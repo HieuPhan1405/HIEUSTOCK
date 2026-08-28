@@ -4,6 +4,13 @@ import { withDb, daoDamBangTinHieu } from "@/lib/db";
 // amibroker/7_Export_LenWeb.afl). Header CSV bat buoc:
 // ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,vung_tham_gia
 
+// TAM THOI - de debug loi 401 API key. KHONG lo gia tri that, chi bao co/khong
+// va do dai. Xoa endpoint nay sau khi xac nhan xong.
+export async function GET() {
+  const key = process.env.UPLOAD_API_KEY;
+  return Response.json({ daCoBien: !!key, doDai: key ? key.length : 0 });
+}
+
 const CAC_COT = [
   "ma",
   "tin",
