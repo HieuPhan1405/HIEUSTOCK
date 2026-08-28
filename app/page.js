@@ -27,13 +27,23 @@ const tradeHistory = [
 
 const stat = { tongGiaoDich: 23, dangMo: 0, laiLoTBMo: 0.0, tyLeLai: 69.6, laiLoTBLenh: 4.3, luyKe: 98.94 };
 
+// Du lieu that tu AmiBroker co the thieu (ma moi len san, chua du du lieu
+// lich su de tinh chi bao) - cac ham nay phai an toan voi null/undefined/NaN
+// thay vi lam sap trang.
 function fmt(n) {
+  if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
   return new Intl.NumberFormat("vi-VN").format(Math.round(n));
 }
 
 function pct(n, digits = 2) {
-  const v = Number(n.toFixed(digits));
+  if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
+  const v = Number(Number(n).toFixed(digits));
   return `${v > 0 ? "+" : ""}${v}%`;
+}
+
+function so1So(n) {
+  if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
+  return Number(n).toFixed(1);
 }
 
 function SignalPill({ tin }) {
@@ -127,7 +137,7 @@ function Dashboard({ onSelect, watchlist, dangTai, capNhatLanCuoi }) {
                 className="hidden sm:block text-xs"
                 style={{ color: "#6F6C64", fontFamily: "'JetBrains Mono', monospace" }}
               >
-                T={row.trend.toFixed(1)} M={row.mom.toFixed(1)} ADX={row.adx.toFixed(1)}
+                T={so1So(row.trend)} M={so1So(row.mom)} ADX={so1So(row.adx)}
               </span>
               <span
                 className="text-right sm:text-left"
