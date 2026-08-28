@@ -1,13 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { TrendingUp, TrendingDown, Minus, ArrowLeft, Mail } from "lucide-react";
 
 const FONT_IMPORT = `
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Be+Vietnam+Pro:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
 `;
 
-const watchlist = [
+// Du lieu mau - chi dung khi CHUA co du lieu that tu API (/api/signals),
+// vi du lan dau vao web truoc khi AmiBroker day CSV len.
+const watchlistMau = [
   { ma: "MWG", diem: 3.74, tin: "MUA", trend: 2.0, mom: 0.5, dt: 0.2, adx: 35.2, gia: 73100, doi: 1.2 },
   { ma: "PGC", diem: 2.85, tin: "MUA", trend: 1.5, mom: 0.5, dt: 0.9, adx: 28.1, gia: 13250, doi: -0.4 },
   { ma: "SBT", diem: 2.1, tin: "MUA", trend: 1.5, mom: -0.5, dt: 0.9, adx: 21.0, gia: 21400, doi: 0.8 },
@@ -38,6 +40,7 @@ function SignalPill({ tin }) {
   const map = {
     MUA: { bg: "#1F3D2E", text: "#5FCF8A", label: "MUA" },
     BAN: { bg: "#3D1F1F", text: "#E86A6A", label: "BAN" },
+    "NAM GIU": { bg: "#332B14", text: "#E8C873", label: "NẮM GIỮ" },
     "TRUNG LAP": { bg: "#2A2620", text: "#A8A296", label: "TRUNG LẬP" },
   };
   const s = map[tin] || map["TRUNG LAP"];
@@ -51,7 +54,7 @@ function SignalPill({ tin }) {
   );
 }
 
-function Dashboard({ onSelect }) {
+function Dashboard({ onSelect, watchlist, dangTai, capNhatLanCuoi }) {
   return (
     <div className="min-h-screen" style={{ background: "#14120F", color: "#EDE7DD" }}>
       <style>{FONT_IMPORT}</style>
@@ -100,7 +103,11 @@ function Dashboard({ onSelect }) {
             Tín hiệu vừa khớp
           </h2>
           <span className="text-xs" style={{ color: "#6F6C64", fontFamily: "'JetBrains Mono', monospace" }}>
-            cập nhật theo phiên
+            {dangTai
+              ? "đang tải..."
+              : capNhatLanCuoi
+              ? `cập nhật lúc ${new Date(capNhatLanCuoi).toLocaleString("vi-VN")}`
+              : "dữ liệu mẫu (chưa nhận CSV từ AmiBroker)"}
           </span>
         </div>
 
@@ -276,9 +283,36 @@ function StockDetail({ ma, onBack }) {
 
 export default function GalaxyApp() {
   const [selected, setSelected] = useState(null);
+  const [watchlist, setWatchlist] = useState(watchlistMau);
+  const [dangTai, setDangTai] = useState(true);
+  const [capNhatLanCuoi, setCapNhatLanCuoi] = useState(null);
+
+  useEffect(() => {
+    let huy = false;
+    fetch("/api/signals")
+      .then((res) => res.json())
+      .then((data) => {
+        if (huy) return;
+        if (data?.trangThai === "ok" && Array.isArray(data.tinHieu) && data.tinHieu.length > 0) {
+          setWatchlist(data.tinHieu);
+          setCapNhatLanCuoi(data.capNhatLanCuoi);
+        }
+        // Neu chua co du lieu that (bang rong), giu nguyen watchlistMau lam vi du.
+      })
+      .catch(() => {
+        // Loi mang/API - giu watchlistMau, khong chan giao dien.
+      })
+      .finally(() => {
+        if (!huy) setDangTai(false);
+      });
+    return () => {
+      huy = true;
+    };
+  }, []);
+
   return selected ? (
     <StockDetail ma={selected} onBack={() => setSelected(null)} />
   ) : (
-    <Dashboard onSelect={setSelected} />
+    <Dashboard onSelect={setSelected} watchlist={watchlist} dangTai={dangTai} capNhatLanCuoi={capNhatLanCuoi} />
   );
 }
