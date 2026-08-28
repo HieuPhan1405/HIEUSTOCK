@@ -44,7 +44,7 @@ def day_du_lieu():
                 "Content-Type": "text/csv",
                 "x-api-key": API_KEY,
             },
-            timeout=30,
+            timeout=90,  # quet toan bo thi truong co the mat vai chuc giay
         )
     except requests.exceptions.RequestException as loi:
         print(f"LOI ket noi toi {URL_API}: {loi}")
