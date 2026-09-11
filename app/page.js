@@ -1,74 +1,48 @@
-"use client";
+import Link from "next/link";
+import { layTatCaTinHieu } from "@/lib/tinHieu";
+import SignalPill from "@/components/SignalPill";
+import { fmt, pct } from "@/components/dungChung";
 
-import React, { useState, useEffect } from "react";
-import { TrendingUp, TrendingDown, Minus, ArrowLeft, Mail } from "lucide-react";
+export const dynamic = "force-dynamic";
 
-const FONT_IMPORT = `
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Be+Vietnam+Pro:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
-`;
-
-// Du lieu mau - chi dung khi CHUA co du lieu that tu API (/api/signals),
-// vi du lan dau vao web truoc khi AmiBroker day CSV len.
-const watchlistMau = [
-  { ma: "MWG", diem: 3.74, tin: "MUA", trend: 2.0, mom: 0.5, dt: 0.2, adx: 35.2, gia: 73100, doi: 1.2 },
-  { ma: "PGC", diem: 2.85, tin: "MUA", trend: 1.5, mom: 0.5, dt: 0.9, adx: 28.1, gia: 13250, doi: -0.4 },
-  { ma: "SBT", diem: 2.1, tin: "MUA", trend: 1.5, mom: -0.5, dt: 0.9, adx: 21.0, gia: 21400, doi: 0.8 },
-  { ma: "PVT", diem: -0.4, tin: "TRUNG LAP", trend: 0.5, mom: -0.5, dt: 0.2, adx: 18.5, gia: 19850, doi: -1.1 },
-  { ma: "VCB", diem: -1.65, tin: "BAN", trend: -1.5, mom: -0.5, dt: 0.1, adx: 22.4, gia: 57400, doi: -1.03 },
-];
-
-const tradeHistory = [
-  { ma: "VCB", ngayMua: "24/03/2026", giaMua: 58071, ngayBan: "02/06/2026", giaBan: 61694, phien: 51, laiLo: 6.24, trangThai: "DA_DONG" },
-  { ma: "VCB", ngayMua: "11/02/2026", giaMua: 64573, ngayBan: "03/03/2026", giaBan: 62091, phien: 15, laiLo: -3.84, trangThai: "DA_DONG" },
-  { ma: "VCB", ngayMua: "07/01/2026", giaMua: 58269, ngayBan: "23/01/2026", giaBan: 69238, phien: 13, laiLo: 18.82, trangThai: "DA_DONG" },
-  { ma: "VCB", ngayMua: "06/10/2025", giaMua: 62935, ngayBan: "17/10/2025", giaBan: 61892, phien: 10, laiLo: -1.66, trangThai: "DA_DONG" },
-  { ma: "VCB", ngayMua: "01/07/2025", giaMua: 57154, ngayBan: "20/08/2025", giaBan: 62529, phien: 37, laiLo: 9.40, trangThai: "DA_DONG" },
-];
-
-const stat = { tongGiaoDich: 23, dangMo: 0, laiLoTBMo: 0.0, tyLeLai: 69.6, laiLoTBLenh: 4.3, luyKe: 98.94 };
-
-// Du lieu that tu AmiBroker co the thieu (ma moi len san, chua du du lieu
-// lich su de tinh chi bao) - cac ham nay phai an toan voi null/undefined/NaN
-// thay vi lam sap trang.
-function fmt(n) {
-  if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
-  return new Intl.NumberFormat("vi-VN").format(Math.round(n));
+// Phan loai xu huong tung ma theo TrendScore (da tinh san trong AFL) - dung
+// de dung "do rong thi truong" giong kieu Xanh/Sideway/Do o trang tham khao.
+function phanLoaiXuHuong(row) {
+  if (row.trend === null || row.trend === undefined) return "sideway";
+  if (row.trend > 0.5) return "xanh";
+  if (row.trend < -0.5) return "do";
+  return "sideway";
 }
 
-function pct(n, digits = 2) {
-  if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
-  const v = Number(Number(n).toFixed(digits));
-  return `${v > 0 ? "+" : ""}${v}%`;
+function sinhKetLuan(pctXanh, pctDo, tong) {
+  if (tong === 0) return "Chưa có dữ liệu — đang chờ AmiBroker đẩy CSV lên.";
+  if (pctXanh - pctDo > 15) return "Nghiêng tích cực — số mã xu hướng tăng đang áp đảo.";
+  if (pctDo - pctXanh > 15) return "Nghiêng tiêu cực — số mã xu hướng giảm đang áp đảo.";
+  return "Sideway — thị trường chưa có xu hướng rõ ràng.";
 }
 
-function so1So(n) {
-  if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
-  return Number(n).toFixed(1);
-}
+export default async function TrangTongQuan() {
+  let tatCa = [];
+  let loi = null;
+  try {
+    tatCa = await layTatCaTinHieu();
+  } catch (e) {
+    loi = String(e?.message || e);
+  }
 
-function SignalPill({ tin }) {
-  const map = {
-    MUA: { bg: "#1F3D2E", text: "#5FCF8A", label: "MUA" },
-    BAN: { bg: "#3D1F1F", text: "#E86A6A", label: "BAN" },
-    "NAM GIU": { bg: "#332B14", text: "#E8C873", label: "NẮM GIỮ" },
-    "TRUNG LAP": { bg: "#2A2620", text: "#A8A296", label: "TRUNG LẬP" },
-  };
-  const s = map[tin] || map["TRUNG LAP"];
+  const tong = tatCa.length;
+  const soXanh = tatCa.filter((r) => phanLoaiXuHuong(r) === "xanh").length;
+  const soDo = tatCa.filter((r) => phanLoaiXuHuong(r) === "do").length;
+  const soSideway = tong - soXanh - soDo;
+  const pctXanh = tong ? (soXanh / tong) * 100 : 0;
+  const pctDo = tong ? (soDo / tong) * 100 : 0;
+  const pctSideway = tong ? (soSideway / tong) * 100 : 0;
+
+  // tatCa da ORDER BY diem DESC tu lib/tinHieu.js - lay 10 ma dau la top diem.
+  const topCoHoi = tatCa.slice(0, 10);
+
   return (
-    <span
-      style={{ background: s.bg, color: s.text, fontFamily: "'JetBrains Mono', monospace" }}
-      className="px-2 py-0.5 text-xs font-bold tracking-wide rounded-sm"
-    >
-      {s.label}
-    </span>
-  );
-}
-
-function Dashboard({ onSelect, watchlist, dangTai, capNhatLanCuoi }) {
-  return (
-    <div className="min-h-screen" style={{ background: "#14120F", color: "#EDE7DD" }}>
-      <style>{FONT_IMPORT}</style>
-
+    <div style={{ color: "#EDE7DD" }}>
       {/* HERO */}
       <div className="relative overflow-hidden border-b" style={{ borderColor: "#2A2620" }}>
         <div className="max-w-5xl mx-auto px-6 pt-14 pb-10">
@@ -82,7 +56,7 @@ function Dashboard({ onSelect, watchlist, dangTai, capNhatLanCuoi }) {
             className="text-4xl sm:text-5xl leading-[1.05] mb-4"
             style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}
           >
-            Tín hiệu Dao Găm,<br />đọc trong 5 giây.
+            Tổng quan thị trường,<br />đọc trong 5 giây.
           </h1>
           <p className="max-w-xl" style={{ color: "#A8A296", fontFamily: "'Be Vietnam Pro', sans-serif" }}>
             Điểm hợp lưu Trend · Động lượng · Dòng tiền, kiểm chứng backtest 12
@@ -90,7 +64,6 @@ function Dashboard({ onSelect, watchlist, dangTai, capNhatLanCuoi }) {
             biểu đồ nhanh hơn.
           </p>
         </div>
-        {/* signature blade divider */}
         <div
           aria-hidden="true"
           style={{
@@ -106,397 +79,94 @@ function Dashboard({ onSelect, watchlist, dangTai, capNhatLanCuoi }) {
         />
       </div>
 
-      {/* WATCHLIST */}
       <div className="max-w-5xl mx-auto px-6 py-10">
+        {loi && (
+          <p className="text-sm mb-6" style={{ color: "#E86A6A" }}>
+            Lỗi tải dữ liệu: {loi}
+          </p>
+        )}
+
+        {/* KET LUAN THI TRUONG */}
+        <div className="border p-6 mb-10" style={{ borderColor: "#2A2620" }}>
+          <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#6F6C64" }}>
+            Kết luận thị trường
+          </p>
+          <p className="text-lg" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
+            {sinhKetLuan(pctXanh, pctDo, tong)}
+          </p>
+          <p className="text-xs mt-1" style={{ color: "#6F6C64" }}>
+            {tong} mã đang theo dõi
+          </p>
+        </div>
+
+        {/* DO RONG THI TRUONG */}
+        <h2 className="text-lg mb-4" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
+          Độ rộng thị trường
+        </h2>
+        <div className="mb-10">
+          {[
+            ["Xanh (xu hướng tăng)", soXanh, pctXanh, "#5FCF8A"],
+            ["Sideway", soSideway, pctSideway, "#E8C873"],
+            ["Đỏ (xu hướng giảm)", soDo, pctDo, "#E86A6A"],
+          ].map(([nhan, soLuong, phanTram, mau]) => (
+            <div key={nhan} className="mb-3">
+              <div className="flex justify-between text-xs mb-1" style={{ color: "#A8A296" }}>
+                <span>{nhan}</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                  {soLuong} mã ({phanTram.toFixed(1)}%)
+                </span>
+              </div>
+              <div className="h-1.5" style={{ background: "#211F1A" }}>
+                <div className="h-full" style={{ width: `${phanTram}%`, background: mau }} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* TOP CO HOI */}
         <div className="flex items-baseline justify-between mb-4">
           <h2 className="text-lg" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
-            Tín hiệu vừa khớp
+            Top cơ hội đáng chú ý
           </h2>
-          <span className="text-xs" style={{ color: "#6F6C64", fontFamily: "'JetBrains Mono', monospace" }}>
-            {dangTai
-              ? "đang tải..."
-              : capNhatLanCuoi
-              ? `cập nhật lúc ${new Date(capNhatLanCuoi).toLocaleString("vi-VN")}`
-              : "dữ liệu mẫu (chưa nhận CSV từ AmiBroker)"}
-          </span>
+          <Link href="/lenh-mo" className="text-xs" style={{ color: "#E8873A", fontFamily: "'JetBrains Mono', monospace" }}>
+            xem lệnh đang mở →
+          </Link>
         </div>
 
         <div className="border-t" style={{ borderColor: "#2A2620" }}>
-          {watchlist.map((row) => (
-            <button
+          {topCoHoi.length === 0 && (
+            <p className="py-6 text-sm" style={{ color: "#6F6C64" }}>
+              Chưa có dữ liệu.
+            </p>
+          )}
+          {topCoHoi.map((row) => (
+            <Link
               key={row.ma}
-              onClick={() => onSelect(row)}
+              href={`/ma/${row.ma}`}
               className="w-full text-left grid grid-cols-[64px_1fr_auto_auto] sm:grid-cols-[64px_90px_1fr_100px_90px] items-center gap-3 py-3 border-b hover:bg-white/[0.03] transition-colors"
               style={{ borderColor: "#211F1A" }}
             >
-              <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: "17px" }}>
-                {row.ma}
-              </span>
+              <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: "17px" }}>{row.ma}</span>
               <SignalPill tin={row.tin} />
               <span
                 className="hidden sm:block text-xs"
                 style={{ color: "#6F6C64", fontFamily: "'JetBrains Mono', monospace" }}
               >
-                T={so1So(row.trend)} M={so1So(row.mom)} ADX={so1So(row.adx)}
+                điểm {row.diem?.toFixed(2) ?? "—"}
               </span>
-              <span
-                className="text-right sm:text-left"
-                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px" }}
-              >
+              <span className="text-right sm:text-left" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px" }}>
                 {fmt(row.gia)}
               </span>
               <span
-                className="text-right flex items-center justify-end gap-1"
-                style={{
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontSize: "13px",
-                  color: row.doi >= 0 ? "#5FCF8A" : "#E86A6A",
-                }}
+                className="text-right"
+                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: row.doi >= 0 ? "#5FCF8A" : "#E86A6A" }}
               >
-                {row.doi >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
                 {pct(row.doi, 2)}
               </span>
-            </button>
+            </Link>
           ))}
         </div>
       </div>
-
-      {/* EMAIL CAPTURE */}
-      <div className="max-w-5xl mx-auto px-6 pb-16">
-        <div className="border p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between" style={{ borderColor: "#2A2620" }}>
-          <div>
-            <p style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }} className="mb-1">
-              Nhận tín hiệu mỗi sáng
-            </p>
-            <p className="text-sm" style={{ color: "#A8A296" }}>
-              5 mã đang khớp điều kiện Dao Găm, gửi qua email trước giờ mở cửa.
-            </p>
-          </div>
-          <div className="flex gap-2 w-full sm:w-auto">
-            <input
-              type="email"
-              placeholder="email@cuaban.com"
-              className="px-3 py-2 text-sm flex-1 sm:w-56 outline-none"
-              style={{ background: "#1B1913", border: "1px solid #2A2620", color: "#EDE7DD" }}
-            />
-            <button
-              className="px-4 py-2 text-sm font-medium flex items-center gap-2"
-              style={{ background: "#E8873A", color: "#241505", fontFamily: "'Be Vietnam Pro', sans-serif", fontWeight: 600 }}
-            >
-              <Mail size={15} /> Đăng ký
-            </button>
-          </div>
-        </div>
-      </div>
     </div>
-  );
-}
-
-// Muc max ly thuyet cua tung thanh phan diem, lay tu dung cong thuc trong
-// amibroker/7_Export_LenWeb.afl - dung de ve thanh % (khong doi dong theo tung ma).
-const TREND_MAX = 3.0; // IIf(...,1) + IIf(...,1) + IIf(...,0.5) + IIf(...,0.5)
-const MOM_MAX = 0.5;
-const DT_MAX = 1.0; // gan dung, MFScore toi da ly thuyet la 1.0 (min -0.8)
-const RS_MAX = 20; // % so voi VNI trong 20 phien, dung lam thang tham khao
-
-function soAn(n, chuSo = 2) {
-  return n === null || n === undefined || Number.isNaN(Number(n)) ? "—" : Number(n).toFixed(chuSo);
-}
-
-// Thanh diem 2 chieu (am/duong quanh 0) - dung cho Trend/Momentum/Dong tien/RS
-function ThanhDiem({ nhan, giaTri, mucMax }) {
-  const gt = giaTri === null || giaTri === undefined ? null : Number(giaTri);
-  const duong = gt !== null && gt >= 0;
-  const rongNua = gt === null ? 0 : Math.min(50, (Math.abs(gt) / mucMax) * 50);
-  return (
-    <div className="mb-3">
-      <div className="flex justify-between text-xs mb-1" style={{ color: "#A8A296" }}>
-        <span>{nhan}</span>
-        <span
-          style={{
-            fontFamily: "'JetBrains Mono', monospace",
-            color: gt === null ? "#6F6C64" : duong ? "#5FCF8A" : "#E86A6A",
-          }}
-        >
-          {gt === null ? "—" : `${gt > 0 ? "+" : ""}${soAn(gt)}`}
-        </span>
-      </div>
-      <div className="relative h-1.5" style={{ background: "#211F1A" }}>
-        <div className="absolute top-0 bottom-0" style={{ left: "50%", width: "1px", background: "#3A362C" }} />
-        {gt !== null && (
-          <div
-            className="absolute top-0 bottom-0"
-            style={{
-              background: duong ? "#5FCF8A" : "#E86A6A",
-              left: duong ? "50%" : `${50 - rongNua}%`,
-              width: `${rongNua}%`,
-            }}
-          />
-        )}
-      </div>
-    </div>
-  );
-}
-
-// Thanh 1 chieu (0 -> mucMax) - dung cho ADX, Breadth nganh
-function ThanhMotChieu({ nhan, giaTri, mucMax, hauTo = "" }) {
-  const gt = giaTri === null || giaTri === undefined ? null : Number(giaTri);
-  const rong = gt === null ? 0 : Math.min(100, Math.max(0, (gt / mucMax) * 100));
-  return (
-    <div className="mb-3">
-      <div className="flex justify-between text-xs mb-1" style={{ color: "#A8A296" }}>
-        <span>{nhan}</span>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{gt === null ? "—" : soAn(gt, 1) + hauTo}</span>
-      </div>
-      <div className="h-1.5" style={{ background: "#211F1A" }}>
-        <div className="h-full" style={{ width: `${rong}%`, background: "#E8873A" }} />
-      </div>
-    </div>
-  );
-}
-
-function ketLuanTuDong(row) {
-  const cauMo = {
-    MUA: "Đang phát tín hiệu MUA",
-    BAN: "Đang phát tín hiệu BÁN",
-    "NAM GIU": "Đang nắm giữ vị thế mở",
-  }[row.tin] || "Chưa đủ điều kiện vào lệnh, đang trung lập";
-
-  const xuHuong = row.trend > 0.5 ? "xu hướng tăng" : row.trend < -0.5 ? "xu hướng giảm" : "đi ngang";
-  const dongTien = row.dt > 0.2 ? "dòng tiền đang ủng hộ" : row.dt < -0.2 ? "dòng tiền đang rút ra" : "dòng tiền trung tính";
-
-  return `${cauMo} — điểm hợp lưu ${soAn(row.diem)}, cổ phiếu đang ${xuHuong}, ${dongTien}.`;
-}
-
-// Tim 2 muc ho tro gan nhat (duoi gia) va 2 muc khang cu gan nhat (tren gia)
-// tu 4 duong tham chieu da tinh trong AFL (Kijun, may Giao Gam, dinh 52 tuan).
-function tinhVungGia(row) {
-  const gia = Number(row.gia);
-  const cacMuc = [row.kijun, row.gg_top, row.gg_bot, row.dinh_52t]
-    .map((v) => (v === null || v === undefined ? null : Number(v)))
-    .filter((v) => v !== null && Number.isFinite(v));
-  const khangCu = cacMuc.filter((v) => v > gia).sort((a, b) => a - b);
-  const hoTro = cacMuc.filter((v) => v <= gia).sort((a, b) => b - a);
-  return { hoTro1: hoTro[0] ?? null, hoTro2: hoTro[1] ?? null, khangCu1: khangCu[0] ?? null, khangCu2: khangCu[1] ?? null };
-}
-
-function StockDetail({ row, onBack }) {
-  const vungGia = tinhVungGia(row);
-  const khoangCach = (muc) => (muc === null || !row.gia ? null : ((muc - row.gia) / row.gia) * 100);
-
-  return (
-    <div className="min-h-screen" style={{ background: "#14120F", color: "#EDE7DD" }}>
-      <style>{FONT_IMPORT}</style>
-
-      <div className="max-w-5xl mx-auto px-6 pt-8 pb-16">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-1 text-xs mb-6"
-          style={{ color: "#A8A296", fontFamily: "'JetBrains Mono', monospace" }}
-        >
-          <ArrowLeft size={13} /> quay lại danh sách
-        </button>
-
-        <div className="flex items-baseline gap-3 mb-1">
-          <h1 style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 700 }} className="text-3xl">
-            {row.ma}
-          </h1>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "#5FCF8A" }} className="text-lg">
-            {fmt(row.gia)}
-          </span>
-          <span
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              color: row.doi >= 0 ? "#5FCF8A" : "#E86A6A",
-            }}
-            className="text-sm"
-          >
-            {pct(row.doi, 2)}
-          </span>
-        </div>
-        <p className="text-sm mb-8" style={{ color: "#6F6C64" }}>
-          {row.cap_nhat_luc
-            ? `cập nhật lúc ${new Date(row.cap_nhat_luc).toLocaleString("vi-VN")}`
-            : "dữ liệu mẫu"}
-        </p>
-
-        {/* DIEM HOP LUU + BREAKDOWN */}
-        <div className="grid sm:grid-cols-[140px_1fr_1fr] gap-6 border-y py-6 mb-10" style={{ borderColor: "#2A2620" }}>
-          <div>
-            <p
-              style={{
-                fontFamily: "'JetBrains Mono', monospace",
-                fontWeight: 700,
-                color: row.diem >= 0 ? "#5FCF8A" : "#E86A6A",
-                fontSize: "40px",
-                lineHeight: 1,
-              }}
-            >
-              {soAn(row.diem)}
-            </p>
-            <p className="text-xs mt-1" style={{ color: "#6F6C64" }}>
-              điểm hợp lưu
-            </p>
-            <div className="mt-2">
-              <SignalPill tin={row.tin} />
-            </div>
-          </div>
-
-          <div>
-            <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#6F6C64" }}>
-              Kết luận
-            </p>
-            <p className="text-sm leading-relaxed" style={{ color: "#EDE7DD" }}>
-              {ketLuanTuDong(row)}
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#6F6C64" }}>
-              Vì sao {row.diem >= 0 ? "được" : "bị trừ"} {soAn(row.diem)} điểm?
-            </p>
-            <ThanhDiem nhan="Trend (x1.5)" giaTri={row.trend} mucMax={TREND_MAX} />
-            <ThanhDiem nhan="Momentum (x1.0)" giaTri={row.mom} mucMax={MOM_MAX} />
-            <ThanhDiem nhan="Dòng tiền (x1.2)" giaTri={row.dt} mucMax={DT_MAX} />
-            <ThanhMotChieu nhan="ADX (sức mạnh xu hướng)" giaTri={row.adx} mucMax={60} />
-            <ThanhDiem nhan="RS so với VNI (20 phiên, %)" giaTri={row.rs_vni} mucMax={RS_MAX} />
-            <ThanhMotChieu nhan="Breadth ngành (%)" giaTri={row.breadth_nganh} mucMax={100} hauTo="%" />
-          </div>
-        </div>
-
-        {/* VUNG GIA QUAN TRONG */}
-        <h2 className="text-lg mb-4" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
-          Vùng giá quan trọng
-        </h2>
-        <div className="grid grid-cols-2 sm:grid-cols-5 border-y mb-10" style={{ borderColor: "#2A2620" }}>
-          {[
-            ["Hỗ trợ 2", vungGia.hoTro2],
-            ["Hỗ trợ 1", vungGia.hoTro1],
-            ["Giá hiện tại", row.gia],
-            ["Kháng cự 1", vungGia.khangCu1],
-            ["Kháng cự 2", vungGia.khangCu2],
-          ].map(([label, val], i) => (
-            <div key={label} className="p-4" style={{ borderLeft: i === 0 ? "none" : "1px solid #2A2620" }}>
-              <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#6F6C64" }}>
-                {label}
-              </p>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-lg">
-                {fmt(val)}
-              </p>
-              {label !== "Giá hiện tại" && val !== null && (
-                <p className="text-[11px] mt-0.5" style={{ color: "#6F6C64" }}>
-                  {pct(khoangCach(val), 2)}
-                </p>
-              )}
-            </div>
-          ))}
-        </div>
-
-        {/* THONG KE HIEU SUAT - du lieu minh hoa, chua noi backtest that theo tung ma */}
-        <p className="text-xs mb-3" style={{ color: "#6F6C64" }}>
-          Dữ liệu minh hoạ bên dưới — chưa nối lịch sử backtest thật theo từng mã.
-        </p>
-        <div className="grid grid-cols-2 sm:grid-cols-6 border-y mb-10" style={{ borderColor: "#2A2620" }}>
-          {[
-            ["Tổng giao dịch", stat.tongGiaoDich, ""],
-            ["Đang mở", stat.dangMo, ""],
-            ["Lãi/lỗ TB lệnh mở", pct(stat.laiLoTBMo), ""],
-            ["Tỷ lệ lãi", stat.tyLeLai + "%", "#5FCF8A"],
-            ["Lãi/lỗ TB mỗi lệnh", pct(stat.laiLoTBLenh), "#5FCF8A"],
-            ["Lợi nhuận lũy kế", pct(stat.luyKe), "#E8873A"],
-          ].map(([label, val, color], i) => (
-            <div key={label} className="p-4" style={{ borderLeft: i === 0 ? "none" : "1px solid #2A2620" }}>
-              <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#6F6C64" }}>
-                {label}
-              </p>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: color || "#EDE7DD" }} className="text-lg">
-                {val}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* LICH SU GIAO DICH */}
-        <h2 className="text-lg mb-4" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
-          Lịch sử giao dịch ({tradeHistory.length} lệnh)
-        </h2>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-            <thead>
-              <tr className="text-left border-b" style={{ borderColor: "#2A2620", color: "#6F6C64" }}>
-                <th className="py-2 pr-4 font-normal">Ngày mua</th>
-                <th className="py-2 pr-4 font-normal">Giá mua</th>
-                <th className="py-2 pr-4 font-normal">Ngày bán</th>
-                <th className="py-2 pr-4 font-normal">Giá bán</th>
-                <th className="py-2 pr-4 font-normal">Phiên</th>
-                <th className="py-2 pr-4 font-normal text-right">Lãi/Lỗ</th>
-                <th className="py-2 font-normal text-right">Trạng thái</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tradeHistory.map((t, i) => (
-                <tr key={i} className="border-b" style={{ borderColor: "#211F1A" }}>
-                  <td className="py-2.5 pr-4">{t.ngayMua}</td>
-                  <td className="py-2.5 pr-4">{fmt(t.giaMua)}</td>
-                  <td className="py-2.5 pr-4">{t.ngayBan}</td>
-                  <td className="py-2.5 pr-4">{fmt(t.giaBan)}</td>
-                  <td className="py-2.5 pr-4">{t.phien}</td>
-                  <td
-                    className="py-2.5 pr-4 text-right font-bold"
-                    style={{ color: t.laiLo >= 0 ? "#5FCF8A" : "#E86A6A" }}
-                  >
-                    {pct(t.laiLo)}
-                  </td>
-                  <td className="py-2.5 text-right">
-                    <span
-                      className="text-xs px-2 py-0.5"
-                      style={{ background: "#211F1A", color: "#A8A296" }}
-                    >
-                      {t.trangThai === "DA_DONG" ? "Đã đóng" : "Đang mở"}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function GalaxyApp() {
-  const [selected, setSelected] = useState(null);
-  const [watchlist, setWatchlist] = useState(watchlistMau);
-  const [dangTai, setDangTai] = useState(true);
-  const [capNhatLanCuoi, setCapNhatLanCuoi] = useState(null);
-
-  useEffect(() => {
-    let huy = false;
-    fetch("/api/signals")
-      .then((res) => res.json())
-      .then((data) => {
-        if (huy) return;
-        if (data?.trangThai === "ok" && Array.isArray(data.tinHieu) && data.tinHieu.length > 0) {
-          setWatchlist(data.tinHieu);
-          setCapNhatLanCuoi(data.capNhatLanCuoi);
-        }
-        // Neu chua co du lieu that (bang rong), giu nguyen watchlistMau lam vi du.
-      })
-      .catch(() => {
-        // Loi mang/API - giu watchlistMau, khong chan giao dien.
-      })
-      .finally(() => {
-        if (!huy) setDangTai(false);
-      });
-    return () => {
-      huy = true;
-    };
-  }, []);
-
-  return selected ? (
-    <StockDetail row={selected} onBack={() => setSelected(null)} />
-  ) : (
-    <Dashboard onSelect={setSelected} watchlist={watchlist} dangTai={dangTai} capNhatLanCuoi={capNhatLanCuoi} />
   );
 }
