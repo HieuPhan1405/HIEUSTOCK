@@ -125,7 +125,7 @@ function Dashboard({ onSelect, watchlist, dangTai, capNhatLanCuoi }) {
           {watchlist.map((row) => (
             <button
               key={row.ma}
-              onClick={() => onSelect(row.ma)}
+              onClick={() => onSelect(row)}
               className="w-full text-left grid grid-cols-[64px_1fr_auto_auto] sm:grid-cols-[64px_90px_1fr_100px_90px] items-center gap-3 py-3 border-b hover:bg-white/[0.03] transition-colors"
               style={{ borderColor: "#211F1A" }}
             >
@@ -192,7 +192,98 @@ function Dashboard({ onSelect, watchlist, dangTai, capNhatLanCuoi }) {
   );
 }
 
-function StockDetail({ ma, onBack }) {
+// Muc max ly thuyet cua tung thanh phan diem, lay tu dung cong thuc trong
+// amibroker/7_Export_LenWeb.afl - dung de ve thanh % (khong doi dong theo tung ma).
+const TREND_MAX = 3.0; // IIf(...,1) + IIf(...,1) + IIf(...,0.5) + IIf(...,0.5)
+const MOM_MAX = 0.5;
+const DT_MAX = 1.0; // gan dung, MFScore toi da ly thuyet la 1.0 (min -0.8)
+const RS_MAX = 20; // % so voi VNI trong 20 phien, dung lam thang tham khao
+
+function soAn(n, chuSo = 2) {
+  return n === null || n === undefined || Number.isNaN(Number(n)) ? "—" : Number(n).toFixed(chuSo);
+}
+
+// Thanh diem 2 chieu (am/duong quanh 0) - dung cho Trend/Momentum/Dong tien/RS
+function ThanhDiem({ nhan, giaTri, mucMax }) {
+  const gt = giaTri === null || giaTri === undefined ? null : Number(giaTri);
+  const duong = gt !== null && gt >= 0;
+  const rongNua = gt === null ? 0 : Math.min(50, (Math.abs(gt) / mucMax) * 50);
+  return (
+    <div className="mb-3">
+      <div className="flex justify-between text-xs mb-1" style={{ color: "#A8A296" }}>
+        <span>{nhan}</span>
+        <span
+          style={{
+            fontFamily: "'JetBrains Mono', monospace",
+            color: gt === null ? "#6F6C64" : duong ? "#5FCF8A" : "#E86A6A",
+          }}
+        >
+          {gt === null ? "—" : `${gt > 0 ? "+" : ""}${soAn(gt)}`}
+        </span>
+      </div>
+      <div className="relative h-1.5" style={{ background: "#211F1A" }}>
+        <div className="absolute top-0 bottom-0" style={{ left: "50%", width: "1px", background: "#3A362C" }} />
+        {gt !== null && (
+          <div
+            className="absolute top-0 bottom-0"
+            style={{
+              background: duong ? "#5FCF8A" : "#E86A6A",
+              left: duong ? "50%" : `${50 - rongNua}%`,
+              width: `${rongNua}%`,
+            }}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Thanh 1 chieu (0 -> mucMax) - dung cho ADX, Breadth nganh
+function ThanhMotChieu({ nhan, giaTri, mucMax, hauTo = "" }) {
+  const gt = giaTri === null || giaTri === undefined ? null : Number(giaTri);
+  const rong = gt === null ? 0 : Math.min(100, Math.max(0, (gt / mucMax) * 100));
+  return (
+    <div className="mb-3">
+      <div className="flex justify-between text-xs mb-1" style={{ color: "#A8A296" }}>
+        <span>{nhan}</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{gt === null ? "—" : soAn(gt, 1) + hauTo}</span>
+      </div>
+      <div className="h-1.5" style={{ background: "#211F1A" }}>
+        <div className="h-full" style={{ width: `${rong}%`, background: "#E8873A" }} />
+      </div>
+    </div>
+  );
+}
+
+function ketLuanTuDong(row) {
+  const cauMo = {
+    MUA: "Đang phát tín hiệu MUA",
+    BAN: "Đang phát tín hiệu BÁN",
+    "NAM GIU": "Đang nắm giữ vị thế mở",
+  }[row.tin] || "Chưa đủ điều kiện vào lệnh, đang trung lập";
+
+  const xuHuong = row.trend > 0.5 ? "xu hướng tăng" : row.trend < -0.5 ? "xu hướng giảm" : "đi ngang";
+  const dongTien = row.dt > 0.2 ? "dòng tiền đang ủng hộ" : row.dt < -0.2 ? "dòng tiền đang rút ra" : "dòng tiền trung tính";
+
+  return `${cauMo} — điểm hợp lưu ${soAn(row.diem)}, cổ phiếu đang ${xuHuong}, ${dongTien}.`;
+}
+
+// Tim 2 muc ho tro gan nhat (duoi gia) va 2 muc khang cu gan nhat (tren gia)
+// tu 4 duong tham chieu da tinh trong AFL (Kijun, may Giao Gam, dinh 52 tuan).
+function tinhVungGia(row) {
+  const gia = Number(row.gia);
+  const cacMuc = [row.kijun, row.gg_top, row.gg_bot, row.dinh_52t]
+    .map((v) => (v === null || v === undefined ? null : Number(v)))
+    .filter((v) => v !== null && Number.isFinite(v));
+  const khangCu = cacMuc.filter((v) => v > gia).sort((a, b) => a - b);
+  const hoTro = cacMuc.filter((v) => v <= gia).sort((a, b) => b - a);
+  return { hoTro1: hoTro[0] ?? null, hoTro2: hoTro[1] ?? null, khangCu1: khangCu[0] ?? null, khangCu2: khangCu[1] ?? null };
+}
+
+function StockDetail({ row, onBack }) {
+  const vungGia = tinhVungGia(row);
+  const khoangCach = (muc) => (muc === null || !row.gia ? null : ((muc - row.gia) / row.gia) * 100);
+
   return (
     <div className="min-h-screen" style={{ background: "#14120F", color: "#EDE7DD" }}>
       <style>{FONT_IMPORT}</style>
@@ -208,20 +299,103 @@ function StockDetail({ ma, onBack }) {
 
         <div className="flex items-baseline gap-3 mb-1">
           <h1 style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 700 }} className="text-3xl">
-            {ma}
+            {row.ma}
           </h1>
           <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "#5FCF8A" }} className="text-lg">
-            57.400
+            {fmt(row.gia)}
           </span>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", color: "#E86A6A" }} className="text-sm">
-            -1.03%
+          <span
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              color: row.doi >= 0 ? "#5FCF8A" : "#E86A6A",
+            }}
+            className="text-sm"
+          >
+            {pct(row.doi, 2)}
           </span>
         </div>
         <p className="text-sm mb-8" style={{ color: "#6F6C64" }}>
-          Ngân hàng TMCP Ngoại thương Việt Nam · HOSE
+          {row.cap_nhat_luc
+            ? `cập nhật lúc ${new Date(row.cap_nhat_luc).toLocaleString("vi-VN")}`
+            : "dữ liệu mẫu"}
         </p>
 
-        {/* THONG KE HIEU SUAT */}
+        {/* DIEM HOP LUU + BREAKDOWN */}
+        <div className="grid sm:grid-cols-[140px_1fr_1fr] gap-6 border-y py-6 mb-10" style={{ borderColor: "#2A2620" }}>
+          <div>
+            <p
+              style={{
+                fontFamily: "'JetBrains Mono', monospace",
+                fontWeight: 700,
+                color: row.diem >= 0 ? "#5FCF8A" : "#E86A6A",
+                fontSize: "40px",
+                lineHeight: 1,
+              }}
+            >
+              {soAn(row.diem)}
+            </p>
+            <p className="text-xs mt-1" style={{ color: "#6F6C64" }}>
+              điểm hợp lưu
+            </p>
+            <div className="mt-2">
+              <SignalPill tin={row.tin} />
+            </div>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#6F6C64" }}>
+              Kết luận
+            </p>
+            <p className="text-sm leading-relaxed" style={{ color: "#EDE7DD" }}>
+              {ketLuanTuDong(row)}
+            </p>
+          </div>
+
+          <div>
+            <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#6F6C64" }}>
+              Vì sao {row.diem >= 0 ? "được" : "bị trừ"} {soAn(row.diem)} điểm?
+            </p>
+            <ThanhDiem nhan="Trend (x1.5)" giaTri={row.trend} mucMax={TREND_MAX} />
+            <ThanhDiem nhan="Momentum (x1.0)" giaTri={row.mom} mucMax={MOM_MAX} />
+            <ThanhDiem nhan="Dòng tiền (x1.2)" giaTri={row.dt} mucMax={DT_MAX} />
+            <ThanhMotChieu nhan="ADX (sức mạnh xu hướng)" giaTri={row.adx} mucMax={60} />
+            <ThanhDiem nhan="RS so với VNI (20 phiên, %)" giaTri={row.rs_vni} mucMax={RS_MAX} />
+            <ThanhMotChieu nhan="Breadth ngành (%)" giaTri={row.breadth_nganh} mucMax={100} hauTo="%" />
+          </div>
+        </div>
+
+        {/* VUNG GIA QUAN TRONG */}
+        <h2 className="text-lg mb-4" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
+          Vùng giá quan trọng
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-5 border-y mb-10" style={{ borderColor: "#2A2620" }}>
+          {[
+            ["Hỗ trợ 2", vungGia.hoTro2],
+            ["Hỗ trợ 1", vungGia.hoTro1],
+            ["Giá hiện tại", row.gia],
+            ["Kháng cự 1", vungGia.khangCu1],
+            ["Kháng cự 2", vungGia.khangCu2],
+          ].map(([label, val], i) => (
+            <div key={label} className="p-4" style={{ borderLeft: i === 0 ? "none" : "1px solid #2A2620" }}>
+              <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#6F6C64" }}>
+                {label}
+              </p>
+              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-lg">
+                {fmt(val)}
+              </p>
+              {label !== "Giá hiện tại" && val !== null && (
+                <p className="text-[11px] mt-0.5" style={{ color: "#6F6C64" }}>
+                  {pct(khoangCach(val), 2)}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* THONG KE HIEU SUAT - du lieu minh hoa, chua noi backtest that theo tung ma */}
+        <p className="text-xs mb-3" style={{ color: "#6F6C64" }}>
+          Dữ liệu minh hoạ bên dưới — chưa nối lịch sử backtest thật theo từng mã.
+        </p>
         <div className="grid grid-cols-2 sm:grid-cols-6 border-y mb-10" style={{ borderColor: "#2A2620" }}>
           {[
             ["Tổng giao dịch", stat.tongGiaoDich, ""],
@@ -321,7 +495,7 @@ export default function GalaxyApp() {
   }, []);
 
   return selected ? (
-    <StockDetail ma={selected} onBack={() => setSelected(null)} />
+    <StockDetail row={selected} onBack={() => setSelected(null)} />
   ) : (
     <Dashboard onSelect={setSelected} watchlist={watchlist} dangTai={dangTai} capNhatLanCuoi={capNhatLanCuoi} />
   );

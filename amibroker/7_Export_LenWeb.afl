@@ -349,7 +349,7 @@ if (Status("stocknum") == 0)
     fh = fopen(DuongDanFileXuat, "w");
     if (fh)
     {
-        fputs("ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,vung_tham_gia\n", fh);
+        fputs("ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,vung_tham_gia,kijun,gg_top,gg_bot,dinh_52t\n", fh);
         fclose(fh);
     }
 }
@@ -381,7 +381,11 @@ Dong = Name() + "," + TinCuoi + ","
      + NumToStr(LastValue(PhanTramDoi),1.4,False) + ","
      + NumToStr(LastValue(RS_SoVoiVNI),1.4,False) + ","
      + NumToStr(LastValue(BreadthPctNganh),1.2,False) + ","
-     + VungThamGiaSo;
+     + VungThamGiaSo + ","
+     + NumToStr(LastValue(Kijun),1.2,False) + ","
+     + NumToStr(LastValue(GGTop),1.2,False) + ","
+     + NumToStr(LastValue(GGBot),1.2,False) + ","
+     + NumToStr(LastValue(Dinh52T),1.2,False);
 
 fh = fopen(DuongDanFileXuat, "a");
 if (fh)

@@ -10,7 +10,7 @@ export async function GET() {
       await daoDamBangTinHieu(client);
       const { rows } = await client.query(
         `SELECT ma, tin, diem, trend, mom, dt, adx, gia, doi, rs_vni, breadth_nganh,
-                vung_tham_gia, cap_nhat_luc
+                vung_tham_gia, kijun, gg_top, gg_bot, dinh_52t, cap_nhat_luc
          FROM tin_hieu
          ORDER BY diem DESC NULLS LAST`
       );

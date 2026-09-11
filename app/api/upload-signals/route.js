@@ -2,7 +2,7 @@ import { withDb, daoDamBangTinHieu } from "@/lib/db";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
 // amibroker/7_Export_LenWeb.afl). Header CSV bat buoc:
-// ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,vung_tham_gia
+// ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,vung_tham_gia,kijun,gg_top,gg_bot,dinh_52t
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -71,11 +71,12 @@ export async function POST(request) {
     // trong ON CONFLICT ben duoi.
     await client.query(
       `INSERT INTO tin_hieu
-        (ma, tin, diem, trend, mom, dt, adx, gia, doi, rs_vni, breadth_nganh, vung_tham_gia)
+        (ma, tin, diem, trend, mom, dt, adx, gia, doi, rs_vni, breadth_nganh, vung_tham_gia,
+         kijun, gg_top, gg_bot, dinh_52t)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
-         $11::float8[], $12::boolean[]
+         $11::float8[], $12::boolean[], $13::float8[], $14::float8[], $15::float8[], $16::float8[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -89,6 +90,10 @@ export async function POST(request) {
          rs_vni = EXCLUDED.rs_vni,
          breadth_nganh = EXCLUDED.breadth_nganh,
          vung_tham_gia = EXCLUDED.vung_tham_gia,
+         kijun = EXCLUDED.kijun,
+         gg_top = EXCLUDED.gg_top,
+         gg_bot = EXCLUDED.gg_bot,
+         dinh_52t = EXCLUDED.dinh_52t,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -103,6 +108,10 @@ export async function POST(request) {
         cot("rs_vni", soFloat),
         cot("breadth_nganh", soFloat),
         cot("vung_tham_gia", (v) => v === "1" || v === "true"),
+        cot("kijun", soFloat),
+        cot("gg_top", soFloat),
+        cot("gg_bot", soFloat),
+        cot("dinh_52t", soFloat),
       ]
     );
   });
