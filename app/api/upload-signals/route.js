@@ -1,8 +1,10 @@
 import { withDb, daoDamBangTinHieu } from "@/lib/db";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
-// amibroker/7_Export_LenWeb.afl). Header CSV bat buoc:
-// ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,vung_tham_gia,kijun,gg_top,gg_bot,dinh_52t
+// amibroker/7_Export_LenWeb.afl). Header CSV bat buoc (28 cot):
+// ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,
+// stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,
+// kumo_twist,ngay_bien_doi,von_hoa
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -28,6 +30,14 @@ function phanTichCSV(vanBan) {
 function soFloat(v) {
   const n = parseFloat(v);
   return Number.isFinite(n) ? n : null;
+}
+
+function soBool(v) {
+  return v === "1" || v === "true";
+}
+
+function soText(v) {
+  return v || null;
 }
 
 export async function POST(request) {
@@ -68,15 +78,21 @@ export async function POST(request) {
 
     // cap_nhat_luc KHONG nam trong danh sach cot chen - dong moi se tu lay
     // gia tri DEFAULT now() cua bang, dong bi trung ma se duoc set lai now()
-    // trong ON CONFLICT ben duoi.
+    // trong ON CONFLICT ben duoi. vung_tham_gia KHONG con ghi - tinh nang da
+    // bi bo trong ban chien luoc FULL v16.
     await client.query(
       `INSERT INTO tin_hieu
-        (ma, tin, diem, trend, mom, dt, adx, gia, doi, rs_vni, breadth_nganh, vung_tham_gia,
-         kijun, gg_top, gg_bot, dinh_52t)
+        (ma, tin, diem, trend, mom, dt, adx, gia, doi, rs_vni, breadth_nganh,
+         kijun, gg_top, gg_bot, dinh_52t,
+         stop_loss, mat_than, tp1, tp2, tp3, gtgd_tb20, fvg_ok,
+         so_phien_giu, lai_lo_pct, sanyaku, kumo_twist, ngay_bien_doi, von_hoa)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
-         $11::float8[], $12::boolean[], $13::float8[], $14::float8[], $15::float8[], $16::float8[]
+         $11::float8[], $12::float8[], $13::float8[], $14::float8[], $15::float8[],
+         $16::float8[], $17::boolean[], $18::float8[], $19::float8[], $20::float8[],
+         $21::float8[], $22::boolean[], $23::float8[], $24::float8[], $25::float8[],
+         $26::text[], $27::boolean[], $28::text[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -89,11 +105,23 @@ export async function POST(request) {
          doi = EXCLUDED.doi,
          rs_vni = EXCLUDED.rs_vni,
          breadth_nganh = EXCLUDED.breadth_nganh,
-         vung_tham_gia = EXCLUDED.vung_tham_gia,
          kijun = EXCLUDED.kijun,
          gg_top = EXCLUDED.gg_top,
          gg_bot = EXCLUDED.gg_bot,
          dinh_52t = EXCLUDED.dinh_52t,
+         stop_loss = EXCLUDED.stop_loss,
+         mat_than = EXCLUDED.mat_than,
+         tp1 = EXCLUDED.tp1,
+         tp2 = EXCLUDED.tp2,
+         tp3 = EXCLUDED.tp3,
+         gtgd_tb20 = EXCLUDED.gtgd_tb20,
+         fvg_ok = EXCLUDED.fvg_ok,
+         so_phien_giu = EXCLUDED.so_phien_giu,
+         lai_lo_pct = EXCLUDED.lai_lo_pct,
+         sanyaku = EXCLUDED.sanyaku,
+         kumo_twist = EXCLUDED.kumo_twist,
+         ngay_bien_doi = EXCLUDED.ngay_bien_doi,
+         von_hoa = EXCLUDED.von_hoa,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -107,11 +135,23 @@ export async function POST(request) {
         cot("doi", soFloat),
         cot("rs_vni", soFloat),
         cot("breadth_nganh", soFloat),
-        cot("vung_tham_gia", (v) => v === "1" || v === "true"),
         cot("kijun", soFloat),
         cot("gg_top", soFloat),
         cot("gg_bot", soFloat),
         cot("dinh_52t", soFloat),
+        cot("stop_loss", soFloat),
+        cot("mat_than", soBool),
+        cot("tp1", soFloat),
+        cot("tp2", soFloat),
+        cot("tp3", soFloat),
+        cot("gtgd_tb20", soFloat),
+        cot("fvg_ok", soBool),
+        cot("so_phien_giu", soFloat),
+        cot("lai_lo_pct", soFloat),
+        cot("sanyaku", soFloat),
+        cot("kumo_twist", soText),
+        cot("ngay_bien_doi", soBool),
+        cot("von_hoa", soText),
       ]
     );
   });

@@ -17,16 +17,26 @@ export default async function TrangLenhMo() {
   }
 
   // "Dang mo" = ma vua phat tin hieu MUA hoac dang giu vi the (NAM GIU).
-  const dangMo = tatCa.filter((r) => r.tin === "MUA" || r.tin === "NAM GIU");
+  // Uu tien hien CANH BAO MAT THAN len dau (rui ro dao chieu, can chu y truoc).
+  const dangMo = tatCa
+    .filter((r) => r.tin === "MUA" || r.tin === "NAM GIU")
+    .sort((a, b) => (b.mat_than ? 1 : 0) - (a.mat_than ? 1 : 0));
+  const soCanhBao = dangMo.filter((r) => r.mat_than).length;
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-10" style={{ color: "#EDE7DD" }}>
       <h1 className="text-2xl mb-1" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
         Lệnh đang mở
       </h1>
-      <p className="text-sm mb-6" style={{ color: "#6F6C64" }}>
+      <p className="text-sm mb-1" style={{ color: "#6F6C64" }}>
         {loi ? "—" : `${dangMo.length} mã đang MUA hoặc NẮM GIỮ / tổng ${tatCa.length} mã theo dõi.`}
       </p>
+      {soCanhBao > 0 && (
+        <p className="text-sm mb-6" style={{ color: "#E86A6A" }}>
+          ⚠️ {soCanhBao} mã đang cảnh báo Mắt Thần — nên xem lại ngay.
+        </p>
+      )}
+      {soCanhBao === 0 && <div className="mb-6" />}
 
       <div className="mb-10 max-w-md">
         <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#6F6C64" }}>
@@ -52,9 +62,12 @@ export default async function TrangLenhMo() {
             key={row.ma}
             href={`/ma/${row.ma}`}
             className="w-full text-left grid grid-cols-[64px_1fr_auto_auto] sm:grid-cols-[64px_90px_1fr_100px_90px] items-center gap-3 py-3 border-b hover:bg-white/[0.03] transition-colors"
-            style={{ borderColor: "#211F1A" }}
+            style={{ borderColor: row.mat_than ? "#4A2222" : "#211F1A", background: row.mat_than ? "#1F1414" : "transparent" }}
           >
-            <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: "17px" }}>{row.ma}</span>
+            <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: "17px" }}>
+              {row.mat_than && "⚠️ "}
+              {row.ma}
+            </span>
             <SignalPill tin={row.tin} />
             <span className="hidden sm:block text-xs" style={{ color: "#6F6C64", fontFamily: "'JetBrains Mono', monospace" }}>
               T={so1So(row.trend)} M={so1So(row.mom)} ADX={so1So(row.adx)}

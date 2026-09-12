@@ -44,6 +44,31 @@ function CardDangCapNhat({ tieuDe }) {
   );
 }
 
+function BannerMatThan() {
+  return (
+    <div
+      className="rounded-lg border p-4 mb-4 flex items-center gap-3"
+      style={{ borderColor: "#E86A6A", background: "#2A1414" }}
+    >
+      <span style={{ fontSize: "22px" }}>⚠️</span>
+      <div>
+        <p style={{ fontWeight: 700, color: "#E86A6A" }} className="text-sm">
+          Cảnh báo Mắt Thần
+        </p>
+        <p className="text-xs" style={{ color: "#D9A0A0" }}>
+          Giá đã phá đỉnh trên mây nhưng quay lại kiểm định mà không bật lên được qua Tenkan — rủi ro đảo chiều, cân nhắc bán ngay.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function chuoiThanhKhoan(v) {
+  if (v === null || v === undefined || Number.isNaN(Number(v))) return "—";
+  const ty = Number(v) / 1e9;
+  return `${ty.toFixed(ty >= 10 ? 0 : 1)} tỷ`;
+}
+
 function TagInfo({ nhan, giaTri, mau }) {
   return (
     <span
@@ -185,6 +210,8 @@ export default function ChiTietMa({ row }) {
         </span>
       </div>
 
+      {row.mat_than && <BannerMatThan />}
+
       {/* 3 CARD CHINH: DIEM - KET LUAN - BREAKDOWN */}
       <div className="grid sm:grid-cols-[180px_1fr_1fr] gap-4 mb-4">
         <Card className="flex flex-col items-start">
@@ -208,7 +235,23 @@ export default function ChiTietMa({ row }) {
             <p style={{ fontFamily: "'JetBrains Mono', monospace", color: row.doi >= 0 ? "#5FCF8A" : "#E86A6A" }} className="text-xs">
               {pct(row.doi, 2)}
             </p>
+            <p className="text-[11px] mt-1" style={{ color: "#6F6C64" }}>
+              Thanh khoản TB20: {chuoiThanhKhoan(row.gtgd_tb20)}
+            </p>
           </div>
+          {(row.tin === "MUA" || row.tin === "NAM GIU") && (
+            <div className="mt-3 pt-3 border-t w-full" style={{ borderColor: VIEN }}>
+              <p className="text-[11px]" style={{ color: "#6F6C64" }}>
+                Đang giữ {row.so_phien_giu ?? "—"} phiên
+              </p>
+              <p
+                className="text-sm font-bold"
+                style={{ fontFamily: "'JetBrains Mono', monospace", color: row.lai_lo_pct >= 0 ? "#5FCF8A" : "#E86A6A" }}
+              >
+                {pct(row.lai_lo_pct, 2)}
+              </p>
+            </div>
+          )}
         </Card>
 
         <Card>
@@ -227,6 +270,18 @@ export default function ChiTietMa({ row }) {
             <TagInfo nhan="Xu hướng" giaTri={tag.xuHuong.nhan} mau={tag.xuHuong.mau} />
             <TagInfo nhan="Dòng tiền" giaTri={tag.dongTien.nhan} mau={tag.dongTien.mau} />
             <TagInfo nhan="Sức mạnh ADX" giaTri={tag.adxSucManh.nhan} mau={tag.adxSucManh.mau} />
+            {row.von_hoa && <TagInfo nhan="Vốn hoá" giaTri={row.von_hoa} mau="#5FCF8A" />}
+            {row.sanyaku !== null && row.sanyaku !== undefined && (
+              <TagInfo nhan="Sanyaku" giaTri={`${row.sanyaku}/3`} mau={row.sanyaku >= 2 ? "#5FCF8A" : "#A8A296"} />
+            )}
+            {row.kumo_twist && (
+              <TagInfo
+                nhan="Mây tương lai"
+                giaTri={row.kumo_twist === "TANG" ? "Sắp đổi chiều tăng" : "Sắp đổi chiều giảm"}
+                mau={row.kumo_twist === "TANG" ? "#5FCF8A" : "#E86A6A"}
+              />
+            )}
+            {row.ngay_bien_doi && <TagInfo nhan="Time Theory" giaTri="Ngày biến đổi" mau="#C77DFF" />}
           </div>
         </Card>
 
@@ -243,8 +298,8 @@ export default function ChiTietMa({ row }) {
         </Card>
       </div>
 
-      {/* VUNG GIA - DINH GIA - CAU CHUYEN, 3 CARD NGANG GIONG MAU */}
-      <div className="grid sm:grid-cols-3 gap-4 mb-10">
+      {/* VUNG GIA + STOP-LOSS - 3 MOC CHOT LOI */}
+      <div className="grid sm:grid-cols-2 gap-4 mb-4">
         <Card>
           <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#6F6C64" }}>
             Vùng giá quan trọng
@@ -281,13 +336,56 @@ export default function ChiTietMa({ row }) {
               </p>
             </div>
           </div>
-          <p className="text-[11px]" style={{ color: "#6F6C64" }}>
+          <p className="text-[11px] mb-3" style={{ color: "#6F6C64" }}>
             Khoảng cách tới hỗ trợ 1: <strong style={{ color: "#EDE7DD" }}>{pct(khoangCach(vungGia.hoTro1), 2)}</strong>
             {"  ·  "}
             tới kháng cự 1: <strong style={{ color: "#EDE7DD" }}>{pct(khoangCach(vungGia.khangCu1), 2)}</strong>
           </p>
+          {row.stop_loss !== null && row.stop_loss !== undefined && (
+            <div className="rounded p-2 flex items-center justify-between" style={{ background: "#2A1414", border: "1px solid #4A2222" }}>
+              <span className="text-xs" style={{ color: "#E8A0A0" }}>
+                Stop-loss (nếu đang giữ)
+              </span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#E86A6A" }} className="text-sm">
+                {fmt(row.stop_loss)}
+                <span className="text-[11px] ml-1" style={{ color: "#B87A7A" }}>
+                  ({pct(khoangCach(row.stop_loss), 2)})
+                </span>
+              </span>
+            </div>
+          )}
         </Card>
 
+        <Card>
+          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#6F6C64" }}>
+            3 mốc chốt lời từng phần
+          </p>
+          {[
+            ["TP1 (gần, ngắn hạn)", row.tp1],
+            ["TP2 (giữa, trung hạn)", row.tp2],
+            ["TP3 (xa, 52 tuần)", row.tp3],
+          ].map(([nhan, gia]) => (
+            <div key={nhan} className="flex items-center justify-between py-1.5 border-b" style={{ borderColor: "#211F1A" }}>
+              <span className="text-xs" style={{ color: "#A8A296" }}>
+                {nhan}
+              </span>
+              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-sm">
+                {fmt(gia)}
+                {gia !== null && gia !== undefined && (
+                  <span className="text-[11px] ml-1" style={{ color: "#6F6C64" }}>
+                    ({pct(khoangCach(gia), 2)})
+                  </span>
+                )}
+              </span>
+            </div>
+          ))}
+          <p className="text-[11px] mt-3" style={{ color: "#6F6C64" }}>
+            Mỗi mốc chỉ còn ý nghĩa khi vẫn cao hơn giá hiện tại — mốc đã vượt qua coi như đã chốt xong phần đó.
+          </p>
+        </Card>
+      </div>
+
+      <div className="grid sm:grid-cols-2 gap-4 mb-10">
         <CardDangCapNhat tieuDe="Định giá tham khảo" />
         <CardDangCapNhat tieuDe="Câu chuyện kỳ vọng" />
       </div>
