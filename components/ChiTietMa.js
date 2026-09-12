@@ -141,10 +141,10 @@ function tinhCacTag(row) {
 
   const dongTien =
     row.dt > 0.2
-      ? { nhan: "Đồng thuận (vào)", mau: "#5FCF8A" }
+      ? { nhan: "Ủng hộ", mau: "#5FCF8A" }
       : row.dt < -0.2
-      ? { nhan: "Đồng thuận (ra)", mau: "#E86A6A" }
-      : { nhan: "Chưa đồng thuận", mau: "#A8A296" };
+      ? { nhan: "Rút ra", mau: "#E86A6A" }
+      : { nhan: "Trung tính", mau: "#A8A296" };
 
   const adxSucManh =
     row.adx === null ? { nhan: "—", mau: "#6F6C64" } : row.adx >= 40 ? { nhan: "Mạnh", mau: "#5FCF8A" } : row.adx >= 20 ? { nhan: "Trung bình", mau: "#E8C873" } : { nhan: "Yếu", mau: "#A8A296" };
