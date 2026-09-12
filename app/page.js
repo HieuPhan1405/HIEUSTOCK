@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
-import SignalPill from "@/components/SignalPill";
-import { fmt, pct } from "@/components/dungChung";
+import { pct } from "@/components/dungChung";
 
 export const dynamic = "force-dynamic";
 
@@ -38,8 +37,14 @@ export default async function TrangTongQuan() {
   const pctDo = tong ? (soDo / tong) * 100 : 0;
   const pctSideway = tong ? (soSideway / tong) * 100 : 0;
 
-  // tatCa da ORDER BY diem DESC tu lib/tinHieu.js - lay 10 ma dau la top diem.
-  const topCoHoi = tatCa.slice(0, 10);
+  // tatCa da ORDER BY diem DESC tu lib/tinHieu.js. Tach rieng tin hieu MUA
+  // (diem cao nhat truoc) va tin hieu BAN (diem thap nhat/am nhieu nhat
+  // truoc, vi day la ben "dang chu y" cua phe ban) thanh 2 cot rieng.
+  const tinHieuMua = tatCa.filter((r) => r.tin === "MUA").slice(0, 10);
+  const tinHieuBan = tatCa
+    .filter((r) => r.tin === "BAN")
+    .sort((a, b) => (a.diem ?? 0) - (b.diem ?? 0))
+    .slice(0, 10);
 
   return (
     <div style={{ color: "#EDE7DD" }}>
@@ -123,7 +128,7 @@ export default async function TrangTongQuan() {
           ))}
         </div>
 
-        {/* TOP CO HOI */}
+        {/* TOP CO HOI - CHIA 2 COT MUA / BAN */}
         <div className="flex items-baseline justify-between mb-4">
           <h2 className="text-lg" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
             Top cơ hội đáng chú ý
@@ -133,40 +138,48 @@ export default async function TrangTongQuan() {
           </Link>
         </div>
 
-        <div className="border-t" style={{ borderColor: "#2A2620" }}>
-          {topCoHoi.length === 0 && (
-            <p className="py-6 text-sm" style={{ color: "#6F6C64" }}>
-              Chưa có dữ liệu.
-            </p>
-          )}
-          {topCoHoi.map((row) => (
-            <Link
-              key={row.ma}
-              href={`/ma/${row.ma}`}
-              className="w-full text-left grid grid-cols-[64px_1fr_auto_auto] sm:grid-cols-[64px_90px_1fr_100px_90px] items-center gap-3 py-3 border-b hover:bg-white/[0.03] transition-colors"
-              style={{ borderColor: "#211F1A" }}
-            >
-              <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: "17px" }}>{row.ma}</span>
-              <SignalPill tin={row.tin} />
-              <span
-                className="hidden sm:block text-xs"
-                style={{ color: "#6F6C64", fontFamily: "'JetBrains Mono', monospace" }}
-              >
-                điểm {row.diem?.toFixed(2) ?? "—"}
-              </span>
-              <span className="text-right sm:text-left" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px" }}>
-                {fmt(row.gia)}
-              </span>
-              <span
-                className="text-right"
-                style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: row.doi >= 0 ? "#5FCF8A" : "#E86A6A" }}
-              >
-                {pct(row.doi, 2)}
-              </span>
-            </Link>
-          ))}
+        <div className="grid sm:grid-cols-2 gap-8">
+          <CotTinHieu tieuDe="Tín hiệu MUA" mau="#5FCF8A" danhSach={tinHieuMua} />
+          <CotTinHieu tieuDe="Tín hiệu BÁN" mau="#E86A6A" danhSach={tinHieuBan} />
         </div>
       </div>
+    </div>
+  );
+}
+
+function CotTinHieu({ tieuDe, mau, danhSach }) {
+  return (
+    <div>
+      <p
+        className="text-xs uppercase tracking-wide mb-2 pb-2 border-b"
+        style={{ color: mau, borderColor: "#2A2620", fontFamily: "'JetBrains Mono', monospace" }}
+      >
+        {tieuDe} ({danhSach.length})
+      </p>
+      {danhSach.length === 0 && (
+        <p className="py-6 text-sm" style={{ color: "#6F6C64" }}>
+          Chưa có mã nào.
+        </p>
+      )}
+      {danhSach.map((row) => (
+        <Link
+          key={row.ma}
+          href={`/ma/${row.ma}`}
+          className="w-full text-left grid grid-cols-[64px_1fr_auto] items-center gap-3 py-3 border-b hover:bg-white/[0.03] transition-colors"
+          style={{ borderColor: "#211F1A" }}
+        >
+          <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: "17px" }}>{row.ma}</span>
+          <span className="text-xs" style={{ color: "#6F6C64", fontFamily: "'JetBrains Mono', monospace" }}>
+            điểm {row.diem?.toFixed(2) ?? "—"}
+          </span>
+          <span
+            className="text-right"
+            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: row.doi >= 0 ? "#5FCF8A" : "#E86A6A" }}
+          >
+            {pct(row.doi, 2)}
+          </span>
+        </Link>
+      ))}
     </div>
   );
 }
