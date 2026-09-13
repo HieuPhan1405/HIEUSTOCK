@@ -1,9 +1,9 @@
 export default function SignalPill({ tin }) {
   const map = {
-    MUA: { bg: "#1F3D2E", text: "#5FCF8A", label: "MUA" },
-    BAN: { bg: "#3D1F1F", text: "#E86A6A", label: "BAN" },
-    "NAM GIU": { bg: "#332B14", text: "#E8C873", label: "NẮM GIỮ" },
-    "TRUNG LAP": { bg: "#2A2620", text: "#A8A296", label: "TRUNG LẬP" },
+    MUA: { bg: "#123423", text: "#22C55E", label: "MUA" },
+    BAN: { bg: "#3A1620", text: "#EF4444", label: "BAN" },
+    "NAM GIU": { bg: "#332413", text: "#FBBF24", label: "NẮM GIỮ" },
+    "TRUNG LAP": { bg: "#26262F", text: "#A6A6B3", label: "TRUNG LẬP" },
   };
   const s = map[tin] || map["TRUNG LAP"];
   return (

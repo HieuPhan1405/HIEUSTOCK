@@ -18,19 +18,19 @@ export default async function TrangChiTietMa({ params }) {
 
   if (loi) {
     return (
-      <div className="max-w-5xl mx-auto px-6 py-16" style={{ color: "#EDE7DD" }}>
-        <p style={{ color: "#E86A6A" }}>Lỗi tải dữ liệu: {loi}</p>
+      <div className="max-w-5xl mx-auto px-6 py-16" style={{ color: "#F5F5F7" }}>
+        <p style={{ color: "#EF4444" }}>Lỗi tải dữ liệu: {loi}</p>
       </div>
     );
   }
 
   if (!row) {
     return (
-      <div className="max-w-5xl mx-auto px-6 py-16" style={{ color: "#EDE7DD" }}>
+      <div className="max-w-5xl mx-auto px-6 py-16" style={{ color: "#F5F5F7" }}>
         <p className="mb-4">
           Không tìm thấy mã <strong>{ma?.toUpperCase()}</strong> trong dữ liệu đã quét.
         </p>
-        <Link href="/lenh-mo" className="text-sm" style={{ color: "#E8873A" }}>
+        <Link href="/lenh-mo" className="text-sm" style={{ color: "#6C5CE7" }}>
           ← quay lại lệnh đang mở
         </Link>
       </div>

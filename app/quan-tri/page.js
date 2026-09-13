@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-const VIEN = "#2A2620";
-const NEN_CARD = "#1B1913";
+const VIEN = "#26262F";
+const NEN_CARD = "#15151F";
 
 const NHAN_LOAI = {
-  dong_luc: { nhan: "Động lực", mau: "#5FCF8A" },
-  theo_doi: { nhan: "Theo dõi", mau: "#E8C873" },
-  rui_ro: { nhan: "Rủi ro", mau: "#E86A6A" },
+  dong_luc: { nhan: "Động lực", mau: "#22C55E" },
+  theo_doi: { nhan: "Theo dõi", mau: "#FBBF24" },
+  rui_ro: { nhan: "Rủi ro", mau: "#EF4444" },
 };
 
 function locApiKey() {
@@ -138,16 +138,16 @@ export default function TrangQuanTri() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-10" style={{ color: "#EDE7DD" }}>
-      <h1 className="text-2xl mb-1" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
+    <div className="max-w-3xl mx-auto px-6 py-10" style={{ color: "#F5F5F7" }}>
+      <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
         Quản trị nội dung
       </h1>
-      <p className="text-sm mb-6" style={{ color: "#6F6C64" }}>
+      <p className="text-sm mb-6" style={{ color: "#8B8B99" }}>
         Nhập tay Định giá tham khảo và Câu chuyện kỳ vọng cho từng mã — AmiBroker không có nguồn dữ liệu này.
       </p>
 
       <div className="rounded-lg border p-4 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <label className="text-xs uppercase tracking-wide block mb-1" style={{ color: "#6F6C64" }}>
+        <label className="text-xs uppercase tracking-wide block mb-1" style={{ color: "#8B8B99" }}>
           Mật khẩu (API key)
         </label>
         <input
@@ -159,7 +159,7 @@ export default function TrangQuanTri() {
           }}
           placeholder="Trùng với UPLOAD_API_KEY trên Vercel"
           className="w-full px-3 py-2 text-sm outline-none"
-          style={{ background: "#14120F", border: `1px solid ${VIEN}`, color: "#EDE7DD" }}
+          style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
         />
       </div>
 
@@ -169,19 +169,19 @@ export default function TrangQuanTri() {
           onChange={(e) => setMa(e.target.value)}
           placeholder="Nhập mã cổ phiếu (ví dụ: FPT)"
           className="px-3 py-2 text-sm flex-1 outline-none"
-          style={{ background: "#1B1913", border: `1px solid ${VIEN}`, color: "#EDE7DD", fontFamily: "'JetBrains Mono', monospace" }}
+          style={{ background: "#15151F", border: `1px solid ${VIEN}`, color: "#F5F5F7", fontFamily: "'JetBrains Mono', monospace" }}
         />
         <button
           type="submit"
           className="px-4 py-2 text-sm font-medium"
-          style={{ background: "#E8873A", color: "#241505", fontWeight: 600 }}
+          style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}
         >
           Tải dữ liệu
         </button>
       </form>
 
       {thongBao && (
-        <p className="text-sm mb-4" style={{ color: "#E86A6A" }}>
+        <p className="text-sm mb-4" style={{ color: "#EF4444" }}>
           {thongBao}
         </p>
       )}
@@ -190,23 +190,23 @@ export default function TrangQuanTri() {
         <>
           {/* DINH GIA */}
           <div className="rounded-lg border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-            <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#6F6C64" }}>
+            <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
               Định giá tham khảo — {ma.trim().toUpperCase()}
             </p>
 
             {dinhGia.map((d) => (
-              <div key={d.id} className="flex items-center justify-between py-2 border-b text-sm" style={{ borderColor: "#211F1A" }}>
+              <div key={d.id} className="flex items-center justify-between py-2 border-b text-sm" style={{ borderColor: "#1D1D26" }}>
                 <span>
                   {d.cong_ty_ck} — {d.ngay_dinh_gia ? new Date(d.ngay_dinh_gia).toLocaleDateString("vi-VN") : "—"} —{" "}
                   <strong>{d.gia_muc_tieu}</strong>
                 </span>
-                <button onClick={() => xoaDinhGia(d.id)} className="text-xs" style={{ color: "#E86A6A" }}>
+                <button onClick={() => xoaDinhGia(d.id)} className="text-xs" style={{ color: "#EF4444" }}>
                   Xoá
                 </button>
               </div>
             ))}
             {dinhGia.length === 0 && !dangTai && (
-              <p className="text-xs py-2" style={{ color: "#6F6C64" }}>
+              <p className="text-xs py-2" style={{ color: "#8B8B99" }}>
                 Chưa có định giá nào cho mã này.
               </p>
             )}
@@ -217,14 +217,14 @@ export default function TrangQuanTri() {
                 onChange={(e) => setCongTyCK(e.target.value)}
                 placeholder="Công ty CK (VD: VCI)"
                 className="px-2 py-1.5 text-sm outline-none"
-                style={{ background: "#14120F", border: `1px solid ${VIEN}`, color: "#EDE7DD" }}
+                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
               />
               <input
                 type="date"
                 value={ngayDinhGia}
                 onChange={(e) => setNgayDinhGia(e.target.value)}
                 className="px-2 py-1.5 text-sm outline-none"
-                style={{ background: "#14120F", border: `1px solid ${VIEN}`, color: "#EDE7DD" }}
+                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
               />
               <input
                 type="number"
@@ -233,9 +233,9 @@ export default function TrangQuanTri() {
                 onChange={(e) => setGiaMucTieu(e.target.value)}
                 placeholder="Giá mục tiêu"
                 className="px-2 py-1.5 text-sm outline-none"
-                style={{ background: "#14120F", border: `1px solid ${VIEN}`, color: "#EDE7DD" }}
+                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
               />
-              <button type="submit" className="px-3 py-1.5 text-sm font-medium" style={{ background: "#E8873A", color: "#241505", fontWeight: 600 }}>
+              <button type="submit" className="px-3 py-1.5 text-sm font-medium" style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}>
                 Thêm
               </button>
             </form>
@@ -243,26 +243,26 @@ export default function TrangQuanTri() {
 
           {/* CAU CHUYEN */}
           <div className="rounded-lg border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
-            <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#6F6C64" }}>
+            <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
               Câu chuyện kỳ vọng — {ma.trim().toUpperCase()}
             </p>
 
             {cauChuyen.map((c) => (
-              <div key={c.id} className="flex items-start justify-between py-2 border-b text-sm gap-2" style={{ borderColor: "#211F1A" }}>
+              <div key={c.id} className="flex items-start justify-between py-2 border-b text-sm gap-2" style={{ borderColor: "#1D1D26" }}>
                 <span>
-                  <span style={{ color: NHAN_LOAI[c.loai]?.mau || "#A8A296", fontWeight: 700 }}>
+                  <span style={{ color: NHAN_LOAI[c.loai]?.mau || "#A6A6B3", fontWeight: 700 }}>
                     [{NHAN_LOAI[c.loai]?.nhan || c.loai}]
                   </span>{" "}
                   {c.noi_dung}{" "}
-                  {c.ngay && <span style={{ color: "#6F6C64" }}>({new Date(c.ngay).toLocaleDateString("vi-VN")})</span>}
+                  {c.ngay && <span style={{ color: "#8B8B99" }}>({new Date(c.ngay).toLocaleDateString("vi-VN")})</span>}
                 </span>
-                <button onClick={() => xoaCauChuyen(c.id)} className="text-xs shrink-0" style={{ color: "#E86A6A" }}>
+                <button onClick={() => xoaCauChuyen(c.id)} className="text-xs shrink-0" style={{ color: "#EF4444" }}>
                   Xoá
                 </button>
               </div>
             ))}
             {cauChuyen.length === 0 && !dangTai && (
-              <p className="text-xs py-2" style={{ color: "#6F6C64" }}>
+              <p className="text-xs py-2" style={{ color: "#8B8B99" }}>
                 Chưa có câu chuyện nào cho mã này.
               </p>
             )}
@@ -272,7 +272,7 @@ export default function TrangQuanTri() {
                 value={loaiCauChuyen}
                 onChange={(e) => setLoaiCauChuyen(e.target.value)}
                 className="px-2 py-1.5 text-sm outline-none"
-                style={{ background: "#14120F", border: `1px solid ${VIEN}`, color: "#EDE7DD" }}
+                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
               >
                 <option value="dong_luc">Động lực</option>
                 <option value="theo_doi">Theo dõi</option>
@@ -283,19 +283,19 @@ export default function TrangQuanTri() {
                 onChange={(e) => setNoiDungCauChuyen(e.target.value)}
                 placeholder="Nội dung"
                 className="px-2 py-1.5 text-sm outline-none sm:col-span-2"
-                style={{ background: "#14120F", border: `1px solid ${VIEN}`, color: "#EDE7DD" }}
+                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
               />
               <input
                 type="date"
                 value={ngayCauChuyen}
                 onChange={(e) => setNgayCauChuyen(e.target.value)}
                 className="px-2 py-1.5 text-sm outline-none"
-                style={{ background: "#14120F", border: `1px solid ${VIEN}`, color: "#EDE7DD" }}
+                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
               />
               <button
                 type="submit"
                 className="px-3 py-1.5 text-sm font-medium sm:col-span-4"
-                style={{ background: "#E8873A", color: "#241505", fontWeight: 600 }}
+                style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}
               >
                 Thêm
               </button>

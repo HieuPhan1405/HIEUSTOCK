@@ -22,16 +22,16 @@ export default function TraCuuMa() {
         placeholder="Nhập mã cổ phiếu khác (ví dụ: MBB)"
         className="px-3 py-2 text-sm flex-1 outline-none"
         style={{
-          background: "#1B1913",
-          border: "1px solid #2A2620",
-          color: "#EDE7DD",
+          background: "#15151F",
+          border: "1px solid #26262F",
+          color: "#F5F5F7",
           fontFamily: "'JetBrains Mono', monospace",
         }}
       />
       <button
         type="submit"
         className="px-4 py-2 text-sm font-medium flex items-center gap-2 shrink-0"
-        style={{ background: "#E8873A", color: "#241505", fontWeight: 600 }}
+        style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}
       >
         <Search size={15} /> Tra cứu
       </button>

@@ -3,7 +3,7 @@
 // du lieu lich su de tinh chi bao) - moi ham phai an toan voi null/undefined/NaN.
 
 export const FONT_IMPORT = `
-@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Be+Vietnam+Pro:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 `;
 
 export function fmt(n) {

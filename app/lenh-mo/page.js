@@ -24,36 +24,36 @@ export default async function TrangLenhMo() {
   const soCanhBao = dangMo.filter((r) => r.mat_than).length;
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-10" style={{ color: "#EDE7DD" }}>
-      <h1 className="text-2xl mb-1" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
+    <div className="max-w-5xl mx-auto px-6 py-10" style={{ color: "#F5F5F7" }}>
+      <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
         Lệnh đang mở
       </h1>
-      <p className="text-sm mb-1" style={{ color: "#6F6C64" }}>
+      <p className="text-sm mb-1" style={{ color: "#8B8B99" }}>
         {loi ? "—" : `${dangMo.length} mã đang MUA hoặc NẮM GIỮ / tổng ${tatCa.length} mã theo dõi.`}
       </p>
       {soCanhBao > 0 && (
-        <p className="text-sm mb-6" style={{ color: "#E86A6A" }}>
+        <p className="text-sm mb-6" style={{ color: "#EF4444" }}>
           ⚠️ {soCanhBao} mã đang cảnh báo Mắt Thần — nên xem lại ngay.
         </p>
       )}
       {soCanhBao === 0 && <div className="mb-6" />}
 
       <div className="mb-10 max-w-md">
-        <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#6F6C64" }}>
+        <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#8B8B99" }}>
           Tra cứu mã khác
         </p>
         <TraCuuMa />
       </div>
 
       {loi && (
-        <p className="text-sm mb-6" style={{ color: "#E86A6A" }}>
+        <p className="text-sm mb-6" style={{ color: "#EF4444" }}>
           Lỗi tải dữ liệu: {loi}
         </p>
       )}
 
-      <div className="border-t" style={{ borderColor: "#2A2620" }}>
+      <div className="border-t" style={{ borderColor: "#26262F" }}>
         {!loi && dangMo.length === 0 && (
-          <p className="py-6 text-sm" style={{ color: "#6F6C64" }}>
+          <p className="py-6 text-sm" style={{ color: "#8B8B99" }}>
             Chưa có mã nào đang MUA/NẮM GIỮ trong lần quét gần nhất.
           </p>
         )}
@@ -62,14 +62,14 @@ export default async function TrangLenhMo() {
             key={row.ma}
             href={`/ma/${row.ma}`}
             className="w-full text-left grid grid-cols-[64px_1fr_auto_auto] sm:grid-cols-[64px_90px_1fr_100px_90px] items-center gap-3 py-3 border-b hover:bg-white/[0.03] transition-colors"
-            style={{ borderColor: row.mat_than ? "#4A2222" : "#211F1A", background: row.mat_than ? "#1F1414" : "transparent" }}
+            style={{ borderColor: row.mat_than ? "#4A2230" : "#1D1D26", background: row.mat_than ? "#241419" : "transparent" }}
           >
-            <span style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600, fontSize: "17px" }}>
+            <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: "17px" }}>
               {row.mat_than && "⚠️ "}
               {row.ma}
             </span>
             <SignalPill tin={row.tin} />
-            <span className="hidden sm:block text-xs" style={{ color: "#6F6C64", fontFamily: "'JetBrains Mono', monospace" }}>
+            <span className="hidden sm:block text-xs" style={{ color: "#8B8B99", fontFamily: "'JetBrains Mono', monospace" }}>
               T={so1So(row.trend)} M={so1So(row.mom)} ADX={so1So(row.adx)}
             </span>
             <span className="text-right sm:text-left" style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px" }}>
@@ -77,7 +77,7 @@ export default async function TrangLenhMo() {
             </span>
             <span
               className="text-right flex items-center justify-end gap-1"
-              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: row.doi >= 0 ? "#5FCF8A" : "#E86A6A" }}
+              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: row.doi >= 0 ? "#22C55E" : "#EF4444" }}
             >
               {row.doi >= 0 ? <TrendingUp size={13} /> : <TrendingDown size={13} />}
               {pct(row.doi, 2)}

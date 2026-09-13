@@ -21,7 +21,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="vi" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col" style={{ background: "#14120F" }}>
+      <body className="min-h-full flex flex-col" style={{ background: "#0B0B10" }}>
         <style>{FONT_IMPORT}</style>
         <ThanhDieuHuong />
         {children}

@@ -11,7 +11,7 @@ const MUC = [
 export default function ThanhDieuHuong() {
   const pathname = usePathname();
   return (
-    <div style={{ background: "#0F0D0A", borderBottom: "1px solid #2A2620" }}>
+    <div style={{ background: "#08080B", borderBottom: "1px solid #26262F" }}>
       <div className="max-w-5xl mx-auto px-6 flex items-center gap-6">
         {MUC.map((m) => {
           const active = pathname === m.href;
@@ -22,8 +22,8 @@ export default function ThanhDieuHuong() {
               className="text-xs py-3 border-b-2 transition-colors"
               style={{
                 fontFamily: "'JetBrains Mono', monospace",
-                borderColor: active ? "#E8873A" : "transparent",
-                color: active ? "#EDE7DD" : "#6F6C64",
+                borderColor: active ? "#6C5CE7" : "transparent",
+                color: active ? "#F5F5F7" : "#8B8B99",
               }}
             >
               {m.nhan}
