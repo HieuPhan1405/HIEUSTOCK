@@ -419,7 +419,14 @@ TyTrongTheoNganh = IIf(BatBreadthGate,
     MocChuan);
 BreadthOk15 = 1;
 
-Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSVNI_OK;
+// THANH KHOAN GATE - loai cac ma khoi luong giao dich qua thap (vd HTV chi
+// vai tram co/phien) ra khoi tin hieu MUA/NAM GIU. Cac ma nay tuy diem so co
+// the dat nguong nhung khong thuc te de vao/ra lenh (truot gia lon, kho
+// khop lenh) nen khong nen duoc khuyen nghi dau tu.
+NguongKLTB20ToiThieu = Param("Nguong KL trung binh 20 phien toi thieu (co phieu)", 100000, 0, 5000000, 10000);
+ThanhKhoanKL_Ok = MA(V,20) >= NguongKLTB20ToiThieu;
+
+Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSVNI_OK AND ThanhKhoanKL_Ok;
 
 SellRaw = TurnedPink OR MatThanWarning;
 DuT2 = BarsSince(Buy) >= 2;
