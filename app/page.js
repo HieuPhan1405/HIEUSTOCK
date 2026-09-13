@@ -13,6 +13,15 @@ function phanLoaiXuHuong(row) {
   return "sideway";
 }
 
+// Do rong rieng cho 1 nhom von hoa (VN30/Midcap/Smallcap) - dung field
+// von_hoa da co san trong tin_hieu (gan tu AFL: InVN30/InVNMidCap/InVNSmallCap).
+function tinhDoRongNhom(tatCa, nhom) {
+  const ds = tatCa.filter((r) => r.von_hoa === nhom);
+  const tong = ds.length;
+  const xanh = ds.filter((r) => phanLoaiXuHuong(r) === "xanh").length;
+  return { tong, xanh, pctXanh: tong ? (xanh / tong) * 100 : 0 };
+}
+
 function sinhKetLuan(pctXanh, pctDo, tong) {
   if (tong === 0) return "Chưa có dữ liệu — đang chờ AmiBroker đẩy CSV lên.";
   if (pctXanh - pctDo > 15) return "Nghiêng tích cực — số mã xu hướng tăng đang áp đảo.";
@@ -45,6 +54,12 @@ export default async function TrangTongQuan() {
     .filter((r) => r.tin === "BAN")
     .sort((a, b) => (a.diem ?? 0) - (b.diem ?? 0))
     .slice(0, 10);
+
+  const doRongVonHoa = [
+    ["VN30", tinhDoRongNhom(tatCa, "VN30")],
+    ["Midcap", tinhDoRongNhom(tatCa, "Midcap")],
+    ["Smallcap", tinhDoRongNhom(tatCa, "Smallcap")],
+  ];
 
   return (
     <div style={{ color: "#EDE7DD" }}>
@@ -126,6 +141,29 @@ export default async function TrangTongQuan() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* DO RONG THEO VON HOA - dong tien tap trung o nhom nao */}
+        <h2 className="text-lg mb-4" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
+          Độ rộng theo vốn hoá
+        </h2>
+        <div className="mb-10">
+          {doRongVonHoa.map(([nhan, { tong, xanh, pctXanh }]) => (
+            <div key={nhan} className="mb-3">
+              <div className="flex justify-between text-xs mb-1" style={{ color: "#A8A296" }}>
+                <span>{nhan}</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                  {tong === 0 ? "chưa có dữ liệu" : `${xanh}/${tong} mã xanh (${pctXanh.toFixed(1)}%)`}
+                </span>
+              </div>
+              <div className="h-1.5" style={{ background: "#211F1A" }}>
+                <div className="h-full" style={{ width: `${pctXanh}%`, background: "#5FCF8A" }} />
+              </div>
+            </div>
+          ))}
+          <p className="text-[11px] mt-2" style={{ color: "#6F6C64" }}>
+            % mã có xu hướng tăng (Trend &gt; 0.5) trong từng nhóm — bluechip dẫn dắt thường thấy VN30 dẫn trước Midcap/Smallcap.
+          </p>
         </div>
 
         {/* TOP CO HOI - CHIA 2 COT MUA / BAN */}
