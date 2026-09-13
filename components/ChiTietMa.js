@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, TriangleAlert } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import { fmt, pct, soAn, TREND_MAX, MOM_MAX, DT_MAX, RS_MAX } from "@/components/dungChung";
 
@@ -16,7 +16,7 @@ const NEN_CARD = "#15151F";
 function Card({ children, className = "", ...rest }) {
   return (
     <div
-      className={`rounded-lg border p-5 ${className}`}
+      className={`rounded-2xl border p-5 ${className}`}
       style={{ borderColor: VIEN, background: NEN_CARD }}
       {...rest}
     >
@@ -107,7 +107,7 @@ function CardCauChuyen({ cauChuyen }) {
 
 function CardDangCapNhat({ tieuDe }) {
   return (
-    <div className="rounded-lg border border-dashed p-5" style={{ borderColor: VIEN }}>
+    <div className="rounded-2xl border border-dashed p-5" style={{ borderColor: VIEN }}>
       <p className="text-xs uppercase tracking-wide mb-4" style={{ color: "#9D8CF0" }}>
         {tieuDe}
       </p>
@@ -121,10 +121,10 @@ function CardDangCapNhat({ tieuDe }) {
 function BannerMatThan() {
   return (
     <div
-      className="rounded-lg border p-4 mb-4 flex items-center gap-3"
+      className="rounded-2xl border p-4 mb-4 flex items-center gap-3"
       style={{ borderColor: "#EF4444", background: "#2C1420" }}
     >
-      <span style={{ fontSize: "22px" }}>⚠️</span>
+      <TriangleAlert size={22} color="#EF4444" strokeWidth={2} aria-hidden="true" className="shrink-0" />
       <div>
         <p style={{ fontWeight: 700, color: "#EF4444" }} className="text-sm">
           Cảnh báo Mắt Thần

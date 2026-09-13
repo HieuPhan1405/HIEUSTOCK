@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, TriangleAlert } from "lucide-react";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import SignalPill from "@/components/SignalPill";
 import TraCuuMa from "@/components/TraCuuMa";
@@ -32,13 +32,14 @@ export default async function TrangLenhMo() {
         {loi ? "—" : `${dangMo.length} mã đang MUA hoặc NẮM GIỮ / tổng ${tatCa.length} mã theo dõi.`}
       </p>
       {soCanhBao > 0 && (
-        <p className="text-sm mb-6" style={{ color: "#EF4444" }}>
-          ⚠️ {soCanhBao} mã đang cảnh báo Mắt Thần — nên xem lại ngay.
+        <p className="text-sm mb-6 flex items-center gap-1.5" style={{ color: "#EF4444" }}>
+          <TriangleAlert size={14} strokeWidth={2} aria-hidden="true" />
+          {soCanhBao} mã đang cảnh báo Mắt Thần — nên xem lại ngay.
         </p>
       )}
       {soCanhBao === 0 && <div className="mb-6" />}
 
-      <div className="mb-10 max-w-md">
+      <div className="mb-10 max-w-md rounded-2xl border p-4" style={{ borderColor: "#26262F", background: "#15151F" }}>
         <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#8B8B99" }}>
           Tra cứu mã khác
         </p>
@@ -51,21 +52,21 @@ export default async function TrangLenhMo() {
         </p>
       )}
 
-      <div className="border-t" style={{ borderColor: "#26262F" }}>
+      <div className="rounded-2xl border overflow-hidden" style={{ borderColor: "#26262F", background: "#15151F" }}>
         {!loi && dangMo.length === 0 && (
-          <p className="py-6 text-sm" style={{ color: "#8B8B99" }}>
+          <p className="py-6 px-4 text-sm" style={{ color: "#8B8B99" }}>
             Chưa có mã nào đang MUA/NẮM GIỮ trong lần quét gần nhất.
           </p>
         )}
-        {dangMo.map((row) => (
+        {dangMo.map((row, i) => (
           <Link
             key={row.ma}
             href={`/ma/${row.ma}`}
-            className="w-full text-left grid grid-cols-[64px_1fr_auto_auto] sm:grid-cols-[64px_90px_1fr_100px_90px] items-center gap-3 py-3 border-b hover:bg-white/[0.03] transition-colors"
+            className={`w-full text-left grid grid-cols-[64px_1fr_auto_auto] sm:grid-cols-[64px_90px_1fr_100px_90px] items-center gap-3 py-3 px-4 hover:bg-white/[0.04] transition-colors ${i > 0 ? "border-t" : ""}`}
             style={{ borderColor: row.mat_than ? "#4A2230" : "#1D1D26", background: row.mat_than ? "#241419" : "transparent" }}
           >
-            <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: "17px" }}>
-              {row.mat_than && "⚠️ "}
+            <span className="flex items-center gap-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, fontSize: "17px" }}>
+              {row.mat_than && <TriangleAlert size={14} color="#EF4444" strokeWidth={2} aria-hidden="true" className="shrink-0" />}
               {row.ma}
             </span>
             <SignalPill tin={row.tin} />
