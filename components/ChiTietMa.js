@@ -63,9 +63,11 @@ function BannerMatThan() {
   );
 }
 
+// row.gtgd_tb20 tu AFL da la don vi TRIEU dong/phien (dong bo voi
+// DaoGam_Scanner_v14.afl: MA(C*V,20)/1e6) - chi can /1000 de ra ty.
 function chuoiThanhKhoan(v) {
   if (v === null || v === undefined || Number.isNaN(Number(v))) return "—";
-  const ty = Number(v) / 1e9;
+  const ty = Number(v) / 1000;
   return `${ty.toFixed(ty >= 10 ? 0 : 1)} tỷ`;
 }
 

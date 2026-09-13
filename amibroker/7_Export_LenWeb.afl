@@ -526,7 +526,9 @@ HoTroGanNhat_V2 = Max(Max(HT1,HT2),Max(HT3,HT4));
 HoTroCungNhat = IIf(Day52T<C, Day52T, HoTroGanNhat_V2);
 
 PhanTramDoi = (C/Ref(C,-1) - 1) * 100; // % thay doi gia so voi phien truoc (rieng cho web)
-GiaTriGDTB20 = MA(V*C, 20); // gia tri giao dich trung binh 20 phien (thanh khoan, rieng cho web)
+// Dong bo dung don vi voi DaoGam_Scanner_v14.afl (chuan chinh thuc): trieu
+// dong/phien, KHONG phai dong tho - truoc day web tinh sai (thieu /1e6).
+GiaTriGDTB20 = MA(C * V, 20) / 1000000;
 
 DangGiuLenhVT = Flip(Buy, Sell);
 GiaVaoLenh_ChoStop = GiaVaoLenh;
