@@ -83,6 +83,7 @@ export async function POST(request) {
   // vai tram/nghin ma (quet toan bo thi truong) cach cu se qua cham va de
   // vuot qua thoi gian toi da cua Vercel Function.
   const cot = (ten, chuyenDoi) => hangDL.map((h) => chuyenDoi(h[ten]));
+  let soDongDaXoa = 0;
 
   await withDb(async (client) => {
     await daoDamBangTinHieu(client);
@@ -165,7 +166,20 @@ export async function POST(request) {
         cot("von_hoa", soText),
       ]
     );
+
+    // Xoa ma KHONG con trong lan quet nay (vd ETF/HNX/UPCOM tu cac lan
+    // upload cu truoc khi AFL loc chi con HOSE VN30/Midcap/Smallcap) - giu
+    // DB luon dung khop chinh xac vu tru dang quet, khong con rac ton dong.
+    const dsMaLanNay = cot("ma", (v) => v);
+    const { rowCount } = await client.query(`DELETE FROM tin_hieu WHERE NOT (ma = ANY($1::text[]))`, [dsMaLanNay]);
+    soDongDaXoa = rowCount;
   });
 
-  return Response.json({ trangThai: "ok", soDongDaLuu: hangDL.length, tongSoDongNhan: hangDL.length, soDongLoiDaBoQua: soDongLoi });
+  return Response.json({
+    trangThai: "ok",
+    soDongDaLuu: hangDL.length,
+    tongSoDongNhan: hangDL.length,
+    soDongLoiDaBoQua: soDongLoi,
+    soDongDaXoa,
+  });
 }
