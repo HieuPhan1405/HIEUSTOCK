@@ -1,11 +1,12 @@
 // ============================================================================
 // DAO GAM SYSTEM v16 FULL - XUAT TIN HIEU TOAN BO THI TRUONG RA CSV
+// (Ban dong bo v14: VN30 cap nhat + them VNMidcap/VNSmallcap + Breadth Gate
+// bo sung 17 ma theo doi chieu GICS chinh thuc HOSE ky 1/2026)
 //
-// Phan LOI (tinh diem/tin hieu/Stop-loss/TP/Sanyaku/...) COPY NGUYEN VAN tu
-// DaoGam_v16_FULL_XemTatCa.afl (ban chien luoc day du, cap nhat 10/9) - KHONG
-// sua bat ky cong thuc nao, chi BO phan Plot()/PlotShapes()/Gfx panel (chi de
-// hien thi tren chart, khong can khi chay Explore/quet toan bo thi truong) va
-// THEM khoi tu dong ghi file CSV o cuoi.
+// Phan LOI (tinh diem/tin hieu/Stop-loss/TP/Sanyaku/...) giu nguyen tu ban
+// truoc, chi BO phan Plot()/PlotShapes()/Gfx panel (chi de hien thi tren
+// chart, khong can khi chay Explore/quet toan bo thi truong) va THEM khoi
+// tu dong ghi file CSV o cuoi.
 //
 // CACH DUNG:
 //   1. Sua duong dan o bien DuongDanFileXuat cho khop may ban.
@@ -34,6 +35,11 @@ ATRMult     = Param("He so ATR cho Stop-loss", 2.0, 1, 4, 0.1);
 HardStopPct = Param("Stop-loss toi da theo % (chan an toan)", 6, 3, 20, 0.5);
 ATRVal = ATR(14);
 FVGLookback = Param("FVG het han sau (phien)", 15, 5, 30, 1);
+
+// RS/VNI - DA CHOT CHINH THUC, dong bo voi he thong v14.
+VNI_Close = Foreign("VNINDEX", "C");
+RS_SoVoiVNI = (C/Ref(C,-20) - 1 - (VNI_Close/Ref(VNI_Close,-20) - 1)) * 100;
+RSVNI_OK = RS_SoVoiVNI > 0;
 
 VolMinPctTB20     = Param("Ngay1-Vol: toi thieu so voi TB20 (%)", 50, 0, 300, 5);
 VolMinPctHomTruoc = Param("Ngay1-Vol: toi thieu so voi hom truoc (%)", 30, 0, 300, 5);
@@ -179,7 +185,7 @@ for (i = 2; i < BarCount; i++)
     }
 }
 
-// FVG - UU TIEN VUNG LON SO VOI ATR.
+// FVG - UU TIEN VUNG LON SO VOI ATR (H3, DA CHOT CHINH THUC).
 DoLonSoATR_FVG = 0;
 for (i = 2; i < BarCount; i++)
 {
@@ -227,11 +233,6 @@ for (i = 5; i < BarCount-5; i++)
 }
 
 Above = TotalScore >= EntryTh;
-
-// VUNG THAM GIA THEM: DA BI LOAI BO khoi chien luoc (ban FULL v16 ghi ro
-// "gay nham lan/loi, khong dang tin cay") - KHONG con tinh/xuat cot nay nua.
-XuHuongConTot = (C > CloudTop) AND (C > GGTop);
-DangDieuChinhVeTenkan = (C <= Tenkan*1.015) AND (C >= Tenkan*0.98);
 ConsecutiveAbove = Sum(Above, PersistBars) == PersistBars;
 VuaVaoVungMua = Above AND NOT Ref(Above,-1);
 BoQuaADXNeuDiemManh = Param("Bo qua ADX Gate neu |TotalScore| >= muc nay", 2.0, 1.5, 4, 0.1);
@@ -272,22 +273,48 @@ ZoneSell = TotalScore <= -ExitTh;
 ZoneSellXacNhan = Sum(ZoneSell, SoPhienBanXacNhan) == SoPhienBanXacNhan;
 TurnedPink = ZoneSellXacNhan AND NOT Ref(ZoneSellXacNhan,-1);
 
-BatBanNgayKhiSau = ParamToggle("Bat Ban NGAY neu diem qua sau (bo qua cho)", "Tat|Bat", 0);
-NguongBanNgay = Param("Nguong diem qua SAU de Ban ngay (khong cho)", 2.0, 1.5, 4, 0.1);
-ZoneSellSau = TotalScore <= -NguongBanNgay;
-TurnedPinkSau = ZoneSellSau AND NOT Ref(ZoneSellSau,-1);
-
-TurnedPink = IIf(BatBanNgayKhiSau,
-    (ZoneSellXacNhan AND NOT Ref(ZoneSellXacNhan,-1)) OR TurnedPinkSau,
-    ZoneSellXacNhan AND NOT Ref(ZoneSellXacNhan,-1));
-
-// GHI CHU: KHONG con gioi han bat buoc "phai nam trong VN100/VN30" o Buy -
-// quet toan bo thi truong. VN30List/InVN30 ben duoi CHI dung de gan nhan
-// "von hoa" tren web, khong anh huong tin hieu Mua/Ban.
-VN30List = "ACB,BID,CTG,DGC,FPT,GAS,GVR,HDB,HPG,LPB,"+
-    "MBB,MSN,MWG,PLX,SAB,SHB,SSB,SSI,STB,TCB,"+
+// VN30 - CAP NHAT dung theo ky co cau thang 7/2026 (nguon: HOSE, xac nhan
+// qua cong ty chung khoan AAS 22/07/2026). Dong bo voi he thong v14.
+VN30List = "ACB,BID,BSR,BVH,CTG,FPT,GAS,GVR,HDB,HPG,"+
+    "MBB,MSN,MWG,PLX,POW,SAB,SSB,SSI,STB,TCB,"+
     "TPB,VCB,VHM,VIB,VIC,VJC,VNM,VPB,VPL,VRE";
 InVN30 = StrFind( "," + VN30List + ",", "," + Name() + "," ) > 0;
+
+// VNMIDCAP - 70 ma. LUU Y: ke thua tu du lieu HOSE ky 1/2026, da dieu chinh
+// 3 ma chuyen nhom voi VN30 (BSR/BVH/POW ra, DGC/LPB/SHB vao).
+VNMidCapList = "ANV,BCM,BMP,BSI,BWE,CII,CMG,CTD,CTR,CTS,"+
+    "DBC,DCM,DGW,DIG,DPM,DSE,DXG,DXS,EIB,EVF,"+
+    "FRT,FTS,GEE,GEX,GMD,HAG,HCM,HDC,HDG,HHV,"+
+    "HSG,HT1,IMP,KBC,KDC,KDH,KOS,MSB,NAB,NKG,"+
+    "NLG,NT2,NVL,OCB,PAN,PC1,PDR,PHR,PNJ,PVD,"+
+    "PVT,REE,SBT,SCS,SIP,SJS,SZC,TCH,VCG,VCI,"+
+    "VGC,VHC,VIX,VND,VPI,VSC,VTP,DGC,LPB,SHB";
+InVNMidCap = StrFind( "," + VNMidCapList + ",", "," + Name() + "," ) > 0;
+
+// VNSMALLCAP - 202 ma. Tinh bang VNAllshare (302 ma, cong bo chinh thuc
+// HOSE ky 1/2026 qua Vietstock) TRU DI VN100.
+VNSmallCapList = "AAA,AAM,ABS,ABT,ACC,ACL,ADG,ADP,ADS,AGG,"+
+    "AGR,APG,APH,ASM,ASP,AST,BAF,BCE,BFC,BIC,"+
+    "BKG,BMC,BMI,BRC,BTP,C32,CCC,CCL,CDC,CHP,"+
+    "CIG,CKG,CLL,CMX,CNG,CRC,CRE,CSM,CSV,CTF,"+
+    "CTI,D2D,DAH,DBD,DC4,DCL,DHA,DHC,DHM,DLG,"+
+    "DMC,DPG,DPR,DRC,DRL,DSC,DSN,DTA,DVP,DXV,"+
+    "ELC,EVE,EVG,FCM,FCN,FIR,FIT,FMC,GDT,GEG,"+
+    "GIL,GSP,HAH,HAP,HAR,HAX,HCD,HHP,HHS,HID,"+
+    "HII,HMC,HPX,HQC,HSL,HTG,HTI,HTN,HTV,HUB,"+
+    "HVH,ICT,IDI,IJC,ILB,ITC,ITD,JVC,KHG,KHP,"+
+    "KMR,KSB,LAF,LBM,LCG,LGL,LHG,LIX,LSS,MCM,"+
+    "MCP,MHC,MIG,MSH,NAF,NAV,NBB,NCT,NHA,NHH,"+
+    "NNC,NO1,NSC,NTL,OGC,ORS,PAC,PET,PGC,PHC,"+
+    "PIT,PLP,PPC,PTB,PTC,PTL,PVP,QCG,RAL,RYG,"+
+    "SAM,SAV,SBG,SCR,SFC,SFI,SGN,SGR,SGT,SHA,"+
+    "SHI,SJD,SKG,SMB,ST8,STK,SVD,SVT,SZL,TCI,"+
+    "TCL,TCM,TCO,TCT,TDC,TDG,TDH,TDP,TEG,THG,"+
+    "TIP,TLD,TLG,TLH,TMT,TN1,TNH,TNI,TNT,TRC,"+
+    "TSC,TTA,TTF,TV2,TVB,TVS,UIC,VCA,VDS,VFG,"+
+    "VIP,VNL,VOS,VPG,VPH,VPS,VRC,VSI,VTB,VTO,"+
+    "YBM,YEG";
+InVNSmallCap = StrFind( "," + VNSmallCapList + ",", "," + Name() + "," ) > 0;
 
 SoNamGanNhat = Param("So nam gan nhat de test (0 = khong gioi han)", 12, 0, 99, 1);
 SoPhienUocTinh = IIf(SoNamGanNhat<=0, BarCount, SoNamGanNhat * 250);
@@ -311,34 +338,36 @@ function TinhBreadth(DanhSachMa, SoLuong)
     return dem / SoLuong * 100;
 }
 
+// 15 NGANH - DA BO SUNG 17 MA theo doi chieu GICS chinh thuc HOSE ky 1/2026
+// (dong bo voi he thong v14: chi ap dung cac truong hop do tin cay Cao+TB).
 DS_NganHang = "ACB,BID,BVB,CTG,EIB,HDB,KLB,LPB,MBB,MSB,NAB,OCB,SHB,SSB,STB,TCB,TPB,VAB,VBB,VCB,VIB,VPB";
-DS_BDS = "AGG,ASM,CCL,CII,CKG,CRE,DXG,DXS,EVG,FDC,FIR,HAR,HDC,HDG,HPX,HQC,HTN,ITC,KDH,KHG,KOS,LDG,LGL,NBB,NHA,NLG,NTL,NVL,PDR,PTL,QCG,SCR,SGR,SJS,TCH,TDC,TDH,THG,TNT,VHM,VIC,VPH,VPI,VRC,VRE,BCM,D2D,GVR,KBC,LHG,NTC,PHR,SIP,SZC,SZL,TIP,TIX,VGC";
-DS_ChungKhoan = "AGR,APG,BSI,CTS,DSC,DSE,EVF,FTS,HCM,ORS,SSI,TVB,TVS,VCI,VDS,VIX,VND";
+DS_BDS = "AGG,ASM,CCL,CII,CKG,CRE,DXG,DXS,EVG,FDC,FIR,HAR,HDC,HDG,HPX,HQC,HTN,ITC,KDH,KHG,KOS,LDG,LGL,NBB,NHA,NLG,NTL,NVL,PDR,PTL,QCG,SCR,SGR,SJS,TCH,TDC,TDH,THG,TNT,VHM,VIC,VPH,VPI,VRC,VRE,BCM,D2D,GVR,KBC,LHG,NTC,PHR,SIP,SZC,SZL,TIP,TIX,VGC,IJC";
+DS_ChungKhoan = "AGR,APG,BSI,CTS,DSC,DSE,EVF,FTS,HCM,ORS,SSI,TVB,TVS,VCI,VDS,VIX,VND,TCI";
 DS_BaoHiem = "BIC,BMI,BVH,MIG,PGI";
-DS_XayDung = "ACC,BCE,C47,CDC,CIG,CTD,CTI,DC4,DPG,DLG,FCM,FCN,HHV,HID,HTI,L10,LCG,LGC,LM8,PHC,PTC,SC5,SRF,VCG,VSI,BMP,C32,CCC,CRC,CVT,DHA,DXV,HCD,HT1,KSB,LBM,MDG,NNC,TCR";
+DS_XayDung = "ACC,BCE,C47,CDC,CIG,CTD,CTI,DC4,DPG,DLG,FCM,FCN,HHV,HID,HTI,L10,LCG,LGC,LM8,PHC,PTC,SC5,SRF,VCG,VSI,BMP,C32,CCC,CRC,CVT,DHA,DXV,HCD,HT1,KSB,LBM,MDG,NNC,TCR,TLD,HUB,NO1";
 DS_ThepKhoangSan = "DTL,HMC,HPG,HSG,NKG,SMC,TLH,VCA,BMC,DHM,PLP,VPG,YBM";
-DS_DauKhiDienNuoc = "ASP,BSR,CNG,COM,GAS,PGC,PGD,PLX,PVD,SFC,BTP,BWE,CHP,CLW,DRL,GEG,GHC,HNA,KHP,NT2,PC1,PGV,POW,PPC,REE,S4A,SBA,SHP,SJD,TBC,TDM,TDW,TMP,TTA,TV2,VPD,VSH";
-DS_HoaChatCaoSu = "BFC,CSV,DCM,DGC,DPM,HII,SFG,VFG,BRC,CSM,DPR,DRC,HRC,SRC,TNC,TRC,AAA,APH,TDP,TPC";
-DS_ThucPhamNongSan = "BBC,BHN,CLC,KDC,LSS,MCH,MSN,NAF,SAB,SBT,VCF,VNM,AAN,ABS,ANT,BAF,DBC,HAG,HSL,NSC,PAN,SSC,TSC,AAM,ABT,ACL,ANV,CMX,FMC,IDI,VHC";
-DS_BanLeOto = "ADP,CMV,DGW,FRT,MWG,PET,PNJ,ST8,CTF,HAX,HHS,HTL,SVC,TMT";
+DS_DauKhiDienNuoc = "ASP,BSR,CNG,COM,GAS,PGC,PGD,PLX,PVD,SFC,BTP,BWE,CHP,CLW,DRL,GEG,GHC,HNA,KHP,NT2,PC1,PGV,POW,PPC,REE,S4A,SBA,SHP,SJD,TBC,TDM,TDW,TMP,TTA,TV2,VPD,VSH,TDG,PIT";
+DS_HoaChatCaoSu = "BFC,CSV,DCM,DGC,DPM,HII,SFG,VFG,BRC,CSM,DPR,DRC,HRC,SRC,TNC,TRC,AAA,APH,TDP,TPC,NAV,NHH,VPS";
+DS_ThucPhamNongSan = "BBC,BHN,CLC,KDC,LSS,MCH,MSN,NAF,SAB,SBT,VCF,VNM,AAN,ABS,ANT,BAF,DBC,HAG,HSL,NSC,PAN,SSC,TSC,AAM,ABT,ACL,ANV,CMX,FMC,IDI,VHC,LAF,LIX,MCM,SMB";
+DS_BanLeOto = "ADP,CMV,DGW,FRT,MWG,PET,PNJ,ST8,CTF,HAX,HHS,HTL,SVC,TMT,TLG,PTB";
 DS_DetMayGo = "AAT,ADS,EVE,GIL,HTG,KMR,MSH,STK,SVD,TCM,TVT,ACG,BKG,GDT,GTA,SAV,TTF,DHC,HHP,MCP,SVI,VID";
-DS_LogisticsVanTai = "CLL,DVP,GMD,HAH,HTV,ILB,NCT,PDN,QNP,SCS,SFI,SGN,STG,TCL,TCO,TMS,VSC,VTP,GSP,HVN,PJT,PVP,PVT,SKG,VJC,VNL,VNS,VOS,VTO";
+DS_LogisticsVanTai = "CLL,DVP,GMD,HAH,HTV,ILB,NCT,PDN,QNP,SCS,SFI,SGN,STG,TCL,TCO,TMS,VSC,VTP,GSP,HVN,PJT,PVP,PVT,SKG,VJC,VNL,VNS,VOS,VTO,MHC,VIP";
 DS_CongNgheVienThong = "ADG,CMG,ELC,FPT,ICT,ITD,SVT,CTR,HAS,TSA,VTB,ABR,PNC,YEG";
 DS_YTe = "DBD,DBT,DCL,DHG,DMC,IMP,JVC,OPC,SPM,TNH,TRA,VDP,VMD";
 DS_ThietBiDienDuLich = "CAV,DQC,GEE,GEL,GEX,PAC,RAL,SHA,SHI,TYA,AST,DAH,DSN,NVT,OGC,TCT,VNG,VPL";
 
 Breadth_NganHang = TinhBreadth(DS_NganHang, 22);
-Breadth_BDS = TinhBreadth(DS_BDS, 57);
-Breadth_ChungKhoan = TinhBreadth(DS_ChungKhoan, 17);
+Breadth_BDS = TinhBreadth(DS_BDS, 58);
+Breadth_ChungKhoan = TinhBreadth(DS_ChungKhoan, 18);
 Breadth_BaoHiem = TinhBreadth(DS_BaoHiem, 5);
-Breadth_XayDung = TinhBreadth(DS_XayDung, 39);
+Breadth_XayDung = TinhBreadth(DS_XayDung, 42);
 Breadth_ThepKhoangSan = TinhBreadth(DS_ThepKhoangSan, 13);
-Breadth_DauKhiDienNuoc = TinhBreadth(DS_DauKhiDienNuoc, 36);
-Breadth_HoaChatCaoSu = TinhBreadth(DS_HoaChatCaoSu, 20);
-Breadth_ThucPhamNongSan = TinhBreadth(DS_ThucPhamNongSan, 32);
-Breadth_BanLeOto = TinhBreadth(DS_BanLeOto, 14);
+Breadth_DauKhiDienNuoc = TinhBreadth(DS_DauKhiDienNuoc, 38);
+Breadth_HoaChatCaoSu = TinhBreadth(DS_HoaChatCaoSu, 23);
+Breadth_ThucPhamNongSan = TinhBreadth(DS_ThucPhamNongSan, 36);
+Breadth_BanLeOto = TinhBreadth(DS_BanLeOto, 16);
 Breadth_DetMayGo = TinhBreadth(DS_DetMayGo, 22);
-Breadth_LogisticsVanTai = TinhBreadth(DS_LogisticsVanTai, 29);
+Breadth_LogisticsVanTai = TinhBreadth(DS_LogisticsVanTai, 31);
 Breadth_CongNgheVienThong = TinhBreadth(DS_CongNgheVienThong, 14);
 Breadth_YTe = TinhBreadth(DS_YTe, 13);
 Breadth_ThietBiDienDuLich = TinhBreadth(DS_ThietBiDienDuLich, 18);
@@ -390,7 +419,7 @@ TyTrongTheoNganh = IIf(BatBreadthGate,
     MocChuan);
 BreadthOk15 = 1;
 
-Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15;
+Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSVNI_OK;
 
 SellRaw = TurnedPink OR MatThanWarning;
 DuT2 = BarsSince(Buy) >= 2;
@@ -496,10 +525,6 @@ HT4=IIf(DayGanNhat<C,DayGanNhat,-1e10);
 HoTroGanNhat_V2 = Max(Max(HT1,HT2),Max(HT3,HT4));
 HoTroCungNhat = IIf(Day52T<C, Day52T, HoTroGanNhat_V2);
 
-VNI_Close = Foreign("VNINDEX", "C");
-Perf20_Ma = C/Ref(C,-20) - 1;
-Perf20_VNI = VNI_Close/Ref(VNI_Close,-20) - 1;
-RS_SoVoiVNI = (Perf20_Ma - Perf20_VNI) * 100;
 PhanTramDoi = (C/Ref(C,-1) - 1) * 100; // % thay doi gia so voi phien truoc (rieng cho web)
 GiaTriGDTB20 = MA(V*C, 20); // gia tri giao dich trung binh 20 phien (thanh khoan, rieng cho web)
 
@@ -540,6 +565,7 @@ AddColumn(ChotLoi_TP1, "TP1", 1.2);
 AddColumn(ChotLoi_TP2, "TP2", 1.2);
 AddColumn(ChotLoi_TP3, "TP3", 1.2);
 AddColumn(SoDiemSanyaku, "Sanyaku(0-3)", 1.0);
+AddTextColumn(WriteIf(InVN30,"VN30",WriteIf(InVNMidCap,"Midcap",WriteIf(InVNSmallCap,"Smallcap","Khac"))), "Von hoa");
 
 // ============================================================================
 // XUAT CSV TU DONG LEN WEB - KHONG CAN BAM "EXPORT" TAY
@@ -575,7 +601,9 @@ FVGCuoi = WriteIf(LastValue(FVGDuLon), "1", "0");
 NgayBienDoiCuoi = WriteIf(LastValue(DungNgayBienDoi), "1", "0");
 KumoTwistCuoi = WriteIf(LastValue(MayTuongLaiDoiChieuTang), "TANG",
                 WriteIf(LastValue(MayTuongLaiDoiChieuGiam), "GIAM", ""));
-VonHoaCuoi = WriteIf(LastValue(InVN30), "VN30", "");
+VonHoaCuoi = WriteIf(LastValue(InVN30), "VN30",
+             WriteIf(LastValue(InVNMidCap), "Midcap",
+             WriteIf(LastValue(InVNSmallCap), "Smallcap", "Khac")));
 
 Dong = Name() + "," + TinCuoi + ","
      + NumToStr(LastValue(TotalScore),1.4,False) + ","
