@@ -541,6 +541,12 @@ GiaMuaVT = GiaVaoLenh;
 SoPhienNamGiuVT = BarsSince(Buy);
 LaiLoVT = IIf(GiaMuaVT>0, (C/GiaMuaVT-1)*100, 0);
 
+// NGAY VAO LENH THAT (khong uoc tinh) - dong bang Nam/Thang/Ngay tai dung
+// phien Buy, giong y het cach GiaVaoLenh da dong bang gia (ValueWhen).
+NamMuaVT = ValueWhen(Buy, Year(), 1);
+ThangMuaVT = ValueWhen(Buy, Month(), 1);
+NgayMuaVT = ValueWhen(Buy, Day(), 1);
+
 VuaMuaHomNay = Buy;
 DangGiuTuTruoc = DangGiuLenhVT AND NOT VuaMuaHomNay AND NOT Sell;
 BanHomNay = Sell;
@@ -588,7 +594,7 @@ if (Status("stocknum") == 0)
     {
         fputs("ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,"+
               "stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,"+
-              "kumo_twist,ngay_bien_doi,von_hoa\n", fh);
+              "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua\n", fh);
         fclose(fh);
     }
 }
@@ -639,7 +645,13 @@ Dong = Name() + "," + TinCuoi + ","
      + NumToStr(LastValue(SoDiemSanyaku),1.0,False) + ","
      + KumoTwistCuoi + ","
      + NgayBienDoiCuoi + ","
-     + VonHoaCuoi;
+     + VonHoaCuoi + ","
+     + NumToStr(LastValue(GiaMuaVT),1.2,False) + ","
+     + WriteIf(LastValue(NamMuaVT) > 0,
+         NumToStr(LastValue(NgayMuaVT),1.0,False) + "/" +
+         NumToStr(LastValue(ThangMuaVT),1.0,False) + "/" +
+         NumToStr(LastValue(NamMuaVT),1.0,False),
+         "");
 
 if (!LaMaETF AND ThuocHOSE)
 {

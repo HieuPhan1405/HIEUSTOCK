@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Briefcase } from "lucide-react";
+import { LayoutGrid, Briefcase, ListFilter } from "lucide-react";
 
 const MUC = [
   { href: "/", nhan: "Tổng quan thị trường", Icon: LayoutGrid },
-  { href: "/lenh-mo", nhan: "Lệnh đang mở", Icon: Briefcase },
+  { href: "/bo-loc", nhan: "Bộ lọc cổ phiếu", Icon: ListFilter },
+  { href: "/lenh-mo", nhan: "Sổ lệnh đang mở", Icon: Briefcase },
 ];
 
 const BG = "#08080B";
