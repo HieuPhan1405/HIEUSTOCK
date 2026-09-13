@@ -554,7 +554,10 @@ KhuyenNghi = WriteIf(VuaMuaHomNay, "MUA",
              WriteIf(BanHomNay, "BAN", "TRUNG LAP")));
 
 ChiPhienCuoi = BarIndex() == LastValue(BarIndex());
-Filter = ChiPhienCuoi; // KHONG gioi han InVN100/InVN30 - quet toan bo thi truong
+// Loai ma chung chi quy ETF (bat dau bang "FUE", vd FUEVFVND, FUESSVFL...) -
+// day khong phai co phieu cong ty, chien luoc Dao Gam khong dung cho ETF.
+LaMaETF = Left(Name(), 3) == "FUE";
+Filter = ChiPhienCuoi AND NOT LaMaETF; // KHONG gioi han InVN100/InVN30 - quet toan bo thi truong (tru ETF)
 
 AddTextColumn(Name(), "Ma");
 AddTextColumn(KhuyenNghi, "Khuyen nghi");
@@ -635,11 +638,14 @@ Dong = Name() + "," + TinCuoi + ","
      + NgayBienDoiCuoi + ","
      + VonHoaCuoi;
 
-fh = fopen(DuongDanFileXuat, "a");
-if (fh)
+if (!LaMaETF)
 {
-    fputs(Dong + "\n", fh);
-    fclose(fh);
+    fh = fopen(DuongDanFileXuat, "a");
+    if (fh)
+    {
+        fputs(Dong + "\n", fh);
+        fclose(fh);
+    }
 }
 
 _SECTION_END();
