@@ -31,6 +31,86 @@ function Card({ children, className = "", ...rest }) {
   );
 }
 
+function CardDinhGia({ dinhGia, gia }) {
+  const trungBinh = dinhGia.length
+    ? dinhGia.reduce((tong, d) => tong + Number(d.gia_muc_tieu), 0) / dinhGia.length
+    : null;
+  const upside = trungBinh !== null && gia ? ((trungBinh / gia - 1) * 100) : null;
+  return (
+    <Card>
+      <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#6F6C64" }}>
+        Định giá tham khảo
+      </p>
+      <table className="w-full text-sm mb-3" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+        <thead>
+          <tr className="text-left" style={{ color: "#6F6C64" }}>
+            <th className="font-normal pb-1">Công ty CK</th>
+            <th className="font-normal pb-1">Ngày</th>
+            <th className="font-normal pb-1 text-right">Giá mục tiêu</th>
+          </tr>
+        </thead>
+        <tbody>
+          {dinhGia.map((d) => (
+            <tr key={d.id} className="border-t" style={{ borderColor: "#211F1A" }}>
+              <td className="py-1.5">{d.cong_ty_ck}</td>
+              <td className="py-1.5" style={{ color: "#6F6C64" }}>
+                {d.ngay_dinh_gia ? new Date(d.ngay_dinh_gia).toLocaleDateString("vi-VN") : "—"}
+              </td>
+              <td className="py-1.5 text-right" style={{ color: "#5FCF8A", fontWeight: 700 }}>
+                {fmt(d.gia_muc_tieu)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {trungBinh !== null && (
+        <div className="rounded p-3 text-center" style={{ background: "#14120F" }}>
+          <p className="text-[11px]" style={{ color: "#6F6C64" }}>
+            Giá mục tiêu trung bình {dinhGia.length} nguồn
+          </p>
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: upside >= 0 ? "#5FCF8A" : "#E86A6A" }} className="text-lg">
+            {fmt(trungBinh)} <span className="text-sm">({pct(upside, 1)})</span>
+          </p>
+        </div>
+      )}
+    </Card>
+  );
+}
+
+function CardCauChuyen({ cauChuyen }) {
+  const nhomTheoLoai = { dong_luc: [], theo_doi: [], rui_ro: [] };
+  cauChuyen.forEach((c) => nhomTheoLoai[c.loai]?.push(c));
+  const nhan = { dong_luc: { chu: "Động lực", mau: "#5FCF8A" }, theo_doi: { chu: "Theo dõi", mau: "#E8C873" }, rui_ro: { chu: "Rủi ro", mau: "#E86A6A" } };
+  return (
+    <Card>
+      <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#6F6C64" }}>
+        Câu chuyện kỳ vọng
+      </p>
+      {["dong_luc", "theo_doi", "rui_ro"].map(
+        (loai) =>
+          nhomTheoLoai[loai].length > 0 && (
+            <div key={loai} className="mb-3">
+              <p className="text-xs font-bold mb-1" style={{ color: nhan[loai].mau }}>
+                {nhan[loai].chu.toUpperCase()}
+              </p>
+              {nhomTheoLoai[loai].map((c) => (
+                <p key={c.id} className="text-sm mb-1" style={{ color: "#A8A296" }}>
+                  {c.noi_dung}
+                  {c.ngay && (
+                    <span className="text-[11px]" style={{ color: "#6F6C64" }}>
+                      {" "}
+                      ({new Date(c.ngay).toLocaleDateString("vi-VN")})
+                    </span>
+                  )}
+                </p>
+              ))}
+            </div>
+          )
+      )}
+    </Card>
+  );
+}
+
 function CardDangCapNhat({ tieuDe }) {
   return (
     <div className="rounded-lg border border-dashed p-5" style={{ borderColor: VIEN }}>
@@ -191,7 +271,7 @@ function tinhVungGia(row) {
   return { hoTro1: hoTro[0] ?? null, hoTro2: hoTro[1] ?? null, khangCu1: khangCu[0] ?? null, khangCu2: khangCu[1] ?? null };
 }
 
-export default function ChiTietMa({ row }) {
+export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
   const vungGia = tinhVungGia(row);
   const khoangCach = (muc) => (muc === null || !row.gia ? null : ((muc - row.gia) / row.gia) * 100);
   const tag = tinhCacTag(row);
@@ -388,8 +468,8 @@ export default function ChiTietMa({ row }) {
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4 mb-10">
-        <CardDangCapNhat tieuDe="Định giá tham khảo" />
-        <CardDangCapNhat tieuDe="Câu chuyện kỳ vọng" />
+        {dinhGia.length > 0 ? <CardDinhGia dinhGia={dinhGia} gia={row.gia} /> : <CardDangCapNhat tieuDe="Định giá tham khảo" />}
+        {cauChuyen.length > 0 ? <CardCauChuyen cauChuyen={cauChuyen} /> : <CardDangCapNhat tieuDe="Câu chuyện kỳ vọng" />}
       </div>
 
       {/* THONG KE HIEU SUAT - du lieu minh hoa, chua noi backtest that theo tung ma */}

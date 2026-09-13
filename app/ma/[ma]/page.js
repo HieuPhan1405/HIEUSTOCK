@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { layTinHieuTheoMa } from "@/lib/tinHieu";
+import { layDinhGia, layCauChuyen } from "@/lib/noiDung";
 import ChiTietMa from "@/components/ChiTietMa";
 
 export const dynamic = "force-dynamic";
@@ -36,5 +37,15 @@ export default async function TrangChiTietMa({ params }) {
     );
   }
 
-  return <ChiTietMa row={row} />;
+  // Loi khi tai Dinh gia/Cau chuyen KHONG duoc lam sap trang chi tiet ma -
+  // day la du lieu bo sung, khong quan trong bang tin hieu chinh.
+  let dinhGia = [];
+  let cauChuyen = [];
+  try {
+    [dinhGia, cauChuyen] = await Promise.all([layDinhGia(ma), layCauChuyen(ma)]);
+  } catch {
+    // giu mang rong, ChiTietMa se tu hien "Dang cap nhat..."
+  }
+
+  return <ChiTietMa row={row} dinhGia={dinhGia} cauChuyen={cauChuyen} />;
 }
