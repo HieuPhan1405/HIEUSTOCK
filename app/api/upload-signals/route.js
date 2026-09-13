@@ -12,19 +12,29 @@ function kiemTraApiKey(request) {
   return dungKey && key === dungKey;
 }
 
+// Tra ve { hangDL, soDongLoi } - dong nao co SO COT KHONG KHOP header se bi
+// BO QUA (khong lam hong ca lo upload). Nguyen nhan thuong gap: AmiBroker
+// chay Explore da luong (multi-thread), nhieu ma cung ghi 1 luc vao file CSV
+// dung chung khien vai dong bi cat/dinh vao nhau. Fix goc: dat so luong
+// threads cua Analysis ve 1. Day chi la lop chan an toan phia web.
 function phanTichCSV(vanBan) {
   const dong = vanBan.trim().split(/\r?\n/);
-  if (dong.length === 0) return [];
+  if (dong.length === 0) return { hangDL: [], soDongLoi: 0 };
   const header = dong[0].split(",").map((h) => h.trim());
   const ketQua = [];
+  let soDongLoi = 0;
   for (let i = 1; i < dong.length; i++) {
     if (!dong[i].trim()) continue;
     const cot = dong[i].split(",");
+    if (cot.length !== header.length) {
+      soDongLoi++;
+      continue;
+    }
     const hang = {};
     header.forEach((ten, idx) => (hang[ten] = cot[idx]));
     ketQua.push(hang);
   }
-  return ketQua;
+  return { hangDL: ketQua, soDongLoi };
 }
 
 function soFloat(v) {
@@ -63,9 +73,10 @@ export async function POST(request) {
     return Response.json({ loi: "Noi dung CSV rong" }, { status: 400 });
   }
 
-  const hangDL = phanTichCSV(vanBanCSV).filter((h) => h.ma);
+  const { hangDL: hangThoRa, soDongLoi } = phanTichCSV(vanBanCSV);
+  const hangDL = hangThoRa.filter((h) => h.ma);
   if (hangDL.length === 0) {
-    return Response.json({ loi: "Khong doc duoc dong du lieu nao tu CSV" }, { status: 400 });
+    return Response.json({ loi: "Khong doc duoc dong du lieu nao tu CSV", soDongLoi }, { status: 400 });
   }
 
   // Ghi 1 lan bang unnest() thay vi 1 cau INSERT rieng cho tung dong - voi
@@ -156,5 +167,5 @@ export async function POST(request) {
     );
   });
 
-  return Response.json({ trangThai: "ok", soDongDaLuu: hangDL.length, tongSoDongNhan: hangDL.length });
+  return Response.json({ trangThai: "ok", soDongDaLuu: hangDL.length, tongSoDongNhan: hangDL.length, soDongLoiDaBoQua: soDongLoi });
 }
