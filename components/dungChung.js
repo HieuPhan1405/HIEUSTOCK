@@ -8,7 +8,11 @@ export const FONT_IMPORT = `
 
 export function fmt(n) {
   if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
-  return new Intl.NumberFormat("vi-VN").format(Math.round(n));
+  // Gia CP VN co buoc gia le (0.01-0.1 nghin dong) - lam tron ve so nguyen
+  // (Math.round) xoa mat phan thap phan, khien Gia mua/Gia hien tai gan nhau
+  // (vd 14.05 va 14.6) hien ra giong het nhau la "14"/"15". Giu toi da 2 chu
+  // so thap phan, bo so 0 thua (243 -> "243", khong phai "243.00").
+  return new Intl.NumberFormat("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(Number(n));
 }
 
 export function pct(n, digits = 2) {
