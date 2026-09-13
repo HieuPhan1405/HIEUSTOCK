@@ -19,7 +19,11 @@ import sys
 import requests
 
 DUONG_DAN_CSV = r"C:\DaoGam_Data\tin_hieu_hom_nay.csv"
-URL_API = "https://cloudstock.id.vn/api/upload-signals"  # doi thanh domain that cua ban
+# LUU Y: phai la "www.cloudstock.id.vn" (co www) - domain khong "www" se tra ve
+# HTTP 308 redirect sang ban co www, va mot so moi truong (proxy/antivirus/thu
+# vien cu) khong theo redirect nay dung cach cho request POST, khien du lieu
+# KHONG BAO GIO thuc su toi duoc server dù script khong bao loi ro rang.
+URL_API = "https://www.cloudstock.id.vn/api/upload-signals"
 API_KEY = "CLOUD"  # phai TRUNG KHOP voi UPLOAD_API_KEY tren Vercel
 
 
@@ -50,8 +54,16 @@ def day_du_lieu():
         print(f"LOI ket noi toi {URL_API}: {loi}")
         sys.exit(1)
 
+    if res.url != URL_API:
+        print(f"CANH BAO: request bi redirect tu {URL_API} sang {res.url}")
+
     if res.status_code == 200:
-        ket_qua = res.json()
+        try:
+            ket_qua = res.json()
+        except ValueError:
+            print(f"LOI: server tra ve HTTP 200 nhung noi dung khong phai JSON hop le.")
+            print(f"Noi dung nhan duoc: {res.text[:500]}")
+            sys.exit(1)
         print(f"OK: da day len {ket_qua.get('soDongDaLuu')} / {ket_qua.get('tongSoDongNhan')} dong.")
     else:
         print(f"LOI tu server (HTTP {res.status_code}): {res.text}")
