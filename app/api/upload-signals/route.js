@@ -94,6 +94,7 @@ export async function POST(request) {
   // vuot qua thoi gian toi da cua Vercel Function.
   const cot = (ten, chuyenDoi) => hangDL.map((h) => chuyenDoi(h[ten]));
   let soDongDaXoa = 0;
+  let daBoQuaXoa = false;
 
   await withDb(async (client) => {
     await daoDamBangTinHieu(client);
@@ -185,9 +186,21 @@ export async function POST(request) {
     // Xoa ma KHONG con trong lan quet nay (vd ETF/HNX/UPCOM tu cac lan
     // upload cu truoc khi AFL loc chi con HOSE VN30/Midcap/Smallcap) - giu
     // DB luon dung khop chinh xac vu tru dang quet, khong con rac ton dong.
+    //
+    // AN TOAN: chi xoa neu lan nay quet du SO_DONG_TOI_THIEU_DE_XOA ma tro
+    // len. He thong quet toan bo HOSE VN30/Midcap/Smallcap luon ra ~280-300
+    // dong; neu file upload chi co vai dong (vd AmiBroker Explore bi cau hinh
+    // nham "Apply to" = 1 ma thay vi "All Symbols") thi day chac chan la loi
+    // cua nguoi dung, KHONG PHAI mot lan quet that - tuyet doi khong duoc xoa
+    // sach du lieu that con lai chi vi 1 lan upload thieu du lieu.
+    const SO_DONG_TOI_THIEU_DE_XOA = 100;
     const dsMaLanNay = cot("ma", (v) => v);
-    const { rowCount } = await client.query(`DELETE FROM tin_hieu WHERE NOT (ma = ANY($1::text[]))`, [dsMaLanNay]);
-    soDongDaXoa = rowCount;
+    if (hangDL.length >= SO_DONG_TOI_THIEU_DE_XOA) {
+      const { rowCount } = await client.query(`DELETE FROM tin_hieu WHERE NOT (ma = ANY($1::text[]))`, [dsMaLanNay]);
+      soDongDaXoa = rowCount;
+    } else {
+      daBoQuaXoa = true;
+    }
   });
 
   return Response.json({
@@ -196,5 +209,8 @@ export async function POST(request) {
     tongSoDongNhan: hangDL.length,
     soDongLoiDaBoQua: soDongLoi,
     soDongDaXoa,
+    ...(daBoQuaXoa && {
+      canhBao: `Chi nhan duoc ${hangDL.length} dong (< ${100}) - da BO QUA buoc xoa du lieu cu de tranh mat du lieu. Kiem tra lai AmiBroker "Apply to" co dang = "All Symbols" khong.`,
+    }),
   });
 }
