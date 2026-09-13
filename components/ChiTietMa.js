@@ -3,16 +3,10 @@ import { ArrowLeft } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import { fmt, pct, soAn, TREND_MAX, MOM_MAX, DT_MAX, RS_MAX } from "@/components/dungChung";
 
-// Du lieu minh hoa - CHUA noi backtest that theo tung ma (can dataset rieng
-// tu AmiBroker moi lam duoc, xem ghi chu trong README.md).
-const tradeHistoryMau = [
-  { ngayMua: "24/03/2026", giaMua: 58071, ngayBan: "02/06/2026", giaBan: 61694, phien: 51, laiLo: 6.24, trangThai: "DA_DONG" },
-  { ngayMua: "11/02/2026", giaMua: 64573, ngayBan: "03/03/2026", giaBan: 62091, phien: 15, laiLo: -3.84, trangThai: "DA_DONG" },
-  { ngayMua: "07/01/2026", giaMua: 58269, ngayBan: "23/01/2026", giaBan: 69238, phien: 13, laiLo: 18.82, trangThai: "DA_DONG" },
-  { ngayMua: "06/10/2025", giaMua: 62935, ngayBan: "17/10/2025", giaBan: 61892, phien: 10, laiLo: -1.66, trangThai: "DA_DONG" },
-  { ngayMua: "01/07/2025", giaMua: 57154, ngayBan: "20/08/2025", giaBan: 62529, phien: 37, laiLo: 9.40, trangThai: "DA_DONG" },
-];
-const statMau = { tongGiaoDich: 23, dangMo: 0, laiLoTBMo: 0.0, tyLeLai: 69.6, laiLoTBLenh: 4.3, luyKe: 98.94 };
+// Lich su giao dich + thong ke hieu suat tung ma: TAM THOI BO KHOI WEB theo
+// yeu cau - file xuat tu AmiBroker (dan qua Excel) bi loi lam trong so thap
+// phan (Price/Ex.Price bi Excel dinh lien thanh so nguyen khong dung duoc).
+// Se lam lai khi co file xuat dung (dan qua Notepad thay vi Excel).
 
 // Mau border/nen dung chung cho tat ca "card" trong trang - de mo phong bo
 // cuc khoi vuong cua trang tham khao thay vi chi la dai phan cach nhu truoc.
@@ -470,69 +464,6 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
       <div className="grid sm:grid-cols-2 gap-4 mb-10">
         {dinhGia.length > 0 ? <CardDinhGia dinhGia={dinhGia} gia={row.gia} /> : <CardDangCapNhat tieuDe="Định giá tham khảo" />}
         {cauChuyen.length > 0 ? <CardCauChuyen cauChuyen={cauChuyen} /> : <CardDangCapNhat tieuDe="Câu chuyện kỳ vọng" />}
-      </div>
-
-      {/* THONG KE HIEU SUAT - du lieu minh hoa, chua noi backtest that theo tung ma */}
-      <p className="text-xs mb-3" style={{ color: "#6F6C64" }}>
-        Dữ liệu minh hoạ bên dưới — chưa nối lịch sử backtest thật theo từng mã.
-      </p>
-      <div className="grid grid-cols-2 sm:grid-cols-6 border-y mb-10" style={{ borderColor: VIEN }}>
-        {[
-          ["Tổng giao dịch", statMau.tongGiaoDich, ""],
-          ["Đang mở", statMau.dangMo, ""],
-          ["Lãi/lỗ TB lệnh mở", pct(statMau.laiLoTBMo), ""],
-          ["Tỷ lệ lãi", statMau.tyLeLai + "%", "#5FCF8A"],
-          ["Lãi/lỗ TB mỗi lệnh", pct(statMau.laiLoTBLenh), "#5FCF8A"],
-          ["Lợi nhuận lũy kế", pct(statMau.luyKe), "#E8873A"],
-        ].map(([label, val, color], i) => (
-          <div key={label} className="p-4" style={{ borderLeft: i === 0 ? "none" : `1px solid ${VIEN}` }}>
-            <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#6F6C64" }}>
-              {label}
-            </p>
-            <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: color || "#EDE7DD" }} className="text-lg">
-              {val}
-            </p>
-          </div>
-        ))}
-      </div>
-
-      {/* LICH SU GIAO DICH */}
-      <h2 className="text-lg mb-4" style={{ fontFamily: "'Oswald', sans-serif", fontWeight: 600 }}>
-        Lịch sử giao dịch ({tradeHistoryMau.length} lệnh)
-      </h2>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-          <thead>
-            <tr className="text-left border-b" style={{ borderColor: VIEN, color: "#6F6C64" }}>
-              <th className="py-2 pr-4 font-normal">Ngày mua</th>
-              <th className="py-2 pr-4 font-normal">Giá mua</th>
-              <th className="py-2 pr-4 font-normal">Ngày bán</th>
-              <th className="py-2 pr-4 font-normal">Giá bán</th>
-              <th className="py-2 pr-4 font-normal">Phiên</th>
-              <th className="py-2 pr-4 font-normal text-right">Lãi/Lỗ</th>
-              <th className="py-2 font-normal text-right">Trạng thái</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tradeHistoryMau.map((t, i) => (
-              <tr key={i} className="border-b" style={{ borderColor: "#211F1A" }}>
-                <td className="py-2.5 pr-4">{t.ngayMua}</td>
-                <td className="py-2.5 pr-4">{fmt(t.giaMua)}</td>
-                <td className="py-2.5 pr-4">{t.ngayBan}</td>
-                <td className="py-2.5 pr-4">{fmt(t.giaBan)}</td>
-                <td className="py-2.5 pr-4">{t.phien}</td>
-                <td className="py-2.5 pr-4 text-right font-bold" style={{ color: t.laiLo >= 0 ? "#5FCF8A" : "#E86A6A" }}>
-                  {pct(t.laiLo)}
-                </td>
-                <td className="py-2.5 text-right">
-                  <span className="text-xs px-2 py-0.5" style={{ background: "#211F1A", color: "#A8A296" }}>
-                    {t.trangThai === "DA_DONG" ? "Đã đóng" : "Đang mở"}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
       </div>
     </div>
   );
