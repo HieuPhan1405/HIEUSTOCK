@@ -558,7 +558,7 @@ ChiPhienCuoi = BarIndex() == LastValue(BarIndex());
 // day khong phai co phieu cong ty, chien luoc Dao Gam khong dung cho ETF.
 // CHI giu co phieu HOSE thuoc VN30/Midcap/Smallcap (~302 ma) - loai ETF (FUE),
 // HNX, UPCOM, chung quyen, va moi ma khong ro nguon goc ("Khac").
-LaMaETF = Left(Name(), 3) == "FUE";
+LaMaETF = StrLeft(Name(), 3) == "FUE";
 ThuocHOSE = InVN30 OR InVNMidCap OR InVNSmallCap;
 Filter = ChiPhienCuoi AND NOT LaMaETF AND ThuocHOSE;
 
