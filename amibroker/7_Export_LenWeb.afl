@@ -573,7 +573,13 @@ ChiPhienCuoi = BarIndex() == LastValue(BarIndex());
 // HNX, UPCOM, chung quyen, va moi ma khong ro nguon goc ("Khac").
 LaMaETF = StrLeft(Name(), 3) == "FUE";
 ThuocHOSE = InVN30 OR InVNMidCap OR InVNSmallCap;
-Filter = ChiPhienCuoi AND NOT LaMaETF AND ThuocHOSE;
+// VNINDEX duoc xuat THEM nhu 1 truong hop dac biet (khong phai co phieu, khong
+// nam trong 3 danh sach von hoa o tren) - de trang web co the hien PTKT (diem
+// so/Ichimoku/Giao Gam/ho tro-khang cu) cho CHINH chi so, dung y het cong thuc
+// da dung cho tung ma. Front-end se loc rieng dong nay ra khoi danh sach co
+// phieu (nhan dien qua von_hoa="ChiSo").
+LaVNIndex = Name() == "VNINDEX";
+Filter = ChiPhienCuoi AND ((NOT LaMaETF AND ThuocHOSE) OR LaVNIndex);
 
 AddTextColumn(Name(), "Ma");
 AddTextColumn(KhuyenNghi, "Khuyen nghi");
@@ -622,9 +628,10 @@ FVGCuoi = WriteIf(LastValue(FVGDuLon), "1", "0");
 NgayBienDoiCuoi = WriteIf(LastValue(DungNgayBienDoi), "1", "0");
 KumoTwistCuoi = WriteIf(LastValue(MayTuongLaiDoiChieuTang), "TANG",
                 WriteIf(LastValue(MayTuongLaiDoiChieuGiam), "GIAM", ""));
-VonHoaCuoi = WriteIf(LastValue(InVN30), "VN30",
+VonHoaCuoi = WriteIf(LaVNIndex, "ChiSo",
+             WriteIf(LastValue(InVN30), "VN30",
              WriteIf(LastValue(InVNMidCap), "Midcap",
-             WriteIf(LastValue(InVNSmallCap), "Smallcap", "Khac")));
+             WriteIf(LastValue(InVNSmallCap), "Smallcap", "Khac"))));
 
 Dong = Name() + "," + TinCuoi + ","
      + NumToStr(LastValue(TotalScore),1.4,False) + ","
@@ -660,7 +667,7 @@ Dong = Name() + "," + TinCuoi + ","
          NumToStr(LastValue(NamMuaVT),1.0,False),
          "");
 
-if (!LaMaETF AND ThuocHOSE)
+if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {
     fh = fopen(DuongDanFileXuat, "a");
     if (fh)

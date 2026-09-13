@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { layTatCaTinHieu } from "@/lib/tinHieu";
-import { pct } from "@/components/dungChung";
+import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
+import { fmt, pct } from "@/components/dungChung";
+import SignalPill from "@/components/SignalPill";
 
 export const dynamic = "force-dynamic";
 
@@ -37,6 +38,52 @@ function sinhKetLuan(pctXanh, pctDo, tong) {
   if (pctXanh - pctDo > 15) return "Nghiêng tích cực — số mã xu hướng tăng đang áp đảo.";
   if (pctDo - pctXanh > 15) return "Nghiêng tiêu cực — số mã xu hướng giảm đang áp đảo.";
   return "Sideway — thị trường chưa có xu hướng rõ ràng.";
+}
+
+// "NHAN DINH THI TRUONG" - doan van tu dong sinh tu chinh du lieu 272-300 ma
+// HOSE VN30/Midcap/Smallcap dang theo doi (KHONG phai toan bo HOSE ~700 ma
+// nen khong dung so lieu "do rong HOSE" tuyet doi, chi noi ro pham vi dang co).
+function sinhNhanDinh(tatCa) {
+  const tong = tatCa.length;
+  if (!tong) return null;
+
+  const soTang = tatCa.filter((r) => r.doi > 0).length;
+  const soGiam = tatCa.filter((r) => r.doi < 0).length;
+  const soDung = tong - soTang - soGiam;
+  const soGiamManh = tatCa.filter((r) => r.doi <= -3).length;
+  const pctGiam = (soGiam / tong) * 100;
+  const pctTang = (soTang / tong) * 100;
+  const pctGiamManh = (soGiamManh / tong) * 100;
+  const soMua = tatCa.filter((r) => r.tin === "MUA").length;
+  const soBan = tatCa.filter((r) => r.tin === "BAN").length;
+  const soMatThan = tatCa.filter((r) => r.mat_than).length;
+  const soVuotDinh = tatCa.filter((r) => r.dinh_52t != null && r.gia >= r.dinh_52t).length;
+
+  let sacThai = "GIẰNG CO", mau = VANG;
+  if (pctGiam - pctTang > 30) { sacThai = "TIÊU CỰC"; mau = DO; }
+  else if (pctTang - pctGiam > 30) { sacThai = "TÍCH CỰC"; mau = XANH; }
+
+  const cau = [
+    `Thị trường nghiêng ${sacThai.toLowerCase()} với ${pctGiam.toFixed(1)}% mã giảm điểm / ${pctTang.toFixed(1)}% mã tăng điểm trong ${tong} mã HOSE VN30-Midcap-Smallcap đang theo dõi, trong đó ${soGiamManh} mã (${pctGiamManh.toFixed(1)}%) giảm mạnh trên 3%.`,
+  ];
+  if (soMatThan > 0) {
+    cau.push(`Có ${soMatThan} mã đang cảnh báo Mắt Thần — rủi ro đảo chiều cần theo dõi sát trong các phiên tới.`);
+  }
+  if (soVuotDinh > 0) {
+    cau.push(`Vẫn có ${soVuotDinh} mã vượt đỉnh 52 tuần, cho thấy dòng tiền chưa rút hoàn toàn mà đang chọn lọc theo từng nhóm ngành.`);
+  }
+  cau.push(`Tín hiệu mới phát sinh hôm nay: ${soMua} mã MUA, ${soBan} mã BÁN.`);
+
+  return { sacThai, mau, doanVan: cau.join(" "), soTang, soGiam, soDung };
+}
+
+// PTKT VNINDEX - dung dung cong thuc Ichimoku/Giao Gam/diem so nhu tung ma,
+// chi khac o cho ap dung cho chinh chi so (xem AFL: LaVNIndex).
+function phanLoaiTrend(trend) {
+  if (trend === null || trend === undefined) return { nhan: "Sideway", mau: VANG };
+  if (trend > 0.5) return { nhan: "Tăng", mau: XANH };
+  if (trend < -0.5) return { nhan: "Giảm", mau: DO };
+  return { nhan: "Sideway", mau: VANG };
 }
 
 // The KPI - card so lieu nhanh, co quang mau mo phia sau de tao diem nhan
@@ -115,12 +162,15 @@ function BieuDoTronDoRong({ soXanh, soSideway, soDo, tong }) {
 
 export default async function TrangTongQuan() {
   let tatCa = [];
+  let chiSoVNIndex = null;
   let loi = null;
   try {
-    tatCa = await layTatCaTinHieu();
+    [tatCa, chiSoVNIndex] = await Promise.all([layTatCaTinHieu(), layChiSoVNIndex()]);
   } catch (e) {
     loi = String(e?.message || e);
   }
+
+  const nhanDinh = sinhNhanDinh(tatCa);
 
   const tong = tatCa.length;
   const soXanh = tatCa.filter((r) => phanLoaiXuHuong(r) === "xanh").length;
@@ -181,6 +231,115 @@ export default async function TrangTongQuan() {
           <p className="text-sm mb-6" style={{ color: DO }}>
             Lỗi tải dữ liệu: {loi}
           </p>
+        )}
+
+        {/* NHAN DINH THI TRUONG - doan van tu dong sinh, khong phai khuyen nghi dau tu */}
+        {nhanDinh && (
+          <div
+            className="rounded-2xl border p-6 mb-6 relative overflow-hidden"
+            style={{ borderColor: VIEN, background: NEN_CARD }}
+          >
+            <div
+              aria-hidden="true"
+              className="absolute -left-10 -bottom-16 w-56 h-56 rounded-full blur-3xl opacity-20 pointer-events-none"
+              style={{ background: nhanDinh.mau }}
+            />
+            <div className="flex items-center gap-2 mb-3 relative">
+              <span className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                Nhận định nhanh
+              </span>
+              <span
+                className="text-xs font-bold px-2 py-0.5 rounded-sm"
+                style={{ color: nhanDinh.mau, background: `${nhanDinh.mau}22`, fontFamily: "'JetBrains Mono', monospace" }}
+              >
+                {nhanDinh.sacThai}
+              </span>
+            </div>
+            <p className="text-sm leading-relaxed relative" style={{ fontFamily: "'Inter', sans-serif", color: "#D8D8E0" }}>
+              {nhanDinh.doanVan}
+            </p>
+            <p className="text-[11px] mt-3 relative" style={{ color: MUTED }}>
+              Tự động tổng hợp từ {tatCa.length} mã đang theo dõi — không phải khuyến nghị đầu tư.
+            </p>
+          </div>
+        )}
+
+        {/* PTKT VNINDEX - dung chung cong thuc Dao Gam, ap dung cho chinh chi so */}
+        {chiSoVNIndex ? (
+          <div className="rounded-2xl border p-6 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
+            <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
+              <div>
+                <p className="text-xs uppercase tracking-wide mb-1" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                  PTKT VNINDEX
+                </p>
+                <div className="flex items-baseline gap-3">
+                  <span className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+                    {fmt(chiSoVNIndex.gia)}
+                  </span>
+                  <span
+                    className="text-sm"
+                    style={{ fontFamily: "'JetBrains Mono', monospace", color: chiSoVNIndex.doi >= 0 ? XANH : DO }}
+                  >
+                    {pct(chiSoVNIndex.doi, 2)}
+                  </span>
+                </div>
+              </div>
+              <SignalPill tin={chiSoVNIndex.tin} />
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              <div>
+                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Điểm tổng hợp</p>
+                <p
+                  className="text-lg"
+                  style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: chiSoVNIndex.diem >= 0 ? XANH : DO }}
+                >
+                  {chiSoVNIndex.diem?.toFixed(2) ?? "—"}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Xu hướng</p>
+                <p className="text-lg" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: phanLoaiTrend(chiSoVNIndex.trend).mau }}>
+                  {phanLoaiTrend(chiSoVNIndex.trend).nhan}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Kijun (17)</p>
+                <p className="text-lg" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+                  {fmt(chiSoVNIndex.kijun)}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Kumo Twist</p>
+                <p className="text-lg" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+                  {chiSoVNIndex.kumo_twist === "TANG" ? "Tăng" : chiSoVNIndex.kumo_twist === "GIAM" ? "Giảm" : "—"}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid sm:grid-cols-2 gap-4 mt-5 pt-5 border-t" style={{ borderColor: VIEN }}>
+              <div className="flex justify-between text-sm">
+                <span style={{ color: MUTED }}>Vùng mây Giao Găm (65-129)</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                  {fmt(chiSoVNIndex.gg_bot)} – {fmt(chiSoVNIndex.gg_top)}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span style={{ color: MUTED }}>Đỉnh 52 tuần</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{fmt(chiSoVNIndex.dinh_52t)}</span>
+              </div>
+            </div>
+
+            <p className="text-[11px] mt-4" style={{ color: MUTED }}>
+              Áp dụng cùng công thức Ichimoku 9-17-33 + Giao Găm 65-129 như từng mã cổ phiếu, tính trực tiếp trên chỉ số VNINDEX.
+            </p>
+          </div>
+        ) : (
+          !loi && (
+            <div className="rounded-2xl border p-6 mb-6 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
+              Chưa có dữ liệu PTKT VNINDEX — cần chạy lại Explore + upload sau khi cập nhật công thức AFL mới nhất.
+            </div>
+          )
         )}
 
         {/* HANG KPI */}
