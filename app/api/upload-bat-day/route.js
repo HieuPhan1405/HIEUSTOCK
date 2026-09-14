@@ -80,11 +80,14 @@ export async function POST(request) {
     return Response.json({ trangThai: "ok", soDongDaLuu: 0, tongSoDongNhan: 0, soDongLoiDaBoQua: soDongLoi });
   }
 
-  // Khong xoa gi ca - AFL tinh lai TOAN BO lich su moi lan chay nen day chi la
-  // upsert. Cac su kien cu (gia sau 5/10/20 phien da co du lieu that) se ghi
-  // lai y het gia tri cu (idempotent); cac su kien MOI gan day se duoc dien
-  // dan gia tri khi co them phien moi, khong bao gio bi mat du lieu lich su.
+  // AFL tinh lai TOAN BO lich su (trong pham vi NamBatDauTheoDoi hien tai) moi
+  // lan chay, nen upsert la du - cac su kien cu (da co gia sau 5/10/20 phien
+  // that) se ghi lai y het gia tri cu (idempotent), su kien moi duoc dien dan.
+  // NHUNG can XOA nhung dong khong con trong lan upload nay - vd khi doi
+  // NamBatDauTheoDoi (loc bot lich su cu di), neu khong xoa thi du lieu cu
+  // (2001-2023) se ton dong mai tren web du AmiBroker da loc dung.
   const cot = (ten, chuyenDoi) => hangDL.map((h) => chuyenDoi(h[ten]));
+  let soDongDaXoa = 0;
 
   await withDb(async (client) => {
     await daoDamBangBatDay(client);
@@ -119,6 +122,16 @@ export async function POST(request) {
         cot("ftd", soBool),
       ]
     );
+
+    const { rowCount } = await client.query(
+      `DELETE FROM bat_day_su_kien
+       WHERE NOT EXISTS (
+         SELECT 1 FROM unnest($1::text[], $2::date[]) AS moi(ma, ngay)
+         WHERE moi.ma = bat_day_su_kien.ma AND moi.ngay = bat_day_su_kien.ngay_tin_hieu
+       )`,
+      [cot("ma", (v) => v), cot("ngay", soNgayVN)]
+    );
+    soDongDaXoa = rowCount;
   });
 
   return Response.json({
@@ -126,5 +139,6 @@ export async function POST(request) {
     soDongDaLuu: hangDL.length,
     tongSoDongNhan: hangDL.length,
     soDongLoiDaBoQua: soDongLoi,
+    soDongDaXoa,
   });
 }
