@@ -293,8 +293,11 @@ VNMidCapList = "ANV,BCM,BMP,BSI,BWE,CII,CMG,CTD,CTR,CTS,"+
     "VGC,VHC,VIX,VND,VPI,VSC,VTP,DGC,LPB,SHB,MSR";
 InVNMidCap = StrFind( "," + VNMidCapList + ",", "," + Name() + "," ) > 0;
 
-// VNSMALLCAP - 202 ma. Tinh bang VNAllshare (302 ma, cong bo chinh thuc
-// HOSE ky 1/2026 qua Vietstock) TRU DI VN100.
+// VNSMALLCAP - 209 ma. Tinh bang VNAllshare (302 ma, cong bo chinh thuc
+// HOSE ky 1/2026 qua Vietstock) TRU DI VN100. Bo sung 7 ma bi thieu sot
+// (da co san trong danh sach 15 nganh nhung lai khong nam trong ca 3 danh
+// sach von hoa nen bi loai het khoi quet - phat hien khi ra soat toan bo):
+// DHG, TRA, VCF, HVN, SVC, CAV, DQC.
 VNSmallCapList = "AAA,AAM,ABS,ABT,ACC,ACL,ADG,ADP,ADS,AGG,"+
     "AGR,APG,APH,ASM,ASP,AST,BAF,BCE,BFC,BIC,"+
     "BKG,BMC,BMI,BRC,BTP,C32,CCC,CCL,CDC,CHP,"+
@@ -315,7 +318,7 @@ VNSmallCapList = "AAA,AAM,ABS,ABT,ACC,ACL,ADG,ADP,ADS,AGG,"+
     "TIP,TLD,TLG,TLH,TMT,TN1,TNH,TNI,TNT,TRC,"+
     "TSC,TTA,TTF,TV2,TVB,TVS,UIC,VCA,VDS,VFG,"+
     "VIP,VNL,VOS,VPG,VPH,VPS,VRC,VSI,VTB,VTO,"+
-    "YBM,YEG";
+    "YBM,YEG,DHG,TRA,VCF,HVN,SVC,CAV,DQC";
 InVNSmallCap = StrFind( "," + VNSmallCapList + ",", "," + Name() + "," ) > 0;
 
 SoNamGanNhat = Param("So nam gan nhat de test (0 = khong gioi han)", 12, 0, 99, 1);
