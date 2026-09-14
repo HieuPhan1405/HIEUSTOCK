@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import BangBoLoc from "@/components/BangBoLoc";
 
@@ -26,7 +27,9 @@ export default async function TrangBoLoc() {
           Lỗi tải dữ liệu: {loi}
         </p>
       ) : (
-        <BangBoLoc duLieu={tatCa} />
+        <Suspense fallback={null}>
+          <BangBoLoc duLieu={tatCa} />
+        </Suspense>
       )}
     </div>
   );

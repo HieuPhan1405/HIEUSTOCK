@@ -30,6 +30,25 @@ export function soAn(n, chuSo = 2) {
   return n === null || n === undefined || Number.isNaN(Number(n)) ? "—" : Number(n).toFixed(chuSo);
 }
 
+// Phan loai xu huong theo TrendScore (da tinh san trong AFL) - dung chung
+// cho trang chu (do rong thi truong) va Bo loc co phieu.
+export function phanLoaiXuHuong(row) {
+  if (row.trend === null || row.trend === undefined) return "sideway";
+  if (row.trend > 0.5) return "xanh";
+  if (row.trend < -0.5) return "do";
+  return "sideway";
+}
+
+// Muc TP cao nhat (dong bang tai luc mua) ma gia hien tai da cham toi - dung
+// chung cho trang chu, Bo loc co phieu, va Bang lenh mo.
+export function chamTPCaoNhat(row) {
+  if (row.gia == null) return null;
+  if (row.tp3 != null && row.gia >= row.tp3) return "TP3";
+  if (row.tp2 != null && row.gia >= row.tp2) return "TP2";
+  if (row.tp1 != null && row.gia >= row.tp1) return "TP1";
+  return null;
+}
+
 // Muc max ly thuyet cua tung thanh phan diem, lay dung theo cong thuc trong
 // amibroker/7_Export_LenWeb.afl.
 export const TREND_MAX = 3.0; // IIf(...,1) + IIf(...,1) + IIf(...,0.5) + IIf(...,0.5)

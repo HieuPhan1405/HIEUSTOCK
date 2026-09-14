@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
-import { fmt, pct } from "@/components/dungChung";
+import { fmt, pct, phanLoaiXuHuong, chamTPCaoNhat } from "@/components/dungChung";
 import SignalPill from "@/components/SignalPill";
 
 export const dynamic = "force-dynamic";
@@ -14,15 +14,6 @@ const PRIMARY = "#6C5CE7";
 const XANH = "#22C55E";
 const VANG = "#FBBF24";
 const DO = "#EF4444";
-
-// Phan loai xu huong tung ma theo TrendScore (da tinh san trong AFL) - dung
-// de dung "do rong thi truong" giong kieu Xanh/Sideway/Do o trang tham khao.
-function phanLoaiXuHuong(row) {
-  if (row.trend === null || row.trend === undefined) return "sideway";
-  if (row.trend > 0.5) return "xanh";
-  if (row.trend < -0.5) return "do";
-  return "sideway";
-}
 
 // Do rong rieng cho 1 nhom von hoa (VN30/Midcap/Smallcap) - dung field
 // von_hoa da co san trong tin_hieu (gan tu AFL: InVN30/InVNMidCap/InVNSmallCap).
@@ -77,16 +68,6 @@ function sinhNhanDinh(tatCa) {
   return { sacThai, mau, doanVan: cau.join(" "), soTang, soGiam, soDung };
 }
 
-// Chot loi - muc TP cao nhat (dong bang tai luc mua) ma gia hien tai da cham
-// toi, dung chung logic voi components/BangLenhMo.js.
-function chamTPCaoNhat(row) {
-  if (row.gia == null) return null;
-  if (row.tp3 != null && row.gia >= row.tp3) return "TP3";
-  if (row.tp2 != null && row.gia >= row.tp2) return "TP2";
-  if (row.tp1 != null && row.gia >= row.tp1) return "TP1";
-  return null;
-}
-
 // PTKT VNINDEX - dung dung cong thuc Ichimoku/Giao Gam/diem so nhu tung ma,
 // chi khac o cho ap dung cho chinh chi so (xem AFL: LaVNIndex).
 function phanLoaiTrend(trend) {
@@ -98,9 +79,11 @@ function phanLoaiTrend(trend) {
 
 // The KPI - card so lieu nhanh, co quang mau mo phia sau de tao diem nhan
 // (mo phong hieu ung "glow" cua dashboard fintech hien dai).
-function TheKPI({ nhan, giaTri, phu, mau }) {
-  return (
-    <div className="rounded-2xl border p-5 relative overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
+// href tuy chon - neu co, ca the tro thanh 1 link bam duoc dan sang Bo loc
+// co phieu voi dung bo loc tuong ung (vd Xu huong tang -> ?xuhuong=xanh).
+function TheKPI({ nhan, giaTri, phu, mau, href }) {
+  const noiDung = (
+    <>
       <div
         aria-hidden="true"
         className="absolute -right-8 -top-8 w-28 h-28 rounded-full blur-3xl opacity-25 pointer-events-none"
@@ -117,6 +100,22 @@ function TheKPI({ nhan, giaTri, phu, mau }) {
           {phu}
         </p>
       )}
+    </>
+  );
+
+  const className = "rounded-2xl border p-5 relative overflow-hidden block";
+  const style = { borderColor: VIEN, background: NEN_CARD };
+
+  if (href) {
+    return (
+      <Link href={href} className={`${className} hover:border-[#3A3A46] transition-colors`} style={style}>
+        {noiDung}
+      </Link>
+    );
+  }
+  return (
+    <div className={className} style={style}>
+      {noiDung}
     </div>
   );
 }
@@ -359,12 +358,12 @@ export default async function TrangTongQuan() {
 
         {/* HANG KPI */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-          <TheKPI nhan="Mã đang theo dõi" giaTri={tong} mau={TEXT} />
-          <TheKPI nhan="Xu hướng tăng" giaTri={`${pctXanh.toFixed(0)}%`} phu={`${soXanh} mã`} mau={XANH} />
-          <TheKPI nhan="Tín hiệu MUA" giaTri={soMua} phu="hôm nay" mau={PRIMARY} />
-          <TheKPI nhan="Cảnh báo Mắt Thần" giaTri={soMatThan} phu="rủi ro đảo chiều" mau={soMatThan > 0 ? DO : MUTED} />
-          <TheKPI nhan="Cơ hội chốt lời" giaTri={soChotLoi} phu="đã chạm TP" mau={soChotLoi > 0 ? "#FBBF24" : MUTED} />
-          <TheKPI nhan="Cảnh báo bán bớt" giaTri={soBanBot} phu="điểm dưới ngưỡng" mau={soBanBot > 0 ? "#F97316" : MUTED} />
+          <TheKPI nhan="Mã đang theo dõi" giaTri={tong} mau={TEXT} href="/bo-loc" />
+          <TheKPI nhan="Xu hướng tăng" giaTri={`${pctXanh.toFixed(0)}%`} phu={`${soXanh} mã`} mau={XANH} href="/bo-loc?xuhuong=xanh" />
+          <TheKPI nhan="Tín hiệu MUA" giaTri={soMua} phu="hôm nay" mau={PRIMARY} href="/bo-loc?tin=MUA" />
+          <TheKPI nhan="Cảnh báo Mắt Thần" giaTri={soMatThan} phu="rủi ro đảo chiều" mau={soMatThan > 0 ? DO : MUTED} href="/bo-loc?matthan=1" />
+          <TheKPI nhan="Cơ hội chốt lời" giaTri={soChotLoi} phu="đã chạm TP" mau={soChotLoi > 0 ? "#FBBF24" : MUTED} href="/bo-loc?chotloi=1" />
+          <TheKPI nhan="Cảnh báo bán bớt" giaTri={soBanBot} phu="điểm dưới ngưỡng" mau={soBanBot > 0 ? "#F97316" : MUTED} href="/bo-loc?banbot=1" />
         </div>
 
         {/* KET LUAN + BIEU DO TRON  ·  DO RONG THEO VON HOA */}
