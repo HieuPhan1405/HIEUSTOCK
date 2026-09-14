@@ -431,7 +431,14 @@ BreadthOk15 = 1;
 NguongKLTB20ToiThieu = Param("Nguong KL trung binh 20 phien toi thieu (co phieu)", 100000, 0, 5000000, 10000);
 ThanhKhoanKL_Ok = MA(V,20) >= NguongKLTB20ToiThieu;
 
-Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSVNI_OK AND ThanhKhoanKL_Ok;
+// GIA TOI THIEU GATE - loai co phieu "tra" (duoi 10 = duoi 10,000 dong/cp,
+// gia cua AmiBroker tinh theo nghin dong) ra khoi tin hieu MUA/NAM GIU. Cac
+// ma gia qua thap thuong bi lam gia/thao tung, bien dong bat thuong, khong
+// phu hop de khuyen nghi dau tu du diem so ky thuat co the dat nguong.
+NguongGiaToiThieu = Param("Nguong gia toi thieu de duoc coi la giao dich duoc (nghin dong)", 10, 0, 100, 1);
+GiaToiThieuOk = C >= NguongGiaToiThieu;
+
+Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSVNI_OK AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
 
 SellRaw = TurnedPink OR MatThanWarning;
 DuT2 = BarsSince(Buy) >= 2;
