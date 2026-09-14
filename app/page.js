@@ -77,6 +77,16 @@ function sinhNhanDinh(tatCa) {
   return { sacThai, mau, doanVan: cau.join(" "), soTang, soGiam, soDung };
 }
 
+// Chot loi - muc TP cao nhat (dong bang tai luc mua) ma gia hien tai da cham
+// toi, dung chung logic voi components/BangLenhMo.js.
+function chamTPCaoNhat(row) {
+  if (row.gia == null) return null;
+  if (row.tp3 != null && row.gia >= row.tp3) return "TP3";
+  if (row.tp2 != null && row.gia >= row.tp2) return "TP2";
+  if (row.tp1 != null && row.gia >= row.tp1) return "TP1";
+  return null;
+}
+
 // PTKT VNINDEX - dung dung cong thuc Ichimoku/Giao Gam/diem so nhu tung ma,
 // chi khac o cho ap dung cho chinh chi so (xem AFL: LaVNIndex).
 function phanLoaiTrend(trend) {
@@ -184,9 +194,16 @@ export default async function TrangTongQuan() {
   // tatCa da ORDER BY diem DESC tu lib/tinHieu.js. Tach rieng tin hieu MUA
   // (diem cao nhat truoc) va tin hieu BAN (diem thap nhat/am nhieu nhat
   // truoc, vi day la ben "dang chu y" cua phe ban) thanh 2 cot rieng.
-  const tinHieuMua = tatCa.filter((r) => r.tin === "MUA").slice(0, 10);
+  // Ben MUA: gom ca tin hieu MUA moi hom nay LAN cac ma dang NAM GIU da cham
+  // muc chot loi TP - deu la "co hoi dang chu y" phia mua. Ben BAN: gom ca
+  // tin hieu BAN han LAN canh bao Ban bot (diem tut duoi nguong nhung chua
+  // du 3 phien xac nhan) - deu la "can chu y" phia ban.
+  const tinHieuMua = tatCa
+    .filter((r) => r.tin === "MUA" || (r.tin === "NAM GIU" && chamTPCaoNhat(r)))
+    .sort((a, b) => (b.diem ?? 0) - (a.diem ?? 0))
+    .slice(0, 10);
   const tinHieuBan = tatCa
-    .filter((r) => r.tin === "BAN")
+    .filter((r) => r.tin === "BAN" || r.ban_bot)
     .sort((a, b) => (a.diem ?? 0) - (b.diem ?? 0))
     .slice(0, 10);
 
@@ -425,25 +442,41 @@ function CotTinHieu({ tieuDe, mau, danhSach }) {
           Chưa có mã nào.
         </p>
       )}
-      {danhSach.map((row) => (
-        <Link
-          key={row.ma}
-          href={`/ma/${row.ma}`}
-          className="w-full text-left grid grid-cols-[64px_1fr_auto] items-center gap-3 py-3 border-b hover:bg-white/[0.04] rounded-lg px-2 -mx-2 transition-colors"
-          style={{ borderColor: "#1D1D26" }}
-        >
-          <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "16px" }}>{row.ma}</span>
-          <span className="text-xs" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
-            điểm {row.diem?.toFixed(2) ?? "—"}
-          </span>
-          <span
-            className="text-right"
-            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: row.doi >= 0 ? XANH : DO }}
+      {danhSach.map((row) => {
+        const tp = chamTPCaoNhat(row);
+        const banBot = row.ban_bot && row.tin !== "BAN";
+        return (
+          <Link
+            key={row.ma}
+            href={`/ma/${row.ma}`}
+            className="w-full text-left grid grid-cols-[64px_1fr_auto] items-center gap-3 py-3 border-b hover:bg-white/[0.04] rounded-lg px-2 -mx-2 transition-colors"
+            style={{ borderColor: "#1D1D26" }}
           >
-            {pct(row.doi, 2)}
-          </span>
-        </Link>
-      ))}
+            <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "16px" }}>{row.ma}</span>
+            <span className="flex flex-col gap-0.5">
+              <span className="text-xs" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+                điểm {row.diem?.toFixed(2) ?? "—"}
+              </span>
+              {tp && (
+                <span className="text-[10px] font-bold tracking-wide" style={{ color: "#FBBF24" }}>
+                  🎯 Chốt lời {tp}
+                </span>
+              )}
+              {banBot && (
+                <span className="text-[10px] font-bold tracking-wide" style={{ color: "#F97316" }}>
+                  ⚠ Bán bớt
+                </span>
+              )}
+            </span>
+            <span
+              className="text-right"
+              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: row.doi >= 0 ? XANH : DO }}
+            >
+              {pct(row.doi, 2)}
+            </span>
+          </Link>
+        );
+      })}
     </div>
   );
 }
