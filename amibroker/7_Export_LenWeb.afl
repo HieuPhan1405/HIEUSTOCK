@@ -280,15 +280,17 @@ VN30List = "ACB,BID,BSR,BVH,CTG,FPT,GAS,GVR,HDB,HPG,"+
     "TPB,VCB,VHM,VIB,VIC,VJC,VNM,VPB,VPL,VRE";
 InVN30 = StrFind( "," + VN30List + ",", "," + Name() + "," ) > 0;
 
-// VNMIDCAP - 70 ma. LUU Y: ke thua tu du lieu HOSE ky 1/2026, da dieu chinh
-// 3 ma chuyen nhom voi VN30 (BSR/BVH/POW ra, DGC/LPB/SHB vao).
+// VNMIDCAP - 71 ma. LUU Y: ke thua tu du lieu HOSE ky 1/2026, da dieu chinh
+// 3 ma chuyen nhom voi VN30 (BSR/BVH/POW ra, DGC/LPB/SHB vao). Bo sung MSR
+// (Masan High-Tech Materials) - bi thieu sot trong danh sach goc, khien ma
+// nay bi loai het khoi quet (khong thuoc VN30/Midcap/Smallcap nao).
 VNMidCapList = "ANV,BCM,BMP,BSI,BWE,CII,CMG,CTD,CTR,CTS,"+
     "DBC,DCM,DGW,DIG,DPM,DSE,DXG,DXS,EIB,EVF,"+
     "FRT,FTS,GEE,GEX,GMD,HAG,HCM,HDC,HDG,HHV,"+
     "HSG,HT1,IMP,KBC,KDC,KDH,KOS,MSB,NAB,NKG,"+
     "NLG,NT2,NVL,OCB,PAN,PC1,PDR,PHR,PNJ,PVD,"+
     "PVT,REE,SBT,SCS,SIP,SJS,SZC,TCH,VCG,VCI,"+
-    "VGC,VHC,VIX,VND,VPI,VSC,VTP,DGC,LPB,SHB";
+    "VGC,VHC,VIX,VND,VPI,VSC,VTP,DGC,LPB,SHB,MSR";
 InVNMidCap = StrFind( "," + VNMidCapList + ",", "," + Name() + "," ) > 0;
 
 // VNSMALLCAP - 202 ma. Tinh bang VNAllshare (302 ma, cong bo chinh thuc
