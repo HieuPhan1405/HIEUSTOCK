@@ -19,6 +19,18 @@ function formatNgay(v) {
   return new Date(v).toLocaleDateString("vi-VN");
 }
 
+// Chot loi - so gia hien tai voi 3 muc TP da tinh san trong AFL (TP1 < TP2 <
+// TP3, dua tren Ho tro/Khang cu gan-trung-xa). Bao muc TP CAO NHAT da cham
+// toi, de nguoi dung biet nen chot 1 phan hay toan bo vi the.
+function tinhChotLoi(row) {
+  const gia = row.gia;
+  if (gia == null) return { nhan: "—", mau: MUTED };
+  if (row.tp3 != null && gia >= row.tp3) return { nhan: "Đã chạm TP3", mau: "#22C55E" };
+  if (row.tp2 != null && gia >= row.tp2) return { nhan: "Đã chạm TP2", mau: "#22C55E" };
+  if (row.tp1 != null && gia >= row.tp1) return { nhan: "Đã chạm TP1", mau: "#FBBF24" };
+  return { nhan: "Chưa chạm", mau: MUTED };
+}
+
 export default async function TrangLenhMo() {
   let tatCa = [];
   let loi = null;
@@ -83,6 +95,7 @@ export default async function TrangLenhMo() {
                   <th className="py-3 px-3 font-normal text-right">Giá bán</th>
                   <th className="py-3 px-3 font-normal text-right">Số phiên</th>
                   <th className="py-3 px-3 font-normal text-right">Lãi/Lỗ</th>
+                  <th className="py-3 px-3 font-normal text-right">Chốt lời</th>
                   <th className="py-3 pr-4 pl-3 font-normal text-right">Trạng thái</th>
                 </tr>
               </thead>
@@ -117,6 +130,9 @@ export default async function TrangLenhMo() {
                     <td className="py-3 px-3 text-right font-bold" style={{ color: row.lai_lo_pct >= 0 ? XANH : DO }}>
                       {pct(row.lai_lo_pct, 2)}
                     </td>
+                    <td className="py-3 px-3 text-right font-bold" style={{ color: tinhChotLoi(row).mau }}>
+                      {tinhChotLoi(row).nhan}
+                    </td>
                     <td className="py-3 pr-4 pl-3 text-right">
                       <SignalPill tin={row.tin} />
                     </td>
@@ -128,7 +144,7 @@ export default async function TrangLenhMo() {
         )}
       </div>
       <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-        Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở.
+        Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở. Chốt lời báo mức TP cao nhất mà giá hiện tại đã chạm tới — không tự động bán, chỉ là gợi ý tham khảo.
       </p>
     </div>
   );
