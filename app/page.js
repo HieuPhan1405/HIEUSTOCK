@@ -205,7 +205,7 @@ export default async function TrangTongQuan() {
             className="text-xs tracking-[0.25em] uppercase mb-3"
             style={{ color: PRIMARY, fontFamily: "'JetBrains Mono', monospace" }}
           >
-            Confluence signal · Ichimoku 9-17-33 · Giao Găm 65-129
+            Hệ thống hỗ trợ đầu tư · Quét toàn bộ thị trường
           </p>
           <h1
             className="text-4xl sm:text-5xl leading-[1.05] mb-4"
@@ -304,13 +304,13 @@ export default async function TrangTongQuan() {
                 </p>
               </div>
               <div>
-                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Kijun (17)</p>
+                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Đường cân bằng</p>
                 <p className="text-lg" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
                   {fmt(chiSoVNIndex.kijun)}
                 </p>
               </div>
               <div>
-                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Kumo Twist</p>
+                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Mây tương lai</p>
                 <p className="text-lg" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
                   {chiSoVNIndex.kumo_twist === "TANG" ? "Tăng" : chiSoVNIndex.kumo_twist === "GIAM" ? "Giảm" : "—"}
                 </p>
@@ -319,7 +319,7 @@ export default async function TrangTongQuan() {
 
             <div className="grid sm:grid-cols-2 gap-4 mt-5 pt-5 border-t" style={{ borderColor: VIEN }}>
               <div className="flex justify-between text-sm">
-                <span style={{ color: MUTED }}>Vùng mây Giao Găm (65-129)</span>
+                <span style={{ color: MUTED }}>Vùng cân bằng trung hạn</span>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>
                   {fmt(chiSoVNIndex.gg_bot)} – {fmt(chiSoVNIndex.gg_top)}
                 </span>
@@ -331,7 +331,7 @@ export default async function TrangTongQuan() {
             </div>
 
             <p className="text-[11px] mt-4" style={{ color: MUTED }}>
-              Áp dụng cùng công thức Ichimoku 9-17-33 + Giao Găm 65-129 như từng mã cổ phiếu, tính trực tiếp trên chỉ số VNINDEX.
+              Áp dụng cùng hệ thống chỉ báo như từng mã cổ phiếu, tính trực tiếp trên chỉ số VNINDEX.
             </p>
           </div>
         ) : (

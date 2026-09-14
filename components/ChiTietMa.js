@@ -130,7 +130,7 @@ function BannerMatThan() {
           Cảnh báo Mắt Thần
         </p>
         <p className="text-xs" style={{ color: "#E3AFAF" }}>
-          Giá đã phá đỉnh trên mây nhưng quay lại kiểm định mà không bật lên được qua Tenkan — rủi ro đảo chiều, cân nhắc bán ngay.
+          Giá đã phá đỉnh trên mây nhưng quay lại kiểm định mà không bật lên được qua đường xu hướng ngắn hạn — rủi ro đảo chiều, cân nhắc bán ngay.
         </p>
       </div>
     </div>
@@ -348,7 +348,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
             <TagInfo nhan="Sức mạnh ADX" giaTri={tag.adxSucManh.nhan} mau={tag.adxSucManh.mau} />
             {row.von_hoa && <TagInfo nhan="Vốn hoá" giaTri={row.von_hoa} mau="#22C55E" />}
             {row.sanyaku !== null && row.sanyaku !== undefined && (
-              <TagInfo nhan="Sanyaku" giaTri={`${row.sanyaku}/3`} mau={row.sanyaku >= 2 ? "#22C55E" : "#A6A6B3"} />
+              <TagInfo nhan="Độ tin cậy" giaTri={`${row.sanyaku}/3`} mau={row.sanyaku >= 2 ? "#22C55E" : "#A6A6B3"} />
             )}
             {row.kumo_twist && (
               <TagInfo

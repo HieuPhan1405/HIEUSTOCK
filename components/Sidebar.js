@@ -64,9 +64,9 @@ export default function Sidebar() {
           className="px-6 py-4 text-[11px]"
           style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace", borderTop: `1px solid ${VIEN}` }}
         >
-          Ichimoku 9-17-33
+          Hệ thống hỗ trợ
           <br />
-          Giao Găm 65-129
+          đầu tư CloudStock
         </div>
       </aside>
 

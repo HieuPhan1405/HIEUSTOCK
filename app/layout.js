@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "CloudStock — Tín hiệu Dao Găm",
-  description: "Tín hiệu kỹ thuật Ichimoku 9-17-33 + Giao Găm 65-129, quét toàn bộ thị trường chứng khoán Việt Nam.",
+  title: "CloudStock — Hệ thống hỗ trợ đầu tư",
+  description: "Hệ thống hỗ trợ đầu tư chứng khoán, quét toàn bộ thị trường chứng khoán Việt Nam.",
 };
 
 export default function RootLayout({ children }) {
