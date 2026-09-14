@@ -1,0 +1,151 @@
+// ============================================================================
+// CHECKLIST BAT DAY - Ban co LICH SU TIN HIEU (khac ban truoc chi xem hom nay)
+// Hien MOI LAN tin hieu vuot nguong 5 trong qua khu, kem gia luc do + gia
+// sau 5/10/20 phien de tu xem tin hieu co "an" khong (giong case BCM).
+//
+// THEM MOI: tu dong ghi CSV MOI LAN kich hoat (khong chi hom nay) len web -
+// KHAC HE THONG CHINH (7_Export_LenWeb.afl chi ghi 1 dong/ma tai phien cuoi).
+// O day can LICH SU: 1 ma co the xuat hien NHIEU dong (moi dong = 1 lan bat
+// day trong qua khu), nen phai for-loop qua tung phien roi ghi rieng tung
+// dong dat dieu kien, khong dung LastValue() nhu file kia.
+//
+// CACH DUNG: giong het 7_Export_LenWeb.afl - dan vao Analysis, Apply to =
+// All Symbols, bam Explore, file CSV se tu dong ghi/ghi de.
+// ============================================================================
+
+High252 = HHV(H, 252);
+ChietKhau = (High252 - C) / High252 * 100;
+C1_ChietKhau = ChietKhau >= 20;
+
+RSIVal = RSI(14);
+MFIVal = MFI(14);
+C2_Oversold = (IIf(RSIVal<35,0.5,0) + IIf(MFIVal<30,0.5,0));
+
+HH14 = HHV(H,14); LL14 = LLV(L,14);
+WPR = IIf(HH14!=LL14, (HH14-C)/(HH14-LL14)*-100, 0);
+C3_WPR = WPR < -80;
+
+MA200 = MA(C, 200);
+MA200Dev = IIf(MA200>0, (C-MA200)/MA200*100, 0);
+C4_MA200 = MA200Dev <= -12;
+
+NhomMotDiem = IIf(C1_ChietKhau,1,0) + C2_Oversold + IIf(C3_WPR,1,0) + IIf(C4_MA200,1,0);
+
+AvgVol20 = MA(V, 20);
+BienDoNen = H - L;
+AvgBienDo20 = MA(BienDoNen, 20);
+C6_Capitulation = (C < Ref(C,-1)) AND (V > AvgVol20*2) AND (BienDoNen > AvgBienDo20*1.5);
+
+Day20 = LLV(L, 20);
+IsLocalLow = L == Day20;
+PrevLowRSI = ValueWhen(IsLocalLow, RSIVal, 2);
+PrevLowPrice = ValueWhen(IsLocalLow, L, 2);
+C7_PhanKy = IsLocalLow AND (L < PrevLowPrice) AND (RSIVal > PrevLowRSI);
+C8_DaySauCaoHon = IsLocalLow AND (L > PrevLowPrice);
+
+NhomHaiDiem = IIf(C6_Capitulation,1,0) + IIf(C7_PhanKy,1,0) + IIf(C8_DaySauCaoHon,1,0);
+
+TangManh = (C >= Ref(C,-1)*1.0125) AND (V > Ref(V,-1));
+DangTrongVungDay = ChietKhau >= 15;
+C9_FTD = TangManh AND DangTrongVungDay;
+DiemFTD = IIf(C9_FTD, 2, 0);
+
+TongDiemRiengMa = NhomMotDiem + NhomHaiDiem + DiemFTD;
+
+// ---------------- TIN HIEU KICH HOAT (SU KIEN, khong phai trang thai) ----------------
+// Chi True DUNG NGAY diem vuot qua 5 (hom truoc CHUA du) - day la "1 lan bat
+// day", giong het khai niem TurnedGreen ben he thong chinh.
+NguongThamKhao = 5;
+TinHieuKichHoat = TongDiemRiengMa >= NguongThamKhao AND Ref(TongDiemRiengMa,-1) < NguongThamKhao;
+
+// ---------------- GIA LUC TIN HIEU + GIA SAU N PHIEN (theo doi "co an khong") ----------------
+GiaLucTinHieu = C;
+Gia5PhienSau = Ref(C, 5);
+Gia10PhienSau = Ref(C, 10);
+Gia20PhienSau = Ref(C, 20);
+PctSau5 = IIf(!IsNull(Gia5PhienSau), (Gia5PhienSau/GiaLucTinHieu-1)*100, Null);
+PctSau10 = IIf(!IsNull(Gia10PhienSau), (Gia10PhienSau/GiaLucTinHieu-1)*100, Null);
+PctSau20 = IIf(!IsNull(Gia20PhienSau), (Gia20PhienSau/GiaLucTinHieu-1)*100, Null);
+
+// ---------------- BO LOC: chi hien DUNG NGAY co su kien kich hoat (khong phai hom nay) ----------------
+VN100List = "ACB,BID,CTG,DGC,FPT,GAS,GVR,HDB,HPG,LPB,"+
+    "MBB,MSN,MWG,PLX,SAB,SHB,SSB,SSI,STB,TCB,"+
+    "TPB,VCB,VHM,VIB,VIC,VJC,VNM,VPB,VPL,VRE,"+
+    "ANV,BCM,BMP,BSI,BSR,BVH,BWE,CII,CMG,CTD,"+
+    "CTR,CTS,DBC,DCM,DGW,DIG,DPM,DSE,DXG,DXS,"+
+    "EIB,EVF,FRT,FTS,GEE,GEX,GMD,HAG,HCM,HDC,"+
+    "HDG,HHV,HSG,HT1,IMP,KBC,KDC,KDH,KOS,MSB,"+
+    "NAB,NKG,NLG,NT2,NVL,OCB,PAN,PC1,PDR,PHR,"+
+    "PNJ,POW,PVD,PVT,REE,SBT,SCS,SIP,SJS,SZC,"+
+    "TCH,VCG,VCI,VGC,VHC,VIX,VND,VPI,VSC,VTP";
+InVN100 = StrFind( "," + VN100List + ",", "," + Name() + "," ) > 0;
+
+Filter = TinHieuKichHoat AND InVN100;
+
+AddColumn(GiaLucTinHieu, "Gia luc tin hieu", 1.2);
+AddColumn(TongDiemRiengMa, "Diem (/10)", 1.1);
+AddColumn(PctSau5, "% sau 5 phien", 1.2);
+AddColumn(PctSau10, "% sau 10 phien", 1.2);
+AddColumn(PctSau20, "% sau 20 phien", 1.2);
+AddColumn(ChietKhau, "Chiet khau luc do (%)", 1.1);
+AddColumn(RSIVal, "RSI luc do", 1.1);
+AddTextColumn(WriteIf(C6_Capitulation,"CO","Khong"), "Capitulation");
+AddTextColumn(WriteIf(C9_FTD,"CO","Khong"), "FTD");
+
+// ============================================================================
+// XUAT CSV TU DONG LEN WEB - KHONG CAN BAM "EXPORT" TAY
+// SUA DUONG DAN NAY cho khop may ban truoc khi dung (tao san thu muc neu chua co).
+// ============================================================================
+DuongDanFileXuat = "C:\\DaoGam_Data\\bat_day_hom_nay.csv";
+
+if (Status("stocknum") == 0)
+{
+    fh = fopen(DuongDanFileXuat, "w");
+    if (fh)
+    {
+        fputs("ma,ngay,diem,gia_luc_tin_hieu,pct_sau_5,pct_sau_10,pct_sau_20,chiet_khau,rsi,capitulation,ftd\n", fh);
+        fclose(fh);
+    }
+}
+
+// Gan tung mang can index theo phien ra bien rieng truoc khi dung trong vong
+// lap - tranh loi AmiBroker voi bieu thuc chua (nhu da ghi chu o 7_Export_
+// LenWeb.afl: "Khong the danh chi so [] tren bieu thuc chu/logic ghep").
+NamArr = Year(); ThangArr = Month(); NgayThangArr = Day();
+
+if (InVN100)
+{
+    fh = fopen(DuongDanFileXuat, "a");
+    if (fh)
+    {
+        for (i = 0; i < BarCount; i++)
+        {
+            if (TinHieuKichHoat[i])
+            {
+                ngayStr = NumToStr(NgayThangArr[i],1.0,False) + "/" +
+                          NumToStr(ThangArr[i],1.0,False) + "/" +
+                          NumToStr(NamArr[i],1.0,False);
+
+                co5 = !IsNull(PctSau5[i]);
+                co10 = !IsNull(PctSau10[i]);
+                co20 = !IsNull(PctSau20[i]);
+                coCap = C6_Capitulation[i];
+                coFTD = C9_FTD[i];
+
+                dong = Name() + "," + ngayStr + ","
+                     + NumToStr(TongDiemRiengMa[i],1.2,False) + ","
+                     + NumToStr(GiaLucTinHieu[i],1.2,False) + ","
+                     + WriteIf(co5, NumToStr(PctSau5[i],1.2,False), "") + ","
+                     + WriteIf(co10, NumToStr(PctSau10[i],1.2,False), "") + ","
+                     + WriteIf(co20, NumToStr(PctSau20[i],1.2,False), "") + ","
+                     + NumToStr(ChietKhau[i],1.2,False) + ","
+                     + NumToStr(RSIVal[i],1.2,False) + ","
+                     + WriteIf(coCap, "1", "0") + ","
+                     + WriteIf(coFTD, "1", "0");
+
+                fputs(dong + "\n", fh);
+            }
+        }
+        fclose(fh);
+    }
+}
