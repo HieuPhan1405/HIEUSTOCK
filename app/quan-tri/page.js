@@ -43,9 +43,38 @@ export default function TrangQuanTri() {
   const [noiDungCauChuyen, setNoiDungCauChuyen] = useState("");
   const [ngayCauChuyen, setNgayCauChuyen] = useState("");
 
+  const [dsLienHe, setDsLienHe] = useState([]);
+  const [dangTaiLienHe, setDangTaiLienHe] = useState(false);
+
   useEffect(() => {
     setApiKey(locApiKey());
   }, []);
+
+  const taiLienHe = useCallback(async (key) => {
+    if (!key) return;
+    setDangTaiLienHe(true);
+    try {
+      const res = await fetch("/api/lien-he", { headers: { "x-api-key": key } });
+      const d = await res.json();
+      if (res.ok) setDsLienHe(d.lienHe || []);
+    } finally {
+      setDangTaiLienHe(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (apiKey) taiLienHe(apiKey);
+  }, [apiKey, taiLienHe]);
+
+  async function xoaLienHe(id) {
+    await fetch(`/api/lien-he?id=${id}`, { method: "DELETE", headers: { "x-api-key": apiKey } });
+    taiLienHe(apiKey);
+  }
+
+  async function danhDauDaDoc(id) {
+    await fetch(`/api/lien-he?id=${id}`, { method: "PATCH", headers: { "x-api-key": apiKey } });
+    taiLienHe(apiKey);
+  }
 
   const taiDuLieu = useCallback(async (maTraCuu) => {
     if (!maTraCuu) return;
@@ -162,6 +191,50 @@ export default function TrangQuanTri() {
           style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
         />
       </div>
+
+      {/* TIN NHAN LIEN HE - khong phu thuoc ma CK, hien ngay khi co API key */}
+      {apiKey && (
+        <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs uppercase tracking-wide" style={{ color: "#8B8B99" }}>
+              Tin nhắn liên hệ ({dsLienHe.length})
+            </p>
+            <button onClick={() => taiLienHe(apiKey)} className="text-xs" style={{ color: "#6C5CE7" }}>
+              {dangTaiLienHe ? "Đang tải..." : "Tải lại"}
+            </button>
+          </div>
+          {dsLienHe.length === 0 && !dangTaiLienHe && (
+            <p className="text-xs py-2" style={{ color: "#8B8B99" }}>
+              Chưa có tin nhắn nào.
+            </p>
+          )}
+          {dsLienHe.map((tn) => (
+            <div key={tn.id} className="py-3 border-b text-sm" style={{ borderColor: "#1D1D26", opacity: tn.da_doc ? 0.55 : 1 }}>
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <span style={{ fontWeight: 700 }}>{tn.ho_ten}</span>{" "}
+                  <span style={{ color: "#8B8B99" }}>
+                    ({tn.lien_lac}) — {new Date(tn.tao_luc).toLocaleString("vi-VN")}
+                  </span>
+                </div>
+                <div className="flex gap-2 shrink-0">
+                  {!tn.da_doc && (
+                    <button onClick={() => danhDauDaDoc(tn.id)} className="text-xs" style={{ color: "#22C55E" }}>
+                      Đánh dấu đã đọc
+                    </button>
+                  )}
+                  <button onClick={() => xoaLienHe(tn.id)} className="text-xs" style={{ color: "#EF4444" }}>
+                    Xoá
+                  </button>
+                </div>
+              </div>
+              <p className="mt-1" style={{ color: "#D8D8E0" }}>
+                {tn.noi_dung}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
 
       <form onSubmit={guiTraCuu} className="flex gap-2 mb-8">
         <input
