@@ -582,6 +582,13 @@ DangGiuTuTruoc = DangGiuLenhVT AND NOT VuaMuaHomNay AND NOT Sell;
 BanHomNay = Sell;
 DungNgoai = NOT DangGiuLenhVT AND NOT VuaMuaHomNay;
 
+// CANH BAO BAN BOT - diem hom nay da roi duoi nguong Ban (-ExitTh, mac dinh
+// -1.5) - MOT PHIEN DUY NHAT, chua can du 3 phien xac nhan lien tuc nhu Ban
+// han (TurnedPink) - nhung VAN DANG GIU lenh va CHUA co tin hieu Ban that su
+// hom nay. Goi y giam bot vi the SOM hon, khong doi den luc diem xau han/du
+// 3 phien moi Ban toan bo.
+CanhBaoBanBot = DangGiuLenhVT AND ZoneSell AND NOT BanHomNay;
+
 // ============================================================================
 // SCANNER - QUET TOAN BO THI TRUONG (Explore)
 // ============================================================================
@@ -611,6 +618,7 @@ AddColumn(C, "Gia", 1.2);
 AddColumn(PhanTramDoi, "Doi hom nay(%)", 1.2);
 AddColumn(StopLossPrice, "Stop-loss", 1.2);
 AddTextColumn(WriteIf(MatThanWarning,"CANH BAO","-"), "Mat Than");
+AddTextColumn(WriteIf(CanhBaoBanBot,"BAN BOT","-"), "Ban bot");
 AddColumn(ChotLoi_TP1_TaiMua, "TP1 (dong bang luc mua)", 1.2);
 AddColumn(ChotLoi_TP2_TaiMua, "TP2 (dong bang luc mua)", 1.2);
 AddColumn(ChotLoi_TP3_TaiMua, "TP3 (dong bang luc mua)", 1.2);
@@ -630,7 +638,7 @@ if (Status("stocknum") == 0)
     {
         fputs("ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,"+
               "stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,"+
-              "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua\n", fh);
+              "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot\n", fh);
         fclose(fh);
     }
 }
@@ -688,7 +696,9 @@ Dong = Name() + "," + TinCuoi + ","
          NumToStr(LastValue(NgayMuaVT),1.0,False) + "/" +
          NumToStr(LastValue(ThangMuaVT),1.0,False) + "/" +
          NumToStr(LastValue(NamMuaVT),1.0,False),
-         "");
+         "")
+     + ","
+     + WriteIf(LastValue(CanhBaoBanBot), "1", "0");
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {

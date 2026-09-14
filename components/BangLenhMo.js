@@ -12,6 +12,7 @@ const MUTED = "#8B8B99";
 const DO = "#EF4444";
 const XANH = "#22C55E";
 const PRIMARY = "#6C5CE7";
+const CAM = "#F97316";
 
 function formatNgay(v) {
   if (!v) return "—";
@@ -121,7 +122,10 @@ export default function BangLenhMo({ duLieu }) {
               <tr
                 key={row.ma}
                 className={i > 0 ? "border-t" : ""}
-                style={{ borderColor: row.mat_than ? "#4A2230" : "#1D1D26", background: row.mat_than ? "#241419" : "transparent" }}
+                style={{
+                  borderColor: row.mat_than ? "#4A2230" : row.ban_bot ? "#4A3218" : "#1D1D26",
+                  background: row.mat_than ? "#241419" : row.ban_bot ? "#241C10" : "transparent",
+                }}
               >
                 <td className="py-3 pl-4 pr-3">
                   <Link href={`/ma/${row.ma}`} className="flex items-center gap-1 hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
@@ -151,7 +155,14 @@ export default function BangLenhMo({ duLieu }) {
                   {tinhChotLoi(row).nhan}
                 </td>
                 <td className="py-3 pr-4 pl-3 text-right">
-                  <SignalPill tin={row.tin} />
+                  <div className="flex flex-col items-end gap-1">
+                    <SignalPill tin={row.tin} />
+                    {row.ban_bot && (
+                      <span className="text-[10px] font-bold tracking-wide" style={{ color: CAM }}>
+                        ⚠ Bán bớt
+                      </span>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
