@@ -440,7 +440,10 @@ GiaToiThieuOk = C >= NguongGiaToiThieu;
 
 Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSVNI_OK AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
 
-SellRaw = TurnedPink OR MatThanWarning;
+// Mat Than KHONG con tu dong kich hoat Ban nua (da xac nhan qua Backtest
+// that: Mat Than gio la CHI TIEU PHU/canh bao tham khao tren web, khong
+// con quyet dinh Mua/Ban) - dong bo voi ban FULL_XemTatCa moi nhat.
+SellRaw = TurnedPink;
 DuT2 = BarsSince(Buy) >= 2;
 SellTinHieu = SellRaw AND DuT2;
 
@@ -537,6 +540,14 @@ ChotLoi_TP1 = Min(Min(NguonGan,NguonGiua),NguonXa);
 ChotLoi_TP3 = Max(Max(NguonGan,NguonGiua),NguonXa);
 ChotLoi_TP2 = Tong3Nguon - ChotLoi_TP1 - ChotLoi_TP3;
 
+// DONG BANG 3 moc TP tai DUNG thoi diem Mua (giong cach da lam voi GiaVaoLenh
+// va StopLossPrice) - tranh TP "chay theo" khang cu moi moi ngay, giup cot
+// Chot loi tren web phan anh dung muc tieu that su tai luc vao lenh. Dong bo
+// voi ban FULL_XemTatCa moi nhat.
+ChotLoi_TP1_TaiMua = ValueWhen(Buy, ChotLoi_TP1, 1);
+ChotLoi_TP2_TaiMua = ValueWhen(Buy, ChotLoi_TP2, 1);
+ChotLoi_TP3_TaiMua = ValueWhen(Buy, ChotLoi_TP3, 1);
+
 HT1=IIf(Day52T<C,Day52T,-1e10);
 HT2=IIf(GGBot<C,GGBot,-1e10);
 HT3=IIf(CloudBot<C,CloudBot,-1e10);
@@ -600,9 +611,9 @@ AddColumn(C, "Gia", 1.2);
 AddColumn(PhanTramDoi, "Doi hom nay(%)", 1.2);
 AddColumn(StopLossPrice, "Stop-loss", 1.2);
 AddTextColumn(WriteIf(MatThanWarning,"CANH BAO","-"), "Mat Than");
-AddColumn(ChotLoi_TP1, "TP1", 1.2);
-AddColumn(ChotLoi_TP2, "TP2", 1.2);
-AddColumn(ChotLoi_TP3, "TP3", 1.2);
+AddColumn(ChotLoi_TP1_TaiMua, "TP1 (dong bang luc mua)", 1.2);
+AddColumn(ChotLoi_TP2_TaiMua, "TP2 (dong bang luc mua)", 1.2);
+AddColumn(ChotLoi_TP3_TaiMua, "TP3 (dong bang luc mua)", 1.2);
 AddColumn(SoDiemSanyaku, "Sanyaku(0-3)", 1.0);
 AddTextColumn(WriteIf(InVN30,"VN30",WriteIf(InVNMidCap,"Midcap",WriteIf(InVNSmallCap,"Smallcap","Khac"))), "Von hoa");
 
@@ -661,9 +672,9 @@ Dong = Name() + "," + TinCuoi + ","
      + NumToStr(LastValue(Dinh52T),1.2,False) + ","
      + NumToStr(LastValue(StopLossPrice),1.2,False) + ","
      + MatThanCuoi + ","
-     + NumToStr(LastValue(ChotLoi_TP1),1.2,False) + ","
-     + NumToStr(LastValue(ChotLoi_TP2),1.2,False) + ","
-     + NumToStr(LastValue(ChotLoi_TP3),1.2,False) + ","
+     + NumToStr(LastValue(ChotLoi_TP1_TaiMua),1.2,False) + ","
+     + NumToStr(LastValue(ChotLoi_TP2_TaiMua),1.2,False) + ","
+     + NumToStr(LastValue(ChotLoi_TP3_TaiMua),1.2,False) + ","
      + NumToStr(LastValue(GiaTriGDTB20),1.0,False) + ","
      + FVGCuoi + ","
      + NumToStr(LastValue(SoPhienNamGiuVT),1.0,False) + ","
