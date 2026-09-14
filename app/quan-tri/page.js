@@ -46,9 +46,55 @@ export default function TrangQuanTri() {
   const [dsLienHe, setDsLienHe] = useState([]);
   const [dangTaiLienHe, setDangTaiLienHe] = useState(false);
 
+  const [sdt, setSdt] = useState("");
+  const [zalo, setZalo] = useState("");
+  const [tiktok, setTiktok] = useState("");
+  const [facebook, setFacebook] = useState("");
+  const [nganHang, setNganHang] = useState("");
+  const [soTk, setSoTk] = useState("");
+  const [chuTk, setChuTk] = useState("");
+  const [dangLuuTT, setDangLuuTT] = useState(false);
+  const [thongBaoTT, setThongBaoTT] = useState("");
+
   useEffect(() => {
     setApiKey(locApiKey());
   }, []);
+
+  useEffect(() => {
+    fetch("/api/thong-tin-lien-he")
+      .then((r) => r.json())
+      .then((d) => {
+        const tt = d.thongTin;
+        if (!tt) return;
+        setSdt(tt.sdt || "");
+        setZalo(tt.zalo || "");
+        setTiktok(tt.tiktok || "");
+        setFacebook(tt.facebook || "");
+        setNganHang(tt.ngan_hang || "");
+        setSoTk(tt.so_tk || "");
+        setChuTk(tt.chu_tk || "");
+      })
+      .catch(() => {});
+  }, []);
+
+  async function luuThongTinLienHe(e) {
+    e.preventDefault();
+    setDangLuuTT(true);
+    setThongBaoTT("");
+    try {
+      const res = await fetch("/api/thong-tin-lien-he", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": apiKey },
+        body: JSON.stringify({ sdt, zalo, tiktok, facebook, nganHang, soTk, chuTk }),
+      });
+      const d = await res.json();
+      setThongBaoTT(res.ok ? "Đã lưu." : "Lỗi: " + (d.loi || "không rõ"));
+    } catch (e) {
+      setThongBaoTT("Lỗi: " + String(e?.message || e));
+    } finally {
+      setDangLuuTT(false);
+    }
+  }
 
   const taiLienHe = useCallback(async (key) => {
     if (!key) return;
@@ -191,6 +237,79 @@ export default function TrangQuanTri() {
           style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
         />
       </div>
+
+      {/* THONG TIN GIOI THIEU / KENH LIEN HE - hien cong khai o trang /lien-he */}
+      {apiKey && (
+        <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
+            Thông tin liên hệ (hiện công khai ở /lien-he)
+          </p>
+          <form onSubmit={luuThongTinLienHe} className="grid sm:grid-cols-2 gap-2">
+            <input
+              value={sdt}
+              onChange={(e) => setSdt(e.target.value)}
+              placeholder="Số điện thoại"
+              className="px-2 py-1.5 text-sm outline-none"
+              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+            />
+            <input
+              value={zalo}
+              onChange={(e) => setZalo(e.target.value)}
+              placeholder="Link nhóm Zalo"
+              className="px-2 py-1.5 text-sm outline-none"
+              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+            />
+            <input
+              value={tiktok}
+              onChange={(e) => setTiktok(e.target.value)}
+              placeholder="Link TikTok"
+              className="px-2 py-1.5 text-sm outline-none"
+              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+            />
+            <input
+              value={facebook}
+              onChange={(e) => setFacebook(e.target.value)}
+              placeholder="Link Facebook"
+              className="px-2 py-1.5 text-sm outline-none"
+              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+            />
+            <input
+              value={nganHang}
+              onChange={(e) => setNganHang(e.target.value)}
+              placeholder="Tên ngân hàng (VD: Vietcombank)"
+              className="px-2 py-1.5 text-sm outline-none"
+              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+            />
+            <input
+              value={soTk}
+              onChange={(e) => setSoTk(e.target.value)}
+              placeholder="Số tài khoản"
+              className="px-2 py-1.5 text-sm outline-none"
+              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+            />
+            <input
+              value={chuTk}
+              onChange={(e) => setChuTk(e.target.value)}
+              placeholder="Tên chủ tài khoản"
+              className="px-2 py-1.5 text-sm outline-none sm:col-span-2"
+              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+            />
+            <button
+              type="submit"
+              disabled={dangLuuTT}
+              className="px-3 py-1.5 text-sm font-medium sm:col-span-2"
+              style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600, opacity: dangLuuTT ? 0.6 : 1 }}
+            >
+              {dangLuuTT ? "Đang lưu..." : "Lưu thông tin"}
+            </button>
+          </form>
+          {thongBaoTT && (
+            <p className="text-xs mt-2" style={{ color: thongBaoTT.startsWith("Lỗi") ? "#EF4444" : "#22C55E" }}>
+              {thongBaoTT}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* TIN NHAN LIEN HE - khong phu thuoc ma CK, hien ngay khi co API key */}
       {apiKey && (

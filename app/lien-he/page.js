@@ -1,52 +1,55 @@
-"use client";
+import { Mail, Phone, MessageCircle, Music2, Link2, Landmark } from "lucide-react";
+import { layThongTinLienHe } from "@/lib/thongTinLienHe";
+import FormGuiTinNhan from "@/components/FormGuiTinNhan";
 
-import { useState } from "react";
-import { Mail } from "lucide-react";
+export const dynamic = "force-dynamic";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
 const TEXT = "#F5F5F7";
 const MUTED = "#8B8B99";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
-const DO = "#EF4444";
 
-export default function TrangLienHe() {
-  const [hoTen, setHoTen] = useState("");
-  const [lienLac, setLienLac] = useState("");
-  const [noiDung, setNoiDung] = useState("");
-  const [dangGui, setDangGui] = useState(false);
-  const [ketQua, setKetQua] = useState(null); // { ok: true|false, thongBao }
+function DongKenh({ Icon, nhan, giaTri, laLink }) {
+  if (!giaTri) return null;
+  return (
+    <div className="flex items-center gap-3 py-3 border-b" style={{ borderColor: "#1D1D26" }}>
+      <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#1D1D26" }}>
+        <Icon size={16} color={PRIMARY} strokeWidth={2} aria-hidden="true" />
+      </div>
+      <div className="min-w-0">
+        <p className="text-[11px] uppercase tracking-wide" style={{ color: MUTED }}>
+          {nhan}
+        </p>
+        {laLink ? (
+          <a
+            href={giaTri.startsWith("http") ? giaTri : `https://${giaTri}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm hover:underline break-all"
+            style={{ color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}
+          >
+            {giaTri}
+          </a>
+        ) : (
+          <p className="text-sm break-all" style={{ color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}>
+            {giaTri}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
 
-  async function guiForm(e) {
-    e.preventDefault();
-    if (!hoTen.trim() || !lienLac.trim() || !noiDung.trim()) {
-      setKetQua({ ok: false, thongBao: "Vui lòng nhập đủ Họ tên, Liên lạc và Nội dung." });
-      return;
-    }
-    setDangGui(true);
-    setKetQua(null);
-    try {
-      const res = await fetch("/api/lien-he", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hoTen: hoTen.trim(), lienLac: lienLac.trim(), noiDung: noiDung.trim() }),
-      });
-      const d = await res.json();
-      if (res.ok) {
-        setKetQua({ ok: true, thongBao: "Đã gửi thành công! Cảm ơn bạn, chúng tôi sẽ phản hồi sớm nhất có thể." });
-        setHoTen("");
-        setLienLac("");
-        setNoiDung("");
-      } else {
-        setKetQua({ ok: false, thongBao: d.loi || "Có lỗi xảy ra, thử lại sau." });
-      }
-    } catch (e) {
-      setKetQua({ ok: false, thongBao: "Lỗi kết nối: " + String(e?.message || e) });
-    } finally {
-      setDangGui(false);
-    }
+export default async function TrangLienHe() {
+  let tt = null;
+  try {
+    tt = await layThongTinLienHe();
+  } catch {
+    tt = null;
   }
+
+  const coThongTinKenh = tt && (tt.sdt || tt.zalo || tt.tiktok || tt.facebook || tt.so_tk);
 
   return (
     <div className="max-w-xl mx-auto px-6 py-10" style={{ color: TEXT }}>
@@ -57,65 +60,40 @@ export default function TrangLienHe() {
         </h1>
       </div>
       <p className="text-sm mb-6" style={{ color: MUTED }}>
-        Góp ý, báo lỗi, hay có câu hỏi về hệ thống? Điền form bên dưới, chúng tôi sẽ phản hồi sớm nhất.
+        Theo dõi các kênh bên dưới, hoặc gửi trực tiếp tin nhắn cho chúng tôi.
       </p>
 
-      <form onSubmit={guiForm} className="rounded-2xl border p-6 flex flex-col gap-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <div>
-          <label className="text-xs uppercase tracking-wide block mb-1.5" style={{ color: MUTED }}>
-            Họ tên
-          </label>
-          <input
-            value={hoTen}
-            onChange={(e) => setHoTen(e.target.value)}
-            placeholder="Nguyễn Văn A"
-            className="w-full px-3 py-2.5 text-sm rounded-lg outline-none"
-            style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
-          />
+      {coThongTinKenh ? (
+        <div className="rounded-2xl border p-6 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          <DongKenh Icon={Phone} nhan="Số điện thoại" giaTri={tt.sdt} />
+          <DongKenh Icon={MessageCircle} nhan="Nhóm Zalo" giaTri={tt.zalo} laLink />
+          <DongKenh Icon={Music2} nhan="TikTok" giaTri={tt.tiktok} laLink />
+          <DongKenh Icon={Link2} nhan="Facebook" giaTri={tt.facebook} laLink />
+          {tt.so_tk && (
+            <div className="flex items-center gap-3 pt-3">
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#1D1D26" }}>
+                <Landmark size={16} color={PRIMARY} strokeWidth={2} aria-hidden="true" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[11px] uppercase tracking-wide" style={{ color: MUTED }}>
+                  Ủng hộ qua ngân hàng
+                </p>
+                <p className="text-sm" style={{ color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}>
+                  {tt.ngan_hang ? `${tt.ngan_hang} — ` : ""}
+                  {tt.so_tk}
+                  {tt.chu_tk ? ` (${tt.chu_tk})` : ""}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
-
-        <div>
-          <label className="text-xs uppercase tracking-wide block mb-1.5" style={{ color: MUTED }}>
-            Email hoặc số điện thoại
-          </label>
-          <input
-            value={lienLac}
-            onChange={(e) => setLienLac(e.target.value)}
-            placeholder="ban@email.com hoặc 09xx xxx xxx"
-            className="w-full px-3 py-2.5 text-sm rounded-lg outline-none"
-            style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}
-          />
+      ) : (
+        <div className="rounded-2xl border p-6 mb-6 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
+          Chưa có thông tin liên hệ — chủ trang cần nhập qua trang quản trị.
         </div>
+      )}
 
-        <div>
-          <label className="text-xs uppercase tracking-wide block mb-1.5" style={{ color: MUTED }}>
-            Nội dung
-          </label>
-          <textarea
-            value={noiDung}
-            onChange={(e) => setNoiDung(e.target.value)}
-            placeholder="Bạn muốn góp ý hay hỏi điều gì?"
-            rows={5}
-            className="w-full px-3 py-2.5 text-sm rounded-lg outline-none resize-none"
-            style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
-          />
-        </div>
-
-        {ketQua && (
-          <p className="text-sm" style={{ color: ketQua.ok ? XANH : DO }}>
-            {ketQua.thongBao}
-          </p>
-        )}
-
-        <button
-          type="submit"
-          disabled={dangGui}
-          className="px-4 py-2.5 text-sm rounded-lg"
-          style={{ background: PRIMARY, color: "#FFFFFF", fontWeight: 600, opacity: dangGui ? 0.6 : 1 }}
-        >
-          {dangGui ? "Đang gửi..." : "Gửi liên hệ"}
-        </button>
-      </form>
+      <FormGuiTinNhan />
     </div>
   );
 }
