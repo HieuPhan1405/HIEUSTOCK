@@ -31,7 +31,7 @@ ADXGateLv   = Param("Nguong ADX (neu bat)", 18, 10, 40, 1);
 CheDoFVG    = ParamList("Che do dieu kien FVG",
               "Thong minh (bo qua khi breakout manh)|Luon BAT|Luon TAT", 0);
 NguongDiemBreakout = Param("Thong minh: diem cao hon nguong bao nhieu la Breakout", 1.0, 0, 3, 0.1);
-ATRMult     = Param("He so ATR cho Stop-loss", 2.0, 1, 4, 0.1);
+ATRMult     = Param("He so ATR cho Stop-loss", 2.2, 1, 4, 0.1);
 HardStopPct = Param("Stop-loss toi da theo % (chan an toan)", 6, 3, 20, 0.5);
 ATRVal = ATR(14);
 FVGLookback = Param("FVG het han sau (phien)", 15, 5, 30, 1);
