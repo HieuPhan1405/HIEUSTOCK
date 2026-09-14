@@ -190,20 +190,18 @@ export default async function TrangTongQuan() {
   const pctDo = tong ? (soDo / tong) * 100 : 0;
   const soMua = tatCa.filter((r) => r.tin === "MUA").length;
   const soMatThan = tatCa.filter((r) => r.mat_than).length;
+  // 2 the KPI rieng, KHONG tinh vao Tin hieu MUA/BAN (2 cot do chi danh cho
+  // dung tin hieu MUA/BAN moi phat sinh hom nay) - Chot loi va Ban bot la
+  // trang thai cua vi the DANG giu, khac ban chat.
+  const soChotLoi = tatCa.filter((r) => r.tin === "NAM GIU" && chamTPCaoNhat(r)).length;
+  const soBanBot = tatCa.filter((r) => r.ban_bot).length;
 
   // tatCa da ORDER BY diem DESC tu lib/tinHieu.js. Tach rieng tin hieu MUA
   // (diem cao nhat truoc) va tin hieu BAN (diem thap nhat/am nhieu nhat
   // truoc, vi day la ben "dang chu y" cua phe ban) thanh 2 cot rieng.
-  // Ben MUA: gom ca tin hieu MUA moi hom nay LAN cac ma dang NAM GIU da cham
-  // muc chot loi TP - deu la "co hoi dang chu y" phia mua. Ben BAN: gom ca
-  // tin hieu BAN han LAN canh bao Ban bot (diem tut duoi nguong nhung chua
-  // du 3 phien xac nhan) - deu la "can chu y" phia ban.
-  const tinHieuMua = tatCa
-    .filter((r) => r.tin === "MUA" || (r.tin === "NAM GIU" && chamTPCaoNhat(r)))
-    .sort((a, b) => (b.diem ?? 0) - (a.diem ?? 0))
-    .slice(0, 10);
+  const tinHieuMua = tatCa.filter((r) => r.tin === "MUA").slice(0, 10);
   const tinHieuBan = tatCa
-    .filter((r) => r.tin === "BAN" || r.ban_bot)
+    .filter((r) => r.tin === "BAN")
     .sort((a, b) => (a.diem ?? 0) - (b.diem ?? 0))
     .slice(0, 10);
 
@@ -360,11 +358,13 @@ export default async function TrangTongQuan() {
         )}
 
         {/* HANG KPI */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
           <TheKPI nhan="Mã đang theo dõi" giaTri={tong} mau={TEXT} />
           <TheKPI nhan="Xu hướng tăng" giaTri={`${pctXanh.toFixed(0)}%`} phu={`${soXanh} mã`} mau={XANH} />
           <TheKPI nhan="Tín hiệu MUA" giaTri={soMua} phu="hôm nay" mau={PRIMARY} />
           <TheKPI nhan="Cảnh báo Mắt Thần" giaTri={soMatThan} phu="rủi ro đảo chiều" mau={soMatThan > 0 ? DO : MUTED} />
+          <TheKPI nhan="Cơ hội chốt lời" giaTri={soChotLoi} phu="đã chạm TP" mau={soChotLoi > 0 ? "#FBBF24" : MUTED} />
+          <TheKPI nhan="Cảnh báo bán bớt" giaTri={soBanBot} phu="điểm dưới ngưỡng" mau={soBanBot > 0 ? "#F97316" : MUTED} />
         </div>
 
         {/* KET LUAN + BIEU DO TRON  ·  DO RONG THEO VON HOA */}
@@ -442,41 +442,25 @@ function CotTinHieu({ tieuDe, mau, danhSach }) {
           Chưa có mã nào.
         </p>
       )}
-      {danhSach.map((row) => {
-        const tp = chamTPCaoNhat(row);
-        const banBot = row.ban_bot && row.tin !== "BAN";
-        return (
-          <Link
-            key={row.ma}
-            href={`/ma/${row.ma}`}
-            className="w-full text-left grid grid-cols-[64px_1fr_auto] items-center gap-3 py-3 border-b hover:bg-white/[0.04] rounded-lg px-2 -mx-2 transition-colors"
-            style={{ borderColor: "#1D1D26" }}
+      {danhSach.map((row) => (
+        <Link
+          key={row.ma}
+          href={`/ma/${row.ma}`}
+          className="w-full text-left grid grid-cols-[64px_1fr_auto] items-center gap-3 py-3 border-b hover:bg-white/[0.04] rounded-lg px-2 -mx-2 transition-colors"
+          style={{ borderColor: "#1D1D26" }}
+        >
+          <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "16px" }}>{row.ma}</span>
+          <span className="text-xs" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+            điểm {row.diem?.toFixed(2) ?? "—"}
+          </span>
+          <span
+            className="text-right"
+            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: row.doi >= 0 ? XANH : DO }}
           >
-            <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "16px" }}>{row.ma}</span>
-            <span className="flex flex-col gap-0.5">
-              <span className="text-xs" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
-                điểm {row.diem?.toFixed(2) ?? "—"}
-              </span>
-              {tp && (
-                <span className="text-[10px] font-bold tracking-wide" style={{ color: "#FBBF24" }}>
-                  🎯 Chốt lời {tp}
-                </span>
-              )}
-              {banBot && (
-                <span className="text-[10px] font-bold tracking-wide" style={{ color: "#F97316" }}>
-                  ⚠ Bán bớt
-                </span>
-              )}
-            </span>
-            <span
-              className="text-right"
-              style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: row.doi >= 0 ? XANH : DO }}
-            >
-              {pct(row.doi, 2)}
-            </span>
-          </Link>
-        );
-      })}
+            {pct(row.doi, 2)}
+          </span>
+        </Link>
+      ))}
     </div>
   );
 }
