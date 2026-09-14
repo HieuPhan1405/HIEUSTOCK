@@ -56,7 +56,12 @@ TongDiemRiengMa = NhomMotDiem + NhomHaiDiem + DiemFTD;
 // Chi True DUNG NGAY diem vuot qua 5 (hom truoc CHUA du) - day la "1 lan bat
 // day", giong het khai niem TurnedGreen ben he thong chinh.
 NguongThamKhao = 5;
-TinHieuKichHoat = TongDiemRiengMa >= NguongThamKhao AND Ref(TongDiemRiengMa,-1) < NguongThamKhao;
+// CHI THEO DOI TU NAM NAY TRO DI (0 = khong gioi han, lay het lich su co du
+// lieu). Ap dung ngay vao TinHieuKichHoat nen anh huong CA bang hien tren
+// man hinh AmiBroker LAN file CSV xuat len web - khong can sua rieng 2 cho.
+NamBatDauTheoDoi = Param("Nam bat dau theo doi (0 = khong gioi han)", 2024, 0, 2030, 1);
+ChiTuNamNay = IIf(NamBatDauTheoDoi<=0, True, Year() >= NamBatDauTheoDoi);
+TinHieuKichHoat = TongDiemRiengMa >= NguongThamKhao AND Ref(TongDiemRiengMa,-1) < NguongThamKhao AND ChiTuNamNay;
 
 // ---------------- GIA LUC TIN HIEU + GIA SAU N PHIEN (theo doi "co an khong") ----------------
 GiaLucTinHieu = C;
