@@ -47,6 +47,15 @@ export default async function TrangLenhMo() {
     .sort((a, b) => (b.mat_than ? 1 : 0) - (a.mat_than ? 1 : 0));
   const soCanhBao = dangMo.filter((r) => r.mat_than).length;
 
+  // Thong ke nhanh hieu qua danh muc dang mo - tinh tren dung so lenh dang
+  // giu (khong tinh cac lenh da dong, vi trang nay chi hien vi the mo).
+  const soLenh = dangMo.length;
+  const soLai = dangMo.filter((r) => r.lai_lo_pct > 0).length;
+  const soLo = dangMo.filter((r) => r.lai_lo_pct < 0).length;
+  const tyLeLai = soLenh ? (soLai / soLenh) * 100 : 0;
+  const tyLeLo = soLenh ? (soLo / soLenh) * 100 : 0;
+  const laiLoTB = soLenh ? dangMo.reduce((tong, r) => tong + (r.lai_lo_pct ?? 0), 0) / soLenh : 0;
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
       <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
@@ -62,6 +71,42 @@ export default async function TrangLenhMo() {
         </p>
       )}
       {soCanhBao === 0 && <div className="mb-6" />}
+
+      {/* THONG KE HIEU QUA DANH MUC DANG MO */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+            {soLenh}
+          </p>
+          <p className="text-xs mt-1" style={{ color: MUTED }}>
+            Lệnh đang mở
+          </p>
+        </div>
+        <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: XANH }}>
+            {tyLeLai.toFixed(0)}%
+          </p>
+          <p className="text-xs mt-1" style={{ color: MUTED }}>
+            Tỷ lệ lãi ({soLai} lệnh)
+          </p>
+        </div>
+        <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: DO }}>
+            {tyLeLo.toFixed(0)}%
+          </p>
+          <p className="text-xs mt-1" style={{ color: MUTED }}>
+            Tỷ lệ lỗ ({soLo} lệnh)
+          </p>
+        </div>
+        <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: laiLoTB >= 0 ? XANH : DO }}>
+            {pct(laiLoTB, 2)}
+          </p>
+          <p className="text-xs mt-1" style={{ color: MUTED }}>
+            Lãi/lỗ trung bình
+          </p>
+        </div>
+      </div>
 
       <div className="mb-8 max-w-md rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <p className="text-xs uppercase tracking-wide mb-2" style={{ color: MUTED }}>
