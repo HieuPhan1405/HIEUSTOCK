@@ -49,6 +49,17 @@ export function chamTPCaoNhat(row) {
   return null;
 }
 
+// % lai da THUC SU co the chot duoc tai muc TP CAO NHAT da cham (so voi gia
+// mua) - KHAC lai_lo_pct (tinh theo gia HIEN TAI, co the da doi tiep sau khi
+// cham TP). Null neu chua cham TP nao hoac thieu du lieu gia mua.
+export function pctChotLoi(row) {
+  const tp = chamTPCaoNhat(row);
+  if (!tp || row.gia_mua == null) return null;
+  const giaTP = row[tp.toLowerCase()];
+  if (giaTP == null) return null;
+  return (giaTP / row.gia_mua - 1) * 100;
+}
+
 // Muc max ly thuyet cua tung thanh phan diem, lay dung theo cong thuc trong
 // amibroker/7_Export_LenWeb.afl.
 export const TREND_MAX = 3.0; // IIf(...,1) + IIf(...,1) + IIf(...,0.5) + IIf(...,0.5)

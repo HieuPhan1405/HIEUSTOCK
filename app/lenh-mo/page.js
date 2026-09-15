@@ -2,7 +2,7 @@ import { TriangleAlert } from "lucide-react";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import TraCuuMa from "@/components/TraCuuMa";
 import BangLenhMo from "@/components/BangLenhMo";
-import { pct } from "@/components/dungChung";
+import { pct, chamTPCaoNhat, pctChotLoi } from "@/components/dungChung";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +38,14 @@ export default async function TrangLenhMo() {
   const tyLeLo = soLenh ? (soLo / soLenh) * 100 : 0;
   const laiLoTB = soLenh ? dangMo.reduce((tong, r) => tong + (r.lai_lo_pct ?? 0), 0) / soLenh : 0;
 
+  // % chot loi trung binh - CHI tinh tren cac lenh DA cham it nhat 1 muc TP,
+  // dua tren gia TP (dong bang luc mua) chu khong phai gia hien tai.
+  const daChotLoi = dangMo.filter((r) => chamTPCaoNhat(r) != null);
+  const soDaChotLoi = daChotLoi.length;
+  const chotLoiTB = soDaChotLoi
+    ? daChotLoi.reduce((tong, r) => tong + (pctChotLoi(r) ?? 0), 0) / soDaChotLoi
+    : 0;
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
       <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
@@ -55,7 +63,7 @@ export default async function TrangLenhMo() {
       {soCanhBao === 0 && <div className="mb-6" />}
 
       {/* THONG KE HIEU QUA DANH MUC DANG MO */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
         <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
           <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
             {soLenh}
@@ -86,6 +94,21 @@ export default async function TrangLenhMo() {
           </p>
           <p className="text-xs mt-1" style={{ color: MUTED }}>
             Lãi/lỗ trung bình
+          </p>
+        </div>
+        <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          <p
+            className="text-2xl"
+            style={{
+              fontFamily: "'JetBrains Mono', monospace",
+              fontWeight: 700,
+              color: soDaChotLoi === 0 ? MUTED : chotLoiTB >= 0 ? XANH : DO,
+            }}
+          >
+            {soDaChotLoi > 0 ? pct(chotLoiTB, 2) : "—"}
+          </p>
+          <p className="text-xs mt-1" style={{ color: MUTED }}>
+            Chốt lời TB ({soDaChotLoi} lệnh)
           </p>
         </div>
       </div>

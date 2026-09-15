@@ -21,18 +21,14 @@ function formatNgay(v) {
 
 // Chot loi - so gia hien tai voi 3 muc TP da tinh san trong AFL (TP1 < TP2 <
 // TP3, dua tren Ho tro/Khang cu gan-trung-xa). Bao muc TP CAO NHAT da cham
-// toi, de nguoi dung biet nen chot 1 phan hay toan bo vi the. "pct" la %
-// lai da THUC SU co the chot duoc tai dung muc TP do (so voi gia mua) -
-// KHONG phai lai/lo hien tai (co the da tang/giam tiep sau khi cham TP).
+// toi, de nguoi dung biet nen chot 1 phan hay toan bo vi the.
 function tinhChotLoi(row) {
   const gia = row.gia;
-  const giaMua = row.gia_mua;
-  const tinhPct = (tp) => (giaMua != null && tp != null ? (tp / giaMua - 1) * 100 : null);
-  if (gia == null) return { nhan: "—", mau: MUTED, hang: -1, pct: null };
-  if (row.tp3 != null && gia >= row.tp3) return { nhan: "Đã chạm TP3", mau: "#22C55E", hang: 3, pct: tinhPct(row.tp3) };
-  if (row.tp2 != null && gia >= row.tp2) return { nhan: "Đã chạm TP2", mau: "#22C55E", hang: 2, pct: tinhPct(row.tp2) };
-  if (row.tp1 != null && gia >= row.tp1) return { nhan: "Đã chạm TP1", mau: "#FBBF24", hang: 1, pct: tinhPct(row.tp1) };
-  return { nhan: "Chưa chạm", mau: MUTED, hang: 0, pct: null };
+  if (gia == null) return { nhan: "—", mau: MUTED, hang: -1 };
+  if (row.tp3 != null && gia >= row.tp3) return { nhan: "Đã chạm TP3", mau: "#22C55E", hang: 3 };
+  if (row.tp2 != null && gia >= row.tp2) return { nhan: "Đã chạm TP2", mau: "#22C55E", hang: 2 };
+  if (row.tp1 != null && gia >= row.tp1) return { nhan: "Đã chạm TP1", mau: "#FBBF24", hang: 1 };
+  return { nhan: "Chưa chạm", mau: MUTED, hang: 0 };
 }
 
 // Cot nao co "khoa" thi bam duoc de sap xep (lay() tra ve gia tri so sanh);
@@ -49,7 +45,6 @@ const COT = [
   { khoa: "so_phien_giu", nhan: "Số phiên", canPhai: true, lay: (r) => r.so_phien_giu },
   { khoa: "lai_lo_pct", nhan: "Lãi/Lỗ", canPhai: true, lay: (r) => r.lai_lo_pct },
   { khoa: "chot_loi", nhan: "Chốt lời", canPhai: true, lay: (r) => tinhChotLoi(r).hang },
-  { khoa: "pct_chot_loi", nhan: "% Chốt lời", canPhai: true, lay: (r) => tinhChotLoi(r).pct },
   { khoa: "tin", nhan: "Trạng thái", canPhai: true, lay: (r) => r.tin },
 ];
 
@@ -158,9 +153,6 @@ export default function BangLenhMo({ duLieu }) {
                 </td>
                 <td className="py-3 px-3 text-right font-bold" style={{ color: tinhChotLoi(row).mau }}>
                   {tinhChotLoi(row).nhan}
-                </td>
-                <td className="py-3 px-3 text-right font-bold" style={{ color: tinhChotLoi(row).mau }}>
-                  {pct(tinhChotLoi(row).pct, 1)}
                 </td>
                 <td className="py-3 pr-4 pl-3 text-right">
                   <div className="flex flex-col items-end gap-1">
