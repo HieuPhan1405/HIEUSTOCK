@@ -50,10 +50,12 @@ export default async function TrangLenhMo() {
   const tyLeLo = soLenh ? (soLo / soLenh) * 100 : 0;
   const laiLoTB = soLenh ? dangMo.reduce((tong, r) => tong + (r.lai_lo_pct ?? 0), 0) / soLenh : 0;
 
-  // % chot loi trung binh - CHI tinh tren cac lenh DA cham it nhat 1 muc TP,
-  // dua tren gia TP (dong bang luc mua) chu khong phai gia hien tai.
+  // Ty le chot loi - % SO LENH da cham it nhat 1 muc TP tren TONG so lenh
+  // dang mo (giong cach tinh Ty le lai/Ty le lo ben tren, khong phai lai
+  // trung binh). VD: 10 lenh, 7 lenh da cham TP -> 70%.
   const daChotLoi = dangMo.filter((r) => chamTPCaoNhat(r) != null);
   const soDaChotLoi = daChotLoi.length;
+  const tyLeChotLoi = soLenh ? (soDaChotLoi / soLenh) * 100 : 0;
   const chotLoiTB = soDaChotLoi
     ? daChotLoi.reduce((tong, r) => tong + (pctChotLoi(r) ?? 0), 0) / soDaChotLoi
     : 0;
@@ -109,19 +111,17 @@ export default async function TrangLenhMo() {
           </p>
         </div>
         <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <p
-            className="text-2xl"
-            style={{
-              fontFamily: "'JetBrains Mono', monospace",
-              fontWeight: 700,
-              color: soDaChotLoi === 0 ? MUTED : chotLoiTB >= 0 ? XANH : DO,
-            }}
-          >
-            {soDaChotLoi > 0 ? pct(chotLoiTB, 2) : "—"}
+          <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#FBBF24" }}>
+            {tyLeChotLoi.toFixed(0)}%
           </p>
           <p className="text-xs mt-1" style={{ color: MUTED }}>
-            Chốt lời TB ({soDaChotLoi} lệnh)
+            Tỷ lệ chốt lời ({soDaChotLoi} lệnh)
           </p>
+          {soDaChotLoi > 0 && (
+            <p className="text-[11px]" style={{ color: chotLoiTB >= 0 ? XANH : DO }}>
+              TB {pct(chotLoiTB, 2)}/lệnh
+            </p>
+          )}
         </div>
       </div>
 
