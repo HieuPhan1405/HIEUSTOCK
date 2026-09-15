@@ -619,9 +619,14 @@ DinhCaoNhatTuKhiMua = HighestSince(Buy, H);
 DaChamTP1_TuKhiMua = DinhCaoNhatTuKhiMua >= ChotLoi_TP1_TaiMua;
 DaChamTP2_TuKhiMua = DinhCaoNhatTuKhiMua >= ChotLoi_TP2_TaiMua;
 DaChamTP3_TuKhiMua = DinhCaoNhatTuKhiMua >= ChotLoi_TP3_TaiMua;
-MucTPDaChamCaoNhat = WriteIf(DaChamTP3_TuKhiMua, "TP3",
-                     WriteIf(DaChamTP2_TuKhiMua, "TP2",
-                     WriteIf(DaChamTP1_TuKhiMua, "TP1", "")));
+// WriteIf() luon tra ve 1 CHUOI (khong phai mang theo tung phien) - phai lay
+// LastValue() cua DIEU KIEN (mang so/logic) TRUOC khi dua vao WriteIf(),
+// giong cach MatThanCuoi/FVGCuoi/KumoTwistCuoi da lam ben duoi. Dua thang ca
+// bieu thuc WriteIf() vao LastValue() sau do se bi Error 5 (WriteIf da tra
+// ve String, khong phai Array nua).
+MucTPDaChamCaoNhat = WriteIf(LastValue(DaChamTP3_TuKhiMua), "TP3",
+                     WriteIf(LastValue(DaChamTP2_TuKhiMua), "TP2",
+                     WriteIf(LastValue(DaChamTP1_TuKhiMua), "TP1", "")));
 
 HT1=IIf(Day52T<C,Day52T,-1e10);
 HT2=IIf(GGBot<C,GGBot,-1e10);
@@ -781,7 +786,7 @@ Dong = Name() + "," + TinCuoi + ","
      + WriteIf(LastValue(CanhBaoBanBot), "1", "0") + ","
      + WriteIf(LaVNIndex, "HOSE", SanHienTai) + ","
      + WriteIf(LaVNIndex, "ChiSo", NganhHienTai) + ","
-     + LastValue(MucTPDaChamCaoNhat);
+     + MucTPDaChamCaoNhat;
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {
