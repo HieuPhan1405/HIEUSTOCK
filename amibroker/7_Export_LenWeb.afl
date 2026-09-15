@@ -449,6 +449,26 @@ BreadthPctNganh = IIf(TrongNH, Breadth_NganHang,
                    IIf(TrongTB, Breadth_ThietBiDienDuLich,
                    Breadth_TB_Chung)))))))))))))));
 
+// NHAN NGANH cho tung ma (dung chung uu tien voi BreadthPctNganh o tren) -
+// phuc vu bo loc "Nganh" tren web. Mot ma co the nam trong nhieu DS_ (vd BDS
+// KCN) nen chi lay NGANH DAU TIEN khop theo dung thu tu uu tien nay.
+NganhHienTai = WriteIf(TrongNH, "Ngan hang",
+               WriteIf(TrongBDS, "Bat dong san",
+               WriteIf(TrongCK, "Chung khoan",
+               WriteIf(TrongBH, "Bao hiem",
+               WriteIf(TrongXD, "Xay dung",
+               WriteIf(TrongTK, "Thep - Khoang san",
+               WriteIf(TrongDK, "Dau khi - Dien - Nuoc",
+               WriteIf(TrongHC, "Hoa chat - Cao su",
+               WriteIf(TrongTP, "Thuc pham - Nong san",
+               WriteIf(TrongBL, "Ban le - O to",
+               WriteIf(TrongDM, "Det may - Go",
+               WriteIf(TrongLG, "Logistics - Van tai",
+               WriteIf(TrongCN, "Cong nghe - Vien thong",
+               WriteIf(TrongYT, "Y te - Duoc",
+               WriteIf(TrongTB, "Thiet bi dien - Du lich",
+               "Khac")))))))))))))));
+
 MocChuan = 100/8;
 TyTrongTheoNganh = IIf(BatBreadthGate,
     IIf(BreadthPctNganh>=NguongManh, MocChuan*1.0,
@@ -663,6 +683,7 @@ AddColumn(ChotLoi_TP3_TaiMua, "TP3 (dong bang luc mua)", 1.2);
 AddColumn(SoDiemSanyaku, "Sanyaku(0-3)", 1.0);
 AddTextColumn(WriteIf(InVN30,"VN30",WriteIf(InVNMidCap,"Midcap",WriteIf(InVNSmallCap,"Smallcap","Khac"))), "Von hoa");
 AddTextColumn(SanHienTai, "San");
+AddTextColumn(NganhHienTai, "Nganh");
 
 // ============================================================================
 // XUAT CSV TU DONG LEN WEB - KHONG CAN BAM "EXPORT" TAY
@@ -677,7 +698,7 @@ if (Status("stocknum") == 0)
     {
         fputs("ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,"+
               "stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,"+
-              "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san\n", fh);
+              "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh\n", fh);
         fclose(fh);
     }
 }
@@ -738,7 +759,8 @@ Dong = Name() + "," + TinCuoi + ","
          "")
      + ","
      + WriteIf(LastValue(CanhBaoBanBot), "1", "0") + ","
-     + WriteIf(LaVNIndex, "HOSE", SanHienTai);
+     + WriteIf(LaVNIndex, "HOSE", SanHienTai) + ","
+     + WriteIf(LaVNIndex, "ChiSo", NganhHienTai);
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {

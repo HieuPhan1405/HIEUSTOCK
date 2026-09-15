@@ -19,6 +19,7 @@ const COT = [
   { khoa: "ma", nhan: "Mã", canPhai: false },
   { khoa: "san", nhan: "Sàn", canPhai: false },
   { khoa: "von_hoa", nhan: "Vốn hoá", canPhai: false },
+  { khoa: "nganh", nhan: "Ngành", canPhai: false },
   { khoa: "gia", nhan: "Giá", canPhai: true },
   { khoa: "doi", nhan: "%Hôm nay", canPhai: true },
   { khoa: "diem", nhan: "Điểm", canPhai: true },
@@ -31,6 +32,29 @@ const COT = [
 
 const XU_HUONG_NHAN = { xanh: "Tăng", do: "Giảm", sideway: "Sideway" };
 
+// Gia tri "nganh" AFL xuat ra KHONG dau (quy uoc chung toan he thong) - map
+// sang nhan co dau de hien thi dep hon trong dropdown, nhung filter van so
+// sanh dung gia tri goc khong dau tu DB.
+const NGANH_NHAN = {
+  "Ngan hang": "Ngân hàng",
+  "Bat dong san": "Bất động sản",
+  "Chung khoan": "Chứng khoán",
+  "Bao hiem": "Bảo hiểm",
+  "Xay dung": "Xây dựng",
+  "Thep - Khoang san": "Thép - Khoáng sản",
+  "Dau khi - Dien - Nuoc": "Dầu khí - Điện - Nước",
+  "Hoa chat - Cao su": "Hoá chất - Cao su",
+  "Thuc pham - Nong san": "Thực phẩm - Nông sản",
+  "Ban le - O to": "Bán lẻ - Ô tô",
+  "Det may - Go": "Dệt may - Gỗ",
+  "Logistics - Van tai": "Logistics - Vận tải",
+  "Cong nghe - Vien thong": "Công nghệ - Viễn thông",
+  "Y te - Duoc": "Y tế - Dược",
+  "Thiet bi dien - Du lich": "Thiết bị điện - Du lịch",
+  Khac: "Khác",
+};
+const DS_NGANH = Object.keys(NGANH_NHAN);
+
 // Doc bo loc ban dau tu URL (vd tu the KPI o trang chu bam vao) - chi doc 1
 // LAN luc khoi tao state, sau do nguoi dung tu do chinh sua tren giao dien.
 function docLocTuUrl(searchParams) {
@@ -39,6 +63,7 @@ function docLocTuUrl(searchParams) {
     vonHoa: searchParams.get("vonhoa") || "",
     xuHuong: searchParams.get("xuhuong") || "",
     san: searchParams.get("san") || "",
+    nganh: searchParams.get("nganh") || "",
     chiMatThan: searchParams.get("matthan") === "1",
     chiChotLoi: searchParams.get("chotloi") === "1",
     chiBanBot: searchParams.get("banbot") === "1",
@@ -72,6 +97,7 @@ export default function BangBoLoc({ duLieu }) {
   const [locVonHoa, setLocVonHoa] = useState(locBanDau.vonHoa);
   const [locXuHuong, setLocXuHuong] = useState(locBanDau.xuHuong);
   const [locSan, setLocSan] = useState(locBanDau.san);
+  const [locNganh, setLocNganh] = useState(locBanDau.nganh);
   const [chiMatThan, setChiMatThan] = useState(locBanDau.chiMatThan);
   const [chiChotLoi, setChiChotLoi] = useState(locBanDau.chiChotLoi);
   const [chiBanBot, setChiBanBot] = useState(locBanDau.chiBanBot);
@@ -88,6 +114,7 @@ export default function BangBoLoc({ duLieu }) {
     if (locVonHoa) ds = ds.filter((r) => r.von_hoa === locVonHoa);
     if (locXuHuong) ds = ds.filter((r) => phanLoaiXuHuong(r) === locXuHuong);
     if (locSan) ds = ds.filter((r) => (r.san || "HOSE") === locSan);
+    if (locNganh) ds = ds.filter((r) => (r.nganh || "Khac") === locNganh);
     if (chiMatThan) ds = ds.filter((r) => r.mat_than);
     if (chiChotLoi) ds = ds.filter((r) => r.tin === "NAM GIU" && chamTPCaoNhat(r));
     if (chiBanBot) ds = ds.filter((r) => r.ban_bot);
@@ -104,7 +131,7 @@ export default function BangBoLoc({ duLieu }) {
       return sapXep.chieu === "asc" ? so : -so;
     });
     return ds;
-  }, [duLieu, timKiem, sapXep, locTin, locVonHoa, locXuHuong, locSan, chiMatThan, chiChotLoi, chiBanBot]);
+  }, [duLieu, timKiem, sapXep, locTin, locVonHoa, locXuHuong, locSan, locNganh, chiMatThan, chiChotLoi, chiBanBot]);
 
   function doiSapXep(khoa) {
     setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: "desc" }));
@@ -116,12 +143,13 @@ export default function BangBoLoc({ duLieu }) {
     setLocVonHoa("");
     setLocXuHuong("");
     setLocSan("");
+    setLocNganh("");
     setChiMatThan(false);
     setChiChotLoi(false);
     setChiBanBot(false);
   }
 
-  const coBoLoc = timKiem || locTin || locVonHoa || locXuHuong || locSan || chiMatThan || chiChotLoi || chiBanBot;
+  const coBoLoc = timKiem || locTin || locVonHoa || locXuHuong || locSan || locNganh || chiMatThan || chiChotLoi || chiBanBot;
 
   return (
     <div>
@@ -206,6 +234,12 @@ export default function BangBoLoc({ duLieu }) {
             ["UPCOM", "UPCOM"],
           ]}
         />
+        <OSelect
+          value={locNganh}
+          onChange={setLocNganh}
+          placeholder="Tất cả ngành"
+          options={DS_NGANH.map((n) => [n, NGANH_NHAN[n]])}
+        />
         {coBoLoc && (
           <button onClick={xoaBoLoc} className="text-xs px-3 py-2 rounded-lg" style={{ color: PRIMARY, border: `1px solid ${VIEN}` }}>
             Xoá bộ lọc
@@ -280,6 +314,9 @@ export default function BangBoLoc({ duLieu }) {
                     </td>
                     <td className="py-2.5 px-3 text-xs" style={{ color: MUTED }}>
                       {row.von_hoa || "—"}
+                    </td>
+                    <td className="py-2.5 px-3 text-xs whitespace-nowrap" style={{ color: MUTED }}>
+                      {NGANH_NHAN[row.nganh] || row.nganh || "—"}
                     </td>
                     <td className="py-2.5 px-3 text-right">{fmt(row.gia)}</td>
                     <td className="py-2.5 px-3 text-right" style={{ color: row.doi >= 0 ? XANH : DO }}>
