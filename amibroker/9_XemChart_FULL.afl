@@ -1,0 +1,1085 @@
+// ============================================================================
+// DAO GAM SYSTEM v12 FULL - XEM TAT CA MA
+// (SL=6, Bo qua ADX khi diem>=2.0, Ban can 3 phien xac nhan)
+// ============================================================================
+_SECTION_BEGIN("Dao Gam System v14 FULL");
+
+TenkanLen   = Param("Tenkan", 9, 2, 50, 1);
+KijunLen    = Param("Kijun", 17, 2, 100, 1);
+SenkouBLen  = Param("Senkou B", 33, 2, 150, 1);
+Shift       = Param("Dich chuyen may", 26, 1, 60, 1);
+GG1Len      = Param("Giao Gam 1", 65, 10, 200, 1);
+GG2Len      = Param("Giao Gam 2", 129, 10, 300, 1);
+EntryTh     = Param("Nguong diem VAO lenh (Mua)", 1.25, 0.5, 3, 0.05);
+ExitTh      = Param("Nguong diem RA lenh (Ban, so duong)", 1.5, 0.5, 3, 0.05);
+PersistBars = Param("So phien giu tren nguong", 1, 1, 5, 1);
+UseADXGate  = ParamToggle("Bat buoc ADX>=18", "Tat|Bat", 1);
+ADXGateLv   = Param("Nguong ADX (neu bat)", 18, 10, 40, 1);
+CheDoFVG    = ParamList("Che do dieu kien FVG",
+              "Thong minh (bo qua khi breakout manh)|Luon BAT|Luon TAT", 0);
+// "Thong minh": neu tin hieu la BREAKOUT MANH (diem rat cao + ADX rat cao +
+// Volume Gate Ngay1 dat) thi BO QUA doi hoi FVG (gia manh co the khong hoi
+// ve vung FVG, cho se lo song). Neu KHONG phai breakout manh (tin hieu binh
+// thuong) thi VAN CAN FVG nhu cu, de co diem vao dep hon.
+NguongDiemBreakout = Param("Thong minh: diem cao hon nguong bao nhieu la Breakout", 1.0, 0, 3, 0.1);
+ATRMult     = Param("He so ATR cho Stop-loss", 2.2, 1, 4, 0.1);
+HardStopPct = Param("Stop-loss toi da theo % (chan an toan)", 6, 3, 20, 0.5);
+ATRVal = ATR(14);
+FVGLookback = Param("FVG het han sau (phien)", 15, 5, 30, 1);
+
+// --- Dieu kien Volume rieng cho MUA NGAY PHIEN DAU chuyen xanh ---
+// Neu KHONG thoa man ca 3 dieu kien nay o phien dau tien vua vao vung mua,
+// he thong se KHONG mua ngay ma cho sang phien tiep theo (T2) trong dot do
+// (van can InFVGZone + ADX Gate nhu binh thuong o T2, khong can lai Volume).
+VolMinPctTB20     = Param("Ngay1-Vol: toi thieu so voi TB20 (%)", 50, 0, 300, 5);
+VolMinPctHomTruoc = Param("Ngay1-Vol: toi thieu so voi hom truoc (%)", 30, 0, 300, 5);
+PocketPivotNhinLai= Param("Ngay1-Vol: Pocket Pivot nhin lai (phien)", 10, 5, 30, 1);
+
+// RS/VNI SOM - dong bo voi ban web (7_Export_LenWeb.afl): can tinh SOM de
+// dung lam GATE cho Buy ben duoi. Cong thuc giong het ban "Phan 2: Diem Rank"
+// se tinh lai sau (Perf20_Ma/Perf20_VNI) - tinh 2 lan khong sao vi cung 1
+// cong thuc, gia tri giong het nhau.
+VNI_Close_Som = Foreign("VNINDEX", "C");
+RS_SoVoiVNI_Som = (C/Ref(C,-20) - 1 - (VNI_Close_Som/Ref(VNI_Close_Som,-20) - 1)) * 100;
+RSVNI_OK = RS_SoVoiVNI_Som > 0;
+
+Tenkan  = (HHV(H,TenkanLen) + LLV(L,TenkanLen)) / 2;
+Kijun   = (HHV(H,KijunLen) + LLV(L,KijunLen)) / 2;
+SenkouA = Ref((Tenkan+Kijun)/2, -Shift);
+SenkouB = Ref((HHV(H,SenkouBLen)+LLV(L,SenkouBLen))/2, -Shift);
+CloudTop = Max(SenkouA, SenkouB);
+CloudBot = Min(SenkouA, SenkouB);
+
+// KUMO TWIST TUONG LAI - CHI hien thi tham khao. SenkouA/B "goc" (truoc khi
+// dich Shift phien ve tuong lai) neu sap cat nhau, nghia la MAY se doi mau
+// trong "Shift" phien toi - canh bao som truoc khi gia den do.
+SenkouA_Goc = (Tenkan+Kijun)/2;
+SenkouB_Goc = (HHV(H,SenkouBLen)+LLV(L,SenkouBLen))/2;
+MayTuongLaiDoiChieuTang = SenkouA_Goc > SenkouB_Goc AND Ref(SenkouA_Goc,-1) <= Ref(SenkouB_Goc,-1);
+MayTuongLaiDoiChieuGiam = SenkouA_Goc < SenkouB_Goc AND Ref(SenkouA_Goc,-1) >= Ref(SenkouB_Goc,-1);
+
+// FLAT KIJUN / FLAT SENKOU B - CHI hien thi tham khao. Duong "phang" (khong
+// doi trong N phien) thuong dong vai tro "nam cham gia" (gia co xu huong bi
+// hut ve khi di xa), hoac canh bao pullback sap toi neu Kijun phang duoi 1
+// dot tang manh.
+SoPhienKiemTraFlat = Param("So phien kiem tra duong phang (Kijun/SenkouB)", 5, 3, 15, 1);
+KijunDangPhang = (HHV(Kijun, SoPhienKiemTraFlat) - LLV(Kijun, SoPhienKiemTraFlat)) == 0;
+SenkouBDangPhang = (HHV(SenkouB, SoPhienKiemTraFlat) - LLV(SenkouB, SoPhienKiemTraFlat)) == 0;
+
+// TARGET GIA (Price Theory V/N/E) - CHI hien thi tham khao. Can 3 diem A
+// (day gan nhat), B (dinh gan nhat sau A), C (day dieu chinh sau B) de tinh:
+//   N = C + (B-A)   |   V = B + (B-C)   |   E = B + (B-A)
+// Dung vong lap don gian: tim pivot GAN NHAT (khong can toi uu, chi can on
+// dinh va dung), voi cua so nhin 5 phien moi ben de xac nhan pivot.
+CuaSoPivot = 5;
+DiemA = 0; DiemB = 0; DiemC = 0;
+ViTriA = 0; ViTriB = 0; ViTriC = 0;
+for (i = CuaSoPivot; i < BarCount - CuaSoPivot; i++)
+{
+    // Tim day pivot (A): thap nhat trong khoang +-CuaSoPivot
+    laDayPivot = 1;
+    for (k = 1; k <= CuaSoPivot; k++)
+    {
+        if (L[i] > L[i-k] OR L[i] > L[i+k]) { laDayPivot = 0; break; }
+    }
+    if (laDayPivot)
+    {
+        ViTriA[i] = i;
+        DiemA[i] = L[i];
+    }
+    else
+    {
+        ViTriA[i] = ViTriA[i-1];
+        DiemA[i] = DiemA[i-1];
+    }
+
+    // Tim dinh pivot (B), CHI tinh neu da co A truoc do
+    laDinhPivot = 1;
+    for (k = 1; k <= CuaSoPivot; k++)
+    {
+        if (H[i] < H[i-k] OR H[i] < H[i+k]) { laDinhPivot = 0; break; }
+    }
+    if (laDinhPivot AND ViTriA[i] > 0 AND i > ViTriA[i])
+    {
+        ViTriB[i] = i;
+        DiemB[i] = H[i];
+        ViTriC[i] = 0; // reset C, cho tim lai sau B moi
+        DiemC[i] = 0;
+    }
+    else
+    {
+        ViTriB[i] = ViTriB[i-1];
+        DiemB[i] = DiemB[i-1];
+        // Tim day pivot C (sau B, truoc thoi diem hien tai)
+        if (laDayPivot AND ViTriB[i-1] > 0 AND i > ViTriB[i-1])
+        {
+            ViTriC[i] = i;
+            DiemC[i] = L[i];
+        }
+        else
+        {
+            ViTriC[i] = ViTriC[i-1];
+            DiemC[i] = DiemC[i-1];
+        }
+    }
+}
+
+// (Da chuyen Target xuong duoi - gan chinh xac voi dung lenh dang giu,
+// xem doan "TARGET CHO LENH HIEN TAI" o gan GiaVaoLenh)
+
+// SANYAKU KOUTEN - "diem chat luong" tong hop 3 dieu kien kinh dien cua
+// Ichimoku (KHONG dung de vao lenh - den tre - CHI dung de danh gia do
+// "chac chan" cua tin hieu da co). Dem so dieu kien dat trong 3:
+//  1. Tenkan cat len Kijun (da co san: TenkanCatLenKijun neu ton tai,
+//     neu chua thi tu tinh lai don gian tai day)
+//  2. Chikou (gia dong cua hom nay) cao hon dinh 5 phien quanh vi tri Shift
+//     phien truoc (dung lai dinh nghia da co o Chikou thong thoang - neu co)
+//  3. Gia phá lên tren May (Cloud)
+DK1_TenkanCatKijun = Tenkan > Kijun AND Ref(Tenkan,-1) <= Ref(Kijun,-1);
+DuDuLieuChoChikou_Sanyaku = BarIndex() >= Shift;
+DK2_ChikouThoat = IIf(DuDuLieuChoChikou_Sanyaku, C > Ref(HHV(H,5), -Shift), False);
+DK3_PhaLenMay = C > CloudTop AND Ref(C,-1) <= Ref(CloudTop,-1);
+SoDiemSanyaku = DK1_TenkanCatKijun + DK2_ChikouThoat + DK3_PhaLenMay;
+
+// TIME THEORY / KIHON SUCHI - CHI hien thi tham khao. Dem so phien tu diem
+// pivot GAN NHAT (A hoac B, lay cai gan hon), so sanh voi cac "so co ban"
+// kinh dien cua Ichimoku: 9,17,26,33,42,51,65,76,129,172,200,257. Neu dung
+// khop 1 trong cac so nay (+-1 phien du sai so), danh dau la "ngay bien doi"
+// (henka-bi) - noi co xac suat cao dao chieu/gia toc xu huong.
+ViTriPivotGanNhat = Max(ViTriA, ViTriB);
+SoPhienTuPivot = BarIndex() - ViTriPivotGanNhat;
+DungNgayBienDoi = (Abs(SoPhienTuPivot-9)<=1) OR (Abs(SoPhienTuPivot-17)<=1) OR
+    (Abs(SoPhienTuPivot-26)<=1) OR (Abs(SoPhienTuPivot-33)<=1) OR
+    (Abs(SoPhienTuPivot-42)<=1) OR (Abs(SoPhienTuPivot-51)<=1) OR
+    (Abs(SoPhienTuPivot-65)<=1) OR (Abs(SoPhienTuPivot-76)<=1) OR
+    (Abs(SoPhienTuPivot-129)<=1) OR (Abs(SoPhienTuPivot-172)<=1) OR
+    (Abs(SoPhienTuPivot-200)<=1) OR (Abs(SoPhienTuPivot-257)<=1);
+
+GiaoGam1 = (HHV(H,GG1Len)+LLV(L,GG1Len))/2;
+GiaoGam2 = (HHV(H,GG2Len)+LLV(L,GG2Len))/2;
+GGTop = Max(GiaoGam1, GiaoGam2);
+GGBot = Min(GiaoGam1, GiaoGam2);
+
+ADXVal = ADX(14);
+DIPlus = PDI(14);
+DIMinus = MDI(14);
+RSIVal = RSI(14);
+
+// ============================================================================
+// HE THONG "RSI DA DAC TRUNG + RANK + CONFIDENCE" - BAN GOC 100%, tu thiet
+// ke rieng, KHONG sao chep thuat toan K-Nearest-Neighbor/Fisher Discriminant
+// cua bat ky tac gia nao. Chi dung toan thong ke pho thong (trung binh
+// trong so, do lech chuan, percentile) - day la kien thuc chung, khong
+// thuoc ban quyen rieng ai.
+// ============================================================================
+
+// --- PHAN 1: RSI DA DAC TRUNG (ket hop nhieu goc nhin tu RSI, thay vi chi
+// dung 1 muc RSI don thuan) ---
+RSI_Nhanh = RSI(7);
+RSI_Cham  = RSI(28);
+DoDocRSI_3Phien = RSIVal - Ref(RSIVal, -3);
+GiaTocRSI = DoDocRSI_3Phien - Ref(DoDocRSI_3Phien, -3);
+ChenhLechNhanhCham = RSI_Nhanh - RSI_Cham;
+DoBienDongRSI = StDev(RSIVal, 14);
+RSI_Percentile20 = (RSIVal - LLV(RSIVal,20)) / (HHV(RSIVal,20) - LLV(RSIVal,20) + 0.0001) * 100;
+
+// Chuan hoa cac dac trung phu ve thang 0-100 giong RSI de cong duoc:
+DoDoc_ChuanHoa      = 50 + Max(-50, Min(50, DoDocRSI_3Phien * 2));
+GiaToc_ChuanHoa     = 50 + Max(-50, Min(50, GiaTocRSI * 3));
+ChenhLech_ChuanHoa  = 50 + Max(-50, Min(50, ChenhLechNhanhCham));
+BienDong_ChuanHoa   = 100 - Min(100, DoBienDongRSI * 5); // bien dong thap = on dinh = diem cao
+
+DungRSIThongMinh = ParamToggle("Loc: Dung RSI da dac trung thay RSI thuong (thu nghiem)", "Tat|Bat", 0);
+RSI_ThongMinh = RSIVal*0.40 + DoDoc_ChuanHoa*0.20 + GiaToc_ChuanHoa*0.10 +
+                ChenhLech_ChuanHoa*0.15 + RSI_Percentile20*0.10 + BienDong_ChuanHoa*0.05;
+RSIVal_ChoDiem = IIf(DungRSIThongMinh, RSI_ThongMinh, RSIVal);
+// (Phan 2-Rank, Phan 3-Confidence, Phan 4-Stop thich ung: xem duoi, dat sau
+// khi TotalScore/FVGDuLon/BreadthPctNganh/RS_SoVoiVNI da tinh xong)
+MFIVal = MFI(14);
+AvgVol20 = Ref(MA(V,20),-1);
+RelVol = IIf(AvgVol20>0, V/AvgVol20, 1);
+
+// VOLUME-CONFIRMED KUMO BREAKOUT + RETEST - CHI hien thi tham khao. Phat
+// hien: (1) gia vua pha len tren May kem Volume dot bien, (2) sau do gia
+// dieu chinh ve gan canh May (retest) trong vong 10 phien, van tren May.
+NguongVolBreakout = Param("Nguong RelVol de coi la Breakout co Volume", 1.3, 1, 3, 0.1);
+PhaLenMayCoVolume = (C > CloudTop) AND (Ref(C,-1) <= Ref(CloudTop,-1)) AND (RelVol >= NguongVolBreakout);
+SoNenTuBreakout = BarsSince(PhaLenMayCoVolume);
+DangRetestMay = (SoNenTuBreakout > 0) AND (SoNenTuBreakout <= 10) AND
+                (C > CloudTop) AND (L <= CloudTop*1.02);
+
+// --- 3 dieu kien Volume cho phien MUA DAU TIEN (khi vua chuyen xanh) ---
+VolDatTB20        = RelVol >= (1 + VolMinPctTB20/100);              // >= +50% so voi TB20
+VolDatHomTruoc     = IIf(Ref(V,-1)>0, V >= Ref(V,-1)*(1+VolMinPctHomTruoc/100), False); // >= +30% so voi hom truoc
+MaxVolNgayGiam10  = Ref(HHV(IIf(C<Ref(C,-1), V, 0), PocketPivotNhinLai), -1); // vol lon nhat cac ngay giam trong N phien truoc do
+VolDatPocketPivot = V > MaxVolNgayGiam10;                            // vuot vol ngay giam manh nhat (tinh than Pocket Pivot)
+VolumeGateNgayDau = VolDatTB20 AND VolDatHomTruoc AND VolDatPocketPivot;
+
+TrendScore = IIf(C>CloudTop,1, IIf(C<CloudBot,-1,0))
+           + IIf(C>GGTop,1, IIf(C<GGBot,-1,0))
+           + IIf(Tenkan>Kijun,0.5,-0.5)
+           + IIf(ADXVal>25, IIf(DIPlus>DIMinus,0.5,-0.5), 0);
+MomScore = IIf(RSIVal>70,-0.5, IIf(RSIVal<30,0.5, IIf(RSIVal>50,0.5,-0.5)));
+MFScore = IIf(MFIVal>80,-0.5, IIf(MFIVal<20,0.5, IIf(MFIVal>50,0.5,-0.5)))
+        + IIf(RelVol>1.5,0.5, IIf(RelVol<0.5,-0.3,0));
+TotalScore = TrendScore*1.5 + MFScore*1.2 + MomScore*1.0;
+
+InFVGZone = 0;
+for (i = 2; i < BarCount; i++)
+{
+    if (H[i-2] < L[i])
+    {
+        gapBot = H[i-2]; gapTop = L[i];
+        expireAt = Min(i + FVGLookback, BarCount-1);
+        for (j = i; j <= expireAt; j++)
+        {
+            if (L[j] < gapBot) break;
+            if ((L[j] <= gapTop AND L[j] >= gapBot) OR (C[j] <= gapTop AND C[j] >= gapBot))
+                InFVGZone[j] = 1;
+        }
+    }
+}
+
+// FVG - UU TIEN VUNG LON SO VOI ATR (da xac nhan qua Backtest that: PF tang
+// dong deu ca 12 nam va 6 nam gan nhat, MaxDD giam ro ret). Vung FVG qua nho
+// so voi bien dong binh thuong cua ma (ATR) bi coi la "nhieu", khong tinh
+// la du dieu kien du dang "trong vung".
+DoLonSoATR_FVG = 0;
+for (i = 2; i < BarCount; i++)
+{
+    if (H[i-2] < L[i])
+    {
+        gapBot = H[i-2]; gapTop = L[i];
+        gapSize = gapTop - gapBot;
+        atrLucHinhThanh = ATRVal[i];
+        tySoLonATR = IIf(atrLucHinhThanh>0, gapSize/atrLucHinhThanh, 0);
+        expireAt = Min(i + FVGLookback, BarCount-1);
+        for (j = i; j <= expireAt; j++)
+        {
+            if (L[j] < gapBot) break;
+            if ((L[j] <= gapTop AND L[j] >= gapBot) OR (C[j] <= gapTop AND C[j] >= gapBot))
+                if (tySoLonATR > DoLonSoATR_FVG[j]) DoLonSoATR_FVG[j] = tySoLonATR;
+        }
+    }
+}
+NguongDiemFVGMem = Param("FVG: Nguong ty le lon/ATR toi thieu (da chot ~0.6)", 0.6, 0.1, 2, 0.05);
+FVGDuLon = DoLonSoATR_FVG >= NguongDiemFVGMem;
+
+MatThanWarning = 0;
+for (i = 5; i < BarCount-5; i++)
+{
+    isPivotHigh = 1;
+    for (k = 1; k <= 5; k++)
+        if (H[i] < H[i-k] OR H[i] < H[i+k]) { isPivotHigh = 0; break; }
+    if (isPivotHigh AND H[i] > CloudTop[i])
+    {
+        enteredAt = -1;
+        limitJ = Min(i+26, BarCount-1);
+        for (j = i+1; j <= limitJ; j++)
+            if (L[j] <= CloudTop[i] AND H[j] >= CloudBot[i]) { enteredAt = j; break; }
+        if (enteredAt > 0 AND (BarCount-1-enteredAt) <= 5)
+        {
+            brokeAbove = 0;
+            limitK = Min(enteredAt+5, BarCount-1);
+            for (k = enteredAt; k <= limitK; k++)
+                if (C[k] > Tenkan[k]) { brokeAbove = 1; break; }
+            if (!brokeAbove)
+                for (k = enteredAt; k <= limitK; k++)
+                    MatThanWarning[k] = 1;
+        }
+    }
+}
+
+Above = TotalScore >= EntryTh;
+
+// ---------------- VUNG THAM GIA THEM (CHI THAM KHAO, KHONG PHAI TIN HIEU MUA) ----------------
+// Danh cho KHACH HANG da lo diem Mua ban dau nhung van muon tham gia - hien
+// thi khi xu huong CON TOT (tren May + tren Giao Gam) nhung gia dang DIEU
+// CHINH ve gan Tenkan/Kijun (vung ho tro dong). KHONG dua vao Buy/Sell that,
+// chi la thong tin tu van bo sung tren Card.
+XuHuongConTot = (C > CloudTop) AND (C > GGTop);
+DangDieuChinhVeTenkan = (C <= Tenkan*1.015) AND (C >= Tenkan*0.98);
+// (Da bo tinh nang Vung tham gia them)
+// dung Buy de kiem tra "da tung Mua trong dot nay chua".
+ConsecutiveAbove = Sum(Above, PersistBars) == PersistBars;
+VuaVaoVungMua = Above AND NOT Ref(Above,-1); // phien dau tien cua dot tren nguong (moi chuyen xanh)
+// TurnedGreenRaw khong con dung (da thay bang vong lap ben duoi cho phep
+// mua muon hon trong cung dot) - giu ConsecutiveAbove de vong lap dung toi.
+BoQuaADXNeuDiemManh = Param("Bo qua ADX Gate neu |TotalScore| >= muc nay", 2.5, 1.5, 4, 0.1);
+ADXGateOk = IIf(UseADXGate, (ADXVal >= ADXGateLv) OR (Abs(TotalScore) >= BoQuaADXNeuDiemManh), 1);
+
+// BREAKOUT MANH: diem vuot xa nguong + ADX rat cao + da co xac nhan Volume
+// Ngay1 (VolumeGateNgayDau) -> coi la tin hieu du manh de KHONG can doi FVG.
+BreakoutManh = (TotalScore >= EntryTh + NguongDiemBreakout);
+
+InFVGZone_H3 = InFVGZone AND FVGDuLon;  // trong vung VA du lon so ATR (H3)
+InFVGZoneOk = IIf(CheDoFVG=="Luon TAT", 1,
+              IIf(CheDoFVG=="Luon BAT", InFVGZone_H3,
+              IIf(BreakoutManh AND VolumeGateNgayDau, 1, InFVGZone_H3))); // che do Thong minh (mac dinh)
+// NANG CAP (da kiem chung Python: PF 2.46->2.62, tong 1377->1417 giai doan
+// tot; chi kem nhe ~4.5 diem % giai doan kho): CHO PHEP Mua vao BAT KY ngay
+// nao trong CUNG 1 dot tren nguong (khong chi dung ngay dau tien), mien FVG
+// mo dung luc do - nhung CHI DUNG 1 LAN moi dot (tranh lap lai loi da hoc
+// truoc: "chot nhieu lan" lam sai lech). Dung vong lap tuong minh de kiem
+// soat chac chan trang thai "da mua trong dot nay chua".
+TurnedGreen = 0;
+DaMuaDotNay = 0;
+for (i = 1; i < BarCount; i++)
+{
+    if (!ConsecutiveAbove[i])
+    {
+        DaMuaDotNay[i] = 0;
+    }
+    else
+    {
+        // Neu la phien dau tien cua dot (VuaVaoVungMua): bat buoc them VolumeGateNgayDau.
+        // Tu phien thu 2 tro di trong cung dot (van chua mua): khong can Volume Gate nua,
+        // chi can InFVGZone + ADX Gate nhu cu -> tuc "mua vao phien T2" khi Ngay1 khong dat Volume.
+        DuDieuKienVolumeNgayDau = !VuaVaoVungMua[i] OR VolumeGateNgayDau[i];
+        if (ConsecutiveAbove[i] AND InFVGZoneOk[i] AND ADXGateOk[i] AND DuDieuKienVolumeNgayDau AND !DaMuaDotNay[i-1])
+        {
+            TurnedGreen[i] = 1;
+            DaMuaDotNay[i] = 1;
+        }
+        else
+        {
+            DaMuaDotNay[i] = DaMuaDotNay[i-1];
+        }
+    }
+}
+
+SoPhienBanXacNhan = Param("So phien Ban can xac nhan lien tuc", 3, 1, 5, 1);
+ZoneSell = TotalScore <= -ExitTh;
+ZoneSellXacNhan = Sum(ZoneSell, SoPhienBanXacNhan) == SoPhienBanXacNhan;
+TurnedPink = ZoneSellXacNhan AND NOT Ref(ZoneSellXacNhan,-1);
+
+// DONG BO tu file Backtest: tuy chon Ban NGAY neu diem qua sau (mac dinh TAT)
+BatBanNgayKhiSau = ParamToggle("Bat Ban NGAY neu diem qua sau (bo qua cho)", "Tat|Bat", 0);
+NguongBanNgay = Param("Nguong diem qua SAU de Ban ngay (khong cho)", 2.0, 1.5, 4, 0.1);
+ZoneSellSau = TotalScore <= -NguongBanNgay;
+TurnedPinkSau = ZoneSellSau AND NOT Ref(ZoneSellSau,-1);
+
+TurnedPink = IIf(BatBanNgayKhiSau,
+    (ZoneSellXacNhan AND NOT Ref(ZoneSellXacNhan,-1)) OR TurnedPinkSau,
+    ZoneSellXacNhan AND NOT Ref(ZoneSellXacNhan,-1));
+
+// VN30 - CAP NHAT dung theo ky co cau thang 7/2026 (nguon: HOSE, xac nhan
+// qua cong ty chung khoan AAS 22/07/2026). BSR, BVH, POW moi vao; DGC, LPB,
+// SHB da bi loai khoi VN30 (chuyen xuong Midcap ben duoi).
+VN30List = "ACB,BID,BSR,BVH,CTG,FPT,GAS,GVR,HDB,HPG,"+
+    "MBB,MSN,MWG,PLX,POW,SAB,SSB,SSI,STB,TCB,"+
+    "TPB,VCB,VHM,VIB,VIC,VJC,VNM,VPB,VPL,VRE";
+InVN30 = StrFind( "," + VN30List + ",", "," + Name() + "," ) > 0;
+
+// VNMIDCAP - 70 ma con lai. LUU Y: chua xac nhan 100% tung ma rieng le, la
+// danh sach ke thua tu du lieu cu, chi dieu chinh 3 ma vua chuyen nhom.
+VNMidCapList = "ANV,BCM,BMP,BSI,BWE,CII,CMG,CTD,CTR,CTS,"+
+    "DBC,DCM,DGW,DIG,DPM,DSE,DXG,DXS,EIB,EVF,"+
+    "FRT,FTS,GEE,GEX,GMD,HAG,HCM,HDC,HDG,HHV,"+
+    "HSG,HT1,IMP,KBC,KDC,KDH,KOS,MSB,NAB,NKG,"+
+    "NLG,NT2,NVL,OCB,PAN,PC1,PDR,PHR,PNJ,PVD,"+
+    "PVT,REE,SBT,SCS,SIP,SJS,SZC,TCH,VCG,VCI,"+
+    "VGC,VHC,VIX,VND,VPI,VSC,VTP,DGC,LPB,SHB,MSR";
+InVNMidCap = StrFind( "," + VNMidCapList + ",", "," + Name() + "," ) > 0;
+
+VN100List = VN30List + "," + VNMidCapList;
+InVN100 = StrFind( "," + VN100List + ",", "," + Name() + "," ) > 0;
+
+// VNSMALLCAP - 202 ma. Tinh bang VNAllshare (302 ma, cong bo chinh thuc HOSE
+// ky 1/2026, qua Vietstock) TRU DI VN100 (100 ma).
+VNSmallCapList = "AAA,AAM,ABS,ABT,ACC,ACL,ADG,ADP,ADS,AGG,"+
+    "AGR,APG,APH,ASM,ASP,AST,BAF,BCE,BFC,BIC,"+
+    "BKG,BMC,BMI,BRC,BTP,C32,CCC,CCL,CDC,CHP,"+
+    "CIG,CKG,CLL,CMX,CNG,CRC,CRE,CSM,CSV,CTF,"+
+    "CTI,D2D,DAH,DBD,DC4,DCL,DHA,DHC,DHM,DLG,"+
+    "DMC,DPG,DPR,DRC,DRL,DSC,DSN,DTA,DVP,DXV,"+
+    "ELC,EVE,EVG,FCM,FCN,FIR,FIT,FMC,GDT,GEG,"+
+    "GIL,GSP,HAH,HAP,HAR,HAX,HCD,HHP,HHS,HID,"+
+    "HII,HMC,HPX,HQC,HSL,HTG,HTI,HTN,HTV,HUB,"+
+    "HVH,ICT,IDI,IJC,ILB,ITC,ITD,JVC,KHG,KHP,"+
+    "KMR,KSB,LAF,LBM,LCG,LGL,LHG,LIX,LSS,MCM,"+
+    "MCP,MHC,MIG,MSH,NAF,NAV,NBB,NCT,NHA,NHH,"+
+    "NNC,NO1,NSC,NTL,OGC,ORS,PAC,PET,PGC,PHC,"+
+    "PIT,PLP,PPC,PTB,PTC,PTL,PVP,QCG,RAL,RYG,"+
+    "SAM,SAV,SBG,SCR,SFC,SFI,SGN,SGR,SGT,SHA,"+
+    "SHI,SJD,SKG,SMB,ST8,STK,SVD,SVT,SZL,TCI,"+
+    "TCL,TCM,TCO,TCT,TDC,TDG,TDH,TDP,TEG,THG,"+
+    "TIP,TLD,TLG,TLH,TMT,TN1,TNH,TNI,TNT,TRC,"+
+    "TSC,TTA,TTF,TV2,TVB,TVS,UIC,VCA,VDS,VFG,"+
+    "VIP,VNL,VOS,VPG,VPH,VPS,VRC,VSI,VTB,VTO,"+
+    "YBM,YEG,DHG,TRA,VCF,HVN,SVC,CAV,DQC";
+InVNSmallCap = StrFind( "," + VNSmallCapList + ",", "," + Name() + "," ) > 0;
+// GHI CHU: Da BO dieu kien bat buoc "phai nam trong VN100List" o Buy ben duoi
+// (xem dong "Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15").
+// Bien InVN100 van duoc tinh & giu lai (khong dung) phong khi can dung lai sau nay.
+
+// GIOI HAN SO NAM GAN NHAT - chinh truc tiep trong bang Parameters cua
+// AmiBroker (khong can sua code). Dat = 0 hoac so nam rat lon (vd 99) neu
+// muon test TOAN BO du lieu co san, khong gioi han.
+SoNamGanNhat = Param("So nam gan nhat de test (0 = khong gioi han)", 12, 0, 99, 1);
+SoPhienUocTinh = IIf(SoNamGanNhat<=0, BarCount, SoNamGanNhat * 250);
+ChiTrong12NamGanNhat = IIf(SoNamGanNhat<=0, True,
+    BarIndex() >= (LastValue(BarIndex()) - SoPhienUocTinh));
+
+// BAN BACKTEST RIENG - GIOI HAN ca VN100 LAN 12 nam gan nhat, dam bao so
+// sanh cong bang voi cac lan Backtest truoc do (deu dung 12 nam).
+// ---------------- BREADTH GATE 15 NGANH DAY DU (tuy chon Bat/Tat) ----------------
+BatBreadthGate = ParamToggle("Bat Breadth Gate 15 Nganh", "Tat|Bat", 1);
+// (Da bo BreadthMinPct - khong con dung trong ban "mem" nay, thay bang
+// NguongManh/NguongYeu ben duoi)
+NguongManh = Param("Nguong Breadth NGANH MANH (100% ty trong)", 60, 30, 90, 5);
+NguongYeu = Param("Nguong Breadth NGANH YEU (duoi muc nay)", 30, 10, 60, 5);
+
+function TinhBreadth(DanhSachMa, SoLuong)
+{
+    dem = 0;
+    for (i = 0; i < SoLuong; i++)
+    {
+        tk = StrExtract(DanhSachMa, i);
+        px = LastValue(Foreign(tk, "C"));
+        maVal = LastValue(MA(Foreign(tk,"C"), 50));
+        if (px > maVal) dem = dem + 1;
+    }
+    return dem / SoLuong * 100;
+}
+
+DS_NganHang = "ACB,BID,BVB,CTG,EIB,HDB,KLB,LPB,MBB,MSB,NAB,OCB,SHB,SSB,STB,TCB,TPB,VAB,VBB,VCB,VIB,VPB";
+DS_BDS = "AGG,ASM,CCL,CII,CKG,CRE,DIG,DXG,DXS,EVG,FDC,FIR,HAR,HDC,HDG,HPX,HQC,HTN,ITC,KDH,KHG,KOS,LDG,LGL,NBB,NHA,NLG,NTL,NVL,PDR,PTL,QCG,SCR,SGR,SJS,TCH,TDC,TDH,THG,TNT,VHM,VIC,VPH,VPI,VRC,VRE,BCM,D2D,GVR,KBC,LHG,NTC,PHR,SIP,SZC,SZL,TIP,TIX,VGC,IJC";
+DS_ChungKhoan = "AGR,APG,BSI,CTS,DSC,DSE,EVF,FTS,HCM,ORS,SSI,TVB,TVS,VCI,VDS,VIX,VND,TCI";
+DS_BaoHiem = "BIC,BMI,BVH,MIG,PGI";
+DS_XayDung = "ACC,BCE,C47,CDC,CIG,CTD,CTI,DC4,DPG,DLG,FCM,FCN,HHV,HID,HTI,L10,LCG,LGC,LM8,PHC,PTC,SC5,SRF,VCG,VSI,BMP,C32,CCC,CRC,CVT,DHA,DXV,HCD,HT1,KSB,LBM,MDG,NNC,TCR,TLD,HUB,NO1";
+DS_ThepKhoangSan = "DTL,HMC,HPG,HSG,NKG,SMC,TLH,VCA,BMC,DHM,PLP,VPG,YBM";
+DS_DauKhiDienNuoc = "ASP,BSR,CNG,COM,GAS,PGC,PGD,PLX,PVD,SFC,BTP,BWE,CHP,CLW,DRL,GEG,GHC,HNA,KHP,NT2,PC1,PGV,POW,PPC,REE,S4A,SBA,SHP,SJD,TBC,TDM,TDW,TMP,TTA,TV2,VPD,VSH,TDG,PIT";
+DS_HoaChatCaoSu = "BFC,CSV,DCM,DGC,DPM,HII,SFG,VFG,BRC,CSM,DPR,DRC,HRC,SRC,TNC,TRC,AAA,APH,TDP,TPC,NAV,NHH,VPS";
+DS_ThucPhamNongSan = "BBC,BHN,CLC,KDC,LSS,MCH,MSN,NAF,SAB,SBT,VCF,VNM,AAN,ABS,ANT,BAF,DBC,HAG,HSL,NSC,PAN,SSC,TSC,AAM,ABT,ACL,ANV,CMX,FMC,IDI,VHC,LAF,LIX,MCM,SMB";
+DS_BanLeOto = "ADP,CMV,DGW,FRT,MWG,PET,PNJ,ST8,CTF,HAX,HHS,HTL,SVC,TMT,TLG,PTB";
+DS_DetMayGo = "AAT,ADS,EVE,GIL,HTG,KMR,MSH,STK,SVD,TCM,TVT,ACG,BKG,GDT,GTA,SAV,TTF,DHC,HHP,MCP,SVI,VID";
+DS_LogisticsVanTai = "CLL,DVP,GMD,HAH,HTV,ILB,NCT,PDN,QNP,SCS,SFI,SGN,STG,TCL,TCO,TMS,VSC,VTP,GSP,HVN,PJT,PVP,PVT,SKG,VJC,VNL,VNS,VOS,VTO,MHC,VIP";
+DS_CongNgheVienThong = "ADG,CMG,ELC,FPT,ICT,ITD,SVT,CTR,HAS,TSA,VTB,ABR,PNC,YEG";
+DS_YTe = "DBD,DBT,DCL,DHG,DMC,IMP,JVC,OPC,SPM,TNH,TRA,VDP,VMD";
+DS_ThietBiDienDuLich = "CAV,DQC,GEE,GEL,GEX,PAC,RAL,SHA,SHI,TYA,AST,DAH,DSN,NVT,OGC,TCT,VNG,VPL";
+
+Breadth_NganHang = TinhBreadth(DS_NganHang, 22);
+Breadth_BDS = TinhBreadth(DS_BDS, 57);
+Breadth_ChungKhoan = TinhBreadth(DS_ChungKhoan, 17);
+Breadth_BaoHiem = TinhBreadth(DS_BaoHiem, 5);
+Breadth_XayDung = TinhBreadth(DS_XayDung, 39);
+Breadth_ThepKhoangSan = TinhBreadth(DS_ThepKhoangSan, 13);
+Breadth_DauKhiDienNuoc = TinhBreadth(DS_DauKhiDienNuoc, 36);
+Breadth_HoaChatCaoSu = TinhBreadth(DS_HoaChatCaoSu, 20);
+Breadth_ThucPhamNongSan = TinhBreadth(DS_ThucPhamNongSan, 32);
+Breadth_BanLeOto = TinhBreadth(DS_BanLeOto, 14);
+Breadth_DetMayGo = TinhBreadth(DS_DetMayGo, 22);
+Breadth_LogisticsVanTai = TinhBreadth(DS_LogisticsVanTai, 29);
+Breadth_CongNgheVienThong = TinhBreadth(DS_CongNgheVienThong, 14);
+Breadth_YTe = TinhBreadth(DS_YTe, 13);
+Breadth_ThietBiDienDuLich = TinhBreadth(DS_ThietBiDienDuLich, 18);
+
+Breadth_TB_Chung = (Breadth_NganHang+Breadth_BDS+Breadth_ChungKhoan+Breadth_BaoHiem+Breadth_XayDung
+    +Breadth_ThepKhoangSan+Breadth_DauKhiDienNuoc+Breadth_HoaChatCaoSu+Breadth_ThucPhamNongSan
+    +Breadth_BanLeOto+Breadth_DetMayGo+Breadth_LogisticsVanTai+Breadth_CongNgheVienThong
+    +Breadth_YTe+Breadth_ThietBiDienDuLich) / 15;
+
+MaTenBG = Name();
+TrongNH = StrFind("," + DS_NganHang + ",", "," + MaTenBG + ",") > 0;
+TrongBDS = StrFind("," + DS_BDS + ",", "," + MaTenBG + ",") > 0;
+TrongCK = StrFind("," + DS_ChungKhoan + ",", "," + MaTenBG + ",") > 0;
+TrongBH = StrFind("," + DS_BaoHiem + ",", "," + MaTenBG + ",") > 0;
+TrongXD = StrFind("," + DS_XayDung + ",", "," + MaTenBG + ",") > 0;
+TrongTK = StrFind("," + DS_ThepKhoangSan + ",", "," + MaTenBG + ",") > 0;
+TrongDK = StrFind("," + DS_DauKhiDienNuoc + ",", "," + MaTenBG + ",") > 0;
+TrongHC = StrFind("," + DS_HoaChatCaoSu + ",", "," + MaTenBG + ",") > 0;
+TrongTP = StrFind("," + DS_ThucPhamNongSan + ",", "," + MaTenBG + ",") > 0;
+TrongBL = StrFind("," + DS_BanLeOto + ",", "," + MaTenBG + ",") > 0;
+TrongDM = StrFind("," + DS_DetMayGo + ",", "," + MaTenBG + ",") > 0;
+TrongLG = StrFind("," + DS_LogisticsVanTai + ",", "," + MaTenBG + ",") > 0;
+TrongCN = StrFind("," + DS_CongNgheVienThong + ",", "," + MaTenBG + ",") > 0;
+TrongYT = StrFind("," + DS_YTe + ",", "," + MaTenBG + ",") > 0;
+TrongTB = StrFind("," + DS_ThietBiDienDuLich + ",", "," + MaTenBG + ",") > 0;
+
+BreadthPctNganh = IIf(TrongNH, Breadth_NganHang,
+                   IIf(TrongBDS, Breadth_BDS,
+                   IIf(TrongCK, Breadth_ChungKhoan,
+                   IIf(TrongBH, Breadth_BaoHiem,
+                   IIf(TrongXD, Breadth_XayDung,
+                   IIf(TrongTK, Breadth_ThepKhoangSan,
+                   IIf(TrongDK, Breadth_DauKhiDienNuoc,
+                   IIf(TrongHC, Breadth_HoaChatCaoSu,
+                   IIf(TrongTP, Breadth_ThucPhamNongSan,
+                   IIf(TrongBL, Breadth_BanLeOto,
+                   IIf(TrongDM, Breadth_DetMayGo,
+                   IIf(TrongLG, Breadth_LogisticsVanTai,
+                   IIf(TrongCN, Breadth_CongNgheVienThong,
+                   IIf(TrongYT, Breadth_YTe,
+                   IIf(TrongTB, Breadth_ThietBiDienDuLich,
+                   Breadth_TB_Chung)))))))))))))));
+
+// CAN DOI: thay vi CHAN CUNG (co/khong), GIAM TY TRONG theo 3 muc - van cho
+// tham gia ngay ca nganh yeu (chi it von hon), khong bo lo hoan toan co hoi.
+// Da kiem chung Python: Sharpe giu nguyen (0.73), Drawdown con em hon.
+// SUA LOI: truoc day dung 100/50/20 (% TUYET DOI cua von) - khien 1 lenh
+// nganh manh co the "nuot het" von, lam cac lenh sau khong con tien du du
+// con "cho trong" (chua du 8 vi the). Sua lai dung CACH: nhan he so vao
+// dung moc chuan 100/8=12.5% (giong ban goc), khong dung % tuyet doi.
+MocChuan = 100/8; // 12.5%
+TyTrongTheoNganh = IIf(BatBreadthGate,
+    IIf(BreadthPctNganh>=NguongManh, MocChuan*1.0,
+    IIf(BreadthPctNganh>=NguongYeu, MocChuan*0.5,
+    MocChuan*0.2)),
+    MocChuan);
+BreadthOk15 = 1; // khong con chan cung nua, luon cho phep (chi doi ty trong)
+
+// THANH KHOAN GATE + GIA TOI THIEU GATE - dong bo voi ban web
+// (7_Export_LenWeb.afl): loai co phieu khoi luong qua thap hoac gia "tra"
+// (duoi 10 nghin dong) ra khoi tin hieu MUA, du diem so co the dat nguong.
+NguongKLTB20ToiThieu = Param("Nguong KL trung binh 20 phien toi thieu (co phieu)", 80000, 0, 5000000, 10000);
+ThanhKhoanKL_Ok = MA(V,20) >= NguongKLTB20ToiThieu;
+NguongGiaToiThieu = Param("Nguong gia toi thieu de duoc coi la giao dich duoc (nghin dong)", 10, 0, 100, 1);
+GiaToiThieuOk = C >= NguongGiaToiThieu;
+
+Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSVNI_OK AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
+
+// QUYET DINH CUOI CUNG sau 2 lan that bai: KHONG gop Stop-loss vao Sell
+// bang vong lap nua (da gay loi 2 lan lien tiep). Dung cau truc DON GIAN,
+// ON DINH NHAT: Sell = tin hieu (TurnedPink/MatThan) + T+2.5. Rieng Stop-loss
+// la lop THAT SU trong Backtest qua ApplyStop() (xem ben duoi, luon dung),
+// con tren Card CHI la dong canh bao THAM KHAO, KHONG tu doi trang thai.
+// Mat Than gio la CHI TIEU PHU (hien thi tham khao tren Card), KHONG con
+// quyet dinh Mua/Ban - da xac nhan qua Backtest that.
+SellRaw = TurnedPink;
+DuT2 = BarsSince(Buy) >= 2;
+SellTinHieu = SellRaw AND DuT2;
+
+// SUA LOI QUAN TRONG: KHONG ExRem(Buy, SellTinHieu) o day nua - vi luc nay
+// SellTinHieu CHUA biet ve cac lan Ban do cham Stop-loss, khien ExRem xoa
+// NHAM cac tin hieu Mua MOI hop le sau moi lan cat lo (day la nguyen nhan
+// "mat nhieu diem mua" da gap). Vong lap ben duoi se TU XU LY dung viec
+// "chi vao lenh khi CHUA dang giu", khong can ExRem truoc.
+
+// GOP STOP-LOSS VAO SELL (lan 3, da kiem tra ky thu tu bien truoc khi sua).
+// Dung vong lap voi TRANG THAI RIENG (khong dung DangGiuLenhVT ben trong,
+// tranh vong lap tu tham chieu - day la nguyen nhan gay loi lan 1).
+Sell = 0;
+LyDoBan = 0;   // 0=chua ban, 1=TurnedPink(diem so), 2=Stop-loss
+GiuTrongVongLap = 0;
+GiaVaoTrongVongLap = 0;
+ATRVaoTrongVongLap = 0;
+for (i = 1; i < BarCount; i++)
+{
+    if (GiuTrongVongLap[i-1] == 1)
+    {
+        // DANG GIU - kiem tra dieu kien thoat TRUOC, bo qua Buy neu co
+        // (dung y het ExRem: khong vao lenh lap khi dang giu).
+        GiaVaoTrongVongLap[i] = GiaVaoTrongVongLap[i-1];
+        ATRVaoTrongVongLap[i] = ATRVaoTrongVongLap[i-1];
+        stopATR_vonglap = ATRVaoTrongVongLap[i] * ATRMult;
+        stopPhanTram_vonglap = GiaVaoTrongVongLap[i] * (HardStopPct/100);
+        stopGiaThucTe_vonglap = GiaVaoTrongVongLap[i] - Min(stopATR_vonglap, stopPhanTram_vonglap);
+
+        // STOP-LOSS CO DIEU KIEN - DA CHOT CHINH THUC: chi kich hoat khi
+        // TotalScore dang AM tai dung phien do.
+        DiemAmChoStop = TotalScore[i] < 0;
+        ChamStopThat = (L[i] <= stopGiaThucTe_vonglap) AND DiemAmChoStop;
+
+        if (SellTinHieu[i] == 1 OR ChamStopThat)
+        {
+            Sell[i] = 1;
+            LyDoBan[i] = IIf(ChamStopThat, 2, 1); // uu tien ghi Stop-loss neu ca 2 cung dung
+            GiuTrongVongLap[i] = 0;
+        }
+        else
+        {
+            Sell[i] = 0;
+            GiuTrongVongLap[i] = 1;
+        }
+    }
+    else if (Buy[i])
+    {
+        // CHUA GIU - Buy moi kich hoat vao lenh
+        GiuTrongVongLap[i] = 1;
+        GiaVaoTrongVongLap[i] = C[i];
+        ATRVaoTrongVongLap[i] = ATRVal[i];
+    }
+    else
+    {
+        GiuTrongVongLap[i] = 0;
+    }
+}
+Buy = GiuTrongVongLap AND NOT Ref(GiuTrongVongLap,-1); // TAI TAO Buy dung: chi
+    // ngay THAT SU bat dau giu lenh (khop voi vong lap, khong con lenh Mua
+    // "thua" nao bi sot lai tu truoc khi qua ExRem sai)
+Sell = ExRem(Sell, Buy);
+
+
+// (Da BO tinh nang "Vung tham gia them" - gay nham lan/loi, khong dang tin cay)
+
+SoViTheToiDa = Param("SO VI THE TOI DA (thay the Settings->Portfolio)", 8, 4, 30, 1);
+SetOption("MaxOpenPositions", SoViTheToiDa);
+
+SetPositionSize(TyTrongTheoNganh, spsPercentOfEquity);
+SetOption("CommissionMode", 1);
+SetOption("CommissionAmount", 0.25);
+
+// ATRVal da chuyen len som hon (canh ATRMult/HardStopPct) de dung duoc trong vong lap Sell
+
+// STOP-LOSS: "DONG BANG" ATR va gia VAO LENH tai dung thoi diem Mua (khong
+// tinh lai theo ATR/gia moi ngay nhu truoc) + THEM CHAN AN TOAN theo % toi
+// da. Ly do: ATR thuong NO RONG dung luc gia dang roi manh, neu dung ATR
+// "song" (moi ngay) thi khoang dung se tu dong gian ra theo, khien lenh thua
+// sau hon du dinh (day chinh la nguyen nhan gay lenh thua toi 15%+ da gap).
+// He thong se dung khoang cach nao HEP HON trong 2 loai (ATR hoac % toi da).
+ATRTaiVaoLenh    = ValueWhen(Buy, ATRVal, 1);
+// GIA MUA THUC TE - nhap tay SAU KHI da khop lenh that (dua theo diem canh
+// gio o khung 15 phut). AmiBroker KHONG THE tu dong biet ban da bam mua o
+// gia nao trong ngay - day la lua chon thu cong cua ban, nen PHAI nhap tay.
+// De = 0 (mac dinh) neu chua co lenh nao dang mo, hoac muon dung gia dong
+// cua ngay tin hieu nhu binh thuong.
+GiaMuaThucTe_Nhap = Param("Buoc 1: Go gia MUA THUC TE vao day", 0, 0, 999999, 0.01);
+LuuGiaChoMaNay = ParamTrigger("Buoc 2: Bam de LUU gia cho DUNG MA NAY", "Luu gia");
+// PHAI bam nut moi luu - KHONG tu dong luu chi vi o nhap con > 0, vi Param()
+// khong tu reset ve 0 khi doi ma (van hien so cu tren hop), neu tu dong luu
+// se bi "dinh" nham gia cua ma truoc sang ma vua doi toi.
+if (LuuGiaChoMaNay AND LastValue(GiaMuaThucTe_Nhap) > 0)
+{
+    StaticVarSet("DaoGam_GiaMua_" + Name(), LastValue(GiaMuaThucTe_Nhap));
+}
+XoaGiaDaLuu = ParamTrigger("Hoac: Xoa gia da luu cho MA NAY", "Xoa gia");
+if (XoaGiaDaLuu)
+{
+    StaticVarSet("DaoGam_GiaMua_" + Name(), 0);
+}
+GiaMuaThucTe = Nz(StaticVarGet("DaoGam_GiaMua_" + Name()));
+GiaVaoLenh_MacDinh = ValueWhen(Buy, C, 1);
+CoNhapGiaThucTe = GiaMuaThucTe > 0;
+GiaVaoLenh       = IIf(CoNhapGiaThucTe, GiaMuaThucTe, GiaVaoLenh_MacDinh);
+
+// TARGET CHO LENH HIEN TAI - sua lai CHINH XAC hon ban cu (ban cu la target
+// "troi noi" theo cau truc gia gan nhat, KHONG lien quan gi toi viec co dang
+// giu lenh hay khong - de gay hieu nham). Ban moi: dung DUNG 2 diem A (day)
+// va B (dinh) cua con song DAN TOI diem Mua nay, dong bang gia tri tai DUNG
+// thoi diem Mua (giong cach GiaVaoLenh da lam), roi chieu bien do song do tu
+// GIA VAO LENH THAT - danh gia chinh xac "target cua lenh nay", khong phai
+// target chung chung cua thi truong.
+// (Da don gian hoa - khong con dung A-B-C/4-TP phuc tap nua. Muc chot loi
+// tham khao gio dung THANG Khang cu gan nhat da co san, on dinh - xem duoi)
+DiemDungATR      = ATRTaiVaoLenh * ATRMult;
+DiemDungPhanTram = GiaVaoLenh * (HardStopPct/100);
+DiemDungThucTe   = Min(DiemDungATR, DiemDungPhanTram);
+
+ApplyStop(stopTypeLoss, stopModePoint, DiemDungThucTe, True);
+
+StopLossPrice = GiaVaoLenh - DiemDungThucTe;
+KhoangCachKijun = (C - Kijun) / C * 100;
+KhoangCachGG = (C - (GGTop+GGBot)/2) / C * 100;
+
+Dinh52T = HHV(H, 252); Day52T = LLV(L, 252);
+DinhGanNhat = HHV(H, 60); DayGanNhat = LLV(L, 60);
+
+KC1=IIf(Dinh52T>C,Dinh52T,1e10);
+KC2=IIf(GGTop>C,GGTop,1e10);
+KC3=IIf(CloudTop>C,CloudTop,1e10);
+KC4=IIf(DinhGanNhat>C,DinhGanNhat,1e10);
+KhangCuGanNhat_V2 = Min(Min(KC1,KC2),Min(KC3,KC4));
+KhangCuCungNhat = IIf(Dinh52T>C, Dinh52T, KhangCuGanNhat_V2);
+// Muc chot loi tham khao = KHANG CU GAN NHAT da co san (on dinh, luon co
+// gia tri, khong phu thuoc tim pivot A-B-C phuc tap de loi nhu truoc).
+// 3 MOC CHOT LOI - dung 3 nguon Khang cu da co san, ON DINH (khong tim
+// pivot phuc tap): Dinh gan (60 phien, ngan han), Mua/Giao Gam (trung han),
+// Dinh 52 tuan (dai han). Sap xep dam bao dung thu tu GAN -> XA du nguon
+// nao lon hon (dung 1 trong nhung mo hinh sap xep 3-gia-tri co ban).
+NguonGan   = DinhGanNhat;
+NguonGiua  = Max(GGTop, CloudTop);
+NguonXa    = Dinh52T;
+Tong3Nguon = NguonGan + NguonGiua + NguonXa;
+ChotLoi_TP1 = Min(Min(NguonGan,NguonGiua),NguonXa);          // gan nhat
+ChotLoi_TP3 = Max(Max(NguonGan,NguonGiua),NguonXa);          // xa nhat
+ChotLoi_TP2 = Tong3Nguon - ChotLoi_TP1 - ChotLoi_TP3;          // con lai o giua
+
+// DONG BANG 3 moc TP tai DUNG thoi diem Mua (giong cach da lam voi GiaVaoLenh
+// va StopLossPrice) - tranh TP "chay theo" gia moi ngay, gay kho theo doi.
+ChotLoi_TP1_TaiMua = ValueWhen(Buy, ChotLoi_TP1, 1);
+ChotLoi_TP2_TaiMua = ValueWhen(Buy, ChotLoi_TP2, 1);
+ChotLoi_TP3_TaiMua = ValueWhen(Buy, ChotLoi_TP3, 1);
+
+TargetChoLenh = ChotLoi_TP1_TaiMua;   // giu ten cu de tuong thich cac cho khac
+
+HT1=IIf(Day52T<C,Day52T,-1e10);
+HT2=IIf(GGBot<C,GGBot,-1e10);
+HT3=IIf(CloudBot<C,CloudBot,-1e10);
+HT4=IIf(DayGanNhat<C,DayGanNhat,-1e10);
+HoTroGanNhat_V2 = Max(Max(HT1,HT2),Max(HT3,HT4));
+HoTroCungNhat = IIf(Day52T<C, Day52T, HoTroGanNhat_V2);
+
+VNI_Close = Foreign("VNINDEX", "C");
+Perf20_Ma = C/Ref(C,-20) - 1;
+Perf20_VNI = VNI_Close/Ref(VNI_Close,-20) - 1;
+RS_SoVoiVNI = (Perf20_Ma - Perf20_VNI) * 100;
+
+// --- PHAN 2: DIEM RANK (0-100) - "setup nay co CHAT LUONG khong" - ghep tu
+// CHINH cac tin hieu Dao Gam da co san (Sanyaku, FVG, ADX, Breadth, RS/VNI),
+// KHONG dung du lieu/cong thuc tu nguon nao khac. ---
+RankTuSanyaku   = (SoDiemSanyaku / 3) * 25;                          // toi da 25
+RankTuFVG       = IIf(FVGDuLon, 20, IIf(InFVGZone, 10, 0));          // toi da 20
+RankTuADX       = Min(20, ADXVal / 40 * 20);                          // toi da 20 (ADX=40 -> full diem)
+RankTuBreadth   = Min(20, BreadthPctNganh / 60 * 20);                 // toi da 20 (Breadth>=60% -> full)
+RankTuRS_VNI    = IIf(RS_SoVoiVNI > 0, 15, Max(0, 15 + RS_SoVoiVNI)); // toi da 15
+DiemRank = RankTuSanyaku + RankTuFVG + RankTuADX + RankTuBreadth + RankTuRS_VNI;
+
+// --- PHAN 3: DIEM CONFIDENCE (0-100) - "he thong CO CHAC voi huong nay
+// khong" - do bang muc do DONG THUAN giua 3 thanh phan diem (Trend/Mom/DT)
+// va so phien da giu vung xu huong. ---
+CungDauTrend = Sign(TrendScore);
+CungDauMom   = Sign(MomScore);
+CungDauDT    = Sign(MFScore);
+SoThanhPhanDongThuan = (CungDauTrend==CungDauMom) + (CungDauTrend==CungDauDT) + (CungDauMom==CungDauDT);
+DiemDongThuan = SoThanhPhanDongThuan / 3 * 60;                        // toi da 60 (ca 3 cap deu dong thuan)
+SoPhienGiuXuHuong = BarsSince(Cross(TotalScore, 0) OR Cross(0, TotalScore));
+DiemBenVung = Min(40, SoPhienGiuXuHuong / 10 * 40);                   // toi da 40 (giu vung >=10 phien)
+DiemConfidence = DiemDongThuan + DiemBenVung;
+
+// --- PHAN 4: STOP THICH UNG (tuy chon) - Confidence cao -> Stop CHAT hon
+// (khoa loi som), Confidence thap -> Stop giu nguyen nhu goc (an toan). CHI
+// DUOC PHEP NOI RONG XUONG THAP HON he so goc, KHONG BAO GIO noi RONG hon
+// (dam bao khong tang rui ro so voi ban goc da kiem chung). ---
+DungStopThichUng = ParamToggle("Loc: Dung Stop thich ung theo Confidence (thu nghiem)", "Tat|Bat", 0);
+HeSoATR_ThichUng = IIf(DungStopThichUng,
+    ATRMult * (1.0 - (DiemConfidence/100) * 0.25),   // Confidence=100 -> giam toi da 25% he so ATR
+    ATRMult);
+
+// SUA LOI QUAN TRONG (da phat hien va sua lai an toan hon): DangGiuLenhVT
+// dung Flip(Buy,Sell) don gian, ON DINH. Rieng "co the da cham Stop" chi la
+// bien PHU de THAM KHAO, KHONG anh huong toi trang thai chinh.
+DangGiuLenhVT = Flip(Buy, Sell);
+// (Da bo ve Target len chart theo yeu cau - chi hien tren Card)
+
+GiaVaoLenh_ChoStop = GiaVaoLenh;  // dung chung bien co gia nhap tay, tranh lech nhau
+ATRVaoLenh_ChoStop = ValueWhen(Buy, ATRVal, 1);
+StopThucTe_ChoHienThi = Min(ATRVaoLenh_ChoStop*ATRMult, GiaVaoLenh_ChoStop*(HardStopPct/100));
+GiaStopThucTe_ChoHienThi = GiaVaoLenh_ChoStop - StopThucTe_ChoHienThi;
+CoTheDaChamStop = DangGiuLenhVT AND (C <= GiaStopThucTe_ChoHienThi);
+// Dau hieu CHI HIEN THI (khong dung vong lap - dung Ref() don gian, AN TOAN
+// hon cach cu da gay loi truoc do): danh dau dung ngay DAU TIEN gia cham
+// Stop, de ve 1 lan duy nhat tren chart, khong lap lai moi ngay sau do.
+ChamStopLanDau = CoTheDaChamStop AND NOT Ref(CoTheDaChamStop,-1);
+
+GiaMuaVT = GiaVaoLenh;  // dung chung bien co gia nhap tay, tranh lech nhau
+SoPhienNamGiuVT = BarsSince(Buy);
+LaiLoVT = IIf(GiaMuaVT>0, (C/GiaMuaVT-1)*100, 0);
+
+VuaMuaHomNay = Buy;
+DangGiuTuTruoc = DangGiuLenhVT AND NOT VuaMuaHomNay AND NOT Sell;
+BanHomNay = Sell;
+DungNgoai = NOT DangGiuLenhVT AND NOT VuaMuaHomNay;
+
+// CANH BAO BAN BOT - dong bo voi ban web: diem hom nay da tut xuong DUOI 0
+// (rong hon nguong Ban -ExitTh, canh bao SOM hon) nhung van dang giu lenh va
+// chua co tin hieu Ban that su hom nay.
+CanhBaoBanBot = DangGiuLenhVT AND TotalScore < 0 AND NOT BanHomNay;
+
+Plot(C, "Gia", IIf(C>=Ref(C,-1),ColorRGB(0,180,0),ColorRGB(220,50,50)), styleCandle);
+Plot(Tenkan, "Tenkan 9", ColorRGB(0,140,255), styleLine|styleThick);
+Plot(Kijun, "Kijun 17", ColorRGB(255,140,0), styleLine|styleThick);
+
+CloudBullish = SenkouA > SenkouB;
+CloudColor = IIf(CloudBullish, ColorRGB(0,120,0), ColorRGB(150,0,0));
+PlotOHLC(CloudTop, CloudTop, CloudBot, CloudBot, "May", CloudColor, styleCloud|styleNoLabel);
+
+Plot(GGTop, "Giao Gam tren (65)", ColorRGB(139,90,43), styleLine|styleThick|styleDashed);
+Plot(GGBot, "Giao Gam duoi (129)", ColorRGB(90,50,20), styleLine|styleThick|styleDashed);
+
+Plot(Dinh52T, "Dinh 52 tuan (CUNG)", colorGrey40, styleLine|styleDots|styleNoLabel|styleThick);
+Plot(Day52T, "Day 52 tuan (CUNG)", colorGrey40, styleLine|styleDots|styleNoLabel|styleThick);
+Plot(DinhGanNhat, "Dinh 3 thang", ColorRGB(218,165,32), styleLine|styleDashed|styleNoLabel);
+Plot(DayGanNhat, "Day 3 thang", ColorRGB(218,165,32), styleLine|styleDashed|styleNoLabel);
+
+PlotShapes(IIf(Buy,shapeUpArrow,shapeNone), colorBrightGreen, 0, L, -35);
+PlotShapes(IIf(Buy,shapeCircle,shapeNone), colorBrightGreen, 0, L, -20);
+PlotShapes(IIf(Sell,shapeDownArrow,shapeNone), ColorRGB(255,0,80), 0, H, 35);
+PlotShapes(IIf(Sell,shapeCircle,shapeNone), ColorRGB(255,0,80), 0, H, 20);
+
+// DAU HIEU RIENG cho ngay CHAM STOP-LOSS (mau cam, khac mau do cua Sell
+// theo tin hieu diem so, de phan biet ro 2 loai "thoat lenh" khac nhau).
+// Dung shapeCircle (da xac nhan hoat dong dung) thay vi shape la chua chac chan.
+PlotShapes(IIf(ChamStopLanDau,shapeCircle,shapeNone), ColorRGB(255,140,0), 0, L, -50);
+
+if (Status("action") == actionIndicator)
+{
+    GfxSetBkMode(1);
+    GfxSelectFont("Arial", 9, 400);
+    pxW = Status("pxwidth");
+    pxH = Status("pxheight");
+
+    DateTimeArr = DateTime();
+    CursorDT = GetCursorXPosition(0);
+    CursorDT = IIf(IsNull(CursorDT), LastValue(DateTimeArr), CursorDT);
+    CountBeforeCursor = LastValue(Sum(DateTimeArr <= CursorDT, BarCount));
+    CursorBar = Max(0, Min(BarCount - 1, CountBeforeCursor - 1));
+
+    buy_c          = Buy[CursorBar];
+    sell_c         = Sell[CursorBar];
+    lydoban_c      = LyDoBan[CursorBar];
+    diem_c         = TotalScore[CursorBar];
+    trend_c        = TrendScore[CursorBar];
+    mom_c          = MomScore[CursorBar];
+    mf_c           = MFScore[CursorBar];
+    adx_c          = ADXVal[CursorBar];
+    breadthNganh_c = BreadthPctNganh[CursorBar];
+    adxGateOk_c    = ADXGateOk[CursorBar];
+    matthan_c      = MatThanWarning[CursorBar];
+    banbot_c       = CanhBaoBanBot[CursorBar];
+    rsi_c          = RSIVal[CursorBar];
+    mfi_c          = MFIVal[CursorBar];
+    vol_c          = V[CursorBar];
+    relvol_c       = RelVol[CursorBar];
+    volgatengay1_c = VolumeGateNgayDau[CursorBar];
+    vuavaovung_c   = VuaVaoVungMua[CursorBar];
+    infvg_c        = InFVGZone[CursorBar];
+    fvgDuLon_c     = FVGDuLon[CursorBar];
+    doLonFVG_c     = DoLonSoATR_FVG[CursorBar];
+    breakout_c     = BreakoutManh[CursorBar];
+    rs_c           = RS_SoVoiVNI[CursorBar];
+    stoploss_c     = StopLossPrice[CursorBar];
+    dungATR_c      = DiemDungATR[CursorBar] <= DiemDungPhanTram[CursorBar];
+    danggiu_c      = DangGiuLenhVT[CursorBar];
+    coNhapGia_c    = CoNhapGiaThucTe[CursorBar];
+    twistTang_c    = MayTuongLaiDoiChieuTang[CursorBar];
+    twistGiam_c    = MayTuongLaiDoiChieuGiam[CursorBar];
+    kijunPhang_c   = KijunDangPhang[CursorBar];
+    senkouBPhang_c = SenkouBDangPhang[CursorBar];
+    kijun_c        = Kijun[CursorBar];
+    senkouB_c      = SenkouB[CursorBar];
+    tp1_c = ChotLoi_TP1_TaiMua[CursorBar];
+    tp2_c = ChotLoi_TP2_TaiMua[CursorBar];
+    tp3_c = ChotLoi_TP3_TaiMua[CursorBar];
+    sanyaku_c      = SoDiemSanyaku[CursorBar];
+    rank_c         = DiemRank[CursorBar];
+    confidence_c2  = DiemConfidence[CursorBar];
+    rsiThongMinh_c = RSI_ThongMinh[CursorBar];
+    retestMay_c    = DangRetestMay[CursorBar];
+    ngayBienDoi_c  = DungNgayBienDoi[CursorBar];
+    soPhienPivot_c = SoPhienTuPivot[CursorBar];
+    chamstop_c     = CoTheDaChamStop[CursorBar];
+    
+    giamua_c       = GiaMuaVT[CursorBar];
+    sophien_c      = SoPhienNamGiuVT[CursorBar];
+    laino_c        = LaiLoVT[CursorBar];
+    kccung_c       = KhangCuCungNhat[CursorBar];
+    kcgan_c        = KhangCuGanNhat_V2[CursorBar];
+    htcung_c       = HoTroCungNhat[CursorBar];
+    htgan_c        = HoTroGanNhat_V2[CursorBar];
+    vuamua_c       = VuaMuaHomNay[CursorBar];
+    danggiutruoc_c = DangGiuTuTruoc[CursorBar];
+    dungngoai_c    = DungNgoai[CursorBar];
+    date_c         = DateTimeArr[CursorBar];
+    kijunkc_c      = KhoangCachKijun[CursorBar];
+
+    MauChinh = IIf(vuamua_c, colorBrightGreen,
+               IIf(danggiutruoc_c, colorYellow,
+               IIf(sell_c, ColorRGB(255,80,80),
+               ColorRGB(90,90,90))));
+    KNTxt = WriteIf(vuamua_c,"MUA",WriteIf(danggiutruoc_c,"NAM GIU",WriteIf(sell_c,"BAN","TRUNG LAP")));
+
+    tongW = Min(pxW - 20, 960);
+    moiCardW = tongW/3 - 8;
+    // CO GIAN CHIEU CAO CARD theo man hinh - tranh tran ra ngoai khi man
+    // hinh thap (laptop nho). 360 la chieu cao "chuan" thiet ke goc; neu
+    // man hinh cao hon 400px danh cho Card, giu nguyen 360; neu thap hon,
+    // thu nho theo ty le (toi thieu 260 de van doc duoc).
+    cH = Max(260, Min(360, pxH - 40));
+    cY = 10;
+    c1X = 10;
+    c2X = c1X + moiCardW + 12;
+    c3X = c2X + moiCardW + 12;
+
+    GfxSelectPen(ColorRGB(200,197,188), 1); GfxSelectSolidBrush(ColorRGB(250,248,242));
+    GfxRoundRect(c1X, cY, c1X+moiCardW, cY+cH, 10, 10);
+    yy=cY+10;
+    GfxSetTextColor(ColorRGB(50,48,45));
+    GfxTextOut(Name()+" - "+WriteVal(date_c,formatDateTime), c1X+12, yy); yy=yy+20;
+
+    GfxSelectPen(colorBlack); GfxSelectSolidBrush(MauChinh);
+    GfxRoundRect(c1X+12, yy, c1X+100, yy+20, 5, 5);
+    GfxSetTextColor(colorBlack);
+    GfxTextOut(KNTxt, c1X+18, yy+2);
+    GfxSetTextColor(ColorRGB(50,48,45));
+    GfxTextOut("Diem:"+NumToStr(diem_c,1.2), c1X+108, yy+2);
+    yy=yy+28;
+
+    GfxSetTextColor(ColorRGB(110,108,100));
+    GfxTextOut("Trend="+NumToStr(trend_c,1.1)+" Mom="+NumToStr(mom_c,1.1)+" DT="+NumToStr(mf_c,1.1), c1X+12, yy); yy=yy+16;
+    GfxTextOut("ADX="+NumToStr(adx_c,1.1)+" RSI="+NumToStr(rsi_c,1.1)+" MFI="+NumToStr(mfi_c,1.1), c1X+12, yy); yy=yy+18;
+    MauADXGate = IIf(adxGateOk_c, colorBrightGreen, ColorRGB(255,80,80));
+    GfxSetTextColor(MauADXGate);
+    GfxTextOut("ADX Gate: "+WriteIf(adxGateOk_c,"DAT (>="+NumToStr(ADXGateLv,1.0)+")","CHUA DAT"), c1X+12, yy); yy=yy+18;
+    MauMatThan = IIf(matthan_c, ColorRGB(255,80,80), ColorRGB(120,120,120));
+    GfxSetTextColor(MauMatThan);
+    GfxTextOut("Mat Than: "+WriteIf(matthan_c,"CANH BAO! (chi tham khao)","Binh thuong"), c1X+12, yy); yy=yy+18;
+    if (banbot_c)
+    {
+        GfxSetTextColor(ColorRGB(255,150,0));
+        GfxTextOut("BAN BOT: diem da am, chua du dieu kien Ban han", c1X+12, yy); yy=yy+18;
+    }
+    MauFVG = IIf(infvg_c, colorBrightGreen, ColorRGB(255,80,80));
+    GfxSetTextColor(MauFVG);
+    GhiChuFVG = WriteIf(CheDoFVG=="Luon TAT", " (che do: Luon TAT)",
+                WriteIf(CheDoFVG=="Luon BAT", " (che do: Luon BAT)",
+                WriteIf(breakout_c, " (Breakout manh - bo qua FVG)", " (che do: Thong minh)")));
+    GfxTextOut("FVG Zone: "+WriteIf(infvg_c,WriteIf(fvgDuLon_c,"DANG MO (du lon)","Trong vung (QUA NHO)"),"KHONG CO/DA DONG")+GhiChuFVG, c1X+12, yy); yy=yy+18;
+    if (infvg_c)
+    {
+        GfxSetTextColor(ColorRGB(110,108,100));
+        GfxTextOut("  (Do lon FVG/ATR: "+NumToStr(doLonFVG_c,1.2)+"x)", c1X+12, yy); yy=yy+18;
+        GfxSetTextColor(ColorRGB(50,48,45));
+    }
+    MauBreadthQ = IIf(breadthNganh_c>=NguongManh, colorBrightGreen, IIf(breadthNganh_c>=NguongYeu, colorYellow, ColorRGB(255,80,80)));
+    GfxSetTextColor(MauBreadthQ);
+    GfxTextOut("Breadth nganh: "+NumToStr(breadthNganh_c,1.0)+"%", c1X+12, yy); yy=yy+18;
+    GfxSetTextColor(ColorRGB(50,48,45));
+    GfxTextOut("Vol: "+NumToStr(vol_c,1.0)+" ("+NumToStr(relvol_c,1.2)+"x TB20)", c1X+12, yy); yy=yy+18;
+    if (vuavaovung_c)
+    {
+        MauVolGate = IIf(volgatengay1_c, colorBrightGreen, ColorRGB(255,80,80));
+        GfxSetTextColor(MauVolGate);
+        GfxTextOut("Vol Gate Ngay1: "+WriteIf(volgatengay1_c,"DAT (mua ngay)","CHUA DAT (doi T2)"), c1X+12, yy); yy=yy+18;
+    }
+    GfxSetTextColor(IIf(rs_c>=0,colorBrightGreen,ColorRGB(255,80,80)));
+    GfxTextOut("RS/VNI(20p): "+NumToStr(rs_c,1.2)+"%", c1X+12, yy); yy=yy+18;
+    GfxSetTextColor(colorYellow);
+    GfxTextOut("Stop-loss: "+NumToStr(stoploss_c,1.2)+WriteIf(dungATR_c," (theo ATR)"," (theo % toi da "+NumToStr(HardStopPct,1.1)+"%)"), c1X+12, yy);
+    yy=yy+18;
+    if (chamstop_c)
+    {
+        GfxSetTextColor(ColorRGB(255,0,0));
+        GfxTextOut("*** GIA DA CHAM/VUOT STOP-LOSS! ***", c1X+12, yy); yy=yy+16;
+        GfxTextOut("(Trong Backtest that: LENH NAY DA DONG.", c1X+12, yy); yy=yy+16;
+        GfxTextOut("Trang thai/Lai-Lo tren Card co the KHONG", c1X+12, yy); yy=yy+16;
+        GfxTextOut("con chinh xac - chi mang tinh tham khao)", c1X+12, yy);
+    }
+
+    GfxSelectPen(ColorRGB(200,197,188), 1); GfxSelectSolidBrush(ColorRGB(250,248,242));
+    GfxRoundRect(c2X, cY, c2X+moiCardW, cY+cH, 10, 10);
+    zy=cY+10;
+    GfxSetTextColor(ColorRGB(50,48,45));
+    GfxTextOut("HO TRO / KHANG CU", c2X+12, zy); zy=zy+22;
+    GfxSetTextColor(ColorRGB(255,110,110));
+    GfxTextOut("KC 52T (cung): "+WriteIf(kccung_c>=1e9,"Khong co",NumToStr(kccung_c,1.2)), c2X+12, zy); zy=zy+18;
+    GfxSetTextColor(ColorRGB(110,108,100));
+    GfxTextOut("KC gan: "+WriteIf(kcgan_c>=1e9,"Khong co",NumToStr(kcgan_c,1.2)), c2X+12, zy); zy=zy+22;
+    GfxSetTextColor(colorBrightGreen);
+    GfxTextOut("HT 52T (cung): "+WriteIf(htcung_c<=-1e9,"Khong co",NumToStr(htcung_c,1.2)), c2X+12, zy); zy=zy+18;
+    GfxSetTextColor(ColorRGB(110,108,100));
+    GfxTextOut("HT gan: "+WriteIf(htgan_c<=-1e9,"Khong co",NumToStr(htgan_c,1.2)), c2X+12, zy); zy=zy+22;
+    GfxSetTextColor(ColorRGB(50,48,45));
+    GfxTextOut("Cach Kijun: "+NumToStr(kijunkc_c,1.2)+"%", c2X+12, zy); zy=zy+22;
+
+    // Kumo Twist tuong lai
+    if (twistTang_c OR twistGiam_c)
+    {
+        GfxSetTextColor(IIf(twistTang_c, colorBrightGreen, ColorRGB(255,90,90)));
+        GfxTextOut("May TL sap doi chieu "+WriteIf(twistTang_c,"TANG!","GIAM!"), c2X+12, zy); zy=zy+18;
+    }
+
+    // Flat Kijun / Flat SenkouB (nam cham gia)
+    if (kijunPhang_c)
+    {
+        GfxSetTextColor(ColorRGB(140,170,255));
+        GfxTextOut("Kijun PHANG ("+NumToStr(kijun_c,1.2)+") - nam cham", c2X+12, zy); zy=zy+18;
+    }
+    if (senkouBPhang_c)
+    {
+        GfxSetTextColor(ColorRGB(140,170,255));
+        GfxTextOut("SenkouB PHANG ("+NumToStr(senkouB_c,1.2)+") - nam cham", c2X+12, zy); zy=zy+18;
+    }
+
+    // 3 MOC CHOT LOI - chi hien tung moc neu con cao hon gia (moc da vuot
+    // qua thi khong hien nua, coi nhu "da chot xong phan do").
+    if (danggiu_c AND (tp1_c > C[CursorBar] OR tp2_c > C[CursorBar] OR tp3_c > C[CursorBar]))
+    {
+        GfxSetTextColor(ColorRGB(200,140,0));
+        GfxTextOut("3 muc chot loi tung phan:", c2X+12, zy); zy=zy+16;
+        if (tp1_c > C[CursorBar])
+            { GfxTextOut("  TP1 (gan, ngan han): "+NumToStr(tp1_c,1.2), c2X+12, zy); zy=zy+16; }
+        if (tp2_c > C[CursorBar])
+            { GfxTextOut("  TP2 (giua, trung han): "+NumToStr(tp2_c,1.2), c2X+12, zy); zy=zy+16; }
+        if (tp3_c > C[CursorBar])
+            { GfxTextOut("  TP3 (xa, 52 tuan): "+NumToStr(tp3_c,1.2), c2X+12, zy); zy=zy+16; }
+    }
+
+    // Sanyaku - diem chat luong 0-3 sao
+    GfxSetTextColor(IIf(sanyaku_c>=2, colorBrightGreen, ColorRGB(110,108,100)));
+    GfxTextOut("Sanyaku: "+NumToStr(sanyaku_c,1.0)+"/3 dieu kien dat", c2X+12, zy); zy=zy+22;
+
+    // RANK + CONFIDENCE (he thong goc, thu nghiem) - chi hien thi tham khao
+    GfxSetTextColor(IIf(rank_c>=60, colorBrightGreen, ColorRGB(110,108,100)));
+    GfxTextOut("Rank (chat luong setup): "+NumToStr(rank_c,1.0)+"/100", c2X+12, zy); zy=zy+18;
+    GfxSetTextColor(IIf(confidence_c2>=60, colorBrightGreen, ColorRGB(110,108,100)));
+    GfxTextOut("Confidence (do chac chan): "+NumToStr(confidence_c2,1.0)+"/100", c2X+12, zy); zy=zy+22;
+
+    // Volume-confirmed Retest
+    if (retestMay_c)
+    {
+        GfxSetTextColor(ColorRGB(255,180,0));
+        GfxTextOut("Dang RETEST May (co Volume truoc do)", c2X+12, zy); zy=zy+18;
+    }
+
+    // Time Theory - ngay bien doi
+    if (ngayBienDoi_c)
+    {
+        GfxSetTextColor(ColorRGB(255,100,255));
+        GfxTextOut("NGAY BIEN DOI! ("+NumToStr(soPhienPivot_c,1.0)+" phien tu pivot)", c2X+12, zy);
+        zy=zy+22;
+    }
+
+    // ----- CHU GIAI NGAN GON -----
+    GfxSelectFont("Arial", 9, 400);
+    GfxSetTextColor(ColorRGB(110,108,100));
+    GfxTextOut("Chu giai: Mat Than=canh bao Ban gap |", c2X+12, zy); zy=zy+14;
+    GfxTextOut("Mui ten tren/duoi May=canh bao dao chieu |", c2X+12, zy); zy=zy+14;
+    GfxTextOut("So mau tren chart=gia Target lenh dang giu", c2X+12, zy);
+
+    GfxSelectPen(colorWhite); GfxSelectSolidBrush(MauChinh);
+    GfxRoundRect(c3X, cY, c3X+moiCardW, cY+cH, 10, 10);
+    wy=cY+10;
+    GfxSetTextColor(colorBlack);
+    GfxSelectFont("Arial", 12, 700);
+    GfxTextOut("KHUYEN NGHI: "+KNTxt, c3X+12, wy); wy=wy+26;
+    GfxSelectFont("Arial", 9, 400);
+
+    if (danggiu_c)
+    {
+        GfxTextOut("Gia mua: "+NumToStr(giamua_c,1.2), c3X+12, wy); wy=wy+18;
+        if (coNhapGia_c)
+        {
+            GfxSetTextColor(ColorRGB(0,80,150));
+            GfxTextOut("(gia THUC TE da nhap tay)", c3X+12, wy); wy=wy+16;
+            GfxSetTextColor(colorBlack);
+        }
+        else
+        {
+            GfxSetTextColor(ColorRGB(80,80,80));
+            GfxTextOut("(gia dong cua ngay tin hieu - chua nhap tay)", c3X+12, wy); wy=wy+16;
+            GfxSetTextColor(colorBlack);
+        }
+        GfxTextOut("So phien nam giu: "+NumToStr(sophien_c,1.0), c3X+12, wy); wy=wy+18;
+        GfxTextOut("Lai/Lo: "+NumToStr(laino_c,1.2)+"%", c3X+12, wy); wy=wy+18;
+    }
+    else
+    {
+        GfxTextOut("Khong co vi the dang mo", c3X+12, wy); wy=wy+18;
+        if (sell_c)
+        {
+            GfxSetTextColor(ColorRGB(200,0,0));
+            GfxTextOut("Ly do Ban: "+WriteIf(lydoban_c==2,"STOP-LOSS (cham gia dung lo)",
+                       WriteIf(lydoban_c==1,"DIEM SO (3 phien xac nhan)","")), c3X+12, wy); wy=wy+18;
+            GfxSetTextColor(colorBlack);
+        }
+    }
+
+    GfxSetTextColor(colorBlack);
+    GfxTextOut("(T+2.5: lenh Ban can cach", c3X+12, wy); wy=wy+16;
+    GfxTextOut("Mua toi thieu 2 phien)", c3X+12, wy);
+
+    RequestTimedRefresh(0.2, True);
+}
+
+_SECTION_END();
