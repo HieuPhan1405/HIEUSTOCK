@@ -64,13 +64,25 @@ ChiTuNamNay = IIf(NamBatDauTheoDoi<=0, True, Year() >= NamBatDauTheoDoi);
 TinHieuKichHoat = TongDiemRiengMa >= NguongThamKhao AND Ref(TongDiemRiengMa,-1) < NguongThamKhao AND ChiTuNamNay;
 
 // ---------------- GIA LUC TIN HIEU + GIA SAU N PHIEN (theo doi "co an khong") ----------------
+// LOI DA SUA: Ref(C, N) voi N duong (nhin ve TUONG LAI) khi vuot qua cuoi
+// du lieu (vd tin hieu moi phat hom nay, chua co 5/10/20 phien sau do) KHONG
+// tra ve Null nhu tuong - AmiBroker "dem" gia tri CUOI CUNG (chinh la
+// GiaLucTinHieu) vao cho, khien PctSauN tinh ra dung 0% thay vi phai la
+// "chua co du lieu". Vi vay IsNull(Ref(C,N)) luon False (sai), va tin hieu
+// hom nay bi hien nham thanh "That bai" (0% khong > 0) o ngay ngay dau tien.
+// Fix goc: dung BarIndex() so voi BarCount de biet CHAC bar do co du N phien
+// tuong lai THAT hay khong, khong dua vao IsNull() nua.
 GiaLucTinHieu = C;
 Gia5PhienSau = Ref(C, 5);
 Gia10PhienSau = Ref(C, 10);
 Gia20PhienSau = Ref(C, 20);
-PctSau5 = IIf(!IsNull(Gia5PhienSau), (Gia5PhienSau/GiaLucTinHieu-1)*100, Null);
-PctSau10 = IIf(!IsNull(Gia10PhienSau), (Gia10PhienSau/GiaLucTinHieu-1)*100, Null);
-PctSau20 = IIf(!IsNull(Gia20PhienSau), (Gia20PhienSau/GiaLucTinHieu-1)*100, Null);
+ChiSoBar = BarIndex();
+ConDuLieu5 = (ChiSoBar + 5) < BarCount;
+ConDuLieu10 = (ChiSoBar + 10) < BarCount;
+ConDuLieu20 = (ChiSoBar + 20) < BarCount;
+PctSau5 = IIf(ConDuLieu5, (Gia5PhienSau/GiaLucTinHieu-1)*100, Null);
+PctSau10 = IIf(ConDuLieu10, (Gia10PhienSau/GiaLucTinHieu-1)*100, Null);
+PctSau20 = IIf(ConDuLieu20, (Gia20PhienSau/GiaLucTinHieu-1)*100, Null);
 
 // ---------------- BO LOC: chi hien DUNG NGAY co su kien kich hoat (khong phai hom nay) ----------------
 VN100List = "ACB,BID,CTG,DGC,FPT,GAS,GVR,HDB,HPG,LPB,"+
