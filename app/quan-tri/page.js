@@ -46,6 +46,9 @@ export default function TrangQuanTri() {
   const [dsLienHe, setDsLienHe] = useState([]);
   const [dangTaiLienHe, setDangTaiLienHe] = useState(false);
 
+  const [dsNguoiDung, setDsNguoiDung] = useState([]);
+  const [dangTaiNguoiDung, setDangTaiNguoiDung] = useState(false);
+
   const [zaloAppId, setZaloAppId] = useState("");
   const [zaloSecretKey, setZaloSecretKey] = useState("");
   const [zaloTrangThai, setZaloTrangThai] = useState(null);
@@ -117,6 +120,22 @@ export default function TrangQuanTri() {
   useEffect(() => {
     if (apiKey) taiLienHe(apiKey);
   }, [apiKey, taiLienHe]);
+
+  const taiNguoiDung = useCallback(async (key) => {
+    if (!key) return;
+    setDangTaiNguoiDung(true);
+    try {
+      const res = await fetch("/api/danh-sach-nguoi-dung", { headers: { "x-api-key": key } });
+      const d = await res.json();
+      if (res.ok) setDsNguoiDung(d.nguoiDung || []);
+    } finally {
+      setDangTaiNguoiDung(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (apiKey) taiNguoiDung(apiKey);
+  }, [apiKey, taiNguoiDung]);
 
   const taiTrangThaiZalo = useCallback(async (key) => {
     if (!key) return;
@@ -420,6 +439,36 @@ export default function TrangQuanTri() {
               <p className="mt-1" style={{ color: "#D8D8E0" }}>
                 {tn.noi_dung}
               </p>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* DANH SACH SDT DA DANG KY (thu thap de tu van) */}
+      {apiKey && (
+        <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-xs uppercase tracking-wide" style={{ color: "#8B8B99" }}>
+              Số điện thoại đã đăng ký ({dsNguoiDung.length})
+            </p>
+            <button onClick={() => taiNguoiDung(apiKey)} className="text-xs" style={{ color: "#6C5CE7" }}>
+              {dangTaiNguoiDung ? "Đang tải..." : "Tải lại"}
+            </button>
+          </div>
+          {dsNguoiDung.length === 0 && !dangTaiNguoiDung && (
+            <p className="text-xs py-2" style={{ color: "#8B8B99" }}>
+              Chưa có ai đăng ký.
+            </p>
+          )}
+          {dsNguoiDung.map((nd) => (
+            <div key={nd.id} className="flex items-center justify-between py-2 border-b text-sm" style={{ borderColor: "#1D1D26" }}>
+              <span>
+                <strong style={{ fontFamily: "'JetBrains Mono', monospace" }}>{nd.sdt}</strong>
+                {nd.ten && <span style={{ color: "#8B8B99" }}> — {nd.ten}</span>}
+              </span>
+              <span className="text-xs" style={{ color: "#8B8B99" }}>
+                {new Date(nd.tao_luc).toLocaleString("vi-VN")}
+              </span>
             </div>
           ))}
         </div>

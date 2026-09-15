@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutGrid, Briefcase, ListFilter, Newspaper, Mail, TrendingDown } from "lucide-react";
+import TaiKhoanNut from "@/components/TaiKhoanNut";
 
 const MUC = [
   { href: "/", nhan: "Tổng quan thị trường", Icon: LayoutGrid },
@@ -39,6 +40,10 @@ export default function Sidebar() {
           <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: TEXT }} className="text-lg">
             CloudStock
           </span>
+        </div>
+
+        <div className="px-3 mb-2">
+          <TaiKhoanNut />
         </div>
 
         <nav className="flex-1 px-3 py-2 flex flex-col gap-1">
@@ -101,6 +106,9 @@ export default function Sidebar() {
               </Link>
             );
           })}
+          <div className="shrink-0 ml-1">
+            <TaiKhoanNut compact />
+          </div>
         </div>
       </div>
     </>
