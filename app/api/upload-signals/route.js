@@ -1,4 +1,5 @@
 import { withDb, daoDamBangTinHieu } from "@/lib/db";
+import { guiTinNhanZalo } from "@/lib/zalo";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
 // amibroker/7_Export_LenWeb.afl). Header CSV bat buoc (31 cot):
@@ -95,6 +96,18 @@ export async function POST(request) {
   const cot = (ten, chuyenDoi) => hangDL.map((h) => chuyenDoi(h[ten]));
   let soDongDaXoa = 0;
   let daBoQuaXoa = false;
+
+  // Lay tin hieu CU (truoc khi ghi de) cho dung cac ma sap upload, de sau do
+  // so sanh phat hien "ma nao MOI chuyen sang MUA hom nay" (tin cu KHAC MUA,
+  // tin moi = MUA) - tranh bao Zalo lap lai neu lo upload trung 1 ma nhieu lan.
+  const dsMaLanNay0 = hangDL.map((h) => h.ma);
+  let tinCuTheoMa = {};
+  await withDb(async (client) => {
+    await daoDamBangTinHieu(client);
+    const { rows } = await client.query(`SELECT ma, tin FROM tin_hieu WHERE ma = ANY($1::text[])`, [dsMaLanNay0]);
+    tinCuTheoMa = Object.fromEntries(rows.map((r) => [r.ma, r.tin]));
+  });
+  const cacMaMuaMoi = hangDL.filter((h) => (h.tin || "TRUNG LAP") === "MUA" && tinCuTheoMa[h.ma] !== "MUA");
 
   await withDb(async (client) => {
     await daoDamBangTinHieu(client);
@@ -205,12 +218,28 @@ export async function POST(request) {
     }
   });
 
+  // Bao Zalo cho tung ma MOI chuyen sang MUA hom nay - loi Zalo (chua ket noi,
+  // token het han,...) KHONG duoc lam hong response upload, chi ghi vao ket
+  // qua tra ve de admin biet.
+  let zaloDaGui = 0;
+  let zaloLoi = null;
+  for (const h of cacMaMuaMoi) {
+    const ketQua = await guiTinNhanZalo(
+      `🟢 TÍN HIỆU MUA MỚI: ${h.ma}\nGiá: ${h.gia}\nĐiểm: ${Number(h.diem).toFixed(2)}\nXem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`
+    );
+    if (ketQua.gui) zaloDaGui++;
+    else if (!zaloLoi) zaloLoi = ketQua.ly_do;
+  }
+
   return Response.json({
     trangThai: "ok",
     soDongDaLuu: hangDL.length,
     tongSoDongNhan: hangDL.length,
     soDongLoiDaBoQua: soDongLoi,
     soDongDaXoa,
+    soMaMuaMoi: cacMaMuaMoi.length,
+    zaloDaGui,
+    ...(zaloLoi && { zaloLoi }),
     ...(daBoQuaXoa && {
       canhBao: `Chi nhan duoc ${hangDL.length} dong (< ${100}) - da BO QUA buoc xoa du lieu cu de tranh mat du lieu. Kiem tra lai AmiBroker "Apply to" co dang = "All Symbols" khong.`,
     }),

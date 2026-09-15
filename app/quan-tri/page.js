@@ -46,6 +46,12 @@ export default function TrangQuanTri() {
   const [dsLienHe, setDsLienHe] = useState([]);
   const [dangTaiLienHe, setDangTaiLienHe] = useState(false);
 
+  const [zaloAppId, setZaloAppId] = useState("");
+  const [zaloSecretKey, setZaloSecretKey] = useState("");
+  const [zaloTrangThai, setZaloTrangThai] = useState(null);
+  const [zaloThongBao, setZaloThongBao] = useState("");
+  const [dangXuLyZalo, setDangXuLyZalo] = useState(false);
+
   const [sdt, setSdt] = useState("");
   const [zalo, setZalo] = useState("");
   const [tiktok, setTiktok] = useState("");
@@ -111,6 +117,70 @@ export default function TrangQuanTri() {
   useEffect(() => {
     if (apiKey) taiLienHe(apiKey);
   }, [apiKey, taiLienHe]);
+
+  const taiTrangThaiZalo = useCallback(async (key) => {
+    if (!key) return;
+    try {
+      const res = await fetch("/api/zalo-config", { headers: { "x-api-key": key } });
+      const d = await res.json();
+      if (res.ok) {
+        setZaloTrangThai(d);
+        if (d.appId) setZaloAppId(d.appId);
+      }
+    } catch {
+      /* bo qua */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (apiKey) taiTrangThaiZalo(apiKey);
+  }, [apiKey, taiTrangThaiZalo]);
+
+  async function ketNoiZalo(e) {
+    e.preventDefault();
+    if (!zaloAppId.trim() || !zaloSecretKey.trim()) {
+      setZaloThongBao("Lỗi: cần nhập đủ App ID và Secret Key.");
+      return;
+    }
+    setDangXuLyZalo(true);
+    setZaloThongBao("");
+    try {
+      const res = await fetch("/api/zalo-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": apiKey },
+        body: JSON.stringify({ appId: zaloAppId.trim(), secretKey: zaloSecretKey.trim(), baseUrl: window.location.origin }),
+      });
+      const d = await res.json();
+      if (res.ok && d.linkKetNoi) {
+        window.open(d.linkKetNoi, "_blank");
+        setZaloThongBao("Đã mở tab mới để cấp quyền trên Zalo — cấp quyền xong quay lại đây bấm 'Tải lại trạng thái'.");
+      } else {
+        setZaloThongBao("Lỗi: " + (d.loi || "không rõ"));
+      }
+    } catch (e) {
+      setZaloThongBao("Lỗi: " + String(e?.message || e));
+    } finally {
+      setDangXuLyZalo(false);
+    }
+  }
+
+  async function guiThuZalo() {
+    setDangXuLyZalo(true);
+    setZaloThongBao("");
+    try {
+      const res = await fetch("/api/zalo-config", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "x-api-key": apiKey },
+        body: JSON.stringify({ hanhDong: "guiThu" }),
+      });
+      const d = await res.json();
+      setZaloThongBao(d.gui ? "Đã gửi tin nhắn test — kiểm tra Zalo xem đã nhận chưa." : "Lỗi: " + (d.ly_do || "không rõ"));
+    } catch (e) {
+      setZaloThongBao("Lỗi: " + String(e?.message || e));
+    } finally {
+      setDangXuLyZalo(false);
+    }
+  }
 
   async function xoaLienHe(id) {
     await fetch(`/api/lien-he?id=${id}`, { method: "DELETE", headers: { "x-api-key": apiKey } });
@@ -352,6 +422,86 @@ export default function TrangQuanTri() {
               </p>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* BAO TIN HIEU MUA QUA ZALO OA */}
+      {apiKey && (
+        <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
+            Báo tín hiệu MUA qua Zalo
+          </p>
+
+          {zaloTrangThai && (
+            <div className="flex flex-wrap gap-3 mb-3 text-xs">
+              <span style={{ color: zaloTrangThai.daCoAppId ? "#22C55E" : "#8B8B99" }}>
+                {zaloTrangThai.daCoAppId ? "✓" : "○"} Đã nhập App ID
+              </span>
+              <span style={{ color: zaloTrangThai.daKetNoi ? "#22C55E" : "#8B8B99" }}>
+                {zaloTrangThai.daKetNoi ? "✓" : "○"} Đã cấp quyền OAuth
+              </span>
+              <span style={{ color: zaloTrangThai.daCoNguoiNhan ? "#22C55E" : "#8B8B99" }}>
+                {zaloTrangThai.daCoNguoiNhan ? "✓" : "○"} Đã xác định người nhận
+              </span>
+            </div>
+          )}
+
+          <form onSubmit={ketNoiZalo} className="grid sm:grid-cols-2 gap-2 mb-3">
+            <input
+              value={zaloAppId}
+              onChange={(e) => setZaloAppId(e.target.value)}
+              placeholder="App ID (từ developers.zalo.me)"
+              className="px-2 py-1.5 text-sm outline-none"
+              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+            />
+            <input
+              value={zaloSecretKey}
+              onChange={(e) => setZaloSecretKey(e.target.value)}
+              placeholder="Secret Key"
+              type="password"
+              className="px-2 py-1.5 text-sm outline-none"
+              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+            />
+            <button
+              type="submit"
+              disabled={dangXuLyZalo}
+              className="px-3 py-1.5 text-sm font-medium"
+              style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600, opacity: dangXuLyZalo ? 0.6 : 1 }}
+            >
+              Lưu &amp; Kết nối Zalo
+            </button>
+            <button
+              type="button"
+              onClick={() => taiTrangThaiZalo(apiKey)}
+              className="px-3 py-1.5 text-sm font-medium"
+              style={{ border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+            >
+              Tải lại trạng thái
+            </button>
+          </form>
+
+          <button
+            type="button"
+            onClick={guiThuZalo}
+            disabled={dangXuLyZalo}
+            className="px-3 py-1.5 text-sm font-medium"
+            style={{ border: `1px solid #22C55E`, color: "#22C55E", opacity: dangXuLyZalo ? 0.6 : 1 }}
+          >
+            Gửi tin nhắn test
+          </button>
+
+          {zaloThongBao && (
+            <p className="text-xs mt-3" style={{ color: zaloThongBao.startsWith("Lỗi") ? "#EF4444" : "#22C55E" }}>
+              {zaloThongBao}
+            </p>
+          )}
+
+          <p className="text-[11px] mt-3" style={{ color: "#8B8B99" }}>
+            Hướng dẫn: (1) Tạo Official Account miễn phí tại oa.zalo.me. (2) Tạo App tại developers.zalo.me, lấy App ID +
+            Secret Key, dán vào đây. (3) Bấm "Lưu & Kết nối Zalo" — 1 tab mới mở ra để cấp quyền, bấm "Cho phép". (4) Mở
+            app Zalo, tìm đúng OA vừa tạo, tự nhắn 1 tin bất kỳ (vd "hi") cho nó. (5) Quay lại đây bấm "Tải lại trạng
+            thái" rồi "Gửi tin nhắn test" để kiểm tra.
+          </p>
         </div>
       )}
 
