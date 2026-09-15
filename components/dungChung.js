@@ -39,9 +39,14 @@ export function phanLoaiXuHuong(row) {
   return "sideway";
 }
 
-// Muc TP cao nhat (dong bang tai luc mua) ma gia hien tai da cham toi - dung
-// chung cho trang chu, Bo loc co phieu, va Bang lenh mo.
+// Muc TP CAO NHAT tung cham toi trong SUOT qua trinh giu (khong chi gia
+// HIEN TAI) - uu tien doc thang cot tp_da_cham (AFL tinh bang HighestSince,
+// nho ca nhung lan da cham roi tut xuong lai). Neu ma chua duoc Explore lai
+// voi ban AFL moi (tp_da_cham con null/thieu) thi tam thoi fallback ve cach
+// cu (so gia HIEN TAI voi TP) de khong mat trang tinh nang trong luc cho
+// nguoi dung upload lai - se tu dong het fallback khi du lieu duoc cap nhat.
 export function chamTPCaoNhat(row) {
+  if (row.tp_da_cham) return row.tp_da_cham;
   if (row.gia == null) return null;
   if (row.tp3 != null && row.gia >= row.tp3) return "TP3";
   if (row.tp2 != null && row.gia >= row.tp2) return "TP2";

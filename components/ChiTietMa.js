@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
-import { fmt, pct, soAn, TREND_MAX, MOM_MAX, DT_MAX, RS_MAX } from "@/components/dungChung";
+import { fmt, pct, soAn, chamTPCaoNhat, TREND_MAX, MOM_MAX, DT_MAX, RS_MAX } from "@/components/dungChung";
 
 // Lich su giao dich + thong ke hieu suat tung ma: TAM THOI BO KHOI WEB theo
 // yeu cau - file xuat tu AmiBroker (dan qua Excel) bi loi lam trong so thap
@@ -436,27 +436,40 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
           <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
             3 mốc chốt lời từng phần
           </p>
-          {[
-            ["TP1 (gần, ngắn hạn)", row.tp1],
-            ["TP2 (giữa, trung hạn)", row.tp2],
-            ["TP3 (xa, 52 tuần)", row.tp3],
-          ].map(([nhan, gia]) => (
-            <div key={nhan} className="flex items-center justify-between py-1.5 border-b" style={{ borderColor: "#1D1D26" }}>
-              <span className="text-xs" style={{ color: "#A6A6B3" }}>
-                {nhan}
-              </span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-sm">
-                {fmt(gia)}
-                {gia !== null && gia !== undefined && (
-                  <span className="text-[11px] ml-1" style={{ color: "#8B8B99" }}>
-                    ({pct(khoangCach(gia), 2)})
+          {(() => {
+            const mucDaCham = chamTPCaoNhat(row); // "TP1"|"TP2"|"TP3"|null - da cham hay chua TUNG LUC NAO trong qua trinh giu
+            const thuTu = { TP1: 1, TP2: 2, TP3: 3 };
+            return [
+              ["TP1", "TP1 (gần, ngắn hạn)", row.tp1],
+              ["TP2", "TP2 (giữa, trung hạn)", row.tp2],
+              ["TP3", "TP3 (xa, 52 tuần)", row.tp3],
+            ].map(([ma, nhan, gia]) => {
+              const daCham = mucDaCham != null && thuTu[ma] <= thuTu[mucDaCham];
+              return (
+                <div key={ma} className="flex items-center justify-between py-1.5 border-b" style={{ borderColor: "#1D1D26" }}>
+                  <span className="text-xs flex items-center gap-1.5" style={{ color: "#A6A6B3" }}>
+                    {nhan}
+                    {daCham && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded" style={{ background: "#22C55E22", color: "#22C55E" }}>
+                        ✓ Đã chạm
+                      </span>
+                    )}
                   </span>
-                )}
-              </span>
-            </div>
-          ))}
+                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-sm">
+                    {fmt(gia)}
+                    {gia !== null && gia !== undefined && (
+                      <span className="text-[11px] ml-1" style={{ color: "#8B8B99" }}>
+                        ({pct(khoangCach(gia), 2)})
+                      </span>
+                    )}
+                  </span>
+                </div>
+              );
+            });
+          })()}
           <p className="text-[11px] mt-3" style={{ color: "#8B8B99" }}>
-            Mỗi mốc chỉ còn ý nghĩa khi vẫn cao hơn giá hiện tại — mốc đã vượt qua coi như đã chốt xong phần đó.
+            "Đã chạm" nghĩa là giá đã TỪNG lên tới mốc đó vào một thời điểm nào trong quá trình đang giữ mã này (kể cả nếu
+            sau đó giá đã tụt xuống lại) — không chỉ so với giá hiện tại.
           </p>
         </Card>
       </div>

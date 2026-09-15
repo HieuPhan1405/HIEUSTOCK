@@ -4,7 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { TriangleAlert, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
-import { fmt, pct } from "@/components/dungChung";
+import { fmt, pct, chamTPCaoNhat } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -19,15 +19,15 @@ function formatNgay(v) {
   return new Date(v).toLocaleDateString("vi-VN");
 }
 
-// Chot loi - so gia hien tai voi 3 muc TP da tinh san trong AFL (TP1 < TP2 <
-// TP3, dua tren Ho tro/Khang cu gan-trung-xa). Bao muc TP CAO NHAT da cham
-// toi, de nguoi dung biet nen chot 1 phan hay toan bo vi the.
+// Chot loi - muc TP CAO NHAT tung cham toi TRONG SUOT qua trinh giu (dung
+// chamTPCaoNhat() dung chung, KHONG chi so gia hien tai - gia co the da
+// cham TP roi tut xuong lai, van phai tinh la "da cham").
 function tinhChotLoi(row) {
-  const gia = row.gia;
-  if (gia == null) return { nhan: "—", mau: MUTED, hang: -1 };
-  if (row.tp3 != null && gia >= row.tp3) return { nhan: "Đã chạm TP3", mau: "#22C55E", hang: 3 };
-  if (row.tp2 != null && gia >= row.tp2) return { nhan: "Đã chạm TP2", mau: "#22C55E", hang: 2 };
-  if (row.tp1 != null && gia >= row.tp1) return { nhan: "Đã chạm TP1", mau: "#FBBF24", hang: 1 };
+  if (row.gia == null && !row.tp_da_cham) return { nhan: "—", mau: MUTED, hang: -1 };
+  const tp = chamTPCaoNhat(row);
+  if (tp === "TP3") return { nhan: "Đã chạm TP3", mau: "#22C55E", hang: 3 };
+  if (tp === "TP2") return { nhan: "Đã chạm TP2", mau: "#22C55E", hang: 2 };
+  if (tp === "TP1") return { nhan: "Đã chạm TP1", mau: "#FBBF24", hang: 1 };
   return { nhan: "Chưa chạm", mau: MUTED, hang: 0 };
 }
 

@@ -610,6 +610,19 @@ ChotLoi_TP1_TaiMua = ValueWhen(Buy, ChotLoi_TP1, 1);
 ChotLoi_TP2_TaiMua = ValueWhen(Buy, ChotLoi_TP2, 1);
 ChotLoi_TP3_TaiMua = ValueWhen(Buy, ChotLoi_TP3, 1);
 
+// MUC TP DA CHAM (TUNG luc nao do trong qua trinh giu, khong chi gia HIEN
+// TAI) - dung HighestSince() de lay dinh cao nhat tu lan Mua gan day nhat.
+// Loi da phat hien: mot ma giu lau (vd FRT 29 phien) co the CHAM TP1 giua
+// chung roi gia tut xuong lai duoi TP1 - web truoc day chi so gia hien tai
+// voi TP nen bao nham "chua cham", trong khi thuc te da co the chot duoc.
+DinhCaoNhatTuKhiMua = HighestSince(Buy, H);
+DaChamTP1_TuKhiMua = DinhCaoNhatTuKhiMua >= ChotLoi_TP1_TaiMua;
+DaChamTP2_TuKhiMua = DinhCaoNhatTuKhiMua >= ChotLoi_TP2_TaiMua;
+DaChamTP3_TuKhiMua = DinhCaoNhatTuKhiMua >= ChotLoi_TP3_TaiMua;
+MucTPDaChamCaoNhat = WriteIf(DaChamTP3_TuKhiMua, "TP3",
+                     WriteIf(DaChamTP2_TuKhiMua, "TP2",
+                     WriteIf(DaChamTP1_TuKhiMua, "TP1", "")));
+
 HT1=IIf(Day52T<C,Day52T,-1e10);
 HT2=IIf(GGBot<C,GGBot,-1e10);
 HT3=IIf(CloudBot<C,CloudBot,-1e10);
@@ -690,6 +703,7 @@ AddColumn(SoDiemSanyaku, "Sanyaku(0-3)", 1.0);
 AddTextColumn(WriteIf(InVN30,"VN30",WriteIf(InVNMidCap,"Midcap",WriteIf(InVNSmallCap,"Smallcap","Khac"))), "Von hoa");
 AddTextColumn(SanHienTai, "San");
 AddTextColumn(NganhHienTai, "Nganh");
+AddTextColumn(WriteIf(MucTPDaChamCaoNhat=="", "-", MucTPDaChamCaoNhat), "TP da cham (tung luc)");
 
 // ============================================================================
 // XUAT CSV TU DONG LEN WEB - KHONG CAN BAM "EXPORT" TAY
@@ -704,7 +718,7 @@ if (Status("stocknum") == 0)
     {
         fputs("ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,"+
               "stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,"+
-              "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh\n", fh);
+              "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham\n", fh);
         fclose(fh);
     }
 }
@@ -766,7 +780,8 @@ Dong = Name() + "," + TinCuoi + ","
      + ","
      + WriteIf(LastValue(CanhBaoBanBot), "1", "0") + ","
      + WriteIf(LaVNIndex, "HOSE", SanHienTai) + ","
-     + WriteIf(LaVNIndex, "ChiSo", NganhHienTai);
+     + WriteIf(LaVNIndex, "ChiSo", NganhHienTai) + ","
+     + LastValue(MucTPDaChamCaoNhat);
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {
