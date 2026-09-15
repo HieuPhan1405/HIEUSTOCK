@@ -771,10 +771,11 @@ DangGiuTuTruoc = DangGiuLenhVT AND NOT VuaMuaHomNay AND NOT Sell;
 BanHomNay = Sell;
 DungNgoai = NOT DangGiuLenhVT AND NOT VuaMuaHomNay;
 
-// CANH BAO BAN BOT - dong bo voi ban web: diem hom nay da tut xuong DUOI 0
-// (rong hon nguong Ban -ExitTh, canh bao SOM hon) nhung van dang giu lenh va
-// chua co tin hieu Ban that su hom nay.
-CanhBaoBanBot = DangGiuLenhVT AND TotalScore < 0 AND NOT BanHomNay;
+// CANH BAO BAN BOT - dong bo voi ban web: diem hom nay da roi duoi nguong
+// Ban (-ExitTh) nhung van dang giu lenh va chua co tin hieu Ban that su hom
+// nay. Khac voi dieu kien Stop-loss (o vong lap ben tren) - Stop-loss chi
+// kich hoat Ban THAT khi diem AM (<0), con Ban bot chi la canh bao tham khao.
+CanhBaoBanBot = DangGiuLenhVT AND ZoneSell AND NOT BanHomNay;
 
 Plot(C, "Gia", IIf(C>=Ref(C,-1),ColorRGB(0,180,0),ColorRGB(220,50,50)), styleCandle);
 Plot(Tenkan, "Tenkan 9", ColorRGB(0,140,255), styleLine|styleThick);

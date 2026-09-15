@@ -461,7 +461,10 @@ for (i = 1; i < BarCount; i++)
         stopPhanTram_vonglap = GiaVaoTrongVongLap[i] * (HardStopPct/100);
         stopGiaThucTe_vonglap = GiaVaoTrongVongLap[i] - Min(stopATR_vonglap, stopPhanTram_vonglap);
 
-        if (SellTinHieu[i] == 1 OR L[i] <= stopGiaThucTe_vonglap)
+        // Cham Stop-loss ve gia CHI thuc su Ban khi diem cung da am (<0) -
+        // tranh cat lo oan neu chi la ria/bong nen tam thoi trong khi diem
+        // ky thuat van con on, theo yeu cau nguoi dung.
+        if (SellTinHieu[i] == 1 OR (L[i] <= stopGiaThucTe_vonglap AND TotalScore[i] < 0))
         {
             Sell[i] = 1;
             GiuTrongVongLap[i] = 0;
@@ -582,11 +585,12 @@ DangGiuTuTruoc = DangGiuLenhVT AND NOT VuaMuaHomNay AND NOT Sell;
 BanHomNay = Sell;
 DungNgoai = NOT DangGiuLenhVT AND NOT VuaMuaHomNay;
 
-// CANH BAO BAN BOT - diem hom nay da tut xuong DUOI 0 (rong hon nguong Ban
-// -ExitTh, canh bao SOM hon nua) - nhung VAN DANG GIU lenh va CHUA co tin
-// hieu Ban that su hom nay. Goi y giam bot vi the som, khong doi den luc
-// diem xau han/du 3 phien moi Ban toan bo.
-CanhBaoBanBot = DangGiuLenhVT AND TotalScore < 0 AND NOT BanHomNay;
+// CANH BAO BAN BOT - diem hom nay da roi duoi nguong Ban (-ExitTh, mac dinh
+// -1.5) - MOT PHIEN DUY NHAT, chua can du 3 phien xac nhan lien tuc nhu Ban
+// han (TurnedPink) - nhung VAN DANG GIU lenh va CHUA co tin hieu Ban that su
+// hom nay. Goi y giam bot vi the SOM hon, khong doi den luc diem xau han/du
+// 3 phien moi Ban toan bo.
+CanhBaoBanBot = DangGiuLenhVT AND ZoneSell AND NOT BanHomNay;
 
 // ============================================================================
 // SCANNER - QUET TOAN BO THI TRUONG (Explore)
