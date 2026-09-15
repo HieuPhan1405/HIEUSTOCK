@@ -296,7 +296,7 @@ VNMidCapList = "ANV,BCM,BMP,BSI,BWE,CII,CMG,CTD,CTR,CTS,"+
     "PVT,REE,SBT,SCS,SIP,SJS,SZC,TCH,VCG,VCI,"+
     "VGC,VHC,VIX,VND,VPI,VSC,VTP,DGC,LPB,SHB,MSR,"+
     "TMS,MBS,SHS,BVS,PVS,OIL,VGI,FOX,ACV,VGT,"+
-    "NTP,QNS,LTG,HNG,MCH,PVI";
+    "NTP,QNS,LTG,HNG,MCH,PVI,TCX,VCK";
 InVNMidCap = StrFind( "," + VNMidCapList + ",", "," + Name() + "," ) > 0;
 
 // VNSMALLCAP - 209 ma. Tinh bang VNAllshare (302 ma, cong bo chinh thuc
@@ -364,7 +364,7 @@ function TinhBreadth(DanhSachMa, SoLuong)
 // (dong bo voi he thong v14: chi ap dung cac truong hop do tin cay Cao+TB).
 DS_NganHang = "ACB,BID,BVB,CTG,EIB,HDB,KLB,LPB,MBB,MSB,NAB,OCB,SHB,SSB,STB,TCB,TPB,VAB,VBB,VCB,VIB,VPB,NVB,ABB,BAB";
 DS_BDS = "AGG,ASM,CCL,CII,CKG,CRE,DIG,DXG,DXS,EVG,FDC,FIR,HAR,HDC,HDG,HPX,HQC,HTN,ITC,KDH,KHG,KOS,LDG,LGL,NBB,NHA,NLG,NTL,NVL,PDR,PTL,QCG,SCR,SGR,SJS,TCH,TDC,TDH,THG,TNT,VHM,VIC,VPH,VPI,VRC,VRE,BCM,D2D,GVR,KBC,LHG,NTC,PHR,SIP,SZC,SZL,TIP,TIX,VGC,IJC,CEO,L18,HLD,HUT,IDC,IDV";
-DS_ChungKhoan = "AGR,APG,BSI,CTS,DSC,DSE,EVF,FTS,HCM,ORS,SSI,TVB,TVS,VCI,VDS,VIX,VND,TCI,BVS,EVS,APS,SHS,MBS,TVC,PSI,BMS,SBS,WSS,AAS";
+DS_ChungKhoan = "AGR,APG,BSI,CTS,DSC,DSE,EVF,FTS,HCM,ORS,SSI,TVB,TVS,VCI,VDS,VIX,VND,TCI,BVS,EVS,APS,SHS,MBS,TVC,PSI,BMS,SBS,WSS,AAS,TCX,VCK";
 DS_BaoHiem = "BIC,BMI,BVH,MIG,PGI,ABI,VNR,PVI,PRE,PTI";
 DS_XayDung = "ACC,BCE,C47,CDC,CIG,CTD,CTI,DC4,DPG,DLG,FCM,FCN,HHV,HID,HTI,L10,LCG,LGC,LM8,PHC,PTC,SC5,SRF,VCG,VSI,BMP,C32,CCC,CRC,CVT,DHA,DXV,HCD,HT1,KSB,LBM,MDG,NNC,TCR,TLD,HUB,NO1,NTP,HBC";
 DS_ThepKhoangSan = "DTL,HMC,HPG,HSG,NKG,SMC,TLH,VCA,BMC,DHM,PLP,VPG,YBM,TVN,VGS,POM,GDA,KSV,HGM";
@@ -396,7 +396,7 @@ SanHienTai = WriteIf(TrenSanHNX, "HNX", WriteIf(TrenSanUPCOM, "UPCOM", "HOSE"));
 // vd DS_BDS thuc co 60 ma nhung chi duyet 58 - tien the sua luon).
 Breadth_NganHang = TinhBreadth(DS_NganHang, 25);
 Breadth_BDS = TinhBreadth(DS_BDS, 66);
-Breadth_ChungKhoan = TinhBreadth(DS_ChungKhoan, 29);
+Breadth_ChungKhoan = TinhBreadth(DS_ChungKhoan, 31);
 Breadth_BaoHiem = TinhBreadth(DS_BaoHiem, 10);
 Breadth_XayDung = TinhBreadth(DS_XayDung, 44);
 Breadth_ThepKhoangSan = TinhBreadth(DS_ThepKhoangSan, 19);
