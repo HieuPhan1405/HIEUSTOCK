@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, Search, Lock } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
+import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import { fmt, pct, so1So, phanLoaiXuHuong, chamTPCaoNhat } from "@/components/dungChung";
 
 const VIEN = "#26262F";
@@ -101,6 +102,18 @@ export default function BangBoLoc({ duLieu }) {
   const [chiMatThan, setChiMatThan] = useState(locBanDau.chiMatThan);
   const [chiChotLoi, setChiChotLoi] = useState(locBanDau.chiChotLoi);
   const [chiBanBot, setChiBanBot] = useState(locBanDau.chiBanBot);
+  // Cot "Tin hieu" (MUA/BAN/NAM GIU/TRUNG LAP) bi lam mo cho khach CHUA dang
+  // ky/dang nhap - de mac dinh la CHUA dang nhap (an toan hon, tranh nhap
+  // nhoang lo tin hieu that truoc khi fetch xong).
+  const [nguoiDung, setNguoiDung] = useState(null);
+  const [moModalTK, setMoModalTK] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/nguoi-dung-hien-tai")
+      .then((r) => r.json())
+      .then((d) => setNguoiDung(d.nguoiDung || null))
+      .catch(() => {});
+  }, []);
 
   const soTang = duLieu.filter((r) => r.doi > 0).length;
   const soGiam = duLieu.filter((r) => r.doi < 0).length;
@@ -110,7 +123,7 @@ export default function BangBoLoc({ duLieu }) {
     const tuKhoa = timKiem.trim().toUpperCase();
     let ds = duLieu;
     if (tuKhoa) ds = ds.filter((r) => r.ma.includes(tuKhoa));
-    if (locTin) ds = ds.filter((r) => r.tin === locTin);
+    if (locTin && nguoiDung) ds = ds.filter((r) => r.tin === locTin);
     if (locVonHoa) ds = ds.filter((r) => r.von_hoa === locVonHoa);
     if (locXuHuong) ds = ds.filter((r) => phanLoaiXuHuong(r) === locXuHuong);
     if (locSan) ds = ds.filter((r) => (r.san || "HOSE") === locSan);
@@ -131,7 +144,7 @@ export default function BangBoLoc({ duLieu }) {
       return sapXep.chieu === "asc" ? so : -so;
     });
     return ds;
-  }, [duLieu, timKiem, sapXep, locTin, locVonHoa, locXuHuong, locSan, locNganh, chiMatThan, chiChotLoi, chiBanBot]);
+  }, [duLieu, timKiem, sapXep, locTin, locVonHoa, locXuHuong, locSan, locNganh, chiMatThan, chiChotLoi, chiBanBot, nguoiDung]);
 
   function doiSapXep(khoa) {
     setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: "desc" }));
@@ -193,17 +206,29 @@ export default function BangBoLoc({ duLieu }) {
             style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}
           />
         </div>
-        <OSelect
-          value={locTin}
-          onChange={setLocTin}
-          placeholder="Tất cả tín hiệu"
-          options={[
-            ["MUA", "MUA"],
-            ["NAM GIU", "NẮM GIỮ"],
-            ["BAN", "BÁN"],
-            ["TRUNG LAP", "TRUNG LẬP"],
-          ]}
-        />
+        {nguoiDung ? (
+          <OSelect
+            value={locTin}
+            onChange={setLocTin}
+            placeholder="Tất cả tín hiệu"
+            options={[
+              ["MUA", "MUA"],
+              ["NAM GIU", "NẮM GIỮ"],
+              ["BAN", "BÁN"],
+              ["TRUNG LAP", "TRUNG LẬP"],
+            ]}
+          />
+        ) : (
+          <button
+            type="button"
+            onClick={() => setMoModalTK(true)}
+            className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg"
+            style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: MUTED, fontFamily: "'Inter', sans-serif" }}
+          >
+            <Lock size={13} />
+            Tất cả tín hiệu
+          </button>
+        )}
         <OSelect
           value={locVonHoa}
           onChange={setLocVonHoa}
@@ -333,7 +358,20 @@ export default function BangBoLoc({ duLieu }) {
                     </td>
                     <td className="py-2.5 px-3 text-right">
                       <div className="flex flex-col items-end gap-1">
-                        <SignalPill tin={row.tin} />
+                        {nguoiDung ? (
+                          <SignalPill tin={row.tin} />
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setMoModalTK(true)}
+                            className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold"
+                            style={{ background: "rgba(255,255,255,0.06)", color: MUTED }}
+                            title="Đăng ký/Đăng nhập để xem tín hiệu"
+                          >
+                            <Lock size={10} />
+                            <span style={{ filter: "blur(3px)" }}>MUA</span>
+                          </button>
+                        )}
                         {tp && (
                           <span className="text-[10px] font-bold" style={{ color: "#FBBF24" }}>
                             🎯 {tp}
@@ -360,6 +398,12 @@ export default function BangBoLoc({ duLieu }) {
           </table>
         </div>
       </div>
+      <ModalTaiKhoan
+        open={moModalTK}
+        onClose={() => setMoModalTK(false)}
+        onThanhCong={setNguoiDung}
+        tieuDeGoiY="Đăng ký hoặc đăng nhập miễn phí để xem cột Tín hiệu (MUA/BÁN/NẮM GIỮ)."
+      />
     </div>
   );
 }

@@ -1,5 +1,7 @@
 import { layTatCaBatDay } from "@/lib/batDay";
+import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import BangBatDay from "@/components/BangBatDay";
+import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import { pct } from "@/components/dungChung";
 
 export const dynamic = "force-dynamic";
@@ -30,6 +32,16 @@ function TheKPI({ nhan, giaTri, phu, mau }) {
 }
 
 export default async function TrangBatDay() {
+  const nguoiDung = await layNguoiDungHienTai();
+  if (!nguoiDung) {
+    return (
+      <KhoaTrangNoiDung
+        tieuDe="Checklist dò bắt đáy"
+        moTa="Đăng ký hoặc đăng nhập miễn phí để xem toàn bộ lịch sử checklist bắt đáy và tỷ lệ thành công thực tế."
+      />
+    );
+  }
+
   let duLieu = [];
   let loi = null;
   try {

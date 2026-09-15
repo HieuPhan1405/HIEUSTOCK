@@ -1,7 +1,9 @@
 import { TriangleAlert } from "lucide-react";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
+import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import TraCuuMa from "@/components/TraCuuMa";
 import BangLenhMo from "@/components/BangLenhMo";
+import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import { pct, chamTPCaoNhat, pctChotLoi } from "@/components/dungChung";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +16,16 @@ const DO = "#EF4444";
 const XANH = "#22C55E";
 
 export default async function TrangLenhMo() {
+  const nguoiDung = await layNguoiDungHienTai();
+  if (!nguoiDung) {
+    return (
+      <KhoaTrangNoiDung
+        tieuDe="Sổ lệnh đang mở"
+        moTa="Đăng ký hoặc đăng nhập miễn phí để xem toàn bộ danh mục đang MUA/NẮM GIỮ, điểm chốt lời và cảnh báo rủi ro."
+      />
+    );
+  }
+
   let tatCa = [];
   let loi = null;
   try {
