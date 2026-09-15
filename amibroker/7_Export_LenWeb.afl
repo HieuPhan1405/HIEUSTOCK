@@ -428,7 +428,7 @@ BreadthOk15 = 1;
 // vai tram co/phien) ra khoi tin hieu MUA/NAM GIU. Cac ma nay tuy diem so co
 // the dat nguong nhung khong thuc te de vao/ra lenh (truot gia lon, kho
 // khop lenh) nen khong nen duoc khuyen nghi dau tu.
-NguongKLTB20ToiThieu = Param("Nguong KL trung binh 20 phien toi thieu (co phieu)", 100000, 0, 5000000, 10000);
+NguongKLTB20ToiThieu = Param("Nguong KL trung binh 20 phien toi thieu (co phieu)", 80000, 0, 5000000, 10000);
 ThanhKhoanKL_Ok = MA(V,20) >= NguongKLTB20ToiThieu;
 
 // GIA TOI THIEU GATE - loai co phieu "tra" (duoi 10 = duoi 10,000 dong/cp,
