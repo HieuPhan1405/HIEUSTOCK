@@ -19,7 +19,7 @@ export default async function TrangBoLoc() {
         Bộ lọc cổ phiếu
       </h1>
       <p className="text-sm mb-6" style={{ color: "#8B8B99" }}>
-        Lọc và sắp xếp toàn bộ {tatCa.length} cổ phiếu HOSE đang theo dõi theo nhiều tiêu chí.
+        Lọc và sắp xếp toàn bộ {tatCa.length} cổ phiếu đang theo dõi (HOSE, HNX, UPCOM) theo nhiều tiêu chí.
       </p>
 
       {loi ? (

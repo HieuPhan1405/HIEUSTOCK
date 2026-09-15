@@ -31,9 +31,10 @@ function sinhKetLuan(pctXanh, pctDo, tong) {
   return "Sideway — thị trường chưa có xu hướng rõ ràng.";
 }
 
-// "NHAN DINH THI TRUONG" - doan van tu dong sinh tu chinh du lieu 272-300 ma
-// HOSE VN30/Midcap/Smallcap dang theo doi (KHONG phai toan bo HOSE ~700 ma
-// nen khong dung so lieu "do rong HOSE" tuyet doi, chi noi ro pham vi dang co).
+// "NHAN DINH THI TRUONG" - doan van tu dong sinh tu chinh du lieu ~390 ma
+// VN30/Midcap/Smallcap dang theo doi, gom ca HOSE lan HNX/UPCOM tu khi mo
+// rong (KHONG phai toan bo thi truong nen khong dung so lieu "do rong ca
+// thi truong" tuyet doi, chi noi ro pham vi dang co).
 function sinhNhanDinh(tatCa) {
   const tong = tatCa.length;
   if (!tong) return null;
@@ -55,7 +56,7 @@ function sinhNhanDinh(tatCa) {
   else if (pctTang - pctGiam > 30) { sacThai = "TÍCH CỰC"; mau = XANH; }
 
   const cau = [
-    `Thị trường nghiêng ${sacThai.toLowerCase()} với ${pctGiam.toFixed(1)}% mã giảm điểm / ${pctTang.toFixed(1)}% mã tăng điểm trong ${tong} mã HOSE VN30-Midcap-Smallcap đang theo dõi, trong đó ${soGiamManh} mã (${pctGiamManh.toFixed(1)}%) giảm mạnh trên 3%.`,
+    `Thị trường nghiêng ${sacThai.toLowerCase()} với ${pctGiam.toFixed(1)}% mã giảm điểm / ${pctTang.toFixed(1)}% mã tăng điểm trong ${tong} mã VN30-Midcap-Smallcap đang theo dõi (HOSE, HNX, UPCOM), trong đó ${soGiamManh} mã (${pctGiamManh.toFixed(1)}%) giảm mạnh trên 3%.`,
   ];
   if (soMatThan > 0) {
     cau.push(`Có ${soMatThan} mã đang cảnh báo Mắt Thần — rủi ro đảo chiều cần theo dõi sát trong các phiên tới.`);
