@@ -17,6 +17,7 @@ const PRIMARY = "#6C5CE7";
 
 const COT = [
   { khoa: "ma", nhan: "Mã", canPhai: false },
+  { khoa: "san", nhan: "Sàn", canPhai: false },
   { khoa: "von_hoa", nhan: "Vốn hoá", canPhai: false },
   { khoa: "gia", nhan: "Giá", canPhai: true },
   { khoa: "doi", nhan: "%Hôm nay", canPhai: true },
@@ -37,6 +38,7 @@ function docLocTuUrl(searchParams) {
     tin: searchParams.get("tin") || "",
     vonHoa: searchParams.get("vonhoa") || "",
     xuHuong: searchParams.get("xuhuong") || "",
+    san: searchParams.get("san") || "",
     chiMatThan: searchParams.get("matthan") === "1",
     chiChotLoi: searchParams.get("chotloi") === "1",
     chiBanBot: searchParams.get("banbot") === "1",
@@ -69,6 +71,7 @@ export default function BangBoLoc({ duLieu }) {
   const [locTin, setLocTin] = useState(locBanDau.tin);
   const [locVonHoa, setLocVonHoa] = useState(locBanDau.vonHoa);
   const [locXuHuong, setLocXuHuong] = useState(locBanDau.xuHuong);
+  const [locSan, setLocSan] = useState(locBanDau.san);
   const [chiMatThan, setChiMatThan] = useState(locBanDau.chiMatThan);
   const [chiChotLoi, setChiChotLoi] = useState(locBanDau.chiChotLoi);
   const [chiBanBot, setChiBanBot] = useState(locBanDau.chiBanBot);
@@ -84,6 +87,7 @@ export default function BangBoLoc({ duLieu }) {
     if (locTin) ds = ds.filter((r) => r.tin === locTin);
     if (locVonHoa) ds = ds.filter((r) => r.von_hoa === locVonHoa);
     if (locXuHuong) ds = ds.filter((r) => phanLoaiXuHuong(r) === locXuHuong);
+    if (locSan) ds = ds.filter((r) => (r.san || "HOSE") === locSan);
     if (chiMatThan) ds = ds.filter((r) => r.mat_than);
     if (chiChotLoi) ds = ds.filter((r) => r.tin === "NAM GIU" && chamTPCaoNhat(r));
     if (chiBanBot) ds = ds.filter((r) => r.ban_bot);
@@ -100,7 +104,7 @@ export default function BangBoLoc({ duLieu }) {
       return sapXep.chieu === "asc" ? so : -so;
     });
     return ds;
-  }, [duLieu, timKiem, sapXep, locTin, locVonHoa, locXuHuong, chiMatThan, chiChotLoi, chiBanBot]);
+  }, [duLieu, timKiem, sapXep, locTin, locVonHoa, locXuHuong, locSan, chiMatThan, chiChotLoi, chiBanBot]);
 
   function doiSapXep(khoa) {
     setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: "desc" }));
@@ -111,12 +115,13 @@ export default function BangBoLoc({ duLieu }) {
     setLocTin("");
     setLocVonHoa("");
     setLocXuHuong("");
+    setLocSan("");
     setChiMatThan(false);
     setChiChotLoi(false);
     setChiBanBot(false);
   }
 
-  const coBoLoc = timKiem || locTin || locVonHoa || locXuHuong || chiMatThan || chiChotLoi || chiBanBot;
+  const coBoLoc = timKiem || locTin || locVonHoa || locXuHuong || locSan || chiMatThan || chiChotLoi || chiBanBot;
 
   return (
     <div>
@@ -191,6 +196,16 @@ export default function BangBoLoc({ duLieu }) {
             ["sideway", "Sideway"],
           ]}
         />
+        <OSelect
+          value={locSan}
+          onChange={setLocSan}
+          placeholder="Tất cả sàn"
+          options={[
+            ["HOSE", "HOSE"],
+            ["HNX", "HNX"],
+            ["UPCOM", "UPCOM"],
+          ]}
+        />
         {coBoLoc && (
           <button onClick={xoaBoLoc} className="text-xs px-3 py-2 rounded-lg" style={{ color: PRIMARY, border: `1px solid ${VIEN}` }}>
             Xoá bộ lọc
@@ -259,6 +274,9 @@ export default function BangBoLoc({ duLieu }) {
                           ⚠
                         </span>
                       )}
+                    </td>
+                    <td className="py-2.5 px-3 text-xs" style={{ color: MUTED }}>
+                      {row.san || "HOSE"}
                     </td>
                     <td className="py-2.5 px-3 text-xs" style={{ color: MUTED }}>
                       {row.von_hoa || "—"}

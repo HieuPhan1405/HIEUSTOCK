@@ -2,10 +2,10 @@ import { withDb, daoDamBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
-// amibroker/7_Export_LenWeb.afl). Header CSV bat buoc (31 cot):
+// amibroker/7_Export_LenWeb.afl). Header CSV bat buoc (32 cot):
 // ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,
 // stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,
-// kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot
+// kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -122,14 +122,15 @@ export async function POST(request) {
          kijun, gg_top, gg_bot, dinh_52t,
          stop_loss, mat_than, tp1, tp2, tp3, gtgd_tb20, fvg_ok,
          so_phien_giu, lai_lo_pct, sanyaku, kumo_twist, ngay_bien_doi, von_hoa,
-         gia_mua, ngay_mua, ban_bot)
+         gia_mua, ngay_mua, ban_bot, san)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
          $11::float8[], $12::float8[], $13::float8[], $14::float8[], $15::float8[],
          $16::float8[], $17::boolean[], $18::float8[], $19::float8[], $20::float8[],
          $21::float8[], $22::boolean[], $23::float8[], $24::float8[], $25::float8[],
-         $26::text[], $27::boolean[], $28::text[], $29::float8[], $30::date[], $31::boolean[]
+         $26::text[], $27::boolean[], $28::text[], $29::float8[], $30::date[], $31::boolean[],
+         $32::text[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -162,6 +163,7 @@ export async function POST(request) {
          gia_mua = EXCLUDED.gia_mua,
          ngay_mua = EXCLUDED.ngay_mua,
          ban_bot = EXCLUDED.ban_bot,
+         san = EXCLUDED.san,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -195,6 +197,7 @@ export async function POST(request) {
         cot("gia_mua", soFloat),
         cot("ngay_mua", soNgayVN),
         cot("ban_bot", soBool),
+        cot("san", soText),
       ]
     );
 

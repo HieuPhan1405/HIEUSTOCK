@@ -373,13 +373,16 @@ InVN30 = StrFind( "," + VN30List + ",", "," + Name() + "," ) > 0;
 
 // VNMIDCAP - 70 ma con lai. LUU Y: chua xac nhan 100% tung ma rieng le, la
 // danh sach ke thua tu du lieu cu, chi dieu chinh 3 ma vua chuyen nhom.
+// Dong bo them 16 ma moi voi 7_Export_LenWeb.afl (mo rong ca HNX/UPCOM).
 VNMidCapList = "ANV,BCM,BMP,BSI,BWE,CII,CMG,CTD,CTR,CTS,"+
     "DBC,DCM,DGW,DIG,DPM,DSE,DXG,DXS,EIB,EVF,"+
     "FRT,FTS,GEE,GEX,GMD,HAG,HCM,HDC,HDG,HHV,"+
     "HSG,HT1,IMP,KBC,KDC,KDH,KOS,MSB,NAB,NKG,"+
     "NLG,NT2,NVL,OCB,PAN,PC1,PDR,PHR,PNJ,PVD,"+
     "PVT,REE,SBT,SCS,SIP,SJS,SZC,TCH,VCG,VCI,"+
-    "VGC,VHC,VIX,VND,VPI,VSC,VTP,DGC,LPB,SHB,MSR";
+    "VGC,VHC,VIX,VND,VPI,VSC,VTP,DGC,LPB,SHB,MSR,"+
+    "TMS,MBS,SHS,BVS,PVS,OIL,VGI,FOX,ACV,VGT,"+
+    "NTP,QNS,LTG,HNG,MCH,PVI";
 InVNMidCap = StrFind( "," + VNMidCapList + ",", "," + Name() + "," ) > 0;
 
 VN100List = VN30List + "," + VNMidCapList;
@@ -387,6 +390,7 @@ InVN100 = StrFind( "," + VN100List + ",", "," + Name() + "," ) > 0;
 
 // VNSMALLCAP - 202 ma. Tinh bang VNAllshare (302 ma, cong bo chinh thuc HOSE
 // ky 1/2026, qua Vietstock) TRU DI VN100 (100 ma).
+// Dong bo them ~70 ma moi voi 7_Export_LenWeb.afl (mo rong ca HNX/UPCOM).
 VNSmallCapList = "AAA,AAM,ABS,ABT,ACC,ACL,ADG,ADP,ADS,AGG,"+
     "AGR,APG,APH,ASM,ASP,AST,BAF,BCE,BFC,BIC,"+
     "BKG,BMC,BMI,BRC,BTP,C32,CCC,CCL,CDC,CHP,"+
@@ -407,7 +411,13 @@ VNSmallCapList = "AAA,AAM,ABS,ABT,ACC,ACL,ADG,ADP,ADS,AGG,"+
     "TIP,TLD,TLG,TLH,TMT,TN1,TNH,TNI,TNT,TRC,"+
     "TSC,TTA,TTF,TV2,TVB,TVS,UIC,VCA,VDS,VFG,"+
     "VIP,VNL,VOS,VPG,VPH,VPS,VRC,VSI,VTB,VTO,"+
-    "YBM,YEG,DHG,TRA,VCF,HVN,SVC,CAV,DQC";
+    "YBM,YEG,DHG,TRA,VCF,HVN,SVC,CAV,DQC,"+
+    "PGI,NTC,VSH,SPM,TVT,STG,VNA,C47,KLB,BVB,"+
+    "VAB,CEO,L18,HLD,EVS,APS,TVC,PSI,BMS,SBS,"+
+    "WSS,AAS,NVB,ABB,BAB,TVN,SMC,VGS,POM,GDA,"+
+    "PVC,PLC,PVB,PSD,ABI,VNR,PRE,PTI,IDC,IDV,"+
+    "FOC,TV1,QTP,HND,PVG,RIC,SAS,LDP,DHT,TNG,"+
+    "DXP,PHP,NET,LAS,HBC,DRI,KSV,HGM,SLS,TAR,HUT";
 InVNSmallCap = StrFind( "," + VNSmallCapList + ",", "," + Name() + "," ) > 0;
 // GHI CHU: Da BO dieu kien bat buoc "phai nam trong VN100List" o Buy ben duoi
 // (xem dong "Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15").
@@ -443,37 +453,37 @@ function TinhBreadth(DanhSachMa, SoLuong)
     return dem / SoLuong * 100;
 }
 
-DS_NganHang = "ACB,BID,BVB,CTG,EIB,HDB,KLB,LPB,MBB,MSB,NAB,OCB,SHB,SSB,STB,TCB,TPB,VAB,VBB,VCB,VIB,VPB";
-DS_BDS = "AGG,ASM,CCL,CII,CKG,CRE,DIG,DXG,DXS,EVG,FDC,FIR,HAR,HDC,HDG,HPX,HQC,HTN,ITC,KDH,KHG,KOS,LDG,LGL,NBB,NHA,NLG,NTL,NVL,PDR,PTL,QCG,SCR,SGR,SJS,TCH,TDC,TDH,THG,TNT,VHM,VIC,VPH,VPI,VRC,VRE,BCM,D2D,GVR,KBC,LHG,NTC,PHR,SIP,SZC,SZL,TIP,TIX,VGC,IJC";
-DS_ChungKhoan = "AGR,APG,BSI,CTS,DSC,DSE,EVF,FTS,HCM,ORS,SSI,TVB,TVS,VCI,VDS,VIX,VND,TCI";
-DS_BaoHiem = "BIC,BMI,BVH,MIG,PGI";
-DS_XayDung = "ACC,BCE,C47,CDC,CIG,CTD,CTI,DC4,DPG,DLG,FCM,FCN,HHV,HID,HTI,L10,LCG,LGC,LM8,PHC,PTC,SC5,SRF,VCG,VSI,BMP,C32,CCC,CRC,CVT,DHA,DXV,HCD,HT1,KSB,LBM,MDG,NNC,TCR,TLD,HUB,NO1";
-DS_ThepKhoangSan = "DTL,HMC,HPG,HSG,NKG,SMC,TLH,VCA,BMC,DHM,PLP,VPG,YBM";
-DS_DauKhiDienNuoc = "ASP,BSR,CNG,COM,GAS,PGC,PGD,PLX,PVD,SFC,BTP,BWE,CHP,CLW,DRL,GEG,GHC,HNA,KHP,NT2,PC1,PGV,POW,PPC,REE,S4A,SBA,SHP,SJD,TBC,TDM,TDW,TMP,TTA,TV2,VPD,VSH,TDG,PIT";
-DS_HoaChatCaoSu = "BFC,CSV,DCM,DGC,DPM,HII,SFG,VFG,BRC,CSM,DPR,DRC,HRC,SRC,TNC,TRC,AAA,APH,TDP,TPC,NAV,NHH,VPS";
-DS_ThucPhamNongSan = "BBC,BHN,CLC,KDC,LSS,MCH,MSN,NAF,SAB,SBT,VCF,VNM,AAN,ABS,ANT,BAF,DBC,HAG,HSL,NSC,PAN,SSC,TSC,AAM,ABT,ACL,ANV,CMX,FMC,IDI,VHC,LAF,LIX,MCM,SMB";
-DS_BanLeOto = "ADP,CMV,DGW,FRT,MWG,PET,PNJ,ST8,CTF,HAX,HHS,HTL,SVC,TMT,TLG,PTB";
-DS_DetMayGo = "AAT,ADS,EVE,GIL,HTG,KMR,MSH,STK,SVD,TCM,TVT,ACG,BKG,GDT,GTA,SAV,TTF,DHC,HHP,MCP,SVI,VID";
-DS_LogisticsVanTai = "CLL,DVP,GMD,HAH,HTV,ILB,NCT,PDN,QNP,SCS,SFI,SGN,STG,TCL,TCO,TMS,VSC,VTP,GSP,HVN,PJT,PVP,PVT,SKG,VJC,VNL,VNS,VOS,VTO,MHC,VIP";
-DS_CongNgheVienThong = "ADG,CMG,ELC,FPT,ICT,ITD,SVT,CTR,HAS,TSA,VTB,ABR,PNC,YEG";
-DS_YTe = "DBD,DBT,DCL,DHG,DMC,IMP,JVC,OPC,SPM,TNH,TRA,VDP,VMD";
-DS_ThietBiDienDuLich = "CAV,DQC,GEE,GEL,GEX,PAC,RAL,SHA,SHI,TYA,AST,DAH,DSN,NVT,OGC,TCT,VNG,VPL";
+DS_NganHang = "ACB,BID,BVB,CTG,EIB,HDB,KLB,LPB,MBB,MSB,NAB,OCB,SHB,SSB,STB,TCB,TPB,VAB,VBB,VCB,VIB,VPB,NVB,ABB,BAB";
+DS_BDS = "AGG,ASM,CCL,CII,CKG,CRE,DIG,DXG,DXS,EVG,FDC,FIR,HAR,HDC,HDG,HPX,HQC,HTN,ITC,KDH,KHG,KOS,LDG,LGL,NBB,NHA,NLG,NTL,NVL,PDR,PTL,QCG,SCR,SGR,SJS,TCH,TDC,TDH,THG,TNT,VHM,VIC,VPH,VPI,VRC,VRE,BCM,D2D,GVR,KBC,LHG,NTC,PHR,SIP,SZC,SZL,TIP,TIX,VGC,IJC,CEO,L18,HLD,HUT,IDC,IDV";
+DS_ChungKhoan = "AGR,APG,BSI,CTS,DSC,DSE,EVF,FTS,HCM,ORS,SSI,TVB,TVS,VCI,VDS,VIX,VND,TCI,BVS,EVS,APS,SHS,MBS,TVC,PSI,BMS,SBS,WSS,AAS";
+DS_BaoHiem = "BIC,BMI,BVH,MIG,PGI,ABI,VNR,PVI,PRE,PTI";
+DS_XayDung = "ACC,BCE,C47,CDC,CIG,CTD,CTI,DC4,DPG,DLG,FCM,FCN,HHV,HID,HTI,L10,LCG,LGC,LM8,PHC,PTC,SC5,SRF,VCG,VSI,BMP,C32,CCC,CRC,CVT,DHA,DXV,HCD,HT1,KSB,LBM,MDG,NNC,TCR,TLD,HUB,NO1,NTP,HBC";
+DS_ThepKhoangSan = "DTL,HMC,HPG,HSG,NKG,SMC,TLH,VCA,BMC,DHM,PLP,VPG,YBM,TVN,VGS,POM,GDA,KSV,HGM";
+DS_DauKhiDienNuoc = "ASP,BSR,CNG,COM,GAS,PGC,PGD,PLX,PVD,SFC,BTP,BWE,CHP,CLW,DRL,GEG,GHC,HNA,KHP,NT2,PC1,PGV,POW,PPC,REE,S4A,SBA,SHP,SJD,TBC,TDM,TDW,TMP,TTA,TV2,VPD,VSH,TDG,PIT,PVC,OIL,PVS,PLC,PVB,TV1,QTP,HND,PVG";
+DS_HoaChatCaoSu = "BFC,CSV,DCM,DGC,DPM,HII,SFG,VFG,BRC,CSM,DPR,DRC,HRC,SRC,TNC,TRC,AAA,APH,TDP,TPC,NAV,NHH,VPS,NET,LAS,DRI";
+DS_ThucPhamNongSan = "BBC,BHN,CLC,KDC,LSS,MCH,MSN,NAF,SAB,SBT,VCF,VNM,AAN,ABS,ANT,BAF,DBC,HAG,HSL,NSC,PAN,SSC,TSC,AAM,ABT,ACL,ANV,CMX,FMC,IDI,VHC,LAF,LIX,MCM,SMB,QNS,SLS,LTG,TAR,HNG";
+DS_BanLeOto = "ADP,CMV,DGW,FRT,MWG,PET,PNJ,ST8,CTF,HAX,HHS,HTL,SVC,TMT,TLG,PTB,PSD";
+DS_DetMayGo = "AAT,ADS,EVE,GIL,HTG,KMR,MSH,STK,SVD,TCM,TVT,ACG,BKG,GDT,GTA,SAV,TTF,DHC,HHP,MCP,SVI,VID,TNG,VGT";
+DS_LogisticsVanTai = "CLL,DVP,GMD,HAH,HTV,ILB,NCT,PDN,QNP,SCS,SFI,SGN,STG,TCL,TCO,TMS,VSC,VTP,GSP,HVN,PJT,PVP,PVT,SKG,VJC,VNL,VNS,VOS,VTO,MHC,VIP,DXP,PHP";
+DS_CongNgheVienThong = "ADG,CMG,ELC,FPT,ICT,ITD,SVT,CTR,HAS,TSA,VTB,ABR,PNC,YEG,VGI,FOX,FOC";
+DS_YTe = "DBD,DBT,DCL,DHG,DMC,IMP,JVC,OPC,SPM,TNH,TRA,VDP,VMD,LDP,DHT";
+DS_ThietBiDienDuLich = "CAV,DQC,GEE,GEL,GEX,PAC,RAL,SHA,SHI,TYA,AST,DAH,DSN,NVT,OGC,TCT,VNG,VPL,RIC,ACV,SAS";
 
-Breadth_NganHang = TinhBreadth(DS_NganHang, 22);
-Breadth_BDS = TinhBreadth(DS_BDS, 57);
-Breadth_ChungKhoan = TinhBreadth(DS_ChungKhoan, 17);
-Breadth_BaoHiem = TinhBreadth(DS_BaoHiem, 5);
-Breadth_XayDung = TinhBreadth(DS_XayDung, 39);
-Breadth_ThepKhoangSan = TinhBreadth(DS_ThepKhoangSan, 13);
-Breadth_DauKhiDienNuoc = TinhBreadth(DS_DauKhiDienNuoc, 36);
-Breadth_HoaChatCaoSu = TinhBreadth(DS_HoaChatCaoSu, 20);
-Breadth_ThucPhamNongSan = TinhBreadth(DS_ThucPhamNongSan, 32);
-Breadth_BanLeOto = TinhBreadth(DS_BanLeOto, 14);
-Breadth_DetMayGo = TinhBreadth(DS_DetMayGo, 22);
-Breadth_LogisticsVanTai = TinhBreadth(DS_LogisticsVanTai, 29);
-Breadth_CongNgheVienThong = TinhBreadth(DS_CongNgheVienThong, 14);
-Breadth_YTe = TinhBreadth(DS_YTe, 13);
-Breadth_ThietBiDienDuLich = TinhBreadth(DS_ThietBiDienDuLich, 18);
+Breadth_NganHang = TinhBreadth(DS_NganHang, 25);
+Breadth_BDS = TinhBreadth(DS_BDS, 66);
+Breadth_ChungKhoan = TinhBreadth(DS_ChungKhoan, 29);
+Breadth_BaoHiem = TinhBreadth(DS_BaoHiem, 10);
+Breadth_XayDung = TinhBreadth(DS_XayDung, 44);
+Breadth_ThepKhoangSan = TinhBreadth(DS_ThepKhoangSan, 19);
+Breadth_DauKhiDienNuoc = TinhBreadth(DS_DauKhiDienNuoc, 48);
+Breadth_HoaChatCaoSu = TinhBreadth(DS_HoaChatCaoSu, 26);
+Breadth_ThucPhamNongSan = TinhBreadth(DS_ThucPhamNongSan, 40);
+Breadth_BanLeOto = TinhBreadth(DS_BanLeOto, 17);
+Breadth_DetMayGo = TinhBreadth(DS_DetMayGo, 24);
+Breadth_LogisticsVanTai = TinhBreadth(DS_LogisticsVanTai, 33);
+Breadth_CongNgheVienThong = TinhBreadth(DS_CongNgheVienThong, 17);
+Breadth_YTe = TinhBreadth(DS_YTe, 15);
+Breadth_ThietBiDienDuLich = TinhBreadth(DS_ThietBiDienDuLich, 21);
 
 Breadth_TB_Chung = (Breadth_NganHang+Breadth_BDS+Breadth_ChungKhoan+Breadth_BaoHiem+Breadth_XayDung
     +Breadth_ThepKhoangSan+Breadth_DauKhiDienNuoc+Breadth_HoaChatCaoSu+Breadth_ThucPhamNongSan
