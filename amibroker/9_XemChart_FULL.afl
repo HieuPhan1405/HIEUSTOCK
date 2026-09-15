@@ -697,9 +697,13 @@ KhangCuCungNhat = IIf(Dinh52T>C, Dinh52T, KhangCuGanNhat_V2);
 // pivot phuc tap): Dinh gan (60 phien, ngan han), Mua/Giao Gam (trung han),
 // Dinh 52 tuan (dai han). Sap xep dam bao dung thu tu GAN -> XA du nguon
 // nao lon hon (dung 1 trong nhung mo hinh sap xep 3-gia-tri co ban).
-NguonGan   = DinhGanNhat;
-NguonGiua  = Max(GGTop, CloudTop);
-NguonXa    = Dinh52T;
+// FIX: dong bo voi 7_Export_LenWeb.afl - ma vua breakout (gia da vuot qua
+// 1/ca 3 nguon) thi nguon do khong con la khang cu thuc su, se khien TP
+// thap hon gia mua ("vua mua da bao chot loi"). Ep san toi thieu 5%/10%/15%
+// tren gia hien tai, giu nguyen gia tri that neu no da o tren san do.
+NguonGan   = Max(DinhGanNhat, C * 1.05);
+NguonGiua  = Max(Max(GGTop, CloudTop), C * 1.10);
+NguonXa    = Max(Dinh52T, C * 1.15);
 Tong3Nguon = NguonGan + NguonGiua + NguonXa;
 ChotLoi_TP1 = Min(Min(NguonGan,NguonGiua),NguonXa);          // gan nhat
 ChotLoi_TP3 = Max(Max(NguonGan,NguonGiua),NguonXa);          // xa nhat

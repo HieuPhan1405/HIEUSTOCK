@@ -588,9 +588,15 @@ KhangCuCungNhat = IIf(Dinh52T>C, Dinh52T, KhangCuGanNhat_V2);
 
 // 3 MOC CHOT LOI - dung 3 nguon Khang cu on dinh: Dinh gan (60 phien, ngan
 // han), Mua/Giao Gam (trung han), Dinh 52 tuan (dai han).
-NguonGan   = DinhGanNhat;
-NguonGiua  = Max(GGTop, CloudTop);
-NguonXa    = Dinh52T;
+// FIX: ma vua BREAKOUT (gia hien tai da VUOT QUA 1 hoac ca 3 nguon khang cu
+// nay) thi nguon do KHONG CON la khang cu thuc su - giu nguyen se khien TP
+// tinh ra THAP HON gia mua, dan den "vua mua da bao chot loi" (vd TRC mua
+// gia 21.35 nhung TP1 tinh ra 19.84). Dam bao moi nguon LUON o tren gia hien
+// tai bang 1 san toi thieu (5%/10%/15%) - giu nguyen gia tri that neu no da
+// o tren san do (truong hop binh thuong, khong breakout).
+NguonGan   = Max(DinhGanNhat, C * 1.05);
+NguonGiua  = Max(Max(GGTop, CloudTop), C * 1.10);
+NguonXa    = Max(Dinh52T, C * 1.15);
 Tong3Nguon = NguonGan + NguonGiua + NguonXa;
 ChotLoi_TP1 = Min(Min(NguonGan,NguonGiua),NguonXa);
 ChotLoi_TP3 = Max(Max(NguonGan,NguonGiua),NguonXa);
