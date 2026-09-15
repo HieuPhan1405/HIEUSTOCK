@@ -35,6 +35,14 @@ export default function TaiKhoanNut({ compact, nhan }) {
         <span style={{ color: MUTED }} className={compact ? "hidden sm:inline" : ""}>
           Xin chào, {nguoiDung.ten || nguoiDung.sdt}
         </span>
+        {nguoiDung.la_admin && (
+          <span
+            className="px-1.5 py-0.5 text-[10px] font-bold rounded"
+            style={{ background: "#22C55E", color: "#0B0B10" }}
+          >
+            ADMIN
+          </span>
+        )}
         <button onClick={dangXuat} style={{ color: PRIMARY }} className="font-medium">
           Đăng xuất
         </button>

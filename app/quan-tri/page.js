@@ -133,6 +133,15 @@ export default function TrangQuanTri() {
     }
   }, []);
 
+  async function datAdmin(id, laAdmin) {
+    await fetch("/api/dat-admin", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": apiKey },
+      body: JSON.stringify({ id, laAdmin }),
+    });
+    taiNguoiDung(apiKey);
+  }
+
   useEffect(() => {
     if (apiKey) taiNguoiDung(apiKey);
   }, [apiKey, taiNguoiDung]);
@@ -461,14 +470,27 @@ export default function TrangQuanTri() {
             </p>
           )}
           {dsNguoiDung.map((nd) => (
-            <div key={nd.id} className="flex items-center justify-between py-2 border-b text-sm" style={{ borderColor: "#1D1D26" }}>
+            <div key={nd.id} className="flex items-center justify-between py-2 border-b text-sm gap-2" style={{ borderColor: "#1D1D26" }}>
               <span>
                 <strong style={{ fontFamily: "'JetBrains Mono', monospace" }}>{nd.sdt}</strong>
                 {nd.ten && <span style={{ color: "#8B8B99" }}> — {nd.ten}</span>}
+                {nd.la_admin && (
+                  <span
+                    className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded"
+                    style={{ background: "#22C55E", color: "#0B0B10" }}
+                  >
+                    ADMIN
+                  </span>
+                )}
               </span>
-              <span className="text-xs" style={{ color: "#8B8B99" }}>
-                {new Date(nd.tao_luc).toLocaleString("vi-VN")}
-              </span>
+              <div className="flex items-center gap-3 shrink-0">
+                <span className="text-xs" style={{ color: "#8B8B99" }}>
+                  {new Date(nd.tao_luc).toLocaleString("vi-VN")}
+                </span>
+                <button onClick={() => datAdmin(nd.id, !nd.la_admin)} className="text-xs" style={{ color: nd.la_admin ? "#EF4444" : "#6C5CE7" }}>
+                  {nd.la_admin ? "Bỏ Admin" : "Đặt Admin"}
+                </button>
+              </div>
             </div>
           ))}
         </div>
