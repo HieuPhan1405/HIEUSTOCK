@@ -582,12 +582,11 @@ DangGiuTuTruoc = DangGiuLenhVT AND NOT VuaMuaHomNay AND NOT Sell;
 BanHomNay = Sell;
 DungNgoai = NOT DangGiuLenhVT AND NOT VuaMuaHomNay;
 
-// CANH BAO BAN BOT - diem hom nay da roi duoi nguong Ban (-ExitTh, mac dinh
-// -1.5) - MOT PHIEN DUY NHAT, chua can du 3 phien xac nhan lien tuc nhu Ban
-// han (TurnedPink) - nhung VAN DANG GIU lenh va CHUA co tin hieu Ban that su
-// hom nay. Goi y giam bot vi the SOM hon, khong doi den luc diem xau han/du
-// 3 phien moi Ban toan bo.
-CanhBaoBanBot = DangGiuLenhVT AND ZoneSell AND NOT BanHomNay;
+// CANH BAO BAN BOT - diem hom nay da tut xuong DUOI 0 (rong hon nguong Ban
+// -ExitTh, canh bao SOM hon nua) - nhung VAN DANG GIU lenh va CHUA co tin
+// hieu Ban that su hom nay. Goi y giam bot vi the som, khong doi den luc
+// diem xau han/du 3 phien moi Ban toan bo.
+CanhBaoBanBot = DangGiuLenhVT AND TotalScore < 0 AND NOT BanHomNay;
 
 // ============================================================================
 // SCANNER - QUET TOAN BO THI TRUONG (Explore)
