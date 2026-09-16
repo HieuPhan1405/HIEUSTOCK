@@ -420,7 +420,7 @@ export default async function TrangTongQuan() {
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
-          <CotTinHieu tieuDe="Tín hiệu MUA" mau={XANH} danhSach={tinHieuMua} />
+          <CotTinHieu tieuDe="Tín hiệu MUA" mau={XANH} danhSach={tinHieuMua} hienRank />
           <CotTinHieu tieuDe="Tín hiệu BÁN" mau={DO} danhSach={tinHieuBan} />
         </div>
       </div>
@@ -428,7 +428,7 @@ export default async function TrangTongQuan() {
   );
 }
 
-function CotTinHieu({ tieuDe, mau, danhSach }) {
+function CotTinHieu({ tieuDe, mau, danhSach, hienRank }) {
   return (
     <div className="rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <p
@@ -452,6 +452,12 @@ function CotTinHieu({ tieuDe, mau, danhSach }) {
           <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "16px" }}>{row.ma}</span>
           <span className="text-xs" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
             điểm {row.diem?.toFixed(2) ?? "—"}
+            {hienRank && row.diem_rank != null && row.diem_confidence != null && (
+              <>
+                {" "}
+                · Rank {row.diem_rank.toFixed(0)} · Conf {row.diem_confidence.toFixed(0)}
+              </>
+            )}
           </span>
           <span
             className="text-right"

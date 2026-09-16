@@ -350,6 +350,20 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
             {row.sanyaku !== null && row.sanyaku !== undefined && (
               <TagInfo nhan="Độ tin cậy" giaTri={`${row.sanyaku}/3`} mau={row.sanyaku >= 2 ? "#22C55E" : "#A6A6B3"} />
             )}
+            {row.diem_rank !== null && row.diem_rank !== undefined && (
+              <TagInfo
+                nhan="Rank (chất lượng setup)"
+                giaTri={`${soAn(row.diem_rank, 0)}/100`}
+                mau={row.diem_rank >= 70 ? "#22C55E" : row.diem_rank >= 40 ? "#FBBF24" : "#A6A6B3"}
+              />
+            )}
+            {row.diem_confidence !== null && row.diem_confidence !== undefined && (
+              <TagInfo
+                nhan="Confidence (độ tự tin)"
+                giaTri={`${soAn(row.diem_confidence, 0)}/100`}
+                mau={row.diem_confidence >= 70 ? "#22C55E" : row.diem_confidence >= 40 ? "#FBBF24" : "#A6A6B3"}
+              />
+            )}
             {row.kumo_twist && (
               <TagInfo
                 nhan="Mây tương lai"

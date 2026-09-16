@@ -469,6 +469,29 @@ NganhHienTai = WriteIf(TrongNH, "Ngan hang",
                WriteIf(TrongTB, "Thiet bi dien - Du lich",
                "Khac")))))))))))))));
 
+// DIEM RANK (0-100, "chat luong setup") + DIEM CONFIDENCE (0-100, "do tu
+// tin/chac chan") - dua nguyen tu 9_XemChart_FULL.afl (da kiem tra: trong
+// so cong dung 100 ca 2 cong thuc, tai su dung nguong da hieu chinh san
+// (NguongManh=60 cho Breadth, ADX=40 la "rat manh") thay vi bia so moi).
+// KHONG dong bang tai luc mua - cap nhat theo ngay giong TotalScore, vi day
+// la mo rong/goc nhin khac cua chinh he thong diem dang chay, khong phai
+// 1 muc gia/rui ro co dinh nhu TP hay Stop-loss.
+RankTuSanyaku   = (SoDiemSanyaku / 3) * 25;
+RankTuFVG       = IIf(FVGDuLon, 20, IIf(InFVGZone, 10, 0));
+RankTuADX       = Min(20, ADXVal / 40 * 20);
+RankTuBreadth   = Min(20, BreadthPctNganh / 60 * 20);
+RankTuRS_VNI    = IIf(RS_SoVoiVNI > 0, 15, Max(0, 15 + RS_SoVoiVNI));
+DiemRank = RankTuSanyaku + RankTuFVG + RankTuADX + RankTuBreadth + RankTuRS_VNI;
+
+CungDauTrend = Sign(TrendScore);
+CungDauMom   = Sign(MomScore);
+CungDauDT    = Sign(MFScore);
+SoThanhPhanDongThuan = (CungDauTrend==CungDauMom) + (CungDauTrend==CungDauDT) + (CungDauMom==CungDauDT);
+DiemDongThuan = SoThanhPhanDongThuan / 3 * 60;
+SoPhienGiuXuHuong = BarsSince(Cross(TotalScore, 0) OR Cross(0, TotalScore));
+DiemBenVung = Min(40, SoPhienGiuXuHuong / 10 * 40);
+DiemConfidence = DiemDongThuan + DiemBenVung;
+
 MocChuan = 100/8;
 TyTrongTheoNganh = IIf(BatBreadthGate,
     IIf(BreadthPctNganh>=NguongManh, MocChuan*1.0,
@@ -709,6 +732,8 @@ AddTextColumn(WriteIf(InVN30,"VN30",WriteIf(InVNMidCap,"Midcap",WriteIf(InVNSmal
 AddTextColumn(SanHienTai, "San");
 AddTextColumn(NganhHienTai, "Nganh");
 AddTextColumn(WriteIf(MucTPDaChamCaoNhat=="", "-", MucTPDaChamCaoNhat), "TP da cham (tung luc)");
+AddColumn(DiemRank, "Rank - chat luong setup (0-100)", 1.0);
+AddColumn(DiemConfidence, "Confidence - do tu tin (0-100)", 1.0);
 
 // ============================================================================
 // XUAT CSV TU DONG LEN WEB - KHONG CAN BAM "EXPORT" TAY
@@ -723,7 +748,8 @@ if (Status("stocknum") == 0)
     {
         fputs("ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,"+
               "stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,"+
-              "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham\n", fh);
+              "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,"+
+              "diem_rank,diem_confidence\n", fh);
         fclose(fh);
     }
 }
@@ -786,7 +812,9 @@ Dong = Name() + "," + TinCuoi + ","
      + WriteIf(LastValue(CanhBaoBanBot), "1", "0") + ","
      + WriteIf(LaVNIndex, "HOSE", SanHienTai) + ","
      + WriteIf(LaVNIndex, "ChiSo", NganhHienTai) + ","
-     + MucTPDaChamCaoNhat;
+     + MucTPDaChamCaoNhat + ","
+     + NumToStr(LastValue(DiemRank),1.0,False) + ","
+     + NumToStr(LastValue(DiemConfidence),1.0,False);
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {
