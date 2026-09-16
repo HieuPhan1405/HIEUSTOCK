@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { TriangleAlert, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
+import NutThamGia from "@/components/NutThamGia";
 import { fmt, pct, chamTPCaoNhat } from "@/components/dungChung";
 
 const VIEN = "#26262F";
@@ -52,6 +53,31 @@ export default function BangLenhMo({ duLieu }) {
   // Mac dinh: canh bao Mat Than len dau (rui ro can chu y truoc), giu nguyen
   // hanh vi cu cho toi khi nguoi dung tu bam sap xep cot khac.
   const [sapXep, setSapXep] = useState(null);
+  // Trang nay da bat buoc dang nhap tu server (xem app/lenh-mo/page.js) nen
+  // luon coi la da dang nhap - chi can nap ban do Tham gia, khong can kiem
+  // tra lai phien dang nhap.
+  const [banDoThamGia, setBanDoThamGia] = useState({});
+
+  useEffect(() => {
+    fetch("/api/tham-gia")
+      .then((r) => r.json())
+      .then((d) => {
+        const maCuaToi = new Set(d.maCuaToi || []);
+        const ban = {};
+        for (const [ma, dem] of Object.entries(d.demTatCa || {})) {
+          ban[ma] = { soNguoiThamGia: dem, daThamGia: maCuaToi.has(ma) };
+        }
+        for (const ma of maCuaToi) {
+          if (!ban[ma]) ban[ma] = { soNguoiThamGia: 0, daThamGia: true };
+        }
+        setBanDoThamGia(ban);
+      })
+      .catch(() => {});
+  }, []);
+
+  function doiTrangThaiThamGia(ma, trangThaiMoi) {
+    setBanDoThamGia((cu) => ({ ...cu, [ma]: trangThaiMoi }));
+  }
 
   const daSapXep = useMemo(() => {
     if (!sapXep) {
@@ -128,10 +154,18 @@ export default function BangLenhMo({ duLieu }) {
                 }}
               >
                 <td className="py-3 pl-4 pr-3">
-                  <Link href={`/ma/${row.ma}`} className="flex items-center gap-1 hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-                    {row.mat_than && <TriangleAlert size={13} color={DO} strokeWidth={2} aria-hidden="true" className="shrink-0" />}
-                    {row.ma}
-                  </Link>
+                  <div className="flex items-center gap-1.5">
+                    <Link href={`/ma/${row.ma}`} className="flex items-center gap-1 hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+                      {row.mat_than && <TriangleAlert size={13} color={DO} strokeWidth={2} aria-hidden="true" className="shrink-0" />}
+                      {row.ma}
+                    </Link>
+                    <NutThamGia
+                      ma={row.ma}
+                      soNguoiThamGia={banDoThamGia[row.ma]?.soNguoiThamGia ?? 0}
+                      daThamGia={banDoThamGia[row.ma]?.daThamGia ?? false}
+                      onDoiTrangThai={doiTrangThaiThamGia}
+                    />
+                  </div>
                 </td>
                 <td className="py-3 px-3 text-right">{fmt(row.gia)}</td>
                 <td className="py-3 px-3 text-right" style={{ color: row.doi >= 0 ? XANH : DO }}>

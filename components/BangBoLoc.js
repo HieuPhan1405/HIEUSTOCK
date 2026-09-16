@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search, Lock } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
+import NutThamGia from "@/components/NutThamGia";
 import { fmt, pct, so1So, phanLoaiXuHuong, chamTPCaoNhat } from "@/components/dungChung";
 
 const VIEN = "#26262F";
@@ -107,13 +108,34 @@ export default function BangBoLoc({ duLieu }) {
   // nhoang lo tin hieu that truoc khi fetch xong).
   const [nguoiDung, setNguoiDung] = useState(null);
   const [moModalTK, setMoModalTK] = useState(false);
+  // Ban do "Tham gia" - {ma: {daThamGia, soNguoiThamGia}}, nap 1 lan cho ca
+  // bang (tranh goi API rieng tung dong).
+  const [banDoThamGia, setBanDoThamGia] = useState({});
 
   useEffect(() => {
     fetch("/api/nguoi-dung-hien-tai")
       .then((r) => r.json())
       .then((d) => setNguoiDung(d.nguoiDung || null))
       .catch(() => {});
+    fetch("/api/tham-gia")
+      .then((r) => r.json())
+      .then((d) => {
+        const maCuaToi = new Set(d.maCuaToi || []);
+        const ban = {};
+        for (const [ma, dem] of Object.entries(d.demTatCa || {})) {
+          ban[ma] = { soNguoiThamGia: dem, daThamGia: maCuaToi.has(ma) };
+        }
+        for (const ma of maCuaToi) {
+          if (!ban[ma]) ban[ma] = { soNguoiThamGia: 0, daThamGia: true };
+        }
+        setBanDoThamGia(ban);
+      })
+      .catch(() => {});
   }, []);
+
+  function doiTrangThaiThamGia(ma, trangThaiMoi) {
+    setBanDoThamGia((cu) => ({ ...cu, [ma]: trangThaiMoi }));
+  }
 
   const soTang = duLieu.filter((r) => r.doi > 0).length;
   const soGiam = duLieu.filter((r) => r.doi < 0).length;
@@ -325,14 +347,24 @@ export default function BangBoLoc({ duLieu }) {
                 return (
                   <tr key={row.ma} className={`hover:bg-white/[0.04] transition-colors ${i > 0 ? "border-t" : ""}`} style={{ borderColor: "#1D1D26" }}>
                     <td className="py-2.5 px-3">
-                      <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-                        {row.ma}
-                      </Link>
-                      {row.mat_than && (
-                        <span className="ml-1.5 text-[10px] font-bold" style={{ color: DO }}>
-                          ⚠
-                        </span>
-                      )}
+                      <div className="flex items-center gap-1.5">
+                        <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+                          {row.ma}
+                        </Link>
+                        {row.mat_than && (
+                          <span className="text-[10px] font-bold" style={{ color: DO }}>
+                            ⚠
+                          </span>
+                        )}
+                        <NutThamGia
+                          ma={row.ma}
+                          soNguoiThamGia={banDoThamGia[row.ma]?.soNguoiThamGia ?? 0}
+                          daThamGia={banDoThamGia[row.ma]?.daThamGia ?? false}
+                          coDangNhap={!!nguoiDung}
+                          moChuaDangNhap={() => setMoModalTK(true)}
+                          onDoiTrangThai={doiTrangThaiThamGia}
+                        />
+                      </div>
                     </td>
                     <td className="py-2.5 px-3 text-xs" style={{ color: MUTED }}>
                       {row.san || "HOSE"}
