@@ -31,6 +31,7 @@ const COT = [
   { khoa: "ngay_tin_hieu", nhan: "Ngày tín hiệu", canPhai: false, lay: (r) => new Date(r.ngay_tin_hieu).getTime() },
   { khoa: "diem", nhan: "Điểm", canPhai: true, lay: (r) => r.diem },
   { khoa: "gia_luc_tin_hieu", nhan: "Giá lúc đó", canPhai: true, lay: (r) => r.gia_luc_tin_hieu },
+  { khoa: "gia_hien_tai", nhan: "Giá hiện tại", canPhai: true, lay: (r) => r.gia_hien_tai },
   { khoa: "pct_sau_5", nhan: "%Sau 5 phiên", canPhai: true, lay: (r) => r.pct_sau_5 },
   { khoa: "pct_sau_10", nhan: "%Sau 10 phiên", canPhai: true, lay: (r) => r.pct_sau_10 },
   { khoa: "pct_sau_20", nhan: "%Sau 20 phiên", canPhai: true, lay: (r) => r.pct_sau_20 },
@@ -131,6 +132,17 @@ export default function BangBatDay({ duLieu }) {
                     </td>
                     <td className="py-2.5 px-3 text-right">{row.diem?.toFixed(2) ?? "—"}</td>
                     <td className="py-2.5 px-3 text-right">{fmt(row.gia_luc_tin_hieu)}</td>
+                    <td className="py-2.5 px-3 text-right">
+                      {fmt(row.gia_hien_tai)}
+                      {row.gia_hien_tai != null && row.gia_luc_tin_hieu > 0 && (
+                        <span
+                          className="text-[11px] ml-1"
+                          style={{ color: row.gia_hien_tai >= row.gia_luc_tin_hieu ? XANH : DO }}
+                        >
+                          ({pct((row.gia_hien_tai / row.gia_luc_tin_hieu - 1) * 100, 1)})
+                        </span>
+                      )}
+                    </td>
                     <td className="py-2.5 px-3 text-right" style={{ color: row.pct_sau_5 >= 0 ? XANH : DO }}>
                       {pct(row.pct_sau_5, 2)}
                     </td>
