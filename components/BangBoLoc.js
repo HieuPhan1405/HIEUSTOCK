@@ -34,6 +34,14 @@ const COT = [
 
 const XU_HUONG_NHAN = { xanh: "Tăng", do: "Giảm", sideway: "Sideway" };
 
+// "Gan diem MUA" - dung DUNG nguong vao lenh mac dinh trong AFL (EntryTh =
+// Param("Nguong diem VAO lenh (Mua)", 1.25, ...) - neu ban doi thong so nay
+// trong AmiBroker, bao lai de cap nhat cho khop). Hien cac ma TRUNG LAP co
+// diem da tiem can nguong nhung CHUA du de kich hoat MUA, de theo doi trong
+// phien xem co "vuot qua" duoc khong.
+const NGUONG_MUA = 1.25;
+const BIEN_DO_GAN_MUA = 0.5;
+
 // Gia tri "nganh" AFL xuat ra KHONG dau (quy uoc chung toan he thong) - map
 // sang nhan co dau de hien thi dep hon trong dropdown, nhung filter van so
 // sanh dung gia tri goc khong dau tu DB.
@@ -69,6 +77,7 @@ function docLocTuUrl(searchParams) {
     chiMatThan: searchParams.get("matthan") === "1",
     chiChotLoi: searchParams.get("chotloi") === "1",
     chiBanBot: searchParams.get("banbot") === "1",
+    chiGanDiemMua: searchParams.get("gandiemmua") === "1",
   };
 }
 
@@ -103,6 +112,7 @@ export default function BangBoLoc({ duLieu }) {
   const [chiMatThan, setChiMatThan] = useState(locBanDau.chiMatThan);
   const [chiChotLoi, setChiChotLoi] = useState(locBanDau.chiChotLoi);
   const [chiBanBot, setChiBanBot] = useState(locBanDau.chiBanBot);
+  const [chiGanDiemMua, setChiGanDiemMua] = useState(locBanDau.chiGanDiemMua);
   // Cot "Tin hieu" (MUA/BAN/NAM GIU/TRUNG LAP) bi lam mo cho khach CHUA dang
   // ky/dang nhap - de mac dinh la CHUA dang nhap (an toan hon, tranh nhap
   // nhoang lo tin hieu that truoc khi fetch xong).
@@ -153,6 +163,7 @@ export default function BangBoLoc({ duLieu }) {
     if (chiMatThan) ds = ds.filter((r) => r.mat_than);
     if (chiChotLoi) ds = ds.filter((r) => r.tin === "NAM GIU" && chamTPCaoNhat(r));
     if (chiBanBot) ds = ds.filter((r) => r.ban_bot);
+    if (chiGanDiemMua) ds = ds.filter((r) => r.tin === "TRUNG LAP" && r.diem >= NGUONG_MUA - BIEN_DO_GAN_MUA && r.diem < NGUONG_MUA);
 
     ds = [...ds].sort((a, b) => {
       const va = a[sapXep.khoa];
@@ -166,7 +177,7 @@ export default function BangBoLoc({ duLieu }) {
       return sapXep.chieu === "asc" ? so : -so;
     });
     return ds;
-  }, [duLieu, timKiem, sapXep, locTin, locVonHoa, locXuHuong, locSan, locNganh, chiMatThan, chiChotLoi, chiBanBot, nguoiDung]);
+  }, [duLieu, timKiem, sapXep, locTin, locVonHoa, locXuHuong, locSan, locNganh, chiMatThan, chiChotLoi, chiBanBot, chiGanDiemMua, nguoiDung]);
 
   function doiSapXep(khoa) {
     setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: "desc" }));
@@ -182,9 +193,10 @@ export default function BangBoLoc({ duLieu }) {
     setChiMatThan(false);
     setChiChotLoi(false);
     setChiBanBot(false);
+    setChiGanDiemMua(false);
   }
 
-  const coBoLoc = timKiem || locTin || locVonHoa || locXuHuong || locSan || locNganh || chiMatThan || chiChotLoi || chiBanBot;
+  const coBoLoc = timKiem || locTin || locVonHoa || locXuHuong || locSan || locNganh || chiMatThan || chiChotLoi || chiBanBot || chiGanDiemMua;
 
   return (
     <div>
@@ -306,6 +318,10 @@ export default function BangBoLoc({ duLieu }) {
         <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }}>
           <input type="checkbox" checked={chiBanBot} onChange={(e) => setChiBanBot(e.target.checked)} />
           Chỉ cảnh báo Bán bớt
+        </label>
+        <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }}>
+          <input type="checkbox" checked={chiGanDiemMua} onChange={(e) => setChiGanDiemMua(e.target.checked)} />
+          Chỉ mã sắp đến điểm MUA
         </label>
       </div>
 
