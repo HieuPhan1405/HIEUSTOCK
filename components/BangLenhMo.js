@@ -5,7 +5,7 @@ import Link from "next/link";
 import { TriangleAlert, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import NutThamGia from "@/components/NutThamGia";
-import { fmt, pct, chamTPCaoNhat } from "@/components/dungChung";
+import { fmt, pct, chamTPCaoNhat, nhanGiaiNgan } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -191,6 +191,11 @@ export default function BangLenhMo({ duLieu }) {
                 <td className="py-3 pr-4 pl-3 text-right">
                   <div className="flex flex-col items-end gap-1">
                     <SignalPill tin={row.tin} />
+                    {nhanGiaiNgan(row) && (
+                      <span className="text-[10px] font-bold tracking-wide" style={{ color: nhanGiaiNgan(row).mau }} title={nhanGiaiNgan(row).moTa}>
+                        ◐ {nhanGiaiNgan(row).nhan}
+                      </span>
+                    )}
                     {row.ban_bot && (
                       <span className="text-[10px] font-bold tracking-wide" style={{ color: CAM }}>
                         ⚠ Bán bớt

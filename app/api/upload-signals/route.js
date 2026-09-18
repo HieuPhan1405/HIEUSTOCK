@@ -2,11 +2,11 @@ import { withDb, daoDamBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
-// amibroker/7_Export_LenWeb.afl). Header CSV bat buoc (37 cot):
+// amibroker/7_Export_LenWeb.afl). Header CSV bat buoc (38 cot):
 // ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,
 // stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,
 // kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,
-// diem_rank,diem_confidence,khoi_luong_tb20
+// diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -103,12 +103,16 @@ export async function POST(request) {
   // tin moi = MUA) - tranh bao Zalo lap lai neu lo upload trung 1 ma nhieu lan.
   const dsMaLanNay0 = hangDL.map((h) => h.ma);
   let tinCuTheoMa = {};
+  let giaiNganCuTheoMa = {};
   await withDb(async (client) => {
     await daoDamBangTinHieu(client);
-    const { rows } = await client.query(`SELECT ma, tin FROM tin_hieu WHERE ma = ANY($1::text[])`, [dsMaLanNay0]);
+    const { rows } = await client.query(`SELECT ma, tin, giai_ngan FROM tin_hieu WHERE ma = ANY($1::text[])`, [dsMaLanNay0]);
     tinCuTheoMa = Object.fromEntries(rows.map((r) => [r.ma, r.tin]));
+    giaiNganCuTheoMa = Object.fromEntries(rows.map((r) => [r.ma, r.giai_ngan]));
   });
   const cacMaMuaMoi = hangDL.filter((h) => (h.tin || "TRUNG LAP") === "MUA" && tinCuTheoMa[h.ma] !== "MUA");
+  // Phien BO SUNG phan con lai sau khi mua tham do (giai ngan 1 phan) - bao 1 lan.
+  const cacMaBoSung = hangDL.filter((h) => h.giai_ngan === "BO SUNG" && giaiNganCuTheoMa[h.ma] !== "BO SUNG");
 
   await withDb(async (client) => {
     await daoDamBangTinHieu(client);
@@ -124,7 +128,7 @@ export async function POST(request) {
          stop_loss, mat_than, tp1, tp2, tp3, gtgd_tb20, fvg_ok,
          so_phien_giu, lai_lo_pct, sanyaku, kumo_twist, ngay_bien_doi, von_hoa,
          gia_mua, ngay_mua, ban_bot, san, nganh, tp_da_cham,
-         diem_rank, diem_confidence, khoi_luong_tb20)
+         diem_rank, diem_confidence, khoi_luong_tb20, giai_ngan)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -133,7 +137,7 @@ export async function POST(request) {
          $21::float8[], $22::boolean[], $23::float8[], $24::float8[], $25::float8[],
          $26::text[], $27::boolean[], $28::text[], $29::float8[], $30::date[], $31::boolean[],
          $32::text[], $33::text[], $34::text[],
-         $35::float8[], $36::float8[], $37::float8[]
+         $35::float8[], $36::float8[], $37::float8[], $38::text[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -172,6 +176,7 @@ export async function POST(request) {
          diem_rank = EXCLUDED.diem_rank,
          diem_confidence = EXCLUDED.diem_confidence,
          khoi_luong_tb20 = EXCLUDED.khoi_luong_tb20,
+         giai_ngan = EXCLUDED.giai_ngan,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -211,6 +216,7 @@ export async function POST(request) {
         cot("diem_rank", soFloat),
         cot("diem_confidence", soFloat),
         cot("khoi_luong_tb20", soFloat),
+        cot("giai_ngan", soText),
       ]
     );
 
@@ -241,7 +247,16 @@ export async function POST(request) {
   let zaloLoi = null;
   for (const h of cacMaMuaMoi) {
     const ketQua = await guiTinNhanZalo(
-      `🟢 TÍN HIỆU MUA MỚI: ${h.ma}\nGiá: ${h.gia}\nĐiểm: ${Number(h.diem).toFixed(2)}\nXem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`
+      `🟢 TÍN HIỆU MUA MỚI: ${h.ma}\nGiá: ${h.gia}\nĐiểm: ${Number(h.diem).toFixed(2)}${
+        h.giai_ngan === "MOT PHAN" ? "\n⚠ Giải ngân 1 phần (RS yếu) — chờ phiên sau để bổ sung" : ""
+      }\nXem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`
+    );
+    if (ketQua.gui) zaloDaGui++;
+    else if (!zaloLoi) zaloLoi = ketQua.ly_do;
+  }
+  for (const h of cacMaBoSung) {
+    const ketQua = await guiTinNhanZalo(
+      `➕ BỔ SUNG: ${h.ma}\nGiá: ${h.gia}\nĐủ điều kiện giải ngân nốt phần còn lại\nXem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`
     );
     if (ketQua.gui) zaloDaGui++;
     else if (!zaloLoi) zaloLoi = ketQua.ly_do;

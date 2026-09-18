@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
-import { fmt, pct, soAn, chamTPCaoNhat, chuoiKhoiLuong, TREND_MAX, MOM_MAX, DT_MAX, RS_MAX } from "@/components/dungChung";
+import { fmt, pct, soAn, chamTPCaoNhat, chuoiKhoiLuong, nhanGiaiNgan, TREND_MAX, MOM_MAX, DT_MAX, RS_MAX } from "@/components/dungChung";
 
 // Lich su giao dich + thong ke hieu suat tung ma: TAM THOI BO KHOI WEB theo
 // yeu cau - file xuat tu AmiBroker (dan qua Excel) bi loi lam trong so thap
@@ -297,6 +297,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
             điểm hợp lưu
           </p>
           <SignalPill tin={row.tin} />
+          {nhanGiaiNgan(row) && (
+            <span className="mt-2 text-[11px] font-bold" style={{ color: nhanGiaiNgan(row).mau }}>
+              ◐ {nhanGiaiNgan(row).nhan}
+            </span>
+          )}
           <div className="mt-4 pt-4 border-t w-full" style={{ borderColor: VIEN }}>
             <p style={{ fontFamily: "'JetBrains Mono', monospace", color: "#22C55E" }} className="text-base">
               {fmt(row.gia)}
@@ -334,6 +339,14 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
           <p className="text-sm leading-relaxed mb-4" style={{ color: "#A6A6B3" }}>
             {ketLuanTuDong(row)}
           </p>
+          {nhanGiaiNgan(row) && (
+            <p
+              className="text-xs leading-relaxed mb-4 rounded-lg p-3"
+              style={{ color: nhanGiaiNgan(row).mau, background: "rgba(255,255,255,0.04)", border: `1px solid ${nhanGiaiNgan(row).mau}55` }}
+            >
+              <b>{nhanGiaiNgan(row).nhan}:</b> {nhanGiaiNgan(row).moTa}
+            </p>
+          )}
           <div className="flex flex-wrap gap-2">
             <TagInfo nhan="Vùng" giaTri={tag.vung.nhan} mau={tag.vung.mau} />
             <TagInfo nhan="Xu hướng" giaTri={tag.xuHuong.nhan} mau={tag.xuHuong.mau} />

@@ -11,7 +11,7 @@ const MUC = [
   { href: "/lenh-mo", nhan: "Sổ lệnh đang mở", Icon: Briefcase },
   { href: "/bat-day", nhan: "Checklist bắt đáy", Icon: TrendingDown },
   { href: "/thi-truong", nhan: "Thông tin thị trường", Icon: Newspaper },
-  { href: "/huong-dan", nhan: "Hướng dẫn & phương pháp", Icon: BookOpen },
+  { href: "/huong-dan", nhan: "Hướng dẫn & nguyên tắc", Icon: BookOpen },
   { href: "/lien-he", nhan: "Liên hệ", Icon: Mail },
 ];
 

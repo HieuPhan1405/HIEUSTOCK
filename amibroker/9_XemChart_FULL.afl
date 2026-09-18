@@ -548,7 +548,13 @@ ThanhKhoanKL_Ok = KhoiLuongTB20 >= NguongKLTB20ToiThieu;
 NguongGiaToiThieu = Param("Nguong gia toi thieu de duoc coi la giao dich duoc (nghin dong)", 10, 0, 100, 1);
 GiaToiThieuOk = C >= NguongGiaToiThieu;
 
-Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSVNI_OK AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
+// RS SO VOI VN-INDEX <= 0: van bao MUA nhung chi GIAI NGAN 1 PHAN (mua tham
+// do) - dong bo voi 7_Export_LenWeb.afl. Tat toggle de tro ve cach cu (chan han).
+ChoPhepMuaKhiRSAm = ParamToggle("RS<=0: van bao MUA nhung chi giai ngan 1 phan (Tat = chan han nhu cu)", "Tat|Bat", 1);
+HanBoSungPhien = Param("Han bo sung phan con lai sau khi mua tham do (phien)", 5, 1, 20, 1);
+RSGateOk = IIf(ChoPhepMuaKhiRSAm, 1, RSVNI_OK);
+
+Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
 
 // QUYET DINH CUOI CUNG sau 2 lan that bai: KHONG gop Stop-loss vao Sell
 // bang vong lap nua (da gay loi 2 lan lien tiep). Dung cau truc DON GIAN,
@@ -575,6 +581,9 @@ LyDoBan = 0;   // 0=chua ban, 1=TurnedPink(diem so), 2=Stop-loss
 GiuTrongVongLap = 0;
 GiaVaoTrongVongLap = 0;
 ATRVaoTrongVongLap = 0;
+ThamDoTrongVongLap = 0;      // 1 = dang giu o che do giai ngan 1 phan (chua bo sung)
+ViTriVaoTrongVongLap = 0;
+BoSungSuKien = 0;            // 1 = phien bo sung phan con lai
 for (i = 1; i < BarCount; i++)
 {
     if (GiuTrongVongLap[i-1] == 1)
@@ -583,6 +592,7 @@ for (i = 1; i < BarCount; i++)
         // (dung y het ExRem: khong vao lenh lap khi dang giu).
         GiaVaoTrongVongLap[i] = GiaVaoTrongVongLap[i-1];
         ATRVaoTrongVongLap[i] = ATRVaoTrongVongLap[i-1];
+        ViTriVaoTrongVongLap[i] = ViTriVaoTrongVongLap[i-1];
         stopATR_vonglap = ATRVaoTrongVongLap[i] * ATRMult;
         stopPhanTram_vonglap = GiaVaoTrongVongLap[i] * (HardStopPct/100);
         stopGiaThucTe_vonglap = GiaVaoTrongVongLap[i] - Min(stopATR_vonglap, stopPhanTram_vonglap);
@@ -597,11 +607,24 @@ for (i = 1; i < BarCount; i++)
             Sell[i] = 1;
             LyDoBan[i] = IIf(ChamStopThat, 2, 1); // uu tien ghi Stop-loss neu ca 2 cung dung
             GiuTrongVongLap[i] = 0;
+            ThamDoTrongVongLap[i] = 0;
         }
         else
         {
             Sell[i] = 0;
             GiuTrongVongLap[i] = 1;
+
+            // BO SUNG phan con lai - dieu kien giong het 7_Export_LenWeb.afl
+            if (ThamDoTrongVongLap[i-1] == 1 AND (i - ViTriVaoTrongVongLap[i]) <= HanBoSungPhien
+                AND RSVNI_OK[i] AND C[i] > GiaVaoTrongVongLap[i] AND TotalScore[i] >= EntryTh)
+            {
+                ThamDoTrongVongLap[i] = 0;
+                BoSungSuKien[i] = 1;
+            }
+            else
+            {
+                ThamDoTrongVongLap[i] = ThamDoTrongVongLap[i-1];
+            }
         }
     }
     else if (Buy[i])
@@ -610,6 +633,9 @@ for (i = 1; i < BarCount; i++)
         GiuTrongVongLap[i] = 1;
         GiaVaoTrongVongLap[i] = C[i];
         ATRVaoTrongVongLap[i] = ATRVal[i];
+        ViTriVaoTrongVongLap[i] = i;
+        if (RSVNI_OK[i]) ThamDoTrongVongLap[i] = 0;
+        else ThamDoTrongVongLap[i] = 1;
     }
     else
     {
@@ -818,8 +844,15 @@ Plot(Day52T, "Day 52 tuan (CUNG)", colorGrey40, styleLine|styleDots|styleNoLabel
 Plot(DinhGanNhat, "Dinh 3 thang", ColorRGB(218,165,32), styleLine|styleDashed|styleNoLabel);
 Plot(DayGanNhat, "Day 3 thang", ColorRGB(218,165,32), styleLine|styleDashed|styleNoLabel);
 
-PlotShapes(IIf(Buy,shapeUpArrow,shapeNone), colorBrightGreen, 0, L, -35);
-PlotShapes(IIf(Buy,shapeCircle,shapeNone), colorBrightGreen, 0, L, -20);
+// MUA DU (xanh la) vs MUA THAM DO/giai ngan 1 phan khi RS<=0 (vang) vs
+// phien BO SUNG phan con lai (xanh ngoc).
+MuaThamDo = Buy AND ThamDoTrongVongLap;
+MuaDay = Buy AND NOT ThamDoTrongVongLap;
+PlotShapes(IIf(MuaDay,shapeUpArrow,shapeNone), colorBrightGreen, 0, L, -35);
+PlotShapes(IIf(MuaDay,shapeCircle,shapeNone), colorBrightGreen, 0, L, -20);
+PlotShapes(IIf(MuaThamDo,shapeUpArrow,shapeNone), colorYellow, 0, L, -35);
+PlotShapes(IIf(MuaThamDo,shapeCircle,shapeNone), colorYellow, 0, L, -20);
+PlotShapes(IIf(BoSungSuKien,shapeUpTriangle,shapeNone), colorAqua, 0, L, -35);
 PlotShapes(IIf(Sell,shapeDownArrow,shapeNone), ColorRGB(255,0,80), 0, H, 35);
 PlotShapes(IIf(Sell,shapeCircle,shapeNone), ColorRGB(255,0,80), 0, H, 20);
 
@@ -853,6 +886,8 @@ if (Status("action") == actionIndicator)
     adxGateOk_c    = ADXGateOk[CursorBar];
     matthan_c      = MatThanWarning[CursorBar];
     banbot_c       = CanhBaoBanBot[CursorBar];
+    thamdo_c       = ThamDoTrongVongLap[CursorBar];
+    bosung_c       = BoSungSuKien[CursorBar];
     rsi_c          = RSIVal[CursorBar];
     mfi_c          = MFIVal[CursorBar];
     vol_c          = V[CursorBar];
@@ -944,6 +979,16 @@ if (Status("action") == actionIndicator)
     {
         GfxSetTextColor(ColorRGB(255,150,0));
         GfxTextOut("BAN BOT: diem da am, chua du dieu kien Ban han", c1X+12, yy); yy=yy+18;
+    }
+    if (thamdo_c)
+    {
+        GfxSetTextColor(ColorRGB(255,215,0));
+        GfxTextOut("GIAI NGAN 1 PHAN (RS<=0) - cho bo sung trong "+NumToStr(HanBoSungPhien,1.0)+" phien", c1X+12, yy); yy=yy+18;
+    }
+    if (bosung_c)
+    {
+        GfxSetTextColor(colorAqua);
+        GfxTextOut("BO SUNG: phien nay giai ngan not phan con lai", c1X+12, yy); yy=yy+18;
     }
     MauFVG = IIf(infvg_c, colorBrightGreen, ColorRGB(255,80,80));
     GfxSetTextColor(MauFVG);

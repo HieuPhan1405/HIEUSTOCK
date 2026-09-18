@@ -25,6 +25,26 @@ export function chuoiKhoiLuong(v) {
   return `${n.toFixed(0)} cp`;
 }
 
+// Trang thai GIAI NGAN cua lenh dang mo (cot giai_ngan tu AFL): khi RS so voi
+// VN-Index <= 0 van bao MUA nhung chi giai ngan 1 phan, cho phien sau bo sung.
+// Tra null neu khong can hien gi (giai ngan du / khong giu lenh).
+export function nhanGiaiNgan(row) {
+  switch (row?.giai_ngan) {
+    case "MOT PHAN":
+      return {
+        nhan: "Giải ngân 1 phần",
+        mau: "#FBBF24",
+        moTa: "Sức mạnh so với thị trường còn yếu nên chỉ giải ngân khoảng 1/3–1/2 tỷ trọng dự kiến. Chờ các phiên sau: khi sức mạnh so với VN-Index chuyển dương, lệnh đang có lãi và điểm vẫn trong vùng mua thì bổ sung nốt phần còn lại.",
+      };
+    case "BO SUNG":
+      return { nhan: "Bổ sung", mau: "#22D3EE", moTa: "Đủ điều kiện giải ngân nốt phần còn lại của lệnh đã mua thăm dò." };
+    case "GIU 1 PHAN":
+      return { nhan: "Giữ 1 phần", mau: "#8B8B99", moTa: "Đã hết thời hạn chờ bổ sung — giữ nguyên tỷ trọng nhỏ, không mua thêm." };
+    default:
+      return null;
+  }
+}
+
 export function pct(n, digits = 2) {
   if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
   const v = Number(Number(n).toFixed(digits));

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
-import { fmt, pct, phanLoaiXuHuong, chamTPCaoNhat } from "@/components/dungChung";
+import { fmt, pct, phanLoaiXuHuong, chamTPCaoNhat, nhanGiaiNgan } from "@/components/dungChung";
 import SignalPill from "@/components/SignalPill";
+import DongHoGiaoDich from "@/components/DongHoGiaoDich";
 
 export const dynamic = "force-dynamic";
 
@@ -357,6 +358,9 @@ export default async function TrangTongQuan() {
           )
         )}
 
+        {/* DONG HO GIAO DICH + KHUNG GIO VAO LENH */}
+        <DongHoGiaoDich className="mb-6" />
+
         {/* HANG KPI */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
           <TheKPI nhan="Mã đang theo dõi" giaTri={tong} mau={TEXT} href="/bo-loc" />
@@ -457,6 +461,9 @@ function CotTinHieu({ tieuDe, mau, danhSach, hienRank }) {
                 {" "}
                 · Rank {row.diem_rank.toFixed(0)} · Conf {row.diem_confidence.toFixed(0)}
               </>
+            )}
+            {hienRank && nhanGiaiNgan(row) && (
+              <span style={{ color: nhanGiaiNgan(row).mau, fontWeight: 700 }}> · ◐ {nhanGiaiNgan(row).nhan}</span>
             )}
           </span>
           <span

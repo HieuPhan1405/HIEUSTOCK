@@ -4,6 +4,7 @@ import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import TraCuuMa from "@/components/TraCuuMa";
 import BangLenhMo from "@/components/BangLenhMo";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
+import DongHoGiaoDich from "@/components/DongHoGiaoDich";
 import { pct, chamTPCaoNhat, pctChotLoi } from "@/components/dungChung";
 
 export const dynamic = "force-dynamic";
@@ -75,6 +76,8 @@ export default async function TrangLenhMo() {
         </p>
       )}
       {soCanhBao === 0 && <div className="mb-6" />}
+
+      <DongHoGiaoDich className="mb-6" />
 
       {/* THONG KE HIEU QUA DANH MUC DANG MO */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">

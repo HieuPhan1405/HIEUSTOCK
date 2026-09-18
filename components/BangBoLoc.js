@@ -7,7 +7,7 @@ import { ArrowUpDown, ArrowUp, ArrowDown, Search, Lock } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import NutThamGia from "@/components/NutThamGia";
-import { fmt, pct, so1So, phanLoaiXuHuong, chamTPCaoNhat, chuoiKhoiLuong } from "@/components/dungChung";
+import { fmt, pct, so1So, phanLoaiXuHuong, chamTPCaoNhat, chuoiKhoiLuong, nhanGiaiNgan } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -41,6 +41,11 @@ const XU_HUONG_NHAN = { xanh: "Tăng", do: "Giảm", sideway: "Sideway" };
 // phien xem co "vuot qua" duoc khong.
 const NGUONG_MUA = 1.25;
 const BIEN_DO_GAN_MUA = 0.5;
+
+// Tieu chi chon co phieu AN TOAN (giong bo loc thanh khoan cua he thong): gia
+// tu 10.000d va khoi luong TB20 tu 100.000 cp.
+const NGUONG_KL_TB20 = 100000;
+const NGUONG_GIA_TOI_THIEU = 10;
 
 // Gia tri "nganh" AFL xuat ra KHONG dau (quy uoc chung toan he thong) - map
 // sang nhan co dau de hien thi dep hon trong dropdown, nhung filter van so
@@ -78,6 +83,7 @@ function docLocTuUrl(searchParams) {
     chiChotLoi: searchParams.get("chotloi") === "1",
     chiBanBot: searchParams.get("banbot") === "1",
     chiGanDiemMua: searchParams.get("gandiemmua") === "1",
+    chiDatChuan: searchParams.get("datchuan") === "1",
   };
 }
 
@@ -113,6 +119,7 @@ export default function BangBoLoc({ duLieu }) {
   const [chiChotLoi, setChiChotLoi] = useState(locBanDau.chiChotLoi);
   const [chiBanBot, setChiBanBot] = useState(locBanDau.chiBanBot);
   const [chiGanDiemMua, setChiGanDiemMua] = useState(locBanDau.chiGanDiemMua);
+  const [chiDatChuan, setChiDatChuan] = useState(locBanDau.chiDatChuan);
   // Cot "Tin hieu" (MUA/BAN/NAM GIU/TRUNG LAP) bi lam mo cho khach CHUA dang
   // ky/dang nhap - de mac dinh la CHUA dang nhap (an toan hon, tranh nhap
   // nhoang lo tin hieu that truoc khi fetch xong).
@@ -163,6 +170,7 @@ export default function BangBoLoc({ duLieu }) {
     if (chiMatThan) ds = ds.filter((r) => r.mat_than);
     if (chiChotLoi) ds = ds.filter((r) => r.tin === "NAM GIU" && chamTPCaoNhat(r));
     if (chiBanBot) ds = ds.filter((r) => r.ban_bot);
+    if (chiDatChuan) ds = ds.filter((r) => r.khoi_luong_tb20 >= NGUONG_KL_TB20 && r.gia >= NGUONG_GIA_TOI_THIEU);
     if (chiGanDiemMua) ds = ds.filter((r) => r.tin === "TRUNG LAP" && r.diem >= NGUONG_MUA - BIEN_DO_GAN_MUA && r.diem < NGUONG_MUA);
 
     ds = [...ds].sort((a, b) => {
@@ -177,7 +185,7 @@ export default function BangBoLoc({ duLieu }) {
       return sapXep.chieu === "asc" ? so : -so;
     });
     return ds;
-  }, [duLieu, timKiem, sapXep, locTin, locVonHoa, locXuHuong, locSan, locNganh, chiMatThan, chiChotLoi, chiBanBot, chiGanDiemMua, nguoiDung]);
+  }, [duLieu, timKiem, sapXep, locTin, locVonHoa, locXuHuong, locSan, locNganh, chiMatThan, chiChotLoi, chiBanBot, chiGanDiemMua, chiDatChuan, nguoiDung]);
 
   function doiSapXep(khoa) {
     setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: "desc" }));
@@ -194,9 +202,10 @@ export default function BangBoLoc({ duLieu }) {
     setChiChotLoi(false);
     setChiBanBot(false);
     setChiGanDiemMua(false);
+    setChiDatChuan(false);
   }
 
-  const coBoLoc = timKiem || locTin || locVonHoa || locXuHuong || locSan || locNganh || chiMatThan || chiChotLoi || chiBanBot || chiGanDiemMua;
+  const coBoLoc = timKiem || locTin || locVonHoa || locXuHuong || locSan || locNganh || chiMatThan || chiChotLoi || chiBanBot || chiGanDiemMua || chiDatChuan;
 
   return (
     <div>
@@ -323,6 +332,10 @@ export default function BangBoLoc({ duLieu }) {
           <input type="checkbox" checked={chiGanDiemMua} onChange={(e) => setChiGanDiemMua(e.target.checked)} />
           Chỉ mã sắp đến điểm MUA
         </label>
+        <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }}>
+          <input type="checkbox" checked={chiDatChuan} onChange={(e) => setChiDatChuan(e.target.checked)} />
+          Chỉ mã đạt chuẩn thanh khoản (KL TB20 ≥ 100.000 cp, giá ≥ 10.000đ)
+        </label>
       </div>
 
       <p className="text-xs mb-2" style={{ color: MUTED }}>
@@ -407,7 +420,14 @@ export default function BangBoLoc({ duLieu }) {
                     <td className="py-2.5 px-3 text-right">
                       <div className="flex flex-col items-end gap-1">
                         {nguoiDung ? (
-                          <SignalPill tin={row.tin} />
+                          <>
+                            <SignalPill tin={row.tin} />
+                            {nhanGiaiNgan(row) && (
+                              <span className="text-[10px] font-bold" style={{ color: nhanGiaiNgan(row).mau }} title={nhanGiaiNgan(row).moTa}>
+                                ◐ {nhanGiaiNgan(row).nhan}
+                              </span>
+                            )}
+                          </>
                         ) : (
                           <button
                             type="button"
