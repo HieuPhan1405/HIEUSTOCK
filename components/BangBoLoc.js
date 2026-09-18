@@ -7,7 +7,7 @@ import { ArrowUpDown, ArrowUp, ArrowDown, Search, Lock } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import NutThamGia from "@/components/NutThamGia";
-import { fmt, pct, so1So, phanLoaiXuHuong, chamTPCaoNhat } from "@/components/dungChung";
+import { fmt, pct, so1So, phanLoaiXuHuong, chamTPCaoNhat, chuoiKhoiLuong } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -28,7 +28,7 @@ const COT = [
   { khoa: "trend", nhan: "Xu hướng", canPhai: true },
   { khoa: "adx", nhan: "ADX", canPhai: true },
   { khoa: "rs_vni", nhan: "RS/VNI", canPhai: true },
-  { khoa: "gtgd_tb20", nhan: "Thanh khoản", canPhai: true },
+  { khoa: "khoi_luong_tb20", nhan: "KL TB20", canPhai: true },
   { khoa: "tin", nhan: "Tín hiệu", canPhai: false },
 ];
 
@@ -386,7 +386,7 @@ export default function BangBoLoc({ duLieu }) {
                     <td className="py-2.5 px-3 text-right">{so1So(row.adx)}</td>
                     <td className="py-2.5 px-3 text-right">{pct(row.rs_vni, 1)}</td>
                     <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED }}>
-                      {row.gtgd_tb20 != null ? `${(row.gtgd_tb20 / 1000).toFixed(1)} tỷ` : "—"}
+                      {chuoiKhoiLuong(row.khoi_luong_tb20)}
                     </td>
                     <td className="py-2.5 px-3 text-right">
                       <div className="flex flex-col items-end gap-1">

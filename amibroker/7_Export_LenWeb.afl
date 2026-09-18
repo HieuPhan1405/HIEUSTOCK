@@ -504,8 +504,9 @@ BreadthOk15 = 1;
 // vai tram co/phien) ra khoi tin hieu MUA/NAM GIU. Cac ma nay tuy diem so co
 // the dat nguong nhung khong thuc te de vao/ra lenh (truot gia lon, kho
 // khop lenh) nen khong nen duoc khuyen nghi dau tu.
-NguongKLTB20ToiThieu = Param("Nguong KL trung binh 20 phien toi thieu (co phieu)", 80000, 0, 5000000, 10000);
-ThanhKhoanKL_Ok = MA(V,20) >= NguongKLTB20ToiThieu;
+NguongKLTB20ToiThieu = Param("Nguong KL trung binh 20 phien toi thieu (co phieu)", 100000, 0, 5000000, 10000);
+KhoiLuongTB20 = MA(V,20);
+ThanhKhoanKL_Ok = KhoiLuongTB20 >= NguongKLTB20ToiThieu;
 
 // GIA TOI THIEU GATE - loai co phieu "tra" (duoi 10 = duoi 10,000 dong/cp,
 // gia cua AmiBroker tinh theo nghin dong) ra khoi tin hieu MUA/NAM GIU. Cac
@@ -734,6 +735,7 @@ AddTextColumn(NganhHienTai, "Nganh");
 AddTextColumn(WriteIf(MucTPDaChamCaoNhat=="", "-", MucTPDaChamCaoNhat), "TP da cham (tung luc)");
 AddColumn(DiemRank, "Rank - chat luong setup (0-100)", 1.0);
 AddColumn(DiemConfidence, "Confidence - do tu tin (0-100)", 1.0);
+AddColumn(KhoiLuongTB20, "KL TB20 (co phieu)", 1.0);
 
 // ============================================================================
 // XUAT CSV TU DONG LEN WEB - KHONG CAN BAM "EXPORT" TAY
@@ -749,7 +751,7 @@ if (Status("stocknum") == 0)
         fputs("ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,"+
               "stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,"+
               "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,"+
-              "diem_rank,diem_confidence\n", fh);
+              "diem_rank,diem_confidence,khoi_luong_tb20\n", fh);
         fclose(fh);
     }
 }
@@ -814,7 +816,8 @@ Dong = Name() + "," + TinCuoi + ","
      + WriteIf(LaVNIndex, "ChiSo", NganhHienTai) + ","
      + MucTPDaChamCaoNhat + ","
      + NumToStr(LastValue(DiemRank),1.0,False) + ","
-     + NumToStr(LastValue(DiemConfidence),1.0,False);
+     + NumToStr(LastValue(DiemConfidence),1.0,False) + ","
+     + NumToStr(LastValue(KhoiLuongTB20),1.0,False);
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {

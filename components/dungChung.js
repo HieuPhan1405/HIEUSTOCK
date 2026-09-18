@@ -15,6 +15,16 @@ export function fmt(n) {
   return new Intl.NumberFormat("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(Number(n));
 }
 
+// Khoi luong TB20 (co phieu) - dung SO CO PHIEU truc tiep (khop dung cach
+// he thong xet "an toan thanh khoan" trong AFL: MA(V,20) >= 100.000 cp),
+// thay vi gia tri giao dich quy doi ra tien (de nham lan don vi truoc day).
+export function chuoiKhoiLuong(v) {
+  if (v === null || v === undefined || Number.isNaN(Number(v))) return "—";
+  const n = Number(v);
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}K cp`;
+  return `${n.toFixed(0)} cp`;
+}
+
 export function pct(n, digits = 2) {
   if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
   const v = Number(Number(n).toFixed(digits));

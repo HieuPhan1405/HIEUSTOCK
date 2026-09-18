@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
-import { fmt, pct, soAn, chamTPCaoNhat, TREND_MAX, MOM_MAX, DT_MAX, RS_MAX } from "@/components/dungChung";
+import { fmt, pct, soAn, chamTPCaoNhat, chuoiKhoiLuong, TREND_MAX, MOM_MAX, DT_MAX, RS_MAX } from "@/components/dungChung";
 
 // Lich su giao dich + thong ke hieu suat tung ma: TAM THOI BO KHOI WEB theo
 // yeu cau - file xuat tu AmiBroker (dan qua Excel) bi loi lam trong so thap
@@ -137,13 +137,6 @@ function BannerMatThan() {
   );
 }
 
-// row.gtgd_tb20 tu AFL da la don vi TRIEU dong/phien (dong bo voi
-// DaoGam_Scanner_v14.afl: MA(C*V,20)/1e6) - chi can /1000 de ra ty.
-function chuoiThanhKhoan(v) {
-  if (v === null || v === undefined || Number.isNaN(Number(v))) return "—";
-  const ty = Number(v) / 1000;
-  return `${ty.toFixed(ty >= 10 ? 0 : 1)} tỷ`;
-}
 
 function TagInfo({ nhan, giaTri, mau }) {
   return (
@@ -312,7 +305,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
               {pct(row.doi, 2)}
             </p>
             <p className="text-[11px] mt-1" style={{ color: "#8B8B99" }}>
-              Thanh khoản TB20: {chuoiThanhKhoan(row.gtgd_tb20)}
+              KL TB20: {chuoiKhoiLuong(row.khoi_luong_tb20)}
             </p>
           </div>
           {(row.tin === "MUA" || row.tin === "NAM GIU") && (

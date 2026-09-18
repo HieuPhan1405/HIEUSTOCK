@@ -2,11 +2,11 @@ import { withDb, daoDamBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
-// amibroker/7_Export_LenWeb.afl). Header CSV bat buoc (36 cot):
+// amibroker/7_Export_LenWeb.afl). Header CSV bat buoc (37 cot):
 // ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,
 // stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,
 // kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,
-// diem_rank,diem_confidence
+// diem_rank,diem_confidence,khoi_luong_tb20
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -124,7 +124,7 @@ export async function POST(request) {
          stop_loss, mat_than, tp1, tp2, tp3, gtgd_tb20, fvg_ok,
          so_phien_giu, lai_lo_pct, sanyaku, kumo_twist, ngay_bien_doi, von_hoa,
          gia_mua, ngay_mua, ban_bot, san, nganh, tp_da_cham,
-         diem_rank, diem_confidence)
+         diem_rank, diem_confidence, khoi_luong_tb20)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -133,7 +133,7 @@ export async function POST(request) {
          $21::float8[], $22::boolean[], $23::float8[], $24::float8[], $25::float8[],
          $26::text[], $27::boolean[], $28::text[], $29::float8[], $30::date[], $31::boolean[],
          $32::text[], $33::text[], $34::text[],
-         $35::float8[], $36::float8[]
+         $35::float8[], $36::float8[], $37::float8[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -171,6 +171,7 @@ export async function POST(request) {
          tp_da_cham = EXCLUDED.tp_da_cham,
          diem_rank = EXCLUDED.diem_rank,
          diem_confidence = EXCLUDED.diem_confidence,
+         khoi_luong_tb20 = EXCLUDED.khoi_luong_tb20,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -209,6 +210,7 @@ export async function POST(request) {
         cot("tp_da_cham", soText),
         cot("diem_rank", soFloat),
         cot("diem_confidence", soFloat),
+        cot("khoi_luong_tb20", soFloat),
       ]
     );
 

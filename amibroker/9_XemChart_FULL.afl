@@ -542,8 +542,9 @@ BreadthOk15 = 1; // khong con chan cung nua, luon cho phep (chi doi ty trong)
 // THANH KHOAN GATE + GIA TOI THIEU GATE - dong bo voi ban web
 // (7_Export_LenWeb.afl): loai co phieu khoi luong qua thap hoac gia "tra"
 // (duoi 10 nghin dong) ra khoi tin hieu MUA, du diem so co the dat nguong.
-NguongKLTB20ToiThieu = Param("Nguong KL trung binh 20 phien toi thieu (co phieu)", 80000, 0, 5000000, 10000);
-ThanhKhoanKL_Ok = MA(V,20) >= NguongKLTB20ToiThieu;
+NguongKLTB20ToiThieu = Param("Nguong KL trung binh 20 phien toi thieu (co phieu)", 100000, 0, 5000000, 10000);
+KhoiLuongTB20 = MA(V,20);
+ThanhKhoanKL_Ok = KhoiLuongTB20 >= NguongKLTB20ToiThieu;
 NguongGiaToiThieu = Param("Nguong gia toi thieu de duoc coi la giao dich duoc (nghin dong)", 10, 0, 100, 1);
 GiaToiThieuOk = C >= NguongGiaToiThieu;
 
