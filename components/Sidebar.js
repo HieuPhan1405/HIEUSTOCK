@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Briefcase, ListFilter, Newspaper, Mail, TrendingDown } from "lucide-react";
+import { LayoutGrid, Briefcase, ListFilter, Newspaper, Mail, TrendingDown, BookOpen } from "lucide-react";
 import TaiKhoanNut from "@/components/TaiKhoanNut";
 
 const MUC = [
@@ -11,6 +11,7 @@ const MUC = [
   { href: "/lenh-mo", nhan: "Sổ lệnh đang mở", Icon: Briefcase },
   { href: "/bat-day", nhan: "Checklist bắt đáy", Icon: TrendingDown },
   { href: "/thi-truong", nhan: "Thông tin thị trường", Icon: Newspaper },
+  { href: "/huong-dan", nhan: "Hướng dẫn & phương pháp", Icon: BookOpen },
   { href: "/lien-he", nhan: "Liên hệ", Icon: Mail },
 ];
 
