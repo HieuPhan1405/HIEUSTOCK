@@ -800,8 +800,18 @@ CloudBullish = SenkouA > SenkouB;
 CloudColor = IIf(CloudBullish, ColorRGB(0,120,0), ColorRGB(150,0,0));
 PlotOHLC(CloudTop, CloudTop, CloudBot, CloudBot, "May", CloudColor, styleCloud|styleNoLabel);
 
-Plot(GGTop, "Giao Gam tren (65)", ColorRGB(139,90,43), styleLine|styleThick|styleDashed);
-Plot(GGBot, "Giao Gam duoi (129)", ColorRGB(90,50,20), styleLine|styleThick|styleDashed);
+// MAU SANG HON theo yeu cau ("ve ro hon") - mau nau cu qua toi, gan nhu
+// khuat tren nen den cua chart. Doi sang tong tim sang, chua dung voi
+// Tenkan (xanh duong)/Kijun (cam)/May (xanh la-do) da dung truoc do.
+Plot(GGTop, "Giao Gam tren (65)", ColorRGB(200,120,255), styleLine|styleThick|styleDashed);
+Plot(GGBot, "Giao Gam duoi (129)", ColorRGB(150,60,220), styleLine|styleThick|styleDashed);
+
+// CHIKOU SPAN (duong tre) - gia dong cua HOM NAY, ve lui lai "Shift" phien
+// ve truoc (dung y idiom chuan AFL: Ref(C, Shift) voi so duong = nhin ve
+// TUONG LAI tai moi diem, tuong duong hien thi gia trị hom nay o vi tri
+// Shift phien truoc). Truoc day CHUA ve dong nay len chart theo yeu cau.
+Chikou = Ref(C, Shift);
+Plot(Chikou, "Chikou Span", colorYellow, styleLine|styleThick);
 
 Plot(Dinh52T, "Dinh 52 tuan (CUNG)", colorGrey40, styleLine|styleDots|styleNoLabel|styleThick);
 Plot(Day52T, "Day 52 tuan (CUNG)", colorGrey40, styleLine|styleDots|styleNoLabel|styleThick);
