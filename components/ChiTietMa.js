@@ -10,6 +10,7 @@ import {
   chuoiKhoiLuong,
   nhanGiaiNgan,
   kiemTraChuanUuTien,
+  gioGhiNhan,
   mocKichHoat,
   TREND_MAX,
   MOM_MAX,
@@ -348,6 +349,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
               >
                 {pct(row.lai_lo_pct, 2)}
               </p>
+              {row.gia_mua_ghi_nhan && (
+                <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
+                  Giá mua {fmt(row.gia_mua)} ghi nhận lúc {gioGhiNhan(row)}, lãi/lỗ tính từ giá này.
+                </p>
+              )}
               {mocKichHoat(row) && (
                 <div className="mt-2" title="Giá mua trên hệ thống là giá đóng cửa phiên có tín hiệu; mốc chuyển mua là mức giá chính vừa bị vượt ở phiên điểm chuyển sang vùng mua.">
                   <p className="text-[11px]" style={{ color: "#8B8B99" }}>

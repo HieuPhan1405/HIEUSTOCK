@@ -86,6 +86,19 @@ export function laDangGiu(row) {
   return row?.tin === "MUA" || row?.tin === "NAM GIU";
 }
 
+// Thoi diem web ghi nhan gia mua (lan dau ma chuyen sang MUA), dang "10:45 19/09"
+// theo gio Viet Nam. Chuoi rong neu chua co ghi nhan.
+export function gioGhiNhan(row) {
+  if (!row?.thoi_diem_vao_web) return "";
+  return new Date(row.thoi_diem_vao_web).toLocaleString("vi-VN", {
+    timeZone: "Asia/Ho_Chi_Minh",
+    hour: "2-digit",
+    minute: "2-digit",
+    day: "2-digit",
+    month: "2-digit",
+  });
+}
+
 // MOC KICH HOAT (cot gia_kich_hoat/moc_kich_hoat tu AFL): muc gia chinh vua bi
 // vuot o phien diem chuyen sang vung MUA (may / Giao Gam; neu phien do diem
 // tang nho dong tien-dong luong thi = gia dong cua). Gia mua that tren he

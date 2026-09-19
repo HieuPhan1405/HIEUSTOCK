@@ -16,6 +16,7 @@ import {
   laDangGiu,
   mocKichHoat,
   mocTiepTheo,
+  gioGhiNhan,
   kiemTraChuanUuTien,
   NGUONG_DIEM_MUA,
 } from "@/components/dungChung";
@@ -259,7 +260,16 @@ export const CAC_COT = {
     nhom: "Vị thế đang giữ",
     canPhai: true,
     lay: chiKhiGiu("gia_mua"),
-    hien: (r) => (laDangGiu(r) ? fmt(r.gia_mua) : Trong),
+    hien: (r) => {
+      if (!laDangGiu(r)) return Trong;
+      if (!r.gia_mua_ghi_nhan) return fmt(r.gia_mua);
+      return (
+        <span title={`Giá ghi nhận lúc mã lần đầu chuyển sang MUA (${gioGhiNhan(r)}), không đổi theo các lần cập nhật sau. Giá AmiBroker: ${fmt(r.gia_mua_amibroker)}`}>
+          {fmt(r.gia_mua)}
+          <span style={{ color: XANH }}> •</span>
+        </span>
+      );
+    },
   },
   gia_kich_hoat: {
     nhan: "Mốc chuyển mua",

@@ -1,5 +1,6 @@
 import { withDb, daoDamBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
+import { tinhGiaVaoWeb } from "@/lib/giaVaoWeb";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
 // amibroker/7_Export_LenWeb.afl). Header CSV (44 cot; 6 cot cuoi gia_kich_hoat,
@@ -107,12 +108,37 @@ export async function POST(request) {
   const dsMaLanNay0 = hangDL.map((h) => h.ma);
   let tinCuTheoMa = {};
   let giaiNganCuTheoMa = {};
+  let banGhiCuTheoMa = {};
   await withDb(async (client) => {
     await daoDamBangTinHieu(client);
-    const { rows } = await client.query(`SELECT ma, tin, giai_ngan FROM tin_hieu WHERE ma = ANY($1::text[])`, [dsMaLanNay0]);
+    const { rows } = await client.query(
+      `SELECT ma, tin, giai_ngan, gia_vao_web, thoi_diem_vao_web, to_char(ngay_mua, 'YYYY-MM-DD') AS ngay_mua_txt
+       FROM tin_hieu WHERE ma = ANY($1::text[])`,
+      [dsMaLanNay0]
+    );
     tinCuTheoMa = Object.fromEntries(rows.map((r) => [r.ma, r.tin]));
     giaiNganCuTheoMa = Object.fromEntries(rows.map((r) => [r.ma, r.giai_ngan]));
+    banGhiCuTheoMa = Object.fromEntries(rows.map((r) => [r.ma, r]));
   });
+
+  // GIA MUA GHI NHAN LUC MA LAN DAU CHUYEN SANG MUA (khi upload giua phien, gia
+  // AmiBroker = gia MOI NHAT nen moi lan upload lai se doi theo). Web dong bang gia
+  // tai lan dau thay MUA va giu nguyen trong suot thoi gian giu; xoa khi khong con
+  // giu lenh, hoac khi ngay mua doi (ban roi mua lai giua 2 lan upload).
+  const bayGio = new Date().toISOString();
+  const giaVaoWeb = [];
+  const thoiDiemVaoWeb = [];
+  for (const h of hangDL) {
+    const { gia, luc } = tinhGiaVaoWeb({
+      tinMoi: h.tin || "TRUNG LAP",
+      giaMoi: soFloat(h.gia),
+      ngayMuaMoi: soNgayVN(h.ngay_mua),
+      cu: banGhiCuTheoMa[h.ma],
+      bayGio,
+    });
+    giaVaoWeb.push(gia);
+    thoiDiemVaoWeb.push(luc);
+  }
   const cacMaMuaMoi = hangDL.filter((h) => (h.tin || "TRUNG LAP") === "MUA" && tinCuTheoMa[h.ma] !== "MUA");
   // Phien BO SUNG phan con lai sau khi mua tham do (giai ngan 1 phan) - bao 1 lan.
   const cacMaBoSung = hangDL.filter((h) => h.giai_ngan === "BO SUNG" && giaiNganCuTheoMa[h.ma] !== "BO SUNG");
@@ -132,7 +158,8 @@ export async function POST(request) {
          so_phien_giu, lai_lo_pct, sanyaku, kumo_twist, ngay_bien_doi, von_hoa,
          gia_mua, ngay_mua, ban_bot, san, nganh, tp_da_cham,
          diem_rank, diem_confidence, khoi_luong_tb20, giai_ngan,
-         gia_kich_hoat, moc_kich_hoat, moc_gia, moc_loai, moc_cach_pct, diem_neu_vuot)
+         gia_kich_hoat, moc_kich_hoat, moc_gia, moc_loai, moc_cach_pct, diem_neu_vuot,
+         gia_vao_web, thoi_diem_vao_web)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -142,7 +169,8 @@ export async function POST(request) {
          $26::text[], $27::boolean[], $28::text[], $29::float8[], $30::date[], $31::boolean[],
          $32::text[], $33::text[], $34::text[],
          $35::float8[], $36::float8[], $37::float8[], $38::text[],
-         $39::float8[], $40::text[], $41::float8[], $42::text[], $43::float8[], $44::float8[]
+         $39::float8[], $40::text[], $41::float8[], $42::text[], $43::float8[], $44::float8[],
+         $45::float8[], $46::timestamptz[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -188,6 +216,8 @@ export async function POST(request) {
          moc_loai = EXCLUDED.moc_loai,
          moc_cach_pct = EXCLUDED.moc_cach_pct,
          diem_neu_vuot = EXCLUDED.diem_neu_vuot,
+         gia_vao_web = EXCLUDED.gia_vao_web,
+         thoi_diem_vao_web = EXCLUDED.thoi_diem_vao_web,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -234,6 +264,8 @@ export async function POST(request) {
         cot("moc_loai", soText),
         cot("moc_cach_pct", soFloat),
         cot("diem_neu_vuot", soFloat),
+        giaVaoWeb,
+        thoiDiemVaoWeb,
       ]
     );
 
