@@ -45,6 +45,65 @@ export function nhanGiaiNgan(row) {
   }
 }
 
+// Ty dong (von hoa, GTGD): >= 100 lam tron ve so nguyen, nho hon giu 1 chu so
+// thap phan (GTGD 10.4 ty khac 10 ty khi so voi nguong "tren 10 ty").
+export function fmtTy(n) {
+  if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
+  const v = Number(n);
+  return new Intl.NumberFormat("en-US", { maximumFractionDigits: v >= 100 ? 0 : 1 }).format(v);
+}
+
+// TIEU CHI CHON CO PHIEU UU TIEN (bo loc "Chi ma uu tien"): gia tren 10.000d,
+// von hoa tu 3.000 ty, khoi luong tu 500.000 cp/phien va GTGD tren 10 ty/phien.
+// Khoi luong/GTGD do bang TRUNG BINH 20 PHIEN (on dinh hon 1 phien le). Chi la
+// bo loc hien thi tren web - khong anh huong tin hieu MUA/BAN trong AFL.
+export const CHUAN_UU_TIEN = {
+  giaToiThieu: 10, // nghin dong, nghiem ngat: gia > 10
+  vonHoaTyToiThieu: 3000,
+  klTB20ToiThieu: 500000,
+  gtgdTyToiThieu: 10, // nghiem ngat: GTGD > 10
+};
+
+export function kiemTraChuanUuTien(row) {
+  const c = CHUAN_UU_TIEN;
+  const tieuChi = [
+    { khoa: "gia", nhan: "Giá > 10.000đ", dat: row.gia != null && row.gia > c.giaToiThieu },
+    { khoa: "von_hoa", nhan: "Vốn hoá ≥ 3.000 tỷ", dat: row.von_hoa_ty != null && row.von_hoa_ty >= c.vonHoaTyToiThieu },
+    { khoa: "kl", nhan: "KL ≥ 500.000 cp/phiên", dat: row.khoi_luong_tb20 != null && row.khoi_luong_tb20 >= c.klTB20ToiThieu },
+    { khoa: "gtgd", nhan: "GTGD > 10 tỷ/phiên", dat: row.gtgd_tb20 != null && row.gtgd_tb20 > c.gtgdTyToiThieu },
+  ];
+  return { dat: tieuChi.every((t) => t.dat), tieuChi };
+}
+
+export function datChuanUuTien(row) {
+  return kiemTraChuanUuTien(row).dat;
+}
+
+// Lenh dang mo = ma vua bao MUA hoac dang NAM GIU. Cac cot lien quan vi the
+// (gia mua, Stop-loss, TP...) chi co nghia voi cac ma nay - ma khac AFL van
+// xuat gia tri cua lan mua GAN NHAT, hien ra se gay hieu nham.
+export function laDangGiu(row) {
+  return row?.tin === "MUA" || row?.tin === "NAM GIU";
+}
+
+// MOC KICH HOAT (cot gia_kich_hoat/moc_kich_hoat tu AFL): muc gia chinh vua bi
+// vuot o phien diem chuyen sang vung MUA (may / Giao Gam; neu phien do diem
+// tang nho dong tien-dong luong thi = gia dong cua). Gia mua that tren he
+// thong la GIA DONG CUA phien co tin hieu, nen thuong cao hon moc nay - phan
+// chenh chinh la "muc do da doi gia chay" so voi luc chuyen mua.
+const NHAN_MOC = {
+  MAY: "Vượt mây",
+  "GIAO GAM": "Vượt Giao Găm",
+  "MAY+GIAO GAM": "Vượt mây + Giao Găm",
+  GIA: "Điểm tăng nhờ dòng tiền/động lượng (mốc = giá đóng cửa)",
+};
+
+export function mocKichHoat(row) {
+  if (!laDangGiu(row) || row.gia_kich_hoat == null || !(row.gia_kich_hoat > 0)) return null;
+  const chenhPct = row.gia_mua > 0 ? (row.gia_mua / row.gia_kich_hoat - 1) * 100 : null;
+  return { gia: row.gia_kich_hoat, nhan: NHAN_MOC[row.moc_kich_hoat] || "Mốc chuyển mua", chenhPct };
+}
+
 export function pct(n, digits = 2) {
   if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
   const v = Number(Number(n).toFixed(digits));

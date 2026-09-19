@@ -639,6 +639,30 @@ GiaiNganCuoi = WriteIf(DangGiuCuoi == 0, "",
                    WriteIf(SoPhienTuVaoCuoi <= HanBoSungPhien, "MOT PHAN", "GIU 1 PHAN"),
                    "DU")));
 
+// MOC KICH HOAT (gia luc CHUYEN MUA) - CHI hien thi tham khao, KHONG anh huong
+// Buy/Sell/Stop-loss/TP. Gia mua tren he thong = GIA DONG CUA phien co tin
+// hieu, nhung muc gia thuc su "kich hoat" (vd gia vuot may) thuong thap hon.
+// Xuat them: (1) muc gia CHINH vua bi vuot o phien diem chuyen sang vung Mua
+// (VuaVaoVungMua) - may hoac Giao Gam (ca 2 thi lay muc cao hon); neu phien do
+// khong vuot muc nao (diem tang nho dong tien/dong luong) thi lay gia dong cua;
+// (2) khong thap hon gia MO CUA neu gia nhay von qua muc do (khong the mua thap
+// hon gia mo cua) va khong cao hon gia dong cua.
+VuotMayBar = C > CloudTop AND Ref(C,-1) <= Ref(CloudTop,-1);
+VuotGGBar = C > GGTop AND Ref(C,-1) <= Ref(GGTop,-1);
+MucVuotBar = IIf(VuotMayBar AND VuotGGBar, Max(CloudTop, GGTop),
+             IIf(VuotMayBar, CloudTop,
+             IIf(VuotGGBar, GGTop, C)));
+LoaiMocBar = IIf(VuotMayBar AND VuotGGBar, 3, IIf(VuotMayBar, 1, IIf(VuotGGBar, 2, 0)));
+GiaKichHoatBar = Max(MucVuotBar, Min(O, C));
+// Dong bang tai phien Buy, lay muc cua phien "vua vao vung Mua" GAN NHAT truoc do
+// (co the la chinh phien Buy, hoac som hon neu Buy bi tri hoan do cac dieu kien khac).
+GiaKichHoatTaiMua = ValueWhen(Buy, ValueWhen(VuaVaoVungMua, GiaKichHoatBar, 1), 1);
+LoaiMocTaiMua = ValueWhen(Buy, ValueWhen(VuaVaoVungMua, LoaiMocBar, 1), 1);
+LoaiMocCuoi = Nz(LastValue(LoaiMocTaiMua));
+MocKichHoatCuoi = WriteIf(LoaiMocCuoi == 3, "MAY+GIAO GAM",
+                  WriteIf(LoaiMocCuoi == 1, "MAY",
+                  WriteIf(LoaiMocCuoi == 2, "GIAO GAM", "GIA")));
+
 SoViTheToiDa = Param("SO VI THE TOI DA (thay the Settings->Portfolio)", 8, 4, 30, 1);
 SetOption("MaxOpenPositions", SoViTheToiDa);
 
@@ -810,6 +834,8 @@ AddColumn(DiemRank, "Rank - chat luong setup (0-100)", 1.0);
 AddColumn(DiemConfidence, "Confidence - do tu tin (0-100)", 1.0);
 AddColumn(KhoiLuongTB20, "KL TB20 (co phieu)", 1.0);
 AddTextColumn(WriteIf(GiaiNganCuoi=="", "-", GiaiNganCuoi), "Giai ngan");
+AddColumn(GiaKichHoatTaiMua, "Moc kich hoat (luc chuyen mua)", 1.2);
+AddTextColumn(MocKichHoatCuoi, "Moc vuot");
 
 // ============================================================================
 // XUAT CSV TU DONG LEN WEB - KHONG CAN BAM "EXPORT" TAY
@@ -825,7 +851,7 @@ if (Status("stocknum") == 0)
         fputs("ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,"+
               "stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,"+
               "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,"+
-              "diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan\n", fh);
+              "diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat\n", fh);
         fclose(fh);
     }
 }
@@ -870,7 +896,7 @@ Dong = Name() + "," + TinCuoi + ","
      + NumToStr(LastValue(ChotLoi_TP1_TaiMua),1.2,False) + ","
      + NumToStr(LastValue(ChotLoi_TP2_TaiMua),1.2,False) + ","
      + NumToStr(LastValue(ChotLoi_TP3_TaiMua),1.2,False) + ","
-     + NumToStr(LastValue(GiaTriGDTB20),1.0,False) + ","
+     + NumToStr(LastValue(GiaTriGDTB20),1.1,False) + ","
      + FVGCuoi + ","
      + NumToStr(LastValue(SoPhienNamGiuVT),1.0,False) + ","
      + NumToStr(LastValue(LaiLoVT),1.4,False) + ","
@@ -892,7 +918,9 @@ Dong = Name() + "," + TinCuoi + ","
      + NumToStr(LastValue(DiemRank),1.0,False) + ","
      + NumToStr(LastValue(DiemConfidence),1.0,False) + ","
      + NumToStr(LastValue(KhoiLuongTB20),1.0,False) + ","
-     + GiaiNganCuoi;
+     + GiaiNganCuoi + ","
+     + NumToStr(Nz(LastValue(GiaKichHoatTaiMua)),1.2,False) + ","
+     + MocKichHoatCuoi;
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {

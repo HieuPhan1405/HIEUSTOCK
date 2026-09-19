@@ -3,36 +3,32 @@
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { ArrowUpDown, ArrowUp, ArrowDown, Search, Lock } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown, Lock } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import NutThamGia from "@/components/NutThamGia";
-import { fmt, pct, so1So, phanLoaiXuHuong, chamTPCaoNhat, chuoiKhoiLuong, nhanGiaiNgan } from "@/components/dungChung";
+import { CAC_COT } from "@/components/cotChung";
+import {
+  NGANH_NHAN,
+  LOC_TRONG,
+  docLocChungTuUrl,
+  locChung,
+  coLocChung,
+  OSelect,
+  OTich,
+  HangBoLocChung,
+  HangTichChung,
+  useCotHienThi,
+  ChonCotHienThi,
+} from "@/components/boLocChung";
+import { chamTPCaoNhat, nhanGiaiNgan, datChuanUuTien } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
 const MUTED = "#8B8B99";
-const TEXT = "#F5F5F7";
 const XANH = "#22C55E";
 const DO = "#EF4444";
 const PRIMARY = "#6C5CE7";
-
-const COT = [
-  { khoa: "ma", nhan: "Mã", canPhai: false },
-  { khoa: "san", nhan: "Sàn", canPhai: false },
-  { khoa: "von_hoa", nhan: "Vốn hoá", canPhai: false },
-  { khoa: "nganh", nhan: "Ngành", canPhai: false },
-  { khoa: "gia", nhan: "Giá", canPhai: true },
-  { khoa: "doi", nhan: "%Hôm nay", canPhai: true },
-  { khoa: "diem", nhan: "Điểm", canPhai: true },
-  { khoa: "trend", nhan: "Xu hướng", canPhai: true },
-  { khoa: "adx", nhan: "ADX", canPhai: true },
-  { khoa: "rs_vni", nhan: "RS/VNI", canPhai: true },
-  { khoa: "khoi_luong_tb20", nhan: "KL TB20", canPhai: true },
-  { khoa: "tin", nhan: "Tín hiệu", canPhai: false },
-];
-
-const XU_HUONG_NHAN = { xanh: "Tăng", do: "Giảm", sideway: "Sideway" };
 
 // "Gan diem MUA" - dung DUNG nguong vao lenh mac dinh trong AFL (EntryTh =
 // Param("Nguong diem VAO lenh (Mua)", 1.25, ...) - neu ban doi thong so nay
@@ -42,84 +38,139 @@ const XU_HUONG_NHAN = { xanh: "Tăng", do: "Giảm", sideway: "Sideway" };
 const NGUONG_MUA = 1.25;
 const BIEN_DO_GAN_MUA = 0.5;
 
-// Tieu chi chon co phieu AN TOAN (giong bo loc thanh khoan cua he thong): gia
-// tu 10.000d va khoi luong TB20 tu 100.000 cp.
-const NGUONG_KL_TB20 = 100000;
-const NGUONG_GIA_TOI_THIEU = 10;
-
-// Gia tri "nganh" AFL xuat ra KHONG dau (quy uoc chung toan he thong) - map
-// sang nhan co dau de hien thi dep hon trong dropdown, nhung filter van so
-// sanh dung gia tri goc khong dau tu DB.
-const NGANH_NHAN = {
-  "Ngan hang": "Ngân hàng",
-  "Bat dong san": "Bất động sản",
-  "Chung khoan": "Chứng khoán",
-  "Bao hiem": "Bảo hiểm",
-  "Xay dung": "Xây dựng",
-  "Thep - Khoang san": "Thép - Khoáng sản",
-  "Dau khi - Dien - Nuoc": "Dầu khí - Điện - Nước",
-  "Hoa chat - Cao su": "Hoá chất - Cao su",
-  "Thuc pham - Nong san": "Thực phẩm - Nông sản",
-  "Ban le - O to": "Bán lẻ - Ô tô",
-  "Det may - Go": "Dệt may - Gỗ",
-  "Logistics - Van tai": "Logistics - Vận tải",
-  "Cong nghe - Vien thong": "Công nghệ - Viễn thông",
-  "Y te - Duoc": "Y tế - Dược",
-  "Thiet bi dien - Du lich": "Thiết bị điện - Du lịch",
-  Khac: "Khác",
+// Cot ma + tin hieu co logic rieng (nut Tham gia, khoa Tin hieu khi chua dang
+// nhap) nen dinh nghia tai day; cac cot chi so con lai lay tu cotChung.js.
+const COT_RIENG = {
+  ma: {
+    nhan: "Mã",
+    canPhai: false,
+    lay: (r) => r.ma,
+    hien: (row, ctx) => (
+      <div className="flex items-center gap-1.5">
+        <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          {row.ma}
+        </Link>
+        {row.mat_than && (
+          <span className="text-[10px] font-bold" style={{ color: DO }}>
+            ⚠
+          </span>
+        )}
+        <NutThamGia
+          ma={row.ma}
+          soNguoiThamGia={ctx.banDoThamGia[row.ma]?.soNguoiThamGia ?? 0}
+          daThamGia={ctx.banDoThamGia[row.ma]?.daThamGia ?? false}
+          coDangNhap={!!ctx.nguoiDung}
+          moChuaDangNhap={ctx.moModalTK}
+          onDoiTrangThai={ctx.doiTrangThaiThamGia}
+        />
+      </div>
+    ),
+  },
+  tin: {
+    nhan: "Tín hiệu",
+    canPhai: false,
+    lay: (r) => r.tin,
+    hien: (row, ctx) => {
+      const tp = chamTPCaoNhat(row);
+      return (
+        <div className="flex flex-col items-end gap-1">
+          {ctx.nguoiDung ? (
+            <>
+              <SignalPill tin={row.tin} />
+              {nhanGiaiNgan(row) && (
+                <span className="text-[10px] font-bold" style={{ color: nhanGiaiNgan(row).mau }} title={nhanGiaiNgan(row).moTa}>
+                  ◐ {nhanGiaiNgan(row).nhan}
+                </span>
+              )}
+            </>
+          ) : (
+            <button
+              type="button"
+              onClick={ctx.moModalTK}
+              className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold"
+              style={{ background: "rgba(255,255,255,0.06)", color: MUTED }}
+              title="Đăng ký/Đăng nhập để xem tín hiệu"
+            >
+              <Lock size={10} />
+              <span style={{ filter: "blur(3px)" }}>MUA</span>
+            </button>
+          )}
+          {tp && (
+            <span className="text-[10px] font-bold" style={{ color: "#FBBF24" }}>
+              🎯 {tp}
+            </span>
+          )}
+          {row.ban_bot && (
+            <span className="text-[10px] font-bold" style={{ color: "#F97316" }}>
+              ⚠ Bán bớt
+            </span>
+          )}
+        </div>
+      );
+    },
+  },
 };
-const DS_NGANH = Object.keys(NGANH_NHAN);
 
-// Doc bo loc ban dau tu URL (vd tu the KPI o trang chu bam vao) - chi doc 1
-// LAN luc khoi tao state, sau do nguoi dung tu do chinh sua tren giao dien.
-function docLocTuUrl(searchParams) {
-  return {
-    tin: searchParams.get("tin") || "",
-    vonHoa: searchParams.get("vonhoa") || "",
-    xuHuong: searchParams.get("xuhuong") || "",
-    san: searchParams.get("san") || "",
-    nganh: searchParams.get("nganh") || "",
-    chiMatThan: searchParams.get("matthan") === "1",
-    chiChotLoi: searchParams.get("chotloi") === "1",
-    chiBanBot: searchParams.get("banbot") === "1",
-    chiGanDiemMua: searchParams.get("gandiemmua") === "1",
-    chiDatChuan: searchParams.get("datchuan") === "1",
-  };
-}
+const COT = { ...CAC_COT, ...COT_RIENG };
 
-function OSelect({ value, onChange, options, placeholder }) {
-  return (
-    <select
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-      className="px-3 py-2 text-sm rounded-lg outline-none"
-      style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
-    >
-      <option value="">{placeholder}</option>
-      {options.map(([v, nhan]) => (
-        <option key={v} value={v}>
-          {nhan}
-        </option>
-      ))}
-    </select>
-  );
-}
+// Thu tu cot tren bang. Mac dinh chi hien cac cot chinh - bam "Cot hien thi" de
+// bat them (hoac "Hien tat ca") cho du moi chi so cua he thong.
+const THU_TU_COT = [
+  "ma",
+  "san",
+  "von_hoa",
+  "von_hoa_ty",
+  "nganh",
+  "gia",
+  "doi",
+  "diem",
+  "diem_rank",
+  "diem_confidence",
+  "trend",
+  "dt",
+  "mom",
+  "adx",
+  "rs_vni",
+  "sanyaku",
+  "breadth_nganh",
+  "khoi_luong_tb20",
+  "gtgd_tb20",
+  "uu_tien",
+  "gia_mua",
+  "ngay_mua",
+  "so_phien_giu",
+  "lai_lo_pct",
+  "gia_kich_hoat",
+  "stop_loss",
+  "tp1",
+  "tp2",
+  "tp3",
+  "chot_loi",
+  "kijun",
+  "gg_top",
+  "gg_bot",
+  "dinh_52t",
+  "tin",
+];
+const MAC_DINH = ["ma", "san", "von_hoa", "von_hoa_ty", "nganh", "gia", "doi", "diem", "trend", "adx", "rs_vni", "khoi_luong_tb20", "gtgd_tb20", "tin"];
+const DS_KHOA_CHON = THU_TU_COT.filter((k) => k !== "ma" && k !== "tin");
+
+// Cot lo ra ma nao DANG GIU (gia mua/lai lo/stop-loss/TP chi co gia tri voi ma
+// dang MUA/NAM GIU) - chi hien khi da dang nhap, neu khong khach chua dang ky
+// se suy ra duoc cot Tin hieu dang bi lam mo.
+const COT_CAN_DANG_NHAP = new Set(["gia_mua", "ngay_mua", "so_phien_giu", "lai_lo_pct", "gia_kich_hoat", "stop_loss", "tp1", "tp2", "tp3", "chot_loi"]);
 
 export default function BangBoLoc({ duLieu }) {
   const searchParams = useSearchParams();
-  const [timKiem, setTimKiem] = useState("");
   const [sapXep, setSapXep] = useState({ khoa: "diem", chieu: "desc" });
-  const [locBanDau] = useState(() => docLocTuUrl(searchParams));
-  const [locTin, setLocTin] = useState(locBanDau.tin);
-  const [locVonHoa, setLocVonHoa] = useState(locBanDau.vonHoa);
-  const [locXuHuong, setLocXuHuong] = useState(locBanDau.xuHuong);
-  const [locSan, setLocSan] = useState(locBanDau.san);
-  const [locNganh, setLocNganh] = useState(locBanDau.nganh);
-  const [chiMatThan, setChiMatThan] = useState(locBanDau.chiMatThan);
-  const [chiChotLoi, setChiChotLoi] = useState(locBanDau.chiChotLoi);
-  const [chiBanBot, setChiBanBot] = useState(locBanDau.chiBanBot);
-  const [chiGanDiemMua, setChiGanDiemMua] = useState(locBanDau.chiGanDiemMua);
-  const [chiDatChuan, setChiDatChuan] = useState(locBanDau.chiDatChuan);
+  // Doc bo loc ban dau tu URL - chi doc 1 LAN luc khoi tao state, sau do nguoi
+  // dung tu do chinh sua tren giao dien.
+  const [loc, datLoc] = useState(() => ({
+    ...docLocChungTuUrl(searchParams),
+    tin: searchParams.get("tin") || "",
+    chiGanDiemMua: searchParams.get("gandiemmua") === "1",
+  }));
+  const cotHienThi = useCotHienThi("cs_cot_boloc_v1", DS_KHOA_CHON, MAC_DINH);
   // Cot "Tin hieu" (MUA/BAN/NAM GIU/TRUNG LAP) bi lam mo cho khach CHUA dang
   // ky/dang nhap - de mac dinh la CHUA dang nhap (an toan hon, tranh nhap
   // nhoang lo tin hieu that truoc khi fetch xong).
@@ -157,25 +208,18 @@ export default function BangBoLoc({ duLieu }) {
   const soTang = duLieu.filter((r) => r.doi > 0).length;
   const soGiam = duLieu.filter((r) => r.doi < 0).length;
   const soDung = duLieu.length - soTang - soGiam;
+  const soUuTien = useMemo(() => duLieu.filter(datChuanUuTien).length, [duLieu]);
 
   const daLoc = useMemo(() => {
-    const tuKhoa = timKiem.trim().toUpperCase();
-    let ds = duLieu;
-    if (tuKhoa) ds = ds.filter((r) => r.ma.includes(tuKhoa));
-    if (locTin && nguoiDung) ds = ds.filter((r) => r.tin === locTin);
-    if (locVonHoa) ds = ds.filter((r) => r.von_hoa === locVonHoa);
-    if (locXuHuong) ds = ds.filter((r) => phanLoaiXuHuong(r) === locXuHuong);
-    if (locSan) ds = ds.filter((r) => (r.san || "HOSE") === locSan);
-    if (locNganh) ds = ds.filter((r) => (r.nganh || "Khac") === locNganh);
-    if (chiMatThan) ds = ds.filter((r) => r.mat_than);
-    if (chiChotLoi) ds = ds.filter((r) => r.tin === "NAM GIU" && chamTPCaoNhat(r));
-    if (chiBanBot) ds = ds.filter((r) => r.ban_bot);
-    if (chiDatChuan) ds = ds.filter((r) => r.khoi_luong_tb20 >= NGUONG_KL_TB20 && r.gia >= NGUONG_GIA_TOI_THIEU);
-    if (chiGanDiemMua) ds = ds.filter((r) => r.tin === "TRUNG LAP" && r.diem >= NGUONG_MUA - BIEN_DO_GAN_MUA && r.diem < NGUONG_MUA);
+    let ds = locChung(duLieu, loc);
+    if (loc.tin && nguoiDung) ds = ds.filter((r) => r.tin === loc.tin);
+    if (loc.chiGanDiemMua) ds = ds.filter((r) => r.tin === "TRUNG LAP" && r.diem >= NGUONG_MUA - BIEN_DO_GAN_MUA && r.diem < NGUONG_MUA);
 
-    ds = [...ds].sort((a, b) => {
-      const va = a[sapXep.khoa];
-      const vb = b[sapXep.khoa];
+    const lay = COT[sapXep.khoa]?.lay;
+    if (!lay) return ds;
+    return [...ds].sort((a, b) => {
+      const va = lay(a);
+      const vb = lay(b);
       let so = 0;
       if (typeof va === "string" || typeof vb === "string") {
         so = String(va ?? "").localeCompare(String(vb ?? ""));
@@ -184,28 +228,33 @@ export default function BangBoLoc({ duLieu }) {
       }
       return sapXep.chieu === "asc" ? so : -so;
     });
-    return ds;
-  }, [duLieu, timKiem, sapXep, locTin, locVonHoa, locXuHuong, locSan, locNganh, chiMatThan, chiChotLoi, chiBanBot, chiGanDiemMua, chiDatChuan, nguoiDung]);
+  }, [duLieu, loc, sapXep, nguoiDung]);
 
   function doiSapXep(khoa) {
+    if (!COT[khoa]?.lay) return;
+    // Sap xep theo Tin hieu se lo thu tu MUA/BAN - yeu cau dang nhap.
+    if (khoa === "tin" && !nguoiDung) {
+      setMoModalTK(true);
+      return;
+    }
     setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: "desc" }));
   }
 
   function xoaBoLoc() {
-    setTimKiem("");
-    setLocTin("");
-    setLocVonHoa("");
-    setLocXuHuong("");
-    setLocSan("");
-    setLocNganh("");
-    setChiMatThan(false);
-    setChiChotLoi(false);
-    setChiBanBot(false);
-    setChiGanDiemMua(false);
-    setChiDatChuan(false);
+    datLoc({ ...LOC_TRONG, tin: "", chiGanDiemMua: false });
   }
 
-  const coBoLoc = timKiem || locTin || locVonHoa || locXuHuong || locSan || locNganh || chiMatThan || chiChotLoi || chiBanBot || chiGanDiemMua || chiDatChuan;
+  const coBoLoc = coLocChung(loc) || loc.tin || loc.chiGanDiemMua;
+  const duocXemCot = (k) => !!nguoiDung || !COT_CAN_DANG_NHAP.has(k);
+  const dsKhoaChon = DS_KHOA_CHON.filter(duocXemCot);
+  const dsCot = THU_TU_COT.filter((k) => k === "ma" || k === "tin" || (cotHienThi.dangChon.has(k) && duocXemCot(k)));
+  const ctx = {
+    nhanNganh: NGANH_NHAN,
+    nguoiDung,
+    banDoThamGia,
+    doiTrangThaiThamGia,
+    moModalTK: () => setMoModalTK(true),
+  };
 
   return (
     <div>
@@ -238,105 +287,54 @@ export default function BangBoLoc({ duLieu }) {
       </div>
 
       {/* BO LOC */}
-      <div className="flex flex-wrap items-center gap-2 mb-4">
-        <div className="relative max-w-xs flex-1 min-w-[160px]">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" color={MUTED} />
-          <input
-            value={timKiem}
-            onChange={(e) => setTimKiem(e.target.value)}
-            placeholder="Tìm mã cổ phiếu..."
-            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg outline-none"
-            style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}
+      <HangBoLocChung
+        loc={loc}
+        datLoc={datLoc}
+        coBoLoc={coBoLoc}
+        onXoa={xoaBoLoc}
+        truocChon={
+          nguoiDung ? (
+            <OSelect
+              value={loc.tin}
+              onChange={(v) => datLoc((cu) => ({ ...cu, tin: v }))}
+              placeholder="Tất cả tín hiệu"
+              options={[
+                ["MUA", "MUA"],
+                ["NAM GIU", "NẮM GIỮ"],
+                ["BAN", "BÁN"],
+                ["TRUNG LAP", "TRUNG LẬP"],
+              ]}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => setMoModalTK(true)}
+              className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg"
+              style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: MUTED, fontFamily: "'Inter', sans-serif" }}
+            >
+              <Lock size={13} />
+              Tất cả tín hiệu
+            </button>
+          )
+        }
+        chonCot={
+          <ChonCotHienThi
+            cot={COT}
+            dsKhoa={dsKhoaChon}
+            dangChon={cotHienThi.dangChon}
+            onBat={cotHienThi.bat}
+            onHienTatCa={cotHienThi.hienTatCa}
+            onMacDinh={cotHienThi.macDinh}
+            ghiChu={nguoiDung ? null : "Đăng nhập để xem thêm các cột vị thế: giá mua, lãi/lỗ, Stop-loss, TP."}
           />
-        </div>
-        {nguoiDung ? (
-          <OSelect
-            value={locTin}
-            onChange={setLocTin}
-            placeholder="Tất cả tín hiệu"
-            options={[
-              ["MUA", "MUA"],
-              ["NAM GIU", "NẮM GIỮ"],
-              ["BAN", "BÁN"],
-              ["TRUNG LAP", "TRUNG LẬP"],
-            ]}
-          />
-        ) : (
-          <button
-            type="button"
-            onClick={() => setMoModalTK(true)}
-            className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg"
-            style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: MUTED, fontFamily: "'Inter', sans-serif" }}
-          >
-            <Lock size={13} />
-            Tất cả tín hiệu
-          </button>
-        )}
-        <OSelect
-          value={locVonHoa}
-          onChange={setLocVonHoa}
-          placeholder="Tất cả vốn hoá"
-          options={[
-            ["VN30", "VN30"],
-            ["Midcap", "Midcap"],
-            ["Smallcap", "Smallcap"],
-          ]}
-        />
-        <OSelect
-          value={locXuHuong}
-          onChange={setLocXuHuong}
-          placeholder="Tất cả xu hướng"
-          options={[
-            ["xanh", "Tăng"],
-            ["do", "Giảm"],
-            ["sideway", "Sideway"],
-          ]}
-        />
-        <OSelect
-          value={locSan}
-          onChange={setLocSan}
-          placeholder="Tất cả sàn"
-          options={[
-            ["HOSE", "HOSE"],
-            ["HNX", "HNX"],
-            ["UPCOM", "UPCOM"],
-          ]}
-        />
-        <OSelect
-          value={locNganh}
-          onChange={setLocNganh}
-          placeholder="Tất cả ngành"
-          options={DS_NGANH.map((n) => [n, NGANH_NHAN[n]])}
-        />
-        {coBoLoc && (
-          <button onClick={xoaBoLoc} className="text-xs px-3 py-2 rounded-lg" style={{ color: PRIMARY, border: `1px solid ${VIEN}` }}>
-            Xoá bộ lọc
-          </button>
-        )}
-      </div>
+        }
+      />
 
-      <div className="flex flex-wrap items-center gap-4 mb-4">
-        <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }}>
-          <input type="checkbox" checked={chiMatThan} onChange={(e) => setChiMatThan(e.target.checked)} />
-          Chỉ cảnh báo Mắt Thần
-        </label>
-        <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }}>
-          <input type="checkbox" checked={chiChotLoi} onChange={(e) => setChiChotLoi(e.target.checked)} />
-          Chỉ đã chạm chốt lời (TP)
-        </label>
-        <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }}>
-          <input type="checkbox" checked={chiBanBot} onChange={(e) => setChiBanBot(e.target.checked)} />
-          Chỉ cảnh báo Bán bớt
-        </label>
-        <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }}>
-          <input type="checkbox" checked={chiGanDiemMua} onChange={(e) => setChiGanDiemMua(e.target.checked)} />
+      <HangTichChung loc={loc} datLoc={datLoc} soUuTien={soUuTien}>
+        <OTich checked={loc.chiGanDiemMua} onChange={(v) => datLoc((cu) => ({ ...cu, chiGanDiemMua: v }))}>
           Chỉ mã sắp đến điểm MUA
-        </label>
-        <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }}>
-          <input type="checkbox" checked={chiDatChuan} onChange={(e) => setChiDatChuan(e.target.checked)} />
-          Chỉ mã đạt chuẩn thanh khoản (KL TB20 ≥ 100.000 cp, giá ≥ 10.000đ)
-        </label>
-      </div>
+        </OTich>
+      </HangTichChung>
 
       <p className="text-xs mb-2" style={{ color: MUTED }}>
         Hiển thị {daLoc.length} / {duLieu.length} mã · {soDung} mã đứng giá
@@ -348,116 +346,55 @@ export default function BangBoLoc({ duLieu }) {
           <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
             <thead>
               <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-                {COT.map((c) => (
-                  <th
-                    key={c.khoa}
-                    className={`py-3 px-3 font-normal cursor-pointer select-none whitespace-nowrap ${c.canPhai ? "text-right" : "text-left"}`}
-                    onClick={() => doiSapXep(c.khoa)}
-                  >
-                    <span className="inline-flex items-center gap-1">
-                      {c.nhan}
-                      {sapXep.khoa === c.khoa ? (
-                        sapXep.chieu === "desc" ? (
-                          <ArrowDown size={12} color={PRIMARY} />
-                        ) : (
-                          <ArrowUp size={12} color={PRIMARY} />
-                        )
-                      ) : (
-                        <ArrowUpDown size={12} opacity={0.4} />
-                      )}
-                    </span>
-                  </th>
-                ))}
+                {dsCot.map((k) => {
+                  const c = COT[k];
+                  return (
+                    <th
+                      key={k}
+                      className={`py-3 px-3 font-normal select-none whitespace-nowrap ${c.lay ? "cursor-pointer" : ""} ${c.canPhai ? "text-right" : "text-left"} ${
+                        k === "ma" ? "sticky left-0 z-[1]" : ""
+                      }`}
+                      style={k === "ma" ? { background: NEN_CARD } : undefined}
+                      onClick={() => doiSapXep(k)}
+                    >
+                      <span className="inline-flex items-center gap-1">
+                        {c.nhan}
+                        {c.lay &&
+                          (sapXep.khoa === k ? (
+                            sapXep.chieu === "desc" ? (
+                              <ArrowDown size={12} color={PRIMARY} />
+                            ) : (
+                              <ArrowUp size={12} color={PRIMARY} />
+                            )
+                          ) : (
+                            <ArrowUpDown size={12} opacity={0.4} />
+                          ))}
+                      </span>
+                    </th>
+                  );
+                })}
               </tr>
             </thead>
             <tbody>
-              {daLoc.map((row, i) => {
-                const tp = chamTPCaoNhat(row);
-                return (
-                  <tr key={row.ma} className={`hover:bg-white/[0.04] transition-colors ${i > 0 ? "border-t" : ""}`} style={{ borderColor: "#1D1D26" }}>
-                    <td className="py-2.5 px-3">
-                      <div className="flex items-center gap-1.5">
-                        <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-                          {row.ma}
-                        </Link>
-                        {row.mat_than && (
-                          <span className="text-[10px] font-bold" style={{ color: DO }}>
-                            ⚠
-                          </span>
-                        )}
-                        <NutThamGia
-                          ma={row.ma}
-                          soNguoiThamGia={banDoThamGia[row.ma]?.soNguoiThamGia ?? 0}
-                          daThamGia={banDoThamGia[row.ma]?.daThamGia ?? false}
-                          coDangNhap={!!nguoiDung}
-                          moChuaDangNhap={() => setMoModalTK(true)}
-                          onDoiTrangThai={doiTrangThaiThamGia}
-                        />
-                      </div>
-                    </td>
-                    <td className="py-2.5 px-3 text-xs" style={{ color: MUTED }}>
-                      {row.san || "HOSE"}
-                    </td>
-                    <td className="py-2.5 px-3 text-xs" style={{ color: MUTED }}>
-                      {row.von_hoa || "—"}
-                    </td>
-                    <td className="py-2.5 px-3 text-xs whitespace-nowrap" style={{ color: MUTED }}>
-                      {NGANH_NHAN[row.nganh] || row.nganh || "—"}
-                    </td>
-                    <td className="py-2.5 px-3 text-right">{fmt(row.gia)}</td>
-                    <td className="py-2.5 px-3 text-right" style={{ color: row.doi >= 0 ? XANH : DO }}>
-                      {pct(row.doi, 2)}
-                    </td>
-                    <td className="py-2.5 px-3 text-right font-bold" style={{ color: row.diem >= 0 ? XANH : DO }}>
-                      {row.diem?.toFixed(2) ?? "—"}
-                    </td>
-                    <td className="py-2.5 px-3 text-right">{so1So(row.trend)}</td>
-                    <td className="py-2.5 px-3 text-right">{so1So(row.adx)}</td>
-                    <td className="py-2.5 px-3 text-right">{pct(row.rs_vni, 1)}</td>
-                    <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED }}>
-                      {chuoiKhoiLuong(row.khoi_luong_tb20)}
-                    </td>
-                    <td className="py-2.5 px-3 text-right">
-                      <div className="flex flex-col items-end gap-1">
-                        {nguoiDung ? (
-                          <>
-                            <SignalPill tin={row.tin} />
-                            {nhanGiaiNgan(row) && (
-                              <span className="text-[10px] font-bold" style={{ color: nhanGiaiNgan(row).mau }} title={nhanGiaiNgan(row).moTa}>
-                                ◐ {nhanGiaiNgan(row).nhan}
-                              </span>
-                            )}
-                          </>
-                        ) : (
-                          <button
-                            type="button"
-                            onClick={() => setMoModalTK(true)}
-                            className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold"
-                            style={{ background: "rgba(255,255,255,0.06)", color: MUTED }}
-                            title="Đăng ký/Đăng nhập để xem tín hiệu"
-                          >
-                            <Lock size={10} />
-                            <span style={{ filter: "blur(3px)" }}>MUA</span>
-                          </button>
-                        )}
-                        {tp && (
-                          <span className="text-[10px] font-bold" style={{ color: "#FBBF24" }}>
-                            🎯 {tp}
-                          </span>
-                        )}
-                        {row.ban_bot && (
-                          <span className="text-[10px] font-bold" style={{ color: "#F97316" }}>
-                            ⚠ Bán bớt
-                          </span>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
+              {daLoc.map((row, i) => (
+                <tr key={row.ma} className={`hover:bg-white/[0.04] transition-colors ${i > 0 ? "border-t" : ""}`} style={{ borderColor: "#1D1D26" }}>
+                  {dsCot.map((k) => {
+                    const c = COT[k];
+                    return (
+                      <td
+                        key={k}
+                        className={`py-2.5 px-3 ${c.canPhai ? "text-right" : ""} ${k === "ma" ? "sticky left-0 z-[1]" : ""}`}
+                        style={k === "ma" ? { background: NEN_CARD } : undefined}
+                      >
+                        {c.hien(row, ctx)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
               {daLoc.length === 0 && (
                 <tr>
-                  <td colSpan={COT.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                  <td colSpan={dsCot.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
                     Không tìm thấy mã nào khớp bộ lọc hiện tại.
                   </td>
                 </tr>

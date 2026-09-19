@@ -1,7 +1,21 @@
 import Link from "next/link";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
-import { fmt, pct, soAn, chamTPCaoNhat, chuoiKhoiLuong, nhanGiaiNgan, TREND_MAX, MOM_MAX, DT_MAX, RS_MAX } from "@/components/dungChung";
+import {
+  fmt,
+  fmtTy,
+  pct,
+  soAn,
+  chamTPCaoNhat,
+  chuoiKhoiLuong,
+  nhanGiaiNgan,
+  kiemTraChuanUuTien,
+  mocKichHoat,
+  TREND_MAX,
+  MOM_MAX,
+  DT_MAX,
+  RS_MAX,
+} from "@/components/dungChung";
 
 // Lich su giao dich + thong ke hieu suat tung ma: TAM THOI BO KHOI WEB theo
 // yeu cau - file xuat tu AmiBroker (dan qua Excel) bi loi lam trong so thap
@@ -312,6 +326,16 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
             <p className="text-[11px] mt-1" style={{ color: "#8B8B99" }}>
               KL TB20: {chuoiKhoiLuong(row.khoi_luong_tb20)}
             </p>
+            {row.gtgd_tb20 != null && (
+              <p className="text-[11px]" style={{ color: "#8B8B99" }}>
+                GTGD TB20: {fmtTy(row.gtgd_tb20)} tỷ
+              </p>
+            )}
+            {row.von_hoa_ty != null && (
+              <p className="text-[11px]" style={{ color: "#8B8B99" }}>
+                Vốn hoá: {fmtTy(row.von_hoa_ty)} tỷ
+              </p>
+            )}
           </div>
           {(row.tin === "MUA" || row.tin === "NAM GIU") && (
             <div className="mt-3 pt-3 border-t w-full" style={{ borderColor: VIEN }}>
@@ -324,6 +348,18 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
               >
                 {pct(row.lai_lo_pct, 2)}
               </p>
+              {mocKichHoat(row) && (
+                <div className="mt-2" title="Giá mua trên hệ thống là giá đóng cửa phiên có tín hiệu; mốc chuyển mua là mức giá chính vừa bị vượt ở phiên điểm chuyển sang vùng mua.">
+                  <p className="text-[11px]" style={{ color: "#8B8B99" }}>
+                    Mốc chuyển mua: {fmt(mocKichHoat(row).gia)}
+                  </p>
+                  <p className="text-[10px] leading-snug" style={{ color: "#8B8B99" }}>
+                    {mocKichHoat(row).nhan}
+                    {mocKichHoat(row).chenhPct != null &&
+                      ` · giá mua ${mocKichHoat(row).chenhPct >= 0 ? "cao" : "thấp"} hơn mốc ${soAn(Math.abs(mocKichHoat(row).chenhPct), 1)}%`}
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </Card>
@@ -353,6 +389,16 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
             <TagInfo nhan="Dòng tiền" giaTri={tag.dongTien.nhan} mau={tag.dongTien.mau} />
             <TagInfo nhan="Sức mạnh ADX" giaTri={tag.adxSucManh.nhan} mau={tag.adxSucManh.mau} />
             {row.von_hoa && <TagInfo nhan="Vốn hoá" giaTri={row.von_hoa} mau="#22C55E" />}
+            {(() => {
+              const chuan = kiemTraChuanUuTien(row);
+              return (
+                <TagInfo
+                  nhan="Chuẩn ưu tiên"
+                  giaTri={chuan.dat ? "Đạt 4/4" : `${chuan.tieuChi.filter((t) => t.dat).length}/4`}
+                  mau={chuan.dat ? "#22C55E" : "#A6A6B3"}
+                />
+              );
+            })()}
             {row.sanyaku !== null && row.sanyaku !== undefined && (
               <TagInfo nhan="Độ tin cậy" giaTri={`${row.sanyaku}/3`} mau={row.sanyaku >= 2 ? "#22C55E" : "#A6A6B3"} />
             )}
@@ -488,7 +534,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
             });
           })()}
           <p className="text-[11px] mt-3" style={{ color: "#8B8B99" }}>
-            "Đã chạm" nghĩa là giá đã TỪNG lên tới mốc đó vào một thời điểm nào trong quá trình đang giữ mã này (kể cả nếu
+            &quot;Đã chạm&quot; nghĩa là giá đã TỪNG lên tới mốc đó vào một thời điểm nào trong quá trình đang giữ mã này (kể cả nếu
             sau đó giá đã tụt xuống lại) — không chỉ so với giá hiện tại.
           </p>
         </Card>

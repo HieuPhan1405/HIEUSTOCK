@@ -134,11 +134,12 @@ function NguyenTac() {
 
       <Muc so={8} tieuDe="Tiêu chí chọn cổ phiếu (bộ lọc an toàn)">
         <p>
-          Ưu tiên mã có <b style={{ color: XANH }}>giá từ 10.000 đồng</b> và{" "}
-          <b style={{ color: XANH }}>khối lượng giao dịch trung bình 20 phiên từ 100.000 cổ phiếu</b>. Hệ thống tự loại các mã không đạt khỏi tín
-          hiệu MUA để tránh mã kém thanh khoản, khó vào/ra lệnh.
+          Ưu tiên mã có <b style={{ color: XANH }}>thị giá trên 10.000 đồng</b>, <b style={{ color: XANH }}>vốn hoá từ 3.000 tỷ</b>,{" "}
+          <b style={{ color: XANH }}>khối lượng từ 500.000 cổ phiếu/phiên</b> và <b style={{ color: XANH }}>giá trị giao dịch trên 10 tỷ/phiên</b>{" "}
+          (khối lượng và giá trị giao dịch tính trung bình 20 phiên). Mã kém thanh khoản khó vào/ra lệnh, dễ trượt giá. Hệ thống cũng tự loại các mã quá
+          kém thanh khoản khỏi tín hiệu MUA.
         </p>
-        <Luu>* Ở trang Bộ lọc có ô &quot;Chỉ mã đạt chuẩn thanh khoản&quot; để lọc nhanh, và ô &quot;Chỉ mã sắp đến điểm MUA&quot; để theo dõi trong phiên.</Luu>
+        <Luu>* Ở trang Bộ lọc và Sổ lệnh có ô &quot;Chỉ mã ưu tiên&quot; để lọc nhanh theo 4 tiêu chí trên, và ô &quot;Chỉ mã sắp đến điểm MUA&quot; (Bộ lọc) để theo dõi trong phiên.</Luu>
       </Muc>
 
       <Muc so={9} tieuDe="Thời điểm đặt lệnh (Mua/Bán)">
@@ -195,8 +196,9 @@ export default async function TrangHuongDan() {
           muc={[
             "Lọc theo tín hiệu, vốn hoá, xu hướng, sàn (HOSE / HNX / UPCOM), ngành và các cảnh báo (Mắt Thần, đã chạm chốt lời, Bán bớt).",
             "Tích \"Chỉ mã sắp đến điểm MUA\" để xem các mã đang trung lập nhưng đã sát điểm mua — dùng theo dõi trong phiên xem mã nào sắp kích hoạt.",
-            "Tích \"Chỉ mã đạt chuẩn thanh khoản\" để chỉ giữ lại các mã đủ giá và khối lượng giao dịch an toàn.",
-            "Bấm vào tiêu đề cột để sắp xếp. Cột KL TB20 là khối lượng trung bình 20 phiên (cổ phiếu). Cột Tín hiệu chỉ hiện đầy đủ sau khi đăng ký / đăng nhập.",
+            "Tích \"Chỉ mã ưu tiên\" để chỉ giữ lại các mã đạt đủ 4 tiêu chí: giá trên 10.000đ, vốn hoá từ 3.000 tỷ, khối lượng từ 500.000 cp/phiên, giá trị giao dịch trên 10 tỷ/phiên.",
+            "Nút \"Cột hiển thị\" cho bật/tắt từng chỉ số (vốn hoá, GTGD, Rank, Confidence, Stop-loss, TP...) hoặc \"Hiện tất cả\". Lựa chọn được nhớ lại cho lần sau.",
+            "Bấm vào tiêu đề cột để sắp xếp. KL TB20 và GTGD TB20 là trung bình 20 phiên. Cột Tín hiệu và các cột vị thế (giá mua, lãi/lỗ, Stop-loss, TP) chỉ hiện đầy đủ sau khi đăng ký / đăng nhập.",
           ]}
         />
       </Muc>
@@ -204,8 +206,10 @@ export default async function TrangHuongDan() {
       <Muc tieuDe="Sổ lệnh đang mở">
         <p>
           Toàn bộ mã đang MUA hoặc NẮM GIỮ: ngày mua, giá mua, số phiên đã giữ, lãi/lỗ hiện tại, mốc chốt lời cao nhất đã chạm, cảnh báo (Mắt Thần, Bán
-          bớt) và nhãn giải ngân (Giải ngân 1 phần / Bổ sung). Các thẻ thống kê phía trên cho biết tỷ lệ lãi, tỷ lệ lỗ, lãi/lỗ trung bình và tỷ lệ lệnh đã
-          chạm chốt lời (ví dụ 10 lệnh có 7 lệnh đã chạm TP thì là 70%).
+          bớt) và nhãn giải ngân (Giải ngân 1 phần / Bổ sung). Bảng có bộ lọc (sàn, ngành, xu hướng, đang lãi/lỗ, mã ưu tiên...) và hiện đầy đủ các chỉ
+          số: điểm, Rank, Confidence, vốn hoá, GTGD, Stop-loss, TP1–3... (dùng nút &quot;Cột hiển thị&quot; để bật/tắt). Cột &quot;Mốc chuyển mua&quot; là mức
+          giá chính vừa bị vượt lúc điểm chuyển sang vùng mua, để so với giá mua thực tế xem mình đang mua cao hơn bao nhiêu. Các thẻ thống kê phía trên cho
+          biết tỷ lệ lãi, tỷ lệ lỗ, lãi/lỗ trung bình và tỷ lệ lệnh đã chạm chốt lời (ví dụ 10 lệnh có 7 lệnh đã chạm TP thì là 70%).
         </p>
       </Muc>
 
