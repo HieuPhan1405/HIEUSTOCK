@@ -21,7 +21,7 @@ import {
   useCotHienThi,
   ChonCotHienThi,
 } from "@/components/boLocChung";
-import { chamTPCaoNhat, nhanGiaiNgan, datChuanUuTien } from "@/components/dungChung";
+import { chamTPCaoNhat, nhanGiaiNgan, datChuanUuTien, sapChamMoc, laDangGiu, NGUONG_DIEM_MUA } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -30,13 +30,19 @@ const XANH = "#22C55E";
 const DO = "#EF4444";
 const PRIMARY = "#6C5CE7";
 
-// "Gan diem MUA" - dung DUNG nguong vao lenh mac dinh trong AFL (EntryTh =
-// Param("Nguong diem VAO lenh (Mua)", 1.25, ...) - neu ban doi thong so nay
-// trong AmiBroker, bao lai de cap nhat cho khop). Hien cac ma TRUNG LAP co
-// diem da tiem can nguong nhung CHUA du de kich hoat MUA, de theo doi trong
-// phien xem co "vuot qua" duoc khong.
-const NGUONG_MUA = 1.25;
+// Bo loc "MA THEO DOI" (Chi ma sap cham moc tinh diem +): ma chua co lenh, gia
+// dang cach 1 moc (may / Giao Gam) khong qua bienMoc % ma VUOT QUA thi duoc cong
+// diem va du diem MUA (xem sapChamMoc trong dungChung.js). Du lieu moc chi co
+// sau khi Explore lai voi AFL moi - TRUOC DO tam dung cach cu: ma TRUNG LAP co
+// diem nam sat duoi nguong MUA (trong BIEN_DO_GAN_MUA diem).
 const BIEN_DO_GAN_MUA = 0.5;
+const CAC_BIEN_MOC = [1, 2, 3, 5];
+const COT_THEO_DOI = ["moc_tiep_theo", "diem_neu_vuot"];
+
+function laMaTheoDoi(r, coDuLieuMoc, bienMoc) {
+  if (coDuLieuMoc) return sapChamMoc(r, bienMoc);
+  return r.tin === "TRUNG LAP" && r.diem >= NGUONG_DIEM_MUA - BIEN_DO_GAN_MUA && r.diem < NGUONG_DIEM_MUA;
+}
 
 // Cot ma + tin hieu co logic rieng (nut Tham gia, khoa Tin hieu khi chua dang
 // nhap) nen dinh nghia tai day; cac cot chi so con lai lay tu cotChung.js.
@@ -71,7 +77,8 @@ const COT_RIENG = {
     canPhai: false,
     lay: (r) => r.tin,
     hien: (row, ctx) => {
-      const tp = chamTPCaoNhat(row);
+      // tp_da_cham cua ma KHONG con giu chi la lich su lan mua gan nhat - khong hien.
+      const tp = laDangGiu(row) ? chamTPCaoNhat(row) : null;
       return (
         <div className="flex flex-col items-end gap-1">
           {ctx.nguoiDung ? (
@@ -126,6 +133,8 @@ const THU_TU_COT = [
   "diem",
   "diem_rank",
   "diem_confidence",
+  "moc_tiep_theo",
+  "diem_neu_vuot",
   "trend",
   "dt",
   "mom",
@@ -169,6 +178,7 @@ export default function BangBoLoc({ duLieu }) {
     ...docLocChungTuUrl(searchParams),
     tin: searchParams.get("tin") || "",
     chiGanDiemMua: searchParams.get("gandiemmua") === "1",
+    bienMoc: 3,
   }));
   const cotHienThi = useCotHienThi("cs_cot_boloc_v1", DS_KHOA_CHON, MAC_DINH);
   // Cot "Tin hieu" (MUA/BAN/NAM GIU/TRUNG LAP) bi lam mo cho khach CHUA dang
@@ -209,11 +219,14 @@ export default function BangBoLoc({ duLieu }) {
   const soGiam = duLieu.filter((r) => r.doi < 0).length;
   const soDung = duLieu.length - soTang - soGiam;
   const soUuTien = useMemo(() => duLieu.filter(datChuanUuTien).length, [duLieu]);
+  // Chua co du lieu moc (chua Explore lai voi AFL moi) -> bo loc theo doi dung cach cu.
+  const coDuLieuMoc = useMemo(() => duLieu.some((r) => r.moc_cach_pct != null), [duLieu]);
+  const soTheoDoi = useMemo(() => duLieu.filter((r) => laMaTheoDoi(r, coDuLieuMoc, loc.bienMoc)).length, [duLieu, coDuLieuMoc, loc.bienMoc]);
 
   const daLoc = useMemo(() => {
     let ds = locChung(duLieu, loc);
     if (loc.tin && nguoiDung) ds = ds.filter((r) => r.tin === loc.tin);
-    if (loc.chiGanDiemMua) ds = ds.filter((r) => r.tin === "TRUNG LAP" && r.diem >= NGUONG_MUA - BIEN_DO_GAN_MUA && r.diem < NGUONG_MUA);
+    if (loc.chiGanDiemMua) ds = ds.filter((r) => laMaTheoDoi(r, coDuLieuMoc, loc.bienMoc));
 
     const lay = COT[sapXep.khoa]?.lay;
     if (!lay) return ds;
@@ -228,7 +241,7 @@ export default function BangBoLoc({ duLieu }) {
       }
       return sapXep.chieu === "asc" ? so : -so;
     });
-  }, [duLieu, loc, sapXep, nguoiDung]);
+  }, [duLieu, loc, sapXep, nguoiDung, coDuLieuMoc]);
 
   function doiSapXep(khoa) {
     if (!COT[khoa]?.lay) return;
@@ -241,13 +254,17 @@ export default function BangBoLoc({ duLieu }) {
   }
 
   function xoaBoLoc() {
-    datLoc({ ...LOC_TRONG, tin: "", chiGanDiemMua: false });
+    datLoc({ ...LOC_TRONG, tin: "", chiGanDiemMua: false, bienMoc: 3 });
   }
 
   const coBoLoc = coLocChung(loc) || loc.tin || loc.chiGanDiemMua;
   const duocXemCot = (k) => !!nguoiDung || !COT_CAN_DANG_NHAP.has(k);
   const dsKhoaChon = DS_KHOA_CHON.filter(duocXemCot);
-  const dsCot = THU_TU_COT.filter((k) => k === "ma" || k === "tin" || (cotHienThi.dangChon.has(k) && duocXemCot(k)));
+  // Dang loc "ma theo doi" thi tu hien 2 cot moc can vuot + diem neu vuot.
+  const hienCotTheoDoi = loc.chiGanDiemMua && coDuLieuMoc;
+  const dsCot = THU_TU_COT.filter(
+    (k) => k === "ma" || k === "tin" || ((cotHienThi.dangChon.has(k) || (hienCotTheoDoi && COT_THEO_DOI.includes(k))) && duocXemCot(k))
+  );
   const ctx = {
     nhanNganh: NGANH_NHAN,
     nguoiDung,
@@ -331,9 +348,26 @@ export default function BangBoLoc({ duLieu }) {
       />
 
       <HangTichChung loc={loc} datLoc={datLoc} soUuTien={soUuTien}>
-        <OTich checked={loc.chiGanDiemMua} onChange={(v) => datLoc((cu) => ({ ...cu, chiGanDiemMua: v }))}>
-          Chỉ mã sắp đến điểm MUA
+        <OTich
+          checked={loc.chiGanDiemMua}
+          onChange={(v) => {
+            datLoc((cu) => ({ ...cu, chiGanDiemMua: v }));
+            // Bat len thi xep ma GAN moc nhat len dau de theo doi.
+            if (v && coDuLieuMoc) setSapXep({ khoa: "moc_tiep_theo", chieu: "asc" });
+          }}
+        >
+          <span title="Mã chưa có lệnh, giá đang sát một mốc (mây / Giao Găm) mà vượt qua thì được cộng điểm và đủ điểm MUA">
+            Mã theo dõi: sắp chạm mốc tính điểm +<b style={{ color: "#22C55E" }}> · {soTheoDoi} mã</b>
+          </span>
         </OTich>
+        {loc.chiGanDiemMua && coDuLieuMoc && (
+          <OSelect
+            value={String(loc.bienMoc)}
+            onChange={(v) => datLoc((cu) => ({ ...cu, bienMoc: Number(v) }))}
+            placeholder="Cách mốc tối đa"
+            options={CAC_BIEN_MOC.map((n) => [String(n), `Cách mốc ≤ ${n}%`])}
+          />
+        )}
       </HangTichChung>
 
       <p className="text-xs mb-2" style={{ color: MUTED }}>

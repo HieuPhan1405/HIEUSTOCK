@@ -2,12 +2,14 @@ import { withDb, daoDamBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
-// amibroker/7_Export_LenWeb.afl). Header CSV (40 cot; 2 cot cuoi gia_kich_hoat,
-// moc_kich_hoat la MOI - CSV cu chi 38 cot van nhan binh thuong, 2 cot do de trong):
+// amibroker/7_Export_LenWeb.afl). Header CSV (44 cot; 6 cot cuoi gia_kich_hoat,
+// moc_kich_hoat, moc_gia, moc_loai, moc_cach_pct, diem_neu_vuot la MOI - CSV cu
+// (38/40 cot) van nhan binh thuong, cac cot thieu de trong):
 // ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,
 // stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,
 // kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,
-// diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat
+// diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat,
+// moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -130,7 +132,7 @@ export async function POST(request) {
          so_phien_giu, lai_lo_pct, sanyaku, kumo_twist, ngay_bien_doi, von_hoa,
          gia_mua, ngay_mua, ban_bot, san, nganh, tp_da_cham,
          diem_rank, diem_confidence, khoi_luong_tb20, giai_ngan,
-         gia_kich_hoat, moc_kich_hoat)
+         gia_kich_hoat, moc_kich_hoat, moc_gia, moc_loai, moc_cach_pct, diem_neu_vuot)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -140,7 +142,7 @@ export async function POST(request) {
          $26::text[], $27::boolean[], $28::text[], $29::float8[], $30::date[], $31::boolean[],
          $32::text[], $33::text[], $34::text[],
          $35::float8[], $36::float8[], $37::float8[], $38::text[],
-         $39::float8[], $40::text[]
+         $39::float8[], $40::text[], $41::float8[], $42::text[], $43::float8[], $44::float8[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -182,6 +184,10 @@ export async function POST(request) {
          giai_ngan = EXCLUDED.giai_ngan,
          gia_kich_hoat = EXCLUDED.gia_kich_hoat,
          moc_kich_hoat = EXCLUDED.moc_kich_hoat,
+         moc_gia = EXCLUDED.moc_gia,
+         moc_loai = EXCLUDED.moc_loai,
+         moc_cach_pct = EXCLUDED.moc_cach_pct,
+         diem_neu_vuot = EXCLUDED.diem_neu_vuot,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -224,6 +230,10 @@ export async function POST(request) {
         cot("giai_ngan", soText),
         cot("gia_kich_hoat", soFloat),
         cot("moc_kich_hoat", soText),
+        cot("moc_gia", soFloat),
+        cot("moc_loai", soText),
+        cot("moc_cach_pct", soFloat),
+        cot("diem_neu_vuot", soFloat),
       ]
     );
 

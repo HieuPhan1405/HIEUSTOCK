@@ -5,7 +5,20 @@
 //
 // Cot co "nhom" se xuat hien trong hop "Cot hien thi". Cot "ma" va "tin" (co
 // logic rieng: nut Tham gia, khoa Tin hieu...) do tung bang tu dinh nghia.
-import { fmt, fmtTy, pct, so1So, soAn, chuoiKhoiLuong, chamTPCaoNhat, laDangGiu, mocKichHoat, kiemTraChuanUuTien } from "@/components/dungChung";
+import {
+  fmt,
+  fmtTy,
+  pct,
+  so1So,
+  soAn,
+  chuoiKhoiLuong,
+  chamTPCaoNhat,
+  laDangGiu,
+  mocKichHoat,
+  mocTiepTheo,
+  kiemTraChuanUuTien,
+  NGUONG_DIEM_MUA,
+} from "@/components/dungChung";
 
 const MUTED = "#8B8B99";
 const XANH = "#22C55E";
@@ -131,6 +144,38 @@ export const CAC_COT = {
     canPhai: true,
     lay: (r) => r.diem_confidence,
     hien: (r) => (r.diem_confidence == null ? Trong : <span style={{ color: mauCap(r.diem_confidence) }}>{soAn(r.diem_confidence, 0)}</span>),
+  },
+  moc_tiep_theo: {
+    nhan: "Mốc cần vượt",
+    nhom: "Điểm & chỉ báo",
+    canPhai: true,
+    lay: (r) => r.moc_cach_pct,
+    hien: (r) => {
+      const m = mocTiepTheo(r);
+      if (!m) return Trong;
+      return (
+        <div className="flex flex-col items-end leading-tight" title={`Vượt ${m.loai} thì được cộng điểm Xu hướng`}>
+          <span>{fmt(m.gia)}</span>
+          <span className="text-[10px]" style={{ color: m.cachPct <= 3 ? VANG : MUTED }}>
+            {m.loai} · cách {soAn(m.cachPct, 1)}%
+          </span>
+        </div>
+      );
+    },
+  },
+  diem_neu_vuot: {
+    nhan: "Điểm nếu vượt",
+    nhom: "Điểm & chỉ báo",
+    canPhai: true,
+    lay: (r) => r.diem_neu_vuot,
+    hien: (r) =>
+      r.diem_neu_vuot == null ? (
+        Trong
+      ) : (
+        <span style={{ color: r.diem_neu_vuot >= NGUONG_DIEM_MUA ? XANH : undefined }} title="Ước tính: mỗi mốc vượt được cộng khoảng +1.5 điểm">
+          {soAn(r.diem_neu_vuot, 2)}
+        </span>
+      ),
   },
   trend: { nhan: "Xu hướng", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.trend, hien: (r) => so1So(r.trend) },
   dt: { nhan: "Dòng tiền", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.dt, hien: (r) => soAn(r.dt, 1) },

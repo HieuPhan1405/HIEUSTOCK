@@ -104,6 +104,35 @@ export function mocKichHoat(row) {
   return { gia: row.gia_kich_hoat, nhan: NHAN_MOC[row.moc_kich_hoat] || "Mốc chuyển mua", chenhPct };
 }
 
+// Nguong diem VAO lenh (Mua) - dung DUNG EntryTh trong AFL (Param "Nguong diem
+// VAO lenh (Mua)", mac dinh 1.25). Doi thong so trong AmiBroker thi bao lai de
+// cap nhat cho khop.
+export const NGUONG_DIEM_MUA = 1.25;
+
+// MOC TINH DIEM (+) KE TIEP (cot moc_gia/moc_loai/moc_cach_pct/diem_neu_vuot tu
+// AFL): muc gia GAN NHAT phia tren gia hien tai ma neu gia VUOT QUA thi duoc
+// cong diem (day/dinh may, Giao Gam), khoang cach toi moc (%) va diem uoc tinh
+// sau khi vuot. Dung cho bo loc "ma theo doi" (sap cham moc).
+const NHAN_LOAI_MOC = { MAY: "Mây", "GIAO GAM": "Giao Găm" };
+
+export function mocTiepTheo(row) {
+  if (!(row?.moc_gia > 0) || row.moc_cach_pct == null || !row.moc_loai) return null;
+  return {
+    gia: row.moc_gia,
+    loai: NHAN_LOAI_MOC[row.moc_loai] || row.moc_loai,
+    cachPct: row.moc_cach_pct,
+    diemNeuVuot: row.diem_neu_vuot,
+  };
+}
+
+// Ma THEO DOI = chua co lenh (TRUNG LAP), gia dang cach 1 moc tinh diem (+)
+// khong qua bienPct %, va NEU vuot moc do thi diem uoc tinh dat nguong MUA.
+export function sapChamMoc(row, bienPct) {
+  const m = mocTiepTheo(row);
+  if (!m || row.tin !== "TRUNG LAP") return false;
+  return m.cachPct <= bienPct && m.diemNeuVuot != null && m.diemNeuVuot >= NGUONG_DIEM_MUA;
+}
+
 export function pct(n, digits = 2) {
   if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
   const v = Number(Number(n).toFixed(digits));

@@ -639,6 +639,27 @@ MocKichHoatCuoi = WriteIf(LoaiMocCuoi == 3, "MAY+GIAO GAM",
                   WriteIf(LoaiMocCuoi == 1, "MAY",
                   WriteIf(LoaiMocCuoi == 2, "GIAO GAM", "GIA")));
 
+// MOC TINH DIEM (+) SAP CHAM - dung cho bo loc "ma theo doi" tren web. Gia
+// dang o duoi mot moc ma VUOT QUA se duoc cong diem Trend (may, Giao Gam):
+//   May:      gia < day may -> moc = day may; gia trong may -> moc = dinh may.
+//   Giao Gam: gia < GGBot   -> moc = GGBot;   gia trong vung  -> moc = GGTop.
+// Moi lan vuot 1 moc = TrendScore +1 => TotalScore +1.5 (TrendScore*1.5), xuat
+// trong DiemNeuVuot (uoc tinh, chua tinh cac thanh phan khac doi theo).
+// Chon moc GAN NHAT phia tren gia. Chi de THAM KHAO, khong anh huong tin hieu.
+KhongCoMoc = 1e10;
+MocMayLen = IIf(C < CloudBot, CloudBot, IIf(C <= CloudTop, CloudTop, KhongCoMoc));
+MocGGLen = IIf(C < GGBot, GGBot, IIf(C <= GGTop, GGTop, KhongCoMoc));
+CachMayPct = IIf(MocMayLen < KhongCoMoc AND C > 0, (MocMayLen / C - 1) * 100, KhongCoMoc);
+CachGGPct = IIf(MocGGLen < KhongCoMoc AND C > 0, (MocGGLen / C - 1) * 100, KhongCoMoc);
+MayGanHon = CachMayPct <= CachGGPct;
+MocGanNhatGia = IIf(MayGanHon, MocMayLen, MocGGLen);
+MocGanNhatPct = IIf(MayGanHon, CachMayPct, CachGGPct);
+DiemNeuVuot = TotalScore + 1.5;
+CoMocPhiaTren = LastValue(MocGanNhatPct) < KhongCoMoc;
+MocGiaCuoi = IIf(CoMocPhiaTren, LastValue(MocGanNhatGia), 0);
+MocCachPctCuoi = IIf(CoMocPhiaTren, LastValue(MocGanNhatPct), 0);
+MocLoaiCuoi = WriteIf(CoMocPhiaTren, WriteIf(LastValue(MayGanHon), "MAY", "GIAO GAM"), "");
+
 SoViTheToiDa = Param("SO VI THE TOI DA (thay the Settings->Portfolio)", 8, 4, 30, 1);
 SetOption("MaxOpenPositions", SoViTheToiDa);
 
@@ -812,6 +833,10 @@ AddColumn(KhoiLuongTB20, "KL TB20 (co phieu)", 1.0);
 AddTextColumn(WriteIf(GiaiNganCuoi=="", "-", GiaiNganCuoi), "Giai ngan");
 AddColumn(GiaKichHoatTaiMua, "Moc kich hoat (luc chuyen mua)", 1.2);
 AddTextColumn(MocKichHoatCuoi, "Moc vuot");
+AddColumn(MocGiaCuoi, "Moc can vuot (gia)", 1.2);
+AddColumn(MocCachPctCuoi, "Cach moc (%)", 1.2);
+AddTextColumn(WriteIf(MocLoaiCuoi=="", "-", MocLoaiCuoi), "Loai moc");
+AddColumn(DiemNeuVuot, "Diem neu vuot moc", 1.2);
 
 // ============================================================================
 // XUAT CSV TU DONG LEN WEB - KHONG CAN BAM "EXPORT" TAY
@@ -827,7 +852,8 @@ if (Status("stocknum") == 0)
         fputs("ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,"+
               "stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,"+
               "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,"+
-              "diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat\n", fh);
+              "diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat,"+
+              "moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot\n", fh);
         fclose(fh);
     }
 }
@@ -896,7 +922,11 @@ Dong = Name() + "," + TinCuoi + ","
      + NumToStr(LastValue(KhoiLuongTB20),1.0,False) + ","
      + GiaiNganCuoi + ","
      + NumToStr(Nz(LastValue(GiaKichHoatTaiMua)),1.2,False) + ","
-     + MocKichHoatCuoi;
+     + MocKichHoatCuoi + ","
+     + NumToStr(LastValue(MocGiaCuoi),1.2,False) + ","
+     + MocLoaiCuoi + ","
+     + NumToStr(LastValue(MocCachPctCuoi),1.2,False) + ","
+     + NumToStr(LastValue(DiemNeuVuot),1.2,False);
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {
