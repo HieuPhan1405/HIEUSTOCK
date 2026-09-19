@@ -17,6 +17,8 @@ import {
   mocKichHoat,
   mocTiepTheo,
   gioGhiNhan,
+  tinhVungLenh,
+  chuoiVung,
   kiemTraChuanUuTien,
   NGUONG_DIEM_MUA,
 } from "@/components/dungChung";
@@ -291,6 +293,66 @@ export const CAC_COT = {
       );
     },
   },
+  // --- VUNG (thay cho tung diem don le) - xem tinhVungLenh() trong dungChung.js
+  vung_mua: {
+    nhan: "Vùng mua",
+    nhom: "Vị thế đang giữ",
+    canPhai: true,
+    lay: (r) => tinhVungLenh(r)?.mua.tu ?? null,
+    hien: (r) => {
+      const v = tinhVungLenh(r);
+      if (!v) return Trong;
+      const tt = { trong: ["trong vùng", XANH], tren: ["trên vùng", VANG], duoi: ["dưới vùng", DO] }[v.mua.trangThai];
+      return (
+        <div
+          className="flex flex-col items-end leading-tight"
+          title={v.mua.coMoc ? "Từ mốc chuyển mua đến giá mua cao hơn tối đa 2% (cao hơn nữa là đuổi giá)" : "Từ giá mua đến cao hơn tối đa 2% (cao hơn nữa là đuổi giá)"}
+        >
+          <span>{chuoiVung(v.mua.tu, v.mua.den)}</span>
+          <span className="text-[10px]" style={{ color: tt[1] }}>
+            giá {tt[0]}
+          </span>
+        </div>
+      );
+    },
+  },
+  vung_sl: {
+    nhan: "Vùng cắt lỗ",
+    nhom: "Vị thế đang giữ",
+    canPhai: true,
+    lay: (r) => tinhVungLenh(r)?.sl?.tu ?? null,
+    hien: (r) => {
+      const v = tinhVungLenh(r)?.sl;
+      if (!v) return Trong;
+      const tt = { cham: ["đã chạm Stop-loss", DO], trong: ["giá trong vùng", VANG], tren: ["giá còn an toàn", MUTED] }[v.trangThai];
+      return (
+        <div className="flex flex-col items-end leading-tight" title="Từ Stop-loss (đáy vùng, cắt dứt khoát) lên tới đường hỗ trợ gần nhất phía trên">
+          <span style={{ color: DO }}>{chuoiVung(v.tu, v.den)}</span>
+          <span className="text-[10px]" style={{ color: tt[1] }}>
+            {tt[0]}
+          </span>
+        </div>
+      );
+    },
+  },
+  vung_tp: {
+    nhan: "Vùng chốt lời",
+    nhom: "Vị thế đang giữ",
+    canPhai: true,
+    lay: (r) => tinhVungLenh(r)?.tp?.tu ?? null,
+    hien: (r) => {
+      const v = tinhVungLenh(r)?.tp;
+      if (!v) return Trong;
+      return (
+        <div className="flex flex-col items-end leading-tight" title={`TP1 đến TP3${v.giua ? ` (TP2 = ${fmt(v.giua)})` : ""}`}>
+          <span style={{ color: XANH }}>{chuoiVung(v.tu, v.den)}</span>
+          <span className="text-[10px]" style={{ color: v.daCham > 0 ? XANH : MUTED }}>
+            {v.daCham > 0 ? `đã chạm TP${v.daCham}` : "chưa chạm TP1"}
+          </span>
+        </div>
+      );
+    },
+  },
   // Lenh dang mo chua co ngay/gia BAN - giu cot de dung bo cuc cu cua So lenh.
   ngay_ban: { nhan: "Ngày bán", nhom: "Vị thế đang giữ", canPhai: false, lay: null, hien: () => Trong },
   gia_ban: { nhan: "Giá bán", nhom: "Vị thế đang giữ", canPhai: true, lay: null, hien: () => Trong },
@@ -336,7 +398,7 @@ export const CAC_COT = {
   tp2: cotGiaMucTieu("tp2", "TP2", 2),
   tp3: cotGiaMucTieu("tp3", "TP3", 3),
   kijun: cotMucGia("kijun", "Kijun"),
-  gg_top: cotMucGia("gg_top", "Giao Găm trên"),
-  gg_bot: cotMucGia("gg_bot", "Giao Găm dưới"),
+  gg_top: cotMucGia("gg_top", "Cân bằng dài hạn trên"),
+  gg_bot: cotMucGia("gg_bot", "Cân bằng dài hạn dưới"),
   dinh_52t: cotMucGia("dinh_52t", "Đỉnh 52 tuần"),
 };

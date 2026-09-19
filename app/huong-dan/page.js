@@ -195,7 +195,7 @@ export default async function TrangHuongDan() {
         <DanhSach
           muc={[
             "Lọc theo tín hiệu, vốn hoá, xu hướng, sàn (HOSE / HNX / UPCOM), ngành và các cảnh báo (Mắt Thần, đã chạm chốt lời, Bán bớt).",
-            "Tích \"Mã theo dõi: sắp chạm mốc tính điểm +\" để xem các mã chưa có lệnh nhưng giá đang sát một mốc (mây, Giao Găm) — vượt qua mốc đó sẽ được cộng điểm và đủ điểm MUA. Bảng hiện giá mốc cần vượt, giá đang cách mốc bao nhiêu % (chọn 1–5%) và điểm ước tính nếu vượt; dùng để canh trong phiên xem mã nào sắp kích hoạt.",
+            "Tích \"Mã theo dõi: sắp chạm mốc tính điểm +\" để xem các mã chưa có lệnh nhưng giá đang sát một mốc (mây, đường cân bằng dài hạn) — vượt qua mốc đó sẽ được cộng điểm và đủ điểm MUA. Bảng hiện giá mốc cần vượt, giá đang cách mốc bao nhiêu % (chọn 1–5%) và điểm ước tính nếu vượt; dùng để canh trong phiên xem mã nào sắp kích hoạt.",
             "Tích \"Chỉ mã ưu tiên\" để chỉ giữ lại các mã đạt đủ 4 tiêu chí: giá trên 10.000đ, vốn hoá từ 3.000 tỷ, khối lượng từ 500.000 cp/phiên, giá trị giao dịch trên 10 tỷ/phiên.",
             "Nút \"Cột hiển thị\" cho bật/tắt từng chỉ số (vốn hoá, GTGD, Rank, Confidence, Stop-loss, TP...) hoặc \"Hiện tất cả\". Lựa chọn được nhớ lại cho lần sau.",
             "Bấm vào tiêu đề cột để sắp xếp. KL TB20 và GTGD TB20 là trung bình 20 phiên. Cột Tín hiệu và các cột vị thế (giá mua, lãi/lỗ, Stop-loss, TP) chỉ hiện đầy đủ sau khi đăng ký / đăng nhập.",
@@ -206,7 +206,7 @@ export default async function TrangHuongDan() {
       <Muc tieuDe="Sổ lệnh đang mở">
         <p>
           Toàn bộ mã đang MUA hoặc NẮM GIỮ: ngày mua, giá mua, số phiên đã giữ, lãi/lỗ hiện tại, mốc chốt lời cao nhất đã chạm, cảnh báo (Mắt Thần, Bán
-          bớt) và nhãn giải ngân (Giải ngân 1 phần / Bổ sung). Bảng có bộ lọc (sàn, ngành, xu hướng, đang lãi/lỗ, mã ưu tiên...) và hiện đầy đủ các chỉ
+          bớt) và nhãn giải ngân (Giải ngân 1 phần / Bổ sung). Giá mua, cắt lỗ và chốt lời được hiển thị dạng vùng: vùng mua (từ mốc chuyển mua đến cao hơn giá mua tối đa khoảng 2%, cao hơn nữa là đuổi giá), vùng cắt lỗ (từ Stop-loss lên tới đường hỗ trợ gần nhất phía trên) và vùng chốt lời (TP1 đến TP3). Bảng có bộ lọc (sàn, ngành, xu hướng, đang lãi/lỗ, mã ưu tiên...) và hiện đầy đủ các chỉ
           số: điểm, Rank, Confidence, vốn hoá, GTGD, Stop-loss, TP1–3... (dùng nút &quot;Cột hiển thị&quot; để bật/tắt). Nếu dữ liệu được cập nhật giữa phiên, giá mua là giá lúc mã lần đầu hiện MUA (dấu chấm xanh cạnh giá) và không đổi ở các lần cập nhật sau; lãi/lỗ, Stop-loss và TP đều giữ theo lúc đó. Cột &quot;Mốc chuyển mua&quot; là mức
           giá chính vừa bị vượt lúc điểm chuyển sang vùng mua, để so với giá mua thực tế xem mình đang mua cao hơn bao nhiêu. Các thẻ thống kê phía trên cho
           biết tỷ lệ lãi, tỷ lệ lỗ, lãi/lỗ trung bình và tỷ lệ lệnh đã chạm chốt lời (ví dụ 10 lệnh có 7 lệnh đã chạm TP thì là 70%).

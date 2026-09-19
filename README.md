@@ -1,6 +1,6 @@
 # CloudStock — cloudstock.id.vn
 
-Website tín hiệu kỹ thuật chứng khoán "Dao Găm" (Ichimoku 9-17-33 + Giao Găm
+Website tín hiệu kỹ thuật chứng khoán "Dao Găm" (Ichimoku 9-17-33 + đường cân bằng dài hạn
 65-129), backtest 12 năm trên AmiBroker.
 
 ## Stack

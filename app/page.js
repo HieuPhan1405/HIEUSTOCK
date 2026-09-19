@@ -70,7 +70,7 @@ function sinhNhanDinh(tatCa) {
   return { sacThai, mau, doanVan: cau.join(" "), soTang, soGiam, soDung };
 }
 
-// PTKT VNINDEX - dung dung cong thuc Ichimoku/Giao Gam/diem so nhu tung ma,
+// PTKT VNINDEX - dung dung cong thuc Ichimoku/duong can bang dai han/diem so nhu tung ma,
 // chi khac o cho ap dung cho chinh chi so (xem AFL: LaVNIndex).
 function phanLoaiTrend(trend) {
   if (trend === null || trend === undefined) return { nhan: "Sideway", mau: VANG };
@@ -280,7 +280,7 @@ export default async function TrangTongQuan() {
           </div>
         )}
 
-        {/* PTKT VNINDEX - dung chung cong thuc Dao Gam, ap dung cho chinh chi so */}
+        {/* PTKT VNINDEX - dung chung cong thuc cua he thong, ap dung cho chinh chi so */}
         {chiSoVNIndex ? (
           <div className="rounded-2xl border p-6 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
             <div className="flex flex-wrap items-center justify-between gap-3 mb-5">

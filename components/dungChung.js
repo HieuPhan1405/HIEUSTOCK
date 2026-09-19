@@ -100,14 +100,14 @@ export function gioGhiNhan(row) {
 }
 
 // MOC KICH HOAT (cot gia_kich_hoat/moc_kich_hoat tu AFL): muc gia chinh vua bi
-// vuot o phien diem chuyen sang vung MUA (may / Giao Gam; neu phien do diem
+// vuot o phien diem chuyen sang vung MUA (may / duong can bang dai han; neu phien do diem
 // tang nho dong tien-dong luong thi = gia dong cua). Gia mua that tren he
 // thong la GIA DONG CUA phien co tin hieu, nen thuong cao hon moc nay - phan
 // chenh chinh la "muc do da doi gia chay" so voi luc chuyen mua.
 const NHAN_MOC = {
   MAY: "Vượt mây",
-  "GIAO GAM": "Vượt Giao Găm",
-  "MAY+GIAO GAM": "Vượt mây + Giao Găm",
+  "CAN BANG": "Vượt đường cân bằng dài hạn",
+  "MAY+CAN BANG": "Vượt mây + đường cân bằng dài hạn",
   GIA: "Điểm tăng nhờ dòng tiền/động lượng (mốc = giá đóng cửa)",
 };
 
@@ -124,9 +124,9 @@ export const NGUONG_DIEM_MUA = 1.25;
 
 // MOC TINH DIEM (+) KE TIEP (cot moc_gia/moc_loai/moc_cach_pct/diem_neu_vuot tu
 // AFL): muc gia GAN NHAT phia tren gia hien tai ma neu gia VUOT QUA thi duoc
-// cong diem (day/dinh may, Giao Gam), khoang cach toi moc (%) va diem uoc tinh
+// cong diem (day/dinh may, duong can bang dai han), khoang cach toi moc (%) va diem uoc tinh
 // sau khi vuot. Dung cho bo loc "ma theo doi" (sap cham moc).
-const NHAN_LOAI_MOC = { MAY: "Mây", "GIAO GAM": "Giao Găm" };
+const NHAN_LOAI_MOC = { MAY: "Mây", "CAN BANG": "Đường cân bằng dài hạn" };
 
 export function mocTiepTheo(row) {
   if (!(row?.moc_gia > 0) || row.moc_cach_pct == null || !row.moc_loai) return null;
@@ -144,6 +144,47 @@ export function sapChamMoc(row, bienPct) {
   const m = mocTiepTheo(row);
   if (!m || row.tin !== "TRUNG LAP") return false;
   return m.cachPct <= bienPct && m.diemNeuVuot != null && m.diemNeuVuot >= NGUONG_DIEM_MUA;
+}
+
+// VUNG MUA / VUNG CAT LO / VUNG CHOT LOI cua lenh dang giu - thay cho tung diem don le:
+//  - Vung mua: tu MOC CHUYEN MUA (neu co, khong cao hon gia mua) den gia mua + tranDuoiPct%
+//    (mua cao hon nua la dui gia). Chua co moc thi bat dau tu chinh gia mua.
+//  - Vung cat lo: tu Stop-loss len toi duong ho tro GAN NHAT nam giua Stop-loss va gia mua
+//    (Kijun / duong can bang dai han), rong toi thieu rongSLToiThieuPct%. Cham day vung = cat.
+//  - Vung chot loi: tu TP1 den TP3 (TP2 nam giua).
+// Tra null neu ma khong dang giu. Hang so o day chinh duoc neu can doi.
+export const VUNG = { tranDuoiPct: 2, rongSLToiThieuPct: 1 };
+
+export function tinhVungLenh(row) {
+  if (!laDangGiu(row) || !(row.gia_mua > 0)) return null;
+  const giaMua = Number(row.gia_mua);
+  const gia = Number(row.gia);
+
+  const moc = row.gia_kich_hoat > 0 && row.gia_kich_hoat <= giaMua ? Number(row.gia_kich_hoat) : null;
+  const mua = { tu: moc ?? giaMua, den: giaMua * (1 + VUNG.tranDuoiPct / 100), coMoc: moc != null };
+  mua.trangThai = gia < mua.tu ? "duoi" : gia > mua.den ? "tren" : "trong";
+
+  let sl = null;
+  const stop = Number(row.stop_loss);
+  if (stop > 0 && stop < giaMua) {
+    const hoTro = [row.kijun, row.gg_top, row.gg_bot].map(Number).filter((v) => Number.isFinite(v) && v > stop && v < giaMua);
+    const gan = hoTro.length ? Math.min(...hoTro) : null;
+    const den = Math.min(giaMua, Math.max(gan ?? 0, stop * (1 + VUNG.rongSLToiThieuPct / 100)));
+    sl = { tu: stop, den, hoTro: gan, trangThai: gia <= stop ? "cham" : gia <= den ? "trong" : "tren" };
+  }
+
+  let tp = null;
+  if (row.tp1 > 0 && row.tp3 > 0) {
+    const daCham = { TP1: 1, TP2: 2, TP3: 3 }[chamTPCaoNhat(row)] ?? 0;
+    tp = { tu: Number(row.tp1), den: Number(row.tp3), giua: row.tp2 > 0 ? Number(row.tp2) : null, daCham };
+  }
+  return { mua, sl, tp };
+}
+
+// "25 – 25.5" (hoac 1 so neu 2 dau bang nhau sau khi lam tron).
+export function chuoiVung(tu, den) {
+  if (tu == null || den == null) return "—";
+  return fmt(tu) === fmt(den) ? fmt(tu) : `${fmt(tu)} – ${fmt(den)}`;
 }
 
 export function pct(n, digits = 2) {

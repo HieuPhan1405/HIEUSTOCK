@@ -12,6 +12,8 @@ import {
   kiemTraChuanUuTien,
   gioGhiNhan,
   mocKichHoat,
+  tinhVungLenh,
+  chuoiVung,
   TREND_MAX,
   MOM_MAX,
   DT_MAX,
@@ -262,7 +264,7 @@ function tinhCacTag(row) {
 }
 
 // Tim 2 muc ho tro gan nhat (duoi gia) va 2 muc khang cu gan nhat (tren gia)
-// tu 4 duong tham chieu da tinh trong AFL (Kijun, may Giao Gam, dinh 52 tuan).
+// tu 4 duong tham chieu da tinh trong AFL (Kijun, duong can bang dai han, dinh 52 tuan).
 function tinhVungGia(row) {
   const gia = Number(row.gia);
   const cacMuc = [row.kijun, row.gg_top, row.gg_bot, row.dinh_52t]
@@ -275,6 +277,7 @@ function tinhVungGia(row) {
 
 export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
   const vungGia = tinhVungGia(row);
+  const vungLenh = tinhVungLenh(row); // null neu khong dang giu
   const khoangCach = (muc) => (muc === null || !row.gia ? null : ((muc - row.gia) / row.gia) * 100);
   const tag = tinhCacTag(row);
   const mauDiem = row.diem >= 0 ? "#22C55E" : "#EF4444";
@@ -357,8 +360,22 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
               )}
               {row.che_do_vao === "MOI" && (
                 <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                  Vào lệnh tại mốc chuyển mua, Stop-loss đặt theo cấu trúc giá (dưới mây / Giao Găm / đáy nến / Kijun).
+                  Vào lệnh tại mốc chuyển mua, Stop-loss đặt theo cấu trúc giá (dưới mây / đường cân bằng dài hạn / đáy nến / Kijun).
                 </p>
+              )}
+              {vungLenh && (
+                <div className="mt-2">
+                  <p className="text-[11px]" style={{ color: "#8B8B99" }}>
+                    Vùng mua: <strong style={{ color: "#F5F5F7" }}>{chuoiVung(vungLenh.mua.tu, vungLenh.mua.den)}</strong>
+                  </p>
+                  <p className="text-[10px] leading-snug" style={{ color: "#8B8B99" }}>
+                    {vungLenh.mua.trangThai === "trong"
+                      ? "Giá hiện tại đang trong vùng mua"
+                      : vungLenh.mua.trangThai === "tren"
+                        ? "Giá đã vượt vùng mua — không đuổi giá"
+                        : "Giá đang dưới vùng mua"}
+                  </p>
+                </div>
               )}
               {mocKichHoat(row) && (
                 <div className="mt-2" title="Giá mua trên hệ thống là giá đóng cửa phiên có tín hiệu; mốc chuyển mua là mức giá chính vừa bị vượt ở phiên điểm chuyển sang vùng mua.">
@@ -496,16 +513,24 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
             tới kháng cự 1: <strong style={{ color: "#F5F5F7" }}>{pct(khoangCach(vungGia.khangCu1), 2)}</strong>
           </p>
           {row.stop_loss !== null && row.stop_loss !== undefined && (
-            <div className="rounded p-2 flex items-center justify-between" style={{ background: "#2C1420", border: "1px solid #4A2230" }}>
-              <span className="text-xs" style={{ color: "#F1A9A9" }}>
-                Stop-loss (nếu đang giữ)
-              </span>
-              <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#EF4444" }} className="text-sm">
-                {fmt(row.stop_loss)}
-                <span className="text-[11px] ml-1" style={{ color: "#C08A8A" }}>
-                  ({pct(khoangCach(row.stop_loss), 2)})
+            <div className="rounded p-2" style={{ background: "#2C1420", border: "1px solid #4A2230" }}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs" style={{ color: "#F1A9A9" }}>
+                  {vungLenh?.sl ? "Vùng cắt lỗ" : "Stop-loss (nếu đang giữ)"}
                 </span>
-              </span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#EF4444" }} className="text-sm">
+                  {vungLenh?.sl ? chuoiVung(vungLenh.sl.tu, vungLenh.sl.den) : fmt(row.stop_loss)}
+                  <span className="text-[11px] ml-1" style={{ color: "#C08A8A" }}>
+                    ({pct(khoangCach(row.stop_loss), 2)})
+                  </span>
+                </span>
+              </div>
+              {vungLenh?.sl && (
+                <p className="text-[10px] leading-snug mt-1" style={{ color: "#C08A8A" }}>
+                  Đáy vùng {fmt(vungLenh.sl.tu)} là mức cắt dứt khoát; đỉnh vùng là đường hỗ trợ gần nhất phía trên — giá rơi vào vùng này là
+                  lúc cần theo dõi sát.
+                </p>
+              )}
             </div>
           )}
         </Card>
@@ -514,6 +539,12 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
           <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
             3 mốc chốt lời từng phần
           </p>
+          {vungLenh?.tp && (
+            <p className="text-xs mb-2" style={{ color: "#A6A6B3" }}>
+              Vùng chốt lời:{" "}
+              <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: "#22C55E" }}>{chuoiVung(vungLenh.tp.tu, vungLenh.tp.den)}</strong> (TP1 → TP3)
+            </p>
+          )}
           {(() => {
             const mucDaCham = chamTPCaoNhat(row); // "TP1"|"TP2"|"TP3"|null - da cham hay chua TUNG LUC NAO trong qua trinh giu
             const thuTu = { TP1: 1, TP2: 2, TP3: 3 };

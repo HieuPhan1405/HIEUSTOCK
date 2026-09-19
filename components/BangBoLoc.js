@@ -31,7 +31,7 @@ const DO = "#EF4444";
 const PRIMARY = "#6C5CE7";
 
 // Bo loc "MA THEO DOI" (Chi ma sap cham moc tinh diem +): ma chua co lenh, gia
-// dang cach 1 moc (may / Giao Gam) khong qua bienMoc % ma VUOT QUA thi duoc cong
+// dang cach 1 moc (may / duong can bang dai han) khong qua bienMoc % ma VUOT QUA thi duoc cong
 // diem va du diem MUA (xem sapChamMoc trong dungChung.js). Du lieu moc chi co
 // sau khi Explore lai voi AFL moi - TRUOC DO tam dung cach cu: ma TRUNG LAP co
 // diem nam sat duoi nguong MUA (trong BIEN_DO_GAN_MUA diem).
@@ -150,6 +150,9 @@ const THU_TU_COT = [
   "so_phien_giu",
   "lai_lo_pct",
   "gia_kich_hoat",
+  "vung_mua",
+  "vung_sl",
+  "vung_tp",
   "stop_loss",
   "tp1",
   "tp2",
@@ -167,7 +170,7 @@ const DS_KHOA_CHON = THU_TU_COT.filter((k) => k !== "ma" && k !== "tin");
 // Cot lo ra ma nao DANG GIU (gia mua/lai lo/stop-loss/TP chi co gia tri voi ma
 // dang MUA/NAM GIU) - chi hien khi da dang nhap, neu khong khach chua dang ky
 // se suy ra duoc cot Tin hieu dang bi lam mo.
-const COT_CAN_DANG_NHAP = new Set(["gia_mua", "ngay_mua", "so_phien_giu", "lai_lo_pct", "gia_kich_hoat", "stop_loss", "tp1", "tp2", "tp3", "chot_loi"]);
+const COT_CAN_DANG_NHAP = new Set(["gia_mua", "ngay_mua", "so_phien_giu", "lai_lo_pct", "gia_kich_hoat", "vung_mua", "vung_sl", "vung_tp", "stop_loss", "tp1", "tp2", "tp3", "chot_loi"]);
 
 export default function BangBoLoc({ duLieu }) {
   const searchParams = useSearchParams();
@@ -356,7 +359,7 @@ export default function BangBoLoc({ duLieu }) {
             if (v && coDuLieuMoc) setSapXep({ khoa: "moc_tiep_theo", chieu: "asc" });
           }}
         >
-          <span title="Mã chưa có lệnh, giá đang sát một mốc (mây / Giao Găm) mà vượt qua thì được cộng điểm và đủ điểm MUA">
+          <span title="Mã chưa có lệnh, giá đang sát một mốc (mây / đường cân bằng dài hạn) mà vượt qua thì được cộng điểm và đủ điểm MUA">
             Mã theo dõi: sắp chạm mốc tính điểm +<b style={{ color: "#22C55E" }}> · {soTheoDoi} mã</b>
           </span>
         </OTich>

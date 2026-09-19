@@ -82,12 +82,15 @@ const THU_TU_COT = [
   "doi",
   "ngay_mua",
   "gia_mua",
+  "vung_mua",
   "gia_kich_hoat",
   "ngay_ban",
   "gia_ban",
   "so_phien_giu",
   "lai_lo_pct",
   "chot_loi",
+  "vung_sl",
+  "vung_tp",
   "stop_loss",
   "tp1",
   "tp2",
@@ -116,7 +119,8 @@ const THU_TU_COT = [
   "tin",
 ];
 const DS_KHOA_CHON = THU_TU_COT.filter((k) => k !== "ma" && k !== "tin");
-const MAC_DINH = THU_TU_COT.filter((k) => k !== "ngay_ban" && k !== "gia_ban");
+// Vung mua/cat lo/chot loi thay cho Stop-loss + TP1-3 don le (van bat lai duoc qua "Cot hien thi").
+const MAC_DINH = THU_TU_COT.filter((k) => !["ngay_ban", "gia_ban", "stop_loss", "tp1", "tp2", "tp3"].includes(k));
 
 function mauNenDong(row) {
   return row.mat_than ? "#241419" : row.ban_bot ? "#241C10" : NEN_CARD;
@@ -127,7 +131,7 @@ export default function BangLenhMo({ duLieu }) {
   // hanh vi cu cho toi khi nguoi dung tu bam sap xep cot khac.
   const [sapXep, setSapXep] = useState(null);
   const [loc, datLoc] = useState({ ...LOC_TRONG, tin: "", laiLo: "", chiGiaiNgan: false });
-  const cotHienThi = useCotHienThi("cs_cot_lenhmo_v1", DS_KHOA_CHON, MAC_DINH);
+  const cotHienThi = useCotHienThi("cs_cot_lenhmo_v2", DS_KHOA_CHON, MAC_DINH);
   // Trang nay da bat buoc dang nhap tu server (xem app/lenh-mo/page.js) nen
   // luon coi la da dang nhap - chi can nap ban do Tham gia, khong can kiem
   // tra lai phien dang nhap.

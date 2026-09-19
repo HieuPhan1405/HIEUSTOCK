@@ -21,8 +21,8 @@ TenkanLen   = Param("Tenkan", 9, 2, 50, 1);
 KijunLen    = Param("Kijun", 17, 2, 100, 1);
 SenkouBLen  = Param("Senkou B", 33, 2, 150, 1);
 Shift       = Param("Dich chuyen may", 26, 1, 60, 1);
-GG1Len      = Param("Giao Gam 1", 65, 10, 200, 1);
-GG2Len      = Param("Giao Gam 2", 129, 10, 300, 1);
+CB1Len      = Param("Duong can bang dai han 1", 65, 10, 200, 1);
+CB2Len      = Param("Duong can bang dai han 2", 129, 10, 300, 1);
 EntryTh     = Param("Nguong diem VAO lenh (Mua)", 1.25, 0.5, 3, 0.05);
 ExitTh      = Param("Nguong diem RA lenh (Ban, so duong)", 1.5, 0.5, 3, 0.05);
 PersistBars = Param("So phien giu tren nguong", 1, 1, 5, 1);
@@ -133,10 +133,10 @@ DungNgayBienDoi = (Abs(SoPhienTuPivot-9)<=1) OR (Abs(SoPhienTuPivot-17)<=1) OR
     (Abs(SoPhienTuPivot-129)<=1) OR (Abs(SoPhienTuPivot-172)<=1) OR
     (Abs(SoPhienTuPivot-200)<=1) OR (Abs(SoPhienTuPivot-257)<=1);
 
-GiaoGam1 = (HHV(H,GG1Len)+LLV(L,GG1Len))/2;
-GiaoGam2 = (HHV(H,GG2Len)+LLV(L,GG2Len))/2;
-GGTop = Max(GiaoGam1, GiaoGam2);
-GGBot = Min(GiaoGam1, GiaoGam2);
+CanBang1 = (HHV(H,CB1Len)+LLV(L,CB1Len))/2;
+CanBang2 = (HHV(H,CB2Len)+LLV(L,CB2Len))/2;
+CBTop = Max(CanBang1, CanBang2);
+CBBot = Min(CanBang1, CanBang2);
 
 ADXVal = ADX(14);
 DIPlus = PDI(14);
@@ -161,7 +161,7 @@ VolDatPocketPivot = V > MaxVolNgayGiam10;
 VolumeGateNgayDau = VolDatTB20 AND VolDatHomTruoc AND VolDatPocketPivot;
 
 TrendScore = IIf(C>CloudTop,1, IIf(C<CloudBot,-1,0))
-           + IIf(C>GGTop,1, IIf(C<GGBot,-1,0))
+           + IIf(C>CBTop,1, IIf(C<CBBot,-1,0))
            + IIf(Tenkan>Kijun,0.5,-0.5)
            + IIf(ADXVal>25, IIf(DIPlus>DIMinus,0.5,-0.5), 0);
 MomScore = IIf(RSIVal>70,-0.5, IIf(RSIVal<30,0.5, IIf(RSIVal>50,0.5,-0.5)));
@@ -539,9 +539,9 @@ SellTinHieu = SellRaw AND DuT2;
 //              5/10/15% tren gia vao.
 //   BAT (moi): "cham diem mua la mua" - neu phien MUA cung la phien diem vua
 //              chuyen sang vung Mua thi vao lenh tai MOC CHUYEN MUA (gia vuot
-//              may/Giao Gam; neu nhay von thi gia mo cua; khong cao hon gia dong
+//              may/duong can bang dai han; neu nhay von thi gia mo cua; khong cao hon gia dong
 //              cua), cac phien con lai van vao tai gia dong cua. SL dat DUOI CAU
-//              TRUC (may/Giao Gam vua vuot, day nen chuyen mua, hoac Kijun) tru
+//              TRUC (may/duong can bang dai han vua vuot, day nen chuyen mua, hoac Kijun) tru
 //              dem ATR, kep trong [SLToiThieuPct, HardStopPct]% duoi gia vao;
 //              khong co cau truc hop le thi dung SL cu. San TP tinh tu gia vao.
 //   LUU Y: Backtest o che do MOI lac quan hon (mua tai moc thap hon gia dong cua
@@ -549,28 +549,28 @@ SellTinHieu = SellRaw AND DuT2;
 //   dung de SO SANH voi che do cu, khong coi la ket qua giao dich thuc te.
 // ============================================================================
 CheDoMoc = ParamToggle("CHE DO MOI: vao tai moc chuyen mua + SL cau truc (Tat = cu)", "Tat|Bat", 0);
-KieuSLCauTruc = ParamList("Che do MOI - SL dat duoi", "Moc vua vuot (may / Giao Gam)|Day nen chuyen mua|Kijun", 0);
+KieuSLCauTruc = ParamList("Che do MOI - SL dat duoi", "Moc vua vuot (may / duong can bang dai han)|Day nen chuyen mua|Kijun", 0);
 DemSLtheoATR = Param("Che do MOI - dem duoi moc SL (x ATR)", 0.3, 0, 2, 0.1);
 SLToiThieuPct = Param("Che do MOI - SL cach gia vao toi thieu (%)", 2, 0.5, 6, 0.5);
-SLKieuMoc = KieuSLCauTruc == "Moc vua vuot (may / Giao Gam)";
+SLKieuMoc = KieuSLCauTruc == "Moc vua vuot (may / duong can bang dai han)";
 SLKieuDay = KieuSLCauTruc == "Day nen chuyen mua";
 
 KhongCoMoc = 1e10;
-// Muc gia vua bi vuot o phien chuyen mua (may / Giao Gam) - dung ca cho cot
+// Muc gia vua bi vuot o phien chuyen mua (may / duong can bang dai han) - dung ca cho cot
 // "moc kich hoat" hien thi tren web va cho che do MOI o tren.
 VuotMayBar = C > CloudTop AND Ref(C,-1) <= Ref(CloudTop,-1);
-VuotGGBar = C > GGTop AND Ref(C,-1) <= Ref(GGTop,-1);
-MucVuotBar = IIf(VuotMayBar AND VuotGGBar, Max(CloudTop, GGTop),
+VuotCBBar = C > CBTop AND Ref(C,-1) <= Ref(CBTop,-1);
+MucVuotBar = IIf(VuotMayBar AND VuotCBBar, Max(CloudTop, CBTop),
              IIf(VuotMayBar, CloudTop,
-             IIf(VuotGGBar, GGTop, C)));
-LoaiMocBar = IIf(VuotMayBar AND VuotGGBar, 3, IIf(VuotMayBar, 1, IIf(VuotGGBar, 2, 0)));
+             IIf(VuotCBBar, CBTop, C)));
+LoaiMocBar = IIf(VuotMayBar AND VuotCBBar, 3, IIf(VuotMayBar, 1, IIf(VuotCBBar, 2, 0)));
 // Gia vao tai moc: khong thap hon gia MO CUA neu nhay von qua moc (khong the mua
 // thap hon gia mo cua), khong cao hon gia dong cua.
 GiaKichHoatBar = Max(MucVuotBar, Min(O, C));
 // Co so dat SL: muc THAP hon trong 2 muc cung bi vuot (chua du "tho" cho ca 2).
-MocDatSLBar = IIf(VuotMayBar AND VuotGGBar, Min(CloudTop, GGTop),
+MocDatSLBar = IIf(VuotMayBar AND VuotCBBar, Min(CloudTop, CBTop),
               IIf(VuotMayBar, CloudTop,
-              IIf(VuotGGBar, GGTop, KhongCoMoc)));
+              IIf(VuotCBBar, CBTop, KhongCoMoc)));
 MocDatSLTaiSwitch = ValueWhen(VuaVaoVungMua, MocDatSLBar, 1);
 DayNenTaiSwitch = ValueWhen(VuaVaoVungMua, L, 1);
 
@@ -676,29 +676,29 @@ GiaiNganCuoi = WriteIf(DangGiuCuoi == 0, "",
 GiaKichHoatTaiMua = ValueWhen(Buy, ValueWhen(VuaVaoVungMua, GiaKichHoatBar, 1), 1);
 LoaiMocTaiMua = ValueWhen(Buy, ValueWhen(VuaVaoVungMua, LoaiMocBar, 1), 1);
 LoaiMocCuoi = Nz(LastValue(LoaiMocTaiMua));
-MocKichHoatCuoi = WriteIf(LoaiMocCuoi == 3, "MAY+GIAO GAM",
+MocKichHoatCuoi = WriteIf(LoaiMocCuoi == 3, "MAY+CAN BANG",
                   WriteIf(LoaiMocCuoi == 1, "MAY",
-                  WriteIf(LoaiMocCuoi == 2, "GIAO GAM", "GIA")));
+                  WriteIf(LoaiMocCuoi == 2, "CAN BANG", "GIA")));
 
 // MOC TINH DIEM (+) SAP CHAM - dung cho bo loc "ma theo doi" tren web. Gia
-// dang o duoi mot moc ma VUOT QUA se duoc cong diem Trend (may, Giao Gam):
+// dang o duoi mot moc ma VUOT QUA se duoc cong diem Trend (may, duong can bang dai han):
 //   May:      gia < day may -> moc = day may; gia trong may -> moc = dinh may.
-//   Giao Gam: gia < GGBot   -> moc = GGBot;   gia trong vung  -> moc = GGTop.
+//   duong can bang dai han: gia < CBBot   -> moc = CBBot;   gia trong vung  -> moc = CBTop.
 // Moi lan vuot 1 moc = TrendScore +1 => TotalScore +1.5 (TrendScore*1.5), xuat
 // trong DiemNeuVuot (uoc tinh, chua tinh cac thanh phan khac doi theo).
 // Chon moc GAN NHAT phia tren gia. Chi de THAM KHAO, khong anh huong tin hieu.
 MocMayLen = IIf(C < CloudBot, CloudBot, IIf(C <= CloudTop, CloudTop, KhongCoMoc));
-MocGGLen = IIf(C < GGBot, GGBot, IIf(C <= GGTop, GGTop, KhongCoMoc));
+MocCBLen = IIf(C < CBBot, CBBot, IIf(C <= CBTop, CBTop, KhongCoMoc));
 CachMayPct = IIf(MocMayLen < KhongCoMoc AND C > 0, (MocMayLen / C - 1) * 100, KhongCoMoc);
-CachGGPct = IIf(MocGGLen < KhongCoMoc AND C > 0, (MocGGLen / C - 1) * 100, KhongCoMoc);
-MayGanHon = CachMayPct <= CachGGPct;
-MocGanNhatGia = IIf(MayGanHon, MocMayLen, MocGGLen);
-MocGanNhatPct = IIf(MayGanHon, CachMayPct, CachGGPct);
+CachCBPct = IIf(MocCBLen < KhongCoMoc AND C > 0, (MocCBLen / C - 1) * 100, KhongCoMoc);
+MayGanHon = CachMayPct <= CachCBPct;
+MocGanNhatGia = IIf(MayGanHon, MocMayLen, MocCBLen);
+MocGanNhatPct = IIf(MayGanHon, CachMayPct, CachCBPct);
 DiemNeuVuot = TotalScore + 1.5;
 CoMocPhiaTren = LastValue(MocGanNhatPct) < KhongCoMoc;
 MocGiaCuoi = IIf(CoMocPhiaTren, LastValue(MocGanNhatGia), 0);
 MocCachPctCuoi = IIf(CoMocPhiaTren, LastValue(MocGanNhatPct), 0);
-MocLoaiCuoi = WriteIf(CoMocPhiaTren, WriteIf(LastValue(MayGanHon), "MAY", "GIAO GAM"), "");
+MocLoaiCuoi = WriteIf(CoMocPhiaTren, WriteIf(LastValue(MayGanHon), "MAY", "CAN BANG"), "");
 
 SoViTheToiDa = Param("SO VI THE TOI DA (thay the Settings->Portfolio)", 8, 4, 30, 1);
 SetOption("MaxOpenPositions", SoViTheToiDa);
@@ -744,20 +744,20 @@ if (CheDoMoc)
     BuyPrice = IIf(Buy, GiaVaoBar, C);
 }
 KhoangCachKijun = (C - Kijun) / C * 100;
-KhoangCachGG = (C - (GGTop+GGBot)/2) / C * 100;
+KhoangCachCB = (C - (CBTop+CBBot)/2) / C * 100;
 
 Dinh52T = HHV(H, 252); Day52T = LLV(L, 252);
 DinhGanNhat = HHV(H, 60); DayGanNhat = LLV(L, 60);
 
 KC1=IIf(Dinh52T>C,Dinh52T,1e10);
-KC2=IIf(GGTop>C,GGTop,1e10);
+KC2=IIf(CBTop>C,CBTop,1e10);
 KC3=IIf(CloudTop>C,CloudTop,1e10);
 KC4=IIf(DinhGanNhat>C,DinhGanNhat,1e10);
 KhangCuGanNhat_V2 = Min(Min(KC1,KC2),Min(KC3,KC4));
 KhangCuCungNhat = IIf(Dinh52T>C, Dinh52T, KhangCuGanNhat_V2);
 
 // 3 MOC CHOT LOI - dung 3 nguon Khang cu on dinh: Dinh gan (60 phien, ngan
-// han), Mua/Giao Gam (trung han), Dinh 52 tuan (dai han).
+// han), Mua/duong can bang dai han (trung han), Dinh 52 tuan (dai han).
 // FIX: ma vua BREAKOUT (gia hien tai da VUOT QUA 1 hoac ca 3 nguon khang cu
 // nay) thi nguon do KHONG CON la khang cu thuc su - giu nguyen se khien TP
 // tinh ra THAP HON gia mua, dan den "vua mua da bao chot loi" (vd TRC mua
@@ -765,7 +765,7 @@ KhangCuCungNhat = IIf(Dinh52T>C, Dinh52T, KhangCuGanNhat_V2);
 // tai bang 1 san toi thieu (5%/10%/15%) - giu nguyen gia tri that neu no da
 // o tren san do (truong hop binh thuong, khong breakout).
 NguonGan   = Max(DinhGanNhat, GiaVaoBar * 1.05);
-NguonGiua  = Max(Max(GGTop, CloudTop), GiaVaoBar * 1.10);
+NguonGiua  = Max(Max(CBTop, CloudTop), GiaVaoBar * 1.10);
 NguonXa    = Max(Dinh52T, GiaVaoBar * 1.15);
 Tong3Nguon = NguonGan + NguonGiua + NguonXa;
 ChotLoi_TP1 = Min(Min(NguonGan,NguonGiua),NguonXa);
@@ -799,7 +799,7 @@ MucTPDaChamCaoNhat = WriteIf(LastValue(DaChamTP3_TuKhiMua), "TP3",
                      WriteIf(LastValue(DaChamTP1_TuKhiMua), "TP1", "")));
 
 HT1=IIf(Day52T<C,Day52T,-1e10);
-HT2=IIf(GGBot<C,GGBot,-1e10);
+HT2=IIf(CBBot<C,CBBot,-1e10);
 HT3=IIf(CloudBot<C,CloudBot,-1e10);
 HT4=IIf(DayGanNhat<C,DayGanNhat,-1e10);
 HoTroGanNhat_V2 = Max(Max(HT1,HT2),Max(HT3,HT4));
@@ -858,7 +858,7 @@ LaMaETF = StrLeft(Name(), 3) == "FUE";
 ThuocHOSE = InVN30 OR InVNMidCap OR InVNSmallCap;
 // VNINDEX duoc xuat THEM nhu 1 truong hop dac biet (khong phai co phieu, khong
 // nam trong 3 danh sach von hoa o tren) - de trang web co the hien PTKT (diem
-// so/Ichimoku/Giao Gam/ho tro-khang cu) cho CHINH chi so, dung y het cong thuc
+// so/Ichimoku/duong can bang dai han/ho tro-khang cu) cho CHINH chi so, dung y het cong thuc
 // da dung cho tung ma. Front-end se loc rieng dong nay ra khoi danh sach co
 // phieu (nhan dien qua von_hoa="ChiSo").
 LaVNIndex = Name() == "VNINDEX";
@@ -944,8 +944,8 @@ Dong = Name() + "," + TinCuoi + ","
      + NumToStr(LastValue(RS_SoVoiVNI),1.4,False) + ","
      + NumToStr(LastValue(BreadthPctNganh),1.2,False) + ","
      + NumToStr(LastValue(Kijun),1.2,False) + ","
-     + NumToStr(LastValue(GGTop),1.2,False) + ","
-     + NumToStr(LastValue(GGBot),1.2,False) + ","
+     + NumToStr(LastValue(CBTop),1.2,False) + ","
+     + NumToStr(LastValue(CBBot),1.2,False) + ","
      + NumToStr(LastValue(Dinh52T),1.2,False) + ","
      + NumToStr(LastValue(StopLossPrice),1.2,False) + ","
      + MatThanCuoi + ","
