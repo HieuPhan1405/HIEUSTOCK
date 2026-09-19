@@ -556,10 +556,62 @@ SellRaw = TurnedPink;
 DuT2 = BarsSince(Buy) >= 2;
 SellTinHieu = SellRaw AND DuT2;
 
+// ============================================================================
+// CHE DO VAO LENH / STOP-LOSS / CHOT LOI - CONG TAC (MAC DINH = TAT = CU)
+//   TAT (cu):  vao lenh tai GIA DONG CUA phien co tin hieu; SL = gia vao - nho
+//              hon cua (ATRMult x ATR, HardStopPct%); TP1-3 = 3 khang cu, san
+//              5/10/15% tren gia vao.
+//   BAT (moi): "cham diem mua la mua" - neu phien MUA cung la phien diem vua
+//              chuyen sang vung Mua thi vao lenh tai MOC CHUYEN MUA (gia vuot
+//              may/Giao Gam; neu nhay von thi gia mo cua; khong cao hon gia dong
+//              cua), cac phien con lai van vao tai gia dong cua. SL dat DUOI CAU
+//              TRUC (may/Giao Gam vua vuot, day nen chuyen mua, hoac Kijun) tru
+//              dem ATR, kep trong [SLToiThieuPct, HardStopPct]% duoi gia vao;
+//              khong co cau truc hop le thi dung SL cu. San TP tinh tu gia vao.
+//   LUU Y: Backtest o che do MOI lac quan hon (mua tai moc thap hon gia dong cua
+//   nhung van chi tinh cac phien da duoc gia dong cua xac nhan diem) - chi nen
+//   dung de SO SANH voi che do cu, khong coi la ket qua giao dich thuc te.
+// ============================================================================
+CheDoMoc = ParamToggle("CHE DO MOI: vao tai moc chuyen mua + SL cau truc (Tat = cu)", "Tat|Bat", 0);
+KieuSLCauTruc = ParamList("Che do MOI - SL dat duoi", "Moc vua vuot (may / Giao Gam)|Day nen chuyen mua|Kijun", 0);
+DemSLtheoATR = Param("Che do MOI - dem duoi moc SL (x ATR)", 0.3, 0, 2, 0.1);
+SLToiThieuPct = Param("Che do MOI - SL cach gia vao toi thieu (%)", 2, 0.5, 6, 0.5);
+SLKieuMoc = KieuSLCauTruc == "Moc vua vuot (may / Giao Gam)";
+SLKieuDay = KieuSLCauTruc == "Day nen chuyen mua";
+
+KhongCoMoc = 1e10;
+// Muc gia vua bi vuot o phien chuyen mua (may / Giao Gam) - dung ca cho cot
+// "moc kich hoat" hien thi tren web va cho che do MOI o tren.
+VuotMayBar = C > CloudTop AND Ref(C,-1) <= Ref(CloudTop,-1);
+VuotGGBar = C > GGTop AND Ref(C,-1) <= Ref(GGTop,-1);
+MucVuotBar = IIf(VuotMayBar AND VuotGGBar, Max(CloudTop, GGTop),
+             IIf(VuotMayBar, CloudTop,
+             IIf(VuotGGBar, GGTop, C)));
+LoaiMocBar = IIf(VuotMayBar AND VuotGGBar, 3, IIf(VuotMayBar, 1, IIf(VuotGGBar, 2, 0)));
+// Gia vao tai moc: khong thap hon gia MO CUA neu nhay von qua moc (khong the mua
+// thap hon gia mo cua), khong cao hon gia dong cua.
+GiaKichHoatBar = Max(MucVuotBar, Min(O, C));
+// Co so dat SL: muc THAP hon trong 2 muc cung bi vuot (chua du "tho" cho ca 2).
+MocDatSLBar = IIf(VuotMayBar AND VuotGGBar, Min(CloudTop, GGTop),
+              IIf(VuotMayBar, CloudTop,
+              IIf(VuotGGBar, GGTop, KhongCoMoc)));
+MocDatSLTaiSwitch = ValueWhen(VuaVaoVungMua, MocDatSLBar, 1);
+DayNenTaiSwitch = ValueWhen(VuaVaoVungMua, L, 1);
+
+// GIA VAO va STOP-LOSS neu vao lenh tai tung phien (Cu: gia vao = C, SL nhu cu).
+GiaVaoBar = IIf(CheDoMoc AND VuaVaoVungMua, GiaKichHoatBar, C);
+BaseSL = IIf(SLKieuMoc, MocDatSLTaiSwitch, IIf(SLKieuDay, DayNenTaiSwitch, Kijun));
+BaseSLHopLe = BaseSL > 0 AND BaseSL < GiaVaoBar;
+SLCauTruc = Min(BaseSL - DemSLtheoATR * ATRVal, GiaVaoBar * (1 - SLToiThieuPct/100));
+SLCauTruc = Max(SLCauTruc, GiaVaoBar * (1 - HardStopPct/100));
+SLTheoATR6 = GiaVaoBar - Min(ATRVal * ATRMult, GiaVaoBar * (HardStopPct/100));
+StopVaoBar = IIf(CheDoMoc AND BaseSLHopLe, SLCauTruc, SLTheoATR6);
+
 Sell = 0;
 GiuTrongVongLap = 0;
 GiaVaoTrongVongLap = 0;
 ATRVaoTrongVongLap = 0;
+StopVaoTrongVongLap = 0;
 // TRANG THAI GIAI NGAN 1 PHAN: ThamDoTrongVongLap = 1 khi dang giu lenh mua
 // luc RS<=0 va CHUA bo sung; BoSungSuKien = 1 dung phien bo sung phan con lai.
 ThamDoTrongVongLap = 0;
@@ -572,9 +624,9 @@ for (i = 1; i < BarCount; i++)
         GiaVaoTrongVongLap[i] = GiaVaoTrongVongLap[i-1];
         ATRVaoTrongVongLap[i] = ATRVaoTrongVongLap[i-1];
         ViTriVaoTrongVongLap[i] = ViTriVaoTrongVongLap[i-1];
-        stopATR_vonglap = ATRVaoTrongVongLap[i] * ATRMult;
-        stopPhanTram_vonglap = GiaVaoTrongVongLap[i] * (HardStopPct/100);
-        stopGiaThucTe_vonglap = GiaVaoTrongVongLap[i] - Min(stopATR_vonglap, stopPhanTram_vonglap);
+        StopVaoTrongVongLap[i] = StopVaoTrongVongLap[i-1];
+        // Stop-loss dong bang luc vao lenh (che do Cu = dung cong thuc ATR/6% nhu truoc).
+        stopGiaThucTe_vonglap = StopVaoTrongVongLap[i];
 
         // Cham Stop-loss ve gia CHI thuc su Ban khi diem cung da am (<0) -
         // tranh cat lo oan neu chi la ria/bong nen tam thoi trong khi diem
@@ -609,8 +661,9 @@ for (i = 1; i < BarCount; i++)
     else if (Buy[i])
     {
         GiuTrongVongLap[i] = 1;
-        GiaVaoTrongVongLap[i] = C[i];
+        GiaVaoTrongVongLap[i] = GiaVaoBar[i];
         ATRVaoTrongVongLap[i] = ATRVal[i];
+        StopVaoTrongVongLap[i] = StopVaoBar[i];
         ViTriVaoTrongVongLap[i] = i;
         if (RSVNI_OK[i]) ThamDoTrongVongLap[i] = 0;
         else ThamDoTrongVongLap[i] = 1;
@@ -639,21 +692,9 @@ GiaiNganCuoi = WriteIf(DangGiuCuoi == 0, "",
                    WriteIf(SoPhienTuVaoCuoi <= HanBoSungPhien, "MOT PHAN", "GIU 1 PHAN"),
                    "DU")));
 
-// MOC KICH HOAT (gia luc CHUYEN MUA) - CHI hien thi tham khao, KHONG anh huong
-// Buy/Sell/Stop-loss/TP. Gia mua tren he thong = GIA DONG CUA phien co tin
-// hieu, nhung muc gia thuc su "kich hoat" (vd gia vuot may) thuong thap hon.
-// Xuat them: (1) muc gia CHINH vua bi vuot o phien diem chuyen sang vung Mua
-// (VuaVaoVungMua) - may hoac Giao Gam (ca 2 thi lay muc cao hon); neu phien do
-// khong vuot muc nao (diem tang nho dong tien/dong luong) thi lay gia dong cua;
-// (2) khong thap hon gia MO CUA neu gia nhay von qua muc do (khong the mua thap
-// hon gia mo cua) va khong cao hon gia dong cua.
-VuotMayBar = C > CloudTop AND Ref(C,-1) <= Ref(CloudTop,-1);
-VuotGGBar = C > GGTop AND Ref(C,-1) <= Ref(GGTop,-1);
-MucVuotBar = IIf(VuotMayBar AND VuotGGBar, Max(CloudTop, GGTop),
-             IIf(VuotMayBar, CloudTop,
-             IIf(VuotGGBar, GGTop, C)));
-LoaiMocBar = IIf(VuotMayBar AND VuotGGBar, 3, IIf(VuotMayBar, 1, IIf(VuotGGBar, 2, 0)));
-GiaKichHoatBar = Max(MucVuotBar, Min(O, C));
+// MOC KICH HOAT (gia luc CHUYEN MUA) - xuat len web de THAM KHAO. (Cac mang
+// VuotMayBar/MucVuotBar/GiaKichHoatBar... duoc dinh nghia o khoi CHE DO VAO LENH
+// phia tren.) O che do Cu, gia mua = GIA DONG CUA nen muc nay thuong THAP hon gia mua.
 // Dong bang tai phien Buy, lay muc cua phien "vua vao vung Mua" GAN NHAT truoc do
 // (co the la chinh phien Buy, hoac som hon neu Buy bi tri hoan do cac dieu kien khac).
 GiaKichHoatTaiMua = ValueWhen(Buy, ValueWhen(VuaVaoVungMua, GiaKichHoatBar, 1), 1);
@@ -670,7 +711,6 @@ MocKichHoatCuoi = WriteIf(LoaiMocCuoi == 3, "MAY+GIAO GAM",
 // Moi lan vuot 1 moc = TrendScore +1 => TotalScore +1.5 (TrendScore*1.5), xuat
 // trong DiemNeuVuot (uoc tinh, chua tinh cac thanh phan khac doi theo).
 // Chon moc GAN NHAT phia tren gia. Chi de THAM KHAO, khong anh huong tin hieu.
-KhongCoMoc = 1e10;
 MocMayLen = IIf(C < CloudBot, CloudBot, IIf(C <= CloudTop, CloudTop, KhongCoMoc));
 MocGGLen = IIf(C < GGBot, GGBot, IIf(C <= GGTop, GGTop, KhongCoMoc));
 CachMayPct = IIf(MocMayLen < KhongCoMoc AND C > 0, (MocMayLen / C - 1) * 100, KhongCoMoc);
@@ -704,17 +744,29 @@ if (XoaGiaDaLuu)
     StaticVarSet("DaoGam_GiaMua_" + Name(), 0);
 }
 GiaMuaThucTe = Nz(StaticVarGet("DaoGam_GiaMua_" + Name()));
-GiaVaoLenh_MacDinh = ValueWhen(Buy, C, 1);
+GiaVaoLenh_MacDinh = ValueWhen(Buy, GiaVaoBar, 1);
 CoNhapGiaThucTe = GiaMuaThucTe > 0;
 GiaVaoLenh       = IIf(CoNhapGiaThucTe, GiaMuaThucTe, GiaVaoLenh_MacDinh);
 
 DiemDungATR      = ATRTaiVaoLenh * ATRMult;
 DiemDungPhanTram = GiaVaoLenh * (HardStopPct/100);
-DiemDungThucTe   = Min(DiemDungATR, DiemDungPhanTram);
+DiemDungCu       = Min(DiemDungATR, DiemDungPhanTram);
+
+// Che do MOI (va CHUA nhap tay gia mua thuc te): SL = SL cau truc da dong bang luc
+// vao lenh. Che do Cu (hoac da nhap tay gia mua): cong thuc ATR/6% nhu truoc.
+DungStopMoi = CheDoMoc AND NOT CoNhapGiaThucTe;
+StopMoiTaiMua = ValueWhen(Buy, StopVaoBar, 1);
+StopLossPrice = IIf(DungStopMoi, StopMoiTaiMua, GiaVaoLenh - DiemDungCu);
+DiemDungThucTe = IIf(DungStopMoi, GiaVaoLenh - StopLossPrice, DiemDungCu);
 
 ApplyStop(stopTypeLoss, stopModePoint, DiemDungThucTe, True);
 
-StopLossPrice = GiaVaoLenh - DiemDungThucTe;
+// Che do MOI: Backtest khop lenh tai gia vao (moc chuyen mua) thay vi gia dong cua.
+// BuyPrice phai nam trong [Low, High] cua phien - GiaVaoBar da dam bao dieu nay.
+if (CheDoMoc)
+{
+    BuyPrice = IIf(Buy, GiaVaoBar, C);
+}
 KhoangCachKijun = (C - Kijun) / C * 100;
 KhoangCachGG = (C - (GGTop+GGBot)/2) / C * 100;
 
@@ -736,9 +788,9 @@ KhangCuCungNhat = IIf(Dinh52T>C, Dinh52T, KhangCuGanNhat_V2);
 // gia 21.35 nhung TP1 tinh ra 19.84). Dam bao moi nguon LUON o tren gia hien
 // tai bang 1 san toi thieu (5%/10%/15%) - giu nguyen gia tri that neu no da
 // o tren san do (truong hop binh thuong, khong breakout).
-NguonGan   = Max(DinhGanNhat, C * 1.05);
-NguonGiua  = Max(Max(GGTop, CloudTop), C * 1.10);
-NguonXa    = Max(Dinh52T, C * 1.15);
+NguonGan   = Max(DinhGanNhat, GiaVaoBar * 1.05);
+NguonGiua  = Max(Max(GGTop, CloudTop), GiaVaoBar * 1.10);
+NguonXa    = Max(Dinh52T, GiaVaoBar * 1.15);
 Tong3Nguon = NguonGan + NguonGiua + NguonXa;
 ChotLoi_TP1 = Min(Min(NguonGan,NguonGiua),NguonXa);
 ChotLoi_TP3 = Max(Max(NguonGan,NguonGiua),NguonXa);
@@ -785,8 +837,9 @@ GiaTriGDTB20 = MA(C * V, 20) / 1000000;
 DangGiuLenhVT = Flip(Buy, Sell);
 GiaVaoLenh_ChoStop = GiaVaoLenh;
 ATRVaoLenh_ChoStop = ValueWhen(Buy, ATRVal, 1);
-StopThucTe_ChoHienThi = Min(ATRVaoLenh_ChoStop*ATRMult, GiaVaoLenh_ChoStop*(HardStopPct/100));
-GiaStopThucTe_ChoHienThi = GiaVaoLenh_ChoStop - StopThucTe_ChoHienThi;
+// SL hien thi = StopLossPrice (che do Cu: ATR/6% nhu truoc; che do MOI: SL cau truc).
+GiaStopThucTe_ChoHienThi = StopLossPrice;
+StopThucTe_ChoHienThi = GiaVaoLenh_ChoStop - GiaStopThucTe_ChoHienThi;
 CoTheDaChamStop = DangGiuLenhVT AND (C <= GiaStopThucTe_ChoHienThi);
 
 GiaMuaVT = GiaVaoLenh;
@@ -857,6 +910,7 @@ AddColumn(KhoiLuongTB20, "KL TB20 (co phieu)", 1.0);
 AddTextColumn(WriteIf(GiaiNganCuoi=="", "-", GiaiNganCuoi), "Giai ngan");
 AddColumn(GiaKichHoatTaiMua, "Moc kich hoat (luc chuyen mua)", 1.2);
 AddTextColumn(MocKichHoatCuoi, "Moc vuot");
+AddTextColumn(WriteIf(CheDoMoc, "MOI", "CU"), "Che do vao lenh");
 AddColumn(MocGiaCuoi, "Moc can vuot (gia)", 1.2);
 AddColumn(MocCachPctCuoi, "Cach moc (%)", 1.2);
 AddTextColumn(WriteIf(MocLoaiCuoi=="", "-", MocLoaiCuoi), "Loai moc");
@@ -877,7 +931,7 @@ if (Status("stocknum") == 0)
               "stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,"+
               "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,"+
               "diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat,"+
-              "moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot\n", fh);
+              "moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao\n", fh);
         fclose(fh);
     }
 }
@@ -950,7 +1004,8 @@ Dong = Name() + "," + TinCuoi + ","
      + NumToStr(LastValue(MocGiaCuoi),1.2,False) + ","
      + MocLoaiCuoi + ","
      + NumToStr(LastValue(MocCachPctCuoi),1.2,False) + ","
-     + NumToStr(LastValue(DiemNeuVuot),1.2,False);
+     + NumToStr(LastValue(DiemNeuVuot),1.2,False) + ","
+     + WriteIf(CheDoMoc, "MOI", "CU");
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {

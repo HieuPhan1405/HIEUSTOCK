@@ -3,14 +3,14 @@ import { guiTinNhanZalo } from "@/lib/zalo";
 import { tinhGiaVaoWeb } from "@/lib/giaVaoWeb";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
-// amibroker/7_Export_LenWeb.afl). Header CSV (44 cot; 6 cot cuoi gia_kich_hoat,
-// moc_kich_hoat, moc_gia, moc_loai, moc_cach_pct, diem_neu_vuot la MOI - CSV cu
+// amibroker/7_Export_LenWeb.afl). Header CSV (45 cot; 7 cot cuoi gia_kich_hoat,
+// moc_kich_hoat, moc_gia, moc_loai, moc_cach_pct, diem_neu_vuot, che_do_vao la MOI - CSV cu
 // (38/40 cot) van nhan binh thuong, cac cot thieu de trong):
 // ma,tin,diem,trend,mom,dt,adx,gia,doi,rs_vni,breadth_nganh,kijun,gg_top,gg_bot,dinh_52t,
 // stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,
 // kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,
 // diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat,
-// moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot
+// moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -112,7 +112,8 @@ export async function POST(request) {
   await withDb(async (client) => {
     await daoDamBangTinHieu(client);
     const { rows } = await client.query(
-      `SELECT ma, tin, giai_ngan, gia_vao_web, thoi_diem_vao_web, to_char(ngay_mua, 'YYYY-MM-DD') AS ngay_mua_txt
+      `SELECT ma, tin, giai_ngan, gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3,
+              to_char(ngay_mua, 'YYYY-MM-DD') AS ngay_mua_txt
        FROM tin_hieu WHERE ma = ANY($1::text[])`,
       [dsMaLanNay0]
     );
@@ -128,16 +129,25 @@ export async function POST(request) {
   const bayGio = new Date().toISOString();
   const giaVaoWeb = [];
   const thoiDiemVaoWeb = [];
+  const vaoStopLoss = [];
+  const vaoTp1 = [];
+  const vaoTp2 = [];
+  const vaoTp3 = [];
   for (const h of hangDL) {
-    const { gia, luc } = tinhGiaVaoWeb({
+    const kq = tinhGiaVaoWeb({
       tinMoi: h.tin || "TRUNG LAP",
-      giaMoi: soFloat(h.gia),
+      giaTriMoi: { gia: soFloat(h.gia), stop_loss: soFloat(h.stop_loss), tp1: soFloat(h.tp1), tp2: soFloat(h.tp2), tp3: soFloat(h.tp3) },
       ngayMuaMoi: soNgayVN(h.ngay_mua),
       cu: banGhiCuTheoMa[h.ma],
       bayGio,
+      cheDoVao: h.che_do_vao,
     });
-    giaVaoWeb.push(gia);
-    thoiDiemVaoWeb.push(luc);
+    giaVaoWeb.push(kq.gia);
+    thoiDiemVaoWeb.push(kq.luc);
+    vaoStopLoss.push(kq.stop_loss);
+    vaoTp1.push(kq.tp1);
+    vaoTp2.push(kq.tp2);
+    vaoTp3.push(kq.tp3);
   }
   const cacMaMuaMoi = hangDL.filter((h) => (h.tin || "TRUNG LAP") === "MUA" && tinCuTheoMa[h.ma] !== "MUA");
   // Phien BO SUNG phan con lai sau khi mua tham do (giai ngan 1 phan) - bao 1 lan.
@@ -159,7 +169,7 @@ export async function POST(request) {
          gia_mua, ngay_mua, ban_bot, san, nganh, tp_da_cham,
          diem_rank, diem_confidence, khoi_luong_tb20, giai_ngan,
          gia_kich_hoat, moc_kich_hoat, moc_gia, moc_loai, moc_cach_pct, diem_neu_vuot,
-         gia_vao_web, thoi_diem_vao_web)
+         gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3, che_do_vao)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -170,7 +180,8 @@ export async function POST(request) {
          $32::text[], $33::text[], $34::text[],
          $35::float8[], $36::float8[], $37::float8[], $38::text[],
          $39::float8[], $40::text[], $41::float8[], $42::text[], $43::float8[], $44::float8[],
-         $45::float8[], $46::timestamptz[]
+         $45::float8[], $46::timestamptz[], $47::float8[], $48::float8[], $49::float8[], $50::float8[],
+         $51::text[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -218,6 +229,11 @@ export async function POST(request) {
          diem_neu_vuot = EXCLUDED.diem_neu_vuot,
          gia_vao_web = EXCLUDED.gia_vao_web,
          thoi_diem_vao_web = EXCLUDED.thoi_diem_vao_web,
+         vao_stop_loss = EXCLUDED.vao_stop_loss,
+         vao_tp1 = EXCLUDED.vao_tp1,
+         vao_tp2 = EXCLUDED.vao_tp2,
+         vao_tp3 = EXCLUDED.vao_tp3,
+         che_do_vao = EXCLUDED.che_do_vao,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -266,6 +282,11 @@ export async function POST(request) {
         cot("diem_neu_vuot", soFloat),
         giaVaoWeb,
         thoiDiemVaoWeb,
+        vaoStopLoss,
+        vaoTp1,
+        vaoTp2,
+        vaoTp3,
+        cot("che_do_vao", soText),
       ]
     );
 

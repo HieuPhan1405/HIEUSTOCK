@@ -352,6 +352,12 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
               {row.gia_mua_ghi_nhan && (
                 <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
                   Giá mua {fmt(row.gia_mua)} ghi nhận lúc {gioGhiNhan(row)}, lãi/lỗ tính từ giá này.
+                  {row.sl_tp_ghi_nhan && " Stop-loss và TP cũng giữ theo lúc đó."}
+                </p>
+              )}
+              {row.che_do_vao === "MOI" && (
+                <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
+                  Vào lệnh tại mốc chuyển mua, Stop-loss đặt theo cấu trúc giá (dưới mây / Giao Găm / đáy nến / Kijun).
                 </p>
               )}
               {mocKichHoat(row) && (
