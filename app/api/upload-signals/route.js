@@ -1,4 +1,4 @@
-import { withDb, daoDamBangTinHieu } from "@/lib/db";
+import { withDb, daoDamBangTinHieu, tenBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
 import { tinhGiaVaoWeb } from "@/lib/giaVaoWeb";
 import { tinhVungLenh, chuoiVung } from "@/components/dungChung";
@@ -95,6 +95,12 @@ export async function POST(request) {
     return Response.json({ loi: "API key khong dung" }, { status: 401 });
   }
 
+  // ?bang=chikou: ghi vao BANG THU NGHIEM (ket qua Explore cua file AFL 10), khong dung toi du lieu
+  // that va khong gui Zalo. Mac dinh ghi vao bang that.
+  const khoaBang = new URL(request.url).searchParams.get("bang") === "chikou" ? "chikou" : "thuong";
+  const bang = tenBangTinHieu(khoaBang);
+  const laBangThu = khoaBang !== "thuong";
+
   const contentType = request.headers.get("content-type") || "";
   let vanBanCSV;
 
@@ -134,11 +140,11 @@ export async function POST(request) {
   let giaiNganCuTheoMa = {};
   let banGhiCuTheoMa = {};
   await withDb(async (client) => {
-    await daoDamBangTinHieu(client);
+    await daoDamBangTinHieu(client, bang);
     const { rows } = await client.query(
       `SELECT ma, tin, giai_ngan, gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3,
               to_char(ngay_mua, 'YYYY-MM-DD') AS ngay_mua_txt
-       FROM tin_hieu WHERE ma = ANY($1::text[])`,
+       FROM ${bang} WHERE ma = ANY($1::text[])`,
       [dsMaLanNay0]
     );
     tinCuTheoMa = Object.fromEntries(rows.map((r) => [r.ma, r.tin]));
@@ -173,19 +179,20 @@ export async function POST(request) {
     vaoTp2.push(kq.tp2);
     vaoTp3.push(kq.tp3);
   }
-  const cacMaMuaMoi = hangDL.filter((h) => (h.tin || "TRUNG LAP") === "MUA" && tinCuTheoMa[h.ma] !== "MUA");
+  // Bang thu nghiem KHONG gui Zalo.
+  const cacMaMuaMoi = laBangThu ? [] : hangDL.filter((h) => (h.tin || "TRUNG LAP") === "MUA" && tinCuTheoMa[h.ma] !== "MUA");
   // Phien BO SUNG phan con lai sau khi mua tham do (giai ngan 1 phan) - bao 1 lan.
-  const cacMaBoSung = hangDL.filter((h) => h.giai_ngan === "BO SUNG" && giaiNganCuTheoMa[h.ma] !== "BO SUNG");
+  const cacMaBoSung = laBangThu ? [] : hangDL.filter((h) => h.giai_ngan === "BO SUNG" && giaiNganCuTheoMa[h.ma] !== "BO SUNG");
 
   await withDb(async (client) => {
-    await daoDamBangTinHieu(client);
+    await daoDamBangTinHieu(client, bang);
 
     // cap_nhat_luc KHONG nam trong danh sach cot chen - dong moi se tu lay
     // gia tri DEFAULT now() cua bang, dong bi trung ma se duoc set lai now()
     // trong ON CONFLICT ben duoi. vung_tham_gia KHONG con ghi - tinh nang da
     // bi bo trong ban chien luoc FULL v16.
     await client.query(
-      `INSERT INTO tin_hieu
+      `INSERT INTO ${bang}
         (ma, tin, diem, trend, mom, dt, adx, gia, doi, rs_vni, breadth_nganh,
          kijun, gg_top, gg_bot, dinh_52t,
          stop_loss, mat_than, tp1, tp2, tp3, gtgd_tb20, fvg_ok,
@@ -332,7 +339,7 @@ export async function POST(request) {
     // NHUNG DONG DO khong co trong danh sach nay - neu xoa thi chung bien mat khoi web chi vi loi
     // ghi file. Bo qua buoc xoa cho toi khi co 1 lan upload sach.
     if (hangDL.length >= SO_DONG_TOI_THIEU_DE_XOA && soDongLoi === 0) {
-      const { rowCount } = await client.query(`DELETE FROM tin_hieu WHERE NOT (ma = ANY($1::text[]))`, [dsMaLanNay]);
+      const { rowCount } = await client.query(`DELETE FROM ${bang} WHERE NOT (ma = ANY($1::text[]))`, [dsMaLanNay]);
       soDongDaXoa = rowCount;
     } else {
       daBoQuaXoa = true;
@@ -363,6 +370,7 @@ export async function POST(request) {
 
   return Response.json({
     trangThai: "ok",
+    bang,
     soDongDaLuu: hangDL.length,
     tongSoDongNhan: hangDL.length,
     soDongLoiDaBoQua: soDongLoi,

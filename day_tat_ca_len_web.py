@@ -24,20 +24,34 @@ API_KEY = "CLOUD"  # phai TRUNG KHOP voi UPLOAD_API_KEY tren Vercel
 # 308 va mot so moi truong khong theo redirect dung cach cho request POST.
 GOC_WEB = os.environ.get("CS_GOC_WEB", "https://www.cloudstock.id.vn")
 
-# (ten hien thi, duong dan CSV do AmiBroker xuat, duong dan API, nhan dong)
+# (ten hien thi, duong dan CSV do AmiBroker xuat, duong dan API, nhan dong, khong bat buoc)
+# Viec KHONG BAT BUOC: thieu file thi bo qua, khong tinh la loi.
 CAC_VIEC = [
-    ("Tin hieu toan thi truong", r"C:\DaoGam_Data\tin_hieu_hom_nay.csv", "/api/upload-signals", "dong tin hieu"),
-    ("Checklist bat day", r"C:\DaoGam_Data\bat_day_hom_nay.csv", "/api/upload-bat-day", "dong lich su bat day"),
+    ("Tin hieu toan thi truong", r"C:\DaoGam_Data\tin_hieu_hom_nay.csv", "/api/upload-signals", "dong tin hieu", False),
+    ("Checklist bat day", r"C:\DaoGam_Data\bat_day_hom_nay.csv", "/api/upload-bat-day", "dong lich su bat day", False),
+    # Ban THU Chikou thong thoang (file AFL 10): vao BANG RIENG, xem o trang /thu-nghiem-chikou,
+    # khong dung toi du lieu that va khong gui Zalo.
+    (
+        "Ban thu Chikou thoang (file 10)",
+        r"C:\DaoGam_Data\tin_hieu_hom_nay_TEST_chikou.csv",
+        "/api/upload-signals?bang=chikou",
+        "dong (ban thu)",
+        True,
+    ),
 ]
 
 # File CSV cu hon so gio nay thi canh bao (co the chua Explore lai).
 CANH_BAO_CU_SAU_GIO = 20
 
 
-def day_mot_file(ten, duong_dan, api, nhan):
-    """Tra ve True neu day thanh cong, False neu loi/bo qua. Khong bao gio tu thoat."""
+def day_mot_file(ten, duong_dan, api, nhan, khong_bat_buoc=False):
+    """True = day thanh cong, False = loi/thieu file, None = bo qua (viec khong bat buoc, chua co file).
+    Khong bao gio tu thoat."""
     print(f"\n=== {ten} ===")
     if not os.path.exists(duong_dan):
+        if khong_bat_buoc:
+            print(f"BO QUA (khong bat buoc): chua co file {duong_dan}")
+            return None
         print(f"BO QUA: chua co file {duong_dan}")
         print("  -> Chay Explore trong AmiBroker de xuat file nay truoc.")
         return False
@@ -99,17 +113,17 @@ def day_mot_file(ten, duong_dan, api, nhan):
 
 
 def main():
-    ket_qua = [(ten, day_mot_file(ten, dd, api, nhan)) for ten, dd, api, nhan in CAC_VIEC]
+    ket_qua = [(ten, day_mot_file(ten, dd, api, nhan, kbb)) for ten, dd, api, nhan, kbb in CAC_VIEC]
     print("\n===== TONG KET =====")
     for ten, ok in ket_qua:
-        print(f"  {'OK  ' if ok else 'LOI '} {ten}")
+        print(f"  {'BO QUA' if ok is None else ('OK    ' if ok else 'LOI   ')} {ten}")
     # Giu cua so mo khi bam dup file .py de doc ket qua (file .bat tu dung lai bang pause).
     if not os.environ.get("CS_KHONG_DOI"):
         try:
             input("\nBam Enter de dong...")
         except (EOFError, OSError):
             pass
-    sys.exit(0 if all(ok for _, ok in ket_qua) else 1)
+    sys.exit(0 if all(ok is not False for _, ok in ket_qua) else 1)
 
 
 if __name__ == "__main__":
