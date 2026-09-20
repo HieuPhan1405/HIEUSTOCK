@@ -14,8 +14,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "CloudStock — Hệ thống hỗ trợ đầu tư",
+  metadataBase: new URL("https://www.cloudstock.id.vn"),
+  title: { default: "CloudStock — Hệ thống hỗ trợ đầu tư", template: "%s | CloudStock" },
   description: "Hệ thống hỗ trợ đầu tư chứng khoán, quét toàn bộ thị trường chứng khoán Việt Nam.",
+  openGraph: {
+    siteName: "CloudStock",
+    locale: "vi_VN",
+    type: "website",
+    title: "CloudStock — Hệ thống hỗ trợ đầu tư",
+    description: "Quét toàn bộ cổ phiếu HOSE, HNX, UPCOM: tín hiệu mua/bán, vùng giá mua, cắt lỗ, chốt lời.",
+  },
 };
 
 export default function RootLayout({ children }) {

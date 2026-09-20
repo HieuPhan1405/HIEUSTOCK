@@ -5,6 +5,15 @@ import ChiTietMa from "@/components/ChiTietMa";
 
 export const dynamic = "force-dynamic";
 
+export async function generateMetadata({ params }) {
+  const { ma } = await params;
+  const maHoa = String(ma || "").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
+  return {
+    title: maHoa ? `Cổ phiếu ${maHoa}` : "Chi tiết mã",
+    description: maHoa ? `Tín hiệu, vùng mua, cắt lỗ và chốt lời của cổ phiếu ${maHoa}.` : undefined,
+  };
+}
+
 export default async function TrangChiTietMa({ params }) {
   const { ma } = await params;
 

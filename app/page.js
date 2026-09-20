@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
-import { fmt, pct, phanLoaiXuHuong, chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, tinhVungLenh, chuoiVung } from "@/components/dungChung";
+import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, tinhVungLenh, chuoiVung } from "@/components/dungChung";
 import SignalPill from "@/components/SignalPill";
 import DongHoGiaoDich from "@/components/DongHoGiaoDich";
+import NhanCapNhat from "@/components/NhanCapNhat";
 
 export const dynamic = "force-dynamic";
 
@@ -359,7 +360,8 @@ export default async function TrangTongQuan() {
         )}
 
         {/* DONG HO GIAO DICH + KHUNG GIO VAO LENH */}
-        <DongHoGiaoDich className="mb-6" />
+        <DongHoGiaoDich className="mb-3" />
+        <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
 
         {/* HANG KPI */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">

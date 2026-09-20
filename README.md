@@ -1,18 +1,15 @@
 # CloudStock — cloudstock.id.vn
 
-Website tín hiệu kỹ thuật chứng khoán "Dao Găm" (Ichimoku 9-17-33 + đường cân bằng dài hạn
-65-129), backtest 12 năm trên AmiBroker.
+Website tín hiệu kỹ thuật chứng khoán (Ichimoku 9-17-33 + đường cân bằng dài hạn 65-129), quét toàn bộ
+HOSE/HNX/UPCOM, backtest nhiều năm trên AmiBroker. Dữ liệu **không phải thời gian thực** — cập nhật khi chủ
+web đẩy lên sau mỗi phiên (trang có nhãn "Dữ liệu cập nhật lúc …").
 
 ## Stack
 
-- **Frontend + Backend:** Next.js (App Router, Route Handlers) + Tailwind
-  CSS, deploy trên Vercel
-- **Database:** Postgres (Neon, tạo qua Vercel → Storage → Create Database)
-- **Nguồn dữ liệu:** AmiBroker quét toàn bộ thị trường (`amibroker/7_Export_LenWeb.afl`)
-  → xuất CSV → `day_du_lieu_len_web.py` đẩy lên `/api/upload-signals` → lưu
-  Postgres → hiển thị trên web qua `/api/signals`. Không phải dữ liệu
-  real-time — cập nhật theo lần chủ động chạy (hoặc theo lịch Windows Task
-  Scheduler nếu đã tự động hoá).
+- **Frontend + Backend:** Next.js (App Router, Route Handlers) + Tailwind CSS, deploy trên Vercel
+  (push lên `main` là tự deploy, mất khoảng 1–2 phút).
+- **Database:** Postgres (Neon). Bảng tạo/nâng cấp tự động (`ADD COLUMN IF NOT EXISTS`) trong `lib/db.js`.
+- **Nguồn dữ liệu:** AmiBroker Explore toàn thị trường → CSV → script Python đẩy lên API → lưu Postgres.
 
 ## Chạy local
 
@@ -21,40 +18,70 @@ npm install
 npm run dev
 ```
 
-Mở [http://localhost:3000](http://localhost:3000).
-
-Cần biến môi trường trong `.env.local` (không commit file này):
+Mở [http://localhost:3000](http://localhost:3000). Cần `.env.local` (không commit):
 
 ```
-DATABASE_URL=postgres://...   # lấy từ Vercel Storage sau khi tạo Postgres
-UPLOAD_API_KEY=chuoi-bi-mat-tuy-chon
+DATABASE_URL=postgres://...   # từ Vercel Storage (Neon)
+UPLOAD_API_KEY=chuoi-bi-mat   # phải khớp API_KEY trong day_tat_ca_len_web.py
 ```
 
-## Cấu trúc
+Không có `DATABASE_URL` thì các trang vẫn mở được nhưng báo "Lỗi tải dữ liệu".
 
-- `app/page.js` — trang chủ (dashboard tín hiệu + chi tiết mã cổ phiếu),
-  fetch dữ liệu thật từ `/api/signals`, có dữ liệu mẫu dự phòng khi chưa có
-  dữ liệu từ AmiBroker
-- `app/api/upload-signals/route.js` — nhận CSV tín hiệu (cần header
-  `x-api-key`), lưu/ghi đè vào bảng `tin_hieu`
-- `app/api/signals/route.js` — trả JSON danh sách tín hiệu hiện tại cho
-  frontend
-- `lib/db.js` — kết nối Postgres (Neon) + tạo bảng nếu chưa có
-- `amibroker/7_Export_LenWeb.afl` — chạy trong AmiBroker (Explore, Apply to:
-  All Symbols) để quét toàn bộ thị trường và tự động xuất CSV
-- `day_du_lieu_len_web.py` — đọc CSV vừa xuất, đẩy lên `/api/upload-signals`
+Kiểm tra trước khi push:
 
-## Luồng dữ liệu đầy đủ
-
-```
-AmiBroker (7_Export_LenWeb.afl, Explore)
-  → xuất C:\DaoGam_Data\tin_hieu_hom_nay.csv
-  → day_du_lieu_len_web.py (POST kèm x-api-key)
-  → /api/upload-signals (Next.js, Vercel) → Postgres (Neon)
-  → /api/signals (GET) → app/page.js hiển thị
+```bash
+npx eslint .
+npm run build
 ```
 
-Muốn tự động hoá hoàn toàn: dùng Windows Task Scheduler để (1) mở AmiBroker
-chạy Batch chứa Explore này theo giờ cố định, và (2) chạy
-`day_du_lieu_len_web.py` ngay sau đó — miễn máy tính đang bật và AmiBroker
-đang kết nối data feed vào đúng giờ chạy.
+## Luồng dữ liệu (2 việc mỗi phiên)
+
+```
+AmiBroker Explore (All Symbols, Analysis threads = 1)
+  7_Export_LenWeb.afl  → C:\DaoGam_Data\tin_hieu_hom_nay.csv   (46 cột, header khớp theo tên)
+  8_Export_ChecklistBatDay.afl → C:\DaoGam_Data\bat_day_hom_nay.csv
+        ↓
+day_tat_ca_len_web.py  (hoặc bấm đúp DAY_LEN_WEB.bat)
+        ↓  POST + header x-api-key
+/api/upload-signals , /api/upload-bat-day  → Postgres (Neon)
+        ↓
+Các trang đọc trực tiếp từ DB (lib/tinHieu.js, lib/batDay.js, lib/lenhDaDong.js)
+```
+
+Chạy từ dòng lệnh, thoát ngay không chờ Enter:
+
+```bash
+python C:/Users/hieu/web/day_tat_ca_len_web.py --khong-doi
+```
+
+Lưu ý khi đẩy dữ liệu:
+
+- Analysis phải để **1 thread** — nhiều thread làm AmiBroker ghi dính dòng CSV, dòng lỗi bị web bỏ qua (script
+  cảnh báo trước khi gửi).
+- Route chỉ xoá các mã cũ không còn trong CSV khi nhận ≥ 100 dòng và không có dòng lỗi.
+- **Không backtest bằng file 7** (file 7 ghi CSV); backtest dùng `9_XemChart_FULL.afl`. Hai file giữ logic tín
+  hiệu giống nhau, sửa file này thì sửa file kia.
+
+## Cấu trúc chính
+
+- `app/` — trang: Tổng quan (`page.js`), Bộ lọc (`bo-loc`), Sổ lệnh đang mở (`lenh-mo`), **Lệnh đã đóng**
+  (`lenh-da-dong`), Checklist bắt đáy (`bat-day`), Thông tin thị trường (`thi-truong`), Chi tiết mã (`ma/[ma]`),
+  Hướng dẫn (`huong-dan`), Liên hệ (`lien-he`), Quản trị (`quan-tri`, noindex). Có `not-found.js`, `error.js`,
+  `robots.js`, `sitemap.js`.
+- `app/api/upload-signals/route.js` — nhận CSV tín hiệu: upsert theo mã, đóng băng giá vào/SL/TP lần đầu MUA,
+  phát hiện lệnh vừa đóng, gửi Zalo khi có mã MUA mới.
+- `lib/db.js` — kết nối Postgres, tạo/nâng cấp bảng (`tin_hieu`, `lenh_da_dong`, …).
+- `lib/giaVaoWeb.js` — đóng băng giá vào lệnh, SL, TP1–3 theo vòng đời lệnh.
+- `lib/lenhDaDong.js` — phát hiện lệnh đóng (NẮM GIỮ → BÁN/thoát), ghi và thống kê. Ngày/giá bán lấy theo lần
+  upload lúc lệnh đổi trạng thái (xấp xỉ giá đóng cửa, không phải giá khớp thật).
+- `components/dungChung.js` — hàm dùng chung: vùng mua/SL/TP (`tinhVungLenh`), chuẩn mã ưu tiên
+  (giá > 10.000đ, vốn hoá ≥ 3.000 tỷ, KL ≥ 500.000 cp, GTGD > 10 tỷ/phiên), mốc chuyển mua, định dạng số.
+- `lib/soCoPhieuLuuHanh.js` — số cổ phiếu lưu hành (tính vốn hoá). Sinh lại bằng
+  `node scripts/capNhatSoCoPhieu.mjs`.
+- `amibroker/` — các file AFL (7 = xuất CSV, 8 = bắt đáy, 9 = xem chart + backtest).
+- `day_tat_ca_len_web.py`, `DAY_LEN_WEB.bat` — đẩy cả hai CSV lên web bằng một lần bấm.
+
+## Lưu ý phiên bản Next
+
+Đây là Next 16 (có breaking changes so với bản cũ): ví dụ `error.js` nhận prop `retry` thay cho `reset`. Xem
+`node_modules/next/dist/docs/` trước khi viết code theo thói quen của bản cũ.

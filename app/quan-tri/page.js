@@ -66,7 +66,9 @@ export default function TrangQuanTri() {
   const [thongBaoTT, setThongBaoTT] = useState("");
 
   useEffect(() => {
-    setApiKey(locApiKey());
+    // Doc localStorage sau khi mount (khong goi setState dong bo trong effect).
+    const t = setTimeout(() => setApiKey(locApiKey()), 0);
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {
@@ -118,7 +120,9 @@ export default function TrangQuanTri() {
   }, []);
 
   useEffect(() => {
-    if (apiKey) taiLienHe(apiKey);
+    if (!apiKey) return;
+    const t = setTimeout(() => taiLienHe(apiKey), 0);
+    return () => clearTimeout(t);
   }, [apiKey, taiLienHe]);
 
   const taiNguoiDung = useCallback(async (key) => {
@@ -143,7 +147,9 @@ export default function TrangQuanTri() {
   }
 
   useEffect(() => {
-    if (apiKey) taiNguoiDung(apiKey);
+    if (!apiKey) return;
+    const t = setTimeout(() => taiNguoiDung(apiKey), 0);
+    return () => clearTimeout(t);
   }, [apiKey, taiNguoiDung]);
 
   const taiTrangThaiZalo = useCallback(async (key) => {
@@ -161,7 +167,9 @@ export default function TrangQuanTri() {
   }, []);
 
   useEffect(() => {
-    if (apiKey) taiTrangThaiZalo(apiKey);
+    if (!apiKey) return;
+    const t = setTimeout(() => taiTrangThaiZalo(apiKey), 0);
+    return () => clearTimeout(t);
   }, [apiKey, taiTrangThaiZalo]);
 
   async function ketNoiZalo(e) {
@@ -569,9 +577,9 @@ export default function TrangQuanTri() {
 
           <p className="text-[11px] mt-3" style={{ color: "#8B8B99" }}>
             Hướng dẫn: (1) Tạo Official Account miễn phí tại oa.zalo.me. (2) Tạo App tại developers.zalo.me, lấy App ID +
-            Secret Key, dán vào đây. (3) Bấm "Lưu & Kết nối Zalo" — 1 tab mới mở ra để cấp quyền, bấm "Cho phép". (4) Mở
-            app Zalo, tìm đúng OA vừa tạo, tự nhắn 1 tin bất kỳ (vd "hi") cho nó. (5) Quay lại đây bấm "Tải lại trạng
-            thái" rồi "Gửi tin nhắn test" để kiểm tra.
+            Secret Key, dán vào đây. (3) Bấm &quot;Lưu & Kết nối Zalo&quot; — 1 tab mới mở ra để cấp quyền, bấm &quot;Cho phép&quot;. (4) Mở
+            app Zalo, tìm đúng OA vừa tạo, tự nhắn 1 tin bất kỳ (vd &quot;hi&quot;) cho nó. (5) Quay lại đây bấm &quot;Tải lại trạng
+            thái&quot; rồi &quot;Gửi tin nhắn test&quot; để kiểm tra.
           </p>
         </div>
       )}

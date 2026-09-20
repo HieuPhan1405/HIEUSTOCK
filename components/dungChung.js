@@ -276,3 +276,20 @@ export const TREND_MAX = 3.0; // IIf(...,1) + IIf(...,1) + IIf(...,0.5) + IIf(..
 export const MOM_MAX = 0.5;
 export const DT_MAX = 1.0; // gan dung, MFScore toi da ly thuyet la 1.0 (min -0.8)
 export const RS_MAX = 20; // % so voi VNI trong 20 phien, dung lam thang tham khao
+
+// Thoi diem cap nhat MOI NHAT trong danh sach ma (max cap_nhat_luc) - dung cho nhan "Du lieu cap nhat luc ...".
+export function capNhatMoiNhat(ds) {
+  let max = null;
+  for (const r of ds || []) {
+    if (!r?.cap_nhat_luc) continue;
+    const t = new Date(r.cap_nhat_luc).getTime();
+    if (!Number.isNaN(t) && (max === null || t > max)) max = t;
+  }
+  return max === null ? null : new Date(max).toISOString();
+}
+
+// Du lieu cu hon ~36 gio (qua 1 ngay giao dich) thi nhan cap nhat chuyen sang canh bao mau vang.
+export function duLieuDaCu(luc, gioToiDa = 36) {
+  const t = new Date(luc).getTime();
+  return !Number.isNaN(t) && (Date.now() - t) / 3600e3 > gioToiDa;
+}

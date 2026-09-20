@@ -3,6 +3,10 @@ import { layThongTinLienHe } from "@/lib/thongTinLienHe";
 import FormGuiTinNhan from "@/components/FormGuiTinNhan";
 
 export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Liên hệ",
+  description: "Thông tin liên hệ và gửi tin nhắn tới CloudStock.",
+};
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";

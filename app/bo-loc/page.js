@@ -2,8 +2,14 @@ import { Suspense } from "react";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import BangBoLoc from "@/components/BangBoLoc";
 import DongHoGiaoDich from "@/components/DongHoGiaoDich";
+import NhanCapNhat from "@/components/NhanCapNhat";
+import { capNhatMoiNhat } from "@/components/dungChung";
 
 export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Bộ lọc cổ phiếu",
+  description: "Lọc và sắp xếp toàn bộ cổ phiếu HOSE, HNX, UPCOM theo tín hiệu, xu hướng, dòng tiền, thanh khoản và vốn hoá.",
+};
 
 export default async function TrangBoLoc() {
   let tatCa = [];
@@ -22,7 +28,8 @@ export default async function TrangBoLoc() {
       <p className="text-sm mb-4" style={{ color: "#8B8B99" }}>
         Lọc và sắp xếp toàn bộ {tatCa.length} cổ phiếu đang theo dõi (HOSE, HNX, UPCOM) theo nhiều tiêu chí.
       </p>
-      <DongHoGiaoDich className="mb-6" />
+      <DongHoGiaoDich className="mb-3" />
+      <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
 
       {loi ? (
         <p className="text-sm" style={{ color: "#EF4444" }}>

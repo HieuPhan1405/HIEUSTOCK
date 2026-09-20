@@ -5,6 +5,10 @@ import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import { pct } from "@/components/dungChung";
 
 export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Checklist bắt đáy",
+  description: "Danh sách kiểm tra điều kiện bắt đáy cho từng cổ phiếu.",
+};
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -99,7 +103,7 @@ export default async function TrangBatDay() {
       )}
 
       <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-        "Đang theo dõi" = tín hiệu quá mới, chưa đủ 20 phiên để đánh giá kết quả. Không phải khuyến nghị đầu tư — chỉ là công cụ tham khảo lịch sử.
+        &quot;Đang theo dõi&quot; = tín hiệu quá mới, chưa đủ 20 phiên để đánh giá kết quả. Không phải khuyến nghị đầu tư — chỉ là công cụ tham khảo lịch sử.
       </p>
     </div>
   );

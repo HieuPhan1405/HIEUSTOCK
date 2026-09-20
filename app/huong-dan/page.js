@@ -3,6 +3,10 @@ import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import TaiKhoanNut from "@/components/TaiKhoanNut";
 
 export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Hướng dẫn & nguyên tắc",
+  description: "Cách đọc tín hiệu, vùng mua, cắt lỗ, chốt lời và nguyên tắc quản trị vốn của hệ thống CloudStock.",
+};
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -215,6 +219,14 @@ export default async function TrangHuongDan() {
         </p>
       </Muc>
 
+      <Muc tieuDe="Lệnh đã đóng">
+        <p>
+          Kết quả các lệnh đã kết thúc (mã đang NẮM GIỮ chuyển sang BÁN hoặc thoát vị thế), tính từ khi web bắt đầu ghi nhận: giá mua, giá bán, lãi/lỗ, số phiên đã
+          giữ, tỷ lệ thắng, lãi trung bình lệnh thắng và lỗ trung bình lệnh thua. Ngày bán và giá bán lấy theo lần cập nhật dữ liệu lúc lệnh đổi trạng thái nên
+          chỉ xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật; lệnh đã đóng trước khi web bắt đầu ghi nhận sẽ không có trong danh sách.
+        </p>
+      </Muc>
+
       <Muc tieuDe="Checklist bắt đáy">
         <p>
           Lịch sử các lần checklist bắt đáy kích hoạt, kèm giá lúc đó, giá hiện tại và kết quả sau 5 / 10 / 20 phiên. &quot;Đang theo dõi&quot; nghĩa là
@@ -232,7 +244,7 @@ export default async function TrangHuongDan() {
       <Muc tieuDe="Đăng ký, Tham gia và một vài lưu ý">
         <DanhSach
           muc={[
-            "Đăng ký bằng số điện thoại + mật khẩu (miễn phí) để mở khoá Checklist bắt đáy, Sổ lệnh đang mở, cột Tín hiệu ở Bộ lọc và phần nguyên tắc giao dịch bên dưới.",
+            "Đăng ký bằng số điện thoại + mật khẩu (miễn phí) để mở khoá Checklist bắt đáy, Sổ lệnh đang mở, Lệnh đã đóng, cột Tín hiệu ở Bộ lọc và phần nguyên tắc giao dịch bên dưới.",
             "Biểu tượng người kèm số cạnh mã là nút Tham gia: bấm để theo dõi mã đó (cần đăng nhập), con số là tổng người đang quan tâm.",
             "Giá hiển thị theo đơn vị nghìn đồng (134.5 nghĩa là 134.500đ).",
             "Tín hiệu tính theo nến ngày và được cập nhật mỗi lần hệ thống quét thị trường; thời điểm cập nhật hiển thị ở đầu trang chi tiết mã.",

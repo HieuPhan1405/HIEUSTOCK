@@ -5,9 +5,14 @@ import TraCuuMa from "@/components/TraCuuMa";
 import BangLenhMo from "@/components/BangLenhMo";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import DongHoGiaoDich from "@/components/DongHoGiaoDich";
-import { pct, chamTPCaoNhat, pctChotLoi } from "@/components/dungChung";
+import NhanCapNhat from "@/components/NhanCapNhat";
+import { pct, capNhatMoiNhat, chamTPCaoNhat, pctChotLoi } from "@/components/dungChung";
 
 export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Sổ lệnh đang mở",
+  description: "Danh mục các mã đang MUA / NẮM GIỮ: vùng mua, cắt lỗ, chốt lời và lãi/lỗ hiện tại.",
+};
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -77,7 +82,8 @@ export default async function TrangLenhMo() {
       )}
       {soCanhBao === 0 && <div className="mb-6" />}
 
-      <DongHoGiaoDich className="mb-6" />
+      <DongHoGiaoDich className="mb-3" />
+      <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
 
       {/* THONG KE HIEU QUA DANH MUC DANG MO */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">

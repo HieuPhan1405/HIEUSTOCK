@@ -81,9 +81,13 @@ export default function DongHoGiaoDich({ className = "" }) {
   const [bayGio, setBayGio] = useState(null);
 
   useEffect(() => {
-    setBayGio(new Date());
+    // Khoi tao sau khi mount (tranh lech gio giua server va trinh duyet), khong setState dong bo trong effect.
+    const t0 = setTimeout(() => setBayGio(new Date()), 0);
     const t = setInterval(() => setBayGio(new Date()), 1000);
-    return () => clearInterval(t);
+    return () => {
+      clearTimeout(t0);
+      clearInterval(t);
+    };
   }, []);
 
   if (!bayGio) {

@@ -1,6 +1,10 @@
 import { layTinTucThiTruong } from "@/lib/tinTuc";
 
 export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Thông tin thị trường",
+  description: "Tin tức và diễn biến thị trường chứng khoán Việt Nam.",
+};
 export const revalidate = 600;
 
 const VIEN = "#26262F";
