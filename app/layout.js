@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
+import ChanTrang from "@/components/ChanTrang";
 import { FONT_IMPORT } from "@/components/dungChung";
 
 const geistSans = Geist({
@@ -12,6 +13,9 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+// Chan trang doc thong tin lien he tu DB o moi request - khong de Next dong cung luc build (vd /quan-tri, 404).
+export const dynamic = "force-dynamic";
 
 export const metadata = {
   metadataBase: new URL("https://www.cloudstock.id.vn"),
@@ -29,10 +33,13 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="vi" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full" style={{ background: "#0B0B10" }}>
+      <body className="min-h-full flex flex-col" style={{ background: "#0B0B10" }}>
         <style>{FONT_IMPORT}</style>
         <Sidebar />
-        <main className="md:pl-60">{children}</main>
+        <div className="md:pl-60 flex flex-col flex-1">
+          <main className="flex-1">{children}</main>
+          <ChanTrang />
+        </div>
       </body>
     </html>
   );
