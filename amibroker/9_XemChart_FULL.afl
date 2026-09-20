@@ -322,21 +322,6 @@ InFVGZoneOk = IIf(CheDoFVG=="Luon TAT", 1,
 // mo dung luc do - nhung CHI DUNG 1 LAN moi dot (tranh lap lai loi da hoc
 // truoc: "chot nhieu lan" lam sai lech). Dung vong lap tuong minh de kiem
 // soat chac chan trang thai "da mua trong dot nay chua".
-// ============================================================================
-// CHIKOU SPAN "THONG THOANG" - CONG TAC (MAC DINH TAT = CU, KHONG DOI GI)
-// Bat: chi Mua khi Chikou (= gia dong cua hom nay) nam TREN CA nen (dinh 5 phien) LAN may tai vi tri
-// no duoc ve (Shift phien truoc) - tuc "khong bi vuong" vao nen/may phia sau.
-// Dieu kien nay DAT TRONG vong lap chon phien Mua (TurnedGreen): neu chi AND vao Buy sau do thi khi
-// Chikou chua thong thoang o phien dau tien cua 1 dot diem cao, CA DOT bi mat (TurnedGreen chi chot
-// 1 lan / dot). Nho vay lenh chi bi TRI HOAN toi phien Chikou thoang dau tien trong dot do.
-// Cung ap dung cho tin hieu MUA LAI.
-// ============================================================================
-BatChikouThoang = ParamToggle("Chi mua khi CHIKOU SPAN thong thoang (tren nen va tren may) (Tat = cu)", "Tat|Bat", 0);
-DuDuLieuChoChikou_Gate = BarIndex() >= Shift;
-ChikouTrenGia = C > Ref(HHV(H,5), -Shift);
-ChikouTrenMay = C > Ref(CloudTop, -Shift);
-ChikouThongThoangOk = IIf(BatChikouThoang, IIf(DuDuLieuChoChikou_Gate, ChikouTrenGia AND ChikouTrenMay, False), 1);
-
 TurnedGreen = 0;
 DaMuaDotNay = 0;
 for (i = 1; i < BarCount; i++)
@@ -351,8 +336,7 @@ for (i = 1; i < BarCount; i++)
         // Tu phien thu 2 tro di trong cung dot (van chua mua): khong can Volume Gate nua,
         // chi can InFVGZone + ADX Gate nhu cu -> tuc "mua vao phien T2" khi Ngay1 khong dat Volume.
         DuDieuKienVolumeNgayDau = !VuaVaoVungMua[i] OR VolumeGateNgayDau[i];
-        if (ConsecutiveAbove[i] AND InFVGZoneOk[i] AND ADXGateOk[i] AND DuDieuKienVolumeNgayDau AND !DaMuaDotNay[i-1]
-            AND ChikouThongThoangOk[i])
+        if (ConsecutiveAbove[i] AND InFVGZoneOk[i] AND ADXGateOk[i] AND DuDieuKienVolumeNgayDau AND !DaMuaDotNay[i-1])
         {
             TurnedGreen[i] = 1;
             DaMuaDotNay[i] = 1;
@@ -570,8 +554,7 @@ ChoPhepMuaKhiRSAm = ParamToggle("RS<=0: van bao MUA nhung chi giai ngan 1 phan (
 HanBoSungPhien = Param("Han bo sung phan con lai sau khi mua tham do (phien)", 5, 1, 20, 1);
 RSGateOk = IIf(ChoPhepMuaKhiRSAm, 1, RSVNI_OK);
 
-Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk
-      AND ChikouThongThoangOk;
+Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
 
 // QUYET DINH CUOI CUNG sau 2 lan that bai: KHONG gop Stop-loss vao Sell
 // bang vong lap nua (da gay loi 2 lan lien tiep). Dung cau truc DON GIAN,
@@ -679,7 +662,7 @@ HoTroMuaLaiGia = IIf(KieuHoTroMuaLai == "Kijun", Kijun, CBBot);
 MuaLaiTinHieu = BatMuaLai AND (HoTroMuaLaiGia > 0)
     AND (L <= HoTroMuaLaiGia * (1 + DoChamHoTroPct/100)) AND (C > HoTroMuaLaiGia)
     AND (C > O) AND (C > Ref(C,-1)) AND (TotalScore >= DiemToiThieuMuaLai) AND (C > CloudTop)
-    AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk AND ChikouThongThoangOk;
+    AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
 SLMuaLaiTho = Min(HoTroMuaLaiGia - DemSLtheoATR * ATRVal, C * (1 - SLToiThieuPct/100));
 SLMuaLaiTho = Max(SLMuaLaiTho, C * (1 - HardStopPct/100));
 StopMuaLaiBar = IIf((HoTroMuaLaiGia > 0) AND (HoTroMuaLaiGia < C), SLMuaLaiTho,
@@ -1038,14 +1021,11 @@ Plot(CBBot, "Can bang dai han duoi (129)", ColorRGB(150,60,220), styleLine|style
 // Shift phien truoc). Truoc day CHUA ve dong nay len chart theo yeu cau.
 // LUU Y KHI DOC CHART: diem vang tai 1 phien la Chikou cua phien CACH DO Shift PHIEN VE SAU (tuong lai),
 // khong phai Chikou cua chinh phien do. Muon biet Chikou cua ngay X co thong thoang khong, phai nhin diem
-// vang o vi tri Shift phien BEN TRAI ngay X (dong "Chikou thoang" o bang thong tin tinh san viec nay).
+// vang o vi tri Shift phien BEN TRAI ngay X.
 // Chi ve nhung diem co du lieu that: Ref(C, +N) vuot qua nen cuoi se LAP lai gia dong cua cuoi cung, tao
 // doan nam ngang gia tao o cuoi chart - bo doan do bang Null.
 Chikou = IIf(BarIndex() + Shift <= LastValue(BarIndex()), Ref(C, Shift), Null);
 Plot(Chikou, "Chikou Span", colorYellow, styleLine|styleThick);
-// Cho bang thong tin: nen (dinh 5 phien) va dinh may TAI VI TRI Chikou cua tung phien duoc ve.
-ChikouNenTaiViTri = Ref(HHV(H,5), -Shift);
-ChikouMayTaiViTri = Ref(CloudTop, -Shift);
 
 Plot(Dinh52T, "Dinh 52 tuan (CUNG)", colorGrey40, styleLine|styleDots|styleNoLabel|styleThick);
 Plot(Day52T, "Day 52 tuan (CUNG)", colorGrey40, styleLine|styleDots|styleNoLabel|styleThick);
@@ -1122,11 +1102,6 @@ if (Status("action") == actionIndicator)
     tp2_c = ChotLoi_TP2_TaiMua[CursorBar];
     tp3_c = ChotLoi_TP3_TaiMua[CursorBar];
     sanyaku_c      = SoDiemSanyaku[CursorBar];
-    chikouCoDuLieu_c = CursorBar >= Shift;
-    chikouGia_c    = C[CursorBar];
-    chikouNen_c    = ChikouNenTaiViTri[CursorBar];
-    chikouMay_c    = ChikouMayTaiViTri[CursorBar];
-    chikouThoang_c = chikouCoDuLieu_c AND (chikouGia_c > chikouNen_c) AND (chikouGia_c > chikouMay_c);
     rank_c         = DiemRank[CursorBar];
     confidence_c2  = DiemConfidence[CursorBar];
     rsiThongMinh_c = RSI_ThongMinh[CursorBar];
@@ -1293,15 +1268,6 @@ if (Status("action") == actionIndicator)
     // Sanyaku - diem chat luong 0-3 sao
     GfxSetTextColor(IIf(sanyaku_c>=2, colorBrightGreen, ColorRGB(110,108,100)));
     GfxTextOut("Sanyaku: "+NumToStr(sanyaku_c,1.0)+"/3 dieu kien dat", c2X+12, zy); zy=zy+22;
-
-    // Chikou thong thoang tai phien dang tro: Chikou (= dong cua phien nay) phai TREN nen (dinh 5 phien) va
-    // TREN may tai vi tri no duoc ve (Shift phien truoc).
-    if (chikouCoDuLieu_c)
-    {
-        GfxSetTextColor(IIf(chikouThoang_c, colorBrightGreen, ColorRGB(110,108,100)));
-        GfxTextOut("Chikou thoang: "+WriteIf(chikouThoang_c,"CO","KHONG")+"  (Chikou "+NumToStr(chikouGia_c,1.2)+
-                   " | nen "+NumToStr(chikouNen_c,1.2)+" | may "+NumToStr(chikouMay_c,1.2)+")", c2X+12, zy); zy=zy+22;
-    }
 
     // RANK + CONFIDENCE (he thong goc, thu nghiem) - chi hien thi tham khao
     GfxSetTextColor(IIf(rank_c>=60, colorBrightGreen, ColorRGB(110,108,100)));

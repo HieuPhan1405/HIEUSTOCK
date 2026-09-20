@@ -29,15 +29,6 @@ GOC_WEB = os.environ.get("CS_GOC_WEB", "https://www.cloudstock.id.vn")
 CAC_VIEC = [
     ("Tin hieu toan thi truong", r"C:\DaoGam_Data\tin_hieu_hom_nay.csv", "/api/upload-signals", "dong tin hieu", False),
     ("Checklist bat day", r"C:\DaoGam_Data\bat_day_hom_nay.csv", "/api/upload-bat-day", "dong lich su bat day", False),
-    # Ban THU Chikou thong thoang (file AFL 10): vao BANG RIENG, xem o trang /thu-nghiem-chikou,
-    # khong dung toi du lieu that va khong gui Zalo.
-    (
-        "Ban thu Chikou thoang (file 10)",
-        r"C:\DaoGam_Data\tin_hieu_hom_nay_TEST_chikou.csv",
-        "/api/upload-signals?bang=chikou",
-        "dong (ban thu)",
-        True,
-    ),
 ]
 
 # File CSV cu hon so gio nay thi canh bao (co the chua Explore lai).
