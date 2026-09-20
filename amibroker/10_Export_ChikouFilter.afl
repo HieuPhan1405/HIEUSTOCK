@@ -261,15 +261,20 @@ InFVGZoneOk = IIf(CheDoFVG=="Luon TAT", 1,
               IIf(CheDoFVG=="Luon BAT", InFVGZone_H3,
               IIf(BreakoutManh AND VolumeGateNgayDau, 1, InFVGZone_H3)));
 
-// GATE THU NGHIEM: CHIKOU SPAN THONG THOANG (rieng cho file 10 - xem giai
-// thich day du o dau file). Can du du lieu Shift phien de so sanh duoc.
-// DAT TRUOC vong lap TurnedGreen: dieu kien nay phai nam TRONG vong lap chon phien Mua, neu chi
-// AND vao Buy sau do thi khi Chikou chua thong thoang o phien dau tien cua 1 dot diem cao, CA DOT
-// bi mat (TurnedGreen chi chot 1 lan / dot) - vd STB Chikou thoang tu 15/01 nhung bi bo den thang 6.
+// ============================================================================
+// CHIKOU SPAN "THONG THOANG" - CONG TAC (MAC DINH TAT = CU, KHONG DOI GI)
+// Bat: chi Mua khi Chikou (= gia dong cua hom nay) nam TREN CA nen (dinh 5 phien) LAN may tai vi tri
+// no duoc ve (Shift phien truoc) - tuc "khong bi vuong" vao nen/may phia sau.
+// Dieu kien nay DAT TRONG vong lap chon phien Mua (TurnedGreen): neu chi AND vao Buy sau do thi khi
+// Chikou chua thong thoang o phien dau tien cua 1 dot diem cao, CA DOT bi mat (TurnedGreen chi chot
+// 1 lan / dot). Nho vay lenh chi bi TRI HOAN toi phien Chikou thoang dau tien trong dot do.
+// Cung ap dung cho tin hieu MUA LAI.
+// ============================================================================
+BatChikouThoang = ParamToggle("Chi mua khi CHIKOU SPAN thong thoang (tren nen va tren may) (Tat = cu)", "Tat|Bat", 1);
 DuDuLieuChoChikou_Gate = BarIndex() >= Shift;
 ChikouTrenGia = C > Ref(HHV(H,5), -Shift);
 ChikouTrenMay = C > Ref(CloudTop, -Shift);
-ChikouThongThoangOk = IIf(DuDuLieuChoChikou_Gate, ChikouTrenGia AND ChikouTrenMay, False);
+ChikouThongThoangOk = IIf(BatChikouThoang, IIf(DuDuLieuChoChikou_Gate, ChikouTrenGia AND ChikouTrenMay, False), 1);
 
 TurnedGreen = 0;
 DaMuaDotNay = 0;
