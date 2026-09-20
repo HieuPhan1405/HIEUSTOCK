@@ -118,7 +118,8 @@ def main():
     for ten, ok in ket_qua:
         print(f"  {'BO QUA' if ok is None else ('OK    ' if ok else 'LOI   ')} {ten}")
     # Giu cua so mo khi bam dup file .py de doc ket qua (file .bat tu dung lai bang pause).
-    if not os.environ.get("CS_KHONG_DOI"):
+    # Chay tu lenh (nut Run / terminal) thi them --khong-doi de thoat ngay, khong cho bam Enter.
+    if not (os.environ.get("CS_KHONG_DOI") or "--khong-doi" in sys.argv):
         try:
             input("\nBam Enter de dong...")
         except (EOFError, OSError):
