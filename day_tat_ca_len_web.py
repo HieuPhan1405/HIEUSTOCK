@@ -54,6 +54,15 @@ def day_mot_file(ten, duong_dan, api, nhan):
         print("LOI: file CSV rong, khong co gi de day len.")
         return False
 
+    # Kiem tra truoc: dong nao co so cot khac header la dong BI HONG (AmiBroker Explore chay da luong
+    # ghi dinh dong vao nhau) - web se bo qua cac dong nay nen cac ma do khong duoc cap nhat.
+    dong = [d for d in noi_dung.splitlines() if d.strip()]
+    so_dau_phay = dong[0].count(",")
+    dong_loi = [d for d in dong[1:] if d.count(",") != so_dau_phay]
+    if dong_loi:
+        print(f"CANH BAO: {len(dong_loi)} dong bi loi dinh dang (AmiBroker Explore chay da luong ghi dinh dong vao nhau).")
+        print("  -> Cac ma o dong loi KHONG duoc cap nhat lan nay. Dat so luong thread cua Analysis ve 1 roi Explore lai.")
+
     url = GOC_WEB + api
     try:
         res = requests.post(

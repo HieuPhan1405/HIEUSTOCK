@@ -328,7 +328,10 @@ export async function POST(request) {
     // sach du lieu that con lai chi vi 1 lan upload thieu du lieu.
     const SO_DONG_TOI_THIEU_DE_XOA = 100;
     const dsMaLanNay = cot("ma", (v) => v);
-    if (hangDL.length >= SO_DONG_TOI_THIEU_DE_XOA) {
+    // Co dong bi loi dinh dang (AmiBroker Explore da luong ghi dinh dong vao nhau) thi CAC MA CUA
+    // NHUNG DONG DO khong co trong danh sach nay - neu xoa thi chung bien mat khoi web chi vi loi
+    // ghi file. Bo qua buoc xoa cho toi khi co 1 lan upload sach.
+    if (hangDL.length >= SO_DONG_TOI_THIEU_DE_XOA && soDongLoi === 0) {
       const { rowCount } = await client.query(`DELETE FROM tin_hieu WHERE NOT (ma = ANY($1::text[]))`, [dsMaLanNay]);
       soDongDaXoa = rowCount;
     } else {
@@ -368,7 +371,10 @@ export async function POST(request) {
     zaloDaGui,
     ...(zaloLoi && { zaloLoi }),
     ...(daBoQuaXoa && {
-      canhBao: `Chi nhan duoc ${hangDL.length} dong (< ${100}) - da BO QUA buoc xoa du lieu cu de tranh mat du lieu. Kiem tra lai AmiBroker "Apply to" co dang = "All Symbols" khong.`,
+      canhBao:
+        soDongLoi > 0
+          ? `Co ${soDongLoi} dong bi loi dinh dang (thuong do AmiBroker Explore chay da luong ghi dinh dong) - cac ma o dong loi KHONG duoc cap nhat lan nay, da BO QUA buoc xoa du lieu cu. Dat so luong thread cua Analysis ve 1 roi Explore lai.`
+          : `Chi nhan duoc ${hangDL.length} dong (< ${100}) - da BO QUA buoc xoa du lieu cu de tranh mat du lieu. Kiem tra lai AmiBroker "Apply to" co dang = "All Symbols" khong.`,
     }),
   });
 }
