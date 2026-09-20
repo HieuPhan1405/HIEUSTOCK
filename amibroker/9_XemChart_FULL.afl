@@ -1036,8 +1036,16 @@ Plot(CBBot, "Can bang dai han duoi (129)", ColorRGB(150,60,220), styleLine|style
 // ve truoc (dung y idiom chuan AFL: Ref(C, Shift) voi so duong = nhin ve
 // TUONG LAI tai moi diem, tuong duong hien thi gia trị hom nay o vi tri
 // Shift phien truoc). Truoc day CHUA ve dong nay len chart theo yeu cau.
-Chikou = Ref(C, Shift);
+// LUU Y KHI DOC CHART: diem vang tai 1 phien la Chikou cua phien CACH DO Shift PHIEN VE SAU (tuong lai),
+// khong phai Chikou cua chinh phien do. Muon biet Chikou cua ngay X co thong thoang khong, phai nhin diem
+// vang o vi tri Shift phien BEN TRAI ngay X (dong "Chikou thoang" o bang thong tin tinh san viec nay).
+// Chi ve nhung diem co du lieu that: Ref(C, +N) vuot qua nen cuoi se LAP lai gia dong cua cuoi cung, tao
+// doan nam ngang gia tao o cuoi chart - bo doan do bang Null.
+Chikou = IIf(BarIndex() + Shift <= LastValue(BarIndex()), Ref(C, Shift), Null);
 Plot(Chikou, "Chikou Span", colorYellow, styleLine|styleThick);
+// Cho bang thong tin: nen (dinh 5 phien) va dinh may TAI VI TRI Chikou cua tung phien duoc ve.
+ChikouNenTaiViTri = Ref(HHV(H,5), -Shift);
+ChikouMayTaiViTri = Ref(CloudTop, -Shift);
 
 Plot(Dinh52T, "Dinh 52 tuan (CUNG)", colorGrey40, styleLine|styleDots|styleNoLabel|styleThick);
 Plot(Day52T, "Day 52 tuan (CUNG)", colorGrey40, styleLine|styleDots|styleNoLabel|styleThick);
@@ -1114,6 +1122,11 @@ if (Status("action") == actionIndicator)
     tp2_c = ChotLoi_TP2_TaiMua[CursorBar];
     tp3_c = ChotLoi_TP3_TaiMua[CursorBar];
     sanyaku_c      = SoDiemSanyaku[CursorBar];
+    chikouCoDuLieu_c = CursorBar >= Shift;
+    chikouGia_c    = C[CursorBar];
+    chikouNen_c    = ChikouNenTaiViTri[CursorBar];
+    chikouMay_c    = ChikouMayTaiViTri[CursorBar];
+    chikouThoang_c = chikouCoDuLieu_c AND (chikouGia_c > chikouNen_c) AND (chikouGia_c > chikouMay_c);
     rank_c         = DiemRank[CursorBar];
     confidence_c2  = DiemConfidence[CursorBar];
     rsiThongMinh_c = RSI_ThongMinh[CursorBar];
@@ -1280,6 +1293,15 @@ if (Status("action") == actionIndicator)
     // Sanyaku - diem chat luong 0-3 sao
     GfxSetTextColor(IIf(sanyaku_c>=2, colorBrightGreen, ColorRGB(110,108,100)));
     GfxTextOut("Sanyaku: "+NumToStr(sanyaku_c,1.0)+"/3 dieu kien dat", c2X+12, zy); zy=zy+22;
+
+    // Chikou thong thoang tai phien dang tro: Chikou (= dong cua phien nay) phai TREN nen (dinh 5 phien) va
+    // TREN may tai vi tri no duoc ve (Shift phien truoc).
+    if (chikouCoDuLieu_c)
+    {
+        GfxSetTextColor(IIf(chikouThoang_c, colorBrightGreen, ColorRGB(110,108,100)));
+        GfxTextOut("Chikou thoang: "+WriteIf(chikouThoang_c,"CO","KHONG")+"  (Chikou "+NumToStr(chikouGia_c,1.2)+
+                   " | nen "+NumToStr(chikouNen_c,1.2)+" | may "+NumToStr(chikouMay_c,1.2)+")", c2X+12, zy); zy=zy+22;
+    }
 
     // RANK + CONFIDENCE (he thong goc, thu nghiem) - chi hien thi tham khao
     GfxSetTextColor(IIf(rank_c>=60, colorBrightGreen, ColorRGB(110,108,100)));
