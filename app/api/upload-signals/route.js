@@ -2,6 +2,7 @@ import { withDb, daoDamBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
 import { tinhGiaVaoWeb } from "@/lib/giaVaoWeb";
 import { tinhVungLenh, chuoiVung } from "@/components/dungChung";
+import { phatHienLenhDong, ghiLenhDaDong, ngayGiaoDichVN } from "@/lib/lenhDaDong";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
 // amibroker/7_Export_LenWeb.afl). Header CSV (45 cot; 7 cot cuoi gia_kich_hoat,
@@ -137,6 +138,7 @@ export async function POST(request) {
     await daoDamBangTinHieu(client);
     const { rows } = await client.query(
       `SELECT ma, tin, giai_ngan, gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3,
+              gia_mua, so_phien_giu, tp_da_cham,
               to_char(ngay_mua, 'YYYY-MM-DD') AS ngay_mua_txt
        FROM tin_hieu WHERE ma = ANY($1::text[])`,
       [dsMaLanNay0]
@@ -339,6 +341,20 @@ export async function POST(request) {
     }
   });
 
+  // Ghi nhan LENH DA DONG (ma vua tu NAM GIU chuyen sang BAN/TRUNG LAP) de co ket qua that theo doi.
+  // Bao ve: loi o buoc nay KHONG duoc lam hong lan upload chinh (du lieu tin hieu da ghi xong o tren).
+  const lenhDaDong = { ghi: 0 };
+  try {
+    const dsDong = phatHienLenhDong({
+      dsMoi: hangDL.map((h) => ({ ma: h.ma, tin: h.tin || "TRUNG LAP", gia: soFloat(h.gia) })),
+      banGhiCuTheoMa,
+      ngayBan: ngayGiaoDichVN(),
+    });
+    lenhDaDong.ghi = await ghiLenhDaDong(dsDong);
+  } catch (e) {
+    lenhDaDong.loi = String(e?.message || e);
+  }
+
   // Bao Zalo cho tung ma MOI chuyen sang MUA hom nay - loi Zalo (chua ket noi,
   // token het han,...) KHONG duoc lam hong response upload, chi ghi vao ket
   // qua tra ve de admin biet.
@@ -363,6 +379,7 @@ export async function POST(request) {
 
   return Response.json({
     trangThai: "ok",
+    lenhDaDong,
     soDongDaLuu: hangDL.length,
     tongSoDongNhan: hangDL.length,
     soDongLoiDaBoQua: soDongLoi,
