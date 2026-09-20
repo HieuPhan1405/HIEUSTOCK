@@ -209,6 +209,15 @@ export default async function TrangHuongDan() {
         />
       </Muc>
 
+      <Muc tieuDe="Biểu đồ kỹ thuật">
+        <p>
+          Biểu đồ nến Nhật kèm khối lượng, Ichimoku (Tenkan 9, Kijun 17, mây Senkou 33 dịch 26 phiên), đường cân bằng dài hạn (65 và 129 phiên) và MA 20/50/200. Bật/tắt từng chỉ báo ở thanh
+          phía trên, đổi khung Ngày/Tuần và chọn khoảng thời gian (3T, 6T, 1N, 3N, Tất cả). Với mã bạn đang có lệnh (đăng nhập), biểu đồ vẽ thêm vùng mua, cắt lỗ, chốt lời gần/xa,
+          mức hòa vốn và mũi tên MUA đúng ngày mua. Giá là giá thực (không điều chỉnh cổ tức/thưởng cổ phiếu) để khớp với tín hiệu; nguồn dữ liệu là bên thứ ba nên có thể trễ hoặc tạm
+          thời không tải được.
+        </p>
+      </Muc>
+
       <Muc tieuDe="Sổ lệnh đang mở">
         <p>
           Toàn bộ mã đang MUA hoặc NẮM GIỮ: ngày mua, giá mua, số phiên đã giữ, lãi/lỗ hiện tại, mốc chốt lời cao nhất đã chạm, cảnh báo (Mắt Thần, Bán

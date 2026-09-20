@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
+import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import {
   fmt,
   fmtTy,
@@ -474,6 +475,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
           <ThanhDiem nhan="RS so với VNI (20 phiên, %)" giaTri={row.rs_vni} mucMax={RS_MAX} />
           <ThanhMotChieu nhan="Breadth ngành (%)" giaTri={row.breadth_nganh} mucMax={100} hauTo="%" />
         </Card>
+      </div>
+
+      {/* BIEU DO KY THUAT */}
+      <div className="mb-4">
+        <BieuDoKyThuat ma={row.ma} vung={vungLenh} ngayMua={row.ngay_mua} />
       </div>
 
       {/* VUNG GIA + STOP-LOSS - 3 MOC CHOT LOI */}

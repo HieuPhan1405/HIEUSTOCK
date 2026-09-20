@@ -68,6 +68,10 @@ Lưu ý khi đẩy dữ liệu:
   (`lenh-da-dong`), Checklist bắt đáy (`bat-day`), Thông tin thị trường (`thi-truong`), Chi tiết mã (`ma/[ma]`),
   Hướng dẫn (`huong-dan`), Liên hệ (`lien-he`), Quản trị (`quan-tri`, noindex). Có `not-found.js`, `error.js`,
   `robots.js`, `sitemap.js`.
+- `app/bieu-do` + `components/BieuDoKyThuat.js` — biểu đồ kỹ thuật (thư viện lightweight-charts của TradingView): nến, khối lượng,
+  Ichimoku 9-17-33, đường cân bằng dài hạn 65/129, MA, vùng mua/SL/TP. Chỉ báo tính ở `lib/chiBaoKyThuat.js` (giống AFL, đã đối chiếu
+  Kijun / đường cân bằng với giá trị AFL xuất lên web). Giá lấy qua `/api/gia-lich-su` → `lib/lichSuGia.js` (API công khai VNDirect: finfo
+  cho cổ phiếu, giá thực không điều chỉnh; dchart cho VN-Index) — bên thứ ba không chính thức, có thể đổi/chặn.
 - `app/api/upload-signals/route.js` — nhận CSV tín hiệu: upsert theo mã, đóng băng giá vào/SL/TP lần đầu MUA,
   phát hiện lệnh vừa đóng, gửi Zalo khi có mã MUA mới.
 - `lib/db.js` — kết nối Postgres, tạo/nâng cấp bảng (`tin_hieu`, `lenh_da_dong`, …).

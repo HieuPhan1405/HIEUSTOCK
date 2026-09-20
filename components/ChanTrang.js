@@ -13,6 +13,7 @@ const PRIMARY = "#6C5CE7";
 const CONG_CU = [
   { href: "/", nhan: "Tổng quan thị trường" },
   { href: "/bo-loc", nhan: "Bộ lọc cổ phiếu" },
+  { href: "/bieu-do", nhan: "Biểu đồ kỹ thuật" },
   { href: "/lenh-mo", nhan: "Sổ lệnh đang mở" },
   { href: "/lenh-da-dong", nhan: "Lệnh đã đóng" },
   { href: "/bat-day", nhan: "Checklist bắt đáy" },
