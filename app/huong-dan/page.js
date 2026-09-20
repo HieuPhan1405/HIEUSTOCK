@@ -119,9 +119,11 @@ function NguyenTac() {
 
       <Muc so={6} tieuDe="Chốt lời từng phần">
         <p>
-          Mỗi mã có 3 mốc chốt lời <b style={{ color: XANH }}>TP1 / TP2 / TP3</b> cố định từ lúc mua. Nhãn{" "}
+          Mỗi mã có <b style={{ color: XANH }}>vùng chốt lời gần (TP1–TP2)</b> và <b style={{ color: XANH }}>mốc xa (TP3)</b> cố định từ lúc mua. Nhãn{" "}
           <b style={{ color: XANH }}>&quot;Đã chạm&quot;</b> nghĩa là giá đã từng lên tới mốc đó trong quá trình giữ (kể cả sau đó giá tụt lại).
-          Nên chốt dần một phần tại mỗi mốc thay vì chờ toàn bộ. Hệ thống chỉ gợi ý, không tự bán.
+          Gợi ý: chốt khoảng <b style={{ color: XANH }}>30% ở vùng gần, 30% ở mốc xa và giữ khoảng 40%</b> cho tín hiệu BÁN để lệnh thắng lớn chạy
+          tiếp. <b style={{ color: XANH }}>Sau khi chạm TP2, nên dời Stop-loss của phần còn lại về giá mua</b> để không còn rủi ro lỗ. Hệ thống chỉ
+          gợi ý, không tự bán.
         </p>
       </Muc>
 
@@ -206,7 +208,7 @@ export default async function TrangHuongDan() {
       <Muc tieuDe="Sổ lệnh đang mở">
         <p>
           Toàn bộ mã đang MUA hoặc NẮM GIỮ: ngày mua, giá mua, số phiên đã giữ, lãi/lỗ hiện tại, mốc chốt lời cao nhất đã chạm, cảnh báo (Mắt Thần, Bán
-          bớt) và nhãn giải ngân (Giải ngân 1 phần / Bổ sung). Giá mua, cắt lỗ và chốt lời được hiển thị dạng vùng: vùng mua (từ mốc chuyển mua đến cao hơn giá mua tối đa khoảng 2%, cao hơn nữa là đuổi giá), vùng cắt lỗ (từ Stop-loss lên tới đường hỗ trợ gần nhất phía trên) và vùng chốt lời (TP1 đến TP3). Bảng có bộ lọc (sàn, ngành, xu hướng, đang lãi/lỗ, mã ưu tiên...) và hiện đầy đủ các chỉ
+          bớt) và nhãn giải ngân (Giải ngân 1 phần / Bổ sung). Nhãn ↺ Mua lại nghĩa là lệnh mua lại khi giá hồi về hỗ trợ trong xu hướng tăng (sau khi lệnh trước đã đóng không lỗ), có Stop-loss riêng. Giá mua, cắt lỗ và chốt lời được hiển thị dạng vùng: vùng mua (từ mốc chuyển mua đến cao hơn giá mua tối đa khoảng 2%, cao hơn nữa là đuổi giá), vùng cắt lỗ (từ Stop-loss lên tới đường hỗ trợ gần nhất phía trên) và vùng chốt lời (TP1 đến TP3). Bảng có bộ lọc (sàn, ngành, xu hướng, đang lãi/lỗ, mã ưu tiên...) và hiện đầy đủ các chỉ
           số: điểm, Rank, Confidence, vốn hoá, GTGD, Stop-loss, TP1–3... (dùng nút &quot;Cột hiển thị&quot; để bật/tắt). Nếu dữ liệu được cập nhật giữa phiên, giá mua là giá lúc mã lần đầu hiện MUA (dấu chấm xanh cạnh giá) và không đổi ở các lần cập nhật sau; lãi/lỗ, Stop-loss và TP đều giữ theo lúc đó. Cột &quot;Mốc chuyển mua&quot; là mức
           giá chính vừa bị vượt lúc điểm chuyển sang vùng mua, để so với giá mua thực tế xem mình đang mua cao hơn bao nhiêu. Các thẻ thống kê phía trên cho
           biết tỷ lệ lãi, tỷ lệ lỗ, lãi/lỗ trung bình và tỷ lệ lệnh đã chạm chốt lời (ví dụ 10 lệnh có 7 lệnh đã chạm TP thì là 70%).

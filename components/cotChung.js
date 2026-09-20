@@ -19,6 +19,7 @@ import {
   gioGhiNhan,
   tinhVungLenh,
   chuoiVung,
+  VUNG,
   kiemTraChuanUuTien,
   NGUONG_DIEM_MUA,
 } from "@/components/dungChung";
@@ -325,11 +326,19 @@ export const CAC_COT = {
       const v = tinhVungLenh(r)?.sl;
       if (!v) return Trong;
       const tt = { cham: ["đã chạm Stop-loss", DO], trong: ["giá trong vùng", VANG], tren: ["giá còn an toàn", MUTED] }[v.trangThai];
+      const hoaVon = tinhVungLenh(r)?.hoaVon;
       return (
-        <div className="flex flex-col items-end leading-tight" title="Từ Stop-loss (đáy vùng, cắt dứt khoát) lên tới đường hỗ trợ gần nhất phía trên">
-          <span style={{ color: DO }}>{chuoiVung(v.tu, v.den)}</span>
-          <span className="text-[10px]" style={{ color: tt[1] }}>
-            {tt[0]}
+        <div
+          className="flex flex-col items-end leading-tight"
+          title={
+            v.xa
+              ? "Stop-loss lúc mua đã cách giá hiện tại rất xa nên chỉ còn mang tính tham khảo; thoát thật theo tín hiệu BÁN"
+              : "Từ Stop-loss (đáy vùng, cắt dứt khoát) lên tới đường hỗ trợ gần nhất phía trên"
+          }
+        >
+          <span style={{ color: v.xa ? MUTED : DO }}>{chuoiVung(v.tu, v.den)}</span>
+          <span className="text-[10px]" style={{ color: hoaVon ? VANG : v.xa ? MUTED : tt[1] }}>
+            {hoaVon ? `nên dời về hòa vốn ${fmt(hoaVon)}` : v.xa ? "chỉ tham khảo (đã cách xa)" : tt[0]}
           </span>
         </div>
       );
@@ -343,11 +352,23 @@ export const CAC_COT = {
     hien: (r) => {
       const v = tinhVungLenh(r)?.tp;
       if (!v) return Trong;
+      const c = VUNG.tyLeChot;
       return (
-        <div className="flex flex-col items-end leading-tight" title={`TP1 đến TP3${v.giua ? ` (TP2 = ${fmt(v.giua)})` : ""}`}>
-          <span style={{ color: XANH }}>{chuoiVung(v.tu, v.den)}</span>
-          <span className="text-[10px]" style={{ color: v.daCham > 0 ? XANH : MUTED }}>
-            {v.daCham > 0 ? `đã chạm TP${v.daCham}` : "chưa chạm TP1"}
+        <div
+          className="flex flex-col items-end leading-tight"
+          title={`Gợi ý: chốt khoảng ${c.gan}% ở vùng gần (TP1–TP2), ${c.xa}% ở mốc xa (TP3), giữ khoảng ${c.giu}% cho tín hiệu BÁN`}
+        >
+          <span style={{ color: v.daCham >= 2 ? XANH : undefined }}>
+            <span className="text-[10px]" style={{ color: MUTED }}>
+              gần{" "}
+            </span>
+            {chuoiVung(v.gan.tu, v.gan.den)}
+          </span>
+          <span style={{ color: v.daCham >= 3 ? XANH : undefined }}>
+            <span className="text-[10px]" style={{ color: MUTED }}>
+              xa{" "}
+            </span>
+            {fmt(v.xa)}
           </span>
         </div>
       );

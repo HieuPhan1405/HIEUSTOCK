@@ -9,11 +9,13 @@ import {
   chamTPCaoNhat,
   chuoiKhoiLuong,
   nhanGiaiNgan,
+  nhanLoaiVao,
   kiemTraChuanUuTien,
   gioGhiNhan,
   mocKichHoat,
   tinhVungLenh,
   chuoiVung,
+  VUNG,
   TREND_MAX,
   MOM_MAX,
   DT_MAX,
@@ -320,6 +322,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
               ◐ {nhanGiaiNgan(row).nhan}
             </span>
           )}
+          {nhanLoaiVao(row) && (
+            <span className="mt-2 text-[11px] font-bold" style={{ color: nhanLoaiVao(row).mau }} title={nhanLoaiVao(row).moTa}>
+              ↺ {nhanLoaiVao(row).nhan}
+            </span>
+          )}
           <div className="mt-4 pt-4 border-t w-full" style={{ borderColor: VIEN }}>
             <p style={{ fontFamily: "'JetBrains Mono', monospace", color: "#22C55E" }} className="text-base">
               {fmt(row.gia)}
@@ -516,7 +523,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
             <div className="rounded p-2" style={{ background: "#2C1420", border: "1px solid #4A2230" }}>
               <div className="flex items-center justify-between">
                 <span className="text-xs" style={{ color: "#F1A9A9" }}>
-                  {vungLenh?.sl ? "Vùng cắt lỗ" : "Stop-loss (nếu đang giữ)"}
+                  {vungLenh?.sl ? (vungLenh.sl.xa ? "Vùng cắt lỗ lúc mua (tham khảo)" : "Vùng cắt lỗ") : "Stop-loss (nếu đang giữ)"}
                 </span>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#EF4444" }} className="text-sm">
                   {vungLenh?.sl ? chuoiVung(vungLenh.sl.tu, vungLenh.sl.den) : fmt(row.stop_loss)}
@@ -527,8 +534,19 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
               </div>
               {vungLenh?.sl && (
                 <p className="text-[10px] leading-snug mt-1" style={{ color: "#C08A8A" }}>
-                  Đáy vùng {fmt(vungLenh.sl.tu)} là mức cắt dứt khoát; đỉnh vùng là đường hỗ trợ gần nhất phía trên — giá rơi vào vùng này là
-                  lúc cần theo dõi sát.
+                  {vungLenh.sl.xa
+                    ? "Mức này đã cách giá hiện tại rất xa nên chỉ còn mang tính tham khảo — thoát lệnh thật theo tín hiệu BÁN của hệ thống."
+                    : `Đáy vùng ${fmt(vungLenh.sl.tu)} là mức cắt dứt khoát; đỉnh vùng là đường hỗ trợ gần nhất phía trên — giá rơi vào vùng này là lúc cần theo dõi sát.`}
+                </p>
+              )}
+              {vungLenh?.hoaVon && (
+                <p className="text-[10px] leading-snug mt-1 font-bold" style={{ color: "#FBBF24" }}>
+                  Đã chạm TP2 → nên dời Stop-loss của phần còn lại về giá mua ({fmt(vungLenh.hoaVon)}) để không còn rủi ro lỗ.
+                </p>
+              )}
+              {vungLenh?.sl?.xa && vungLenh.sl.canhBao != null && (
+                <p className="text-[10px] leading-snug mt-1" style={{ color: "#C08A8A" }}>
+                  Mức cảnh báo bảo vệ lãi (chỉ để theo dõi, không phải lệnh cắt): Kijun {fmt(vungLenh.sl.canhBao)} ({pct(khoangCach(vungLenh.sl.canhBao), 2)}).
                 </p>
               )}
             </div>
@@ -540,10 +558,19 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
             3 mốc chốt lời từng phần
           </p>
           {vungLenh?.tp && (
-            <p className="text-xs mb-2" style={{ color: "#A6A6B3" }}>
-              Vùng chốt lời:{" "}
-              <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: "#22C55E" }}>{chuoiVung(vungLenh.tp.tu, vungLenh.tp.den)}</strong> (TP1 → TP3)
-            </p>
+            <div className="mb-3 rounded p-2" style={{ background: "#0B0B10" }}>
+              <p className="text-xs" style={{ color: "#A6A6B3" }}>
+                Vùng chốt lời gần (TP1–TP2):{" "}
+                <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: "#22C55E" }}>{chuoiVung(vungLenh.tp.gan.tu, vungLenh.tp.gan.den)}</strong>
+              </p>
+              <p className="text-xs" style={{ color: "#A6A6B3" }}>
+                Mốc xa (TP3):{" "}
+                <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: "#22C55E" }}>{fmt(vungLenh.tp.xa)}</strong>
+              </p>
+              <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
+                Gợi ý: chốt khoảng {VUNG.tyLeChot.gan}% ở vùng gần, {VUNG.tyLeChot.xa}% ở mốc xa, giữ khoảng {VUNG.tyLeChot.giu}% cho tín hiệu BÁN.
+              </p>
+            </div>
           )}
           {(() => {
             const mucDaCham = chamTPCaoNhat(row); // "TP1"|"TP2"|"TP3"|null - da cham hay chua TUNG LUC NAO trong qua trinh giu

@@ -82,6 +82,17 @@ export function datChuanUuTien(row) {
 // Lenh dang mo = ma vua bao MUA hoac dang NAM GIU. Cac cot lien quan vi the
 // (gia mua, Stop-loss, TP...) chi co nghia voi cac ma nay - ma khac AFL van
 // xuat gia tri cua lan mua GAN NHAT, hien ra se gay hieu nham.
+// Nhan "Mua lại": lenh MUA phat sinh tu cong tac MUA LAI trong AFL (gia hoi ve ho tro trong
+// xu huong tang, sau khi lenh truoc da dong khong lo) - khac Buy thuong (cot loai_vao).
+export function nhanLoaiVao(row) {
+  if (row?.loai_vao !== "MUA LAI") return null;
+  return {
+    nhan: "Mua lại",
+    mau: "#22D3EE",
+    moTa: "Lệnh mua lại: giá hồi về hỗ trợ trong xu hướng tăng, sau khi lệnh trước đã đóng không lỗ. Có Stop-loss riêng dưới hỗ trợ.",
+  };
+}
+
 export function laDangGiu(row) {
   return row?.tin === "MUA" || row?.tin === "NAM GIU";
 }
@@ -151,9 +162,13 @@ export function sapChamMoc(row, bienPct) {
 //    (mua cao hon nua la dui gia). Chua co moc thi bat dau tu chinh gia mua.
 //  - Vung cat lo: tu Stop-loss len toi duong ho tro GAN NHAT nam giua Stop-loss va gia mua
 //    (Kijun / duong can bang dai han), rong toi thieu rongSLToiThieuPct%. Cham day vung = cat.
-//  - Vung chot loi: tu TP1 den TP3 (TP2 nam giua).
+//  - Vung chot loi: GOM TP1-TP2 thanh "vung gan" (2 moc nay thuong sat nhau, gia di qua trong
+//    vai phien) + TP3 la "moc xa"; goi y chot ~30% o vung gan, ~30% o moc xa, giu ~40% cho
+//    tin hieu BAN. Sau khi cham TP2, goi y doi Stop-loss phan con lai ve gia mua (hoa von).
+//  - Khi Stop-loss luc mua da cach gia hien tai qua xa (lenh lai lon) thi chi con mang tinh
+//    tham khao - thoat that van theo tin hieu BAN cua he thong.
 // Tra null neu ma khong dang giu. Hang so o day chinh duoc neu can doi.
-export const VUNG = { tranDuoiPct: 2, rongSLToiThieuPct: 1 };
+export const VUNG = { tranDuoiPct: 2, rongSLToiThieuPct: 1, slXaPct: 15, tyLeChot: { gan: 30, xa: 30, giu: 40 } };
 
 export function tinhVungLenh(row) {
   if (!laDangGiu(row) || !(row.gia_mua > 0)) return null;
@@ -170,15 +185,33 @@ export function tinhVungLenh(row) {
     const hoTro = [row.kijun, row.gg_top, row.gg_bot].map(Number).filter((v) => Number.isFinite(v) && v > stop && v < giaMua);
     const gan = hoTro.length ? Math.min(...hoTro) : null;
     const den = Math.min(giaMua, Math.max(gan ?? 0, stop * (1 + VUNG.rongSLToiThieuPct / 100)));
-    sl = { tu: stop, den, hoTro: gan, trangThai: gia <= stop ? "cham" : gia <= den ? "trong" : "tren" };
+    sl = {
+      tu: stop,
+      den,
+      hoTro: gan,
+      trangThai: gia <= stop ? "cham" : gia <= den ? "trong" : "tren",
+      // Stop-loss luc mua cach gia hien tai qua xa -> khong con y nghia bao ve lai.
+      xa: gia > 0 && (gia - den) / gia > VUNG.slXaPct / 100,
+      canhBao: row.kijun > 0 && row.kijun < gia ? Number(row.kijun) : null,
+    };
   }
 
   let tp = null;
   if (row.tp1 > 0 && row.tp3 > 0) {
     const daCham = { TP1: 1, TP2: 2, TP3: 3 }[chamTPCaoNhat(row)] ?? 0;
-    tp = { tu: Number(row.tp1), den: Number(row.tp3), giua: row.tp2 > 0 ? Number(row.tp2) : null, daCham };
+    const tp2 = row.tp2 > 0 ? Number(row.tp2) : Number(row.tp1);
+    tp = {
+      tu: Number(row.tp1),
+      den: Number(row.tp3),
+      giua: row.tp2 > 0 ? Number(row.tp2) : null,
+      gan: { tu: Number(row.tp1), den: tp2 },
+      xa: Number(row.tp3),
+      daCham,
+    };
   }
-  return { mua, sl, tp };
+  // Sau khi cham TP2: goi y doi Stop-loss phan con lai ve gia mua (chi hien thi, khong doi tin hieu).
+  const hoaVon = tp && tp.daCham >= 2 ? giaMua : null;
+  return { mua, sl, tp, hoaVon };
 }
 
 // "25 – 25.5" (hoac 1 so neu 2 dau bang nhau sau khi lam tron).

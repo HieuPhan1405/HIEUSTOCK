@@ -1,6 +1,7 @@
 import { withDb, daoDamBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
 import { tinhGiaVaoWeb } from "@/lib/giaVaoWeb";
+import { tinhVungLenh, chuoiVung } from "@/components/dungChung";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
 // amibroker/7_Export_LenWeb.afl). Header CSV (45 cot; 7 cot cuoi gia_kich_hoat,
@@ -10,7 +11,7 @@ import { tinhGiaVaoWeb } from "@/lib/giaVaoWeb";
 // stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,
 // kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,
 // diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat,
-// moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao
+// moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao,loai_vao
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -64,6 +65,29 @@ function soNgayVN(v) {
   if (!m) return null;
   const [, d, mo, y] = m;
   return `${y}-${mo.padStart(2, "0")}-${d.padStart(2, "0")}`;
+}
+
+// Noi dung vung mua / cat lo / chot loi cho tin Zalo (lenh MUA moi chi can 3 thong tin nay).
+function dongVung(h) {
+  const gia = soFloat(h.gia);
+  const v = tinhVungLenh({
+    tin: "MUA",
+    gia,
+    gia_mua: soFloat(h.gia_mua) ?? gia,
+    gia_kich_hoat: soFloat(h.gia_kich_hoat),
+    stop_loss: soFloat(h.stop_loss),
+    tp1: soFloat(h.tp1),
+    tp2: soFloat(h.tp2),
+    tp3: soFloat(h.tp3),
+    kijun: soFloat(h.kijun),
+    gg_top: soFloat(h.gg_top),
+    gg_bot: soFloat(h.gg_bot),
+  });
+  if (!v) return `Giá: ${h.gia}`;
+  const dong = [`Vùng mua: ${chuoiVung(v.mua.tu, v.mua.den)}`];
+  if (v.sl) dong.push(`Cắt lỗ: ${chuoiVung(v.sl.tu, v.sl.den)}`);
+  if (v.tp) dong.push(`Chốt lời: gần ${chuoiVung(v.tp.gan.tu, v.tp.gan.den)} · xa ${chuoiVung(v.tp.xa, v.tp.xa)}`);
+  return dong.join("\n");
 }
 
 export async function POST(request) {
@@ -169,7 +193,7 @@ export async function POST(request) {
          gia_mua, ngay_mua, ban_bot, san, nganh, tp_da_cham,
          diem_rank, diem_confidence, khoi_luong_tb20, giai_ngan,
          gia_kich_hoat, moc_kich_hoat, moc_gia, moc_loai, moc_cach_pct, diem_neu_vuot,
-         gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3, che_do_vao)
+         gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3, che_do_vao, loai_vao)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -181,7 +205,7 @@ export async function POST(request) {
          $35::float8[], $36::float8[], $37::float8[], $38::text[],
          $39::float8[], $40::text[], $41::float8[], $42::text[], $43::float8[], $44::float8[],
          $45::float8[], $46::timestamptz[], $47::float8[], $48::float8[], $49::float8[], $50::float8[],
-         $51::text[]
+         $51::text[], $52::text[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -234,6 +258,7 @@ export async function POST(request) {
          vao_tp2 = EXCLUDED.vao_tp2,
          vao_tp3 = EXCLUDED.vao_tp3,
          che_do_vao = EXCLUDED.che_do_vao,
+         loai_vao = EXCLUDED.loai_vao,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -287,6 +312,7 @@ export async function POST(request) {
         vaoTp2,
         vaoTp3,
         cot("che_do_vao", soText),
+        cot("loai_vao", soText),
       ]
     );
 
@@ -317,7 +343,7 @@ export async function POST(request) {
   let zaloLoi = null;
   for (const h of cacMaMuaMoi) {
     const ketQua = await guiTinNhanZalo(
-      `🟢 TÍN HIỆU MUA MỚI: ${h.ma}\nGiá: ${h.gia}\nĐiểm: ${Number(h.diem).toFixed(2)}${
+      `🟢 TÍN HIỆU ${h.loai_vao === "MUA LAI" ? "MUA LẠI" : "MUA MỚI"}: ${h.ma}\n${dongVung(h)}${
         h.giai_ngan === "MOT PHAN" ? "\n⚠ Giải ngân 1 phần (RS yếu) — chờ phiên sau để bổ sung" : ""
       }\nXem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`
     );

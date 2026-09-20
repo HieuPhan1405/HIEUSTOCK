@@ -18,7 +18,7 @@ import {
   useCotHienThi,
   ChonCotHienThi,
 } from "@/components/boLocChung";
-import { nhanGiaiNgan, datChuanUuTien } from "@/components/dungChung";
+import { nhanGiaiNgan, nhanLoaiVao, datChuanUuTien } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -61,6 +61,11 @@ const COT_RIENG = {
             ◐ {nhanGiaiNgan(row).nhan}
           </span>
         )}
+        {nhanLoaiVao(row) && (
+          <span className="text-[10px] font-bold tracking-wide" style={{ color: nhanLoaiVao(row).mau }} title={nhanLoaiVao(row).moTa}>
+            ↺ {nhanLoaiVao(row).nhan}
+          </span>
+        )}
         {row.ban_bot && (
           <span className="text-[10px] font-bold tracking-wide" style={{ color: CAM }}>
             ⚠ Bán bớt
@@ -83,14 +88,14 @@ const THU_TU_COT = [
   "ngay_mua",
   "gia_mua",
   "vung_mua",
+  "vung_sl",
+  "vung_tp",
+  "lai_lo_pct",
   "gia_kich_hoat",
   "ngay_ban",
   "gia_ban",
   "so_phien_giu",
-  "lai_lo_pct",
   "chot_loi",
-  "vung_sl",
-  "vung_tp",
   "stop_loss",
   "tp1",
   "tp2",
@@ -119,8 +124,9 @@ const THU_TU_COT = [
   "tin",
 ];
 const DS_KHOA_CHON = THU_TU_COT.filter((k) => k !== "ma" && k !== "tin");
-// Vung mua/cat lo/chot loi thay cho Stop-loss + TP1-3 don le (van bat lai duoc qua "Cot hien thi").
-const MAC_DINH = THU_TU_COT.filter((k) => !["ngay_ban", "gia_ban", "stop_loss", "tp1", "tp2", "tp3"].includes(k));
+// Mac dinh GON: chi can vung mua, vung cat lo, vung chot loi (+ gia hien tai, lai/lo, trang thai).
+// Cac chi so khac van bat duoc bang nut "Cot hien thi" (hoac "Hien tat ca").
+const MAC_DINH = ["ma", "gia", "vung_mua", "vung_sl", "vung_tp", "lai_lo_pct", "tin"];
 
 function mauNenDong(row) {
   return row.mat_than ? "#241419" : row.ban_bot ? "#241C10" : NEN_CARD;
@@ -131,7 +137,7 @@ export default function BangLenhMo({ duLieu }) {
   // hanh vi cu cho toi khi nguoi dung tu bam sap xep cot khac.
   const [sapXep, setSapXep] = useState(null);
   const [loc, datLoc] = useState({ ...LOC_TRONG, tin: "", laiLo: "", chiGiaiNgan: false });
-  const cotHienThi = useCotHienThi("cs_cot_lenhmo_v2", DS_KHOA_CHON, MAC_DINH);
+  const cotHienThi = useCotHienThi("cs_cot_lenhmo_v3", DS_KHOA_CHON, MAC_DINH);
   // Trang nay da bat buoc dang nhap tu server (xem app/lenh-mo/page.js) nen
   // luon coi la da dang nhap - chi can nap ban do Tham gia, khong can kiem
   // tra lai phien dang nhap.

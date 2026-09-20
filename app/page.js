@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
-import { fmt, pct, phanLoaiXuHuong, chamTPCaoNhat, nhanGiaiNgan } from "@/components/dungChung";
+import { fmt, pct, phanLoaiXuHuong, chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, tinhVungLenh, chuoiVung } from "@/components/dungChung";
 import SignalPill from "@/components/SignalPill";
 import DongHoGiaoDich from "@/components/DongHoGiaoDich";
 
@@ -454,18 +454,28 @@ function CotTinHieu({ tieuDe, mau, danhSach, hienRank }) {
           style={{ borderColor: "#1D1D26" }}
         >
           <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "16px" }}>{row.ma}</span>
-          <span className="text-xs" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
-            điểm {row.diem?.toFixed(2) ?? "—"}
-            {hienRank && row.diem_rank != null && row.diem_confidence != null && (
-              <>
-                {" "}
-                · Rank {row.diem_rank.toFixed(0)} · Conf {row.diem_confidence.toFixed(0)}
-              </>
-            )}
-            {hienRank && nhanGiaiNgan(row) && (
-              <span style={{ color: nhanGiaiNgan(row).mau, fontWeight: 700 }}> · ◐ {nhanGiaiNgan(row).nhan}</span>
-            )}
-          </span>
+          {hienRank && tinhVungLenh(row) ? (
+            // Lenh MUA chi can 3 thong tin: vung mua, vung cat lo, vung chot loi.
+            <span className="text-xs leading-relaxed" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+              <span>
+                Mua <b style={{ color: "#F5F5F7" }}>{chuoiVung(tinhVungLenh(row).mua.tu, tinhVungLenh(row).mua.den)}</b>
+                {nhanGiaiNgan(row) && <span style={{ color: nhanGiaiNgan(row).mau, fontWeight: 700 }}> · ◐ {nhanGiaiNgan(row).nhan}</span>}
+                {nhanLoaiVao(row) && <span style={{ color: nhanLoaiVao(row).mau, fontWeight: 700 }}> · ↺ {nhanLoaiVao(row).nhan}</span>}
+              </span>
+              <br />
+              <span>
+                Cắt lỗ <b style={{ color: DO }}>{tinhVungLenh(row).sl ? chuoiVung(tinhVungLenh(row).sl.tu, tinhVungLenh(row).sl.den) : "—"}</b>
+                {" · "}Chốt lời{" "}
+                <b style={{ color: XANH }}>
+                  {tinhVungLenh(row).tp ? `${chuoiVung(tinhVungLenh(row).tp.gan.tu, tinhVungLenh(row).tp.gan.den)} / ${fmt(tinhVungLenh(row).tp.xa)}` : "—"}
+                </b>
+              </span>
+            </span>
+          ) : (
+            <span className="text-xs" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+              điểm {row.diem?.toFixed(2) ?? "—"}
+            </span>
+          )}
           <span
             className="text-right"
             style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: row.doi >= 0 ? XANH : DO }}
