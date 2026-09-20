@@ -261,6 +261,16 @@ InFVGZoneOk = IIf(CheDoFVG=="Luon TAT", 1,
               IIf(CheDoFVG=="Luon BAT", InFVGZone_H3,
               IIf(BreakoutManh AND VolumeGateNgayDau, 1, InFVGZone_H3)));
 
+// GATE THU NGHIEM: CHIKOU SPAN THONG THOANG (rieng cho file 10 - xem giai
+// thich day du o dau file). Can du du lieu Shift phien de so sanh duoc.
+// DAT TRUOC vong lap TurnedGreen: dieu kien nay phai nam TRONG vong lap chon phien Mua, neu chi
+// AND vao Buy sau do thi khi Chikou chua thong thoang o phien dau tien cua 1 dot diem cao, CA DOT
+// bi mat (TurnedGreen chi chot 1 lan / dot) - vd STB Chikou thoang tu 15/01 nhung bi bo den thang 6.
+DuDuLieuChoChikou_Gate = BarIndex() >= Shift;
+ChikouTrenGia = C > Ref(HHV(H,5), -Shift);
+ChikouTrenMay = C > Ref(CloudTop, -Shift);
+ChikouThongThoangOk = IIf(DuDuLieuChoChikou_Gate, ChikouTrenGia AND ChikouTrenMay, False);
+
 TurnedGreen = 0;
 DaMuaDotNay = 0;
 for (i = 1; i < BarCount; i++)
@@ -272,7 +282,8 @@ for (i = 1; i < BarCount; i++)
     else
     {
         DuDieuKienVolumeNgayDau = !VuaVaoVungMua[i] OR VolumeGateNgayDau[i];
-        if (ConsecutiveAbove[i] AND InFVGZoneOk[i] AND ADXGateOk[i] AND DuDieuKienVolumeNgayDau AND !DaMuaDotNay[i-1])
+        if (ConsecutiveAbove[i] AND InFVGZoneOk[i] AND ADXGateOk[i] AND DuDieuKienVolumeNgayDau AND !DaMuaDotNay[i-1]
+            AND ChikouThongThoangOk[i])
         {
             TurnedGreen[i] = 1;
             DaMuaDotNay[i] = 1;
@@ -539,13 +550,6 @@ ChoPhepMuaKhiRSAm = ParamToggle("RS<=0: van bao MUA nhung chi giai ngan 1 phan (
 HanBoSungPhien = Param("Han bo sung phan con lai sau khi mua tham do (phien)", 5, 1, 20, 1);
 RSGateOk = IIf(ChoPhepMuaKhiRSAm, 1, RSVNI_OK);
 
-// GATE THU NGHIEM: CHIKOU SPAN THONG THOANG (rieng cho file 10 - xem giai
-// thich day du o dau file). Can du du lieu Shift phien de so sanh duoc.
-DuDuLieuChoChikou_Gate = BarIndex() >= Shift;
-ChikouTrenGia = C > Ref(HHV(H,5), -Shift);
-ChikouTrenMay = C > Ref(CloudTop, -Shift);
-ChikouThongThoangOk = IIf(DuDuLieuChoChikou_Gate, ChikouTrenGia AND ChikouTrenMay, False);
-
 Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk
       AND ChikouThongThoangOk;
 
@@ -651,7 +655,7 @@ HoTroMuaLaiGia = IIf(KieuHoTroMuaLai == "Kijun", Kijun, CBBot);
 MuaLaiTinHieu = BatMuaLai AND (HoTroMuaLaiGia > 0)
     AND (L <= HoTroMuaLaiGia * (1 + DoChamHoTroPct/100)) AND (C > HoTroMuaLaiGia)
     AND (C > O) AND (C > Ref(C,-1)) AND (TotalScore >= DiemToiThieuMuaLai) AND (C > CloudTop)
-    AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
+    AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk AND ChikouThongThoangOk;
 SLMuaLaiTho = Min(HoTroMuaLaiGia - DemSLtheoATR * ATRVal, C * (1 - SLToiThieuPct/100));
 SLMuaLaiTho = Max(SLMuaLaiTho, C * (1 - HardStopPct/100));
 StopMuaLaiBar = IIf((HoTroMuaLaiGia > 0) AND (HoTroMuaLaiGia < C), SLMuaLaiTho,
