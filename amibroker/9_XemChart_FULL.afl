@@ -1046,7 +1046,26 @@ Plot(Kijun, "Kijun 17", ColorRGB(255,140,0), styleLine|styleThick);
 
 CloudBullish = SenkouA > SenkouB;
 CloudColor = IIf(CloudBullish, ColorRGB(0,120,0), ColorRGB(150,0,0));
-PlotOHLC(CloudTop, CloudTop, CloudBot, CloudBot, "May", CloudColor, styleCloud|styleNoLabel);
+
+// MAY VA 2 DUONG SENKOU KEO DAI VE TUONG LAI: ve mang GOC (SenkouA_Goc/SenkouB_Goc, chua dich) voi XShift = Shift
+// nen may/duong duoc ve them Shift phien ben phai nen cuoi cung (phan "tuong lai"). Khoang trong ben phai do
+// GraphXSpace tao ra. Cac bien CloudTop/CloudBot (da dich, dung cho logic Mua/Ban) KHONG doi - day chi la ve hinh.
+VeMayTuongLai = ParamToggle("Ve may + Senkou keo dai Shift phien ve tuong lai", "Tat|Bat", 1);
+KhoangTrongPhaiPct = Param("Khoang trong ben phai chart (%) - de hien may tuong lai", 18, 0, 40, 1);
+GraphXSpace = KhoangTrongPhaiPct;
+if (VeMayTuongLai)
+{
+    MayTopGoc = Max(SenkouA_Goc, SenkouB_Goc);
+    MayBotGoc = Min(SenkouA_Goc, SenkouB_Goc);
+    MauMayGoc = IIf(SenkouA_Goc > SenkouB_Goc, ColorRGB(0,120,0), ColorRGB(150,0,0));
+    PlotOHLC(MayTopGoc, MayTopGoc, MayBotGoc, MayBotGoc, "May", MauMayGoc, styleCloud|styleNoLabel, Null, Null, Shift);
+    Plot(SenkouA_Goc, "Senkou A", ColorRGB(0,190,0), styleLine|styleNoLabel, Null, Null, Shift);
+    Plot(SenkouB_Goc, "Senkou B", ColorRGB(220,50,50), styleLine|styleNoLabel, Null, Null, Shift);
+}
+else
+{
+    PlotOHLC(CloudTop, CloudTop, CloudBot, CloudBot, "May", CloudColor, styleCloud|styleNoLabel);
+}
 
 // MAU SANG HON theo yeu cau ("ve ro hon") - mau nau cu qua toi, gan nhu
 // khuat tren nen den cua chart. Doi sang tong tim sang, chua dung voi
