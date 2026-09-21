@@ -385,7 +385,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
 
       <p className="px-3 py-2 text-[11px] border-t" style={{ borderColor: VIEN, color: MUTED }}>
         Giá thực (không điều chỉnh cổ tức/thưởng cổ phiếu), khối lượng khớp lệnh; chỉ báo tính giống hệ thống tín hiệu (Ichimoku 9-17-33, mây dịch 26 phiên, đường
-        cân bằng dài hạn 65/129). Dữ liệu tham khảo, có thể trễ so với thị trường.
+        cân bằng dài hạn 65/129). Không phải dữ liệu thời gian thực: nến cuối là phiên gần nhất mà nguồn đã cập nhật, và web làm mới tối đa 10 phút một lần.
       </p>
     </div>
   );
