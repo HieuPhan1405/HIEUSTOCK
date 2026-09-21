@@ -248,10 +248,36 @@ export function tinhSauTP3(row) {
         trangThai: gia <= ht[0] * (1 + VUNG.tranDuoiPct / 100) ? "trong" : "cho",
       }
     : null;
+  // Lenh MUA MOI (vong 2) da duoc AFL bao: co gia mua / Stop-loss / TP RIENG, tach khoi vi the cu.
+  const daVao = row.dang_giu_moi === true && row.gia_mua_moi > 0;
+  const lenhMoi = daVao
+    ? {
+        giaMua: Number(row.gia_mua_moi),
+        stop: row.stop_moi > 0 ? Number(row.stop_moi) : null,
+        tp1: row.tp1_moi > 0 ? Number(row.tp1_moi) : null,
+        tp2: row.tp2_moi > 0 ? Number(row.tp2_moi) : null,
+        tp3: row.tp3_moi > 0 ? Number(row.tp3_moi) : null,
+        laiLoPct: gia > 0 ? (gia / Number(row.gia_mua_moi) - 1) * 100 : null,
+        ngay: row.ngay_mua_moi ?? null,
+      }
+    : null;
+  const daDongMoi = !daVao && row.gia_mua_moi > 0; // da mua moi roi va da dong (cham Stop-loss rieng), khong mua them nua tren lenh goc nay
   return {
     viTheCu: { giaMua: Number(row.gia_mua), laiLoPct: row.lai_lo_pct, tyLeConLai: TY_LE_CHOT.giu },
     muaMoi,
     diemDu: row.diem >= NGUONG_DIEM_MUA,
+    lenhMoi,
+    daDongMoi,
+  };
+}
+
+// Nhan "Mua thêm" khi AFL dang giu lenh MUA MOI sau TP3.
+export function nhanMuaThem(row) {
+  if (row?.dang_giu_moi !== true) return null;
+  return {
+    nhan: "Mua thêm sau TP3",
+    mau: "#22D3EE",
+    moTa: "Lệnh mua mới sau khi lệnh gốc đã chốt đủ TP3, có giá mua, Stop-loss và chốt lời riêng, tách khỏi vị thế cũ.",
   };
 }
 

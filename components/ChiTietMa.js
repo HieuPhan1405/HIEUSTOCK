@@ -11,6 +11,7 @@ import {
   chuoiKhoiLuong,
   nhanGiaiNgan,
   nhanLoaiVao,
+  nhanMuaThem,
   laChoPhienSau,
   kiemTraChuanUuTien,
   gioGhiNhan,
@@ -339,6 +340,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
               ◐ {nhanGiaiNgan(row).nhan}
             </span>
           )}
+          {nhanMuaThem(row) && (
+            <span className="mt-2 text-[11px] font-bold" style={{ color: nhanMuaThem(row).mau }} title={nhanMuaThem(row).moTa}>
+              ➕ {nhanMuaThem(row).nhan}
+            </span>
+          )}
           {laChoPhienSau(row) && (
             <span className="mt-2 text-[11px] font-bold" style={{ color: "#FBBF24" }} title="Đã đạt điểm MUA nhưng phiên đầu chưa đủ khối lượng xác nhận; phiên sau vẫn trên ngưỡng điểm thì sẽ MUA.">
               ⏳ Đạt điểm, chờ phiên sau
@@ -523,7 +529,25 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
               <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#22C55E" }}>
                 Điểm mua mới (tham khảo)
               </p>
-              {sauTP3.muaMoi ? (
+              {sauTP3.lenhMoi ? (
+                <>
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#22D3EE" }} className="text-lg">
+                    Đã MUA THÊM {fmt(sauTP3.lenhMoi.giaMua)}
+                  </p>
+                  <p className="text-sm" style={{ fontFamily: "'JetBrains Mono', monospace", color: sauTP3.lenhMoi.laiLoPct >= 0 ? "#22C55E" : "#EF4444" }}>
+                    {pct(sauTP3.lenhMoi.laiLoPct, 2)} so với giá mua mới
+                  </p>
+                  <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
+                    {sauTP3.lenhMoi.stop ? `Cắt lỗ riêng ${fmt(sauTP3.lenhMoi.stop)}. ` : ""}
+                    {sauTP3.lenhMoi.tp1 ? `Chốt lời mới ${fmt(sauTP3.lenhMoi.tp1)} / ${fmt(sauTP3.lenhMoi.tp2)} / ${fmt(sauTP3.lenhMoi.tp3)}. ` : ""}
+                    Lệnh mua mới thoát khi chạm cắt lỗ riêng hoặc khi lệnh gốc có tín hiệu BÁN.
+                  </p>
+                </>
+              ) : sauTP3.daDongMoi ? (
+                <p className="text-sm" style={{ color: "#8B8B99" }}>
+                  Lệnh mua thêm đã đóng (chạm cắt lỗ riêng). Mỗi lệnh gốc chỉ mua thêm tối đa 1 lần.
+                </p>
+              ) : sauTP3.muaMoi ? (
                 <>
                   <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#22C55E" }} className="text-lg">
                     Vùng mua {chuoiVung(sauTP3.muaMoi.tu, sauTP3.muaMoi.den)}
@@ -540,7 +564,9 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
                 </p>
               )}
               <p className="text-[10px] leading-snug mt-1.5" style={{ color: "#6B6B78" }}>
-                Gợi ý hiển thị từ dữ liệu web, chưa phải tín hiệu MUA của hệ thống. Lệnh mua mới có giá mua, Stop-loss riêng, tách khỏi vị thế cũ.
+                {sauTP3.lenhMoi || sauTP3.daDongMoi
+                  ? "Tín hiệu MUA THÊM do AFL phát khi giá hồi về hỗ trợ sau TP3 (nến xanh, điểm còn đạt ngưỡng)."
+                  : "Vùng gợi ý từ dữ liệu web. Hệ thống sẽ báo MUA THÊM khi giá hồi về hỗ trợ với nến xanh và điểm còn đạt ngưỡng; lệnh mới có giá mua, Stop-loss riêng."}
               </p>
             </div>
           </div>

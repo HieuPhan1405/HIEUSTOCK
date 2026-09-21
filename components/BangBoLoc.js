@@ -21,7 +21,7 @@ import {
   useCotHienThi,
   ChonCotHienThi,
 } from "@/components/boLocChung";
-import { chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, datChuanUuTien, sapChamMoc, laChoPhienSau, laDangGiu, NGUONG_DIEM_MUA } from "@/components/dungChung";
+import { chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, nhanMuaThem, datChuanUuTien, sapChamMoc, laChoPhienSau, laDangGiu, NGUONG_DIEM_MUA } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -105,6 +105,11 @@ const COT_RIENG = {
               {nhanLoaiVao(row) && (
                 <span className="text-[10px] font-bold" style={{ color: nhanLoaiVao(row).mau }} title={nhanLoaiVao(row).moTa}>
                   ↺ {nhanLoaiVao(row).nhan}
+                </span>
+              )}
+              {nhanMuaThem(row) && (
+                <span className="text-[10px] font-bold" style={{ color: nhanMuaThem(row).mau }} title={nhanMuaThem(row).moTa}>
+                  ➕ {nhanMuaThem(row).nhan}
                 </span>
               )}
               {laChoPhienSau(row) && (

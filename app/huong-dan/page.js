@@ -126,7 +126,7 @@ function NguyenTac() {
           Mỗi mã có <b style={{ color: XANH }}>vùng chốt lời gần (TP1–TP2)</b> và <b style={{ color: XANH }}>mốc xa (TP3)</b> cố định từ lúc mua. Nhãn{" "}
           <b style={{ color: XANH }}>&quot;Đã chạm&quot;</b> nghĩa là giá đã từng lên tới mốc đó trong quá trình giữ (kể cả sau đó giá tụt lại).
           Tỷ lệ chốt <b style={{ color: XANH }}>30/30/25/15</b>: chốt 30% ở TP1, 30% ở TP2, 25% ở TP3; <b style={{ color: XANH }}>15% cuối, nếu giá còn tăng thì nắm giữ lấy vị thế</b>
-          và thoát theo tín hiệu BÁN để lệnh thắng lớn chạy tiếp. Lệnh đã chạm TP3 được ghi vào trang Lệnh đã đóng (phần 85% đã chốt). <b style={{ color: XANH }}>Sau khi chạm TP2, nên dời Stop-loss của phần còn lại về giá mua</b> để không còn rủi ro lỗ. Hệ thống chỉ
+          và thoát theo tín hiệu BÁN để lệnh thắng lớn chạy tiếp. Lệnh đã chạm TP3 được ghi vào trang Lệnh đã đóng (phần 85% đã chốt). Sau TP3 mã coi như cần tìm điểm mua mới: khi giá hồi về hỗ trợ (Kijun), nến xanh và điểm còn đạt ngưỡng, hệ thống báo <b style={{ color: XANH }}>MUA THÊM</b> (tối đa 1 lần mỗi lệnh gốc) với giá mua, cắt lỗ và chốt lời riêng, tách khỏi vị thế cũ còn giữ. <b style={{ color: XANH }}>Sau khi chạm TP2, nên dời Stop-loss của phần còn lại về giá mua</b> để không còn rủi ro lỗ. Hệ thống chỉ
           gợi ý, không tự bán.
         </p>
       </Muc>

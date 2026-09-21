@@ -137,10 +137,13 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                   <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
                     {x.ly_do === "TP3"
                       ? `Chốt đủ TP3 (${x.phan_chot_pct ?? 100 - TY_LE_CHOT.giu}%) · giữ ${TY_LE_CHOT.giu}% chạy`
-                      : x.ly_do === "BAN"
-                        ? "Tín hiệu BÁN"
-                        : "Đã thoát"}
+                      : x.ly_do === "CAT_LO"
+                        ? "Cắt lỗ (Stop-loss)"
+                        : x.ly_do === "BAN"
+                          ? "Tín hiệu BÁN"
+                          : "Đã thoát"}
                     {x.ly_do !== "TP3" && x.da_cham_tp ? ` · đã chạm ${x.da_cham_tp}` : ""}
+                    {x.vong === 2 ? " · mua thêm sau TP3" : ""}
                   </td>
                 </tr>
               ))}

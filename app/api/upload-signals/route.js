@@ -2,7 +2,7 @@ import { withDb, daoDamBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
 import { tinhGiaVaoWeb } from "@/lib/giaVaoWeb";
 import { tinhVungLenh, chuoiVung } from "@/components/dungChung";
-import { phatHienLenhDong, phatHienChotTP3, ghiLenhDaDong, doiSoatLenhDaDong, dangTrongPhien, ngayGiaoDichVN } from "@/lib/lenhDaDong";
+import { phatHienLenhDong, phatHienChotTP3, phatHienDongMuaMoi, ghiLenhDaDong, doiSoatLenhDaDong, dangTrongPhien, ngayGiaoDichVN } from "@/lib/lenhDaDong";
 import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
@@ -13,7 +13,8 @@ import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
 // stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,
 // kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,
 // diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat,
-// moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao,loai_vao,cho_phien_sau
+// moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao,loai_vao,cho_phien_sau,
+// mua_moi,dang_giu_moi,cat_moi,gia_mua_moi,stop_moi,tp1_moi,tp2_moi,tp3_moi,ngay_mua_moi
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -140,6 +141,8 @@ export async function POST(request) {
     const { rows } = await client.query(
       `SELECT ma, tin, giai_ngan, gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3,
               gia_mua, so_phien_giu, tp_da_cham, stop_loss,
+              dang_giu_moi, gia_mua_moi, stop_moi, tp1_moi, tp2_moi, tp3_moi,
+              to_char(ngay_mua_moi, 'YYYY-MM-DD') AS ngay_mua_moi_txt,
               to_char(ngay_mua, 'YYYY-MM-DD') AS ngay_mua_txt
        FROM tin_hieu WHERE ma = ANY($1::text[])`,
       [dsMaLanNay0]
@@ -176,6 +179,28 @@ export async function POST(request) {
     vaoTp2.push(kq.tp2);
     vaoTp3.push(kq.tp3);
   }
+  // LENH MUA MOI SAU TP3: AFL xuat gia mua/Stop-loss/TP cua nen vao lenh nen giua phien gia dong cua doi theo tung lan upload. Dong bang
+  // tai lan dau thay lenh (cung ngay mua moi) - giong cach dong bang gia mua cua lenh goc.
+  const boolTriState = (v) => (v === "1" ? true : v === "0" ? false : null);
+  const duong = (v) => {
+    const n = soFloat(v);
+    return n != null && n > 0 ? n : null;
+  };
+  const moiGia = [];
+  const moiStop = [];
+  const moiTp1 = [];
+  const moiTp2 = [];
+  const moiTp3 = [];
+  for (const h of hangDL) {
+    const cu = banGhiCuTheoMa[h.ma];
+    const ngayMoi = soNgayVN(h.ngay_mua_moi);
+    const giuNguyen = cu && cu.dang_giu_moi === true && boolTriState(h.dang_giu_moi) === true && ngayMoi && cu.ngay_mua_moi_txt === ngayMoi && Number(cu.gia_mua_moi) > 0;
+    moiGia.push(giuNguyen ? cu.gia_mua_moi : duong(h.gia_mua_moi));
+    moiStop.push(giuNguyen ? cu.stop_moi : duong(h.stop_moi));
+    moiTp1.push(giuNguyen ? cu.tp1_moi : duong(h.tp1_moi));
+    moiTp2.push(giuNguyen ? cu.tp2_moi : duong(h.tp2_moi));
+    moiTp3.push(giuNguyen ? cu.tp3_moi : duong(h.tp3_moi));
+  }
   const cacMaMuaMoi = hangDL.filter((h) => (h.tin || "TRUNG LAP") === "MUA" && tinCuTheoMa[h.ma] !== "MUA");
   // Phien BO SUNG phan con lai sau khi mua tham do (giai ngan 1 phan) - bao 1 lan.
   const cacMaBoSung = hangDL.filter((h) => h.giai_ngan === "BO SUNG" && giaiNganCuTheoMa[h.ma] !== "BO SUNG");
@@ -196,7 +221,8 @@ export async function POST(request) {
          gia_mua, ngay_mua, ban_bot, san, nganh, tp_da_cham,
          diem_rank, diem_confidence, khoi_luong_tb20, giai_ngan,
          gia_kich_hoat, moc_kich_hoat, moc_gia, moc_loai, moc_cach_pct, diem_neu_vuot,
-         gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3, che_do_vao, loai_vao, cho_phien_sau)
+         gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3, che_do_vao, loai_vao, cho_phien_sau,
+         mua_moi, dang_giu_moi, cat_moi, gia_mua_moi, stop_moi, tp1_moi, tp2_moi, tp3_moi, ngay_mua_moi)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -208,7 +234,8 @@ export async function POST(request) {
          $35::float8[], $36::float8[], $37::float8[], $38::text[],
          $39::float8[], $40::text[], $41::float8[], $42::text[], $43::float8[], $44::float8[],
          $45::float8[], $46::timestamptz[], $47::float8[], $48::float8[], $49::float8[], $50::float8[],
-         $51::text[], $52::text[], $53::boolean[]
+         $51::text[], $52::text[], $53::boolean[],
+         $54::boolean[], $55::boolean[], $56::float8[], $57::float8[], $58::float8[], $59::float8[], $60::float8[], $61::float8[], $62::date[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -263,6 +290,15 @@ export async function POST(request) {
          che_do_vao = EXCLUDED.che_do_vao,
          loai_vao = EXCLUDED.loai_vao,
          cho_phien_sau = EXCLUDED.cho_phien_sau,
+         mua_moi = EXCLUDED.mua_moi,
+         dang_giu_moi = EXCLUDED.dang_giu_moi,
+         cat_moi = EXCLUDED.cat_moi,
+         gia_mua_moi = EXCLUDED.gia_mua_moi,
+         stop_moi = EXCLUDED.stop_moi,
+         tp1_moi = EXCLUDED.tp1_moi,
+         tp2_moi = EXCLUDED.tp2_moi,
+         tp3_moi = EXCLUDED.tp3_moi,
+         ngay_mua_moi = EXCLUDED.ngay_mua_moi,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -319,6 +355,16 @@ export async function POST(request) {
         cot("loai_vao", soText),
         // 1/0 do AFL xuat; CSV cu chua co cot nay -> null (khong biet), khac voi false (da biet la khong).
         cot("cho_phien_sau", (v) => (v === "1" ? true : v === "0" ? false : null)),
+        // LENH MUA MOI SAU TP3 (CSV cu chua co cot -> null). Gia/SL/TP la mang da dong bang o tren.
+        cot("mua_moi", boolTriState),
+        cot("dang_giu_moi", boolTriState),
+        cot("cat_moi", soFloat),
+        moiGia,
+        moiStop,
+        moiTp1,
+        moiTp2,
+        moiTp3,
+        cot("ngay_mua_moi", soNgayVN),
       ]
     );
 
@@ -374,7 +420,13 @@ export async function POST(request) {
       ngayBan,
     });
     dsBanMoi = dsDong;
-    lenhDaDong.ghi = await ghiLenhDaDong([...dsDong, ...dsChotTP3]);
+    const dsDongMuaMoi = phatHienDongMuaMoi({
+      dsMoi: hangDL.map((h) => ({ ma: h.ma, tin: h.tin || "TRUNG LAP", gia: soFloat(h.gia), dang_giu_moi: boolTriState(h.dang_giu_moi), cat_moi: soFloat(h.cat_moi) })),
+      banGhiCuTheoMa,
+      ngayBan,
+    });
+    lenhDaDong.dongMuaMoi = dsDongMuaMoi.length;
+    lenhDaDong.ghi = await ghiLenhDaDong([...dsDong, ...dsChotTP3, ...dsDongMuaMoi]);
     lenhDaDong.chotTP3 = dsChotTP3.length;
     // Doi soat: ma da bi ghi la dong nhung nay lai NAM GIU (tin hieu doi chieu trong phien) -> bo khoi Lenh da dong;
     // ma van BAN thi cap nhat gia chot theo gia moi nhat.
@@ -412,6 +464,28 @@ export async function POST(request) {
         stop > 0 ? `Stop-loss của lệnh: ${stop}` : null,
         trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa, xem lại sau ATC" : null,
         `Xem chi tiết: https://cloudstock.id.vn/ma/${b.ma}`,
+      ];
+      const ketQua = await guiTinNhanZalo(dong.filter(Boolean).join("\n"));
+      if (ketQua.gui) zaloDaGui++;
+      else if (!zaloLoi) zaloLoi = ketQua.ly_do;
+    } catch {
+      /* loi bao Zalo khong duoc lam hong upload */
+    }
+  }
+  // Bao Zalo MUA THEM: lenh MUA MOI sau khi lenh goc chot du TP3 (vong 2) - bao 1 lan cho moi lenh moi (khong lap khi upload lai).
+  for (let k = 0; k < hangDL.length; k++) {
+    const h = hangDL[k];
+    if (boolTriState(h.mua_moi) !== true) continue;
+    const cu = banGhiCuTheoMa[h.ma];
+    if (cu && cu.dang_giu_moi === true && cu.ngay_mua_moi_txt === soNgayVN(h.ngay_mua_moi)) continue;
+    try {
+      const dong = [
+        `➕ MUA THÊM (sau khi chốt đủ TP3): ${h.ma}`,
+        `Giá mua mới: ${moiGia[k] ?? h.gia}${moiStop[k] ? ` · Cắt lỗ riêng: ${moiStop[k]}` : ""}`,
+        moiTp1[k] ? `Chốt lời mới: ${moiTp1[k]} / ${moiTp2[k] ?? "—"} / ${moiTp3[k] ?? "—"}` : null,
+        cu?.gia_vao_web > 0 || cu?.gia_mua > 0 ? `Vị thế cũ còn giữ ~15%: giá mua ${cu.gia_vao_web > 0 ? cu.gia_vao_web : cu.gia_mua}` : null,
+        trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa" : null,
+        `Xem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`,
       ];
       const ketQua = await guiTinNhanZalo(dong.filter(Boolean).join("\n"));
       if (ketQua.gui) zaloDaGui++;
