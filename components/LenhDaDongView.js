@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { thongKeLenhDaDong } from "@/lib/lenhDaDong";
 import { fmt, pct } from "@/components/dungChung";
+import { TY_LE_CHOT, CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -31,21 +32,27 @@ function The({ so, nhan, phu, mau }) {
 }
 
 // Phan hien thi trang Lenh da dong (tach khoi page.js de trang chi lo cong dang nhap + lay du lieu).
-export default function LenhDaDongView({ ds, loi }) {
+// nhung = true: dung nhu 1 phan cua trang khac (vd Danh muc ca nhan) - tieu de h2, khong boc khung trang.
+export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng", moTa, nhung = false }) {
   const tk = thongKeLenhDaDong(ds);
   const mauLai = (v) => (v == null ? MUTED : v >= 0 ? XANH : DO);
+  const TieuDeTag = nhung ? "h2" : "h1";
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
-      <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-        Lệnh đã đóng
-      </h1>
+    <div className={nhung ? "" : "max-w-6xl mx-auto px-6 py-10"} style={{ color: TEXT }}>
+      <TieuDeTag className={nhung ? "text-lg mb-1" : "text-2xl mb-1"} style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+        {tieuDe}
+      </TieuDeTag>
       <p className="text-sm mb-6" style={{ color: MUTED }}>
-        Kết quả các lệnh đã bán hoặc đã thoát vị thế kể từ khi web bắt đầu ghi nhận. Lệnh đang giữ xem ở{" "}
-        <Link href="/lenh-mo" className="underline" style={{ color: "#6C5CE7" }}>
-          Sổ lệnh đang mở
-        </Link>
-        .
+        {moTa ?? (
+          <>
+            Kết quả các lệnh đã bán, đã thoát vị thế hoặc đã chốt đủ TP3 kể từ khi web bắt đầu ghi nhận. Lệnh đang giữ xem ở{" "}
+            <Link href="/lenh-mo" className="underline" style={{ color: "#6C5CE7" }}>
+              Sổ lệnh đang mở
+            </Link>
+            .
+          </>
+        )}
       </p>
 
       {loi && (
@@ -72,8 +79,9 @@ export default function LenhDaDongView({ ds, loi }) {
       )}
 
       <p className="text-[11px] mb-6" style={{ color: MUTED }}>
-        Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Kết quả
-        chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
+        Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Lệnh
+        &quot;Chốt đủ TP3&quot; tính theo tỷ lệ chốt {CHUOI_TY_LE_CHOT} tại đúng mức TP1/TP2/TP3: lãi/lỗ là phần đã chốt ({100 - TY_LE_CHOT.giu}% vị thế), {TY_LE_CHOT.giu}% cuối
+        giữ chạy nên chưa tính. Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
       </p>
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
@@ -121,8 +129,12 @@ export default function LenhDaDongView({ ds, loi }) {
                     {x.so_phien ?? "—"}
                   </td>
                   <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-                    {x.ly_do === "BAN" ? "Tín hiệu BÁN" : "Đã thoát"}
-                    {x.da_cham_tp ? ` · đã chạm ${x.da_cham_tp}` : ""}
+                    {x.ly_do === "TP3"
+                      ? `Chốt đủ TP3 (${x.phan_chot_pct ?? 100 - TY_LE_CHOT.giu}%) · giữ ${TY_LE_CHOT.giu}% chạy`
+                      : x.ly_do === "BAN"
+                        ? "Tín hiệu BÁN"
+                        : "Đã thoát"}
+                    {x.ly_do !== "TP3" && x.da_cham_tp ? ` · đã chạm ${x.da_cham_tp}` : ""}
                   </td>
                 </tr>
               ))}

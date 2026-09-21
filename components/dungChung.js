@@ -2,6 +2,8 @@
 // tiet ma). Du lieu that tu AmiBroker co the thieu (ma moi len san, chua du
 // du lieu lich su de tinh chi bao) - moi ham phai an toan voi null/undefined/NaN.
 
+import { TY_LE_CHOT } from "@/lib/tyLeChot";
+
 export const FONT_IMPORT = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
 `;
@@ -163,12 +165,13 @@ export function sapChamMoc(row, bienPct) {
 //  - Vung cat lo: tu Stop-loss len toi duong ho tro GAN NHAT nam giua Stop-loss va gia mua
 //    (Kijun / duong can bang dai han), rong toi thieu rongSLToiThieuPct%. Cham day vung = cat.
 //  - Vung chot loi: GOM TP1-TP2 thanh "vung gan" (2 moc nay thuong sat nhau, gia di qua trong
-//    vai phien) + TP3 la "moc xa"; goi y chot ~30% o vung gan, ~30% o moc xa, giu ~40% cho
-//    tin hieu BAN. Sau khi cham TP2, goi y doi Stop-loss phan con lai ve gia mua (hoa von).
+//    vai phien) + TP3 la "moc xa"; ty le chot 30/30/25/15 (TP1/TP2/TP3/phan cuoi - xem lib/tyLeChot.js):
+//    15% cuoi neu gia con tang thi nam giu lay vi the, thoat theo tin hieu BAN.
+//    Sau khi cham TP2, goi y doi Stop-loss phan con lai ve gia mua (hoa von).
 //  - Khi Stop-loss luc mua da cach gia hien tai qua xa (lenh lai lon) thi chi con mang tinh
 //    tham khao - thoat that van theo tin hieu BAN cua he thong.
 // Tra null neu ma khong dang giu. Hang so o day chinh duoc neu can doi.
-export const VUNG = { tranDuoiPct: 2, rongSLToiThieuPct: 1, slXaPct: 15, tyLeChot: { gan: 30, xa: 30, giu: 40 } };
+export const VUNG = { tranDuoiPct: 2, rongSLToiThieuPct: 1, slXaPct: 15, tyLeChot: TY_LE_CHOT };
 
 export function tinhVungLenh(row) {
   if (!laDangGiu(row) || !(row.gia_mua > 0)) return null;

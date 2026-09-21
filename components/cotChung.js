@@ -356,7 +356,7 @@ export const CAC_COT = {
       return (
         <div
           className="flex flex-col items-end leading-tight"
-          title={`Gợi ý: chốt khoảng ${c.gan}% ở vùng gần (TP1–TP2), ${c.xa}% ở mốc xa (TP3), giữ khoảng ${c.giu}% cho tín hiệu BÁN`}
+          title={`Tỷ lệ chốt ${c.tp1}/${c.tp2}/${c.tp3}/${c.giu}: ${c.tp1}% ở TP1, ${c.tp2}% ở TP2, ${c.tp3}% ở TP3; ${c.giu}% cuối nếu giá còn tăng thì nắm giữ lấy vị thế, thoát theo tín hiệu BÁN`}
         >
           <span style={{ color: v.daCham >= 2 ? XANH : undefined }}>
             <span className="text-[10px]" style={{ color: MUTED }}>

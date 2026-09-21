@@ -72,6 +72,8 @@ Lưu ý khi đẩy dữ liệu:
   Ichimoku 9-17-33, đường cân bằng dài hạn 65/129, MA, vùng mua/SL/TP. Chỉ báo tính ở `lib/chiBaoKyThuat.js` (giống AFL, đã đối chiếu
   Kijun / đường cân bằng với giá trị AFL xuất lên web). Giá lấy qua `/api/gia-lich-su` → `lib/lichSuGia.js` (API công khai VNDirect: finfo
   cho cổ phiếu, dùng giá ĐÃ điều chỉnh adOpen/adHigh/adLow/adClose vì khớp AmiBroker ~345/389 mã; dchart cho VN-Index) — bên thứ ba không chính thức, có thể đổi/chặn.
+- `app/danh-muc` — Danh mục cá nhân: mã người dùng đã "tham gia" (bảng `tham_gia_ma`) + lệnh hiện tại của mã đó + lệnh đã đóng từ ngày tham gia.
+  `/api/backfill-tp3` (cần x-api-key; GET xem trước, POST `?ap-dung=1` ghi) nạp một lần các lệnh đã chạm TP3 từ trước vào `lenh_da_dong`.
 - `app/api/upload-signals/route.js` — nhận CSV tín hiệu: upsert theo mã, đóng băng giá vào/SL/TP lần đầu MUA,
   phát hiện lệnh vừa đóng, gửi Zalo khi có mã MUA mới.
 - `lib/db.js` — kết nối Postgres, tạo/nâng cấp bảng (`tin_hieu`, `lenh_da_dong`, …).

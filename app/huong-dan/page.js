@@ -125,8 +125,8 @@ function NguyenTac() {
         <p>
           Mỗi mã có <b style={{ color: XANH }}>vùng chốt lời gần (TP1–TP2)</b> và <b style={{ color: XANH }}>mốc xa (TP3)</b> cố định từ lúc mua. Nhãn{" "}
           <b style={{ color: XANH }}>&quot;Đã chạm&quot;</b> nghĩa là giá đã từng lên tới mốc đó trong quá trình giữ (kể cả sau đó giá tụt lại).
-          Gợi ý: chốt khoảng <b style={{ color: XANH }}>30% ở vùng gần, 30% ở mốc xa và giữ khoảng 40%</b> cho tín hiệu BÁN để lệnh thắng lớn chạy
-          tiếp. <b style={{ color: XANH }}>Sau khi chạm TP2, nên dời Stop-loss của phần còn lại về giá mua</b> để không còn rủi ro lỗ. Hệ thống chỉ
+          Tỷ lệ chốt <b style={{ color: XANH }}>30/30/25/15</b>: chốt 30% ở TP1, 30% ở TP2, 25% ở TP3; <b style={{ color: XANH }}>15% cuối, nếu giá còn tăng thì nắm giữ lấy vị thế</b>
+          và thoát theo tín hiệu BÁN để lệnh thắng lớn chạy tiếp. Lệnh đã chạm TP3 được ghi vào trang Lệnh đã đóng (phần 85% đã chốt). <b style={{ color: XANH }}>Sau khi chạm TP2, nên dời Stop-loss của phần còn lại về giá mua</b> để không còn rủi ro lỗ. Hệ thống chỉ
           gợi ý, không tự bán.
         </p>
       </Muc>
@@ -228,9 +228,17 @@ export default async function TrangHuongDan() {
         </p>
       </Muc>
 
+      <Muc tieuDe="Danh mục cá nhân">
+        <p>
+          Bấm nút tham gia (biểu tượng người cạnh mã ở Bộ lọc hoặc Sổ lệnh) để thêm mã vào danh mục. Danh mục tự hiện lệnh hiện tại của từng mã bạn tham gia (giá mua, vùng mua, cắt
+          lỗ, chốt lời, lãi/lỗ) và tự chuyển sang &quot;Lệnh đã đóng của tôi&quot; khi lệnh bán/thoát hoặc chốt đủ TP3 — chỉ tính từ ngày bạn tham gia mã đó. Số liệu theo lệnh của hệ
+          thống, không phải giá khớp thật trong tài khoản chứng khoán của bạn.
+        </p>
+      </Muc>
+
       <Muc tieuDe="Lệnh đã đóng">
         <p>
-          Kết quả các lệnh đã kết thúc (mã đang NẮM GIỮ chuyển sang BÁN hoặc thoát vị thế), tính từ khi web bắt đầu ghi nhận: giá mua, giá bán, lãi/lỗ, số phiên đã
+          Kết quả các lệnh đã kết thúc (mã đang NẮM GIỮ chuyển sang BÁN hoặc thoát vị thế, hoặc chốt đủ TP3 theo tỷ lệ 30/30/25/15 với 15% cuối giữ chạy), tính từ khi web bắt đầu ghi nhận: giá mua, giá bán, lãi/lỗ, số phiên đã
           giữ, tỷ lệ thắng, lãi trung bình lệnh thắng và lỗ trung bình lệnh thua. Ngày bán và giá bán lấy theo lần cập nhật dữ liệu lúc lệnh đổi trạng thái nên
           chỉ xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật; lệnh đã đóng trước khi web bắt đầu ghi nhận sẽ không có trong danh sách.
         </p>

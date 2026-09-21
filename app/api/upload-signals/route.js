@@ -2,7 +2,7 @@ import { withDb, daoDamBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
 import { tinhGiaVaoWeb } from "@/lib/giaVaoWeb";
 import { tinhVungLenh, chuoiVung } from "@/components/dungChung";
-import { phatHienLenhDong, ghiLenhDaDong, ngayGiaoDichVN } from "@/lib/lenhDaDong";
+import { phatHienLenhDong, phatHienChotTP3, ghiLenhDaDong, ngayGiaoDichVN } from "@/lib/lenhDaDong";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
 // amibroker/7_Export_LenWeb.afl). Header CSV (45 cot; 7 cot cuoi gia_kich_hoat,
@@ -343,14 +343,31 @@ export async function POST(request) {
 
   // Ghi nhan LENH DA DONG (ma vua tu NAM GIU chuyen sang BAN/TRUNG LAP) de co ket qua that theo doi.
   // Bao ve: loi o buoc nay KHONG duoc lam hong lan upload chinh (du lieu tin hieu da ghi xong o tren).
+  // Them: lenh VUA cham du TP3 (chot 30/30/25, giu 15% chay) cung duoc ghi vao Lenh da dong.
   const lenhDaDong = { ghi: 0 };
   try {
+    const ngayBan = ngayGiaoDichVN();
     const dsDong = phatHienLenhDong({
       dsMoi: hangDL.map((h) => ({ ma: h.ma, tin: h.tin || "TRUNG LAP", gia: soFloat(h.gia) })),
       banGhiCuTheoMa,
-      ngayBan: ngayGiaoDichVN(),
+      ngayBan,
     });
-    lenhDaDong.ghi = await ghiLenhDaDong(dsDong);
+    const dsChotTP3 = phatHienChotTP3({
+      dsMoi: hangDL.map((h) => ({
+        ma: h.ma,
+        tin: h.tin || "TRUNG LAP",
+        tp_da_cham: h.tp_da_cham,
+        ngay_mua: soNgayVN(h.ngay_mua),
+        so_phien_giu: soFloat(h.so_phien_giu),
+        tp1: soFloat(h.tp1),
+        tp2: soFloat(h.tp2),
+        tp3: soFloat(h.tp3),
+      })),
+      banGhiCuTheoMa,
+      ngayBan,
+    });
+    lenhDaDong.ghi = await ghiLenhDaDong([...dsDong, ...dsChotTP3]);
+    lenhDaDong.chotTP3 = dsChotTP3.length;
   } catch (e) {
     lenhDaDong.loi = String(e?.message || e);
   }

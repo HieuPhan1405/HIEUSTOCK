@@ -574,7 +574,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
                 <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: "#22C55E" }}>{fmt(vungLenh.tp.xa)}</strong>
               </p>
               <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                Gợi ý: chốt khoảng {VUNG.tyLeChot.gan}% ở vùng gần, {VUNG.tyLeChot.xa}% ở mốc xa, giữ khoảng {VUNG.tyLeChot.giu}% cho tín hiệu BÁN.
+                Tỷ lệ chốt {VUNG.tyLeChot.tp1}/{VUNG.tyLeChot.tp2}/{VUNG.tyLeChot.tp3}/{VUNG.tyLeChot.giu}: {VUNG.tyLeChot.tp1}% ở TP1, {VUNG.tyLeChot.tp2}% ở TP2, {VUNG.tyLeChot.tp3}% ở TP3; {VUNG.tyLeChot.giu}% cuối nếu giá còn tăng thì nắm giữ lấy vị thế, thoát theo tín hiệu BÁN.
               </p>
             </div>
           )}
