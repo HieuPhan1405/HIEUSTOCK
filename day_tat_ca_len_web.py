@@ -103,6 +103,10 @@ def day_mot_file(ten, duong_dan, api, nhan, khong_bat_buoc=False):
     dong = kq.get("lenhDaDong") or {}
     if dong.get("ghi"):
         print(f"  Lenh vua dong (da ghi vao trang Lenh da dong): {dong['ghi']}")
+    if dong.get("moLai"):
+        print(f"  Lenh MO LAI (tin hieu doi chieu trong phien, da bo khoi Lenh da dong): {', '.join(dong['moLai'])}")
+    if dong.get("capNhatGia"):
+        print(f"  Lenh da dong duoc cap nhat gia chot moi nhat: {', '.join(dong['capNhatGia'])}")
     if dong.get("loi"):
         print(f"  CANH BAO: khong ghi duoc lenh da dong: {dong['loi']}")
     return True

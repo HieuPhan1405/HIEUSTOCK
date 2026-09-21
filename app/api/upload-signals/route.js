@@ -2,7 +2,7 @@ import { withDb, daoDamBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
 import { tinhGiaVaoWeb } from "@/lib/giaVaoWeb";
 import { tinhVungLenh, chuoiVung } from "@/components/dungChung";
-import { phatHienLenhDong, phatHienChotTP3, ghiLenhDaDong, ngayGiaoDichVN } from "@/lib/lenhDaDong";
+import { phatHienLenhDong, phatHienChotTP3, ghiLenhDaDong, doiSoatLenhDaDong, ngayGiaoDichVN } from "@/lib/lenhDaDong";
 import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
@@ -374,6 +374,11 @@ export async function POST(request) {
     });
     lenhDaDong.ghi = await ghiLenhDaDong([...dsDong, ...dsChotTP3]);
     lenhDaDong.chotTP3 = dsChotTP3.length;
+    // Doi soat: ma da bi ghi la dong nhung nay lai NAM GIU (tin hieu doi chieu trong phien) -> bo khoi Lenh da dong;
+    // ma van BAN thi cap nhat gia chot theo gia moi nhat.
+    const doiSoat = await doiSoatLenhDaDong({ ngayHomNay: ngayBan });
+    lenhDaDong.moLai = doiSoat.moLai.map((x) => x.ma);
+    lenhDaDong.capNhatGia = doiSoat.capNhat;
   } catch (e) {
     lenhDaDong.loi = String(e?.message || e);
   }
