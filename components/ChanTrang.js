@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Phone, MessageCircle, Music2, ShieldAlert } from "lucide-react";
 import { layThongTinLienHe } from "@/lib/thongTinLienHe";
 import NutNoi from "@/components/NutNoi";
@@ -86,17 +87,9 @@ export default async function ChanTrang() {
         <div className="max-w-6xl mx-auto px-6 pt-10 pb-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
             <div className="col-span-2 lg:col-span-1">
-              <div className="flex items-center gap-2.5 mb-3">
-                <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                  style={{ background: PRIMARY, color: "#FFFFFF", fontFamily: "'Inter', sans-serif", fontWeight: 800 }}
-                >
-                  C
-                </div>
-                <span className="text-lg" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: TEXT }}>
-                  CloudStock
-                </span>
-              </div>
+              <Link href="/" aria-label="CloudStock - về trang chính" className="inline-block mb-3">
+                <Image src="/logo-day-du-toi.png" alt="CloudStock" width={640} height={427} className="w-28 h-auto" />
+              </Link>
               <p className="text-sm mb-4 max-w-xs" style={{ color: MUTED }}>
                 Hệ thống hỗ trợ đầu tư chứng khoán, quét toàn bộ cổ phiếu HOSE, HNX, UPCOM và cập nhật sau mỗi phiên.
               </p>

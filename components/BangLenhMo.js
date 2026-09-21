@@ -35,17 +35,28 @@ const COT_RIENG = {
     canPhai: false,
     lay: (r) => r.ma,
     hien: (row, ctx) => (
-      <div className="flex items-center gap-1.5">
-        <Link href={`/ma/${row.ma}`} className="flex items-center gap-1 hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-          {row.mat_than && <TriangleAlert size={13} color={DO} strokeWidth={2} aria-hidden="true" className="shrink-0" />}
-          {row.ma}
-        </Link>
-        <NutThamGia
-          ma={row.ma}
-          soNguoiThamGia={ctx.banDoThamGia[row.ma]?.soNguoiThamGia ?? 0}
-          daThamGia={ctx.banDoThamGia[row.ma]?.daThamGia ?? false}
-          onDoiTrangThai={ctx.doiTrangThaiThamGia}
-        />
+      <div className="flex flex-col min-w-0">
+        <div className="flex items-center gap-1.5">
+          <Link href={`/ma/${row.ma}`} className="flex items-center gap-1 hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+            {row.mat_than && <TriangleAlert size={13} color={DO} strokeWidth={2} aria-hidden="true" className="shrink-0" />}
+            {row.ma}
+          </Link>
+          <NutThamGia
+            ma={row.ma}
+            soNguoiThamGia={ctx.banDoThamGia[row.ma]?.soNguoiThamGia ?? 0}
+            daThamGia={ctx.banDoThamGia[row.ma]?.daThamGia ?? false}
+            onDoiTrangThai={ctx.doiTrangThaiThamGia}
+          />
+        </div>
+        {row.ten_ngan && (
+          <span
+            className="block max-w-[190px] truncate text-[10px] font-normal leading-tight mt-0.5"
+            style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}
+            title={row.ten_cong_ty}
+          >
+            {row.ten_ngan}
+          </span>
+        )}
       </div>
     ),
   },

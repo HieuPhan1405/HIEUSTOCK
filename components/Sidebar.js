@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { LayoutGrid, Briefcase, ListFilter, Newspaper, Mail, TrendingDown, BookOpen, History, CandlestickChart, Wallet } from "lucide-react";
-import TaiKhoanNut from "@/components/TaiKhoanNut";
 
 const MUC = [
   { href: "/", nhan: "Tổng quan thị trường", Icon: LayoutGrid },
@@ -31,26 +30,10 @@ export default function Sidebar() {
     <>
       {/* Desktop: sidebar doc co dinh ben trai (>=768px) */}
       <aside
-        className="hidden md:flex md:flex-col md:fixed md:inset-y-0 md:left-0 md:w-60 md:z-20"
+        className="hidden md:flex md:flex-col md:fixed md:top-14 md:bottom-0 md:left-0 md:w-60 md:z-20"
         style={{ background: BG, borderRight: `1px solid ${VIEN}` }}
       >
-        <div className="px-6 py-6 flex items-center gap-2.5">
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: PRIMARY, color: "#FFFFFF", fontFamily: "'Inter', sans-serif", fontWeight: 800 }}
-          >
-            C
-          </div>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, color: TEXT }} className="text-lg">
-            CloudStock
-          </span>
-        </div>
-
-        <div className="px-3 mb-2">
-          <TaiKhoanNut />
-        </div>
-
-        <nav className="flex-1 px-3 py-2 flex flex-col gap-1">
+        <nav className="flex-1 px-3 py-2 flex flex-col gap-1 overflow-y-auto">
           {MUC.map(({ href, nhan, Icon }) => {
             const active = pathname === href;
             return (
@@ -83,14 +66,8 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile: thanh ngang tren cung (<768px) */}
-      <div className="md:hidden sticky top-0 z-20" style={{ background: BG, borderBottom: `1px solid ${VIEN}` }}>
+      <div className="md:hidden sticky top-14 z-20" style={{ background: BG, borderBottom: `1px solid ${VIEN}` }}>
         <div className="px-4 flex items-center gap-2 overflow-x-auto">
-          <div
-            className="w-6 h-6 rounded flex items-center justify-center shrink-0 my-2 mr-1"
-            style={{ background: PRIMARY, color: "#FFFFFF", fontFamily: "'Inter', sans-serif", fontWeight: 800, fontSize: "12px" }}
-          >
-            C
-          </div>
           {MUC.map(({ href, nhan, Icon }) => {
             const active = pathname === href;
             return (
@@ -110,9 +87,6 @@ export default function Sidebar() {
               </Link>
             );
           })}
-          <div className="shrink-0 ml-1">
-            <TaiKhoanNut compact />
-          </div>
         </div>
       </div>
     </>

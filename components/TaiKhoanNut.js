@@ -58,7 +58,14 @@ export default function TaiKhoanNut({ compact, nhan }) {
         style={{ background: PRIMARY, color: "#FFFFFF", fontFamily: "'Inter', sans-serif" }}
       >
         <UserRound size={14} strokeWidth={2.5} />
-        {nhan || "Đăng ký nhận tư vấn"}
+        {compact && !nhan ? (
+          <>
+            <span className="hidden sm:inline">Đăng ký nhận tư vấn</span>
+            <span className="sm:hidden">Đăng ký</span>
+          </>
+        ) : (
+          nhan || "Đăng ký nhận tư vấn"
+        )}
       </button>
       <ModalTaiKhoan open={moModal} onClose={() => setMoModal(false)} onThanhCong={setNguoiDung} />
     </>

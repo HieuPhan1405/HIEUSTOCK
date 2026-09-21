@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, tinhVungLenh, chuoiVung } from "@/components/dungChung";
 import SignalPill from "@/components/SignalPill";
@@ -217,7 +218,26 @@ export default async function TrangTongQuan() {
     <div style={{ color: TEXT }}>
       {/* HERO */}
       <div className="relative overflow-hidden border-b" style={{ borderColor: VIEN }}>
-        <div className="max-w-6xl mx-auto px-6 pt-14 pb-10">
+        {/* Nen luoi mo tan dan xuong duoi + bieu tuong logo lam hinh nen (bo cuc hoc tu trang nghien cuu) */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)",
+            backgroundSize: "44px 44px",
+            maskImage: "linear-gradient(to bottom, black 20%, transparent 100%)",
+            WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 100%)",
+          }}
+        />
+        <Image
+          src="/logo-bieu-tuong-toi.png"
+          alt=""
+          aria-hidden="true"
+          width={260}
+          height={176}
+          className="hidden md:block absolute right-10 top-6 w-[330px] h-auto opacity-[0.09] pointer-events-none select-none"
+        />
+        <div className="relative max-w-6xl mx-auto px-6 pt-14 pb-10">
           <p
             className="text-xs tracking-[0.25em] uppercase mb-3"
             style={{ color: PRIMARY, fontFamily: "'JetBrains Mono', monospace" }}
@@ -228,13 +248,24 @@ export default async function TrangTongQuan() {
             className="text-4xl sm:text-5xl leading-[1.05] mb-4"
             style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
           >
-            Tổng quan thị trường,<br />đọc trong 5 giây.
+            Tổng quan thị trường,<br />
+            <span style={{ background: "linear-gradient(90deg, #B7A4FF, #6C5CE7)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>
+              đọc trong 5 giây.
+            </span>
           </h1>
           <p className="max-w-xl" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
             Điểm hợp lưu Trend · Động lượng · Dòng tiền, kiểm chứng backtest 12
             năm trên VN100. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc
             biểu đồ nhanh hơn.
           </p>
+          <div className="flex flex-wrap gap-3 mt-6 text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>
+            <Link href="/bo-loc" className="px-4 py-2.5 rounded-lg font-semibold" style={{ background: PRIMARY, color: "#FFFFFF" }}>
+              Mở Bộ lọc cổ phiếu
+            </Link>
+            <Link href="/bieu-do" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
+              Xem biểu đồ kỹ thuật
+            </Link>
+          </div>
         </div>
         <div
           aria-hidden="true"

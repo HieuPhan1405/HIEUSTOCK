@@ -185,6 +185,11 @@ export default async function TrangDanhMuc() {
                             <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
                               {r.ma}
                             </Link>
+                            {r.ten_ngan && (
+                              <span className="block max-w-[190px] truncate text-[10px] leading-tight" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }} title={r.ten_cong_ty}>
+                                {r.ten_ngan}
+                              </span>
+                            )}
                           </td>
                           <td className="py-2.5 px-3">
                             <SignalPill tin={r.tin} />

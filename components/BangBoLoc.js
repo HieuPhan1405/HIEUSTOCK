@@ -54,23 +54,34 @@ const COT_RIENG = {
     canPhai: false,
     lay: (r) => r.ma,
     hien: (row, ctx) => (
-      <div className="flex items-center gap-1.5">
-        <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-          {row.ma}
-        </Link>
-        {row.mat_than && (
-          <span className="text-[10px] font-bold" style={{ color: DO }}>
-            ⚠
+      <div className="flex flex-col min-w-0">
+        <div className="flex items-center gap-1.5">
+          <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+            {row.ma}
+          </Link>
+          {row.mat_than && (
+            <span className="text-[10px] font-bold" style={{ color: DO }}>
+              ⚠
+            </span>
+          )}
+          <NutThamGia
+            ma={row.ma}
+            soNguoiThamGia={ctx.banDoThamGia[row.ma]?.soNguoiThamGia ?? 0}
+            daThamGia={ctx.banDoThamGia[row.ma]?.daThamGia ?? false}
+            coDangNhap={!!ctx.nguoiDung}
+            moChuaDangNhap={ctx.moModalTK}
+            onDoiTrangThai={ctx.doiTrangThaiThamGia}
+          />
+        </div>
+        {row.ten_ngan && (
+          <span
+            className="block max-w-[190px] truncate text-[10px] font-normal leading-tight mt-0.5"
+            style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}
+            title={row.ten_cong_ty}
+          >
+            {row.ten_ngan}
           </span>
         )}
-        <NutThamGia
-          ma={row.ma}
-          soNguoiThamGia={ctx.banDoThamGia[row.ma]?.soNguoiThamGia ?? 0}
-          daThamGia={ctx.banDoThamGia[row.ma]?.daThamGia ?? false}
-          coDangNhap={!!ctx.nguoiDung}
-          moChuaDangNhap={ctx.moModalTK}
-          onDoiTrangThai={ctx.doiTrangThaiThamGia}
-        />
       </div>
     ),
   },

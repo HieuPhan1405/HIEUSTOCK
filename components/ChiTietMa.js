@@ -301,6 +301,19 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
         </span>
       </div>
 
+      {row.ten_cong_ty && (
+        <div className="mb-5">
+          <h1 className="text-xl leading-snug" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+            {row.ma} <span style={{ fontWeight: 400, color: "#A6A6B3" }}>— {row.ten_cong_ty}</span>
+          </h1>
+          {row.san && (
+            <p className="text-xs mt-1" style={{ color: "#8B8B99" }}>
+              Sàn {row.san}
+            </p>
+          )}
+        </div>
+      )}
+
       {row.mat_than && <BannerMatThan />}
 
       {/* 3 CARD CHINH: DIEM - KET LUAN - BREAKDOWN */}

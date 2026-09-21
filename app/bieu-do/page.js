@@ -5,6 +5,7 @@ import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import SignalPill from "@/components/SignalPill";
 import { tinhVungLenh } from "@/components/dungChung";
+import { tenCongTy } from "@/lib/tenMa";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -33,6 +34,7 @@ export default async function TrangBieuDo({ searchParams }) {
     row = null;
   }
   const vung = nguoiDung && row ? tinhVungLenh(row) : null;
+  const ten = tenCongTy(ma);
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
@@ -77,6 +79,11 @@ export default async function TrangBieuDo({ searchParams }) {
         ))}
       </div>
 
+      {ten && (
+        <p className="text-sm mb-3" style={{ color: MUTED }}>
+          <b style={{ color: TEXT }}>{ma}</b> — {ten.ten} · {ten.san}
+        </p>
+      )}
       {row && ma !== "VNINDEX" && (
         <div className="flex flex-wrap items-center gap-3 mb-3 text-sm">
           {nguoiDung && <SignalPill tin={row.tin} />}

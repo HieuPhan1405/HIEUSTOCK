@@ -2,6 +2,7 @@ import Link from "next/link";
 import { thongKeLenhDaDong } from "@/lib/lenhDaDong";
 import { fmt, pct } from "@/components/dungChung";
 import { TY_LE_CHOT, CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
+import { tenCongTy } from "@/lib/tenMa";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -113,6 +114,11 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                     <Link href={`/ma/${x.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
                       {x.ma}
                     </Link>
+                    {tenCongTy(x.ma) && (
+                      <span className="block max-w-[190px] truncate text-[10px] leading-tight" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }} title={tenCongTy(x.ma).ten}>
+                        {tenCongTy(x.ma).ngan}
+                      </span>
+                    )}
                   </td>
                   <td className="py-2.5 px-3" style={{ color: MUTED }}>
                     {ngayVN(x.ngay_mua)}
