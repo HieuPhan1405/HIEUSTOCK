@@ -2,7 +2,7 @@ import { withDb, daoDamBangTinHieu } from "@/lib/db";
 import { guiTinNhanZalo } from "@/lib/zalo";
 import { tinhGiaVaoWeb } from "@/lib/giaVaoWeb";
 import { tinhVungLenh, chuoiVung } from "@/components/dungChung";
-import { phatHienLenhDong, phatHienChotTP3, ghiLenhDaDong, doiSoatLenhDaDong, ngayGiaoDichVN } from "@/lib/lenhDaDong";
+import { phatHienLenhDong, phatHienChotTP3, ghiLenhDaDong, doiSoatLenhDaDong, dangTrongPhien, ngayGiaoDichVN } from "@/lib/lenhDaDong";
 import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
@@ -139,7 +139,7 @@ export async function POST(request) {
     await daoDamBangTinHieu(client);
     const { rows } = await client.query(
       `SELECT ma, tin, giai_ngan, gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3,
-              gia_mua, so_phien_giu, tp_da_cham,
+              gia_mua, so_phien_giu, tp_da_cham, stop_loss,
               to_char(ngay_mua, 'YYYY-MM-DD') AS ngay_mua_txt
        FROM tin_hieu WHERE ma = ANY($1::text[])`,
       [dsMaLanNay0]
@@ -351,6 +351,7 @@ export async function POST(request) {
   // Bao ve: loi o buoc nay KHONG duoc lam hong lan upload chinh (du lieu tin hieu da ghi xong o tren).
   // Them: lenh VUA cham du TP3 (chot 30/30/25, giu 15% chay) cung duoc ghi vao Lenh da dong.
   const lenhDaDong = { ghi: 0 };
+  let dsBanMoi = []; // lenh vua dong lan upload nay - dung de bao Zalo BAN
   try {
     const ngayBan = ngayGiaoDichVN();
     const dsDong = phatHienLenhDong({
@@ -372,6 +373,7 @@ export async function POST(request) {
       banGhiCuTheoMa,
       ngayBan,
     });
+    dsBanMoi = dsDong;
     lenhDaDong.ghi = await ghiLenhDaDong([...dsDong, ...dsChotTP3]);
     lenhDaDong.chotTP3 = dsChotTP3.length;
     // Doi soat: ma da bi ghi la dong nhung nay lai NAM GIU (tin hieu doi chieu trong phien) -> bo khoi Lenh da dong;
@@ -396,6 +398,27 @@ export async function POST(request) {
     );
     if (ketQua.gui) zaloDaGui++;
     else if (!zaloLoi) zaloLoi = ketQua.ly_do;
+  }
+  // Bao Zalo BAN / cat lo: ma tu NAM GIU vua chuyen sang BAN (gom ca chạm Stop-loss). Gio giao dich thi kem canh bao tin hieu tam thoi.
+  const trongPhien = dangTrongPhien();
+  for (const b of dsBanMoi) {
+    try {
+      const cu = banGhiCuTheoMa[b.ma];
+      const stop = Number(cu?.vao_stop_loss) > 0 ? Number(cu.vao_stop_loss) : Number(cu?.stop_loss);
+      const lai = `${b.lai_lo_pct >= 0 ? "+" : ""}${b.lai_lo_pct.toFixed(2)}%`;
+      const dong = [
+        `🔴 ${b.ly_do === "BAN" ? "TÍN HIỆU BÁN / CẮT LỖ" : "THOÁT LỆNH"}: ${b.ma}`,
+        `Giá: ${b.gia_ban} (giá mua ${b.gia_mua}, ${lai})`,
+        stop > 0 ? `Stop-loss của lệnh: ${stop}` : null,
+        trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa, xem lại sau ATC" : null,
+        `Xem chi tiết: https://cloudstock.id.vn/ma/${b.ma}`,
+      ];
+      const ketQua = await guiTinNhanZalo(dong.filter(Boolean).join("\n"));
+      if (ketQua.gui) zaloDaGui++;
+      else if (!zaloLoi) zaloLoi = ketQua.ly_do;
+    } catch {
+      /* loi bao Zalo khong duoc lam hong upload */
+    }
   }
   for (const h of cacMaBoSung) {
     const ketQua = await guiTinNhanZalo(

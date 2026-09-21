@@ -555,6 +555,11 @@ SLToiThieuPct = Param("Che do MOI - SL cach gia vao toi thieu (%)", 2, 0.5, 6, 0
 SLKieuMoc = KieuSLCauTruc == "Moc vua vuot (may / duong can bang dai han)";
 SLKieuDay = KieuSLCauTruc == "Day nen chuyen mua";
 
+// STOP-LOSS: CHAM LA CAT (Bat, mac dinh) - khop Backtest: ApplyStop() cat lenh ngay khi gia thap nhat cua phien <= Stop-loss,
+// bat ke diem so. Tat = kieu cu "chi cat khi diem cung am" (tin hieu web/Zalo se KHONG bao Ban du gia da cham Stop-loss neu diem con duong,
+// trong khi Backtest van cat -> lech nhau; ket qua Backtest 2006-2026: cat khi cham Stop-loss tot hon giu tiep).
+SLChamLaCat = ParamToggle("Stop-loss: CHAM LA CAT nhu Backtest (Tat = chi cat khi diem am)", "Tat|Bat", 1);
+
 KhongCoMoc = 1e10;
 // Muc gia vua bi vuot o phien chuyen mua (may / duong can bang dai han) - dung ca cho cot
 // "moc kich hoat" hien thi tren web va cho che do MOI o tren.
@@ -681,10 +686,9 @@ for (i = 1; i < BarCount; i++)
         chamBaoVe = 0;
         if (stopBaoVe > 0 AND L[i] <= stopBaoVe) chamBaoVe = 1;
 
-        // Cham Stop-loss ve gia CHI thuc su Ban khi diem cung da am (<0) -
-        // tranh cat lo oan neu chi la ria/bong nen tam thoi trong khi diem
-        // ky thuat van con on, theo yeu cau nguoi dung.
-        chamStopThuong = L[i] <= stopGiaThucTe_vonglap AND TotalScore[i] < 0;
+        // Cham Stop-loss: mac dinh (SLChamLaCat = Bat) Ban NGAY khi gia thap nhat phien <= Stop-loss, khop Backtest (ApplyStop).
+        // Tat = kieu cu: chi Ban khi diem cung da am (<0).
+        chamStopThuong = L[i] <= stopGiaThucTe_vonglap AND (SLChamLaCat OR TotalScore[i] < 0);
         if (SellTinHieu[i] == 1 OR chamStopThuong OR chamBaoVe == 1)
         {
             Sell[i] = 1;

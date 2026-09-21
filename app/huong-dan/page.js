@@ -108,7 +108,7 @@ function NguyenTac() {
       <Muc so={4} tieuDe="Cắt lỗ kịp thời">
         <p>
           Mỗi lệnh có mức <b style={{ color: XANH }}>stop-loss tính sẵn</b> (hiện ở trang chi tiết mã, thường thấp hơn giá mua tối đa khoảng 6%). Khi giá
-          chạm stop-loss và hệ thống đánh giá xu hướng đã xấu đi → <b style={{ color: XANH }}>cắt lỗ ngay</b>, sai thì cắt sớm.
+          chạm stop-loss → <b style={{ color: XANH }}>cắt lỗ ngay</b>, không chờ điểm âm, sai thì cắt sớm. Backtest 2006–2026 cho thấy giữ tiếp qua mức này thường lỗ nặng hơn cắt. Hệ thống sẽ báo BÁN (web, Zalo) ngay khi giá thấp nhất phiên chạm stop-loss; nhớ tín hiệu trong phiên có thể đổi chiều trước khi đóng cửa, và lệnh bán vẫn phải tuân thủ T+2,5.
         </p>
         <Luu>* Tỷ trọng mỗi lệnh vừa phải nên cắt lỗ chỉ gây thiệt hại nhỏ, các lệnh lãi sẽ bù đắp dư.</Luu>
       </Muc>
