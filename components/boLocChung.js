@@ -1,5 +1,7 @@
 "use client";
 
+import { NGANH_NHAN } from "@/lib/nganh";
+
 // Phan bo loc + chon cot DUNG CHUNG cho bang Bo loc co phieu va bang So lenh
 // dang mo (2 bang cung nhom bo loc: tim ma, von hoa, xu huong, san, nganh, canh
 // bao va tieu chi UU TIEN; moi bang them cac bo loc rieng qua "children").
@@ -17,24 +19,7 @@ const PRIMARY = "#6C5CE7";
 // Gia tri "nganh" AFL xuat ra KHONG dau (quy uoc chung toan he thong) - map
 // sang nhan co dau de hien thi dep hon trong dropdown, nhung filter van so
 // sanh dung gia tri goc khong dau tu DB.
-export const NGANH_NHAN = {
-  "Ngan hang": "Ngân hàng",
-  "Bat dong san": "Bất động sản",
-  "Chung khoan": "Chứng khoán",
-  "Bao hiem": "Bảo hiểm",
-  "Xay dung": "Xây dựng",
-  "Thep - Khoang san": "Thép - Khoáng sản",
-  "Dau khi - Dien - Nuoc": "Dầu khí - Điện - Nước",
-  "Hoa chat - Cao su": "Hoá chất - Cao su",
-  "Thuc pham - Nong san": "Thực phẩm - Nông sản",
-  "Ban le - O to": "Bán lẻ - Ô tô",
-  "Det may - Go": "Dệt may - Gỗ",
-  "Logistics - Van tai": "Logistics - Vận tải",
-  "Cong nghe - Vien thong": "Công nghệ - Viễn thông",
-  "Y te - Duoc": "Y tế - Dược",
-  "Thiet bi dien - Du lich": "Thiết bị điện - Du lịch",
-  Khac: "Khác",
-};
+export { NGANH_NHAN };
 export const DS_NGANH = Object.keys(NGANH_NHAN);
 
 // Cac bo loc chung - moi bang tu them khoa rieng vao object loc cua minh.

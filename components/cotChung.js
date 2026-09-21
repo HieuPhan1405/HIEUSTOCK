@@ -22,6 +22,7 @@ import {
   VUNG,
   kiemTraChuanUuTien,
   NGUONG_DIEM_MUA,
+  tinhSauTP3,
 } from "@/components/dungChung";
 
 const MUTED = "#8B8B99";
@@ -299,10 +300,30 @@ export const CAC_COT = {
     nhan: "Vùng mua",
     nhom: "Vị thế đang giữ",
     canPhai: true,
-    lay: (r) => tinhVungLenh(r)?.mua.tu ?? null,
+    lay: (r) => (tinhSauTP3(r)?.muaMoi?.tu ?? tinhVungLenh(r)?.mua.tu) ?? null,
     hien: (r) => {
       const v = tinhVungLenh(r);
       if (!v) return Trong;
+      // Da chot du TP3: tach ro VUNG MUA MOI (tham khao) va GIA MUA CU cua phan con giu.
+      const s = tinhSauTP3(r);
+      if (s) {
+        return (
+          <div
+            className="flex flex-col items-end leading-tight"
+            title={`Đã chốt đủ TP3: tìm điểm mua mới. Vùng mua mới là gợi ý tham khảo (từ hỗ trợ gần nhất bên dưới giá), chưa phải tín hiệu MUA. Phần ${s.viTheCu.tyLeConLai}% còn giữ có giá mua cũ ${fmt(s.viTheCu.giaMua)}.`}
+          >
+            <span>
+              <span className="text-[10px]" style={{ color: XANH }}>
+                mới{" "}
+              </span>
+              {s.muaMoi ? chuoiVung(s.muaMoi.tu, s.muaMoi.den) : "chờ hỗ trợ"}
+            </span>
+            <span className="text-[10px]" style={{ color: MUTED }}>
+              cũ {fmt(s.viTheCu.giaMua)} · giữ {s.viTheCu.tyLeConLai}%
+            </span>
+          </div>
+        );
+      }
       const tt = { trong: ["trong vùng", XANH], tren: ["trên vùng", VANG], duoi: ["dưới vùng", DO] }[v.mua.trangThai];
       return (
         <div

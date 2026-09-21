@@ -12,7 +12,7 @@ const MUC = [
   { href: "/danh-muc", nhan: "Danh mục cá nhân", Icon: Wallet },
   { href: "/lenh-da-dong", nhan: "Lệnh đã đóng", Icon: History },
   { href: "/bat-day", nhan: "Checklist bắt đáy", Icon: TrendingDown },
-  { href: "/thi-truong", nhan: "Thông tin thị trường", Icon: Newspaper },
+  { href: "/thi-truong", nhan: "Rà soát thị trường", Icon: Newspaper },
   { href: "/huong-dan", nhan: "Hướng dẫn & nguyên tắc", Icon: BookOpen },
   { href: "/lien-he", nhan: "Liên hệ", Icon: Mail },
 ];

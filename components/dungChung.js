@@ -223,6 +223,38 @@ export function tinhVungLenh(row) {
   return { mua, sl, tp, hoaVon };
 }
 
+// SAU KHI CHOT DU TP3 (chot 85%, con phan cuoi giu chay): ma coi nhu can TIM DIEM MUA MOI. Tach ro 2 thu:
+//  - viTheCu: phan con giu (gia mua CU, lai/lo tu gia do);
+//  - muaMoi: vung mua moi THAM KHAO = tu ho tro gan nhat BEN DUOI gia (Kijun / duong can bang dai han) den ho tro + tranDuoiPct%.
+// Day chi la goi y hien thi tu du lieu web, CHUA phai tin hieu MUA cua he thong (AFL chua phat lenh mua thu 2 khi dang giu).
+// Tra null neu ma khong dang giu hoac chua cham TP3.
+export function tinhSauTP3(row) {
+  if (!laDangGiu(row) || row.tp_da_cham !== "TP3" || !(row.gia_mua > 0)) return null;
+  const gia = Number(row.gia);
+  const cacHoTro = [
+    [row.kijun, "Kijun"],
+    [row.gg_top, "đường cân bằng dài hạn (trên)"],
+    [row.gg_bot, "đường cân bằng dài hạn (dưới)"],
+  ]
+    .map(([v, ten]) => [Number(v), ten])
+    .filter(([v]) => Number.isFinite(v) && v > 0 && v < gia);
+  const ht = cacHoTro.length ? cacHoTro.reduce((a, b) => (b[0] > a[0] ? b : a)) : null;
+  const muaMoi = ht
+    ? {
+        tu: ht[0],
+        den: ht[0] * (1 + VUNG.tranDuoiPct / 100),
+        hoTro: ht[1],
+        cachPct: (gia / ht[0] - 1) * 100,
+        trangThai: gia <= ht[0] * (1 + VUNG.tranDuoiPct / 100) ? "trong" : "cho",
+      }
+    : null;
+  return {
+    viTheCu: { giaMua: Number(row.gia_mua), laiLoPct: row.lai_lo_pct, tyLeConLai: TY_LE_CHOT.giu },
+    muaMoi,
+    diemDu: row.diem >= NGUONG_DIEM_MUA,
+  };
+}
+
 // "25 – 25.5" (hoac 1 so neu 2 dau bang nhau sau khi lam tron).
 export function chuoiVung(tu, den) {
   if (tu == null || den == null) return "—";

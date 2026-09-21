@@ -16,6 +16,7 @@ import {
   gioGhiNhan,
   mocKichHoat,
   tinhVungLenh,
+  tinhSauTP3,
   chuoiVung,
   VUNG,
   TREND_MAX,
@@ -282,6 +283,7 @@ function tinhVungGia(row) {
 export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
   const vungGia = tinhVungGia(row);
   const vungLenh = tinhVungLenh(row); // null neu khong dang giu
+  const sauTP3 = tinhSauTP3(row); // null neu chua chot du TP3
   const khoangCach = (muc) => (muc === null || !row.gia ? null : ((muc - row.gia) / row.gia) * 100);
   const tag = tinhCacTag(row);
   const mauDiem = row.diem >= 0 ? "#22C55E" : "#EF4444";
@@ -495,6 +497,55 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
           <ThanhMotChieu nhan="Breadth ngành (%)" giaTri={row.breadth_nganh} mucMax={100} hauTo="%" />
         </Card>
       </div>
+
+      {/* DA CHOT DU TP3: TACH VI THE CU VA DIEM MUA MOI */}
+      {sauTP3 && (
+        <Card className="mb-4">
+          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#6C5CE7" }}>
+            ★ Đã chốt đủ TP3 — tìm điểm mua mới
+          </p>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#8B8B99" }}>
+                Vị thế cũ còn giữ ({sauTP3.viTheCu.tyLeConLai}%)
+              </p>
+              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-lg">
+                Giá mua {fmt(sauTP3.viTheCu.giaMua)}
+              </p>
+              <p className="text-sm" style={{ fontFamily: "'JetBrains Mono', monospace", color: sauTP3.viTheCu.laiLoPct >= 0 ? "#22C55E" : "#EF4444" }}>
+                {pct(sauTP3.viTheCu.laiLoPct, 2)} so với giá mua cũ
+              </p>
+              <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
+                85% vị thế đã chốt ở TP1/TP2/TP3. Phần còn lại giữ chạy, thoát theo tín hiệu BÁN.
+              </p>
+            </div>
+            <div>
+              <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#22C55E" }}>
+                Điểm mua mới (tham khảo)
+              </p>
+              {sauTP3.muaMoi ? (
+                <>
+                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#22C55E" }} className="text-lg">
+                    Vùng mua {chuoiVung(sauTP3.muaMoi.tu, sauTP3.muaMoi.den)}
+                  </p>
+                  <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
+                    Hỗ trợ gần nhất bên dưới giá: {sauTP3.muaMoi.hoTro}, cách giá hiện tại {pct(sauTP3.muaMoi.cachPct, 1)}.{" "}
+                    {sauTP3.muaMoi.trangThai === "trong" ? "Giá đang trong vùng mua mới." : "Chờ giá hồi về vùng này, không đuổi giá."}{" "}
+                    {sauTP3.diemDu ? "Điểm hiện vẫn đạt ngưỡng MUA." : "Điểm hiện chưa đạt ngưỡng MUA, nên chờ thêm."}
+                  </p>
+                </>
+              ) : (
+                <p className="text-sm" style={{ color: "#8B8B99" }}>
+                  Chưa có mức hỗ trợ nào bên dưới giá hiện tại, chờ giá hồi về.
+                </p>
+              )}
+              <p className="text-[10px] leading-snug mt-1.5" style={{ color: "#6B6B78" }}>
+                Gợi ý hiển thị từ dữ liệu web, chưa phải tín hiệu MUA của hệ thống. Lệnh mua mới có giá mua, Stop-loss riêng, tách khỏi vị thế cũ.
+              </p>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* BIEU DO KY THUAT */}
       <div className="mb-4">

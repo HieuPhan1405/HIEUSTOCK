@@ -24,3 +24,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Thanh cuon toi (giao dien toi) - tranh thanh cuon trang mac dinh chói tren nen den. */
+html {
+  color-scheme: dark;
+  scrollbar-color: #2E2E3A #0B0B10;
+}

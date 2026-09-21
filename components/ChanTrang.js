@@ -21,7 +21,7 @@ const CONG_CU = [
   { href: "/bat-day", nhan: "Checklist bắt đáy" },
 ];
 const THONG_TIN = [
-  { href: "/thi-truong", nhan: "Thông tin thị trường" },
+  { href: "/thi-truong", nhan: "Rà soát thị trường" },
   { href: "/huong-dan", nhan: "Hướng dẫn & nguyên tắc" },
   { href: "/lien-he", nhan: "Liên hệ" },
 ];
