@@ -21,7 +21,7 @@ import {
   useCotHienThi,
   ChonCotHienThi,
 } from "@/components/boLocChung";
-import { chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, datChuanUuTien, sapChamMoc, laDangGiu, NGUONG_DIEM_MUA } from "@/components/dungChung";
+import { chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, datChuanUuTien, sapChamMoc, laChoPhienSau, laDangGiu, NGUONG_DIEM_MUA } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -30,7 +30,8 @@ const XANH = "#22C55E";
 const DO = "#EF4444";
 const PRIMARY = "#6C5CE7";
 
-// Bo loc "MA THEO DOI" (Chi ma sap cham moc tinh diem +): ma chua co lenh, gia
+// Bo loc "MA THEO DOI" gom 2 nhom: (1) da DAT DIEM MUA nhung dang doi phien sau (laChoPhienSau) va
+// (2) chi ma sap cham moc tinh diem +: ma chua co lenh, gia
 // dang cach 1 moc (may / duong can bang dai han) khong qua bienMoc % ma VUOT QUA thi duoc cong
 // diem va du diem MUA (xem sapChamMoc trong dungChung.js). Du lieu moc chi co
 // sau khi Explore lai voi AFL moi - TRUOC DO tam dung cach cu: ma TRUNG LAP co
@@ -40,6 +41,7 @@ const CAC_BIEN_MOC = [1, 2, 3, 5];
 const COT_THEO_DOI = ["moc_tiep_theo", "diem_neu_vuot"];
 
 function laMaTheoDoi(r, coDuLieuMoc, bienMoc) {
+  if (laChoPhienSau(r)) return true;
   if (coDuLieuMoc) return sapChamMoc(r, bienMoc);
   return r.tin === "TRUNG LAP" && r.diem >= NGUONG_DIEM_MUA - BIEN_DO_GAN_MUA && r.diem < NGUONG_DIEM_MUA;
 }
@@ -92,6 +94,15 @@ const COT_RIENG = {
               {nhanLoaiVao(row) && (
                 <span className="text-[10px] font-bold" style={{ color: nhanLoaiVao(row).mau }} title={nhanLoaiVao(row).moTa}>
                   ↺ {nhanLoaiVao(row).nhan}
+                </span>
+              )}
+              {laChoPhienSau(row) && (
+                <span
+                  className="text-[10px] font-bold"
+                  style={{ color: "#FBBF24" }}
+                  title="Đã đạt điểm MUA nhưng phiên đầu chưa đủ khối lượng xác nhận. Nếu phiên sau vẫn trên ngưỡng điểm thì sẽ MUA."
+                >
+                  ⏳ Đạt điểm, chờ phiên sau
                 </span>
               )}
             </>
@@ -364,8 +375,8 @@ export default function BangBoLoc({ duLieu }) {
             if (v && coDuLieuMoc) setSapXep({ khoa: "moc_tiep_theo", chieu: "asc" });
           }}
         >
-          <span title="Mã chưa có lệnh, giá đang sát một mốc (mây / đường cân bằng dài hạn) mà vượt qua thì được cộng điểm và đủ điểm MUA">
-            Mã theo dõi: sắp chạm mốc tính điểm +<b style={{ color: "#22C55E" }}> · {soTheoDoi} mã</b>
+          <span title="Mã chưa có lệnh và (1) đã đạt điểm MUA nhưng đang đợi phiên sau xác nhận khối lượng, hoặc (2) giá đang sát một mốc (mây / đường cân bằng dài hạn) mà vượt qua thì được cộng điểm và đủ điểm MUA">
+            Mã theo dõi: đạt điểm chờ phiên sau + sắp chạm mốc tính điểm +<b style={{ color: "#22C55E" }}> · {soTheoDoi} mã</b>
           </span>
         </OTich>
         {loc.chiGanDiemMua && coDuLieuMoc && (

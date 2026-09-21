@@ -1016,6 +1016,13 @@ AddColumn(DiemNeuVuot, "Diem neu vuot moc", 1.2);
 // ============================================================================
 DuongDanFileXuat = "C:\\DaoGam_Data\\tin_hieu_hom_nay.csv";
 
+// MA DAT DIEM NHUNG DANG DOI PHIEN SAU (cho bo loc "Ma theo doi" tren web): phien dau tien tren nguong diem (VuaVaoVungMua)
+// chua du volume xac nhan ngay dau (VolumeGateNgayDau) trong khi MOI dieu kien khac de MUA deu dat. Neu phien sau van tren
+// nguong thi se MUA (chi phien dau moi bat buoc volume). Chi gia tri phien CUOI duoc xuat (0/1); CHI HIEN THI, khong doi Mua/Ban.
+ChoPhienSau = ConsecutiveAbove AND VuaVaoVungMua AND NOT VolumeGateNgayDau AND InFVGZoneOk AND ADXGateOk
+              AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
+ChoPhienSauCuoi = LastValue(ChoPhienSau);
+
 if (Status("stocknum") == 0)
 {
     fh = fopen(DuongDanFileXuat, "w");
@@ -1025,7 +1032,7 @@ if (Status("stocknum") == 0)
               "stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,"+
               "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,"+
               "diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat,"+
-              "moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao,loai_vao\n", fh);
+              "moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao,loai_vao,cho_phien_sau\n", fh);
         fclose(fh);
     }
 }
@@ -1100,7 +1107,8 @@ Dong = Name() + "," + TinCuoi + ","
      + NumToStr(LastValue(MocCachPctCuoi),1.2,False) + ","
      + NumToStr(LastValue(DiemNeuVuot),1.2,False) + ","
      + WriteIf(CheDoMoc, "MOI", "CU") + ","
-     + LoaiVaoCuoi;
+     + LoaiVaoCuoi + ","
+     + NumToStr(ChoPhienSauCuoi,1.0,False);
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {

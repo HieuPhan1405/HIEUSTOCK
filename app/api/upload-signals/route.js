@@ -12,7 +12,7 @@ import { phatHienLenhDong, phatHienChotTP3, ghiLenhDaDong, ngayGiaoDichVN } from
 // stop_loss,mat_than,tp1,tp2,tp3,gtgd_tb20,fvg_ok,so_phien_giu,lai_lo_pct,sanyaku,
 // kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,
 // diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat,
-// moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao,loai_vao
+// moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao,loai_vao,cho_phien_sau
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -195,7 +195,7 @@ export async function POST(request) {
          gia_mua, ngay_mua, ban_bot, san, nganh, tp_da_cham,
          diem_rank, diem_confidence, khoi_luong_tb20, giai_ngan,
          gia_kich_hoat, moc_kich_hoat, moc_gia, moc_loai, moc_cach_pct, diem_neu_vuot,
-         gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3, che_do_vao, loai_vao)
+         gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3, che_do_vao, loai_vao, cho_phien_sau)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -207,7 +207,7 @@ export async function POST(request) {
          $35::float8[], $36::float8[], $37::float8[], $38::text[],
          $39::float8[], $40::text[], $41::float8[], $42::text[], $43::float8[], $44::float8[],
          $45::float8[], $46::timestamptz[], $47::float8[], $48::float8[], $49::float8[], $50::float8[],
-         $51::text[], $52::text[]
+         $51::text[], $52::text[], $53::boolean[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -261,6 +261,7 @@ export async function POST(request) {
          vao_tp3 = EXCLUDED.vao_tp3,
          che_do_vao = EXCLUDED.che_do_vao,
          loai_vao = EXCLUDED.loai_vao,
+         cho_phien_sau = EXCLUDED.cho_phien_sau,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -315,6 +316,8 @@ export async function POST(request) {
         vaoTp3,
         cot("che_do_vao", soText),
         cot("loai_vao", soText),
+        // 1/0 do AFL xuat; CSV cu chua co cot nay -> null (khong biet), khac voi false (da biet la khong).
+        cot("cho_phien_sau", (v) => (v === "1" ? true : v === "0" ? false : null)),
       ]
     );
 

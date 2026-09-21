@@ -201,7 +201,7 @@ export default async function TrangHuongDan() {
         <DanhSach
           muc={[
             "Lọc theo tín hiệu, vốn hoá, xu hướng, sàn (HOSE / HNX / UPCOM), ngành và các cảnh báo (Mắt Thần, đã chạm chốt lời, Bán bớt).",
-            "Tích \"Mã theo dõi: sắp chạm mốc tính điểm +\" để xem các mã chưa có lệnh nhưng giá đang sát một mốc (mây, đường cân bằng dài hạn) — vượt qua mốc đó sẽ được cộng điểm và đủ điểm MUA. Bảng hiện giá mốc cần vượt, giá đang cách mốc bao nhiêu % (chọn 1–5%) và điểm ước tính nếu vượt; dùng để canh trong phiên xem mã nào sắp kích hoạt.",
+            "Tích \"Mã theo dõi\" để xem 2 nhóm mã chưa có lệnh: (1) mã đã đạt điểm MUA nhưng đang đợi phiên sau (phiên đầu tiên trên ngưỡng điểm chưa đủ khối lượng xác nhận, phiên sau vẫn trên ngưỡng thì sẽ MUA; hiện nhãn ⏳); (2) mã có giá đang sát một mốc (mây, đường cân bằng dài hạn) — vượt qua mốc đó sẽ được cộng điểm và đủ điểm MUA. Bảng hiện giá mốc cần vượt, giá đang cách mốc bao nhiêu % (chọn 1–5%) và điểm ước tính nếu vượt; dùng để canh trong phiên xem mã nào sắp kích hoạt.",
             "Tích \"Chỉ mã ưu tiên\" để chỉ giữ lại các mã đạt đủ 4 tiêu chí: giá trên 10.000đ, vốn hoá từ 3.000 tỷ, khối lượng từ 500.000 cp/phiên, giá trị giao dịch trên 10 tỷ/phiên.",
             "Nút \"Cột hiển thị\" cho bật/tắt từng chỉ số (vốn hoá, GTGD, Rank, Confidence, Stop-loss, TP...) hoặc \"Hiện tất cả\". Lựa chọn được nhớ lại cho lần sau.",
             "Bấm vào tiêu đề cột để sắp xếp. KL TB20 và GTGD TB20 là trung bình 20 phiên. Cột Tín hiệu và các cột vị thế (giá mua, lãi/lỗ, Stop-loss, TP) chỉ hiện đầy đủ sau khi đăng ký / đăng nhập.",

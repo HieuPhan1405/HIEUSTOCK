@@ -11,6 +11,7 @@ import {
   chuoiKhoiLuong,
   nhanGiaiNgan,
   nhanLoaiVao,
+  laChoPhienSau,
   kiemTraChuanUuTien,
   gioGhiNhan,
   mocKichHoat,
@@ -321,6 +322,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
           {nhanGiaiNgan(row) && (
             <span className="mt-2 text-[11px] font-bold" style={{ color: nhanGiaiNgan(row).mau }}>
               ◐ {nhanGiaiNgan(row).nhan}
+            </span>
+          )}
+          {laChoPhienSau(row) && (
+            <span className="mt-2 text-[11px] font-bold" style={{ color: "#FBBF24" }} title="Đã đạt điểm MUA nhưng phiên đầu chưa đủ khối lượng xác nhận; phiên sau vẫn trên ngưỡng điểm thì sẽ MUA.">
+              ⏳ Đạt điểm, chờ phiên sau
             </span>
           )}
           {nhanLoaiVao(row) && (

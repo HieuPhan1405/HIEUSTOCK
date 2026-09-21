@@ -153,6 +153,12 @@ export function mocTiepTheo(row) {
 
 // Ma THEO DOI = chua co lenh (TRUNG LAP), gia dang cach 1 moc tinh diem (+)
 // khong qua bienPct %, va NEU vuot moc do thi diem uoc tinh dat nguong MUA.
+// Ma da DAT DIEM MUA nhung dang DOI PHIEN SAU (phien dau tren nguong chua du volume xac nhan - AFL cot cho_phien_sau).
+// null/undefined khi chua Explore lai voi AFL moi (chua co cot).
+export function laChoPhienSau(row) {
+  return row?.tin === "TRUNG LAP" && row?.cho_phien_sau === true;
+}
+
 export function sapChamMoc(row, bienPct) {
   const m = mocTiepTheo(row);
   if (!m || row.tin !== "TRUNG LAP") return false;
