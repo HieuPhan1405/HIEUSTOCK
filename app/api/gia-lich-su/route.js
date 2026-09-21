@@ -12,7 +12,7 @@ export async function GET(request) {
     const nen = khungTG === "W" ? gopNenTuan(ngay) : ngay;
     return Response.json(
       { trangThai: "ok", ma, khungTG, nen },
-      { headers: { "Cache-Control": "public, s-maxage=600, stale-while-revalidate=3600" } }
+      { headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600" } }
     );
   } catch (loi) {
     return Response.json({ trangThai: "loi", thongBao: String(loi?.message || loi) }, { status: 502 });

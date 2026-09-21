@@ -146,7 +146,7 @@ function Chip({ bat, onClick, children, mau }) {
 
 // Bieu do ky thuat kieu FireAnt/TradingView: nen Nhat + khoi luong + Ichimoku (9-17-33, may) + duong can bang dai han (65/129) + MA,
 // ve them vung mua / cat lo / chot loi cua he thong (neu ma dang giu lenh). Cong thuc chi bao giong het AFL.
-// Gia = gia THUC (khong dieu chinh co tuc) de khop tin hieu; nguon du lieu qua /api/gia-lich-su.
+// Gia = gia DA DIEU CHINH co tuc/thuong CP (giong du lieu AmiBroker) de chi bao khop tin hieu; nguon qua /api/gia-lich-su.
 export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCao = 540 }) {
   const khungRef = useRef(null);
   const veRef = useRef(null);
@@ -384,8 +384,8 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       </div>
 
       <p className="px-3 py-2 text-[11px] border-t" style={{ borderColor: VIEN, color: MUTED }}>
-        Giá thực (không điều chỉnh cổ tức/thưởng cổ phiếu), khối lượng khớp lệnh; chỉ báo tính giống hệ thống tín hiệu (Ichimoku 9-17-33, mây dịch 26 phiên, đường
-        cân bằng dài hạn 65/129). Không phải dữ liệu thời gian thực: nến cuối là phiên gần nhất mà nguồn đã cập nhật, và web làm mới tối đa 10 phút một lần.
+        Giá đã điều chỉnh cổ tức/thưởng cổ phiếu (giống dữ liệu AmiBroker), khối lượng khớp lệnh; chỉ báo tính giống hệ thống tín hiệu (Ichimoku 9-17-33, mây dịch 26
+        phiên, đường cân bằng dài hạn 65/129). Trong phiên, nến hôm nay cập nhật theo nguồn, web làm mới tối đa 2 phút một lần, không dùng để đặt lệnh khớp từng giây.
       </p>
     </div>
   );
