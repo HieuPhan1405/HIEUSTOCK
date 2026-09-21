@@ -1001,6 +1001,34 @@ DungNgoai = NOT DangGiuLenhVT AND NOT VuaMuaHomNay;
 // kich hoat Ban THAT khi diem AM (<0), con Ban bot chi la canh bao tham khao.
 CanhBaoBanBot = DangGiuLenhVT AND ZoneSell AND NOT BanHomNay;
 
+// ============================================================================
+// VE VUNG LENH LEN CHART (CHI HIEN THI - khong anh huong Mua/Ban/backtest)
+// Khi dang giu lenh, ve theo dung lenh do: GIA CHUYEN MUA (moc vua bi vuot o phien chuyen sang
+// vung mua: may / duong can bang dai han - cung gia tri gui len web o cot "gia kich hoat"),
+// VUNG MUA (tu gia chuyen mua den gia vao + %), GIA VAO, STOP-LOSS, TP1/TP2/TP3 (dong bang luc vao).
+// CHE DO MOI Bat: gia vao chinh la gia chuyen mua ("cham diem mua la mua"). Che do Cu: gia vao = gia
+// dong cua phien tin hieu, vung mua keo tu gia chuyen mua len den gia vao + %.
+// ============================================================================
+VeVungLenh = ParamToggle("Ve vung lenh len chart (gia chuyen mua, vung mua, SL, TP)", "Tat|Bat", 1);
+VungMuaTranPct = Param("Vung mua: cao hon gia vao toi da (%)", 2, 0, 5, 0.5);
+GiaChuyenMuaTaiMua = ValueWhen(Buy, ValueWhen(VuaVaoVungMua, GiaKichHoatBar, 1), 1);
+CoVungLenh = VeVungLenh AND DangGiuLenhVT AND GiaVaoLenh > 0;
+CoGiaChuyenMua = CoVungLenh AND GiaChuyenMuaTaiMua > 0 AND GiaChuyenMuaTaiMua <= GiaVaoLenh;
+VungMuaDuoi = IIf(CoGiaChuyenMua, GiaChuyenMuaTaiMua, GiaVaoLenh);
+VungMuaTren = GiaVaoLenh * (1 + VungMuaTranPct/100);
+if (VeVungLenh)
+{
+    PlotOHLC(IIf(CoVungLenh, VungMuaTren, Null), IIf(CoVungLenh, VungMuaTren, Null),
+             IIf(CoVungLenh, VungMuaDuoi, Null), IIf(CoVungLenh, VungMuaDuoi, Null),
+             "Vung mua", ColorRGB(0,90,40), styleCloud|styleNoLabel);
+    Plot(IIf(CoGiaChuyenMua, GiaChuyenMuaTaiMua, Null), "Gia chuyen mua", ColorRGB(0,255,127), styleLine|styleThick);
+    Plot(IIf(CoVungLenh, GiaVaoLenh, Null), "Gia vao lenh", ColorRGB(170,230,170), styleLine|styleDots);
+    Plot(IIf(CoVungLenh AND StopLossPrice > 0, StopLossPrice, Null), "Stop-loss", ColorRGB(255,60,60), styleLine|styleThick|styleDashed);
+    Plot(IIf(CoVungLenh AND ChotLoi_TP1_TaiMua > 0, ChotLoi_TP1_TaiMua, Null), "TP1", ColorRGB(90,170,255), styleLine|styleDashed);
+    Plot(IIf(CoVungLenh AND ChotLoi_TP2_TaiMua > 0, ChotLoi_TP2_TaiMua, Null), "TP2", ColorRGB(60,220,220), styleLine|styleDashed);
+    Plot(IIf(CoVungLenh AND ChotLoi_TP3_TaiMua > 0, ChotLoi_TP3_TaiMua, Null), "TP3", ColorRGB(255,200,60), styleLine|styleDashed);
+}
+
 Plot(C, "Gia", IIf(C>=Ref(C,-1),ColorRGB(0,180,0),ColorRGB(220,50,50)), styleCandle);
 Plot(Tenkan, "Tenkan 9", ColorRGB(0,140,255), styleLine|styleThick);
 Plot(Kijun, "Kijun 17", ColorRGB(255,140,0), styleLine|styleThick);
@@ -1120,6 +1148,7 @@ if (Status("action") == actionIndicator)
     chamstop_c     = CoTheDaChamStop[CursorBar];
     
     giamua_c       = GiaMuaVT[CursorBar];
+    gcm_c          = GiaChuyenMuaTaiMua[CursorBar];
     sophien_c      = SoPhienNamGiuVT[CursorBar];
     laino_c        = LaiLoVT[CursorBar];
     kccung_c       = KhangCuCungNhat[CursorBar];
@@ -1335,8 +1364,13 @@ if (Status("action") == actionIndicator)
         else
         {
             GfxSetTextColor(ColorRGB(80,80,80));
-            GfxTextOut("(gia dong cua ngay tin hieu - chua nhap tay)", c3X+12, wy); wy=wy+16;
+            GfxTextOut(WriteIf(CheDoMoc, "(vao tai gia chuyen mua - che do MOI)", "(gia dong cua ngay tin hieu - chua nhap tay)"), c3X+12, wy); wy=wy+16;
             GfxSetTextColor(colorBlack);
+        }
+        if (gcm_c > 0 AND gcm_c <= giamua_c)
+        {
+            GfxTextOut("Gia chuyen mua: "+NumToStr(gcm_c,1.2), c3X+12, wy); wy=wy+16;
+            GfxTextOut("Vung mua: "+NumToStr(gcm_c,1.2)+" - "+NumToStr(giamua_c*(1+VungMuaTranPct/100),1.2), c3X+12, wy); wy=wy+16;
         }
         GfxTextOut("So phien nam giu: "+NumToStr(sophien_c,1.0), c3X+12, wy); wy=wy+18;
         GfxTextOut("Lai/Lo: "+NumToStr(laino_c,1.2)+"%", c3X+12, wy); wy=wy+18;
