@@ -3,6 +3,7 @@ import { guiTinNhanZalo } from "@/lib/zalo";
 import { tinhGiaVaoWeb } from "@/lib/giaVaoWeb";
 import { tinhVungLenh, chuoiVung } from "@/components/dungChung";
 import { phatHienLenhDong, phatHienChotTP3, ghiLenhDaDong, ngayGiaoDichVN } from "@/lib/lenhDaDong";
+import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
 // amibroker/7_Export_LenWeb.afl). Header CSV (45 cot; 7 cot cuoi gia_kich_hoat,
@@ -343,6 +344,8 @@ export async function POST(request) {
       daBoQuaXoa = true;
     }
   });
+
+  xoaBoNhoTinHieu(); // du lieu vua doi - cac trang doc lai tu DB, khong doi het han bo nho 30 giay
 
   // Ghi nhan LENH DA DONG (ma vua tu NAM GIU chuyen sang BAN/TRUNG LAP) de co ket qua that theo doi.
   // Bao ve: loi o buoc nay KHONG duoc lam hong lan upload chinh (du lieu tin hieu da ghi xong o tren).
