@@ -1,0 +1,63 @@
+// Copy Y NGUYEN tu amibroker/7_Export_LenWeb.afl dong 276-339 - GIU STATIC (khong doi sang API)
+// vi day la "vu tru quet" (universe gate): neu lech du 1 ma so voi AmiBroker se khong doi chieu
+// duoc trong giai doan kiem chung song song (xem plan). Sua o day PHAI sua dong bo ca AFL.
+const VN30_LIST =
+  "ACB,BID,BSR,BVH,CTG,FPT,GAS,GVR,HDB,HPG," +
+  "MBB,MSN,MWG,PLX,POW,SAB,SSB,SSI,STB,TCB," +
+  "TPB,VCB,VHM,VIB,VIC,VJC,VNM,VPB,VPL,VRE";
+
+const VNMIDCAP_LIST =
+  "ANV,BCM,BMP,BSI,BWE,CII,CMG,CTD,CTR,CTS," +
+  "DBC,DCM,DGW,DIG,DPM,DSE,DXG,DXS,EIB,EVF," +
+  "FRT,FTS,GEE,GEX,GMD,HAG,HCM,HDC,HDG,HHV," +
+  "HSG,HT1,IMP,KBC,KDC,KDH,KOS,MSB,NAB,NKG," +
+  "NLG,NT2,NVL,OCB,PAN,PC1,PDR,PHR,PNJ,PVD," +
+  "PVT,REE,SBT,SCS,SIP,SJS,SZC,TCH,VCG,VCI," +
+  "VGC,VHC,VIX,VND,VPI,VSC,VTP,DGC,LPB,SHB,MSR," +
+  "TMS,MBS,SHS,BVS,PVS,OIL,VGI,FOX,ACV,VGT," +
+  "NTP,QNS,LTG,HNG,MCH,PVI,TCX,VCK";
+
+const VNSMALLCAP_LIST =
+  "AAA,AAM,ABS,ABT,ACC,ACL,ADG,ADP,ADS,AGG," +
+  "AGR,APG,APH,ASM,ASP,AST,BAF,BCE,BFC,BIC," +
+  "BKG,BMC,BMI,BRC,BTP,C32,CCC,CCL,CDC,CHP," +
+  "CIG,CKG,CLL,CMX,CNG,CRC,CRE,CSM,CSV,CTF," +
+  "CTI,D2D,DAH,DBD,DC4,DCL,DHA,DHC,DHM,DLG," +
+  "DMC,DPG,DPR,DRC,DRL,DSC,DSN,DTA,DVP,DXV," +
+  "ELC,EVE,EVG,FCM,FCN,FIR,FIT,FMC,GDT,GEG," +
+  "GIL,GSP,HAH,HAP,HAR,HAX,HCD,HHP,HHS,HID," +
+  "HII,HMC,HPX,HQC,HSL,HTG,HTI,HTN,HTV,HUB," +
+  "HVH,ICT,IDI,IJC,ILB,ITC,ITD,JVC,KHG,KHP," +
+  "KMR,KSB,LAF,LBM,LCG,LGL,LHG,LIX,LSS,MCM," +
+  "MCP,MHC,MIG,MSH,NAF,NAV,NBB,NCT,NHA,NHH," +
+  "NNC,NO1,NSC,NTL,OGC,ORS,PAC,PET,PGC,PHC," +
+  "PIT,PLP,PPC,PTB,PTC,PTL,PVP,QCG,RAL,RYG," +
+  "SAM,SAV,SBG,SCR,SFC,SFI,SGN,SGR,SGT,SHA," +
+  "SHI,SJD,SKG,SMB,ST8,STK,SVD,SVT,SZL,TCI," +
+  "TCL,TCM,TCO,TCT,TDC,TDG,TDH,TDP,TEG,THG," +
+  "TIP,TLD,TLG,TLH,TMT,TN1,TNH,TNI,TNT,TRC," +
+  "TSC,TTA,TTF,TV2,TVB,TVS,UIC,VCA,VDS,VFG," +
+  "VIP,VNL,VOS,VPG,VPH,VPS,VRC,VSI,VTB,VTO," +
+  "YBM,YEG,DHG,TRA,VCF,HVN,SVC,CAV,DQC," +
+  "PGI,NTC,VSH,SPM,TVT,STG,VNA,C47,KLB,BVB," +
+  "VAB,CEO,L18,HLD,EVS,APS,TVC,PSI,BMS,SBS," +
+  "WSS,AAS,NVB,ABB,BAB,TVN,SMC,VGS,POM,GDA," +
+  "PVC,PLC,PVB,PSD,ABI,VNR,PRE,PTI,IDC,IDV," +
+  "FOC,TV1,QTP,HND,PVG,RIC,SAS,LDP,DHT,TNG," +
+  "DXP,PHP,NET,LAS,HBC,DRI,KSV,HGM,SLS,TAR,HUT";
+
+export const VN30 = new Set(VN30_LIST.split(","));
+export const VN_MIDCAP = new Set(VNMIDCAP_LIST.split(","));
+export const VN_SMALLCAP = new Set(VNSMALLCAP_LIST.split(","));
+
+// "VN30" | "Midcap" | "Smallcap" | null (ngoai vu tru quet).
+export function phanLoaiVonHoa(ma) {
+  if (VN30.has(ma)) return "VN30";
+  if (VN_MIDCAP.has(ma)) return "Midcap";
+  if (VN_SMALLCAP.has(ma)) return "Smallcap";
+  return null;
+}
+
+export function thuocVuTruQuet(ma) {
+  return phanLoaiVonHoa(ma) != null;
+}
