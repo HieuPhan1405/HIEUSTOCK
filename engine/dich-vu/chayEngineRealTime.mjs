@@ -1,0 +1,144 @@
+// DICH VU CHINH REAL-TIME (Giai doan 4 hoan tat): chay NEN lien tuc, tu dong tinh lai tin hieu
+// ngay khi co nen moi ve tu WebSocket DNSE OpenAPI - khong can tu tay chay lai
+// chayPipelineDayDu.mjs moi lan muon tin hieu moi.
+//
+// Luong hoat dong:
+//   1. Luc khoi dong: lay TOAN BO lich su gia qua REST (giong chayPipelineDayDu.mjs) 1 LAN.
+//   2. Ket noi WebSocket, subscribe nen "1D" cho toan bo vu tru quet + VNINDEX.
+//   3. Moi khi co nen moi ve (bat ky ma nao) -> cap nhat vao bo nho, danh dau "co thay doi".
+//   4. Cu moi CHU_KY_TINH_LAI_MS (mac dinh 10 giay) - NEU co thay doi tu lan truoc - TINH LAI TOAN
+//      BO (giong AmiBroker, an toan hon tinh tang dan - xem plan) roi ghi de 1 file CSV cuc bo.
+//
+// AN TOAN - giong het chayPipelineDayDu.mjs: MAC DINH CHI ghi CSV cuc bo, KHONG tu POST len web.
+// Muon POST that (SAU KHI da doi chieu on dinh voi AmiBroker - xem Giai doan 5) thi chay voi flag
+// --upload + 2 bien moi truong CS_UPLOAD_API_KEY + CS_XAC_NHAN_UPLOAD=DONG_Y.
+//
+// CACH CHAY (can DNSE_API_KEY/DNSE_API_SECRET trong .env.dnse.local):
+//   node --env-file=.env.dnse.local engine/dich-vu/chayEngineRealTime.mjs
+// Dung Ctrl+C de dung. De chay lien tuc trong 1 cua so terminal rieng trong gio giao dich (9h-15h).
+import { mkdirSync, writeFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { taoOpenApiClient } from "../dnse/openApiClient.js";
+import { ketNoiWebSocketDNSE } from "../dnse/wsClient.js";
+import { taiLichSuToanBo, tinhTinHieuToanBo, capNhatNenMoiNhat } from "../loi/quetToanBo.js";
+import { xayDungCSV } from "../loi/csvDauRa.js";
+
+const apiKey = process.env.DNSE_API_KEY;
+const apiSecret = process.env.DNSE_API_SECRET;
+if (!apiKey || !apiSecret) {
+  console.error("Thieu DNSE_API_KEY/DNSE_API_SECRET trong .env.dnse.local. Xem huong dan o chayThuOpenApi.mjs.");
+  process.exit(1);
+}
+
+const CHU_KY_TINH_LAI_MS = 10000; // 10s - du "gan real-time", tranh tinh lai qua day (~389 ma tinh lai TOAN BO moi lan)
+
+const ngayIsoTuGiay = (giay) => new Date(giay * 1000).toISOString().slice(0, 10);
+function chuyenDoiNenTuWS(doi) {
+  return { t: ngayIsoTuGiay(doi.time), o: doi.open, h: doi.high, l: doi.low, c: doi.close, v: doi.volume ?? 0 };
+}
+
+async function main() {
+  const client = taoOpenApiClient({ apiKey, apiSecret });
+  const { dsMa, vniNen, sanTheoMa, nenTheoMa, loiTheoMa } = await taiLichSuToanBo(client, {
+    onTienDo: (chuoi) => console.log(chuoi),
+  });
+
+  if (loiTheoMa.length > 0) {
+    console.log(`\nCANH BAO: ${loiTheoMa.length} ma khong lay duoc lich su luc khoi dong:`);
+    for (const l of loiTheoMa.slice(0, 30)) console.log(`  ${l.ma}: ${l.loi}`);
+  }
+  const SO_MA_TOI_THIEU = Math.floor(dsMa.length * 0.9);
+  if (nenTheoMa.size < SO_MA_TOI_THIEU) {
+    console.error(`\nDUNG: chi lay duoc ${nenTheoMa.size}/${dsMa.length} ma luc khoi dong (< ${SO_MA_TOI_THIEU} toi thieu). Kiem tra loi roi chay lai.`);
+    process.exit(1);
+  }
+
+  const thuMucOutput = fileURLToPath(new URL("../output/", import.meta.url));
+  mkdirSync(thuMucOutput, { recursive: true });
+  const duongDanCsv = thuMucOutput + "tin_hieu_realtime_moi_nhat.csv";
+
+  const uploadBat = process.argv.includes("--upload");
+  const uploadKey = process.env.CS_UPLOAD_API_KEY;
+  const uploadDuocPhep = uploadBat && !!uploadKey && process.env.CS_XAC_NHAN_UPLOAD === "DONG_Y";
+  if (uploadBat) {
+    console.log(
+      uploadDuocPhep
+        ? "\nCANH BAO: --upload dang BAT - se tu dong POST THAT len web moi lan tinh lai co thay doi."
+        : "\n--upload duoc yeu cau nhung THIEU CS_UPLOAD_API_KEY hoac CS_XAC_NHAN_UPLOAD=DONG_Y - se CHI ghi file, khong upload (an toan)."
+    );
+  }
+
+  async function guiLenWebNeuDuocPhep(csv) {
+    if (!uploadDuocPhep) return;
+    try {
+      const gocWeb = process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn";
+      const res = await fetch(`${gocWeb}/api/upload-signals`, {
+        method: "POST",
+        headers: { "Content-Type": "text/csv", "x-api-key": uploadKey },
+        body: csv,
+        signal: AbortSignal.timeout(120000),
+      });
+      console.log(`[upload] HTTP ${res.status}`);
+    } catch (loi) {
+      console.log(`[upload] LOI: ${loi.message}`);
+    }
+  }
+
+  let coThayDoi = true; // tinh lan dau ngay sau khi tai xong lich su, khong doi tick WebSocket
+  let dangTinh = false;
+
+  async function tinhLaiVaGhi() {
+    if (!coThayDoi || dangTinh) return;
+    coThayDoi = false;
+    dangTinh = true;
+    try {
+      const { hang, loiTinhToan } = tinhTinHieuToanBo({ nenTheoMa, vniNen, sanTheoMa });
+      if (loiTinhToan.length > 0) {
+        console.log(`[canh bao] ${loiTinhToan.length} ma loi khi tinh tin hieu, da bo qua: ${loiTinhToan.slice(0, 5).map((l) => l.ma).join(", ")}${loiTinhToan.length > 5 ? "..." : ""}`);
+      }
+      const dem = {};
+      for (const h of hang) dem[h.tin] = (dem[h.tin] || 0) + 1;
+      console.log(
+        `[${new Date().toLocaleTimeString("vi-VN")}] Tinh lai xong (${hang.length} dong): MUA=${dem.MUA || 0} NAM GIU=${dem["NAM GIU"] || 0} BAN=${dem.BAN || 0} TRUNG LAP=${dem["TRUNG LAP"] || 0}`
+      );
+
+      const csv = xayDungCSV(hang);
+      writeFileSync(duongDanCsv, csv, "utf-8");
+      await guiLenWebNeuDuocPhep(csv);
+    } finally {
+      dangTinh = false;
+    }
+  }
+
+  console.log(`\nDang ket noi WebSocket, subscribe nen 1D cho ${dsMa.length} ma + VNINDEX...`);
+  const ketNoi = ketNoiWebSocketDNSE(
+    { apiKey, apiSecret },
+    {
+      kenh: [{ name: "ohlc.1D.json", symbols: [...dsMa, "VNINDEX"] }],
+      onTrangThai: (chuoi) => console.log(`[ws] ${chuoi}`),
+      onLoi: (loi) => console.error(`[ws loi] ${loi.message}`),
+      onData: (_loaiDuLieu, doi) => {
+        if (!doi.symbol || doi.open == null) return; // khong phai nen OHLC hop le - bo qua an toan
+        const mang = doi.symbol === "VNINDEX" ? vniNen : nenTheoMa.get(doi.symbol);
+        if (!mang) return; // ma khong nam trong vu tru dang theo doi (khong nen xay ra, phong thu)
+        capNhatNenMoiNhat(mang, chuyenDoiNenTuWS(doi));
+        coThayDoi = true;
+      },
+    }
+  );
+
+  await tinhLaiVaGhi(); // tinh ngay lan dau voi du lieu REST vua tai, khong doi tick WebSocket
+  const henGio = setInterval(tinhLaiVaGhi, CHU_KY_TINH_LAI_MS);
+
+  process.on("SIGINT", () => {
+    console.log("\nDang dung dich vu...");
+    clearInterval(henGio);
+    ketNoi.dong();
+    process.exit(0);
+  });
+}
+
+main().catch((loi) => {
+  console.error("LOI DICH VU REAL-TIME:", loi);
+  process.exit(1);
+});

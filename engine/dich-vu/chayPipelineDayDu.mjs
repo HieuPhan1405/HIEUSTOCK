@@ -1,6 +1,10 @@
-// PIPELINE DAY DU (Giai doan 4 cua ke hoach): lay lich su gia toan bo vu tru quet
+// PIPELINE DAY DU - CHAY 1 LAN (Giai doan 4 cua ke hoach): lay lich su gia toan bo vu tru quet
 // (VN30+Midcap+Smallcap, ~389 ma) + VNINDEX tu DNSE OpenAPI, tinh breadth toan thi truong, roi goi
 // tinhTinHieuChoMa() cho tung ma de ra CSV dung dinh dang app/api/upload-signals/route.js mong doi.
+//
+// Muon chay LIEN TUC, tu dong tinh lai khi co nen moi (real-time qua WebSocket) thay vi phai tu
+// chay lai file nay - xem engine/dich-vu/chayEngineRealTime.mjs (dung chung logic voi file nay
+// qua engine/loi/quetToanBo.js).
 //
 // AN TOAN - MAC DINH CHI GHI FILE CSV RA CUC BO (engine/output/), KHONG tu POST len web. Engine
 // nay CHUA duoc doi chieu voi AmiBroker (xem ke hoach Giai doan 5) - upload that se GHI DE du lieu
@@ -19,12 +23,8 @@
 //   node --env-file=.env.dnse.local engine/dich-vu/chayPipelineDayDu.mjs --upload   (sau khi da doi chieu xong)
 import { mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
-import { taoOpenApiClient, layNenOHLC } from "../dnse/openApiClient.js";
-import { VN30, VN_MIDCAP, VN_SMALLCAP } from "../danh-sach/vonHoa.js";
-import { laySanTheoDanhSachMa } from "../loi/vndirectSanNganh.js";
-import { tinhTatCaBreadth } from "../loi/breadth.js";
-import { tinhTinHieuChoMa } from "../tinhTinHieuChoMa.js";
-import { sma } from "../loi/mang.js";
+import { taoOpenApiClient } from "../dnse/openApiClient.js";
+import { taiLichSuToanBo, tinhTinHieuToanBo } from "../loi/quetToanBo.js";
 import { xayDungCSV } from "../loi/csvDauRa.js";
 
 const apiKey = process.env.DNSE_API_KEY;
@@ -34,56 +34,11 @@ if (!apiKey || !apiSecret) {
   process.exit(1);
 }
 
-const SO_NGAY_LICH_SU = 1600; // ~4.4 nam lich, du cho HHV(H,252) + Ichimoku + on dinh Kijun/duong can bang
-const CHO_GIUA_MOI_MA_MS = 200; // gian cach nhe giua cac request - tranh bi coi la spam API that
-
-const client = taoOpenApiClient({ apiKey, apiSecret });
-const cho = (ms) => new Promise((r) => setTimeout(r, ms));
-
-async function layNenAnToan(symbol, type) {
-  const den = Math.floor(Date.now() / 1000);
-  const tu = den - SO_NGAY_LICH_SU * 86400;
-  let loiCuoi;
-  for (let lan = 1; lan <= 3; lan++) {
-    try {
-      return await layNenOHLC(client, { symbol, type, resolution: "1D", tu, den });
-    } catch (loi) {
-      loiCuoi = loi;
-      if (lan < 3) await cho(500 * lan);
-    }
-  }
-  throw loiCuoi;
-}
-
 async function main() {
-  const dsMa = [...new Set([...VN30, ...VN_MIDCAP, ...VN_SMALLCAP])].sort();
-  console.log(`Vu tru quet: ${dsMa.length} ma. Dang lay VNINDEX...`);
-
-  const vniNen = await layNenAnToan("VNINDEX", "INDEX");
-  const vniCloseByDate = new Map(vniNen.map((b) => [b.t, b.c]));
-  console.log(`VNINDEX: ${vniNen.length} nen.`);
-
-  console.log("Dang lay san niem yet (HOSE/HNX/UPCOM) tu VNDirect...");
-  const sanTheoMa = await laySanTheoDanhSachMa(dsMa).catch((loi) => {
-    console.log(`  CANH BAO: khong lay duoc san (${loi.message}) - cot 'san' se de trong, khong anh huong tin hieu MUA/BAN.`);
-    return new Map();
+  const client = taoOpenApiClient({ apiKey, apiSecret });
+  const { dsMa, vniNen, sanTheoMa, nenTheoMa, loiTheoMa } = await taiLichSuToanBo(client, {
+    onTienDo: (chuoi) => console.log(chuoi),
   });
-
-  const nenTheoMa = new Map();
-  const loiTheoMa = [];
-  console.log("Dang lay lich su gia tung ma (co the mat vai phut)...");
-  for (let i = 0; i < dsMa.length; i++) {
-    const ma = dsMa[i];
-    try {
-      const nen = await layNenAnToan(ma, "STOCK");
-      if (!nen || nen.length < 60) throw new Error(`chi ${nen?.length ?? 0} nen - qua it de tinh chi bao`);
-      nenTheoMa.set(ma, nen);
-    } catch (loi) {
-      loiTheoMa.push({ ma, loi: String(loi.message || loi) });
-    }
-    if ((i + 1) % 20 === 0 || i === dsMa.length - 1) console.log(`  ${i + 1}/${dsMa.length} ma (${loiTheoMa.length} loi)...`);
-    await cho(CHO_GIUA_MOI_MA_MS);
-  }
 
   if (loiTheoMa.length > 0) {
     console.log(`\nCANH BAO: ${loiTheoMa.length} ma khong lay duoc du lieu:`);
@@ -99,34 +54,9 @@ async function main() {
     process.exit(1);
   }
 
-  console.log("\nDang tinh breadth toan thi truong...");
-  const ketQuaBreadth = tinhTatCaBreadth((ma) => {
-    const nen = nenTheoMa.get(ma);
-    if (!nen) return undefined;
-    const close = nen.map((b) => b.c);
-    const ma50 = sma(close, 50);
-    return { gia: close[close.length - 1], ma50: ma50[ma50.length - 1] };
-  });
+  console.log("\nDang tinh breadth + tin hieu tung ma...");
+  const { ketQuaBreadth, hang, loiTinhToan } = tinhTinHieuToanBo({ nenTheoMa, vniNen, sanTheoMa });
   console.log(`Breadth trung binh thi truong: ${ketQuaBreadth.trungBinh.toFixed(1)}%`);
-
-  console.log("\nDang tinh tin hieu tung ma...");
-  const hang = [];
-  const loiTinhToan = [];
-  for (const [ma, nen] of nenTheoMa) {
-    try {
-      const vniClose = nen.map((b) => vniCloseByDate.get(b.t) ?? null);
-      hang.push(tinhTinHieuChoMa({ ma, nen, vniClose, san: sanTheoMa.get(ma) ?? null, ketQuaBreadth }));
-    } catch (loi) {
-      loiTinhToan.push({ ma, loi: String(loi.message || loi) });
-    }
-  }
-  // VNINDEX cung xuat 1 dong (hien thi nhu 1 chi so tren web - xem nhanh ma==="VNINDEX" trong tinhTinHieuChoMa).
-  try {
-    const vniCloseAligned = vniNen.map((b) => vniCloseByDate.get(b.t));
-    hang.push(tinhTinHieuChoMa({ ma: "VNINDEX", nen: vniNen, vniClose: vniCloseAligned, san: "HOSE", ketQuaBreadth }));
-  } catch (loi) {
-    loiTinhToan.push({ ma: "VNINDEX", loi: String(loi.message || loi) });
-  }
 
   if (loiTinhToan.length > 0) {
     console.log(`\nCANH BAO: ${loiTinhToan.length} ma loi khi tinh tin hieu (bo qua):`);
