@@ -134,7 +134,7 @@ for (i = CuaSoPivot; i < BarCount - CuaSoPivot; i++)
 //     neu chua thi tu tinh lai don gian tai day)
 //  2. Chikou (gia dong cua hom nay) cao hon dinh 5 phien quanh vi tri Shift
 //     phien truoc (dung lai dinh nghia da co o Chikou thong thoang - neu co)
-//  3. Gia phá lên tren May (Cloud)
+//  3. Gia pha len tren May (Cloud)
 DK1_TenkanCatKijun = Tenkan > Kijun AND Ref(Tenkan,-1) <= Ref(Kijun,-1);
 DuDuLieuChoChikou_Sanyaku = BarIndex() >= Shift;
 DK2_ChikouThoat = IIf(DuDuLieuChoChikou_Sanyaku, C > Ref(HHV(H,5), -Shift), False);
@@ -1171,7 +1171,7 @@ Plot(CBBot, "Can bang dai han duoi (129)", ColorRGB(150,60,220), styleLine|style
 
 // CHIKOU SPAN (duong tre) - gia dong cua HOM NAY, ve lui lai "Shift" phien
 // ve truoc (dung y idiom chuan AFL: Ref(C, Shift) voi so duong = nhin ve
-// TUONG LAI tai moi diem, tuong duong hien thi gia trị hom nay o vi tri
+// TUONG LAI tai moi diem, tuong duong hien thi gia tri hom nay o vi tri
 // Shift phien truoc). Truoc day CHUA ve dong nay len chart theo yeu cau.
 // LUU Y KHI DOC CHART: diem vang tai 1 phien la Chikou cua phien CACH DO Shift PHIEN VE SAU (tuong lai),
 // khong phai Chikou cua chinh phien do. Muon biet Chikou cua ngay X co thong thoang khong, phai nhin diem

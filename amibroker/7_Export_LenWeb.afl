@@ -693,10 +693,8 @@ Mua2Vi = 0;         // vi tri nen vao lenh mua moi
 Mua2SuKien = 0;     // 1 = dung nen vao lenh mua moi
 Mua2Cat = 0;        // 1 = cham Stop-loss rieng, 2 = dong cung lenh goc (Ban)
 Mua2DaTung = 0;     // 1 = lenh goc hien tai da mua moi roi (toi da 1 lan)
-stopBaoVe = 0; chamBaoVe = 0; // khoi tao truoc vong lap - ma chua tung giu lenh (nhanh if ben duoi khong bao gio chay) se
-                              // khong duoc gan lai, doc o ngoai vong lap (LastValue...) se bao Error 29 neu thieu dong nay.
+stopBaoVe = 0; chamBaoVe = 0;
 for (i = 1; i < BarCount; i++)
-{
     if (GiuTrongVongLap[i-1] == 1)
     {
         GiaVaoTrongVongLap[i] = GiaVaoTrongVongLap[i-1];
@@ -842,7 +840,7 @@ for (i = 1; i < BarCount; i++)
     {
         GiuTrongVongLap[i] = 0;
     }
-}
+
 Buy = GiuTrongVongLap AND NOT Ref(GiuTrongVongLap,-1);
 Sell = ExRem(Sell, Buy);
 
@@ -1055,7 +1053,7 @@ ChiPhienCuoi = BarIndex() == LastValue(BarIndex());
 // day khong phai co phieu cong ty, chien luoc Dao Gam khong dung cho ETF.
 // TRUOC DAY chi quet co phieu HOSE. Da MO RONG sang ca HNX/UPCOM theo yeu
 // cau (xem DS_SanHNX/DS_SanUPCOM o tren) - ten bien ThuocHOSE giu nguyen de
-// khong phai sua lai moi cho dùng, nhung nay thuc chat nghia la "nam trong
+// khong phai sua lai moi cho dung, nhung nay thuc chat nghia la "nam trong
 // 1 trong 3 danh sach VN30/Midcap/Smallcap dang quet" (khong phan biet san).
 LaMaETF = StrLeft(Name(), 3) == "FUE";
 ThuocHOSE = InVN30 OR InVNMidCap OR InVNSmallCap;
