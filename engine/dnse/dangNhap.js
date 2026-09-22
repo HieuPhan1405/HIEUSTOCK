@@ -1,3 +1,9 @@
+// TAM DUNG 2026-09-22: da thu that voi tai khoan that - dang nhap + lay investorId THANH CONG,
+// nhung ket noi MQTT bi tu choi subscribe ("Unspecified error") tren ca 3 topic thu. Da chuyen
+// huong chinh sang engine/dnse/openApiClient.js (DNSE OpenAPI, xac thuc bang API Key + API
+// Secret, KHONG dung username/password) - xem developers.dnse.com.vn, co ca REST /price/ohlc lay
+// duoc lich su nen. Giu lai file nay phong khi can quay lai huong LightSpeed/MQTT sau nay.
+//
 // Dang nhap DNSE LightSpeed API - CHI dung username/password tu BIEN MOI TRUONG do NGUOI DUNG
 // tu set tren may cua ho (vd file .env.dnse.local, da nam trong .gitignore qua pattern ".env*").
 // Claude/AI KHONG duoc nhap/thay mat khau nay trong bat ky truong hop nao - day la tai khoan
