@@ -80,13 +80,50 @@ if (ketQua) {
     ok("dang giu -> co ngay mua (dang d/m/yyyy)", /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(ketQua.ngay_mua ?? ""), ketQua.ngay_mua);
     ok("dang giu -> co TP1<=TP2<=TP3, deu tren gia mua", ketQua.tp1 <= ketQua.tp2 && ketQua.tp2 <= ketQua.tp3 && ketQua.tp1 > ketQua.gia_mua, [ketQua.tp1, ketQua.tp2, ketQua.tp3]);
   } else {
-    ok("khong giu lenh -> gia_mua = null", ketQua.gia_mua == null, ketQua.gia_mua);
-    ok("khong giu lenh -> stop_loss = null", ketQua.stop_loss == null, ketQua.stop_loss);
+    // Chuoi gia luon tang manh nen kich ban nay khong roi vao day trong thuc te - test rieng ben
+    // duoi (kich ban Ban sau khi Mua) moi thuc su kiem tra nhanh TRUNG LAP/BAN.
+    ok("(khong roi vao nhanh nay voi chuoi gia luon tang - bo qua)", true);
   }
 
   if (ketQua.dang_giu_moi) {
     ok("dang giu Mua them -> gia_mua_moi/stop_moi hop le", ketQua.gia_mua_moi > 0 && ketQua.stop_moi > 0 && ketQua.stop_moi < ketQua.gia_mua_moi);
   }
+}
+
+// ---- Kich ban 2: TANG MANH roi SAP MANH (chac chan MUA roi BAN) - kiem tra dung bug da sua
+// 2026-09-23: AFL xuat gia_mua/stop_loss/tp1-3/ngay_mua/lai_lo_pct la ValueWhen(Buy,X,1), CARRY
+// FORWARD MAI MAI ke ca sau khi da Ban (KHONG reset ve null/rong khi het dang giu) - doi chieu CSV
+// that voi AmiBroker 2026-09-22 phat hien engine truoc do gate nham theo dangGiuCuoi lam cac cot
+// nay rong sai cho hau het ma dang o trang thai TRUNG LAP/BAN.
+function taoNenSauKhiBan() {
+  const tang = taoNenGiaTongHop(400, 7, 0.15);
+  const ngayGocSap = new Date(tang[tang.length - 1].t + "T00:00:00Z").getTime() + 86400000;
+  const sap = [];
+  let gia = tang[tang.length - 1].c;
+  for (let i = 0; i < 100; i++) {
+    gia *= 0.95; // giam 5%/phien - chac chan xuyen thung moi stop-loss hop ly, kich hoat Ban
+    const ngay = new Date(ngayGocSap + i * 86400000).toISOString().slice(0, 10);
+    sap.push({ t: ngay, o: gia * 1.02, h: gia * 1.03, l: gia * 0.99, c: gia, v: 500000 });
+  }
+  return [...tang, ...sap];
+}
+
+const nenSauBan = taoNenSauKhiBan();
+const vniCloseSauBan = taoNenGiaTongHop(nenSauBan.length, 99, 0.03).map((b) => b.c * 20);
+let ketQua2;
+try {
+  ketQua2 = tinhTinHieuChoMa({ ma: "TESTMA2", nen: nenSauBan, vniClose: vniCloseSauBan, san: "HOSE", ketQuaBreadth: tinhTatCaBreadth(() => undefined) });
+  ok("kich ban Mua roi Ban: chay khong crash", true);
+} catch (e) {
+  ok("kich ban Mua roi Ban: chay khong crash", false, e.stack);
+}
+if (ketQua2) {
+  ok("kich ban Mua roi Ban: tin la BAN hoac TRUNG LAP (da tung mua truoc, gia sau do sap manh)", ["BAN", "TRUNG LAP"].includes(ketQua2.tin), ketQua2.tin);
+  ok("da tung MUA -> gia_mua VAN con gia tri (khong reset ve null khi het giu)", ketQua2.gia_mua > 0, ketQua2.gia_mua);
+  ok("da tung MUA -> stop_loss VAN con gia tri", ketQua2.stop_loss > 0, ketQua2.stop_loss);
+  ok("da tung MUA -> tp1/tp2/tp3 VAN con gia tri", ketQua2.tp1 > 0 && ketQua2.tp2 > 0 && ketQua2.tp3 > 0, [ketQua2.tp1, ketQua2.tp2, ketQua2.tp3]);
+  ok("da tung MUA -> ngay_mua VAN con gia tri (dang d/m/yyyy)", /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(ketQua2.ngay_mua ?? ""), ketQua2.ngay_mua);
+  ok("da tung MUA, gia da sap manh -> lai_lo_pct < 0", ketQua2.lai_lo_pct < 0, ketQua2.lai_lo_pct);
 }
 
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);

@@ -238,6 +238,20 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   const loaiMocTaiMua = valueWhen(kq.buy, loaiMocTaiVuaVao, 1);
   const loaiVaoTaiMua = valueWhen(kq.buy, kq.loaiVaoLenh, 1);
 
+  // ---- Gia mua/SL/TP xuat CSV (AFL dong 919-982, 1180-1193): GiaVaoLenh/StopLossPrice/
+  // ChotLoi_TPx_TaiMua DEU la ValueWhen(Buy,X,1) - gia tri tai lan MUA GAN NHAT, giu nguyen MAI MAI
+  // (KE CA sau khi da Ban), KHONG gate theo dang-giu-hay-khong. Doi chieu CSV that 2026-09-22 xac
+  // nhan AmiBroker luon co gia tri cho cac cot nay du dang MUA/NAM GIU/BAN/TRUNG LAP - truoc day
+  // engine gate nham theo dangGiuCuoi lam cac cot nay rong sai cho hau het ma (loi rap code, AFL
+  // khong lam vay). stopTaiMua dung cong thuc ung voi CheDoMoc/BatMuaLai=true (MAC_DINH hien tai;
+  // xem StopLossPrice = IIf(DungStopMoi, StopMoiTaiMua, ...) trong AFL).
+  const giaMuaTaiMua = valueWhen(kq.buy, giaVaoBar, 1);
+  const stopTaiMua = valueWhen(kq.buy, stopVaoBar, 1);
+  const tp1TaiMua = valueWhen(kq.buy, tp1Vong, 1);
+  const tp2TaiMua = valueWhen(kq.buy, tp2Vong, 1);
+  const tp3TaiMua = valueWhen(kq.buy, tp3Vong, 1);
+  const ngayMuaTaiMuaIso = valueWhen(kq.buy, nen.map((b) => b.t), 1);
+
   // ---- Cac gia tri "tung cham TP nao" DE HIEN THI (HighestSince TU LUC Buy - BAO GOM CHINH nen
   // Buy, KHAC voi daTP1Vong/2/3 NOI BO cua may trang thai von CHU DINH BO QUA nen vao lenh - day
   // la 2 duong tinh khac nhau CO CHU DICH trong chinh AFL goc, khong phai loi). ----
@@ -293,11 +307,10 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   const vonHoa = ma === "VNINDEX" ? "ChiSo" : phanLoaiVonHoa(ma) ?? "Khac";
   const tin = vuaMuaHomNay ? "MUA" : dangGiuTuTruoc ? "NAM GIU" : banHomNay ? "BAN" : "TRUNG LAP";
 
-  // Chi thuc su duoc doc khi dangGiuCuoi/mua2Giu[cuoi] dung (xem cac cho gan ngay_mua/ngay_mua_moi
-  // ben duoi) - luc do viTriVaoTrongVongLap/mua2Vi chac chan la vi tri nen VAO LENH THAT, khong
-  // phai gia tri khoi tao 0 mac dinh.
-  const ngayMuaVT = nen[kq.viTriVaoTrongVongLap[cuoi]]?.t ?? null;
+  // Chi thuc su duoc doc khi mua2Giu[cuoi] dung (xem ngay_mua_moi ben duoi) - luc do mua2Vi chac
+  // chan la vi tri nen VAO LENH THAT, khong phai gia tri khoi tao 0 mac dinh.
   const ngayMuaMoiVT = nen[kq.mua2Vi[cuoi]]?.t ?? null;
+  const laiLoTaiMuaCuoi = giaMuaTaiMua[cuoi] > 0 ? (close[cuoi] / giaMuaTaiMua[cuoi] - 1) * 100 : 0;
 
   return {
     ma,
@@ -315,21 +328,21 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     gg_top: cbTop[cuoi],
     gg_bot: cbBot[cuoi],
     dinh_52t: dinh52TCuoi,
-    stop_loss: dangGiuCuoi ? kq.stopVaoTrongVongLap[cuoi] : null,
+    stop_loss: stopTaiMua[cuoi],
     mat_than: matThan[cuoi],
-    tp1: dangGiuCuoi ? kq.tp1VaoVong[cuoi] : null,
-    tp2: dangGiuCuoi ? kq.tp2VaoVong[cuoi] : null,
-    tp3: dangGiuCuoi ? kq.tp3VaoVong[cuoi] : null,
+    tp1: tp1TaiMua[cuoi],
+    tp2: tp2TaiMua[cuoi],
+    tp3: tp3TaiMua[cuoi],
     gtgd_tb20: gtgdTB20Cuoi,
     fvg_ok: fvgDuLon[cuoi],
     so_phien_giu: barsSince(kq.buy)[cuoi],
-    lai_lo_pct: dangGiuCuoi && kq.giaVaoTrongVongLap[cuoi] > 0 ? (close[cuoi] / kq.giaVaoTrongVongLap[cuoi] - 1) * 100 : null,
+    lai_lo_pct: laiLoTaiMuaCuoi,
     sanyaku: sanyaku[cuoi],
     kumo_twist: kumoTwistCuoi,
     ngay_bien_doi: false, // TODO (display-only, xem chu thich dau file)
     von_hoa: vonHoa,
-    gia_mua: dangGiuCuoi ? kq.giaVaoTrongVongLap[cuoi] : null,
-    ngay_mua: dangGiuCuoi ? ngayVN(ngayMuaVT) : null,
+    gia_mua: giaMuaTaiMua[cuoi],
+    ngay_mua: ngayVN(ngayMuaTaiMuaIso[cuoi]),
     ban_bot: canhBaoBanBotCuoi,
     san: ma === "VNINDEX" ? "HOSE" : san,
     nganh: ma === "VNINDEX" ? "ChiSo" : (nganhCuaMa(ma) ?? "Khac"),

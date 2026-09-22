@@ -20,8 +20,8 @@ function layDuLieu(ma) {
 }
 
 const ketQua = tinhTatCaBreadth(layDuLieu);
-ok("Breadth nhom Bao hiem = 3/10*100 = 30%", gan(ketQua.theoNganh.get("Bảo hiểm"), 30), ketQua.theoNganh.get("Bảo hiểm"));
-ok("14 nhom con lai khong co du lieu -> 0% moi nhom", [...ketQua.theoNganh].filter(([t]) => t !== "Bảo hiểm").every(([, v]) => v === 0));
+ok("Breadth nhom Bao hiem = 3/10*100 = 30%", gan(ketQua.theoNganh.get("Bao hiem"), 30), ketQua.theoNganh.get("Bao hiem"));
+ok("14 nhom con lai khong co du lieu -> 0% moi nhom", [...ketQua.theoNganh].filter(([t]) => t !== "Bao hiem").every(([, v]) => v === 0));
 ok("Trung binh 15 nhom = (30 + 0*14)/15 = 2.0", gan(ketQua.trungBinh, 2.0), ketQua.trungBinh);
 
 ok("breadthCuaMa('BIC') = breadth nhom Bao hiem = 30", gan(breadthCuaMa("BIC", ketQua), 30));
