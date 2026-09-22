@@ -90,6 +90,8 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], dangGiu, ngayMua
   }, [ma, canTimNgayCham]);
 
   // ---------- Xay danh sach su kien ----------
+  // uuTien: thu tu hien thi khi 2 su kien trung ngay (vd Cham TP3 va Chot du TP3 thuong cung 1 ngay phat hien).
+  const UU_TIEN = { MUA: 0, CHAM_TP: 1, DONG: 2, DANG_GIU: 3 };
   const suKien = [];
 
   // 1. Cac dot DA DONG trong qua khu (moi dong lenh_da_dong = 1 su kien MUA + 1 su kien DONG; khu trung MUA khi
@@ -101,6 +103,7 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], dangGiu, ngayMua
       daThemMua.add(khoaMua);
       suKien.push({
         ngay: d.ngay_mua,
+        uuTien: UU_TIEN.MUA,
         icon: ArrowUpCircle,
         mau: XANH,
         chinh: d.vong === 2 ? "Mua thêm (sau TP3)" : "Mua",
@@ -110,6 +113,7 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], dangGiu, ngayMua
     const nhan = NHAN_LY_DO[d.ly_do] || (() => "Đóng vị thế");
     suKien.push({
       ngay: d.ngay_ban,
+      uuTien: UU_TIEN.DONG,
       icon: d.ly_do === "CAT_LO" ? ArrowDownCircle : d.ly_do === "TP3" ? Target : d.ly_do === "BAO_VE_LAI" ? ShieldCheck : ArrowDownCircle,
       mau: d.lai_lo_pct >= 0 ? XANH : DO,
       chinh: nhan(d) + (d.vong === 3 ? " · phần còn lại sau TP3" : ""),
@@ -118,9 +122,12 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], dangGiu, ngayMua
     });
   }
 
-  // 2. Vi the DANG GIU hien tai (chua co trong lichSuDaDong vi chua dong).
+  // 2. Vi the DANG GIU hien tai (chua co trong lichSuDaDong vi chua dong). Neu dot mua nay da co san trong lich su
+  // (vd. da tung chot TP3 nen co dong "vong 1" ghi lai ngay mua nay roi) thi KHONG them "Mua" trung nua.
   if (dangGiu && ngayMuaStr) {
-    suKien.push({ ngay: ngayMuaStr, icon: ArrowUpCircle, mau: XANH, chinh: "Mua", phu: `Giá ${fmt(giaMua)}` });
+    if (!daThemMua.has(`${ngayMuaStr}|goc`)) {
+      suKien.push({ ngay: ngayMuaStr, uuTien: UU_TIEN.MUA, icon: ArrowUpCircle, mau: XANH, chinh: "Mua", phu: `Giá ${fmt(giaMua)}` });
+    }
 
     if (nen) {
       const moc = [
@@ -132,16 +139,25 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], dangGiu, ngayMua
       for (const [ky, gia_, nhan] of moc) {
         if (!(gia_ > 0) || thuTu[ky] > (thuTu[daChamTp] ?? 0)) continue;
         const cham = ngayChamTP(nen, ngayMuaStr, gia_);
-        if (cham) suKien.push({ ngay: cham.ngay, icon: Target, mau: VANG, chinh: nhan, phu: `Giá vượt ${fmt(gia_)} · sau ${cham.soPhien} phiên` });
+        if (cham)
+          suKien.push({
+            ngay: cham.ngay,
+            uuTien: UU_TIEN.CHAM_TP,
+            icon: Target,
+            mau: VANG,
+            chinh: nhan,
+            phu: `Giá vượt ${fmt(gia_)} · sau ${cham.soPhien} phiên`,
+          });
       }
     }
 
-    if (dangGiuMoi && ngayMuaMoiStr) {
-      suKien.push({ ngay: ngayMuaMoiStr, icon: TrendingUp, mau: NGOC, chinh: "Mua thêm (sau TP3)", phu: `Giá ${fmt(giaMuaMoi)}` });
+    if (dangGiuMoi && ngayMuaMoiStr && !daThemMua.has(`${ngayMuaMoiStr}|moi`)) {
+      suKien.push({ ngay: ngayMuaMoiStr, uuTien: UU_TIEN.MUA, icon: TrendingUp, mau: NGOC, chinh: "Mua thêm (sau TP3)", phu: `Giá ${fmt(giaMuaMoi)}` });
     }
 
     suKien.push({
       ngay: null,
+      uuTien: UU_TIEN.DANG_GIU,
       icon: Rewind,
       mau: TIM,
       chinh: "Đang giữ",
@@ -151,7 +167,12 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], dangGiu, ngayMua
   }
 
   if (suKien.length === 0) return null;
-  suKien.sort((a, b) => (a.ngay == null ? 1 : b.ngay == null ? -1 : a.ngay < b.ngay ? -1 : a.ngay > b.ngay ? 1 : 0));
+  suKien.sort((a, b) => {
+    if (a.ngay == null) return 1;
+    if (b.ngay == null) return -1;
+    if (a.ngay !== b.ngay) return a.ngay < b.ngay ? -1 : 1;
+    return a.uuTien - b.uuTien;
+  });
 
   return (
     <div className="rounded-2xl border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
