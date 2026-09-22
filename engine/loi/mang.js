@@ -74,6 +74,20 @@ export function min2(a, b) {
   return zip2(a, b, Math.min);
 }
 
+// ValueWhen(dieuKien, mang, n): gia tri cua `mang` tai lan thu n GAN NHAT (n=1 la gan nhat, TINH
+// CA nen hien tai neu dieuKien[i] dung ngay tai i) ma dieuKien dung, giu nguyen cho toi lan dung
+// tiep theo. Chua co lan nao dung du -> null.
+export function valueWhen(dieuKien, mang, n = 1) {
+  const ketQua = new Array(mang.length).fill(null);
+  const lichSu = [];
+  for (let i = 0; i < mang.length; i++) {
+    if (dieuKien[i]) lichSu.push(mang[i]);
+    const viTri = lichSu.length - n;
+    ketQua[i] = viTri >= 0 ? lichSu[viTri] : null;
+  }
+  return ketQua;
+}
+
 function num(v) {
   return v == null ? 0 : v;
 }
