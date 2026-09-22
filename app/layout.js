@@ -3,6 +3,7 @@ import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import ThanhDau from "@/components/ThanhDau";
 import ChanTrang from "@/components/ChanTrang";
+import { KhungGioProvider } from "@/components/KhungGioContext";
 import { FONT_IMPORT } from "@/components/dungChung";
 
 const geistSans = Geist({
@@ -36,12 +37,14 @@ export default function RootLayout({ children }) {
     <html lang="vi" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col" style={{ background: "#0B0B10" }}>
         <style>{FONT_IMPORT}</style>
-        <ThanhDau />
-        <Sidebar />
-        <div className="md:pl-60 flex flex-col flex-1">
-          <main className="flex-1">{children}</main>
-          <ChanTrang />
-        </div>
+        <KhungGioProvider>
+          <ThanhDau />
+          <Sidebar />
+          <div className="md:pl-60 flex flex-col flex-1">
+            <main className="flex-1">{children}</main>
+            <ChanTrang />
+          </div>
+        </KhungGioProvider>
       </body>
     </html>
   );

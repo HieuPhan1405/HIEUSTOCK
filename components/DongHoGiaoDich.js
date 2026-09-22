@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Clock } from "lucide-react";
+import { KHUNG_VAO_LENH } from "@/lib/khungGioVaoLenh";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -15,10 +16,6 @@ const VANG = "#FBBF24";
 // phien. Doi gio o day neu muon chinh khung khac. LUU Y: chua tinh ngay le,
 // ngay nghi Tet - nhung ngay do dong ho van tinh nhu ngay thuong.
 const PHIEN_MO = 9 * 60; // 09:00 - moc "reset": phien moi bat dau, tin hieu ngay moi
-const KHUNG_VAO_LENH = [
-  { tu: 10 * 60 + 30, den: 11 * 60 + 30 },
-  { tu: 14 * 60, den: 14 * 60 + 45 },
-];
 const TEN_THU = { Mon: "thứ Hai", Tue: "thứ Ba", Wed: "thứ Tư", Thu: "thứ Năm", Fri: "thứ Sáu", Sat: "thứ Bảy", Sun: "Chủ nhật" };
 
 const dinhDangGio = (phut) => `${String(Math.floor(phut / 60)).padStart(2, "0")}:${String(phut % 60).padStart(2, "0")}`;
