@@ -693,6 +693,8 @@ Mua2Vi = 0;         // vi tri nen vao lenh mua moi
 Mua2SuKien = 0;     // 1 = dung nen vao lenh mua moi
 Mua2Cat = 0;        // 1 = cham Stop-loss rieng, 2 = dong cung lenh goc (Ban)
 Mua2DaTung = 0;     // 1 = lenh goc hien tai da mua moi roi (toi da 1 lan)
+stopBaoVe = 0; chamBaoVe = 0; // khoi tao truoc vong lap - ma chua tung giu lenh (nhanh if ben duoi khong bao gio chay) se
+                              // khong duoc gan lai, doc o ngoai vong lap (LastValue...) se bao Error 29 neu thieu dong nay.
 for (i = 1; i < BarCount; i++)
 {
     if (GiuTrongVongLap[i-1] == 1)
