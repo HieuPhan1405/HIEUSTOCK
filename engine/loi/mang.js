@@ -74,6 +74,32 @@ export function min2(a, b) {
   return zip2(a, b, Math.min);
 }
 
+// HighestSince(dieuKien, mang): cao nhat cua `mang` TU LAN GAN NHAT dieuKien dung (bao gom CHINH
+// nen do), giu chay toi lan dung tiep theo. null neu chua tung dung.
+export function highestSince(dieuKien, mang) {
+  const ketQua = new Array(mang.length).fill(null);
+  let max = null;
+  for (let i = 0; i < mang.length; i++) {
+    if (dieuKien[i]) max = mang[i];
+    else if (max != null) max = Math.max(max, mang[i]);
+    ketQua[i] = max;
+  }
+  return ketQua;
+}
+
+// BarsSince(dieuKien): so nen tu lan gan nhat dieuKien dung (0 tai chinh nen do), Infinity neu
+// chua tung dung tu dau lich su co san (AmiBroker tra ve so rat lon - Infinity >= N luon dung
+// nen an toan cho moi phep so sanh ">= nguong" dang dung trong du an nay).
+export function barsSince(dieuKien) {
+  const ketQua = new Array(dieuKien.length).fill(Infinity);
+  let dem = Infinity;
+  for (let i = 0; i < dieuKien.length; i++) {
+    dem = dieuKien[i] ? 0 : dem + 1;
+    ketQua[i] = dem;
+  }
+  return ketQua;
+}
+
 // ValueWhen(dieuKien, mang, n): gia tri cua `mang` tai lan thu n GAN NHAT (n=1 la gan nhat, TINH
 // CA nen hien tai neu dieuKien[i] dung ngay tai i) ma dieuKien dung, giu nguyen cho toi lan dung
 // tiep theo. Chua co lan nao dung du -> null.

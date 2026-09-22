@@ -77,6 +77,7 @@ export function chayMayTrangThai(dauVao) {
   const mua2DaTung = new Array(n).fill(false);
   const sell = new Array(n).fill(false);
   const giaBanBaoVe = A();
+  const stopBaoVeMoiNen = A(); // gia tri stopBaoVe cua CHINH nen do (0 = khong bao ve/chua tinh)
 
   // 4 bien vo huong BEN VUNG qua ca vong lap (khong duoc reset moi nen) - xem chu thich dau file.
   let banGanNhatViTri = -999999;
@@ -113,6 +114,7 @@ export function chayMayTrangThai(dauVao) {
       let stopBaoVe = 0;
       if (bvHoaVon && daTP2Vong[i] === 1) stopBaoVe = giaVaoTrongVongLap[i];
       if (bvRong && daTP1Vong[i] === 1) stopBaoVe = dinhSauVaoVong[i] * (1 - baoVeRongPct / 100);
+      stopBaoVeMoiNen[i] = stopBaoVe;
       const chamBaoVe = stopBaoVe > 0 && low[i] <= stopBaoVe;
 
       // Cham Stop-loss: mac dinh (slChamLaCat=true) ban ngay khi gia thap nhat <= Stop-loss.
@@ -247,5 +249,6 @@ export function chayMayTrangThai(dauVao) {
     mua2SuKien,
     mua2Cat,
     mua2DaTung,
+    stopBaoVeMoiNen,
   };
 }
