@@ -140,7 +140,7 @@ export async function POST(request) {
     await daoDamBangTinHieu(client);
     const { rows } = await client.query(
       `SELECT ma, tin, giai_ngan, gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3,
-              gia_mua, so_phien_giu, tp_da_cham, stop_loss,
+              gia_mua, so_phien_giu, tp_da_cham, stop_loss, tp1, tp2, tp3,
               dang_giu_moi, gia_mua_moi, stop_moi, tp1_moi, tp2_moi, tp3_moi,
               to_char(ngay_mua_moi, 'YYYY-MM-DD') AS ngay_mua_moi_txt,
               to_char(ngay_mua, 'YYYY-MM-DD') AS ngay_mua_txt
@@ -401,7 +401,7 @@ export async function POST(request) {
   try {
     const ngayBan = ngayGiaoDichVN();
     const dsDong = phatHienLenhDong({
-      dsMoi: hangDL.map((h) => ({ ma: h.ma, tin: h.tin || "TRUNG LAP", gia: soFloat(h.gia) })),
+      dsMoi: hangDL.map((h) => ({ ma: h.ma, tin: h.tin || "TRUNG LAP", gia: soFloat(h.gia), tp1: soFloat(h.tp1), tp2: soFloat(h.tp2) })),
       banGhiCuTheoMa,
       ngayBan,
     });

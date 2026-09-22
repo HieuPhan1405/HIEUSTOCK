@@ -583,7 +583,7 @@ SellTinHieu = SellRaw AND DuT2;
 //   nhung van chi tinh cac phien da duoc gia dong cua xac nhan diem) - chi nen
 //   dung de SO SANH voi che do cu, khong coi la ket qua giao dich thuc te.
 // ============================================================================
-CheDoMoc = ParamToggle("CHE DO MOI: vao tai moc chuyen mua + SL cau truc (Tat = cu)", "Tat|Bat", 0);
+CheDoMoc = ParamToggle("CHE DO MOI: vao tai moc chuyen mua + SL cau truc (Tat = cu)", "Tat|Bat", 1);
 KieuSLCauTruc = ParamList("Che do MOI - SL dat duoi", "Moc vua vuot (may / duong can bang dai han)|Day nen chuyen mua|Kijun", 0);
 DemSLtheoATR = Param("Che do MOI - dem duoi moc SL (x ATR)", 0.3, 0, 2, 0.1);
 SLToiThieuPct = Param("Che do MOI - SL cach gia vao toi thieu (%)", 2, 0.5, 6, 0.5);
@@ -668,8 +668,9 @@ MuaLaiTinHieu = BatMuaLai AND (HoTroMuaLaiGia > 0)
     AND (L <= HoTroMuaLaiGia * (1 + DoChamHoTroPct/100)) AND (C > HoTroMuaLaiGia)
     AND (C > O) AND (C > Ref(C,-1)) AND (TotalScore >= DiemToiThieuMuaLai) AND (C > CloudTop)
     AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
-SLMuaLaiTho = Min(HoTroMuaLaiGia - DemSLtheoATR * ATRVal, C * (1 - SLToiThieuPct/100));
-SLMuaLaiTho = Max(SLMuaLaiTho, C * (1 - HardStopPct/100));
+// SL do gia CHUYEN MUA (HoTroMuaLaiGia), khong do tu gia dong cua C - xem ghi chu MUA MOI SAU TP3 ben duoi.
+SLMuaLaiTho = Min(HoTroMuaLaiGia - DemSLtheoATR * ATRVal, HoTroMuaLaiGia * (1 - SLToiThieuPct/100));
+SLMuaLaiTho = Max(SLMuaLaiTho, HoTroMuaLaiGia * (1 - HardStopPct/100));
 StopMuaLaiBar = IIf((HoTroMuaLaiGia > 0) AND (HoTroMuaLaiGia < C), SLMuaLaiTho,
                     C - Min(ATRVal * ATRMult, C * (HardStopPct/100)));
 
@@ -699,8 +700,10 @@ MuaMoiTinHieu = BatMuaMoi AND (HoTroMuaMoi > 0)
     AND (L <= HoTroMuaMoi * (1 + DoChamHoTroPct/100)) AND (C > HoTroMuaMoi) AND (C <= HoTroMuaMoi * (1 + MuaMoiCaoToiDaPct/100))
     AND (C > O) AND (C > Ref(C,-1)) AND (TotalScore >= DiemToiThieuMuaMoi) AND (C > CloudTop)
     AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
-SLMuaMoiTho = Min(HoTroMuaMoi - DemSLtheoATR * ATRVal, C * (1 - SLToiThieuPct/100));
-SLMuaMoiTho = Max(SLMuaMoiTho, C * (1 - HardStopPct/100));
+// SL do gia CHUYEN MUA (HoTroMuaMoi = muc ho tro vua duoc giu lai), khong do tu gia dong cua C. MuaMoiCaoToiDaPct
+// da gioi han C khong cao hon HoTroMuaMoi qua X% nen SL khong bi keo qua xa gia vao thuc te.
+SLMuaMoiTho = Min(HoTroMuaMoi - DemSLtheoATR * ATRVal, HoTroMuaMoi * (1 - SLToiThieuPct/100));
+SLMuaMoiTho = Max(SLMuaMoiTho, HoTroMuaMoi * (1 - HardStopPct/100));
 StopMuaMoiBar = IIf((HoTroMuaMoi > 0) AND (HoTroMuaMoi < C), SLMuaMoiTho,
                     C - Min(ATRVal * ATRMult, C * (HardStopPct/100)));
 

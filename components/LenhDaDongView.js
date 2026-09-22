@@ -82,7 +82,9 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
       <p className="text-[11px] mb-6" style={{ color: MUTED }}>
         Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Lệnh
         &quot;Chốt đủ TP3&quot; tính theo tỷ lệ chốt {CHUOI_TY_LE_CHOT} tại đúng mức TP1/TP2/TP3: lãi/lỗ là phần đã chốt ({100 - TY_LE_CHOT.giu}% vị thế), {TY_LE_CHOT.giu}% cuối
-        giữ chạy nên chưa tính. Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
+        giữ chạy — khi phần này đóng thật sự, kết quả hiện thành một dòng riêng (&quot;phần còn lại sau TP3&quot;). Với lệnh đã chạm TP1/TP2 nhưng chưa
+        tới TP3 rồi phải thoát, lãi/lỗ đã tính gộp phần coi như chốt tại TP1/TP2 (theo đúng tỷ lệ {CHUOI_TY_LE_CHOT}) với phần còn lại tính theo giá thoát
+        thật — không còn hiện lỗ đầy đủ nếu một phần đã chốt lời trước đó. Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
       </p>
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
@@ -142,8 +144,9 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                         : x.ly_do === "BAN"
                           ? "Tín hiệu BÁN"
                           : "Đã thoát"}
-                    {x.ly_do !== "TP3" && x.da_cham_tp ? ` · đã chạm ${x.da_cham_tp}` : ""}
+                    {x.ly_do !== "TP3" && x.vong !== 3 && x.da_cham_tp ? ` · đã chạm ${x.da_cham_tp}` : ""}
                     {x.vong === 2 ? " · mua thêm sau TP3" : ""}
+                    {x.vong === 3 ? ` · phần còn lại ${TY_LE_CHOT.giu}% sau TP3` : ""}
                   </td>
                 </tr>
               ))}
