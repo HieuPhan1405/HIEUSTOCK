@@ -1,6 +1,7 @@
 import { Lock } from "lucide-react";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import TaiKhoanNut from "@/components/TaiKhoanNut";
+import SignalPill from "@/components/SignalPill";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -59,6 +60,21 @@ function DanhSach({ muc }) {
         <li key={i}>{m}</li>
       ))}
     </ul>
+  );
+}
+
+// 1 dong trong bang "Giai thich ky hieu": bieu tuong/nhan mau + loi giai thich ngan.
+function KyHieu({ ky, mau, chu }) {
+  return (
+    <div className="flex items-start gap-2.5 py-1.5">
+      <span
+        className="shrink-0 min-w-[34px] text-center text-sm px-1"
+        style={{ color: mau, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}
+      >
+        {ky}
+      </span>
+      <span className="text-sm">{chu}</span>
+    </div>
   );
 }
 
@@ -126,19 +142,32 @@ function NguyenTac() {
           Mỗi mã có <b style={{ color: XANH }}>vùng chốt lời gần (TP1–TP2)</b> và <b style={{ color: XANH }}>mốc xa (TP3)</b> cố định từ lúc mua. Nhãn{" "}
           <b style={{ color: XANH }}>&quot;Đã chạm&quot;</b> nghĩa là giá đã từng lên tới mốc đó trong quá trình giữ (kể cả sau đó giá tụt lại).
           Tỷ lệ chốt <b style={{ color: XANH }}>30/30/25/15</b>: chốt 30% ở TP1, 30% ở TP2, 25% ở TP3; <b style={{ color: XANH }}>15% cuối, nếu giá còn tăng thì nắm giữ lấy vị thế</b>
-          và thoát theo tín hiệu BÁN để lệnh thắng lớn chạy tiếp. Lệnh đã chạm TP3 được ghi vào trang Lệnh đã đóng (phần 85% đã chốt). Sau TP3 mã coi như cần tìm điểm mua mới: khi giá hồi về hỗ trợ (Kijun), nến xanh và điểm còn đạt ngưỡng, hệ thống báo <b style={{ color: XANH }}>MUA THÊM</b> (tối đa 1 lần mỗi lệnh gốc) với giá mua, cắt lỗ và chốt lời riêng, tách khỏi vị thế cũ còn giữ. <b style={{ color: XANH }}>Sau khi chạm TP2, nên dời Stop-loss của phần còn lại về giá mua</b> để không còn rủi ro lỗ. Hệ thống chỉ
+          và thoát theo tín hiệu BÁN để lệnh thắng lớn chạy tiếp. Lệnh đã chạm TP3 được ghi vào trang Lệnh đã đóng (phần 85% đã chốt). Sau TP3 mã coi như cần tìm điểm mua mới: khi giá hồi về hỗ trợ (Kijun), nến xanh và điểm còn đạt ngưỡng, hệ thống báo <b style={{ color: XANH }}>MUA THÊM</b> (tối đa 1 lần mỗi lệnh gốc) với giá mua, cắt lỗ và chốt lời riêng, tách khỏi vị thế cũ còn giữ (xem thêm phần &quot;Mua lại &amp; Bảo vệ lãi&quot; bên dưới — sau khi chạm TP2, Stop-loss của phần còn lại tự động dời về giá mua). Hệ thống chỉ
           gợi ý, không tự bán.
         </p>
       </Muc>
 
-      <Muc so={7} tieuDe="Đa dạng danh mục">
+      <Muc so={7} tieuDe="Mua lại & Bảo vệ lãi (tự động)">
+        <p>
+          <b style={{ color: XANH }}>Mua lại:</b> sau khi một lệnh đã bán không lỗ, nếu xu hướng còn tăng và giá hồi về đúng hỗ trợ (Kijun) rồi bật lên lại
+          (đủ điểm, giá trên mây), hệ thống tự mở lệnh mới, có Stop-loss riêng dưới hỗ trợ. Nhãn <b style={{ color: XANH }}>&quot;↺ Mua lại&quot;</b>. Giới
+          hạn tối đa 2 lần liên tiếp kể từ lần mua thường gần nhất, tránh mua đi bán lại liên tục quanh một mức hỗ trợ.
+        </p>
+        <p className="mt-2">
+          <b style={{ color: XANH }}>Bảo vệ lãi:</b> sau khi giá đã từng chạm TP2 trong lúc giữ lệnh, Stop-loss của phần đang giữ tự động dời lên{" "}
+          <b style={{ color: XANH }}>đúng bằng giá mua</b> (hòa vốn). Giá quay về đúng mức đó thì bán ngay, chạm là bán, không chờ điểm âm — khóa lại phần
+          lãi đã có, không để biến thành lỗ. Nhãn <b style={{ color: "#A78BFA" }}>&quot;🛡 Bảo vệ lãi&quot;</b>.
+        </p>
+      </Muc>
+
+      <Muc so={8} tieuDe="Đa dạng danh mục">
         <p>
           <b style={{ color: XANH }}>Không tất tay</b> vào một mã. Nên nắm 1–2 mã mỗi ngành và trải đều nhiều ngành hấp dẫn; nhưng cũng{" "}
           <b style={{ color: XANH }}>không nên nắm quá nhiều mã</b> ngoài khả năng theo dõi của bản thân.
         </p>
       </Muc>
 
-      <Muc so={8} tieuDe="Tiêu chí chọn cổ phiếu (bộ lọc an toàn)">
+      <Muc so={9} tieuDe="Tiêu chí chọn cổ phiếu (bộ lọc an toàn)">
         <p>
           Ưu tiên mã có <b style={{ color: XANH }}>thị giá trên 10.000 đồng</b>, <b style={{ color: XANH }}>vốn hoá từ 3.000 tỷ</b>,{" "}
           <b style={{ color: XANH }}>khối lượng từ 500.000 cổ phiếu/phiên</b> và <b style={{ color: XANH }}>giá trị giao dịch trên 10 tỷ/phiên</b>{" "}
@@ -148,7 +177,7 @@ function NguyenTac() {
         <Luu>* Ở trang Bộ lọc và Sổ lệnh có ô &quot;Chỉ mã ưu tiên&quot; để lọc nhanh theo 4 tiêu chí trên, và ô &quot;Mã theo dõi: sắp chạm mốc tính điểm +&quot; (Bộ lọc) để theo dõi trong phiên.</Luu>
       </Muc>
 
-      <Muc so={9} tieuDe="Thời điểm đặt lệnh (Mua/Bán)">
+      <Muc so={10} tieuDe="Thời điểm đặt lệnh (Mua/Bán)">
         <p>
           Nên đặt lệnh trong 2 khung: <b style={{ color: XANH }}>10h30 – 11h30</b> và <b style={{ color: XANH }}>14h00 – 14h45</b>. Đồng hồ ở đầu
           trang Tổng quan, Bộ lọc và Sổ lệnh cho biết đang trong hay ngoài khung, còn bao lâu tới khung tiếp theo và mốc reset lúc 09h00 mỗi phiên.
@@ -156,7 +185,7 @@ function NguyenTac() {
         </p>
       </Muc>
 
-      <Muc so={10} tieuDe="Các chỉ số tham khảo thêm">
+      <Muc so={11} tieuDe="Các chỉ số tham khảo thêm">
         <DanhSach
           muc={[
             "Rank (chất lượng setup) và Confidence (độ tự tin), thang 0–100: càng cao càng tốt, chỉ mang tính tham khảo, không thay tín hiệu chính.",
@@ -164,6 +193,31 @@ function NguyenTac() {
             "Checklist bắt đáy: hệ thống riêng dò các nhịp giảm sâu; hãy xem kết quả lịch sử sau 5 / 10 / 20 phiên để đánh giá độ tin cậy trước khi cân nhắc.",
           ]}
         />
+      </Muc>
+
+      <Muc tieuDe="Giải thích ký hiệu">
+        <p className="mb-3">
+          Các biểu tượng và nhãn nhỏ xuất hiện cạnh mã trong Bộ lọc, Sổ lệnh, Danh mục cá nhân và trang chi tiết mã:
+        </p>
+        <div className="grid sm:grid-cols-2 gap-x-6">
+          <KyHieu ky="⚠" mau="#EF4444" chu={<><b style={{ color: XANH }}>Mắt Thần</b> — cảnh báo rủi ro đảo chiều, cần xem lại ngay.</>} />
+          <KyHieu ky="⚠" mau="#F97316" chu={<><b style={{ color: XANH }}>Bán bớt</b> — nên giảm bớt vị thế trước khi có tín hiệu Bán toàn bộ.</>} />
+          <KyHieu ky="◐" mau="#FBBF24" chu={<><b style={{ color: XANH }}>Giải ngân 1 phần</b> — RS còn yếu nên chỉ mua một phần tỷ trọng.</>} />
+          <KyHieu ky="➕" mau="#22D3EE" chu={<><b style={{ color: XANH }}>Bổ sung</b> — đủ điều kiện mua nốt phần tỷ trọng còn lại.</>} />
+          <KyHieu ky="↺" mau={XANH} chu={<><b style={{ color: XANH }}>Mua lại</b> — mua lại sau khi bán không lỗ, giá hồi về hỗ trợ trong xu hướng tăng.</>} />
+          <KyHieu ky="➕" mau="#22D3EE" chu={<><b style={{ color: XANH }}>Mua thêm sau TP3</b> — lệnh mới sau khi lệnh gốc đã chốt đủ TP3.</>} />
+          <KyHieu ky="🛡" mau="#A78BFA" chu={<><b style={{ color: XANH }}>Bảo vệ lãi</b> — Stop-loss đã dời lên cao hơn (hòa vốn) sau khi chạm TP2.</>} />
+          <KyHieu ky="⏳" mau="#FBBF24" chu={<><b style={{ color: XANH }}>Đạt điểm, chờ phiên sau</b> — đủ điểm MUA nhưng phiên đầu chưa đủ khối lượng xác nhận.</>} />
+          <KyHieu ky="✓" mau={XANH} chu={<><b style={{ color: XANH }}>Đã chạm</b> (TP1/TP2/TP3) — giá đã từng lên tới mốc đó, kể cả nếu sau đó tụt lại.</>} />
+          <KyHieu ky="★" mau={XANH} chu={<>Đánh dấu phần kết luận hoặc nội dung chính của một thẻ thông tin.</>} />
+        </div>
+        <p className="mt-3">Bốn màu trạng thái tín hiệu dùng xuyên suốt trang:</p>
+        <div className="flex flex-wrap gap-2 mt-2">
+          <SignalPill tin="MUA" />
+          <SignalPill tin="NAM GIU" />
+          <SignalPill tin="BAN" />
+          <SignalPill tin="TRUNG LAP" />
+        </div>
       </Muc>
     </>
   );
@@ -221,7 +275,7 @@ export default async function TrangHuongDan() {
       <Muc tieuDe="Sổ lệnh đang mở">
         <p>
           Toàn bộ mã đang MUA hoặc NẮM GIỮ: ngày mua, giá mua, số phiên đã giữ, lãi/lỗ hiện tại, mốc chốt lời cao nhất đã chạm, cảnh báo (Mắt Thần, Bán
-          bớt) và nhãn giải ngân (Giải ngân 1 phần / Bổ sung). Nhãn ↺ Mua lại nghĩa là lệnh mua lại khi giá hồi về hỗ trợ trong xu hướng tăng (sau khi lệnh trước đã đóng không lỗ), có Stop-loss riêng. Giá mua, cắt lỗ và chốt lời được hiển thị dạng vùng: vùng mua (từ mốc chuyển mua đến cao hơn giá mua tối đa khoảng 2%, cao hơn nữa là đuổi giá), vùng cắt lỗ (từ Stop-loss lên tới đường hỗ trợ gần nhất phía trên) và vùng chốt lời (TP1 đến TP3). Bảng có bộ lọc (sàn, ngành, xu hướng, đang lãi/lỗ, mã ưu tiên...) và hiện đầy đủ các chỉ
+          bớt) và nhãn giải ngân (Giải ngân 1 phần / Bổ sung). Nhãn ↺ Mua lại nghĩa là lệnh mua lại khi giá hồi về hỗ trợ trong xu hướng tăng (sau khi lệnh trước đã đóng không lỗ), có Stop-loss riêng; nhãn 🛡 Bảo vệ lãi nghĩa là Stop-loss đã được dời lên cao hơn (hòa vốn) sau khi giá từng chạm TP2 (xem mục &quot;Giải thích ký hiệu&quot; bên dưới). Giá mua, cắt lỗ và chốt lời được hiển thị dạng vùng: vùng mua (từ mốc chuyển mua đến cao hơn giá mua tối đa khoảng 2%, cao hơn nữa là đuổi giá), vùng cắt lỗ (từ Stop-loss lên tới đường hỗ trợ gần nhất phía trên) và vùng chốt lời (TP1 đến TP3). Bảng có bộ lọc (sàn, ngành, xu hướng, đang lãi/lỗ, mã ưu tiên...) và hiện đầy đủ các chỉ
           số: điểm, Rank, Confidence, vốn hoá, GTGD, Stop-loss, TP1–3... (dùng nút &quot;Cột hiển thị&quot; để bật/tắt). Nếu dữ liệu được cập nhật giữa phiên, giá mua là giá lúc mã lần đầu hiện MUA (dấu chấm xanh cạnh giá) và không đổi ở các lần cập nhật sau; lãi/lỗ, Stop-loss và TP đều giữ theo lúc đó. Cột &quot;Mốc chuyển mua&quot; là mức
           giá chính vừa bị vượt lúc điểm chuyển sang vùng mua, để so với giá mua thực tế xem mình đang mua cao hơn bao nhiêu. Các thẻ thống kê phía trên cho
           biết tỷ lệ lãi, tỷ lệ lỗ, lãi/lỗ trung bình và tỷ lệ lệnh đã chạm chốt lời (ví dụ 10 lệnh có 7 lệnh đã chạm TP thì là 70%).
@@ -282,8 +336,8 @@ export default async function TrangHuongDan() {
             Nguyên tắc giao dịch dành cho thành viên
           </p>
           <p className="text-sm mb-6" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-            Đăng ký hoặc đăng nhập miễn phí để xem đầy đủ 10 nguyên tắc: giải ngân 1 phần, bổ sung, giới hạn tỷ trọng, cắt lỗ, chốt lời, tiêu chí chọn cổ
-            phiếu và thời điểm đặt lệnh.
+            Đăng ký hoặc đăng nhập miễn phí để xem đầy đủ 11 nguyên tắc: giải ngân 1 phần, bổ sung, giới hạn tỷ trọng, cắt lỗ, chốt lời, mua lại, bảo vệ
+            lãi, tiêu chí chọn cổ phiếu, thời điểm đặt lệnh và giải thích ký hiệu.
           </p>
           <div className="flex justify-center">
             <TaiKhoanNut nhan="Đăng ký / Đăng nhập để xem" />

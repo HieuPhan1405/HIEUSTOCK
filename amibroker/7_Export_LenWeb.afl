@@ -605,7 +605,7 @@ StopVaoBar = IIf(CheDoMoc AND BaseSLHopLe, SLCauTruc, SLTheoATR6);
 // truoc; va cac bo loc cua Buy (12 nam, thanh khoan, gia toi thieu, RS). Chua backtest -
 // chi dung de SO SANH voi che do cu.
 // ============================================================================
-KieuBaoVeLai = ParamList("Bao ve lai sau khi chot loi", "Tat|Hoa von sau TP2|Rong tu dinh sau TP1", 0);
+KieuBaoVeLai = ParamList("Bao ve lai sau khi chot loi", "Tat|Hoa von sau TP2|Rong tu dinh sau TP1", 1);
 BaoVeRongPct = Param("Bao ve lai - do rong tu dinh (%)", 20, 5, 40, 1);
 BVHoaVon = KieuBaoVeLai == "Hoa von sau TP2";
 BVRong = KieuBaoVeLai == "Rong tu dinh sau TP1";
@@ -620,7 +620,7 @@ TP1Vong = Min(Min(NGanV, NGiuaV), NXaV);
 TP3Vong = Max(Max(NGanV, NGiuaV), NXaV);
 TP2Vong = NGanV + NGiuaV + NXaV - TP1Vong - TP3Vong;
 
-BatMuaLai = ParamToggle("MUA LAI: mua lai khi hoi ve ho tro trong xu huong tang (Tat = cu)", "Tat|Bat", 0);
+BatMuaLai = ParamToggle("MUA LAI: mua lai khi hoi ve ho tro trong xu huong tang (Tat = cu)", "Tat|Bat", 1);
 KieuHoTroMuaLai = ParamList("Mua lai - ho tro", "Kijun|Can bang dai han (duoi)", 0);
 DiemToiThieuMuaLai = Param("Mua lai - diem toi thieu", 0.75, 0, 3, 0.05);
 HanMuaLaiPhien = Param("Mua lai - trong vong (phien) sau lan ban truoc", 60, 5, 250, 5);
@@ -628,6 +628,7 @@ DoChamHoTroPct = Param("Mua lai - do cham ho tro cho phep (%)", 1, 0, 3, 0.5);
 // Khong "duoi gia": gia mua lai khong duoc cao hon gia ban lan truoc qua muc nay (%). Mac dinh 0 =
 // chi mua lai khi gia da ve bang/thap hon gia da ban. Dat 50 de tat dieu kien nay.
 MuaLaiCaoToiDaPct = Param("Mua lai - toi da cao hon gia ban truoc (%)", 0, -20, 50, 0.5);
+SoLanMuaLaiToiDa = Param("Mua lai - so lan lien tiep toi da (tinh tu lan Mua thuong gan nhat)", 2, 1, 10, 1);
 HoTroMuaLaiGia = IIf(KieuHoTroMuaLai == "Kijun", Kijun, CBBot);
 MuaLaiTinHieu = BatMuaLai AND (HoTroMuaLaiGia > 0)
     AND (L <= HoTroMuaLaiGia * (1 + DoChamHoTroPct/100)) AND (C > HoTroMuaLaiGia)
@@ -678,12 +679,14 @@ GiaBanBaoVe = 0;       // > 0 tai phien ban do cham SL bao ve
 banGanNhatViTri = -999999;
 banGanNhatCoLai = 0;
 banGanNhatGia = 0;
+soLanMuaLaiLienTiep = 0; // dem so lan MUA LAI lien tiep tu lan Mua thuong (LoaiVaoLenh=1) gan nhat - chan whipsaw quanh 1 muc ho tro.
 // TRANG THAI GIAI NGAN 1 PHAN: ThamDoTrongVongLap = 1 khi dang giu lenh mua
 // luc RS<=0 va CHUA bo sung; BoSungSuKien = 1 dung phien bo sung phan con lai.
 ThamDoTrongVongLap = 0;
 ViTriVaoTrongVongLap = 0;
 BoSungSuKien = 0;
 TP3VaoVong = 0; DaTP3Vong = 0;
+LyDoBanBar = 0;   // Chi co nghia dung phien Sell that su xay ra: 1=tin hieu diem so, 2=Stop-loss thuong, 3=Bao ve lai.
 Mua2Giu = 0;        // 1 = dang giu lenh MUA MOI (vong 2)
 Mua2Gia = 0; Mua2Stop = 0; Mua2TP1 = 0; Mua2TP2 = 0; Mua2TP3 = 0;
 Mua2Vi = 0;         // vi tri nen vao lenh mua moi
@@ -736,6 +739,7 @@ for (i = 1; i < BarCount; i++)
         if (SellTinHieu[i] == 1 OR chamStopThuong OR chamBaoVe == 1)
         {
             Sell[i] = 1;
+            LyDoBanBar[i] = IIf(chamStopThuong, 2, IIf(chamBaoVe == 1 AND SellTinHieu[i] == 0, 3, 1));
             GiuTrongVongLap[i] = 0;
             ThamDoTrongVongLap[i] = 0;
             // MUA MOI SAU TP3: lenh goc bi Ban thi lenh moi (neu dang giu) dong theo.
@@ -800,13 +804,15 @@ for (i = 1; i < BarCount; i++)
         }
     }
     else if (Buy[i] OR (MuaLaiTinHieu[i] AND banGanNhatCoLai == 1 AND (i - banGanNhatViTri) <= HanMuaLaiPhien
-                               AND C[i] <= banGanNhatGia * (1 + MuaLaiCaoToiDaPct/100)))
+                               AND C[i] <= banGanNhatGia * (1 + MuaLaiCaoToiDaPct/100)
+                               AND soLanMuaLaiLienTiep < SoLanMuaLaiToiDa))
     {
         if (Buy[i])
         {
             giaVaoLoop = GiaVaoBar[i];
             stopVaoLoop = StopVaoBar[i];
             LoaiVaoLenh[i] = 1;
+            soLanMuaLaiLienTiep = 0;
         }
         else
         {
@@ -814,6 +820,7 @@ for (i = 1; i < BarCount; i++)
             giaVaoLoop = C[i];
             stopVaoLoop = StopMuaLaiBar[i];
             LoaiVaoLenh[i] = 2;
+            soLanMuaLaiLienTiep = soLanMuaLaiLienTiep + 1;
         }
         GiuTrongVongLap[i] = 1;
         GiaVaoTrongVongLap[i] = giaVaoLoop;
@@ -1100,6 +1107,12 @@ ChoPhienSau = ConsecutiveAbove AND VuaVaoVungMua AND NOT VolumeGateNgayDau AND I
               AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
 ChoPhienSauCuoi = LastValue(ChoPhienSau);
 
+// LY DO BAN chi co nghia dung phien Sell that su xay ra hom nay; BAO VE LAI chi co nghia khi dang giu VA da giu tu
+// truoc (khong phai vua mua hom nay - luc do stopBaoVe chua duoc tinh lai trong vong lap nen co the con gia tri cu).
+LyDoBanCuoi = IIf(LastValue(BanHomNay), Nz(LastValue(LyDoBanBar)), 0);
+DangBaoVeLaiCuoi = IIf(LastValue(DangGiuTuTruoc) AND stopBaoVe > 0, 1, 0);
+StopBaoVeCuoi = IIf(LastValue(DangGiuTuTruoc) AND stopBaoVe > 0, stopBaoVe, 0);
+
 // MUA MOI SAU TP3 - gia tri phien cuoi xuat len web (Mua2Gia... chi > 0 khi lenh goc HIEN TAI da co lenh mua moi).
 Mua2SuKienCuoi = LastValue(Mua2SuKien);
 Mua2GiuCuoi = LastValue(Mua2Giu);
@@ -1123,7 +1136,8 @@ if (Status("stocknum") == 0)
               "kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,"+
               "diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat,"+
               "moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao,loai_vao,cho_phien_sau,"+
-              "mua_moi,dang_giu_moi,cat_moi,gia_mua_moi,stop_moi,tp1_moi,tp2_moi,tp3_moi,ngay_mua_moi\n", fh);
+              "mua_moi,dang_giu_moi,cat_moi,gia_mua_moi,stop_moi,tp1_moi,tp2_moi,tp3_moi,ngay_mua_moi,"+
+              "ly_do_ban,dang_bao_ve_lai,stop_bao_ve\n", fh);
         fclose(fh);
     }
 }
@@ -1212,7 +1226,11 @@ Dong = Name() + "," + TinCuoi + ","
          NumToStr(LastValue(NgayMua2),1.0,False) + "/" +
          NumToStr(LastValue(ThangMua2),1.0,False) + "/" +
          NumToStr(LastValue(NamMua2),1.0,False),
-         "");
+         "")
+     + ","
+     + NumToStr(LyDoBanCuoi,1.0,False) + ","
+     + NumToStr(DangBaoVeLaiCuoi,1.0,False) + ","
+     + NumToStr(StopBaoVeCuoi,1.2,False);
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {

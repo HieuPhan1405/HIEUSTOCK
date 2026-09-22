@@ -14,7 +14,8 @@ import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
 // kumo_twist,ngay_bien_doi,von_hoa,gia_mua,ngay_mua,ban_bot,san,nganh,tp_da_cham,
 // diem_rank,diem_confidence,khoi_luong_tb20,giai_ngan,gia_kich_hoat,moc_kich_hoat,
 // moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao,loai_vao,cho_phien_sau,
-// mua_moi,dang_giu_moi,cat_moi,gia_mua_moi,stop_moi,tp1_moi,tp2_moi,tp3_moi,ngay_mua_moi
+// mua_moi,dang_giu_moi,cat_moi,gia_mua_moi,stop_moi,tp1_moi,tp2_moi,tp3_moi,ngay_mua_moi,
+// ly_do_ban,dang_bao_ve_lai,stop_bao_ve
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -222,7 +223,8 @@ export async function POST(request) {
          diem_rank, diem_confidence, khoi_luong_tb20, giai_ngan,
          gia_kich_hoat, moc_kich_hoat, moc_gia, moc_loai, moc_cach_pct, diem_neu_vuot,
          gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3, che_do_vao, loai_vao, cho_phien_sau,
-         mua_moi, dang_giu_moi, cat_moi, gia_mua_moi, stop_moi, tp1_moi, tp2_moi, tp3_moi, ngay_mua_moi)
+         mua_moi, dang_giu_moi, cat_moi, gia_mua_moi, stop_moi, tp1_moi, tp2_moi, tp3_moi, ngay_mua_moi,
+         ly_do_ban, dang_bao_ve_lai, stop_bao_ve)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -235,7 +237,8 @@ export async function POST(request) {
          $39::float8[], $40::text[], $41::float8[], $42::text[], $43::float8[], $44::float8[],
          $45::float8[], $46::timestamptz[], $47::float8[], $48::float8[], $49::float8[], $50::float8[],
          $51::text[], $52::text[], $53::boolean[],
-         $54::boolean[], $55::boolean[], $56::float8[], $57::float8[], $58::float8[], $59::float8[], $60::float8[], $61::float8[], $62::date[]
+         $54::boolean[], $55::boolean[], $56::float8[], $57::float8[], $58::float8[], $59::float8[], $60::float8[], $61::float8[], $62::date[],
+         $63::int2[], $64::boolean[], $65::float8[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -299,6 +302,9 @@ export async function POST(request) {
          tp2_moi = EXCLUDED.tp2_moi,
          tp3_moi = EXCLUDED.tp3_moi,
          ngay_mua_moi = EXCLUDED.ngay_mua_moi,
+         ly_do_ban = EXCLUDED.ly_do_ban,
+         dang_bao_ve_lai = EXCLUDED.dang_bao_ve_lai,
+         stop_bao_ve = EXCLUDED.stop_bao_ve,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -365,6 +371,12 @@ export async function POST(request) {
         moiTp2,
         moiTp3,
         cot("ngay_mua_moi", soNgayVN),
+        cot("ly_do_ban", (v) => {
+          const n = parseInt(v, 10);
+          return Number.isFinite(n) && n > 0 ? n : null;
+        }),
+        cot("dang_bao_ve_lai", boolTriState),
+        cot("stop_bao_ve", duong),
       ]
     );
 
@@ -401,7 +413,14 @@ export async function POST(request) {
   try {
     const ngayBan = ngayGiaoDichVN();
     const dsDong = phatHienLenhDong({
-      dsMoi: hangDL.map((h) => ({ ma: h.ma, tin: h.tin || "TRUNG LAP", gia: soFloat(h.gia), tp1: soFloat(h.tp1), tp2: soFloat(h.tp2) })),
+      dsMoi: hangDL.map((h) => ({
+        ma: h.ma,
+        tin: h.tin || "TRUNG LAP",
+        gia: soFloat(h.gia),
+        tp1: soFloat(h.tp1),
+        tp2: soFloat(h.tp2),
+        ly_do_ban: parseInt(h.ly_do_ban, 10) || 0,
+      })),
       banGhiCuTheoMa,
       ngayBan,
     });

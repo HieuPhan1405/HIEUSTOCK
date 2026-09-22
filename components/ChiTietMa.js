@@ -12,6 +12,7 @@ import {
   nhanGiaiNgan,
   nhanLoaiVao,
   nhanMuaThem,
+  nhanBaoVeLai,
   laChoPhienSau,
   kiemTraChuanUuTien,
   gioGhiNhan,
@@ -343,6 +344,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
           {nhanMuaThem(row) && (
             <span className="mt-2 text-[11px] font-bold" style={{ color: nhanMuaThem(row).mau }} title={nhanMuaThem(row).moTa}>
               ➕ {nhanMuaThem(row).nhan}
+            </span>
+          )}
+          {nhanBaoVeLai(row) && (
+            <span className="mt-2 text-[11px] font-bold" style={{ color: nhanBaoVeLai(row).mau }} title={nhanBaoVeLai(row).moTa}>
+              🛡 {nhanBaoVeLai(row).nhan}
             </span>
           )}
           {laChoPhienSau(row) && (

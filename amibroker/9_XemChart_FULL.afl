@@ -640,7 +640,7 @@ StopVaoBar = IIf(CheDoMoc AND BaseSLHopLe, SLCauTruc, SLTheoATR6);
 // truoc; va cac bo loc cua Buy (12 nam, thanh khoan, gia toi thieu, RS). Chua backtest -
 // chi dung de SO SANH voi che do cu.
 // ============================================================================
-KieuBaoVeLai = ParamList("Bao ve lai sau khi chot loi", "Tat|Hoa von sau TP2|Rong tu dinh sau TP1", 0);
+KieuBaoVeLai = ParamList("Bao ve lai sau khi chot loi", "Tat|Hoa von sau TP2|Rong tu dinh sau TP1", 1);
 BaoVeRongPct = Param("Bao ve lai - do rong tu dinh (%)", 20, 5, 40, 1);
 BVHoaVon = KieuBaoVeLai == "Hoa von sau TP2";
 BVRong = KieuBaoVeLai == "Rong tu dinh sau TP1";
@@ -655,7 +655,7 @@ TP1Vong = Min(Min(NGanV, NGiuaV), NXaV);
 TP3Vong = Max(Max(NGanV, NGiuaV), NXaV);
 TP2Vong = NGanV + NGiuaV + NXaV - TP1Vong - TP3Vong;
 
-BatMuaLai = ParamToggle("MUA LAI: mua lai khi hoi ve ho tro trong xu huong tang (Tat = cu)", "Tat|Bat", 0);
+BatMuaLai = ParamToggle("MUA LAI: mua lai khi hoi ve ho tro trong xu huong tang (Tat = cu)", "Tat|Bat", 1);
 KieuHoTroMuaLai = ParamList("Mua lai - ho tro", "Kijun|Can bang dai han (duoi)", 0);
 DiemToiThieuMuaLai = Param("Mua lai - diem toi thieu", 0.75, 0, 3, 0.05);
 HanMuaLaiPhien = Param("Mua lai - trong vong (phien) sau lan ban truoc", 60, 5, 250, 5);
@@ -663,6 +663,7 @@ DoChamHoTroPct = Param("Mua lai - do cham ho tro cho phep (%)", 1, 0, 3, 0.5);
 // Khong "duoi gia": gia mua lai khong duoc cao hon gia ban lan truoc qua muc nay (%). Mac dinh 0 =
 // chi mua lai khi gia da ve bang/thap hon gia da ban. Dat 50 de tat dieu kien nay.
 MuaLaiCaoToiDaPct = Param("Mua lai - toi da cao hon gia ban truoc (%)", 0, -20, 50, 0.5);
+SoLanMuaLaiToiDa = Param("Mua lai - so lan lien tiep toi da (tinh tu lan Mua thuong gan nhat)", 2, 1, 10, 1);
 HoTroMuaLaiGia = IIf(KieuHoTroMuaLai == "Kijun", Kijun, CBBot);
 MuaLaiTinHieu = BatMuaLai AND (HoTroMuaLaiGia > 0)
     AND (L <= HoTroMuaLaiGia * (1 + DoChamHoTroPct/100)) AND (C > HoTroMuaLaiGia)
@@ -723,6 +724,7 @@ GiaBanBaoVe = 0;       // > 0 tai phien ban do cham SL bao ve
 banGanNhatViTri = -999999;
 banGanNhatCoLai = 0;
 banGanNhatGia = 0;
+soLanMuaLaiLienTiep = 0; // dem so lan MUA LAI lien tiep tu lan Mua thuong (LoaiVaoLenh=1) gan nhat - chan whipsaw quanh 1 muc ho tro.
 ThamDoTrongVongLap = 0;      // 1 = dang giu o che do giai ngan 1 phan (chua bo sung)
 ViTriVaoTrongVongLap = 0;
 BoSungSuKien = 0;            // 1 = phien bo sung phan con lai
@@ -847,7 +849,8 @@ for (i = 1; i < BarCount; i++)
         }
     }
     else if (Buy[i] OR (MuaLaiTinHieu[i] AND banGanNhatCoLai == 1 AND (i - banGanNhatViTri) <= HanMuaLaiPhien
-                               AND C[i] <= banGanNhatGia * (1 + MuaLaiCaoToiDaPct/100)))
+                               AND C[i] <= banGanNhatGia * (1 + MuaLaiCaoToiDaPct/100)
+                               AND soLanMuaLaiLienTiep < SoLanMuaLaiToiDa))
     {
         // CHUA GIU - Buy moi kich hoat vao lenh (hoac MUA LAI khi cong tac bat)
         if (Buy[i])
@@ -855,6 +858,7 @@ for (i = 1; i < BarCount; i++)
             giaVaoLoop = GiaVaoBar[i];
             stopVaoLoop = StopVaoBar[i];
             LoaiVaoLenh[i] = 1;
+            soLanMuaLaiLienTiep = 0;
         }
         else
         {
@@ -862,6 +866,7 @@ for (i = 1; i < BarCount; i++)
             giaVaoLoop = C[i];
             stopVaoLoop = StopMuaLaiBar[i];
             LoaiVaoLenh[i] = 2;
+            soLanMuaLaiLienTiep = soLanMuaLaiLienTiep + 1;
         }
         GiuTrongVongLap[i] = 1;
         GiaVaoTrongVongLap[i] = giaVaoLoop;

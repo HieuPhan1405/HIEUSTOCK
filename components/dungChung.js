@@ -281,6 +281,16 @@ export function nhanMuaThem(row) {
   };
 }
 
+// Nhan "Bảo vệ lãi" khi AFL da doi Stop-loss len cao hon (hoa von sau TP2, hoac rong tu dinh sau TP1).
+export function nhanBaoVeLai(row) {
+  if (!row?.bao_ve_lai_kich_hoat) return null;
+  return {
+    nhan: "Bảo vệ lãi",
+    mau: "#A78BFA",
+    moTa: `Đã từng chạm mốc chốt lời nên Stop-loss được dời lên ${fmt(row.stop_loss)} (cao hơn Stop-loss ban đầu) — chạm là bán ngay, không chờ điểm âm.`,
+  };
+}
+
 // "25 – 25.5" (hoac 1 so neu 2 dau bang nhau sau khi lam tron).
 export function chuoiVung(tu, den) {
   if (tu == null || den == null) return "—";

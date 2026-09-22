@@ -141,9 +141,11 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                       ? `Chốt đủ TP3 (${x.phan_chot_pct ?? 100 - TY_LE_CHOT.giu}%) · giữ ${TY_LE_CHOT.giu}% chạy`
                       : x.ly_do === "CAT_LO"
                         ? "Cắt lỗ (Stop-loss)"
-                        : x.ly_do === "BAN"
-                          ? "Tín hiệu BÁN"
-                          : "Đã thoát"}
+                        : x.ly_do === "BAO_VE_LAI"
+                          ? "Bảo vệ lãi (dời SL lên cao hơn)"
+                          : x.ly_do === "BAN"
+                            ? "Tín hiệu BÁN"
+                            : "Đã thoát"}
                     {x.ly_do !== "TP3" && x.vong !== 3 && x.da_cham_tp ? ` · đã chạm ${x.da_cham_tp}` : ""}
                     {x.vong === 2 ? " · mua thêm sau TP3" : ""}
                     {x.vong === 3 ? ` · phần còn lại ${TY_LE_CHOT.giu}% sau TP3` : ""}
