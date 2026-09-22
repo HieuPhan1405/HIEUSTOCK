@@ -14,7 +14,10 @@ async function dangNhap(username, password) {
     body: JSON.stringify({ username, password }),
     signal: AbortSignal.timeout(15000),
   });
-  if (!res.ok) throw new Error(`Dang nhap DNSE that bai (HTTP ${res.status}). Kiem tra lai DNSE_USERNAME/DNSE_PASSWORD.`);
+  if (!res.ok) {
+    const noiDungLoi = await res.text().catch(() => "");
+    throw new Error(`Dang nhap DNSE that bai (HTTP ${res.status}). Phan hoi tu DNSE: ${noiDungLoi.slice(0, 500)}`);
+  }
   const j = await res.json();
   if (!j.token) throw new Error("Dang nhap DNSE khong tra ve token - phan hoi bat thuong: " + JSON.stringify(j).slice(0, 200));
   return j.token;
