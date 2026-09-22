@@ -291,10 +291,12 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     congChung[cuoi]
   );
   const phanTramDoiCuoi = cuoi > 0 && close[cuoi - 1] > 0 ? (close[cuoi] / close[cuoi - 1] - 1) * 100 : null;
-  const gtgdTB20Cuoi = sma(
+  // AFL: GiaTriGDTB20 = MA(C*V,20) / 1000000 (dong 1012) - don vi TRIEU dong/phien, khong phai dong tho.
+  const gtgdTB20Tho = sma(
     close.map((c, i) => c * volume[i]),
     20
   )[cuoi];
+  const gtgdTB20Cuoi = gtgdTB20Tho == null ? null : gtgdTB20Tho / 1e6;
   const khoiLuongTB20Cuoi = sma(volume, 20)[cuoi];
   const dinh52TCuoi = hhv(high, 252)[cuoi];
 
