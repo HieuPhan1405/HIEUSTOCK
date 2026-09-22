@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
+import NhatKyGiaoDich from "@/components/NhatKyGiaoDich";
 import {
   fmt,
   fmtTy,
@@ -282,7 +283,7 @@ function tinhVungGia(row) {
   return { hoTro1: hoTro[0] ?? null, hoTro2: hoTro[1] ?? null, khangCu1: khangCu[0] ?? null, khangCu2: khangCu[1] ?? null };
 }
 
-export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
+export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaDong = [] }) {
   const vungGia = tinhVungGia(row);
   const vungLenh = tinhVungLenh(row); // null neu khong dang giu
   const sauTP3 = tinhSauTP3(row); // null neu chua chot du TP3
@@ -716,6 +717,26 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [] }) {
             sau đó giá đã tụt xuống lại) — không chỉ so với giá hiện tại.
           </p>
         </Card>
+      </div>
+
+      {/* NHAT KY GIAO DICH */}
+      <div className="mb-4">
+        <NhatKyGiaoDich
+          ma={row.ma}
+          lichSuDaDong={lichSuDaDong}
+          dangGiu={row.tin === "MUA" || row.tin === "NAM GIU"}
+          ngayMua={row.ngay_mua}
+          giaMua={row.gia_mua}
+          gia={row.gia}
+          laiLoPct={row.lai_lo_pct}
+          tp1={row.tp1}
+          tp2={row.tp2}
+          tp3={row.tp3}
+          daChamTp={chamTPCaoNhat(row)}
+          dangGiuMoi={row.dang_giu_moi === true}
+          ngayMuaMoi={row.ngay_mua_moi}
+          giaMuaMoi={row.gia_mua_moi}
+        />
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4 mb-10">

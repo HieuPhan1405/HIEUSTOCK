@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { layTinHieuTheoMa } from "@/lib/tinHieu";
 import { layDinhGia, layCauChuyen } from "@/lib/noiDung";
+import { layLichSuGiaoDichMa } from "@/lib/lenhDaDong";
 import ChiTietMa from "@/components/ChiTietMa";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import { tenCongTy } from "@/lib/tenMa";
@@ -67,15 +68,16 @@ export default async function TrangChiTietMa({ params }) {
     );
   }
 
-  // Loi khi tai Dinh gia/Cau chuyen KHONG duoc lam sap trang chi tiet ma -
+  // Loi khi tai Dinh gia/Cau chuyen/Lich su giao dich KHONG duoc lam sap trang chi tiet ma -
   // day la du lieu bo sung, khong quan trong bang tin hieu chinh.
   let dinhGia = [];
   let cauChuyen = [];
+  let lichSuDaDong = [];
   try {
-    [dinhGia, cauChuyen] = await Promise.all([layDinhGia(ma), layCauChuyen(ma)]);
+    [dinhGia, cauChuyen, lichSuDaDong] = await Promise.all([layDinhGia(ma), layCauChuyen(ma), layLichSuGiaoDichMa(ma)]);
   } catch {
     // giu mang rong, ChiTietMa se tu hien "Dang cap nhat..."
   }
 
-  return <ChiTietMa row={row} dinhGia={dinhGia} cauChuyen={cauChuyen} />;
+  return <ChiTietMa row={row} dinhGia={dinhGia} cauChuyen={cauChuyen} lichSuDaDong={lichSuDaDong} />;
 }
