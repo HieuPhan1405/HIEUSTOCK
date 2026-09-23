@@ -60,10 +60,13 @@ async function main() {
   const uploadBat = process.argv.includes("--upload");
   const uploadKey = process.env.CS_UPLOAD_API_KEY;
   const uploadDuocPhep = uploadBat && !!uploadKey && process.env.CS_XAC_NHAN_UPLOAD === "DONG_Y";
+  // MAC DINH tat Zalo khi dang thu nghiem engine (--upload) - CHI gui Zalo that neu chu dong dat
+  // CS_CHO_PHEP_ZALO=DONG_Y (bat theo kieu "opt-in", an toan hon la mac dinh bat).
+  const choPhepZalo = process.env.CS_CHO_PHEP_ZALO === "DONG_Y";
   if (uploadBat) {
     console.log(
       uploadDuocPhep
-        ? "\nCANH BAO: --upload dang BAT - se tu dong POST THAT len web moi lan tinh lai co thay doi."
+        ? `\nCANH BAO: --upload dang BAT - se tu dong POST THAT len web moi lan tinh lai co thay doi. Zalo: ${choPhepZalo ? "CO GUI THAT" : "DA TAT (mac dinh)"}.`
         : "\n--upload duoc yeu cau nhung THIEU CS_UPLOAD_API_KEY hoac CS_XAC_NHAN_UPLOAD=DONG_Y - se CHI ghi file, khong upload (an toan)."
     );
   }
@@ -74,7 +77,7 @@ async function main() {
       const gocWeb = process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn";
       const res = await fetch(`${gocWeb}/api/upload-signals`, {
         method: "POST",
-        headers: { "Content-Type": "text/csv", "x-api-key": uploadKey },
+        headers: { "Content-Type": "text/csv", "x-api-key": uploadKey, "x-skip-zalo": choPhepZalo ? "0" : "1" },
         body: csv,
         signal: AbortSignal.timeout(120000),
       });

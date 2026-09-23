@@ -99,6 +99,13 @@ export async function POST(request) {
     return Response.json({ loi: "API key khong dung" }, { status: 401 });
   }
 
+  // Cho phep 1 lan upload GHI DU LIEU nhung KHONG gui Zalo - dung khi thu nghiem 1 nguon du lieu
+  // moi (vd engine JS, xem engine/dich-vu/chayEngineRealTime.mjs) muon thay ket qua hien thi that
+  // tren web ma chua chac chan du de bao that cho nguoi theo doi. AmiBroker/script cu khong gui
+  // header nay nen hanh vi Zalo cua ho KHONG doi.
+  const boQuaZalo = request.headers.get("x-skip-zalo") === "1";
+  const guiZaloNeuDuocPhep = (noiDung) => (boQuaZalo ? Promise.resolve({ gui: false, ly_do: "da tat qua header x-skip-zalo" }) : guiTinNhanZalo(noiDung));
+
   const contentType = request.headers.get("content-type") || "";
   let vanBanCSV;
 
@@ -462,7 +469,7 @@ export async function POST(request) {
   let zaloDaGui = 0;
   let zaloLoi = null;
   for (const h of cacMaMuaMoi) {
-    const ketQua = await guiTinNhanZalo(
+    const ketQua = await guiZaloNeuDuocPhep(
       `🟢 TÍN HIỆU ${h.loai_vao === "MUA LAI" ? "MUA LẠI" : "MUA MỚI"}: ${h.ma}\n${dongVung(h)}${
         h.giai_ngan === "MOT PHAN" ? "\n⚠ Giải ngân 1 phần (RS yếu) — chờ phiên sau để bổ sung" : ""
       }\nXem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`
@@ -484,7 +491,7 @@ export async function POST(request) {
         trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa, xem lại sau ATC" : null,
         `Xem chi tiết: https://cloudstock.id.vn/ma/${b.ma}`,
       ];
-      const ketQua = await guiTinNhanZalo(dong.filter(Boolean).join("\n"));
+      const ketQua = await guiZaloNeuDuocPhep(dong.filter(Boolean).join("\n"));
       if (ketQua.gui) zaloDaGui++;
       else if (!zaloLoi) zaloLoi = ketQua.ly_do;
     } catch {
@@ -506,7 +513,7 @@ export async function POST(request) {
         trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa" : null,
         `Xem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`,
       ];
-      const ketQua = await guiTinNhanZalo(dong.filter(Boolean).join("\n"));
+      const ketQua = await guiZaloNeuDuocPhep(dong.filter(Boolean).join("\n"));
       if (ketQua.gui) zaloDaGui++;
       else if (!zaloLoi) zaloLoi = ketQua.ly_do;
     } catch {
@@ -514,7 +521,7 @@ export async function POST(request) {
     }
   }
   for (const h of cacMaBoSung) {
-    const ketQua = await guiTinNhanZalo(
+    const ketQua = await guiZaloNeuDuocPhep(
       `➕ BỔ SUNG: ${h.ma}\nGiá: ${h.gia}\nĐủ điều kiện giải ngân nốt phần còn lại\nXem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`
     );
     if (ketQua.gui) zaloDaGui++;

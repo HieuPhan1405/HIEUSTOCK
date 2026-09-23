@@ -85,11 +85,13 @@ async function main() {
     console.log("\n--upload duoc yeu cau nhung THIEU CS_UPLOAD_API_KEY hoac CS_XAC_NHAN_UPLOAD=DONG_Y - BO QUA upload (chi ghi file, an toan).");
     return;
   }
+  // MAC DINH tat Zalo khi thu nghiem engine - CHI gui that neu chu dong dat CS_CHO_PHEP_ZALO=DONG_Y.
+  const choPhepZalo = process.env.CS_CHO_PHEP_ZALO === "DONG_Y";
   const gocWeb = process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn";
-  console.log(`\nCANH BAO: dang POST THAT len ${gocWeb}/api/upload-signals - se GHI DE du lieu that va co the gui Zalo that.`);
+  console.log(`\nCANH BAO: dang POST THAT len ${gocWeb}/api/upload-signals - se GHI DE du lieu that. Zalo: ${choPhepZalo ? "CO GUI THAT" : "DA TAT (mac dinh)"}.`);
   const res = await fetch(`${gocWeb}/api/upload-signals`, {
     method: "POST",
-    headers: { "Content-Type": "text/csv", "x-api-key": uploadKey },
+    headers: { "Content-Type": "text/csv", "x-api-key": uploadKey, "x-skip-zalo": choPhepZalo ? "0" : "1" },
     body: csv,
     signal: AbortSignal.timeout(120000),
   });
