@@ -322,12 +322,16 @@ InFVGZoneOk = IIf(CheDoFVG=="Luon TAT", 1,
 // mo dung luc do - nhung CHI DUNG 1 LAN moi dot (tranh lap lai loi da hoc
 // truoc: "chot nhieu lan" lam sai lech). Dung vong lap tuong minh de kiem
 // soat chac chan trang thai "da mua trong dot nay chua".
+// DotKetThucBoLo: dung PHIEN 1 dot tren nguong VUA KET THUC ma suot dot do CHUA TUNG mua (bo sung
+// 2026-09-23, dung cho tin hieu "Mua muon" - xem khoi MUA MUON ben duoi).
 TurnedGreen = 0;
 DaMuaDotNay = 0;
+DotKetThucBoLo = 0;
 for (i = 1; i < BarCount; i++)
 {
     if (!ConsecutiveAbove[i])
     {
+        DotKetThucBoLo[i] = ConsecutiveAbove[i-1] AND !DaMuaDotNay[i-1];
         DaMuaDotNay[i] = 0;
     }
     else
@@ -613,6 +617,9 @@ MocDatSLBar = IIf(VuotMayBar AND VuotCBBar, Min(CloudTop, CBTop),
               IIf(VuotCBBar, CBTop, KhongCoMoc)));
 MocDatSLTaiSwitch = ValueWhen(VuaVaoVungMua, MocDatSLBar, 1);
 DayNenTaiSwitch = ValueWhen(VuaVaoVungMua, L, 1);
+// Dung cho khoi MUA MUON ben duoi - gia kich hoat tai LAN VUA VAO VUNG MUA gan nhat (chua chac da
+// Mua that su). Bo sung 2026-09-23.
+GiaKichHoatTaiVuaVao = ValueWhen(VuaVaoVungMua, GiaKichHoatBar, 1);
 
 // GIA VAO va STOP-LOSS neu vao lenh tai tung phien (Cu: gia vao = C, SL nhu cu).
 GiaVaoBar = IIf(CheDoMoc AND VuaVaoVungMua, GiaKichHoatBar, C);
@@ -708,13 +715,49 @@ SLMuaMoiTho = Max(SLMuaMoiTho, HoTroMuaMoi * (1 - HardStopPct/100));
 StopMuaMoiBar = IIf((HoTroMuaMoi > 0) AND (HoTroMuaMoi < C), SLMuaMoiTho,
                     C - Min(ATRVal * ATRMult, C * (HardStopPct/100)));
 
+// MUA MUON (bat kip tin hieu bi bo lo hoan toan) - bo sung 2026-09-23, xem plan "2 tin hieu MUA
+// moi". Dung DotKetThucBoLo (1 dot tren nguong da ket thuc ma CHUA TUNG mua duoc trong suot dot -
+// xem khoi TurnedGreen o tren) + gia kich hoat tai LAN BO LO GAN NHAT (GiaKichHoatTaiVuaVao) de
+// biet gia co con trong han "vung mua cu" khong.
+BatMuaMuon          = ParamToggle("MUA MUON: bat kip tin hieu bi bo lo hoan toan (chi xuat/hien thi)", "Tat|Bat", 0);
+HanPhienMuaMuon     = Param("Mua muon - trong vong (phien) sau khi bo lo tin hieu", 10, 1, 60, 1);
+DiemToiThieuMuaMuon = Param("Mua muon - diem toi thieu", 0.75, 0, 3, 0.05);
+MuaMuonCaoToiDaPct  = Param("Mua muon - gia toi da cao hon moc kich hoat bi bo lo (%)", 2, 0.5, 10, 0.5);
+GiaKichHoatBoLo = ValueWhen(DotKetThucBoLo, GiaKichHoatTaiVuaVao, 1);
+SoPhienTuBoLo   = BarsSince(DotKetThucBoLo);
+MuaMuonTinHieu = BatMuaMuon AND (GiaKichHoatBoLo > 0) AND (SoPhienTuBoLo <= HanPhienMuaMuon)
+    AND (C >= GiaKichHoatBoLo) AND (C <= GiaKichHoatBoLo * (1 + MuaMuonCaoToiDaPct/100))
+    AND (C > O) AND (C > Ref(C,-1)) AND (TotalScore >= DiemToiThieuMuaMuon) AND (C > CloudTop)
+    AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
+SLMuaMuonTho = Min(GiaKichHoatBoLo - DemSLtheoATR * ATRVal, GiaKichHoatBoLo * (1 - SLToiThieuPct/100));
+SLMuaMuonTho = Max(SLMuaMuonTho, GiaKichHoatBoLo * (1 - HardStopPct/100));
+StopMuaMuonBar = IIf((GiaKichHoatBoLo > 0) AND (GiaKichHoatBoLo < C), SLMuaMuonTho,
+                    C - Min(ATRVal * ATRMult, C * (HardStopPct/100)));
+
+// MUA THEM GIUA CHUNG (vong doc lap voi vong 2, mo TRUOC khi cham du TP3) - bo sung 2026-09-23.
+// Ban sao CO CHU DICH cua khoi MUA MOI SAU TP3 o tren - tham so RIENG, dung chung cac nguong SL
+// cau truc/ATR/tran 6% da co.
+BatMuaThemGiuaChung = ParamToggle("MUA THEM GIUA CHUNG: bao mua them khi hoi ve ho tro TRUOC TP3 (chi xuat/hien thi)", "Tat|Bat", 0);
+KieuHoTroMuaGiua    = ParamList("Mua them giua chung - ho tro", "Kijun|Can bang dai han (duoi)", 0);
+DiemToiThieuMuaGiua = Param("Mua them giua chung - diem toi thieu", 1.25, 0, 4, 0.05);
+MuaGiuaCaoToiDaPct  = Param("Mua them giua chung - gia toi da cao hon ho tro (%)", 4, 1, 15, 0.5);
+HoTroMuaGiua = IIf(KieuHoTroMuaGiua == "Kijun", Kijun, CBBot);
+MuaThemGiuaChungTinHieu = BatMuaThemGiuaChung AND (HoTroMuaGiua > 0)
+    AND (L <= HoTroMuaGiua * (1 + DoChamHoTroPct/100)) AND (C > HoTroMuaGiua) AND (C <= HoTroMuaGiua * (1 + MuaGiuaCaoToiDaPct/100))
+    AND (C > O) AND (C > Ref(C,-1)) AND (TotalScore >= DiemToiThieuMuaGiua) AND (C > CloudTop)
+    AND ChiTrong12NamGanNhat AND BreadthOk15 AND RSGateOk AND ThanhKhoanKL_Ok AND GiaToiThieuOk;
+SLMuaGiuaTho = Min(HoTroMuaGiua - DemSLtheoATR * ATRVal, HoTroMuaGiua * (1 - SLToiThieuPct/100));
+SLMuaGiuaTho = Max(SLMuaGiuaTho, HoTroMuaGiua * (1 - HardStopPct/100));
+StopMuaGiuaBar = IIf((HoTroMuaGiua > 0) AND (HoTroMuaGiua < C), SLMuaGiuaTho,
+                    C - Min(ATRVal * ATRMult, C * (HardStopPct/100)));
+
 Sell = 0;
 LyDoBan = 0;   // 0=chua ban, 1=TurnedPink(diem so), 2=Stop-loss, 3=SL bao ve lai
 GiuTrongVongLap = 0;
 GiaVaoTrongVongLap = 0;
 ATRVaoTrongVongLap = 0;
 StopVaoTrongVongLap = 0;
-LoaiVaoLenh = 0;       // 1 = Buy thuong, 2 = MUA LAI
+LoaiVaoLenh = 0;       // 1 = Buy thuong, 2 = MUA LAI, 3 = MUA MUON
 GiaVaoLuc = 0;         // gia vao thuc te tai phien vao lenh
 StopVaoLuc = 0;        // Stop-loss thuc te tai phien vao lenh
 TP1VaoVong = 0; TP2VaoVong = 0;
@@ -735,10 +778,22 @@ Mua2Vi = 0;         // vi tri nen vao lenh mua moi
 Mua2SuKien = 0;     // 1 = dung nen vao lenh mua moi
 Mua2Cat = 0;        // 1 = cham Stop-loss rieng, 2 = dong cung lenh goc (Ban)
 Mua2DaTung = 0;     // 1 = lenh goc hien tai da mua moi roi (toi da 1 lan)
+// MUA THEM GIUA CHUNG (vong doc lap voi Mua2, mo TRUOC khi cham du TP3) - bo sung 2026-09-23.
+// Cau truc GIONG HET Mua2* o tren.
+MuaGiuaGiu = 0; MuaGiuaGia = 0; MuaGiuaStop = 0; MuaGiuaTP1 = 0; MuaGiuaTP2 = 0; MuaGiuaTP3 = 0;
+MuaGiuaVi = 0; MuaGiuaSuKien = 0; MuaGiuaCat = 0; MuaGiuaDaTung = 0;
+// MUA MUON: co nho "da bat kip 1 lan cho lan bo lo gan nhat" - chan mua-cat-mua lap lai cung 1
+// vung gia bo lo, reset khi co 1 dot bo lo MOI (DotKetThucBoLo[i] moi).
+DaMuaMuonSauBoLo = 0;
 stopBaoVe = 0; chamBaoVe = 0; // khoi tao truoc vong lap - ma chua tung giu lenh (nhanh if ben duoi khong bao gio chay) se
                               // khong duoc gan lai, doc o ngoai vong lap (LastValue...) se bao Error 29 neu thieu dong nay.
 for (i = 1; i < BarCount; i++)
 {
+    // Doc lap voi giu-goc-hay-khong - tinh truoc o day de dung lai ben duoi (ca 2 nhanh).
+    DaMuaMuonSauBoLo[i] = IIf(DotKetThucBoLo[i], 0, DaMuaMuonSauBoLo[i-1]);
+    DuDieuKienMuaLai = MuaLaiTinHieu[i] AND banGanNhatCoLai == 1 AND (i - banGanNhatViTri) <= HanMuaLaiPhien
+                        AND C[i] <= banGanNhatGia * (1 + MuaLaiCaoToiDaPct/100) AND soLanMuaLaiLienTiep < SoLanMuaLaiToiDa;
+    DuDieuKienMuaMuon = MuaMuonTinHieu[i] AND DaMuaMuonSauBoLo[i] == 0;
     if (GiuTrongVongLap[i-1] == 1)
     {
         // DANG GIU - kiem tra dieu kien thoat TRUOC, bo qua Buy neu co
@@ -757,6 +812,14 @@ for (i = 1; i < BarCount; i++)
         Mua2TP2[i] = Mua2TP2[i-1];
         Mua2TP3[i] = Mua2TP3[i-1];
         Mua2Vi[i] = Mua2Vi[i-1];
+        MuaGiuaDaTung[i] = MuaGiuaDaTung[i-1];
+        MuaGiuaGiu[i] = MuaGiuaGiu[i-1];
+        MuaGiuaGia[i] = MuaGiuaGia[i-1];
+        MuaGiuaStop[i] = MuaGiuaStop[i-1];
+        MuaGiuaTP1[i] = MuaGiuaTP1[i-1];
+        MuaGiuaTP2[i] = MuaGiuaTP2[i-1];
+        MuaGiuaTP3[i] = MuaGiuaTP3[i-1];
+        MuaGiuaVi[i] = MuaGiuaVi[i-1];
         // Stop-loss dong bang luc vao lenh (che do Cu = cong thuc ATR/6% nhu truoc).
         stopGiaThucTe_vonglap = StopVaoTrongVongLap[i];
 
@@ -797,6 +860,11 @@ for (i = 1; i < BarCount; i++)
             {
                 Mua2Giu[i] = 0;
                 Mua2Cat[i] = 2;
+            }
+            if (MuaGiuaGiu[i-1] == 1)
+            {
+                MuaGiuaGiu[i] = 0;
+                MuaGiuaCat[i] = 2;
             }
             // Gia ban de xet "lan ban nay co lo khong" (cho MUA LAI) va gia khop khi cham SL bao ve.
             giaBanLoop = C[i];
@@ -848,13 +916,33 @@ for (i = 1; i < BarCount; i++)
                 Mua2TP3[i] = TP3Vong[i];
                 Mua2Vi[i] = i;
             }
+
+            // MUA THEM GIUA CHUNG (vong doc lap voi Mua2, CHI mo TRUOC khi cham du TP3 - DaTP3Vong==0).
+            if (MuaGiuaGiu[i-1] == 1)
+            {
+                if (L[i] <= MuaGiuaStop[i] AND (SLChamLaCat OR TotalScore[i] < 0))
+                {
+                    MuaGiuaGiu[i] = 0;
+                    MuaGiuaCat[i] = 1;
+                }
+            }
+            else if (DaTP3Vong[i] == 0 AND MuaGiuaDaTung[i] == 0 AND MuaThemGiuaChungTinHieu[i])
+            {
+                MuaGiuaGiu[i] = 1;
+                MuaGiuaDaTung[i] = 1;
+                MuaGiuaSuKien[i] = 1;
+                MuaGiuaGia[i] = C[i];
+                MuaGiuaStop[i] = StopMuaGiuaBar[i];
+                MuaGiuaTP1[i] = TP1Vong[i];
+                MuaGiuaTP2[i] = TP2Vong[i];
+                MuaGiuaTP3[i] = TP3Vong[i];
+                MuaGiuaVi[i] = i;
+            }
         }
     }
-    else if (Buy[i] OR (MuaLaiTinHieu[i] AND banGanNhatCoLai == 1 AND (i - banGanNhatViTri) <= HanMuaLaiPhien
-                               AND C[i] <= banGanNhatGia * (1 + MuaLaiCaoToiDaPct/100)
-                               AND soLanMuaLaiLienTiep < SoLanMuaLaiToiDa))
+    else if (Buy[i] OR DuDieuKienMuaLai OR DuDieuKienMuaMuon)
     {
-        // CHUA GIU - Buy moi kich hoat vao lenh (hoac MUA LAI khi cong tac bat)
+        // CHUA GIU - Buy moi kich hoat vao lenh (hoac MUA LAI/MUA MUON khi cong tac bat)
         if (Buy[i])
         {
             giaVaoLoop = GiaVaoBar[i];
@@ -862,13 +950,22 @@ for (i = 1; i < BarCount; i++)
             LoaiVaoLenh[i] = 1;
             soLanMuaLaiLienTiep = 0;
         }
-        else
+        else if (DuDieuKienMuaLai)
         {
             // MUA LAI: vao tai gia dong cua, SL rieng duoi ho tro.
             giaVaoLoop = C[i];
             stopVaoLoop = StopMuaLaiBar[i];
             LoaiVaoLenh[i] = 2;
             soLanMuaLaiLienTiep = soLanMuaLaiLienTiep + 1;
+        }
+        else
+        {
+            // MUA MUON: bat kip tin hieu bi bo lo, vao tai gia dong cua, SL rieng duoi moc kich hoat bi lo.
+            giaVaoLoop = C[i];
+            stopVaoLoop = StopMuaMuonBar[i];
+            LoaiVaoLenh[i] = 3;
+            soLanMuaLaiLienTiep = 0;
+            DaMuaMuonSauBoLo[i] = 1;
         }
         GiuTrongVongLap[i] = 1;
         GiaVaoTrongVongLap[i] = giaVaoLoop;
@@ -1136,6 +1233,17 @@ if (BatMuaMoi)
     PlotShapes(IIf(Mua2Cat == 1, shapeCircle, shapeNone), ColorRGB(255,110,110), 0, L, -65);
 }
 
+// MUA THEM GIUA CHUNG (vong doc lap voi Mua2, mo TRUOC khi cham du TP3) - bo sung 2026-09-23,
+// mui ten tim, phan biet mau voi Mua2 (xanh ngoc) de khong nham lan tren chart.
+if (BatMuaThemGiuaChung)
+{
+    Plot(IIf(MuaGiuaGiu, MuaGiuaGia, Null), "Mua giua - gia vao", ColorRGB(170,110,255), styleLine|styleDashed|styleNoLabel);
+    Plot(IIf(MuaGiuaGiu, MuaGiuaStop, Null), "Mua giua - Stop-loss", ColorRGB(255,110,110), styleLine|styleDots);
+    PlotShapes(IIf(MuaGiuaSuKien, shapeUpArrow, shapeNone), ColorRGB(170,110,255), 0, L, -60);
+    PlotShapes(IIf(MuaGiuaSuKien, shapeCircle, shapeNone), ColorRGB(170,110,255), 0, L, -45);
+    PlotShapes(IIf(MuaGiuaCat == 1, shapeCircle, shapeNone), ColorRGB(255,110,110), 0, L, -65);
+}
+
 Plot(C, "Gia", IIf(C>=Ref(C,-1),ColorRGB(0,180,0),ColorRGB(220,50,50)), styleCandle);
 Plot(Tenkan, "Tenkan 9", ColorRGB(0,140,255), styleLine|styleThick);
 Plot(Kijun, "Kijun 17", ColorRGB(255,140,0), styleLine|styleThick);
@@ -1285,6 +1393,10 @@ if (Status("action") == actionIndicator)
     m2gia_c        = Mua2Gia[CursorBar];
     m2stop_c       = Mua2Stop[CursorBar];
     m2tp1_c        = Mua2TP1[CursorBar];
+    mgiu_c         = MuaGiuaGiu[CursorBar];
+    mgiugia_c      = MuaGiuaGia[CursorBar];
+    mgiustop_c     = MuaGiuaStop[CursorBar];
+    mgiutp1_c      = MuaGiuaTP1[CursorBar];
     dtp3_c         = DaTP3Vong[CursorBar];
     sophien_c      = SoPhienNamGiuVT[CursorBar];
     laino_c        = LaiLoVT[CursorBar];
@@ -1515,6 +1627,14 @@ if (Status("action") == actionIndicator)
             {
                 GfxTextOut("MUA MOI: "+NumToStr(m2gia_c,1.2)+"  SL "+NumToStr(m2stop_c,1.2)+"  TP1 "+NumToStr(m2tp1_c,1.2), c3X+12, wy); wy=wy+16;
             }
+            GfxSetTextColor(colorBlack);
+        }
+        // MUA THEM GIUA CHUNG (vong doc lap voi Mua2, mo TRUOC khi cham du TP3, khong phu thuoc
+        // dtp3_c) - bo sung 2026-09-23.
+        if (mgiu_c == 1 AND mgiugia_c > 0)
+        {
+            GfxSetTextColor(ColorRGB(120,60,200));
+            GfxTextOut("MUA THEM (giua chung): "+NumToStr(mgiugia_c,1.2)+"  SL "+NumToStr(mgiustop_c,1.2)+"  TP1 "+NumToStr(mgiutp1_c,1.2), c3X+12, wy); wy=wy+16;
             GfxSetTextColor(colorBlack);
         }
         if (gcm_c > 0 AND gcm_c <= giamua_c)
