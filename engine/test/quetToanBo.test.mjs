@@ -2,7 +2,7 @@
 // nen KHONG test o day - da duoc kiem chung gian tiep qua chayThuOpenApi.mjs/chayPipelineDayDu.mjs
 // voi credential that (xem lich su trao doi 2026-09-22/23). File nay chi test cac ham THUAN:
 // danhSachMaQuet, capNhatNenMoiNhat, va tinhTinHieuToanBo (voi du lieu tong hop, khong goi mang).
-import { danhSachMaQuet, capNhatNenMoiNhat, tinhTinHieuToanBo } from "../loi/quetToanBo.js";
+import { danhSachMaQuet, capNhatNenMoiNhat, tinhTinHieuToanBo, chiaNhoMang } from "../loi/quetToanBo.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -11,6 +11,18 @@ const ok = (ten, dk, them = "") => {
     console.log("SAI:", ten, them);
   } else console.log("ok:", ten);
 };
+
+// ---- chiaNhoMang ----
+{
+  const mang = Array.from({ length: 390 }, (_, i) => `MA${i}`);
+  const nhom = chiaNhoMang(mang, 190);
+  ok("390 phan tu, kich thuoc 190 -> 3 nhom", nhom.length === 3, nhom.length);
+  ok("2 nhom dau du 190 phan tu", nhom[0].length === 190 && nhom[1].length === 190);
+  ok("nhom cuoi con lai 10 phan tu", nhom[2].length === 10, nhom[2].length);
+  ok("gop lai dung thu tu ban dau", nhom.flat().join(",") === mang.join(","));
+  ok("mang rong -> khong nhom nao", chiaNhoMang([], 190).length === 0);
+  ok("mang nho hon kich thuoc -> 1 nhom duy nhat", chiaNhoMang(["A", "B"], 190).length === 1);
+}
 
 // ---- danhSachMaQuet ----
 {

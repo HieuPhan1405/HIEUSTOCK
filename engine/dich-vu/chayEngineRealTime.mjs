@@ -20,7 +20,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { taoOpenApiClient } from "../dnse/openApiClient.js";
 import { ketNoiWebSocketDNSE } from "../dnse/wsClient.js";
-import { taiLichSuToanBo, tinhTinHieuToanBo, capNhatNenMoiNhat } from "../loi/quetToanBo.js";
+import { taiLichSuToanBo, tinhTinHieuToanBo, capNhatNenMoiNhat, chiaNhoMang } from "../loi/quetToanBo.js";
 import { xayDungCSV } from "../loi/csvDauRa.js";
 
 const apiKey = process.env.DNSE_API_KEY;
@@ -110,21 +110,33 @@ async function main() {
     }
   }
 
-  console.log(`\nDang ket noi WebSocket, subscribe nen 1D cho ${dsMa.length} ma + VNINDEX...`);
-  const ketNoi = ketNoiWebSocketDNSE(
-    { apiKey, apiSecret },
-    {
-      kenh: [{ name: "ohlc.1D.json", symbols: [...dsMa, "VNINDEX"] }],
-      onTrangThai: (chuoi) => console.log(`[ws] ${chuoi}`),
-      onLoi: (loi) => console.error(`[ws loi] ${loi.message}`),
-      onData: (_loaiDuLieu, doi) => {
-        if (!doi.symbol || doi.open == null) return; // khong phai nen OHLC hop le - bo qua an toan
-        const mang = doi.symbol === "VNINDEX" ? vniNen : nenTheoMa.get(doi.symbol);
-        if (!mang) return; // ma khong nam trong vu tru dang theo doi (khong nen xay ra, phong thu)
-        capNhatNenMoiNhat(mang, chuyenDoiNenTuWS(doi));
-        coThayDoi = true;
-      },
-    }
+  // DNSE OpenAPI gioi han so "streams"/ket noi theo tier tai khoan (tier "normalUser" toi da 200 -
+  // xac nhan qua loi that SUBSCRIBE_FAILED/MAX_CHANNELS_EXCEEDED khi thu nhet het ~390 ma vao 1 ket
+  // noi duy nhat) - chia nho danh sach ma, moi lo mo 1 ket noi WebSocket rieng (tai lieu cho phep
+  // toi da 10 ket noi/tai khoan, du du cho vai lo).
+  const KICH_THUOC_KENH_TOI_DA = 190;
+  const toanBoMaCanTheoDoi = [...dsMa, "VNINDEX"];
+  const nhomMa = chiaNhoMang(toanBoMaCanTheoDoi, KICH_THUOC_KENH_TOI_DA);
+  console.log(`\nDang ket noi WebSocket (${nhomMa.length} ket noi, toi da ${KICH_THUOC_KENH_TOI_DA} ma/ket noi do gioi han tier tai khoan)...`);
+
+  const onDataChung = (_loaiDuLieu, doi) => {
+    if (!doi.symbol || doi.open == null) return; // khong phai nen OHLC hop le - bo qua an toan
+    const mang = doi.symbol === "VNINDEX" ? vniNen : nenTheoMa.get(doi.symbol);
+    if (!mang) return; // ma khong nam trong vu tru dang theo doi (khong nen xay ra, phong thu)
+    capNhatNenMoiNhat(mang, chuyenDoiNenTuWS(doi));
+    coThayDoi = true;
+  };
+
+  const dsKetNoi = nhomMa.map((nhom, idx) =>
+    ketNoiWebSocketDNSE(
+      { apiKey, apiSecret },
+      {
+        kenh: [{ name: "ohlc.1D.json", symbols: nhom }],
+        onTrangThai: (chuoi) => console.log(`[ws#${idx + 1}] ${chuoi}`),
+        onLoi: (loi) => console.error(`[ws#${idx + 1} loi] ${loi.message}`),
+        onData: onDataChung,
+      }
+    )
   );
 
   await tinhLaiVaGhi(); // tinh ngay lan dau voi du lieu REST vua tai, khong doi tick WebSocket
@@ -133,7 +145,7 @@ async function main() {
   process.on("SIGINT", () => {
     console.log("\nDang dung dich vu...");
     clearInterval(henGio);
-    ketNoi.dong();
+    dsKetNoi.forEach((k) => k.dong());
     process.exit(0);
   });
 }

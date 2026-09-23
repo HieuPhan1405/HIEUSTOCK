@@ -12,6 +12,16 @@ import { sma } from "./mang.js";
 export const SO_NGAY_LICH_SU = 1600; // ~4.4 nam lich, du cho HHV(H,252) + Ichimoku + on dinh Kijun/duong can bang
 const CHO_GIUA_MOI_MA_MS = 200; // gian cach nhe giua cac request REST luc tai lich su - tranh bi coi la spam API that
 
+// Chia 1 mang thanh nhieu mang con toi da `kichThuoc` phan tu - dung de chia nho danh sach ma
+// subscribe WebSocket (DNSE OpenAPI gioi han so "streams"/ket noi theo tier tai khoan - tier
+// "normalUser" toi da 200, xac nhan qua loi that SUBSCRIBE_FAILED/MAX_CHANNELS_EXCEEDED khi thu
+// subscribe het ~390 ma trong 1 ket noi duy nhat, xem chayEngineRealTime.mjs).
+export function chiaNhoMang(mang, kichThuoc) {
+  const ketQua = [];
+  for (let i = 0; i < mang.length; i += kichThuoc) ketQua.push(mang.slice(i, i + kichThuoc));
+  return ketQua;
+}
+
 export function danhSachMaQuet() {
   return [...new Set([...VN30, ...VN_MIDCAP, ...VN_SMALLCAP])].sort();
 }
