@@ -13,6 +13,7 @@ import {
   nhanGiaiNgan,
   nhanLoaiVao,
   nhanMuaThem,
+  nhanMuaGiuaChung,
   nhanBaoVeLai,
   laChoPhienSau,
   kiemTraChuanUuTien,
@@ -20,6 +21,7 @@ import {
   mocKichHoat,
   tinhVungLenh,
   tinhSauTP3,
+  tinhMuaGiuaChung,
   chuoiVung,
   VUNG,
   TREND_MAX,
@@ -287,6 +289,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
   const vungGia = tinhVungGia(row);
   const vungLenh = tinhVungLenh(row); // null neu khong dang giu
   const sauTP3 = tinhSauTP3(row); // null neu chua chot du TP3
+  const muaGiuaChung = tinhMuaGiuaChung(row); // null neu khong dang giu vi the "giua chung"
   const khoangCach = (muc) => (muc === null || !row.gia ? null : ((muc - row.gia) / row.gia) * 100);
   const tag = tinhCacTag(row);
   const mauDiem = row.diem >= 0 ? "#22C55E" : "#EF4444";
@@ -345,6 +348,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           {nhanMuaThem(row) && (
             <span className="mt-2 text-[11px] font-bold" style={{ color: nhanMuaThem(row).mau }} title={nhanMuaThem(row).moTa}>
               ➕ {nhanMuaThem(row).nhan}
+            </span>
+          )}
+          {nhanMuaGiuaChung(row) && (
+            <span className="mt-2 text-[11px] font-bold" style={{ color: nhanMuaGiuaChung(row).mau }} title={nhanMuaGiuaChung(row).moTa}>
+              ➕ {nhanMuaGiuaChung(row).nhan}
             </span>
           )}
           {nhanBaoVeLai(row) && (
@@ -580,6 +588,28 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         </Card>
       )}
 
+      {/* MUA THEM GIUA CHUNG: vi the doc lap voi vong 2, mo TRUOC khi cham du TP3 - co the cung
+          hien thi dong thoi voi card "Da chot du TP3" o tren (toi da 3 vi the: goc + giua chung +
+          sau TP3). Bo sung 2026-09-23. */}
+      {muaGiuaChung && (
+        <Card className="mb-4">
+          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#A78BFA" }}>
+            ★ Mua thêm giữa chừng (trước khi chốt đủ TP3)
+          </p>
+          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#A78BFA" }} className="text-lg">
+            Đã MUA THÊM {fmt(muaGiuaChung.giaMua)}
+          </p>
+          <p className="text-sm" style={{ fontFamily: "'JetBrains Mono', monospace", color: muaGiuaChung.laiLoPct >= 0 ? "#22C55E" : "#EF4444" }}>
+            {pct(muaGiuaChung.laiLoPct, 2)} so với giá mua thêm
+          </p>
+          <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
+            {muaGiuaChung.stop ? `Cắt lỗ riêng ${fmt(muaGiuaChung.stop)}. ` : ""}
+            {muaGiuaChung.tp1 ? `Chốt lời riêng ${fmt(muaGiuaChung.tp1)} / ${fmt(muaGiuaChung.tp2)} / ${fmt(muaGiuaChung.tp3)}. ` : ""}
+            Vị thế tách khỏi lệnh gốc, tự thoát khi chạm cắt lỗ riêng hoặc khi lệnh gốc có tín hiệu BÁN.
+          </p>
+        </Card>
+      )}
+
       {/* BIEU DO KY THUAT */}
       <div className="mb-4">
         <BieuDoKyThuat ma={row.ma} vung={vungLenh} ngayMua={row.ngay_mua} />
@@ -736,6 +766,9 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           dangGiuMoi={row.dang_giu_moi === true}
           ngayMuaMoi={row.ngay_mua_moi}
           giaMuaMoi={row.gia_mua_moi}
+          dangGiuGiua={row.dang_giu_giua === true}
+          ngayMuaGiua={row.ngay_mua_giua}
+          giaMuaGiua={row.gia_mua_giua}
         />
       </div>
 

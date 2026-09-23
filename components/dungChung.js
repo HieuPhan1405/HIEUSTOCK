@@ -271,6 +271,34 @@ export function tinhSauTP3(row) {
   };
 }
 
+// MUA THEM GIUA CHUNG (vi the doc lap voi vong 2, mo TRUOC khi cham du TP3) - bo sung 2026-09-23.
+// CHI hien khi CO DU LIEU THAT (dang giu vi the phu nay) - KHONG doan "goi y vung mua" nhu
+// tinhSauTP3().muaMoi, vi tinh nang nay MAC DINH TAT trong engine (batMuaThemGiuaChung=false):
+// hien goi y cho ma chua thuc su duoc tinh se gay hieu lam. Tra null neu khong dang giu.
+export function tinhMuaGiuaChung(row) {
+  if (!laDangGiu(row) || row.dang_giu_giua !== true || !(row.gia_mua_giua > 0)) return null;
+  const gia = Number(row.gia);
+  return {
+    giaMua: Number(row.gia_mua_giua),
+    stop: row.stop_giua > 0 ? Number(row.stop_giua) : null,
+    tp1: row.tp1_giua > 0 ? Number(row.tp1_giua) : null,
+    tp2: row.tp2_giua > 0 ? Number(row.tp2_giua) : null,
+    tp3: row.tp3_giua > 0 ? Number(row.tp3_giua) : null,
+    laiLoPct: gia > 0 ? (gia / Number(row.gia_mua_giua) - 1) * 100 : null,
+    ngay: row.ngay_mua_giua ?? null,
+  };
+}
+
+// Nhan "Mua thêm (giữa chừng)" khi AFL dang giu vi the phu nay.
+export function nhanMuaGiuaChung(row) {
+  if (row?.dang_giu_giua !== true) return null;
+  return {
+    nhan: "Mua thêm giữa chừng",
+    mau: "#A78BFA",
+    moTa: "Lệnh mua thêm khi giá hồi về hỗ trợ trong lúc đang giữ lệnh gốc (trước khi chốt đủ TP3), có giá mua, Stop-loss và chốt lời riêng, tách khỏi vị thế cũ.",
+  };
+}
+
 // Nhan "Mua thêm" khi AFL dang giu lenh MUA MOI sau TP3.
 export function nhanMuaThem(row) {
   if (row?.dang_giu_moi !== true) return null;

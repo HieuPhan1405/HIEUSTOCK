@@ -65,11 +65,29 @@ function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri }) {
 
 // Nhat ky mua-ban rieng cua 1 ma: goc tu cac lenh da dong (lichSuDaDong) + vi the dang giu hien tai (neu co).
 // Moi diem lai/lo quy doi ra so cu the tren gia dinh 100 don vi von cho de hinh dung thay vi chi xem %.
-export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], dangGiu, ngayMua, giaMua, laiLoPct, tp1, tp2, tp3, daChamTp, dangGiuMoi, ngayMuaMoi, giaMuaMoi }) {
+export default function NhatKyGiaoDich({
+  ma,
+  lichSuDaDong = [],
+  dangGiu,
+  ngayMua,
+  giaMua,
+  laiLoPct,
+  tp1,
+  tp2,
+  tp3,
+  daChamTp,
+  dangGiuMoi,
+  ngayMuaMoi,
+  giaMuaMoi,
+  dangGiuGiua,
+  ngayMuaGiua,
+  giaMuaGiua,
+}) {
   const [nen, setNen] = useState(null);
 
   const ngayMuaStr = chuoiNgay(ngayMua);
   const ngayMuaMoiStr = chuoiNgay(ngayMuaMoi);
+  const ngayMuaGiuaStr = chuoiNgay(ngayMuaGiua);
   const canTimNgayCham = dangGiu && ngayMuaStr && (tp1 > 0 || tp2 > 0 || tp3 > 0);
   const dangTai = canTimNgayCham && nen === null; // suy ra tu trang thai da tai chua, khong can them 1 state rieng
 
@@ -98,7 +116,7 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], dangGiu, ngayMua
   // nhieu dong (vd vong 1 chot TP3 + vong 3 phan con lai) cung 1 ngay_mua).
   const daThemMua = new Set();
   for (const d of lichSuDaDong) {
-    const khoaMua = `${d.ngay_mua}|${d.vong === 2 ? "moi" : "goc"}`;
+    const khoaMua = `${d.ngay_mua}|${d.vong === 2 ? "moi" : d.vong === 4 ? "giua" : "goc"}`;
     if (!daThemMua.has(khoaMua)) {
       daThemMua.add(khoaMua);
       suKien.push({
@@ -106,7 +124,7 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], dangGiu, ngayMua
         uuTien: UU_TIEN.MUA,
         icon: ArrowUpCircle,
         mau: XANH,
-        chinh: d.vong === 2 ? "Mua thêm (sau TP3)" : "Mua",
+        chinh: d.vong === 2 ? "Mua thêm (sau TP3)" : d.vong === 4 ? "Mua thêm (giữa chừng)" : "Mua",
         phu: `Giá ${fmt(d.gia_mua)}`,
       });
     }
@@ -153,6 +171,10 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], dangGiu, ngayMua
 
     if (dangGiuMoi && ngayMuaMoiStr && !daThemMua.has(`${ngayMuaMoiStr}|moi`)) {
       suKien.push({ ngay: ngayMuaMoiStr, uuTien: UU_TIEN.MUA, icon: TrendingUp, mau: NGOC, chinh: "Mua thêm (sau TP3)", phu: `Giá ${fmt(giaMuaMoi)}` });
+    }
+
+    if (dangGiuGiua && ngayMuaGiuaStr && !daThemMua.has(`${ngayMuaGiuaStr}|giua`)) {
+      suKien.push({ ngay: ngayMuaGiuaStr, uuTien: UU_TIEN.MUA, icon: TrendingUp, mau: TIM, chinh: "Mua thêm (giữa chừng)", phu: `Giá ${fmt(giaMuaGiua)}` });
     }
 
     suKien.push({
