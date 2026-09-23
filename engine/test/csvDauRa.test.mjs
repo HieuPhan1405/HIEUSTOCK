@@ -10,7 +10,10 @@ const ok = (ten, dk, them = "") => {
 
 {
   const csv = xayDungCSV([
-    { ma: "VJC", tin: "MUA", diem: 1.5, mat_than: true, fvg_ok: false, ngay_mua: "23/9/2026", kumo_twist: "", gia_mua: null, stop_bao_ve: 0 },
+    {
+      ma: "VJC", tin: "MUA", diem: 1.5, mat_than: true, fvg_ok: false, ngay_mua: "23/9/2026", kumo_twist: "", gia_mua: null, stop_bao_ve: 0,
+      dang_giu_giua: true, gia_mua_giua: 32.1, ngay_mua_giua: "23/9/2026",
+    },
   ]);
   const dong = csv.split("\n");
   ok("dong dau la header dung CAC_COT", dong[0] === CAC_COT.join(","), dong[0]);
@@ -26,6 +29,9 @@ const ok = (ten, dk, them = "") => {
   ok("null -> chuoi rong", hang.gia_mua === "");
   ok("so 0 khong bi doi thanh rong", hang.stop_bao_ve === "0");
   ok("truong khong khai bao -> chuoi rong (undefined)", hang.trend === "");
+  ok("cot moi 'dang_giu_giua' (Mua them giua chung) co trong CAC_COT va round-trip dung", hang.dang_giu_giua === "1");
+  ok("cot moi 'gia_mua_giua' round-trip dung", hang.gia_mua_giua === "32.1");
+  ok("cot moi 'ngay_mua_giua' round-trip dung", hang.ngay_mua_giua === "23/9/2026");
 }
 
 {

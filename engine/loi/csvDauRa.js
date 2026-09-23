@@ -11,6 +11,9 @@ export const CAC_COT = [
   "moc_gia", "moc_loai", "moc_cach_pct", "diem_neu_vuot", "che_do_vao", "loai_vao",
   "cho_phien_sau", "mua_moi", "dang_giu_moi", "cat_moi", "gia_mua_moi", "stop_moi",
   "tp1_moi", "tp2_moi", "tp3_moi", "ngay_mua_moi", "ly_do_ban", "dang_bao_ve_lai", "stop_bao_ve",
+  // MUA THEM GIUA CHUNG (vong doc lap voi mua_moi/vong 2, mo TRUOC khi cham du TP3) - bo sung 2026-09-23.
+  "mua_giua", "dang_giu_giua", "cat_giua", "gia_mua_giua", "stop_giua",
+  "tp1_giua", "tp2_giua", "tp3_giua", "ngay_mua_giua",
 ];
 
 // true/false -> "1"/"0" (route.js soBool/boolTriState doc dung 2 gia tri nay). null/undefined ->

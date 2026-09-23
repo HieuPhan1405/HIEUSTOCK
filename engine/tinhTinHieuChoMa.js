@@ -14,7 +14,7 @@ import { tinhMatThan } from "./loi/matThan.js";
 import { tinhRelVol, tinhVolumeGateNgayDau } from "./loi/volumeGate.js";
 import { tinhDiem } from "./loi/diem.js";
 import { tinhTinHieuTho } from "./loi/tinHieuTho.js";
-import { tinhCheDoMocVaoLenh, tinhBaMocChotLoi, tinhMuaLai, tinhMuaMoiSauTP3 } from "./loi/vaoLenh.js";
+import { tinhCheDoMocVaoLenh, tinhBaMocChotLoi, tinhMuaLai, tinhMuaMoiSauTP3, tinhMuaMuon, tinhMuaThemGiuaChung } from "./loi/vaoLenh.js";
 import { chayMayTrangThai } from "./loi/mayTrangThai.js";
 import { tinhChiTrongNamGanNhat, tinhThanhKhoanOk, tinhGiaToiThieuOk, tinhRSGateOk, tinhRSVoiVNIndex } from "./loi/cong.js";
 import { tinhDiemRank, tinhDiemConfidence } from "./loi/diemRank.js";
@@ -69,6 +69,17 @@ const MAC_DINH = {
   kieuHoTroMuaMoi: "Kijun",
   diemToiThieuMuaMoi: 1.25,
   muaMoiCaoToiDaPct: 4,
+  // 2 tin hieu MUA moi bo sung 2026-09-23 (xem plan) - MAC DINH TAT ca 2, giong moi tinh nang thu
+  // nghiem khac trong du an (Mua Lai/Mua Them/Bao ve lai deu khoi dau tat roi moi bat sau khi co
+  // ket qua backtest). Nguoi dung tu bat + tu backtest trong AmiBroker truoc khi tin dung.
+  batMuaMuon: false,
+  hanPhienMuaMuon: 10,
+  diemToiThieuMuaMuon: 0.75,
+  muaMuonCaoToiDaPct: 2,
+  batMuaThemGiuaChung: false,
+  kieuHoTroMuaGiua: "Kijun",
+  diemToiThieuMuaGiua: 1.25,
+  muaGiuaCaoToiDaPct: 4,
 };
 
 const ngayVN = (isoNgay) => {
@@ -141,7 +152,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   for (let i = 0; i < n; i++) congChung[i] = chiTrongNamGanNhat[i] && rsGateOk[i] && thanhKhoanOk[i] && giaToiThieuOk[i];
 
   // ---- Tin hieu MUA/BAN tho ----
-  const { vuaVaoVungMua, consecutiveAbove, adxGateOk, inFVGZoneOk, turnedGreen, turnedPink } = tinhTinHieuTho(
+  const { vuaVaoVungMua, consecutiveAbove, adxGateOk, inFVGZoneOk, turnedGreen, turnedPink, dotKetThucBoLo } = tinhTinHieuTho(
     { totalScore, adx, inFVGZone, fvgDuLon, volumeGateNgayDau },
     {
       entryTh: p.entryTh,
@@ -164,8 +175,12 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     { cheDoMoc: p.cheDoMoc, slKieuMoc: p.slKieuMoc, slKieuDay: p.slKieuDay, demSLtheoATR: p.demSLtheoATR, slToiThieuPct: p.slToiThieuPct, hardStopPct: p.hardStopPct, atrMult: p.atrMult }
   );
   const { tp1Vong, tp2Vong, tp3Vong } = tinhBaMocChotLoi({ high, giaVaoBar, cloudTop, cbTop });
+  // Hoist len som (truoc day tinh SAU chayMayTrangThai) vi Mua Muon can gia tri nay LAM INPUT cho
+  // may trang thai - gia kich hoat tai LAN VUA VAO VUNG MUA gan nhat (chua chac da Mua that su).
+  const mocKichHoatTaiVuaVao = valueWhen(vuaVaoVungMua, giaKichHoatBar, 1);
 
-  // ---- Mua lai / Mua them sau TP3 (con cot cong chung truoc khi dua vao may trang thai) ----
+  // ---- Mua lai / Mua them sau TP3 / Mua muon / Mua them giua chung (con cot cong chung truoc
+  // khi dua vao may trang thai) ----
   const { muaLaiTinHieu: muaLaiTho, stopMuaLaiBar } = tinhMuaLai(
     { close, open, high, low, atr: atrArr, totalScore, cloudTop, kijun, cbBot },
     { batMuaLai: p.batMuaLai, kieuHoTro: p.kieuHoTroMuaLai, diemToiThieu: p.diemToiThieuMuaLai, doChamHoTroPct: p.doChamHoTroPct, demSLtheoATR: p.demSLtheoATR, slToiThieuPct: p.slToiThieuPct, hardStopPct: p.hardStopPct, atrMult: p.atrMult }
@@ -174,11 +189,23 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     { close, open, high, low, atr: atrArr, totalScore, cloudTop, kijun, cbBot },
     { batMuaMoi: p.batMuaMoi, kieuHoTro: p.kieuHoTroMuaMoi, diemToiThieu: p.diemToiThieuMuaMoi, caoToiDaPct: p.muaMoiCaoToiDaPct, doChamHoTroPct: p.doChamHoTroPct, demSLtheoATR: p.demSLtheoATR, slToiThieuPct: p.slToiThieuPct, hardStopPct: p.hardStopPct, atrMult: p.atrMult }
   );
+  const { muaMuonTinHieu: muaMuonTho, stopMuaMuonBar } = tinhMuaMuon(
+    { close, open, atr: atrArr, totalScore, cloudTop, dotKetThucBoLo, giaKichHoatTaiVuaVao: mocKichHoatTaiVuaVao },
+    { batMuaMuon: p.batMuaMuon, diemToiThieu: p.diemToiThieuMuaMuon, caoToiDaPct: p.muaMuonCaoToiDaPct, hanPhien: p.hanPhienMuaMuon, demSLtheoATR: p.demSLtheoATR, slToiThieuPct: p.slToiThieuPct, hardStopPct: p.hardStopPct, atrMult: p.atrMult }
+  );
+  const { muaThemGiuaChungTinHieu: muaGiuaTho, stopMuaThemGiuaChungBar } = tinhMuaThemGiuaChung(
+    { close, open, high, low, atr: atrArr, totalScore, cloudTop, kijun, cbBot },
+    { batMuaThemGiuaChung: p.batMuaThemGiuaChung, kieuHoTro: p.kieuHoTroMuaGiua, diemToiThieu: p.diemToiThieuMuaGiua, caoToiDaPct: p.muaGiuaCaoToiDaPct, doChamHoTroPct: p.doChamHoTroPct, demSLtheoATR: p.demSLtheoATR, slToiThieuPct: p.slToiThieuPct, hardStopPct: p.hardStopPct, atrMult: p.atrMult }
+  );
   const muaLaiTinHieu = new Array(n);
   const muaMoiTinHieu = new Array(n);
+  const muaMuonTinHieu = new Array(n);
+  const muaThemGiuaChungTinHieu = new Array(n);
   for (let i = 0; i < n; i++) {
     muaLaiTinHieu[i] = muaLaiTho[i] && congChung[i];
     muaMoiTinHieu[i] = muaMoiTho[i] && congChung[i];
+    muaMuonTinHieu[i] = muaMuonTho[i] && congChung[i];
+    muaThemGiuaChungTinHieu[i] = muaGiuaTho[i] && congChung[i];
   }
 
   // ---- May trang thai chinh ----
@@ -206,6 +233,11 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     muaLaiTinHieu,
     stopMuaMoiBar,
     muaMoiTinHieu,
+    dotKetThucBoLo,
+    muaMuonTinHieu,
+    stopMuaMuonBar,
+    muaThemGiuaChungTinHieu,
+    stopMuaThemGiuaChungBar,
     thamSo: {
       slChamLaCat: p.slChamLaCat,
       bvHoaVon: p.bvHoaVon,
@@ -232,7 +264,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   const diemConfidenceArr = tinhDiemConfidence({ trendScore, momScore, mfScore, totalScore });
 
   // ---- Cac gia tri "TaiMua" (dong bang tai lan Buy gan nhat) - dung valueWhen 2 tang giong AFL ----
-  const mocKichHoatTaiVuaVao = valueWhen(vuaVaoVungMua, giaKichHoatBar, 1);
+  // (mocKichHoatTaiVuaVao da tinh o tren, truoc chayMayTrangThai - Mua Muon can dung lam input)
   const loaiMocTaiVuaVao = valueWhen(vuaVaoVungMua, loaiMocBar, 1);
   const giaKichHoatTaiMua = valueWhen(kq.buy, mocKichHoatTaiVuaVao, 1);
   const loaiMocTaiMua = valueWhen(kq.buy, loaiMocTaiVuaVao, 1);
@@ -312,6 +344,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   // Chi thuc su duoc doc khi mua2Giu[cuoi] dung (xem ngay_mua_moi ben duoi) - luc do mua2Vi chac
   // chan la vi tri nen VAO LENH THAT, khong phai gia tri khoi tao 0 mac dinh.
   const ngayMuaMoiVT = nen[kq.mua2Vi[cuoi]]?.t ?? null;
+  const ngayMuaGiuaVT = nen[kq.muaGiuaVi[cuoi]]?.t ?? null;
   const laiLoTaiMuaCuoi = giaMuaTaiMua[cuoi] > 0 ? (close[cuoi] / giaMuaTaiMua[cuoi] - 1) * 100 : 0;
 
   return {
@@ -360,7 +393,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     moc_cach_pct: null, // TODO
     diem_neu_vuot: null, // TODO
     che_do_vao: p.cheDoMoc ? "MOI" : "CU",
-    loai_vao: loaiVaoTaiMua[cuoi] === 2 ? "MUA LAI" : "",
+    loai_vao: loaiVaoTaiMua[cuoi] === 2 ? "MUA LAI" : loaiVaoTaiMua[cuoi] === 3 ? "MUA MUON" : "",
     cho_phien_sau: choPhienSauCuoi,
     mua_moi: kq.mua2SuKien[cuoi],
     dang_giu_moi: kq.mua2Giu[cuoi],
@@ -374,5 +407,16 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     ly_do_ban: banHomNay ? kq.lyDoBanBar[cuoi] || null : null,
     dang_bao_ve_lai: dangGiuTuTruoc && kq.stopBaoVeMoiNen[cuoi] > 0,
     stop_bao_ve: dangGiuTuTruoc && kq.stopBaoVeMoiNen[cuoi] > 0 ? kq.stopBaoVeMoiNen[cuoi] : 0,
+    // MUA THEM GIUA CHUNG (vong doc lap voi mua_moi/vong 2, mo TRUOC khi cham du TP3) - bo sung
+    // 2026-09-23, cung khuon voi mua_moi/dang_giu_moi/... o tren.
+    mua_giua: kq.muaGiuaSuKien[cuoi],
+    dang_giu_giua: kq.muaGiuaGiu[cuoi],
+    cat_giua: kq.muaGiuaCat[cuoi] || null,
+    gia_mua_giua: kq.muaGiuaGiu[cuoi] ? kq.muaGiuaGia[cuoi] : null,
+    stop_giua: kq.muaGiuaGiu[cuoi] ? kq.muaGiuaStop[cuoi] : null,
+    tp1_giua: kq.muaGiuaGiu[cuoi] ? kq.muaGiuaTP1[cuoi] : null,
+    tp2_giua: kq.muaGiuaGiu[cuoi] ? kq.muaGiuaTP2[cuoi] : null,
+    tp3_giua: kq.muaGiuaGiu[cuoi] ? kq.muaGiuaTP3[cuoi] : null,
+    ngay_mua_giua: kq.muaGiuaGiu[cuoi] ? ngayVN(ngayMuaGiuaVT) : null,
   };
 }

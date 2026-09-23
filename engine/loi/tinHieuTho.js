@@ -43,10 +43,17 @@ export function tinhTinHieuTho(
 
   // May trang thai: 1 "dot" tren nguong chi duoc bao MUA (TurnedGreen) DUNG 1 LAN, ke ca neu con
   // duy tri tren nguong nhieu phien sau do lien tuc du dieu kien.
+  // dotKetThucBoLo: dung PHIEN 1 dot tren nguong VUA KET THUC ma suot dot do CHUA TUNG mua
+  // (daMuaDotNay luon false) - "bo lo hoan toan", KHAC voi truong hop hut dieu kien ngay dau
+  // nhung van mua duoc o phien sau trong CUNG dot (da xu ly san qua ConsecutiveAbove/
+  // duDieuKienVolumeNgayDau ben duoi, khong can dotKetThucBoLo). Dung cho tinh hieu "Mua muon"
+  // (engine/loi/vaoLenh.js: tinhMuaMuon).
+  const dotKetThucBoLo = new Array(n).fill(false);
   const turnedGreen = new Array(n).fill(false);
   const daMuaDotNay = new Array(n).fill(false);
   for (let i = 1; i < n; i++) {
     if (!consecutiveAbove[i]) {
+      dotKetThucBoLo[i] = consecutiveAbove[i - 1] === true && daMuaDotNay[i - 1] === false;
       daMuaDotNay[i] = false;
       continue;
     }
@@ -64,5 +71,5 @@ export function tinhTinHieuTho(
   const zoneSellXacNhanTruoc = ref(zoneSellXacNhan, -1);
   const turnedPink = zoneSellXacNhan.map((v, i) => v && !zoneSellXacNhanTruoc[i]);
 
-  return { above, consecutiveAbove, vuaVaoVungMua, adxGateOk, inFVGZoneOk, turnedGreen, turnedPink };
+  return { above, consecutiveAbove, vuaVaoVungMua, adxGateOk, inFVGZoneOk, turnedGreen, turnedPink, dotKetThucBoLo };
 }

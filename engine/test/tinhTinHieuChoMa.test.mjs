@@ -64,9 +64,11 @@ if (ketQua) {
     "moc_loai", "moc_cach_pct", "diem_neu_vuot", "che_do_vao", "loai_vao", "cho_phien_sau",
     "mua_moi", "dang_giu_moi", "cat_moi", "gia_mua_moi", "stop_moi", "tp1_moi", "tp2_moi",
     "tp3_moi", "ngay_mua_moi", "ly_do_ban", "dang_bao_ve_lai", "stop_bao_ve",
+    "mua_giua", "dang_giu_giua", "cat_giua", "gia_mua_giua", "stop_giua", "tp1_giua", "tp2_giua",
+    "tp3_giua", "ngay_mua_giua",
   ];
   const thieu = CAC_TRUONG_BAT_BUOC.filter((k) => !(k in ketQua));
-  ok(`co du ca 57 truong can thiet (chua tinh cap_nhat_luc do server tu dien)`, thieu.length === 0, JSON.stringify(thieu));
+  ok(`co du ca 66 truong can thiet (chua tinh cap_nhat_luc do server tu dien)`, thieu.length === 0, JSON.stringify(thieu));
 
   ok("tin la 1 trong 4 gia tri hop le", ["MUA", "NAM GIU", "BAN", "TRUNG LAP"].includes(ketQua.tin), ketQua.tin);
   ok("gia > 0", ketQua.gia > 0, ketQua.gia);
@@ -87,6 +89,30 @@ if (ketQua) {
 
   if (ketQua.dang_giu_moi) {
     ok("dang giu Mua them -> gia_mua_moi/stop_moi hop le", ketQua.gia_mua_moi > 0 && ketQua.stop_moi > 0 && ketQua.stop_moi < ketQua.gia_mua_moi);
+  }
+
+  // 2 tin hieu moi (Mua muon/Mua them giua chung) mac dinh TAT - bat thu qua thamSo tren CUNG
+  // chuoi gia de kiem tra khong crash khi bat, va neu co kich hoat thi du lieu phai hop le.
+  let ketQuaBatThem;
+  try {
+    ketQuaBatThem = tinhTinHieuChoMa({ ma: "TESTMA3", nen, vniClose, san: "HOSE", ketQuaBreadth, thamSo: { batMuaMuon: true, batMuaThemGiuaChung: true } });
+    ok("bat Mua muon + Mua them giua chung: chay khong crash", true);
+  } catch (e) {
+    ok("bat Mua muon + Mua them giua chung: chay khong crash", false, e.stack);
+  }
+  if (ketQuaBatThem?.dang_giu_giua) {
+    ok(
+      "dang giu Mua them giua chung -> gia_mua_giua/stop_giua/tp1-3_giua hop le",
+      ketQuaBatThem.gia_mua_giua > 0 &&
+        ketQuaBatThem.stop_giua > 0 &&
+        ketQuaBatThem.stop_giua < ketQuaBatThem.gia_mua_giua &&
+        ketQuaBatThem.tp1_giua <= ketQuaBatThem.tp2_giua &&
+        ketQuaBatThem.tp2_giua <= ketQuaBatThem.tp3_giua
+    );
+    ok("dang giu Mua them giua chung -> co ngay mua giua (dang d/m/yyyy)", /^\d{1,2}\/\d{1,2}\/\d{4}$/.test(ketQuaBatThem.ngay_mua_giua ?? ""));
+  }
+  if (ketQuaBatThem?.loai_vao === "MUA MUON") {
+    ok("loai_vao MUA MUON -> van co gia_mua/stop_loss hop le nhu 1 lenh Mua binh thuong", ketQuaBatThem.gia_mua > 0 && ketQuaBatThem.stop_loss > 0);
   }
 }
 

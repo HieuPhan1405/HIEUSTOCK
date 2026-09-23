@@ -1,6 +1,6 @@
 // Test tay cho engine/loi/vaoLenh.js - CheDoMoc (gia vao tai moc chuyen mua + SL cau truc, 2
 // chieu kep gioi han toi thieu/toi da), 3 muc TP dung chung, va dieu kien MUA LAI/MUA THEM.
-import { tinhCheDoMocVaoLenh, tinhBaMocChotLoi, tinhMuaLai, tinhMuaMoiSauTP3 } from "../loi/vaoLenh.js";
+import { tinhCheDoMocVaoLenh, tinhBaMocChotLoi, tinhMuaLai, tinhMuaMoiSauTP3, tinhMuaMuon, tinhMuaThemGiuaChung } from "../loi/vaoLenh.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -96,6 +96,46 @@ const gan = (a, b, e = 1e-6) => a != null && b != null && Math.abs(a - b) < e;
   // kien "duoi gia" hoat dong (khac voi Mua Lai KHONG co dieu kien nay).
   const ganHonKq = tinhMuaMoiSauTP3({ ...nen, close: [0, 107], open: [0, 106], high: [0, 108] }, {});
   ok("MUA THEM: gia gan ho tro hon (107, cach 1.9%) -> du dieu kien", ganHonKq.muaMoiTinHieu[1] === true, ganHonKq.muaMoiTinHieu[1]);
+}
+
+// ---- MUA MUON: gia quay lai dung "vung mua cu" trong han phien -> tin hieu dung ----
+{
+  const dotKetThucBoLo = [false, false, true, false, false];
+  const giaKichHoatTaiVuaVao = [0, 0, 100, 100, 100];
+  const close = [0, 0, 95, 98, 101];
+  const open = [0, 0, 94, 97, 99];
+  const atr = [0, 0, 2, 2, 2];
+  const totalScore = [0, 0, 0, 0, 1.0];
+  const cloudTop = [0, 0, 90, 90, 90];
+  const dauVao = { close, open, atr, totalScore, cloudTop, dotKetThucBoLo, giaKichHoatTaiVuaVao };
+  const kq = tinhMuaMuon(dauVao, { batMuaMuon: true });
+  ok("MUA MUON: gia quay ve dung vung [100,102] trong han phien -> tin hieu dung", kq.muaMuonTinHieu[4] === true, kq.muaMuonTinHieu[4]);
+  ok("MUA MUON: gia con duoi moc kich hoat bi lo (i=3, 98<100) -> tin hieu SAI", kq.muaMuonTinHieu[3] === false);
+  ok("MUA MUON: giaKichHoatBoLo giu dung gia tri 100 tu lan bo lo", gan(kq.giaKichHoatBoLo[4], 100));
+
+  const qHan = tinhMuaMuon(dauVao, { batMuaMuon: true, hanPhien: 1 });
+  ok("MUA MUON: qua han so phien cho phep -> tin hieu SAI du gia dung vung", qHan.muaMuonTinHieu[4] === false);
+
+  const vuotTran = { ...dauVao, close: [0, 0, 95, 98, 103], open: [0, 0, 94, 97, 102] };
+  const kqVuotTran = tinhMuaMuon(vuotTran, { batMuaMuon: true, caoToiDaPct: 2 });
+  ok("MUA MUON: gia vuot qua tran (103 > 100*1.02=102) -> tin hieu SAI", kqVuotTran.muaMuonTinHieu[4] === false, kqVuotTran.muaMuonTinHieu[4]);
+
+  const kqTat = tinhMuaMuon(dauVao, { batMuaMuon: false });
+  ok("MUA MUON: batMuaMuon=false (mac dinh) -> luon SAI du du dieu kien khac", kqTat.muaMuonTinHieu[4] === false);
+}
+
+// ---- MUA THEM GIUA CHUNG: cong thuc giong het MUA THEM SAU TP3 nhung mac dinh TAT va tham so rieng ----
+{
+  const nen = { close: [0, 110], open: [0, 108], high: [0, 111], low: [0, 104], atr: [0, 3], totalScore: [0, 1.5], cloudTop: [0, 100], kijun: [0, 105], cbBot: [0, 90] };
+  const kqTat = tinhMuaThemGiuaChung(nen, {});
+  ok("MUA THEM GIUA CHUNG: mac dinh TAT (batMuaThemGiuaChung=false) -> tin hieu SAI du du dieu kien", kqTat.muaThemGiuaChungTinHieu[1] === false);
+
+  const okKq = tinhMuaThemGiuaChung(nen, { batMuaThemGiuaChung: true });
+  ok("MUA THEM GIUA CHUNG: gia cach ho tro qua xa (4.76% > 4%) -> tin hieu SAI", okKq.muaThemGiuaChungTinHieu[1] === false, okKq.muaThemGiuaChungTinHieu[1]);
+
+  const ganHonKq = tinhMuaThemGiuaChung({ ...nen, close: [0, 107], open: [0, 106], high: [0, 108] }, { batMuaThemGiuaChung: true });
+  ok("MUA THEM GIUA CHUNG: gia gan ho tro hon (107, cach 1.9%) -> du dieu kien", ganHonKq.muaThemGiuaChungTinHieu[1] === true, ganHonKq.muaThemGiuaChungTinHieu[1]);
+  ok("MUA THEM GIUA CHUNG: co Stop-loss rieng < gia dong cua", ganHonKq.stopMuaThemGiuaChungBar[1] < 107 && ganHonKq.stopMuaThemGiuaChungBar[1] > 0);
 }
 
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);

@@ -22,7 +22,7 @@ const ok = (ten, dk, them = "") => {
     fvgDuLon: new Array(n).fill(false),
     volumeGateNgayDau: new Array(n).fill(true),
   };
-  const { turnedGreen, vuaVaoVungMua } = tinhTinHieuTho(dauVao, { cheDoFVG: "Luon TAT" });
+  const { turnedGreen, vuaVaoVungMua, dotKetThucBoLo } = tinhTinHieuTho(dauVao, { cheDoFVG: "Luon TAT" });
   ok("vua vao vung mua dung 2 lan (i=1 va i=6)", vuaVaoVungMua[1] === true && vuaVaoVungMua[6] === true);
   ok("khong vua vao vung mua o cac phien con lai trong cung dot (i=2,3)", vuaVaoVungMua[2] === false && vuaVaoVungMua[3] === false);
   ok("TurnedGreen CHI bao dung 1 lan moi dot (i=1)", turnedGreen[1] === true);
@@ -30,6 +30,24 @@ const ok = (ten, dk, them = "") => {
   ok("het dot (duoi nguong) khong bao", turnedGreen[4] === false && turnedGreen[5] === false);
   ok("dot MOI (i=6) bao lai tu dau", turnedGreen[6] === true);
   ok("van khong lap lai trong dot moi (i=7)", turnedGreen[7] === false);
+  ok("dot da tung mua (i=1) -> dotKetThucBoLo=false luc ket thuc (i=4)", dotKetThucBoLo[4] === false);
+}
+
+// ---- dotKetThucBoLo: 1 dot tren nguong nhung KHONG BAO GIO mua duoc (ADX gate hut suot dot) ----
+{
+  const n = 6;
+  const totalScore = [0, 1.5, 1.5, 1.5, 0.5, 0.5]; // dot o i=1..3, khong "manh" (< 2.0) de khong bo qua ADX gate
+  const dauVao = {
+    totalScore,
+    adx: new Array(n).fill(5), // duoi nguong 18 suot -> ADXGateOk luon false trong dot
+    inFVGZone: new Array(n).fill(false),
+    fvgDuLon: new Array(n).fill(false),
+    volumeGateNgayDau: new Array(n).fill(true),
+  };
+  const { turnedGreen, dotKetThucBoLo } = tinhTinHieuTho(dauVao, { cheDoFVG: "Luon TAT" });
+  ok("ADX gate hut suot dot -> TurnedGreen khong bao gio bao", turnedGreen.every((v) => v === false));
+  ok("dot ket thuc (i=4) ma chua tung mua -> dotKetThucBoLo=true", dotKetThucBoLo[4] === true);
+  ok("cac phien khac dotKetThucBoLo=false", dotKetThucBoLo.filter((v, i) => i !== 4).every((v) => v === false));
 }
 
 // ---- TurnedPink: xac nhan 3 phien lien tuc trong vung Ban, chi bao 1 lan dau ----

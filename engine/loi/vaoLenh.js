@@ -3,7 +3,7 @@
 // MUA MOI SAU TP3. CAC HAM O DAY CHUA AND VOI CONG CHUNG (ChiTrong12NamGanNhat, RSGateOk,
 // ThanhKhoanKL_Ok, GiaToiThieuOk, BreadthOk15) - noi goi (assembly) phai tu AND them truoc khi
 // dua vao engine/loi/mayTrangThai.js, giong dung thu tu AFL.
-import { ref, hhv, valueWhen } from "./mang.js";
+import { ref, hhv, valueWhen, barsSince } from "./mang.js";
 
 const KHONG_CO_MOC = 1e10;
 
@@ -123,6 +123,103 @@ export function tinhMuaLai(
     stop[i] = ht > 0 && ht < close[i] ? slTho : close[i] - Math.min(atr[i] * atrMult, close[i] * (hardStopPct / 100));
   }
   return { muaLaiTinHieu: tinHieu, stopMuaLaiBar: stop };
+}
+
+// MUA MUON (bat kip tin hieu bi bo lo hoan toan) - bo sung 2026-09-23, xem plan "2 tin hieu
+// MUA moi". Dung dotKetThucBoLo (engine/loi/tinHieuTho.js) + gia kich hoat luc bi lo (2 tang
+// valueWhen giong giaKichHoatTaiMua o engine/tinhTinHieuChoMa.js) de biet con trong han "vung mua
+// cu" hay khong. CHUA and voi cong chung (xem chu thich dau file).
+export function tinhMuaMuon(
+  { close, open, atr, totalScore, cloudTop, dotKetThucBoLo, giaKichHoatTaiVuaVao },
+  {
+    batMuaMuon = false,
+    diemToiThieu = 0.75,
+    caoToiDaPct = 2,
+    hanPhien = 10,
+    yeuCauNenXanh = true,
+    demSLtheoATR = 0.3,
+    slToiThieuPct = 2,
+    hardStopPct = 6,
+    atrMult = 2.2,
+  } = {}
+) {
+  const n = close.length;
+  const closeTruoc = ref(close, -1);
+  // valueWhen(dotKetThucBoLo, giaKichHoatTaiVuaVao, 1): gia kich hoat cua LAN BO LO GAN NHAT,
+  // giu nguyen cho toi lan bo lo tiep theo (giong het cach giaKichHoatTaiMua dung valueWhen(Buy,...)).
+  const giaKichHoatBoLo = valueWhen(dotKetThucBoLo, giaKichHoatTaiVuaVao, 1);
+  const soPhienTuBoLo = barsSince(dotKetThucBoLo);
+  const tinHieu = new Array(n).fill(false);
+  const stop = new Array(n);
+  for (let i = 0; i < n; i++) {
+    const ht = giaKichHoatBoLo[i];
+    tinHieu[i] =
+      batMuaMuon &&
+      ht != null &&
+      ht > 0 &&
+      soPhienTuBoLo[i] <= hanPhien &&
+      close[i] >= ht &&
+      close[i] <= ht * (1 + caoToiDaPct / 100) &&
+      (!yeuCauNenXanh || (close[i] > open[i] && closeTruoc[i] != null && close[i] > closeTruoc[i])) &&
+      totalScore[i] >= diemToiThieu &&
+      cloudTop[i] != null &&
+      close[i] > cloudTop[i];
+
+    if (ht != null && ht > 0 && ht < close[i]) {
+      let slTho = Math.min(ht - demSLtheoATR * atr[i], ht * (1 - slToiThieuPct / 100));
+      slTho = Math.max(slTho, ht * (1 - hardStopPct / 100));
+      stop[i] = slTho;
+    } else {
+      stop[i] = close[i] - Math.min(atr[i] * atrMult, close[i] * (hardStopPct / 100));
+    }
+  }
+  return { muaMuonTinHieu: tinHieu, stopMuaMuonBar: stop, giaKichHoatBoLo, soPhienTuBoLo };
+}
+
+// MUA THEM GIUA CHUNG (vong doc lap voi vong 2, mo TRUOC khi cham du TP3) - bo sung 2026-09-23.
+// Ban sao CO CHU DICH cua tinhMuaMoiSauTP3 (dung tinh than "dich sat tung khoi AFL, khong gop
+// chung 2 khoi ve mat y nghia khac nhau" da dung xuyen suot du an) - tham so rieng, KHONG dung
+// chung tinhMuaMoiSauTP3 de tranh nham lan khi 1 trong 2 doi cong thuc sau nay. CHUA and voi
+// cong chung.
+export function tinhMuaThemGiuaChung(
+  { close, open, high, low, atr, totalScore, cloudTop, kijun, cbBot },
+  {
+    batMuaThemGiuaChung = false,
+    kieuHoTro = "Kijun",
+    diemToiThieu = 1.25,
+    caoToiDaPct = 4,
+    doChamHoTroPct = 1,
+    demSLtheoATR = 0.3,
+    slToiThieuPct = 2,
+    hardStopPct = 6,
+    atrMult = 2.2,
+  } = {}
+) {
+  const n = close.length;
+  const hoTro = kieuHoTro === "Kijun" ? kijun : cbBot;
+  const closeTruoc = ref(close, -1);
+  const tinHieu = new Array(n).fill(false);
+  const stop = new Array(n);
+  for (let i = 0; i < n; i++) {
+    const ht = hoTro[i];
+    tinHieu[i] =
+      batMuaThemGiuaChung &&
+      ht > 0 &&
+      low[i] <= ht * (1 + doChamHoTroPct / 100) &&
+      close[i] > ht &&
+      close[i] <= ht * (1 + caoToiDaPct / 100) &&
+      close[i] > open[i] &&
+      closeTruoc[i] != null &&
+      close[i] > closeTruoc[i] &&
+      totalScore[i] >= diemToiThieu &&
+      cloudTop[i] != null &&
+      close[i] > cloudTop[i];
+
+    let slTho = Math.min(ht - demSLtheoATR * atr[i], ht * (1 - slToiThieuPct / 100));
+    slTho = Math.max(slTho, ht * (1 - hardStopPct / 100));
+    stop[i] = ht > 0 && ht < close[i] ? slTho : close[i] - Math.min(atr[i] * atrMult, close[i] * (hardStopPct / 100));
+  }
+  return { muaThemGiuaChungTinHieu: tinHieu, stopMuaThemGiuaChungBar: stop };
 }
 
 // MUA THEM SAU TP3 (vong 2) - AFL dong 651-665. CHUA and voi cong chung.

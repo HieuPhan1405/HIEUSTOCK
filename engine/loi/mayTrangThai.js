@@ -32,6 +32,11 @@ export function chayMayTrangThai(dauVao) {
     muaLaiTinHieu,
     stopMuaMoiBar,
     muaMoiTinHieu,
+    dotKetThucBoLo,
+    muaMuonTinHieu,
+    stopMuaMuonBar,
+    muaThemGiuaChungTinHieu,
+    stopMuaThemGiuaChungBar,
   } = dauVao;
   const {
     slChamLaCat = true,
@@ -51,7 +56,7 @@ export function chayMayTrangThai(dauVao) {
   const giaVaoTrongVongLap = A();
   const atrVaoTrongVongLap = A();
   const stopVaoTrongVongLap = A();
-  const loaiVaoLenh = A(); // 0 = khong, 1 = Buy thuong, 2 = Mua lai
+  const loaiVaoLenh = A(); // 0 = khong, 1 = Buy thuong, 2 = Mua lai, 3 = Mua muon
   const giaVaoLuc = A();
   const stopVaoLuc = A();
   const tp1VaoVong = A();
@@ -75,6 +80,21 @@ export function chayMayTrangThai(dauVao) {
   const mua2SuKien = new Array(n).fill(false);
   const mua2Cat = A();
   const mua2DaTung = new Array(n).fill(false);
+  // MUA THEM GIUA CHUNG (vong doc lap voi mua2, mo TRUOC khi cham du TP3 - bo sung 2026-09-23).
+  // Cau truc GIONG HET mua2* o tren (cung mang THAT giu nguyen qua tung nen khi con giu goc).
+  const muaGiuaGiu = new Array(n).fill(false);
+  const muaGiuaGia = A();
+  const muaGiuaStop = A();
+  const muaGiuaTP1 = A();
+  const muaGiuaTP2 = A();
+  const muaGiuaTP3 = A();
+  const muaGiuaVi = A();
+  const muaGiuaSuKien = new Array(n).fill(false);
+  const muaGiuaCat = A();
+  const muaGiuaDaTung = new Array(n).fill(false);
+  // MUA MUON: co nho "da bat kip 1 lan cho lan bo lo gan nhat" - chan mua-cat-mua lap lai cung 1
+  // vung gia bo lo, reset khi co 1 dot bo lo MOI (dotKetThucBoLo[i] moi).
+  const daMuaMuonSauBoLo = new Array(n).fill(false);
   const sell = new Array(n).fill(false);
   const giaBanBaoVe = A();
   const stopBaoVeMoiNen = A(); // gia tri stopBaoVe cua CHINH nen do (0 = khong bao ve/chua tinh)
@@ -86,6 +106,16 @@ export function chayMayTrangThai(dauVao) {
   let soLanMuaLaiLienTiep = 0;
 
   for (let i = 1; i < n; i++) {
+    // Doc lap voi giu-gioc-hay-khong - tinh truoc o day de dung lai ben duoi (ca 2 nhanh).
+    daMuaMuonSauBoLo[i] = dotKetThucBoLo[i] ? false : daMuaMuonSauBoLo[i - 1];
+    const duDieuKienMuaLai =
+      muaLaiTinHieu[i] &&
+      banGanNhatCoLai === true &&
+      i - banGanNhatViTri <= hanMuaLaiPhien &&
+      close[i] <= banGanNhatGia * (1 + muaLaiCaoToiDaPct / 100) &&
+      soLanMuaLaiLienTiep < soLanMuaLaiToiDa;
+    const duDieuKienMuaMuon = muaMuonTinHieu[i] && daMuaMuonSauBoLo[i] === false;
+
     if (giuTrongVongLap[i - 1] === 1) {
       giaVaoTrongVongLap[i] = giaVaoTrongVongLap[i - 1];
       atrVaoTrongVongLap[i] = atrVaoTrongVongLap[i - 1];
@@ -100,6 +130,14 @@ export function chayMayTrangThai(dauVao) {
       mua2TP2[i] = mua2TP2[i - 1];
       mua2TP3[i] = mua2TP3[i - 1];
       mua2Vi[i] = mua2Vi[i - 1];
+      muaGiuaDaTung[i] = muaGiuaDaTung[i - 1];
+      muaGiuaGiu[i] = muaGiuaGiu[i - 1];
+      muaGiuaGia[i] = muaGiuaGia[i - 1];
+      muaGiuaStop[i] = muaGiuaStop[i - 1];
+      muaGiuaTP1[i] = muaGiuaTP1[i - 1];
+      muaGiuaTP2[i] = muaGiuaTP2[i - 1];
+      muaGiuaTP3[i] = muaGiuaTP3[i - 1];
+      muaGiuaVi[i] = muaGiuaVi[i - 1];
       const stopGiaThucTe_vonglap = stopVaoTrongVongLap[i];
 
       tp1VaoVong[i] = tp1VaoVong[i - 1];
@@ -128,6 +166,10 @@ export function chayMayTrangThai(dauVao) {
         if (mua2Giu[i - 1] === true) {
           mua2Giu[i] = false;
           mua2Cat[i] = 2;
+        }
+        if (muaGiuaGiu[i - 1] === true) {
+          muaGiuaGiu[i] = false;
+          muaGiuaCat[i] = 2;
         }
         let giaBanLoop = close[i];
         if (chamBaoVe && !sellTinHieu[i] && !chamStopThuong) {
@@ -172,26 +214,43 @@ export function chayMayTrangThai(dauVao) {
           mua2TP3[i] = tp3Vong[i];
           mua2Vi[i] = i;
         }
+
+        // MUA THEM GIUA CHUNG (vong doc lap voi mua2, CHI mo TRUOC khi cham du TP3 - DaTP3Vong===0).
+        if (muaGiuaGiu[i - 1] === true) {
+          if (low[i] <= muaGiuaStop[i] && (slChamLaCat || totalScore[i] < 0)) {
+            muaGiuaGiu[i] = false;
+            muaGiuaCat[i] = 1;
+          }
+        } else if (daTP3Vong[i] === 0 && muaGiuaDaTung[i] === false && muaThemGiuaChungTinHieu[i]) {
+          muaGiuaGiu[i] = true;
+          muaGiuaDaTung[i] = true;
+          muaGiuaSuKien[i] = true;
+          muaGiuaGia[i] = close[i];
+          muaGiuaStop[i] = stopMuaThemGiuaChungBar[i];
+          muaGiuaTP1[i] = tp1Vong[i];
+          muaGiuaTP2[i] = tp2Vong[i];
+          muaGiuaTP3[i] = tp3Vong[i];
+          muaGiuaVi[i] = i;
+        }
       }
-    } else if (
-      buyTho[i] ||
-      (muaLaiTinHieu[i] &&
-        banGanNhatCoLai === true &&
-        i - banGanNhatViTri <= hanMuaLaiPhien &&
-        close[i] <= banGanNhatGia * (1 + muaLaiCaoToiDaPct / 100) &&
-        soLanMuaLaiLienTiep < soLanMuaLaiToiDa)
-    ) {
+    } else if (buyTho[i] || duDieuKienMuaLai || duDieuKienMuaMuon) {
       let giaVaoLoop, stopVaoLoop;
       if (buyTho[i]) {
         giaVaoLoop = giaVaoBar[i];
         stopVaoLoop = stopVaoBar[i];
         loaiVaoLenh[i] = 1;
         soLanMuaLaiLienTiep = 0;
-      } else {
+      } else if (duDieuKienMuaLai) {
         giaVaoLoop = close[i];
         stopVaoLoop = stopMuaLaiBar[i];
         loaiVaoLenh[i] = 2;
         soLanMuaLaiLienTiep = soLanMuaLaiLienTiep + 1;
+      } else {
+        giaVaoLoop = close[i];
+        stopVaoLoop = stopMuaMuonBar[i];
+        loaiVaoLenh[i] = 3;
+        soLanMuaLaiLienTiep = 0;
+        daMuaMuonSauBoLo[i] = true;
       }
       giuTrongVongLap[i] = 1;
       giaVaoTrongVongLap[i] = giaVaoLoop;
@@ -249,6 +308,17 @@ export function chayMayTrangThai(dauVao) {
     mua2SuKien,
     mua2Cat,
     mua2DaTung,
+    muaGiuaGiu,
+    muaGiuaGia,
+    muaGiuaStop,
+    muaGiuaTP1,
+    muaGiuaTP2,
+    muaGiuaTP3,
+    muaGiuaVi,
+    muaGiuaSuKien,
+    muaGiuaCat,
+    muaGiuaDaTung,
+    daMuaMuonSauBoLo,
     stopBaoVeMoiNen,
   };
 }
