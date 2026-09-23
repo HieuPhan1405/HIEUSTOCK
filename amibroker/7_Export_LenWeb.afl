@@ -550,8 +550,8 @@ SellTinHieu = SellRaw AND DuT2;
 // ============================================================================
 CheDoMoc = ParamToggle("CHE DO MOI: vao tai moc chuyen mua + SL cau truc (Tat = cu)", "Tat|Bat", 1);
 KieuSLCauTruc = ParamList("Che do MOI - SL dat duoi", "Moc vua vuot (may / duong can bang dai han)|Day nen chuyen mua|Kijun", 0);
-DemSLtheoATR = Param("Che do MOI - dem duoi moc SL (x ATR)", 0.3, 0, 2, 0.1);
-SLToiThieuPct = Param("Che do MOI - SL cach gia vao toi thieu (%)", 2, 0.5, 6, 0.5);
+DemSLtheoATR = Param("Che do MOI - dem duoi moc SL (x ATR)", 0.5, 0, 2, 0.1);
+SLToiThieuPct = Param("Che do MOI - SL cach gia vao toi thieu (%)", 3.5, 0.5, 6, 0.5);
 SLKieuMoc = KieuSLCauTruc == "Moc vua vuot (may / duong can bang dai han)";
 SLKieuDay = KieuSLCauTruc == "Day nen chuyen mua";
 

@@ -585,8 +585,8 @@ SellTinHieu = SellRaw AND DuT2;
 // ============================================================================
 CheDoMoc = ParamToggle("CHE DO MOI: vao tai moc chuyen mua + SL cau truc (Tat = cu)", "Tat|Bat", 1);
 KieuSLCauTruc = ParamList("Che do MOI - SL dat duoi", "Moc vua vuot (may / duong can bang dai han)|Day nen chuyen mua|Kijun", 0);
-DemSLtheoATR = Param("Che do MOI - dem duoi moc SL (x ATR)", 0.3, 0, 2, 0.1);
-SLToiThieuPct = Param("Che do MOI - SL cach gia vao toi thieu (%)", 2, 0.5, 6, 0.5);
+DemSLtheoATR = Param("Che do MOI - dem duoi moc SL (x ATR)", 0.5, 0, 2, 0.1);
+SLToiThieuPct = Param("Che do MOI - SL cach gia vao toi thieu (%)", 3.5, 0.5, 6, 0.5);
 SLKieuMoc = KieuSLCauTruc == "Moc vua vuot (may / duong can bang dai han)";
 SLKieuDay = KieuSLCauTruc == "Day nen chuyen mua";
 
@@ -1250,6 +1250,12 @@ if (Status("action") == actionIndicator)
     dungATR_c      = DiemDungATR[CursorBar] <= DiemDungPhanTram[CursorBar];
     danggiu_c      = DangGiuLenhVT[CursorBar];
     coNhapGia_c    = CoNhapGiaThucTe[CursorBar];
+    // Che Do MOI (hoac Mua Lai) dang bat -> Stop-loss thuc te lay tu StopMoiTaiMua (moc cau truc
+    // luc vao, xem DungStopMoi/StopLossPrice) - HOAN TOAN KHAC voi so sanh ATR-vs-% ben tren
+    // (dungATR_c), von chi con dung khi CA CheDoMoc lan BatMuaLai deu TAT (che do cu). Tach rieng
+    // de nhan hien thi Stop-loss KHONG bi ghi nham ly do (phat hien 2026-09-23: nhan cu ghi "theo
+    // % toi da X%" trong khi so thuc te la moc cau truc, khong lien quan gi HardStopPct).
+    dungStopMoi_c  = (CheDoMoc OR BatMuaLai) AND NOT coNhapGia_c;
     twistTang_c    = MayTuongLaiDoiChieuTang[CursorBar];
     twistGiam_c    = MayTuongLaiDoiChieuGiam[CursorBar];
     kijunPhang_c   = KijunDangPhang[CursorBar];
@@ -1374,7 +1380,10 @@ if (Status("action") == actionIndicator)
     GfxSetTextColor(IIf(rs_c>=0,colorBrightGreen,ColorRGB(255,80,80)));
     GfxTextOut("RS/VNI(20p): "+NumToStr(rs_c,1.2)+"%", c1X+12, yy); yy=yy+18;
     GfxSetTextColor(colorYellow);
-    GfxTextOut("Stop-loss: "+NumToStr(stoploss_c,1.2)+WriteIf(dungATR_c," (theo ATR)"," (theo % toi da "+NumToStr(HardStopPct,1.1)+"%)"), c1X+12, yy);
+    GfxTextOut("Stop-loss: "+NumToStr(stoploss_c,1.2)+
+        WriteIf(dungStopMoi_c," (theo cau truc luc vao)",
+        WriteIf(dungATR_c," (theo ATR)"," (theo % toi da "+NumToStr(HardStopPct,1.1)+"%)"))
+        , c1X+12, yy);
     yy=yy+18;
     if (chamstop_c)
     {

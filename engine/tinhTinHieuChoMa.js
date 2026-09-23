@@ -52,8 +52,8 @@ const MAC_DINH = {
   cheDoMoc: true,
   slKieuMoc: true,
   slKieuDay: false,
-  demSLtheoATR: 0.3,
-  slToiThieuPct: 2,
+  demSLtheoATR: 0.5,
+  slToiThieuPct: 3.5,
   slChamLaCat: true,
   bvHoaVon: true, // KieuBaoVeLai = "Hoa von sau TP2" (index 1) - da BAT theo chot "Chot ca 2".
   bvRong: false,
