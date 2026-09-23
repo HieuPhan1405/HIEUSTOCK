@@ -4,6 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import ThanhDau from "@/components/ThanhDau";
 import ChanTrang from "@/components/ChanTrang";
 import { KhungGioProvider } from "@/components/KhungGioContext";
+import TuDongLamMoi from "@/components/TuDongLamMoi";
 import { FONT_IMPORT } from "@/components/dungChung";
 
 const geistSans = Geist({
@@ -38,6 +39,7 @@ export default function RootLayout({ children }) {
       <body className="min-h-full flex flex-col" style={{ background: "#0B0B10" }}>
         <style>{FONT_IMPORT}</style>
         <KhungGioProvider>
+          <TuDongLamMoi />
           <ThanhDau />
           <Sidebar />
           <div className="md:pl-60 flex flex-col flex-1">
