@@ -1,8 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
-import { layDongTienNuocNgoai } from "@/lib/thiTruong";
-import RaSoatThiTruong from "@/components/RaSoatThiTruong";
+import { LenhMuaBan } from "@/components/RaSoatThiTruong";
 import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, tinhVungLenh, chuoiVung } from "@/components/dungChung";
 import SignalPill from "@/components/SignalPill";
 import DongHoGiaoDich from "@/components/DongHoGiaoDich";
@@ -184,9 +183,6 @@ export default async function TrangTongQuan() {
   } catch (e) {
     loi = String(e?.message || e);
   }
-
-  // Khoi ngoai: nguon ben ngoai, cho toi da 4 giay de khong lam cham trang chu.
-  const ngoai = await Promise.race([layDongTienNuocNgoai().catch(() => null), new Promise((r) => setTimeout(() => r(null), 4000))]);
 
   const nhanDinh = sinhNhanDinh(tatCa);
 
@@ -399,8 +395,9 @@ export default async function TrangTongQuan() {
         <DongHoGiaoDich className="mb-3" />
         <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
 
-        {/* RA SOAT THI TRUONG: 3 the tong hop + LENH MUA - BAN + ra soat nhanh */}
-        <RaSoatThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} ngoai={ngoai} />
+        {/* LENH MUA - BAN: huong di lenh/vi the hien tai cua he thong. Tong quan/Ra soat nhanh
+            (breadth, top nganh, khoi ngoai...) da chuyen sang trang /dashboard rieng. */}
+        <LenhMuaBan tatCa={tatCa} />
 
         {/* HANG KPI */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">

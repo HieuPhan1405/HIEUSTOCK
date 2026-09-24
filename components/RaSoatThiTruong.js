@@ -167,7 +167,66 @@ function TieuDeKhoi({ children, phu, ngay }) {
   );
 }
 
-export default function RaSoatThiTruong({ tatCa, vnindex, ngoai }) {
+// "Lenh mua - ban": dung o trang Tong quan (trang dau) - tap trung vao HUONG DI LENH/VI THE hien
+// tai cua he thong (mua, mua them, ban, ban bot, chot loi), khong keo theo cac chi so tong quan
+// rong hon (xem TongQuanThiTruong ben duoi, dung o trang Dashboard rieng).
+export function LenhMuaBan({ tatCa }) {
+  if (!tatCa?.length) return null;
+  const tq = tinhTongQuanThiTruong(tatCa, null);
+  const capNhat = capNhatMoiNhat(tatCa);
+  const ngayHienThi = capNhat
+    ? new Date(capNhat).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "numeric", month: "numeric", year: "numeric" })
+    : "";
+  const l = tq.lenh;
+
+  return (
+    <section aria-label="Lệnh mua - bán" className="mb-8">
+      {ngayHienThi && (
+        <p className="flex items-center gap-1.5 text-xs mb-3" style={{ color: MUTED, ...mono }}>
+          <CalendarDays size={13} aria-hidden="true" /> Số liệu ngày {ngayHienThi}
+        </p>
+      )}
+
+      {/* LENH MUA - BAN */}
+      <div className="rounded-2xl border" style={{ borderColor: VIEN, background: NEN_CARD }}>
+        <TieuDeKhoi phu="Các lệnh của hệ thống ở lần cập nhật gần nhất: mua, mua thêm (sau khi chốt đủ TP3), bán, bán bớt và các mã đã chạm chốt lời.">
+          Lệnh mua – bán
+        </TieuDeKhoi>
+        <div className="px-5">
+          <HangRaSoat so="1" nhan="Mua" nhan2="Bán / cắt lỗ" children2={<DanhSachMa ds={l.ban} mau={DO} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã BÁN" />}>
+            <DanhSachMa ds={l.mua} mau={XANH} hienThi={(r) => `điểm ${fmt(r.diem)}`} trong="Không có mã MUA mới" />
+          </HangRaSoat>
+
+          <HangRaSoat so="2" nhan="Mua thêm (mới vào hôm nay)" mauNhan={NGOC} nhan2="Đang giữ lệnh mua thêm" mauNhan2={NGOC} children2={<DanhSachMa ds={l.dangMuaThem} mau={NGOC} hienThi={(r) => pct((r.gia / r.gia_mua_moi - 1) * 100, 1)} trong="Chưa có lệnh mua thêm nào đang giữ" />}>
+            {l.coDuLieuMuaThem ? (
+              <DanhSachMa ds={l.muaThemHomNay} mau={NGOC} hienThi={(r) => fmt(r.gia_mua_moi)} trong="Chưa có tín hiệu mua thêm hôm nay" />
+            ) : (
+              <span className="text-sm" style={{ color: MUTED }}>
+                Chưa có dữ liệu mua thêm (cần Explore file AFL 7 mới rồi đẩy dữ liệu).
+              </span>
+            )}
+          </HangRaSoat>
+
+          <HangRaSoat so="3" nhan="Bán bớt (cảnh báo)" mauNhan={CAM}>
+            <DanhSachMa ds={l.banBot} mau={CAM} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có cảnh báo bán bớt" />
+          </HangRaSoat>
+
+          <HangRaSoat so="4" nhan="Chốt lời: đã chạm TP3 (đã chốt 85%, tìm điểm mua mới)" mauNhan={PRIMARY}>
+            <DanhSachMa ds={l.chotTP3} mau={PRIMARY} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Chưa có mã nào chạm TP3" />
+          </HangRaSoat>
+
+          <HangRaSoat so="5" nhan="Chốt lời: đã chạm TP2" nhan2="Chốt lời: đã chạm TP1" mauNhan2={XANH} children2={<DanhSachMa ds={l.chotTP1} mau={XANH} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã nào" />}>
+            <DanhSachMa ds={l.chotTP2} mau={XANH} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã nào" />
+          </HangRaSoat>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// "Tong quan thi truong" (3 the tong hop + ra soat nhanh) - dung o trang Dashboard rieng, tach khoi
+// trang Tong quan (trang dau) de trang dau chi tap trung vao huong di lenh/vi the (xem LenhMuaBan).
+export function TongQuanThiTruong({ tatCa, vnindex }) {
   if (!tatCa?.length) return null;
   const tq = tinhTongQuanThiTruong(tatCa, vnindex);
   const capNhat = capNhatMoiNhat(tatCa);
@@ -177,11 +236,9 @@ export default function RaSoatThiTruong({ tatCa, vnindex, ngoai }) {
   const tamLy = nhanTamLy(tq.tamLy);
   const mauDoi = (v) => (v > 0 ? XANH : v < 0 ? DO : VANG);
   const chuoiDoi = (r) => pct(r.doi, 1);
-  const tyDong = (v) => `${v > 0 ? "+" : ""}${Math.round(v).toLocaleString("vi-VN")} tỷ`;
-  const l = tq.lenh;
 
   return (
-    <section aria-label="Rà soát thị trường" className="mb-8">
+    <section aria-label="Tổng quan thị trường" className="mb-8">
       {ngayHienThi && (
         <p className="flex items-center gap-1.5 text-xs mb-3" style={{ color: MUTED, ...mono }}>
           <CalendarDays size={13} aria-hidden="true" /> Số liệu ngày {ngayHienThi}
@@ -238,40 +295,6 @@ export default function RaSoatThiTruong({ tatCa, vnindex, ngoai }) {
         </The>
       </div>
 
-      {/* LENH MUA - BAN */}
-      <div className="rounded-2xl border mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <TieuDeKhoi phu="Các lệnh của hệ thống ở lần cập nhật gần nhất: mua, mua thêm (sau khi chốt đủ TP3), bán, bán bớt và các mã đã chạm chốt lời.">
-          Lệnh mua – bán
-        </TieuDeKhoi>
-        <div className="px-5">
-          <HangRaSoat so="1" nhan="Mua" nhan2="Bán / cắt lỗ" children2={<DanhSachMa ds={l.ban} mau={DO} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã BÁN" />}>
-            <DanhSachMa ds={l.mua} mau={XANH} hienThi={(r) => `điểm ${fmt(r.diem)}`} trong="Không có mã MUA mới" />
-          </HangRaSoat>
-
-          <HangRaSoat so="2" nhan="Mua thêm (mới vào hôm nay)" mauNhan={NGOC} nhan2="Đang giữ lệnh mua thêm" mauNhan2={NGOC} children2={<DanhSachMa ds={l.dangMuaThem} mau={NGOC} hienThi={(r) => pct((r.gia / r.gia_mua_moi - 1) * 100, 1)} trong="Chưa có lệnh mua thêm nào đang giữ" />}>
-            {l.coDuLieuMuaThem ? (
-              <DanhSachMa ds={l.muaThemHomNay} mau={NGOC} hienThi={(r) => fmt(r.gia_mua_moi)} trong="Chưa có tín hiệu mua thêm hôm nay" />
-            ) : (
-              <span className="text-sm" style={{ color: MUTED }}>
-                Chưa có dữ liệu mua thêm (cần Explore file AFL 7 mới rồi đẩy dữ liệu).
-              </span>
-            )}
-          </HangRaSoat>
-
-          <HangRaSoat so="3" nhan="Bán bớt (cảnh báo)" mauNhan={CAM}>
-            <DanhSachMa ds={l.banBot} mau={CAM} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có cảnh báo bán bớt" />
-          </HangRaSoat>
-
-          <HangRaSoat so="4" nhan="Chốt lời: đã chạm TP3 (đã chốt 85%, tìm điểm mua mới)" mauNhan={PRIMARY}>
-            <DanhSachMa ds={l.chotTP3} mau={PRIMARY} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Chưa có mã nào chạm TP3" />
-          </HangRaSoat>
-
-          <HangRaSoat so="5" nhan="Chốt lời: đã chạm TP2" nhan2="Chốt lời: đã chạm TP1" mauNhan2={XANH} children2={<DanhSachMa ds={l.chotTP1} mau={XANH} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã nào" />}>
-            <DanhSachMa ds={l.chotTP2} mau={XANH} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã nào" />
-          </HangRaSoat>
-        </div>
-      </div>
-
       {/* RA SOAT NHANH */}
       <div className="rounded-2xl border" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <TieuDeKhoi
@@ -322,28 +345,7 @@ export default function RaSoatThiTruong({ tatCa, vnindex, ngoai }) {
             <DanhSachNganh ds={tq.nganhTot} mau={XANH} />
           </HangRaSoat>
 
-          <HangRaSoat
-            so="6"
-            nhan="Khối ngoại mua ròng"
-            nhan2="Khối ngoại bán ròng"
-            children2={ngoai ? <DanhSachMa ds={ngoai.topBan} mau={DO} hienThi={(r) => tyDong(r.tyDong)} /> : null}
-          >
-            {ngoai ? (
-              <>
-                <p className="text-xs mb-2" style={{ color: MUTED }}>
-                  Ngày {ngoai.ngay.split("-").reverse().join("/")} · khối ngoại HOSE ròng{" "}
-                  <b style={{ color: ngoai.rongHose >= 0 ? XANH : DO, ...mono }}>{tyDong(ngoai.rongHose)}</b> (toàn bộ mã niêm yết, nguồn VNDirect).
-                </p>
-                <DanhSachMa ds={ngoai.topMua} mau={XANH} hienThi={(r) => tyDong(r.tyDong)} />
-              </>
-            ) : (
-              <span className="text-sm" style={{ color: MUTED }}>
-                Chưa tải được dữ liệu khối ngoại.
-              </span>
-            )}
-          </HangRaSoat>
-
-          <HangRaSoat so="7" nhan="Thống kê mã so với đường trung bình của hệ thống">
+          <HangRaSoat so="6" nhan="Thống kê mã so với đường trung bình của hệ thống">
             <DongTyLe nhan="Mã có giá trên Kijun (17 phiên)" ty={tq.tren.kijun} mau="#3B9EFF" />
             <DongTyLe nhan="Mã có giá trên đường cân bằng dài hạn" ty={tq.tren.canBang} mau="#A78BFA" />
             <DongTyLe nhan="Mã đạt điểm MUA (từ 1,25 điểm)" ty={tq.tren.datDiem} mau={XANH} />
