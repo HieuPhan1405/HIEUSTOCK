@@ -267,8 +267,8 @@ export default async function TrangHuongDan() {
         <p>
           Biểu đồ nến Nhật kèm khối lượng, Ichimoku (Tenkan 9, Kijun 17, mây Senkou 33 dịch 26 phiên), đường cân bằng dài hạn (65 và 129 phiên) và MA 20/50/200. Bật/tắt từng chỉ báo ở thanh
           phía trên, đổi khung Ngày/Tuần và chọn khoảng thời gian (3T, 6T, 1N, 3N, Tất cả). Với mã bạn đang có lệnh (đăng nhập), biểu đồ vẽ thêm vùng mua, cắt lỗ, chốt lời gần/xa,
-          mức hòa vốn và mũi tên MUA đúng ngày mua. Giá đã điều chỉnh cổ tức/thưởng cổ phiếu (giống dữ liệu AmiBroker) nên chỉ báo khớp với tín hiệu; trong phiên, nến hôm nay cập nhật theo nguồn (làm
-          mới tối đa 2 phút một lần). Nguồn dữ liệu là bên thứ ba nên có thể trễ hoặc tạm thời không tải được.
+          mức hòa vốn và mũi tên MUA đúng ngày mua. Giá đã điều chỉnh cổ tức/thưởng cổ phiếu (giống dữ liệu AmiBroker) nên chỉ báo khớp với tín hiệu; trong phiên, nến hôm nay chạy theo giá khớp thực tế, web tự
+          làm mới mỗi 30 giây. Nguồn dữ liệu là bên thứ ba nên có thể trễ hoặc tạm thời không tải được.
         </p>
       </Muc>
 

@@ -402,7 +402,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
 
       <p className="px-3 py-2 text-[11px] border-t" style={{ borderColor: VIEN, color: MUTED }}>
         Giá đã điều chỉnh cổ tức/thưởng cổ phiếu (giống dữ liệu AmiBroker), khối lượng khớp lệnh; chỉ báo tính giống hệ thống tín hiệu (Ichimoku 9-17-33, mây dịch 26
-        phiên, đường cân bằng dài hạn 65/129). Trong phiên, nến hôm nay cập nhật theo nguồn, web làm mới tối đa 2 phút một lần, không dùng để đặt lệnh khớp từng giây.
+        phiên, đường cân bằng dài hạn 65/129). Trong phiên, nến hôm nay cập nhật theo giá khớp thực tế, web tự làm mới mỗi 30 giây, không dùng để đặt lệnh khớp từng giây.
       </p>
     </div>
   );

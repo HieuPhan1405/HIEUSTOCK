@@ -10,9 +10,11 @@ export async function GET(request) {
   try {
     const ngay = await layLichSuGia(ma);
     const nen = khungTG === "W" ? gopNenTuan(ngay) : ngay;
+    // s-maxage 20s de khop chu ky bieu do tu lam moi 30s (xem BieuDoKyThuat.js) - nen hom nay
+    // ghep tu du lieu phut (lib/lichSuGia.js) nen can cache ngan de thuc su "chay" trong phien.
     return Response.json(
       { trangThai: "ok", ma, khungTG, nen },
-      { headers: { "Cache-Control": "public, s-maxage=120, stale-while-revalidate=600" } }
+      { headers: { "Cache-Control": "public, s-maxage=20, stale-while-revalidate=120" } }
     );
   } catch (loi) {
     return Response.json({ trangThai: "loi", thongBao: String(loi?.message || loi) }, { status: 502 });
