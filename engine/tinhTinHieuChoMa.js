@@ -69,14 +69,14 @@ const MAC_DINH = {
   kieuHoTroMuaMoi: "Kijun",
   diemToiThieuMuaMoi: 1.25,
   muaMoiCaoToiDaPct: 4,
-  // 2 tin hieu MUA moi bo sung 2026-09-23 (xem plan) - MAC DINH TAT ca 2, giong moi tinh nang thu
-  // nghiem khac trong du an (Mua Lai/Mua Them/Bao ve lai deu khoi dau tat roi moi bat sau khi co
-  // ket qua backtest). Nguoi dung tu bat + tu backtest trong AmiBroker truoc khi tin dung.
-  batMuaMuon: false,
+  // 2 tin hieu MUA moi bo sung 2026-09-23 (xem plan). Bat that 2026-09-24 theo yeu cau
+  // nguoi dung - tham so mac dinh ben duoi CHUA qua backtest rieng, tu dieu chinh sau khi
+  // theo doi ket qua thuc te.
+  batMuaMuon: true,
   hanPhienMuaMuon: 10,
   diemToiThieuMuaMuon: 0.75,
   muaMuonCaoToiDaPct: 2,
-  batMuaThemGiuaChung: false,
+  batMuaThemGiuaChung: true,
   kieuHoTroMuaGiua: "Kijun",
   diemToiThieuMuaGiua: 1.25,
   muaGiuaCaoToiDaPct: 4,
