@@ -38,6 +38,7 @@ export default function TrangQuanTri() {
   const [congTyCK, setCongTyCK] = useState("");
   const [ngayDinhGia, setNgayDinhGia] = useState("");
   const [giaMucTieu, setGiaMucTieu] = useState("");
+  const [khuyenNghi, setKhuyenNghi] = useState("");
 
   const [loaiCauChuyen, setLoaiCauChuyen] = useState("dong_luc");
   const [noiDungCauChuyen, setNoiDungCauChuyen] = useState("");
@@ -268,6 +269,7 @@ export default function TrangQuanTri() {
         congTyCK: congTyCK.trim(),
         ngayDinhGia: ngayDinhGia || null,
         giaMucTieu: Number(giaMucTieu),
+        khuyenNghi: khuyenNghi.trim() || null,
       }),
     });
     const d = await res.json();
@@ -275,6 +277,7 @@ export default function TrangQuanTri() {
       setCongTyCK("");
       setNgayDinhGia("");
       setGiaMucTieu("");
+      setKhuyenNghi("");
       taiDuLieu(ma.trim().toUpperCase());
     } else {
       setThongBao("Lỗi: " + (d.loi || "không rõ"));
@@ -612,14 +615,14 @@ export default function TrangQuanTri() {
           {/* DINH GIA */}
           <div className="rounded-lg border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
             <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
-              Định giá tham khảo — {ma.trim().toUpperCase()}
+              Khuyến nghị CTCK — {ma.trim().toUpperCase()}
             </p>
 
             {dinhGia.map((d) => (
               <div key={d.id} className="flex items-center justify-between py-2 border-b text-sm" style={{ borderColor: "#1D1D26" }}>
                 <span>
-                  {d.cong_ty_ck} — {d.ngay_dinh_gia ? new Date(d.ngay_dinh_gia).toLocaleDateString("vi-VN") : "—"} —{" "}
-                  <strong>{d.gia_muc_tieu}</strong>
+                  {d.cong_ty_ck} — {d.ngay_dinh_gia ? new Date(d.ngay_dinh_gia).toLocaleDateString("vi-VN") : "—"}
+                  {d.khuyen_nghi ? ` — ${d.khuyen_nghi}` : ""} — <strong>{d.gia_muc_tieu}</strong>
                 </span>
                 <button onClick={() => xoaDinhGia(d.id)} className="text-xs" style={{ color: "#EF4444" }}>
                   Xoá
@@ -628,11 +631,11 @@ export default function TrangQuanTri() {
             ))}
             {dinhGia.length === 0 && !dangTai && (
               <p className="text-xs py-2" style={{ color: "#8B8B99" }}>
-                Chưa có định giá nào cho mã này.
+                Chưa có khuyến nghị nào cho mã này. Chỉ hiện báo cáo mới nhất của mỗi CTCK (nhập báo cáo mới cho cùng 1 CTCK sẽ thay báo cáo cũ trên trang chi tiết mã).
               </p>
             )}
 
-            <form onSubmit={themDinhGia} className="grid sm:grid-cols-4 gap-2 mt-4">
+            <form onSubmit={themDinhGia} className="grid sm:grid-cols-5 gap-2 mt-4">
               <input
                 value={congTyCK}
                 onChange={(e) => setCongTyCK(e.target.value)}
@@ -644,6 +647,13 @@ export default function TrangQuanTri() {
                 type="date"
                 value={ngayDinhGia}
                 onChange={(e) => setNgayDinhGia(e.target.value)}
+                className="px-2 py-1.5 text-sm outline-none"
+                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+              />
+              <input
+                value={khuyenNghi}
+                onChange={(e) => setKhuyenNghi(e.target.value)}
+                placeholder="Khuyến nghị (VD: Mua, Bán)"
                 className="px-2 py-1.5 text-sm outline-none"
                 style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
               />

@@ -308,7 +308,7 @@ export default async function TrangHuongDan() {
       <Muc tieuDe="Trang chi tiết từng mã">
         <p>
           Bấm vào một mã để xem điểm hợp lưu, kết luận, vùng giá quan trọng (hỗ trợ / kháng cự / stop-loss), ba mốc chốt lời (kèm nhãn &quot;✓ Đã
-          chạm&quot;), định giá tham khảo của các công ty chứng khoán và câu chuyện kỳ vọng.
+          chạm&quot;), khuyến nghị mua/bán kèm giá mục tiêu (báo cáo mới nhất) của các công ty chứng khoán và câu chuyện kỳ vọng.
         </p>
       </Muc>
 

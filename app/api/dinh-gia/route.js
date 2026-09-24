@@ -22,12 +22,12 @@ export async function POST(request) {
     return Response.json({ loi: "API key khong dung" }, { status: 401 });
   }
   const body = await request.json();
-  const { ma, congTyCK, ngayDinhGia, giaMucTieu } = body || {};
+  const { ma, congTyCK, ngayDinhGia, giaMucTieu, khuyenNghi } = body || {};
   if (!ma || !congTyCK || !giaMucTieu) {
     return Response.json({ loi: "Thieu ma / congTyCK / giaMucTieu" }, { status: 400 });
   }
   try {
-    const ketQua = await themDinhGia({ ma, congTyCK, ngayDinhGia, giaMucTieu: Number(giaMucTieu) });
+    const ketQua = await themDinhGia({ ma, congTyCK, ngayDinhGia, giaMucTieu: Number(giaMucTieu), khuyenNghi: khuyenNghi || null });
     return Response.json({ trangThai: "ok", id: ketQua.id });
   } catch (loi) {
     return Response.json({ trangThai: "loi", thongBao: String(loi?.message || loi) }, { status: 500 });

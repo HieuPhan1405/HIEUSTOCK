@@ -52,21 +52,28 @@ function Card({ children, className = "", ...rest }) {
   );
 }
 
-function CardDinhGia({ dinhGia, gia }) {
-  const trungBinh = dinhGia.length
-    ? dinhGia.reduce((tong, d) => tong + Number(d.gia_muc_tieu), 0) / dinhGia.length
-    : null;
-  const upside = trungBinh !== null && gia ? ((trungBinh / gia - 1) * 100) : null;
+// Mau badge khuyen nghi - doan chu tu do (nhap tay o /quan-tri, moi CTCK goi khac nhau: "Mua",
+// "Kha quan", "Tich luy"... hay "Ban", "Giam ty trong"...) nen chi doan theo tu khoa, khong ep 1
+// danh sach co dinh. Khong doan duoc (rong/trung lap) -> mau trung tinh, van hien nguyen chu.
+function mauKhuyenNghi(khuyenNghi) {
+  const s = (khuyenNghi || "").toLowerCase();
+  if (/mua|khả quan|kha quan|tích lũy|tich luy|tăng|tang/.test(s)) return "#22C55E";
+  if (/bán|ban|giảm|giam|tiêu cực|tieu cuc/.test(s)) return "#EF4444";
+  return "#8B8B99";
+}
+
+function CardDinhGia({ dinhGia }) {
   return (
     <Card>
       <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
-        Định giá tham khảo
+        Khuyến nghị công ty chứng khoán
       </p>
-      <table className="w-full text-sm mb-3" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+      <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
         <thead>
           <tr className="text-left" style={{ color: "#8B8B99" }}>
             <th className="font-normal pb-1">Công ty CK</th>
             <th className="font-normal pb-1">Ngày</th>
+            <th className="font-normal pb-1">Khuyến nghị</th>
             <th className="font-normal pb-1 text-right">Giá mục tiêu</th>
           </tr>
         </thead>
@@ -77,23 +84,19 @@ function CardDinhGia({ dinhGia, gia }) {
               <td className="py-1.5" style={{ color: "#8B8B99" }}>
                 {d.ngay_dinh_gia ? new Date(d.ngay_dinh_gia).toLocaleDateString("vi-VN") : "—"}
               </td>
-              <td className="py-1.5 text-right" style={{ color: "#22C55E", fontWeight: 700 }}>
+              <td className="py-1.5 font-bold" style={{ color: mauKhuyenNghi(d.khuyen_nghi) }}>
+                {d.khuyen_nghi || "—"}
+              </td>
+              <td className="py-1.5 text-right" style={{ fontWeight: 700 }}>
                 {fmt(d.gia_muc_tieu)}
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {trungBinh !== null && (
-        <div className="rounded p-3 text-center" style={{ background: "#0B0B10" }}>
-          <p className="text-[11px]" style={{ color: "#8B8B99" }}>
-            Giá mục tiêu trung bình {dinhGia.length} nguồn
-          </p>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: upside >= 0 ? "#22C55E" : "#EF4444" }} className="text-lg">
-            {fmt(trungBinh)} <span className="text-sm">({pct(upside, 1)})</span>
-          </p>
-        </div>
-      )}
+      <p className="text-[11px] mt-3" style={{ color: "#5B5B66" }}>
+        Báo cáo mới nhất của mỗi công ty chứng khoán — không phải khuyến nghị của CloudStock.
+      </p>
     </Card>
   );
 }
@@ -773,7 +776,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4 mb-10">
-        {dinhGia.length > 0 ? <CardDinhGia dinhGia={dinhGia} gia={row.gia} /> : <CardDangCapNhat tieuDe="Định giá tham khảo" />}
+        {dinhGia.length > 0 ? <CardDinhGia dinhGia={dinhGia} /> : <CardDangCapNhat tieuDe="Khuyến nghị công ty chứng khoán" />}
         {cauChuyen.length > 0 ? <CardCauChuyen cauChuyen={cauChuyen} /> : <CardDangCapNhat tieuDe="Câu chuyện kỳ vọng" />}
       </div>
     </div>
