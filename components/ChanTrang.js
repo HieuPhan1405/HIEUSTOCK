@@ -21,6 +21,7 @@ const CONG_CU = [
   { href: "/bat-day", nhan: "Checklist bắt đáy" },
 ];
 const THONG_TIN = [
+  { href: "/gioi-thieu", nhan: "Giới thiệu" },
   { href: "/thi-truong", nhan: "Thông tin thị trường" },
   { href: "/huong-dan", nhan: "Hướng dẫn & nguyên tắc" },
   { href: "/lien-he", nhan: "Liên hệ" },
@@ -87,7 +88,7 @@ export default async function ChanTrang() {
         <div className="max-w-6xl mx-auto px-6 pt-10 pb-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
             <div className="col-span-2 lg:col-span-1">
-              <Link href="/" aria-label="CloudStock - về trang chính" className="inline-block mb-3">
+              <Link href="/gioi-thieu" aria-label="CloudStock - về trang giới thiệu" className="inline-block mb-3">
                 <Image src="/logo-day-du-toi.png" alt="CloudStock" width={640} height={427} className="w-28 h-auto" />
               </Link>
               <p className="text-sm mb-4 max-w-xs" style={{ color: MUTED }}>
