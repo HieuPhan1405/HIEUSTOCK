@@ -33,7 +33,7 @@ export default async function TrangBieuDo({ searchParams }) {
   } catch {
     row = null;
   }
-  const vung = nguoiDung && row ? tinhVungLenh(row) : null;
+  const vung = nguoiDung?.da_duyet && row ? tinhVungLenh(row) : null;
   const ten = tenCongTy(ma);
 
   return (

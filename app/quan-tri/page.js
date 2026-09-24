@@ -147,6 +147,15 @@ export default function TrangQuanTri() {
     taiNguoiDung(apiKey);
   }
 
+  async function datDuyet(id, daDuyet) {
+    await fetch("/api/duyet-nguoi-dung", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": apiKey },
+      body: JSON.stringify({ id, daDuyet }),
+    });
+    taiNguoiDung(apiKey);
+  }
+
   useEffect(() => {
     if (!apiKey) return;
     const t = setTimeout(() => taiNguoiDung(apiKey), 0);
@@ -470,6 +479,9 @@ export default function TrangQuanTri() {
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs uppercase tracking-wide" style={{ color: "#8B8B99" }}>
               Số điện thoại đã đăng ký ({dsNguoiDung.length})
+              {dsNguoiDung.some((nd) => !nd.da_duyet) && (
+                <span style={{ color: "#FBBF24" }}> · {dsNguoiDung.filter((nd) => !nd.da_duyet).length} chờ duyệt</span>
+              )}
             </p>
             <button onClick={() => taiNguoiDung(apiKey)} className="text-xs" style={{ color: "#6C5CE7" }}>
               {dangTaiNguoiDung ? "Đang tải..." : "Tải lại"}
@@ -493,11 +505,22 @@ export default function TrangQuanTri() {
                     ADMIN
                   </span>
                 )}
+                {!nd.da_duyet && (
+                  <span
+                    className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded"
+                    style={{ background: "#FBBF24", color: "#0B0B10" }}
+                  >
+                    CHỜ DUYỆT
+                  </span>
+                )}
               </span>
               <div className="flex items-center gap-3 shrink-0">
                 <span className="text-xs" style={{ color: "#8B8B99" }}>
                   {new Date(nd.tao_luc).toLocaleString("vi-VN")}
                 </span>
+                <button onClick={() => datDuyet(nd.id, !nd.da_duyet)} className="text-xs font-semibold" style={{ color: nd.da_duyet ? "#EF4444" : "#22C55E" }}>
+                  {nd.da_duyet ? "Bỏ duyệt" : "Duyệt"}
+                </button>
                 <button onClick={() => datAdmin(nd.id, !nd.la_admin)} className="text-xs" style={{ color: nd.la_admin ? "#EF4444" : "#6C5CE7" }}>
                   {nd.la_admin ? "Bỏ Admin" : "Đặt Admin"}
                 </button>

@@ -8,6 +8,7 @@ const PRIMARY = "#6C5CE7";
 const MUTED = "#8B8B99";
 const TEXT = "#F5F5F7";
 const XANH = "#22C55E";
+const VANG = "#FBBF24";
 
 export default function TaiKhoanNut({ compact, nhan }) {
   const [nguoiDung, setNguoiDung] = useState(undefined); // undefined = dang tai, null = chua dang nhap
@@ -95,6 +96,15 @@ export default function TaiKhoanNut({ compact, nhan }) {
             style={{ background: "#22C55E", color: "#0B0B10" }}
           >
             ADMIN
+          </span>
+        )}
+        {!nguoiDung.da_duyet && (
+          <span
+            className="px-1.5 py-0.5 text-[10px] font-bold rounded"
+            style={{ background: VANG, color: "#0B0B10" }}
+            title="Tài khoản đang chờ quản trị viên duyệt"
+          >
+            CHỜ DUYỆT
           </span>
         )}
         <button onClick={dangXuat} style={{ color: PRIMARY }} className="font-medium">

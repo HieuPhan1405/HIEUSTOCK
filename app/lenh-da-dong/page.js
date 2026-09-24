@@ -11,11 +11,12 @@ export const metadata = {
 
 export default async function TrangLenhDaDong() {
   const nguoiDung = await layNguoiDungHienTai();
-  if (!nguoiDung) {
+  if (!nguoiDung || !nguoiDung.da_duyet) {
     return (
       <KhoaTrangNoiDung
         tieuDe="Lệnh đã đóng"
         moTa="Đăng ký hoặc đăng nhập miễn phí để xem kết quả các lệnh mua-bán đã đóng: tỷ lệ thắng, lãi/lỗ trung bình, thời gian nắm giữ."
+        choDuyet={!!nguoiDung}
       />
     );
   }

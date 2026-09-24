@@ -37,11 +37,12 @@ function TheKPI({ nhan, giaTri, phu, mau }) {
 
 export default async function TrangBatDay() {
   const nguoiDung = await layNguoiDungHienTai();
-  if (!nguoiDung) {
+  if (!nguoiDung || !nguoiDung.da_duyet) {
     return (
       <KhoaTrangNoiDung
         tieuDe="Checklist dò bắt đáy"
         moTa="Đăng ký hoặc đăng nhập miễn phí để xem toàn bộ lịch sử checklist bắt đáy và tỷ lệ thành công thực tế."
+        choDuyet={!!nguoiDung}
       />
     );
   }

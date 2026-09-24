@@ -233,7 +233,9 @@ export default function BangBoLoc({ duLieu }) {
   useEffect(() => {
     fetch("/api/nguoi-dung-hien-tai")
       .then((r) => r.json())
-      .then((d) => setNguoiDung(d.nguoiDung || null))
+      // Tai khoan CHUA duoc admin duyet (da_duyet=false) coi nhu chua dang nhap o day - khong mo
+      // khoa cot vi the (giong nguoi chua dang ky), du van dang nhap duoc binh thuong o noi khac.
+      .then((d) => setNguoiDung(d.nguoiDung?.da_duyet ? d.nguoiDung : null))
       .catch(() => {});
     fetch("/api/tham-gia")
       .then((r) => r.json())

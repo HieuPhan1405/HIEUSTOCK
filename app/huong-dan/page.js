@@ -325,7 +325,7 @@ export default async function TrangHuongDan() {
 
       <TieuDeLon chu="Nguyên tắc giao dịch" phu="Kỷ luật quản trị vốn và rủi ro khi giao dịch theo tín hiệu." />
 
-      {nguoiDung ? (
+      {nguoiDung?.da_duyet ? (
         <NguyenTac />
       ) : (
         <div className="rounded-2xl border p-8 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
@@ -333,15 +333,18 @@ export default async function TrangHuongDan() {
             <Lock size={22} color={PRIMARY} strokeWidth={2} />
           </div>
           <p className="text-base mb-2" style={{ color: TEXT, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-            Nguyên tắc giao dịch dành cho thành viên
+            {nguoiDung ? "Tài khoản đang chờ duyệt" : "Nguyên tắc giao dịch dành cho thành viên"}
           </p>
           <p className="text-sm mb-6" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-            Đăng ký hoặc đăng nhập miễn phí để xem đầy đủ 11 nguyên tắc: giải ngân 1 phần, bổ sung, giới hạn tỷ trọng, cắt lỗ, chốt lời, mua lại, bảo vệ
-            lãi, tiêu chí chọn cổ phiếu, thời điểm đặt lệnh và giải thích ký hiệu.
+            {nguoiDung
+              ? "Tài khoản của bạn đang chờ quản trị viên duyệt trước khi xem được phần này."
+              : "Đăng ký hoặc đăng nhập miễn phí để xem đầy đủ 11 nguyên tắc: giải ngân 1 phần, bổ sung, giới hạn tỷ trọng, cắt lỗ, chốt lời, mua lại, bảo vệ lãi, tiêu chí chọn cổ phiếu, thời điểm đặt lệnh và giải thích ký hiệu."}
           </p>
-          <div className="flex justify-center">
-            <TaiKhoanNut nhan="Đăng ký / Đăng nhập để xem" />
-          </div>
+          {!nguoiDung && (
+            <div className="flex justify-center">
+              <TaiKhoanNut nhan="Đăng ký / Đăng nhập để xem" />
+            </div>
+          )}
         </div>
       )}
 

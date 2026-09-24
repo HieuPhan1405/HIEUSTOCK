@@ -129,8 +129,8 @@ export default function TrangGioiThieu() {
 
           <div className="grid grid-cols-3 gap-6 mt-14 max-w-md mx-auto">
             <TheSo so="~390" nhan="mã theo dõi (HOSE, HNX, UPCOM)" />
-            <TheSo so="12 năm" nhan="backtest trên VN100" />
-            <TheSo so="Miễn phí" nhan="không thu phí sử dụng" />
+            <TheSo so="12 năm" nhan="đã kiểm chứng bằng backtest trên VN100" />
+            <TheSo so="Miễn phí" nhan="trong tuần đầu sử dụng" />
           </div>
         </div>
       </div>
@@ -156,7 +156,7 @@ export default function TrangGioiThieu() {
       <div className="border-t" style={{ borderColor: VIEN }}>
         <div className="max-w-3xl mx-auto px-6 py-16 text-center">
           <h2 className="text-2xl mb-3" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-            Trải nghiệm ngay, không cần trả phí
+            Trải nghiệm miễn phí trong tuần đầu sử dụng
           </h2>
           <p className="text-sm mb-7" style={{ color: MUTED }}>
             Đăng ký bằng số điện thoại để lưu danh mục theo dõi, xem đầy đủ lịch sử checklist bắt đáy và các tính năng dành riêng cho hội viên.

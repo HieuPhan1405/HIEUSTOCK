@@ -23,11 +23,12 @@ const XANH = "#22C55E";
 
 export default async function TrangLenhMo() {
   const nguoiDung = await layNguoiDungHienTai();
-  if (!nguoiDung) {
+  if (!nguoiDung || !nguoiDung.da_duyet) {
     return (
       <KhoaTrangNoiDung
         tieuDe="Sổ lệnh đang mở"
         moTa="Đăng ký hoặc đăng nhập miễn phí để xem toàn bộ danh mục đang MUA/NẮM GIỮ, điểm chốt lời và cảnh báo rủi ro."
+        choDuyet={!!nguoiDung}
       />
     );
   }

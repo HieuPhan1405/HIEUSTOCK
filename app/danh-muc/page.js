@@ -61,11 +61,12 @@ function TieuDeMuc({ children, phu }) {
 
 export default async function TrangDanhMuc() {
   const nguoiDung = await layNguoiDungHienTai();
-  if (!nguoiDung) {
+  if (!nguoiDung || !nguoiDung.da_duyet) {
     return (
       <KhoaTrangNoiDung
         tieuDe="Danh mục theo dõi"
         moTa="Đăng ký hoặc đăng nhập miễn phí để lập danh mục các mã bạn tham gia: lệnh đang giữ, lãi/lỗ, vùng mua - cắt lỗ - chốt lời và lệnh đã đóng."
+        choDuyet={!!nguoiDung}
       />
     );
   }
