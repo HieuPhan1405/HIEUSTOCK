@@ -26,6 +26,7 @@ import { fileURLToPath } from "node:url";
 import { taoOpenApiClient } from "../dnse/openApiClient.js";
 import { taiLichSuToanBo, tinhTinHieuToanBo } from "../loi/quetToanBo.js";
 import { xayDungCSV } from "../loi/csvDauRa.js";
+import { tinhChecklistBatDayToanBo, xayDungCsvBatDay } from "../loi/checklistBatDay.js";
 
 const apiKey = process.env.DNSE_API_KEY;
 const apiSecret = process.env.DNSE_API_SECRET;
@@ -77,6 +78,16 @@ async function main() {
   console.log(`\nDa ghi file: ${duongDan}`);
   console.log("So sanh file nay voi CSV AmiBroker Explore xuat (7_Export_LenWeb.afl) truoc khi nghi den upload that.");
 
+  // Checklist bat day (VN100, port tu amibroker/8_Export_ChecklistBatDay.afl) - dung LAI nenTheoMa da
+  // tai o tren, khong fetch them. Ghi file rieng + (neu --upload) POST rieng vao /api/upload-bat-day
+  // (khac endpoint voi tin hieu chinh o tren).
+  const dsBatDay = tinhChecklistBatDayToanBo(nenTheoMa);
+  console.log(`\nChecklist bat day (VN100): ${dsBatDay.length} su kien trong lich su.`);
+  const csvBatDay = xayDungCsvBatDay(dsBatDay);
+  const duongDanBatDay = thuMucOutput + `bat_day_engine_${new Date().toISOString().replace(/[:.]/g, "-")}.csv`;
+  writeFileSync(duongDanBatDay, csvBatDay, "utf-8");
+  console.log(`Da ghi file: ${duongDanBatDay}`);
+
   if (!process.argv.includes("--upload")) return;
 
   const uploadKey = process.env.CS_UPLOAD_API_KEY;
@@ -97,6 +108,15 @@ async function main() {
   });
   const vanBan = await res.text();
   console.log(`HTTP ${res.status}:`, vanBan.slice(0, 1000));
+
+  console.log(`\nDang POST checklist bat day len ${gocWeb}/api/upload-bat-day...`);
+  const resBatDay = await fetch(`${gocWeb}/api/upload-bat-day`, {
+    method: "POST",
+    headers: { "Content-Type": "text/csv", "x-api-key": uploadKey },
+    body: csvBatDay,
+    signal: AbortSignal.timeout(120000),
+  });
+  console.log(`HTTP ${resBatDay.status}:`, (await resBatDay.text()).slice(0, 1000));
 }
 
 main().catch((loi) => {

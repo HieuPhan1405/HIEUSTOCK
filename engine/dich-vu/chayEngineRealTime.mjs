@@ -22,6 +22,7 @@ import { taoOpenApiClient } from "../dnse/openApiClient.js";
 import { ketNoiWebSocketDNSE } from "../dnse/wsClient.js";
 import { taiLichSuToanBo, tinhTinHieuToanBo, capNhatNenMoiNhat, chiaNhoMang } from "../loi/quetToanBo.js";
 import { xayDungCSV } from "../loi/csvDauRa.js";
+import { tinhChecklistBatDayToanBo, xayDungCsvBatDay } from "../loi/checklistBatDay.js";
 
 const apiKey = process.env.DNSE_API_KEY;
 const apiSecret = process.env.DNSE_API_SECRET;
@@ -31,6 +32,10 @@ if (!apiKey || !apiSecret) {
 }
 
 const CHU_KY_TINH_LAI_MS = 10000; // 10s - du "gan real-time", tranh tinh lai qua day (~389 ma tinh lai TOAN BO moi lan)
+// Checklist bat day (VN100) chi phu thuoc du lieu NGAY (HHV252/MA200/RSI...), khong can do tuoi
+// nhu tin hieu MUA/BAN chinh - tinh lai/upload rieng theo chu ky THUA hon (15 phut) de tranh ghi DB
+// (upload-bat-day) qua day trong khi tin hieu chinh van tinh lai moi 10s nhu binh thuong.
+const CHU_KY_BAT_DAY_MS = 15 * 60 * 1000;
 
 const ngayIsoTuGiay = (giay) => new Date(giay * 1000).toISOString().slice(0, 10);
 function chuyenDoiNenTuWS(doi) {
@@ -56,6 +61,7 @@ async function main() {
   const thuMucOutput = fileURLToPath(new URL("../output/", import.meta.url));
   mkdirSync(thuMucOutput, { recursive: true });
   const duongDanCsv = thuMucOutput + "tin_hieu_realtime_moi_nhat.csv";
+  const duongDanCsvBatDay = thuMucOutput + "bat_day_realtime_moi_nhat.csv";
 
   const uploadBat = process.argv.includes("--upload");
   const uploadKey = process.env.CS_UPLOAD_API_KEY;
@@ -87,8 +93,25 @@ async function main() {
     }
   }
 
+  async function guiBatDayLenWebNeuDuocPhep(csv) {
+    if (!uploadDuocPhep) return;
+    try {
+      const gocWeb = process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn";
+      const res = await fetch(`${gocWeb}/api/upload-bat-day`, {
+        method: "POST",
+        headers: { "Content-Type": "text/csv", "x-api-key": uploadKey },
+        body: csv,
+        signal: AbortSignal.timeout(120000),
+      });
+      console.log(`[upload bat-day] HTTP ${res.status}`);
+    } catch (loi) {
+      console.log(`[upload bat-day] LOI: ${loi.message}`);
+    }
+  }
+
   let coThayDoi = true; // tinh lan dau ngay sau khi tai xong lich su, khong doi tick WebSocket
   let dangTinh = false;
+  let lanCuoiTinhBatDay = 0;
 
   async function tinhLaiVaGhi() {
     if (!coThayDoi || dangTinh) return;
@@ -108,6 +131,17 @@ async function main() {
       const csv = xayDungCSV(hang);
       writeFileSync(duongDanCsv, csv, "utf-8");
       await guiLenWebNeuDuocPhep(csv);
+
+      // Checklist bat day: chi tinh lai/upload moi CHU_KY_BAT_DAY_MS (khong can moi 10s nhu tin hieu
+      // chinh - xem chu thich tai khai bao hang so o dau file).
+      if (Date.now() - lanCuoiTinhBatDay > CHU_KY_BAT_DAY_MS) {
+        lanCuoiTinhBatDay = Date.now();
+        const dsBatDay = tinhChecklistBatDayToanBo(nenTheoMa);
+        console.log(`[${new Date().toLocaleTimeString("vi-VN")}] Checklist bat day (VN100): ${dsBatDay.length} su kien.`);
+        const csvBatDay = xayDungCsvBatDay(dsBatDay);
+        writeFileSync(duongDanCsvBatDay, csvBatDay, "utf-8");
+        await guiBatDayLenWebNeuDuocPhep(csvBatDay);
+      }
     } finally {
       dangTinh = false;
     }
