@@ -197,7 +197,7 @@ function NguyenTac() {
 
       <Muc tieuDe="Giải thích ký hiệu">
         <p className="mb-3">
-          Các biểu tượng và nhãn nhỏ xuất hiện cạnh mã trong Bộ lọc, Sổ lệnh, Danh mục cá nhân và trang chi tiết mã:
+          Các biểu tượng và nhãn nhỏ xuất hiện cạnh mã trong Bộ lọc, Sổ lệnh, Danh mục theo dõi và trang chi tiết mã:
         </p>
         <div className="grid sm:grid-cols-2 gap-x-6">
           <KyHieu ky="⚠" mau="#EF4444" chu={<><b style={{ color: XANH }}>Mắt Thần</b> — cảnh báo rủi ro đảo chiều, cần xem lại ngay.</>} />
@@ -282,7 +282,7 @@ export default async function TrangHuongDan() {
         </p>
       </Muc>
 
-      <Muc tieuDe="Danh mục cá nhân">
+      <Muc tieuDe="Danh mục theo dõi">
         <p>
           Bấm nút tham gia (biểu tượng người cạnh mã ở Bộ lọc hoặc Sổ lệnh) để thêm mã vào danh mục. Danh mục tự hiện lệnh hiện tại của từng mã bạn tham gia (giá mua, vùng mua, cắt
           lỗ, chốt lời, lãi/lỗ) và tự chuyển sang &quot;Lệnh đã đóng của tôi&quot; khi lệnh bán/thoát hoặc chốt đủ TP3 — chỉ tính từ ngày bạn tham gia mã đó. Số liệu theo lệnh của hệ

@@ -10,7 +10,7 @@ const MUC = [
   { href: "/bo-loc", nhan: "Bộ lọc cổ phiếu", Icon: ListFilter },
   { href: "/bieu-do", nhan: "Biểu đồ kỹ thuật", Icon: CandlestickChart },
   { href: "/lenh-mo", nhan: "Sổ lệnh đang mở", Icon: Briefcase },
-  { href: "/danh-muc", nhan: "Danh mục cá nhân", Icon: Wallet },
+  { href: "/danh-muc", nhan: "Danh mục theo dõi", Icon: Wallet },
   { href: "/lenh-da-dong", nhan: "Lệnh đã đóng", Icon: History },
   { href: "/bat-day", nhan: "Checklist bắt đáy", Icon: TrendingDown },
   { href: "/thi-truong", nhan: "Thông tin thị trường", Icon: Newspaper },

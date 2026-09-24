@@ -12,7 +12,7 @@ import { fmt, pct, capNhatMoiNhat, chamTPCaoNhat } from "@/components/dungChung"
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Danh mục cá nhân",
+  title: "Danh mục theo dõi",
   description: "Danh mục các mã bạn đã tham gia: lệnh đang giữ, vùng mua, cắt lỗ, chốt lời, lãi/lỗ và các lệnh đã đóng.",
 };
 
@@ -64,7 +64,7 @@ export default async function TrangDanhMuc() {
   if (!nguoiDung) {
     return (
       <KhoaTrangNoiDung
-        tieuDe="Danh mục cá nhân"
+        tieuDe="Danh mục theo dõi"
         moTa="Đăng ký hoặc đăng nhập miễn phí để lập danh mục các mã bạn tham gia: lệnh đang giữ, lãi/lỗ, vùng mua - cắt lỗ - chốt lời và lệnh đã đóng."
       />
     );
@@ -103,7 +103,7 @@ export default async function TrangDanhMuc() {
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
       <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-        Danh mục cá nhân
+        Danh mục theo dõi
       </h1>
       <p className="text-sm mb-3" style={{ color: MUTED }}>
         Mã nào bạn bấm nút tham gia (biểu tượng người cạnh mã ở{" "}

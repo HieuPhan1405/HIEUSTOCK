@@ -159,7 +159,7 @@ export default function TrangGioiThieu() {
             Trải nghiệm ngay, không cần trả phí
           </h2>
           <p className="text-sm mb-7" style={{ color: MUTED }}>
-            Đăng ký bằng số điện thoại để lưu danh mục cá nhân, xem đầy đủ lịch sử checklist bắt đáy và các tính năng dành riêng cho hội viên.
+            Đăng ký bằng số điện thoại để lưu danh mục theo dõi, xem đầy đủ lịch sử checklist bắt đáy và các tính năng dành riêng cho hội viên.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <TaiKhoanNut compact nhan="Đăng ký nhận tư vấn miễn phí" />

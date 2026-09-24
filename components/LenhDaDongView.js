@@ -33,7 +33,7 @@ function The({ so, nhan, phu, mau }) {
 }
 
 // Phan hien thi trang Lenh da dong (tach khoi page.js de trang chi lo cong dang nhap + lay du lieu).
-// nhung = true: dung nhu 1 phan cua trang khac (vd Danh muc ca nhan) - tieu de h2, khong boc khung trang.
+// nhung = true: dung nhu 1 phan cua trang khac (vd Danh muc theo doi) - tieu de h2, khong boc khung trang.
 export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng", moTa, nhung = false }) {
   const tk = thongKeLenhDaDong(ds);
   const mauLai = (v) => (v == null ? MUTED : v >= 0 ? XANH : DO);
