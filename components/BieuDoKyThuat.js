@@ -5,6 +5,7 @@ import { createChart, createSeriesMarkers, CandlestickSeries, HistogramSeries, L
 import { tinhIchimoku, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { DaiMay, DaiGia } from "@/components/bieuDoPlugin";
 import { fmt } from "@/components/dungChung";
+import { dangTrongPhienGiaoDich } from "@/lib/khungGioVaoLenh";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -156,7 +157,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const [lanThu, setLanThu] = useState(0);
   const [chuThich, setChuThich] = useState(null);
 
-  const khoa = `${ma}|${khungTG}|${lanThu}`;
+  const khoa = `${ma}|${khungTG}`;
   const nen = ketQua.khoa === khoa ? ketQua.nen : null;
   const dangTai = ketQua.khoa !== khoa;
   const loi = ketQua.khoa === khoa ? ketQua.loi : null;
@@ -226,23 +227,39 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     };
   }, []);
 
-  // 2. Tai gia lich su khi doi ma / khung thoi gian.
+  // 2. Tai gia lich su khi doi ma / khung thoi gian, hoac lam moi (lanThu, xem 2b) - khoa KHONG
+  // gom lanThu de lam moi trong luc da co du lieu cu khong lam bieu do nhap nhay ve trang thai "dang tai".
   useEffect(() => {
     let huy = false;
+    const khoaLucGoi = `${ma}|${khungTG}`;
     fetch(`/api/gia-lich-su?ma=${encodeURIComponent(ma)}&kt=${khungTG}`)
       .then((r) => r.json())
       .then((j) => {
         if (huy) return;
-        if (j.trangThai === "ok" && Array.isArray(j.nen) && j.nen.length >= 2) setKetQua({ khoa, nen: j.nen, loi: null });
-        else setKetQua({ khoa, nen: null, loi: j.thongBao || "Chưa có dữ liệu giá cho mã này." });
+        if (j.trangThai === "ok" && Array.isArray(j.nen) && j.nen.length >= 2) setKetQua({ khoa: khoaLucGoi, nen: j.nen, loi: null });
+        // Lam moi ngam (lanThu > 0) that bai nhung da co du lieu cu cung ma/khung -> giu nguyen bieu
+        // do dang hien, khong thay bang thong bao loi (chi 1 lan lam moi bi lo, se tu thu lai sau 30s).
+        else
+          setKetQua((cu) => (cu.khoa === khoaLucGoi && cu.nen ? cu : { khoa: khoaLucGoi, nen: null, loi: j.thongBao || "Chưa có dữ liệu giá cho mã này." }));
       })
       .catch(() => {
-        if (!huy) setKetQua({ khoa, nen: null, loi: "Không kết nối được máy chủ." });
+        if (huy) return;
+        setKetQua((cu) => (cu.khoa === khoaLucGoi && cu.nen ? cu : { khoa: khoaLucGoi, nen: null, loi: "Không kết nối được máy chủ." }));
       });
     return () => {
       huy = true;
     };
-  }, [ma, khungTG, khoa]);
+  }, [ma, khungTG, lanThu]);
+
+  // 2b. Trong phien giao dich: tu dong lam moi nen "hom nay" moi 30 giay (khung Ngay - nguon
+  // DNSE tra ve nen hom nay dang chay, khong phai da chot) - khung Tuan khong can vi khong doi trong ngay.
+  useEffect(() => {
+    if (khungTG !== "D") return;
+    const hen = setInterval(() => {
+      if (dangTrongPhienGiaoDich()) setLanThu((x) => x + 1);
+    }, 30_000);
+    return () => clearInterval(hen);
+  }, [khungTG]);
 
   // 3. Do du lieu + chi bao len bieu do.
   useEffect(() => {
