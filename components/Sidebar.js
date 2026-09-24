@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Briefcase, ListFilter, Newspaper, Mail, TrendingDown, BookOpen, History, CandlestickChart, Wallet } from "lucide-react";
+import { LayoutGrid, LayoutDashboard, Briefcase, ListFilter, Newspaper, Mail, TrendingDown, BookOpen, History, CandlestickChart, Wallet } from "lucide-react";
 
 const MUC = [
   { href: "/", nhan: "Tổng quan thị trường", Icon: LayoutGrid },
+  { href: "/dashboard", nhan: "Dashboard thị trường", Icon: LayoutDashboard },
   { href: "/bo-loc", nhan: "Bộ lọc cổ phiếu", Icon: ListFilter },
   { href: "/bieu-do", nhan: "Biểu đồ kỹ thuật", Icon: CandlestickChart },
   { href: "/lenh-mo", nhan: "Sổ lệnh đang mở", Icon: Briefcase },
