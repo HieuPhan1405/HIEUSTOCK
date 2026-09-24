@@ -1,15 +1,20 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { UserRound } from "lucide-react";
+import { UserRound, Pencil, Check, X as HuyIcon } from "lucide-react";
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 
 const PRIMARY = "#6C5CE7";
 const MUTED = "#8B8B99";
+const TEXT = "#F5F5F7";
+const XANH = "#22C55E";
 
 export default function TaiKhoanNut({ compact, nhan }) {
   const [nguoiDung, setNguoiDung] = useState(undefined); // undefined = dang tai, null = chua dang nhap
   const [moModal, setMoModal] = useState(false);
+  const [dangSuaTen, setDangSuaTen] = useState(false);
+  const [tenMoi, setTenMoi] = useState("");
+  const [dangLuu, setDangLuu] = useState(false);
 
   const taiPhien = useCallback(() => {
     fetch("/api/nguoi-dung-hien-tai")
@@ -27,14 +32,63 @@ export default function TaiKhoanNut({ compact, nhan }) {
     setNguoiDung(null);
   }
 
+  function moSuaTen() {
+    setTenMoi(nguoiDung?.ten || "");
+    setDangSuaTen(true);
+  }
+
+  async function luuTen(e) {
+    e.preventDefault();
+    const sach = tenMoi.trim();
+    if (!sach || dangLuu) return;
+    setDangLuu(true);
+    try {
+      const res = await fetch("/api/doi-ten", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ten: sach }),
+      });
+      const d = await res.json();
+      if (res.ok) {
+        setNguoiDung((cu) => ({ ...cu, ten: d.nguoiDung?.ten ?? sach }));
+        setDangSuaTen(false);
+      }
+    } finally {
+      setDangLuu(false);
+    }
+  }
+
   if (nguoiDung === undefined) return null;
 
   if (nguoiDung) {
     return (
       <div className="flex items-center gap-2 text-xs" style={{ fontFamily: "'Inter', sans-serif" }}>
-        <span style={{ color: MUTED }} className={compact ? "hidden sm:inline" : ""}>
-          Xin chào, {nguoiDung.ten || nguoiDung.sdt}
-        </span>
+        {dangSuaTen ? (
+          <form onSubmit={luuTen} className="flex items-center gap-1">
+            <input
+              autoFocus
+              value={tenMoi}
+              onChange={(e) => setTenMoi(e.target.value)}
+              maxLength={200}
+              placeholder="Tên hiển thị"
+              className="px-2 py-1 text-xs rounded outline-none"
+              style={{ background: "#0B0B10", border: `1px solid ${PRIMARY}`, color: TEXT, width: 140 }}
+            />
+            <button type="submit" disabled={dangLuu} style={{ color: XANH }} aria-label="Lưu tên">
+              <Check size={14} strokeWidth={2.5} />
+            </button>
+            <button type="button" onClick={() => setDangSuaTen(false)} style={{ color: MUTED }} aria-label="Huỷ đổi tên">
+              <HuyIcon size={14} strokeWidth={2.5} />
+            </button>
+          </form>
+        ) : (
+          <span style={{ color: MUTED }} className={`items-center gap-1 ${compact ? "hidden sm:flex" : "flex"}`}>
+            Xin chào, {nguoiDung.ten || nguoiDung.sdt}
+            <button type="button" onClick={moSuaTen} style={{ color: MUTED }} aria-label="Đổi tên hiển thị" title="Đổi tên hiển thị">
+              <Pencil size={11} strokeWidth={2.5} />
+            </button>
+          </span>
+        )}
         {nguoiDung.la_admin && (
           <span
             className="px-1.5 py-0.5 text-[10px] font-bold rounded"
