@@ -3,6 +3,7 @@ import Image from "next/image";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import { layDongTienNuocNgoai } from "@/lib/thiTruong";
 import RaSoatThiTruong from "@/components/RaSoatThiTruong";
+import BanDoNhiet from "@/components/BanDoNhiet";
 import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, tinhVungLenh, chuoiVung } from "@/components/dungChung";
 import SignalPill from "@/components/SignalPill";
 import DongHoGiaoDich from "@/components/DongHoGiaoDich";
@@ -398,6 +399,9 @@ export default async function TrangTongQuan() {
         {/* DONG HO GIAO DICH + KHUNG GIO VAO LENH */}
         <DongHoGiaoDich className="mb-3" />
         <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
+
+        {/* BAN DO NHIET: toan canh ~390 ma theo nganh, mau theo % thay doi gia */}
+        <BanDoNhiet tatCa={tatCa} />
 
         {/* RA SOAT THI TRUONG: 3 the tong hop + LENH MUA - BAN + ra soat nhanh */}
         <RaSoatThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} ngoai={ngoai} />
