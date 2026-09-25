@@ -42,7 +42,7 @@ export function tinhSoSanhVnindex(ds, vnindex) {
     }
     const vn = (cuoi.c / goc.c - 1) * 100;
     // khoa: 1 ma co the co nhieu lenh (lenh goc + lenh mua them) nen khong dung rieng ma lam khoa.
-    dong.push({ khoa: r.khoa_lenh ?? r.ma, ma: r.ma, muaThem: !!r.la_mua_them, ngay, lai, vn, chenh: lai - vn });
+    dong.push({ khoa: r.khoa_lenh ?? r.ma, ma: r.ma, ten: r.ten_lenh ?? r.ma, ngay, lai, vn, chenh: lai - vn });
   }
   dong.sort((a, b) => b.chenh - a.chenh);
   return { dong, boQua };
@@ -105,8 +105,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
           <p className="text-xs mb-2 min-h-[16px]" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
             {dongChon ? (
               <>
-                <b style={{ color: TEXT }}>{dongChon.ma}</b>
-                {dongChon.muaThem ? " (mua thêm)" : ""} · mua {ngayVN(dongChon.ngay)} · mã <b style={{ color: mau(dongChon.lai) }}>{pct(dongChon.lai, 2)}</b> · VNINDEX{" "}
+                <b style={{ color: TEXT }}>{dongChon.ten}</b> · mua {ngayVN(dongChon.ngay)} · mã <b style={{ color: mau(dongChon.lai) }}>{pct(dongChon.lai, 2)}</b> · VNINDEX{" "}
                 <b style={{ color: mau(dongChon.vn) }}>{pct(dongChon.vn, 2)}</b> · chênh <b style={{ color: mau(dongChon.chenh) }}>{pct(dongChon.chenh, 2)}</b>
               </>
             ) : (
@@ -143,8 +142,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
                       transform={`rotate(-60 ${x0 + w / 2} ${H - DUOI + 10})`}
                       style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: laChon ? 700 : 400 }}
                     >
-                      {x.ma}
-                      {x.muaThem ? "+" : ""}
+                      {x.ten}
                     </text>
                   </g>
                 );
@@ -155,7 +153,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
       )}
       <p className="text-[11px] mt-2" style={{ color: MUTED }}>
         Chênh lệch = lãi/lỗ của mã (theo giá mua ghi nhận) trừ mức tăng/giảm VNINDEX từ ngày mua đến hiện tại. VNINDEX lấy theo giá đóng cửa ngày mua nên chỉ mang tính tương đối
-        {boQua > 0 ? ` (${boQua} lệnh chưa tính: mới mua hôm nay hoặc mua trước cửa sổ dữ liệu)` : ""}. Cột có dấu + là lệnh mua thêm (tính theo giá mua thêm). Bộ lọc ở tab Lệnh đang mở áp dụng cho biểu đồ này.
+        {boQua > 0 ? ` (${boQua} lệnh chưa tính: mới mua hôm nay hoặc mua trước cửa sổ dữ liệu)` : ""}. Mỗi cột là một lệnh (mã có nhiều lệnh được đánh số, tính theo giá mua riêng của lệnh đó). Bộ lọc ở tab Lệnh đang mở áp dụng cho biểu đồ này.
       </p>
     </div>
   );

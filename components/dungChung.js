@@ -222,73 +222,6 @@ export function tinhVungLenh(row) {
   return { mua, sl, tp, hoaVon };
 }
 
-// LENH CU (cach 30/30/25/15 truoc 2026-09-25) SAU KHI CHOT DU TP3 (chot 85%, con 15% giu chay): ma coi nhu can TIM DIEM MUA MOI. Cach quan ly moi
-// khong con trang thai nay (cham TP3 la dong lenh) - ham chi con tra ve du lieu cho cac lenh cu dang giu phan chay. Tach ro 2 thu:
-//  - viTheCu: phan con giu (gia mua CU, lai/lo tu gia do);
-//  - muaMoi: vung mua moi THAM KHAO = tu ho tro gan nhat BEN DUOI gia (Kijun / duong can bang dai han) den ho tro + tranDuoiPct%.
-// Day chi la goi y hien thi tu du lieu web, CHUA phai tin hieu MUA cua he thong (AFL chua phat lenh mua thu 2 khi dang giu).
-// Tra null neu ma khong dang giu hoac chua cham TP3.
-export function tinhSauTP3(row) {
-  if (!laDangGiu(row) || row.tp_da_cham !== "TP3" || !(row.gia_mua > 0)) return null;
-  const gia = Number(row.gia);
-  const cacHoTro = [
-    [row.kijun, "Kijun"],
-    [row.gg_top, "đường cân bằng dài hạn (trên)"],
-    [row.gg_bot, "đường cân bằng dài hạn (dưới)"],
-  ]
-    .map(([v, ten]) => [Number(v), ten])
-    .filter(([v]) => Number.isFinite(v) && v > 0 && v < gia);
-  const ht = cacHoTro.length ? cacHoTro.reduce((a, b) => (b[0] > a[0] ? b : a)) : null;
-  const muaMoi = ht
-    ? {
-        tu: ht[0],
-        den: ht[0] * (1 + VUNG.tranDuoiPct / 100),
-        hoTro: ht[1],
-        cachPct: (gia / ht[0] - 1) * 100,
-        trangThai: gia <= ht[0] * (1 + VUNG.tranDuoiPct / 100) ? "trong" : "cho",
-      }
-    : null;
-  // Lenh MUA MOI (vong 2) da duoc AFL bao: co gia mua / Stop-loss / TP RIENG, tach khoi vi the cu.
-  const daVao = row.dang_giu_moi === true && row.gia_mua_moi > 0;
-  const lenhMoi = daVao
-    ? {
-        giaMua: Number(row.gia_mua_moi),
-        stop: row.stop_moi > 0 ? Number(row.stop_moi) : null,
-        tp1: row.tp1_moi > 0 ? Number(row.tp1_moi) : null,
-        tp2: row.tp2_moi > 0 ? Number(row.tp2_moi) : null,
-        tp3: row.tp3_moi > 0 ? Number(row.tp3_moi) : null,
-        laiLoPct: gia > 0 ? (gia / Number(row.gia_mua_moi) - 1) * 100 : null,
-        ngay: row.ngay_mua_moi ?? null,
-      }
-    : null;
-  const daDongMoi = !daVao && row.gia_mua_moi > 0; // da mua moi roi va da dong (cham Stop-loss rieng), khong mua them nua tren lenh goc nay
-  return {
-    viTheCu: { giaMua: Number(row.gia_mua), laiLoPct: row.lai_lo_pct, tyLeConLai: TY_LE_CHOT_CU.giu },
-    muaMoi,
-    diemDu: row.diem >= NGUONG_DIEM_MUA,
-    lenhMoi,
-    daDongMoi,
-  };
-}
-
-// MUA THEM GIUA CHUNG (vi the doc lap voi vong 2, mo TRUOC khi cham du TP3) - bo sung 2026-09-23.
-// CHI hien khi CO DU LIEU THAT (dang giu vi the phu nay) - KHONG doan "goi y vung mua" nhu
-// tinhSauTP3().muaMoi, vi tinh nang nay MAC DINH TAT trong engine (batMuaThemGiuaChung=false):
-// hien goi y cho ma chua thuc su duoc tinh se gay hieu lam. Tra null neu khong dang giu.
-export function tinhMuaGiuaChung(row) {
-  if (!laDangGiu(row) || row.dang_giu_giua !== true || !(row.gia_mua_giua > 0)) return null;
-  const gia = Number(row.gia);
-  return {
-    giaMua: Number(row.gia_mua_giua),
-    stop: row.stop_giua > 0 ? Number(row.stop_giua) : null,
-    tp1: row.tp1_giua > 0 ? Number(row.tp1_giua) : null,
-    tp2: row.tp2_giua > 0 ? Number(row.tp2_giua) : null,
-    tp3: row.tp3_giua > 0 ? Number(row.tp3_giua) : null,
-    laiLoPct: gia > 0 ? (gia / Number(row.gia_mua_giua) - 1) * 100 : null,
-    ngay: row.ngay_mua_giua ?? null,
-  };
-}
-
 // LY DO KET THUC LENH o phien BAN that su (cot ly_do_ban do AFL/engine xuat, chi co nghia khi tin = BAN): 5 = cham TP3 (chot du 30/30/40 = KET THUC lenh, khong con nam vi the ->
 // lib/tinHieu.js chuan hoa tin thanh TRUNG LAP va gan ket_thuc_tp3), 4 = thoat theo Kijun sau TP2, 3 = bao ve lai, 2 = cat lo (Stop-loss), 1 = diem so tut duoi nguong (tin hieu BAN
 // thuong). Tra null neu khong phai ma vua ket thuc lenh hoac chua co du lieu (CSV cu).
@@ -305,23 +238,13 @@ export function nhanLyDoBan(row) {
   return LY_DO_BAN[Number(row.ly_do_ban)] ?? null;
 }
 
-// Nhan "Mua thêm (giữa chừng)" khi AFL dang giu vi the phu nay.
-export function nhanMuaGiuaChung(row) {
-  if (row?.dang_giu_giua !== true) return null;
+// Nhan "Có lệnh mua mới" khi ma DANG GIU them lenh MUA MOI (dot sau: sau khi bo qua lenh dau, hoac lenh moi sau TP3). Moi lenh la 1 dong rieng, xem lenhDangMo.
+export function nhanMuaMoi(row) {
+  if (row?.dang_giu_giua !== true && row?.dang_giu_moi !== true) return null;
   return {
-    nhan: "Mua thêm giữa chừng",
-    mau: "#A78BFA",
-    moTa: "Lệnh mua thêm khi giá hồi về hỗ trợ trong lúc đang giữ lệnh gốc (lệnh gốc chưa chạm TP3), có giá mua, Stop-loss và chốt lời riêng, tách khỏi lệnh gốc.",
-  };
-}
-
-// Nhan "Mua thêm" khi AFL dang giu lenh MUA MOI sau TP3.
-export function nhanMuaThem(row) {
-  if (row?.dang_giu_moi !== true) return null;
-  return {
-    nhan: "Mua mới sau TP3",
+    nhan: "Có lệnh mua mới",
     mau: "#22D3EE",
-    moTa: "Lệnh mới sau khi lệnh gốc chạm TP3: một lệnh bình thường có giá mua, Stop-loss và chốt lời riêng.",
+    moTa: "Có lệnh Mua mới (đợt sau, khi giá hồi về hỗ trợ rồi bật lên) đang mở, có giá mua, Stop-loss và chốt lời riêng, tính riêng với lệnh đầu.",
   };
 }
 

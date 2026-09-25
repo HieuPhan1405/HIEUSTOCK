@@ -95,10 +95,10 @@ export default async function TrangDanhMuc() {
   // Lenh da dong chi tinh tu luc tham gia (ban/chot tu ngay tham gia tro di).
   const dsDaDong = daDong.filter((x) => ngayThamGia.has(x.ma) && x.ngay_ban >= ngayThamGia.get(x.ma));
 
-  // 1 danh sach chung: lenh goc + cac diem mua them cua cac ma dang giu (moi diem mua them la 1 dong rieng, 1 ma co the co nhieu dong). Giong So lenh dang mo:
+  // 1 danh sach chung: MOI LENH 1 dong rieng (lenh dau + cac lenh mua moi dang giu cua cac ma ban tham gia; 1 ma co nhieu lenh thi danh so (1), (2)). Giong So lenh dang mo:
   // ma khong con lenh nao thi chuyen xuong "Dang theo doi".
   const dsLenh = lenhDangMo(cuaToi);
-  const soMuaThem = dsLenh.filter((r) => r.la_mua_them).length;
+  const soMaCoLenh = new Set(dsLenh.map((r) => r.ma)).size;
   const maConLenh = new Set(dsLenh.map((r) => r.ma));
   const dsTheoDoi = cuaToi.filter((r) => !maConLenh.has(r.ma));
   const soLai = dsLenh.filter((r) => r.lai_lo_pct > 0).length;
@@ -155,7 +155,7 @@ export default async function TrangDanhMuc() {
             <The
               so={dsLenh.length}
               nhan="Lệnh đang giữ"
-              phu={`${soMuaThem > 0 ? `gồm ${soMuaThem} lệnh mua thêm · ` : ""}${cuaToi.length}/${thamGia.length} mã có dữ liệu`}
+              phu={`${soMaCoLenh < dsLenh.length ? `của ${soMaCoLenh} mã · ` : ""}${cuaToi.length}/${thamGia.length} mã có dữ liệu`}
             />
             <The so={laiLoTB == null ? "—" : pct(laiLoTB, 2)} nhan="Lãi/lỗ trung bình" mau={mauLai(laiLoTB)} />
             <The so={dsLenh.length ? `${soLai}/${dsLenh.length}` : "—"} nhan="Đang lãi" mau={XANH} />

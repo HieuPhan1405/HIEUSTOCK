@@ -21,7 +21,6 @@ const DO = "#EF4444";
 export default async function TrangLenhMo({ searchParams }) {
   const sp = (await searchParams) ?? {};
   const tabDau = typeof sp.tab === "string" ? sp.tab : undefined; // vd /lenh-mo?tab=hieuQua
-  const locDau = sp.loai === "them" || sp.tab === "muaMoi" ? "them" : sp.loai === "goc" ? "goc" : ""; // /lenh-mo?loai=them: chi hien lenh mua them (lien ket tu trang dau)
   const nguoiDung = await layNguoiDungHienTai();
   if (!nguoiDung || !nguoiDung.da_duyet) {
     return (
@@ -41,13 +40,11 @@ export default async function TrangLenhMo({ searchParams }) {
     loi = String(e?.message || e);
   }
 
-  // "Dang mo" = ma vua phat tin hieu MUA hoac dang giu vi the (NAM GIU) + cac lenh phu con dang giu (mua them giua chung, lenh moi sau TP3) - xem lenhDangMo. Cach 2 TP + giu den BAN:
-  // lenh cham TP1/TP2 van con phan giu (30% / 30% da chot) nen van nam o day cho toi khi he thong bao BAN; TP3 chi la moc tham khao.
+  // "Dang mo" = MOI LENH la 1 dong rieng (gia mua, Stop-loss, TP, lai/lo rieng): lenh dau cua ma dang MUA/NAM GIU + cac lenh MUA MOI (dot sau) dang giu - xem lenhDangMo; ma co nhieu
+  // lenh thi danh so (1), (2). Cach 2 TP + giu den BAN: lenh cham TP1/TP2 van con phan giu nen van nam o day cho toi khi he thong bao BAN; TP3 chi la moc tham khao.
   const lenhMo = lenhDangMo(tatCa);
-  const soLenhGoc = lenhMo.filter((r) => !r.la_mua_them && !r.sau_tp3).length;
-  const soMuaThem = lenhMo.filter((r) => r.la_mua_them).length;
-  const soMoiSauTP3 = lenhMo.filter((r) => r.sau_tp3).length; // lenh moi sau TP3: dong binh thuong (khong phai mua them)
-  const soCanhBao = lenhMo.filter((r) => !r.la_mua_them && !r.sau_tp3 && r.mat_than).length;
+  const soMa = new Set(lenhMo.map((r) => r.ma)).size;
+  const soCanhBao = new Set(lenhMo.filter((r) => r.mat_than).map((r) => r.ma)).size;
 
   // Lich su dong cua VNINDEX de so sanh hieu suat cac lenh dang mo voi thi truong cung ky (loi nguon gia khong duoc lam hong trang).
   let vnindex = null;
@@ -64,7 +61,7 @@ export default async function TrangLenhMo({ searchParams }) {
       <p className="text-sm mb-1" style={{ color: MUTED }}>
         {loi
           ? "—"
-          : `${soLenhGoc} mã đang MUA hoặc NẮM GIỮ${soMuaThem > 0 ? ` (+ ${soMuaThem} lệnh mua thêm giữa chừng)` : ""}${soMoiSauTP3 > 0 ? ` (+ ${soMoiSauTP3} lệnh mới sau TP3)` : ""} / tổng ${tatCa.length} mã theo dõi.`}
+          : `${lenhMo.length} lệnh đang mở${soMa < lenhMo.length ? ` của ${soMa} mã (mã có nhiều lệnh được đánh số (1), (2)...)` : ""} / tổng ${tatCa.length} mã theo dõi.`}
       </p>
       {soCanhBao > 0 && (
         <p className="text-sm mb-6 flex items-center gap-1.5" style={{ color: DO }}>
@@ -82,9 +79,9 @@ export default async function TrangLenhMo({ searchParams }) {
         </p>
       )}
 
-      <LenhMoNoiDung lenhMo={lenhMo} vnindex={vnindex} tabDau={tabDau} locDau={locDau} />
+      <LenhMoNoiDung lenhMo={lenhMo} vnindex={vnindex} tabDau={tabDau} />
       <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-        Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Lệnh mua thêm giữa chừng nằm gọn dưới lệnh gốc của mã (bấm nút ➕ ▾ để mở, giá vốn trung bình tính trong trang từng mã); lệnh mới sau TP3 là một dòng bình thường với TP/SL mới. Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở. Chốt lời báo mức TP cao nhất mà giá hiện tại đã chạm tới (TP1 chốt 30%, TP2 chốt 30%, 40% còn lại giữ đến tín hiệu BÁN; TP3 chỉ là mốc tham khảo). Hệ thống không tự động bán, chỉ là gợi ý tham khảo. ⚠ Bán bớt xuất hiện khi điểm hôm nay đã tụt dưới ngưỡng bán nhưng chưa đủ điều kiện Bán hẳn — gợi ý giảm bớt vị thế sớm hơn, không đợi đến khi có tín hiệu Bán toàn bộ.
+        Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Mỗi lệnh là một dòng riêng với giá mua, cắt lỗ, chốt lời và lãi/lỗ tính riêng; mã có nhiều lệnh được đánh số (1), (2)... theo ngày mua, lệnh có nhãn Mua mới là lệnh vào đợt sau. Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở. Chốt lời báo mức TP cao nhất mà giá hiện tại đã chạm tới (TP1 chốt 30%, TP2 chốt 30%, 40% còn lại giữ đến tín hiệu BÁN; TP3 chỉ là mốc tham khảo). Hệ thống không tự động bán, chỉ là gợi ý tham khảo. ⚠ Bán bớt xuất hiện khi điểm hôm nay đã tụt dưới ngưỡng bán nhưng chưa đủ điều kiện Bán hẳn — gợi ý giảm bớt vị thế sớm hơn, không đợi đến khi có tín hiệu Bán toàn bộ.
       </p>
     </div>
   );

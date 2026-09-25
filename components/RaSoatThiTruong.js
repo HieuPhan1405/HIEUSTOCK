@@ -229,7 +229,6 @@ export function LenhMuaBan({ tatCa }) {
     ? new Date(capNhat).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "numeric", month: "numeric", year: "numeric" })
     : "";
   const l = tq.lenh;
-  const loaiDiem = (d) => (d.vong === "giua" ? "mua thêm giữa chừng" : "lệnh mới sau TP3");
   const soBan = l.ban.length + l.thoatKijun.length;
   const soBanBot = l.ketThucTP3.length + l.chotTP3.length + l.chotTP2.length + l.chotTP1.length + l.banBot.length;
 
@@ -246,7 +245,7 @@ export function LenhMuaBan({ tatCa }) {
           Lệnh mua – bán
         </h2>
         <p className="text-xs mt-1" style={{ color: MUTED }}>
-          Các lệnh của hệ thống ở lần cập nhật gần nhất. Chốt lời: {CHUOI_TY_LE_CHOT}.
+          Các lệnh của hệ thống ở lần cập nhật gần nhất (mua, mua mới, bán, bán bớt). Chốt lời: {CHUOI_TY_LE_CHOT}.
         </p>
       </div>
 
@@ -269,20 +268,17 @@ export function LenhMuaBan({ tatCa }) {
         <CotLenh
           tieuDe="Mua mới"
           mau={NGOC}
-          dem={l.muaThemHomNay.length}
-          moTa="Lệnh mới sau TP3 và mua thêm giữa chừng"
-          nhom={[
-            { nhan: "Điểm mua hôm nay", ds: l.muaThemHomNay, hienThi: (d) => `${fmt(d.giaMua)} · ${loaiDiem(d)}` },
-            { nhan: "Đang giữ (mới sau TP3 / mua thêm)", ds: l.dangMuaThem, mau: TIM, hienThi: (d) => `${pct((d.gia / d.giaMua - 1) * 100, 1)} · ${loaiDiem(d)}` },
-          ]}
-          trong={l.coDuLieuMuaThem ? "Chưa có điểm mua thêm / mua mới hôm nay" : "Chưa có dữ liệu mua thêm (cần Explore file AFL 7 mới rồi đẩy dữ liệu)."}
+          dem={l.muaMoiHomNay.length}
+          moTa="Điểm vào đợt sau khi bỏ qua lệnh đầu"
+          nhom={[{ nhan: "Mua mới hôm nay", ds: l.muaMoiHomNay, hienThi: (d) => fmt(d.giaMua) }]}
+          trong={l.coDuLieuMuaThem ? "Chưa có điểm mua mới hôm nay" : "Chưa có dữ liệu mua mới (cần Explore file AFL 7 mới rồi đẩy dữ liệu)."}
           chan={
             <>
-              Lệnh mới sau TP3 là một lệnh bình thường (TP/SL mới) trong{" "}
+              Mua mới là lệnh riêng (giá mua, cắt lỗ, chốt lời, lãi/lỗ tính riêng): khi bạn bỏ qua lệnh đầu có thể đợi đợt sau. Xem trong{" "}
               <Link href="/lenh-mo" className="underline" style={{ color: NGOC }}>
                 Sổ lệnh đang mở
               </Link>
-              ; mua thêm giữa chừng nằm gọn dưới lệnh gốc, giá vốn trung bình của bạn tính trong trang của từng mã.
+              , mã có nhiều lệnh được đánh số (1), (2).
             </>
           }
         />

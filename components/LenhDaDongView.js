@@ -14,10 +14,10 @@ const DO = "#EF4444";
 // yyyy-mm-dd -> dd/mm/yyyy
 const ngayVN = (s) => (s && /^\d{4}-\d{2}-\d{2}$/.test(s) ? `${s.slice(8, 10)}/${s.slice(5, 7)}/${s.slice(0, 4)}` : "—");
 
-// Dong cua LENH MUA THEM GIUA CHUNG (vong 4: vi the phu gan voi lenh goc, co gia mua/Stop-loss/ngay mua rieng). Lenh MOI SAU TP3 (vong 2) la lenh binh thuong (TP/SL moi) nen
-// hien nhu moi lenh khac, khong gan nhan "mua them".
+// LENH MUA MOI (dot sau khi bo qua lenh dau: vong 4 = gia hoi ve ho tro luc lenh dau con giu, vong 2 = sau TP3): la lenh DOC LAP co gia mua / Stop-loss / ngay mua rieng, gan nhan "Mua moi".
 const MUA_THEM = {
-  4: { nhan: "Mua thêm giữa chừng", mau: "#A78BFA" },
+  2: { nhan: "Mua mới", mau: "#22D3EE" },
+  4: { nhan: "Mua mới", mau: "#22D3EE" },
 };
 
 // Cot "Ket thuc": ly do dong + ghi chu phan vi the. Lenh mua them dong theo Stop-loss RIENG hoac dong THEO lenh goc (lenh goc bi ban / ket thuc o TP3), khong co
@@ -25,9 +25,9 @@ const MUA_THEM = {
 function nhanKetThuc(x) {
   const pc = Number(x.phan_chot_pct);
   if (MUA_THEM[x.vong]) {
-    if (x.ly_do === "CAT_LO") return "Cắt lỗ riêng (chạm Stop-loss của lệnh mua thêm)";
-    if (x.ly_do === "BAN") return "Đóng theo lệnh gốc (lệnh gốc có tín hiệu BÁN)";
-    return "Đóng theo lệnh gốc";
+    if (x.ly_do === "CAT_LO") return "Cắt lỗ (chạm Stop-loss của lệnh này)";
+    if (x.ly_do === "BAN") return "Đóng cùng lệnh đầu (có tín hiệu BÁN)";
+    return "Đóng cùng lệnh đầu";
   }
   let chinh;
   if (x.ly_do === "TP1" || x.ly_do === "TP2") chinh = `Chốt lời ${x.ly_do} (${x.phan_chot_pct}% vị thế)`;
@@ -124,8 +124,8 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Với
         lệnh mới, mỗi lần giá chạm mốc chốt lời được ghi thành một dòng ngay lúc chạm theo tỷ lệ chốt: TP1 chốt {TY_LE_CHOT.tp1}%, TP2 chốt {TY_LE_CHOT.tp2}%, {TY_LE_CHOT.giu}% còn lại giữ đến khi hệ thống báo BÁN (TP3 chỉ là mốc tham khảo, không ghi dòng riêng) — lãi/lỗ của mỗi dòng là tỷ lệ giá của đúng phần đó (giá chốt so với giá mua), và khi lệnh đóng thật
         sự thì chỉ ghi phần còn lại. Các thẻ thống kê ở trên tính THEO TỪNG LỆNH: các dòng TP1/TP2/TP3/phần còn lại của cùng một lệnh được gộp lại và chỉ tính một lần khi lệnh đã đóng hẳn,
-        kết quả = tổng các phần theo tỷ trọng (ví dụ chốt 30% ở +10%, 30% ở +20%, 40% ở +40% thì lệnh lãi 25%). Lệnh mới chốt TP1/TP2 mà còn giữ chưa được tính vào thống kê; lệnh cũ (30/30/25) đã chốt tới TP3 tính là đã kết thúc theo phần đã chốt (bỏ qua 15% còn chạy). Dòng có nhãn <b style={{ color: "#A78BFA" }}>➕ Mua thêm giữa chừng</b> là lệnh mua thêm riêng của cùng mã (giá mua và Stop-loss riêng, ngày mua khác lệnh gốc): đóng khi
-        chạm Stop-loss riêng hoặc khi lệnh gốc kết thúc. Lệnh mới sau khi lệnh gốc chạm TP3 (nếu có) là một lệnh bình thường nên cũng hiện như mọi lệnh khác. Lệnh cũ (trước 26/09/2026) chốt theo cách 30/30/25
+        kết quả = tổng các phần theo tỷ trọng (ví dụ chốt 30% ở +10%, 30% ở +20%, 40% ở +40% thì lệnh lãi 25%). Lệnh mới chốt TP1/TP2 mà còn giữ chưa được tính vào thống kê; lệnh cũ (30/30/25) đã chốt tới TP3 tính là đã kết thúc theo phần đã chốt (bỏ qua 15% còn chạy). Dòng có nhãn <b style={{ color: "#22D3EE" }}>Mua mới</b> là lệnh vào đợt sau của cùng mã (khi bạn bỏ qua lệnh đầu có thể đợi đợt sau): là một lệnh độc lập với giá mua, Stop-loss và chốt lời
+        riêng, đóng khi chạm Stop-loss riêng hoặc cùng lúc với lệnh đầu. Lệnh cũ (trước 26/09/2026) chốt theo cách 30/30/25
         nên dòng TP3 hiện {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 - TY_LE_CHOT_CU.giu}%). Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
       </p>
 
@@ -160,7 +160,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                     </Link>
                     {MUA_THEM[x.vong] && (
                       <span className="block text-[10px] font-bold tracking-wide leading-tight mt-0.5" style={{ color: MUA_THEM[x.vong].mau, fontFamily: "'Inter', sans-serif" }}>
-                        ➕ {MUA_THEM[x.vong].nhan}
+                        {MUA_THEM[x.vong].nhan}
                       </span>
                     )}
                     {tenCongTy(x.ma) && (

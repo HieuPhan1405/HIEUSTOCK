@@ -35,14 +35,14 @@ function The({ so, mau, nhan, phu, mauPhu }) {
 
 // Phan than trang So lenh dang mo: the thong ke + bieu do so sanh VNINDEX + bang. Bo loc nam O DAY (khong o trong bang) de
 // bam loc (vd "chi ma dat chuan") thi CA thong ke lan bieu do doi theo, khong chi bang.
-// MOT DANH SACH DUY NHAT: lenh goc + cac diem mua them / mua moi gop chung (gopLenhMo, gop o trang cha) - 1 ma co the co 2 dong, dong mua them co ghi chu rieng. Gia von
-// trung binh (chon "da mua dot dau chua") khong o day ma nam trong trang tung ma (components/TheGiaVon.js). Lenh DA CHAM TP3 (ket thuc lenh) da bi loc bo o trang cha.
+// MOT DANH SACH DUY NHAT: moi LENH la 1 dong rieng (lenhDangMo, tinh o trang cha): lenh dau + cac lenh MUA MOI (dot sau) cua ma; ma co nhieu lenh thi danh so (1), (2). Khong co "mua them"
+// / gia von trung binh - moi lenh co gia mua, SL, TP, lai/lo rieng.
 const CAC_TAB = ["lenh", "hieuQua", "tungMa"];
 
-// tabDau: the mo san; locDau: "them" (chi lenh mua them) | "goc" - dung cho lien ket tu trang dau (/lenh-mo?loai=them).
-export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau, locDau }) {
+// tabDau: the mo san (lenh | hieuQua | tungMa).
+export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
   const tabBanDau = CAC_TAB.includes(tabDau) ? tabDau : "lenh";
-  const [loc, datLoc] = useState({ ...LOC_LENH_MO_TRONG, loai: locDau === "them" || locDau === "goc" ? locDau : "" });
+  const [loc, datLoc] = useState(LOC_LENH_MO_TRONG);
   // THANH GAT (tab) gom cac khoi phu de trang khong roi: mac dinh chi hien danh sach lenh. Khoi Hieu qua chi tai du lieu khi mo lan dau, roi giu nguyen
   // (an di chu khong go bo) de khong tai lai.
   const [tab, setTab] = useState(tabBanDau);
@@ -52,8 +52,8 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau, locDau }) {
     if (t === "hieuQua") setDaMoHieuQua(true);
   };
   const lenhGop = lenhMo;
-  const soMuaThem = lenhGop.filter((r) => r.la_mua_them).length;
-  const soMuaThemHomNay = useMemo(() => lenhGop.filter((r) => r.la_mua_them && r.mua_them_hom_nay).length, [lenhGop]);
+  const soMa = useMemo(() => new Set(lenhGop.map((r) => r.ma)).size, [lenhGop]);
+  const soMuaMoiHomNay = useMemo(() => lenhGop.filter((r) => r.la_lenh_moi && r.mua_moi_hom_nay).length, [lenhGop]);
   const daLoc = useMemo(() => locLenhMo(lenhGop, loc), [lenhGop, loc]);
 
   // Thong ke nhanh hieu qua cac lenh DANG HIEN (sau loc, gom ca dong mua them - moi dong la 1 lenh) - khong tinh lenh da dong, vi trang nay chi hien vi the mo.
@@ -65,7 +65,7 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau, locDau }) {
     const daChotLoi = daLoc.filter((r) => chamTPCaoNhat(r) != null);
     return {
       soLenh,
-      soMuaThem: daLoc.filter((r) => r.la_mua_them).length,
+      soMa: new Set(daLoc.map((r) => r.ma)).size,
       soLai,
       soLo,
       tyLeLai: soLenh ? (soLai / soLenh) * 100 : 0,
@@ -80,7 +80,7 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau, locDau }) {
   const dangLoc = daLoc.length !== lenhGop.length;
 
   const TABS = [
-    ["lenh", "Lệnh đang mở", lenhGop.length, soMuaThemHomNay > 0 ? TIM : null],
+    ["lenh", "Lệnh đang mở", lenhGop.length, soMuaMoiHomNay > 0 ? TIM : null],
     ["hieuQua", "Hiệu quả", null, null],
     ["tungMa", "So sánh từng mã", null, null],
   ];
@@ -121,8 +121,7 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau, locDau }) {
         <The
           so={tk.soLenh}
           nhan="Lệnh đang mở"
-          phu={tk.soMuaThem > 0 ? `gồm ${tk.soMuaThem} lệnh mua thêm` : dangLoc ? `trên tổng ${lenhGop.length}` : undefined}
-          mauPhu={tk.soMuaThem > 0 ? TIM : undefined}
+          phu={tk.soMa < tk.soLenh ? `của ${tk.soMa} mã (1 mã có thể có nhiều lệnh)` : dangLoc ? `trên tổng ${lenhGop.length}` : undefined}
         />
         <The so={`${tk.tyLeLai.toFixed(0)}%`} mau={XANH} nhan={`Tỷ lệ lãi (${tk.soLai} lệnh)`} />
         <The so={`${tk.tyLeLo.toFixed(0)}%`} mau={DO} nhan={`Tỷ lệ lỗ (${tk.soLo} lệnh)`} />
@@ -137,10 +136,10 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau, locDau }) {
       </div>
 
       <BangLenhMo duLieu={lenhGop} loc={loc} datLoc={datLoc} />
-      {soMuaThem > 0 && (
+      {soMa < lenhGop.length && (
         <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-          Mã có lệnh mua thêm hiện nút <b style={{ color: TIM }}>➕ mua thêm ▾</b> ngay dưới tên mã: bấm để mở / ẩn lệnh mua thêm, dòng mở ra gắn liền dưới lệnh gốc. Lệnh mua thêm có giá mua, cắt lỗ, chốt lời riêng nên lãi/lỗ ở dòng đó tính theo giá mua thêm; muốn xem{" "}
-          <b>giá vốn trung bình</b> khi bạn đã mua đợt đầu, mở trang của mã đó.
+          Mã có nhiều lệnh đang mở được đánh số <b style={{ color: "#F5F5F7" }}>(1), (2)...</b> theo ngày mua. Mỗi lệnh có giá mua, cắt lỗ, chốt lời và lãi/lỗ tính riêng; lệnh có nhãn{" "}
+          <b style={{ color: "#22D3EE" }}>Mua mới</b> là lệnh vào đợt sau (khi bạn bỏ qua lệnh đầu, có thể đợi đợt sau). Bấm vào mã để xem từng lệnh.
         </p>
       )}
 

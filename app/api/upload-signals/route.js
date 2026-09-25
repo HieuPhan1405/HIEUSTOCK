@@ -593,7 +593,7 @@ export async function POST(request) {
       /* loi bao Zalo khong duoc lam hong upload */
     }
   }
-  // Bao Zalo MUA THEM: lenh MUA MOI sau khi lenh goc chot du TP3 (vong 2) - bao 1 lan cho moi lenh moi (khong lap khi upload lai).
+  // Bao Zalo MUA MOI: lenh MUA MOI sau khi lenh goc cham TP3 (vong 2) - lenh doc lap, bao 1 lan cho moi lenh moi (khong lap khi upload lai).
   for (let k = 0; k < hangDL.length; k++) {
     const h = hangDL[k];
     if (boolTriState(h.mua_moi) !== true) continue;
@@ -601,10 +601,10 @@ export async function POST(request) {
     if (cu && cu.dang_giu_moi === true && cu.ngay_mua_moi_txt === soNgayVN(h.ngay_mua_moi)) continue;
     try {
       const dong = [
-        `🟢 LỆNH MỚI SAU TP3: ${h.ma}`,
+        `🟢 MUA MỚI (sau TP3): ${h.ma}`,
         `Giá mua mới: ${moiGia[k] ?? h.gia}${moiStop[k] ? ` · Cắt lỗ riêng: ${moiStop[k]}` : ""}`,
         moiTp1[k] ? `Chốt lời mới: ${moiTp1[k]} / ${moiTp2[k] ?? "—"} / ${moiTp3[k] ?? "—"}` : null,
-        cu?.gia_vao_web > 0 || cu?.gia_mua > 0 ? `Lệnh gốc (đã chạm TP3): giá mua ${cu.gia_vao_web > 0 ? cu.gia_vao_web : cu.gia_mua}` : null,
+        cu?.gia_vao_web > 0 || cu?.gia_mua > 0 ? `Lệnh đầu: giá mua ${cu.gia_vao_web > 0 ? cu.gia_vao_web : cu.gia_mua}` : null,
         trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa" : null,
         `Xem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`,
       ];
@@ -624,10 +624,10 @@ export async function POST(request) {
     if (cu && cu.dang_giu_giua === true && cu.ngay_mua_giua_txt === soNgayVN(h.ngay_mua_giua)) continue;
     try {
       const dong = [
-        `➕ MUA THÊM (giữa chừng, trước TP3): ${h.ma}`,
+        `🟢 MUA MỚI (đợt sau): ${h.ma}`,
         `Giá mua mới: ${giuaGia[k] ?? h.gia}${giuaStop[k] ? ` · Cắt lỗ riêng: ${giuaStop[k]}` : ""}`,
         giuaTp1[k] ? `Chốt lời mới: ${giuaTp1[k]} / ${giuaTp2[k] ?? "—"} / ${giuaTp3[k] ?? "—"}` : null,
-        cu?.gia_vao_web > 0 || cu?.gia_mua > 0 ? `Vị thế gốc: đang giữ, giá mua ${cu.gia_vao_web > 0 ? cu.gia_vao_web : cu.gia_mua}` : null,
+        cu?.gia_vao_web > 0 || cu?.gia_mua > 0 ? `Lệnh đầu đang giữ: giá mua ${cu.gia_vao_web > 0 ? cu.gia_vao_web : cu.gia_mua}` : null,
         trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa" : null,
         `Xem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`,
       ];

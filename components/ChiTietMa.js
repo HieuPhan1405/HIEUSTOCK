@@ -1,10 +1,12 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import NhatKyGiaoDich from "@/components/NhatKyGiaoDich";
-import TheGiaVon from "@/components/TheGiaVon";
-import { cacDiemMuaMoi } from "@/lib/muaThemTinhToan";
+import { lenhDangMo, ngayChuoi } from "@/lib/muaThemTinhToan";
 import {
   fmt,
   fmtTy,
@@ -14,8 +16,7 @@ import {
   chuoiKhoiLuong,
   nhanGiaiNgan,
   nhanLoaiVao,
-  nhanMuaThem,
-  nhanMuaGiuaChung,
+  nhanMuaMoi,
   nhanBaoVeLai,
   nhanLyDoBan,
   laChoPhienSau,
@@ -23,9 +24,6 @@ import {
   gioGhiNhan,
   mocKichHoat,
   tinhVungLenh,
-  tinhSauTP3,
-  tinhMuaGiuaChung,
-  laDangGiu,
   chuoiVung,
   VUNG,
   TREND_MAX,
@@ -294,14 +292,59 @@ function tinhVungGia(row) {
   return { hoTro1: hoTro[0] ?? null, hoTro2: hoTro[1] ?? null, khangCu1: khangCu[0] ?? null, khangCu2: khangCu[1] ?? null };
 }
 
-// daChonMuaThem: lua chon "da mua dot dau chua" cua nguoi dang xem (chi khi da dang nhap va duoc duyet - coTheLuuMuaThem) cho tung diem mua them cua ma nay.
-export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaDong = [], daChonMuaThem = {}, coTheLuuMuaThem = false }) {
+const ngayNgan = (v) => {
+  const n = ngayChuoi(v);
+  return n ? `${n.slice(8, 10)}/${n.slice(5, 7)}` : "—";
+};
+
+// THANH NGANG cac LENH DANG MO cua ma (moi lenh 1 dong rieng, danh so (1), (2)...): chon 1 lenh de xem/tinh gia mua, Stop-loss, TP, lai/lo, bieu do... theo dung lenh do. Chi hien khi ma co tu 2 lenh.
+function ThanhChonLenh({ cacLenh, chon, datChon }) {
+  if (cacLenh.length < 2) return null;
+  return (
+    <div className="mb-4 rounded-2xl border p-3" style={{ borderColor: VIEN, background: NEN_CARD }}>
+      <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#8B8B99" }}>
+        Các lệnh đang mở của mã · chọn 1 lệnh để xem giá mua, cắt lỗ, chốt lời và lãi/lỗ theo đúng lệnh đó
+      </p>
+      <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Chọn lệnh của mã">
+        {cacLenh.map((l, i) => {
+          const dangChon = i === chon;
+          return (
+            <button
+              key={l.khoa_lenh}
+              type="button"
+              role="tab"
+              aria-selected={dangChon}
+              onClick={() => datChon(i)}
+              className="shrink-0 text-left rounded-xl border px-3 py-2"
+              style={dangChon ? { borderColor: "#6C5CE7", background: "rgba(108,92,231,0.15)" } : { borderColor: VIEN, background: "transparent" }}
+            >
+              <span className="block text-sm font-bold" style={{ fontFamily: "'Inter', sans-serif" }}>
+                {l.ten_lenh}
+                {l.la_lenh_moi ? <span style={{ color: "#22D3EE" }}> · Mua mới</span> : ""}
+              </span>
+              <span className="block text-[11px]" style={{ color: "#8B8B99", fontFamily: "'JetBrains Mono', monospace" }}>
+                mua {ngayNgan(l.ngay_mua)} · giá {fmt(l.gia_mua)}
+              </span>
+              <span className="block text-xs font-bold" style={{ fontFamily: "'JetBrains Mono', monospace", color: l.lai_lo_pct >= 0 ? "#22C55E" : "#EF4444" }}>
+                {pct(l.lai_lo_pct, 2)}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaDong = [] }) {
+  // Cac LENH DANG MO cua ma: moi lenh 1 dong rieng (gia mua, Stop-loss, TP, lai/lo rieng), danh so (1), (2) neu co nhieu lenh - xem lenhDangMo. Chon 1 lenh o thanh ngang de xem
+  // moi thu theo lenh do. vt = lenh dang xem (hoac chinh dong tin hieu khi ma khong giu lenh nao); row van la du lieu chung cua ma (diem, xu huong, trang thai...).
+  const cacLenh = useMemo(() => lenhDangMo([row]), [row]);
+  const [chon, setChon] = useState(0);
+  const lenh = cacLenh.length ? cacLenh[Math.min(chon, cacLenh.length - 1)] : null;
+  const vt = lenh ?? row;
   const vungGia = tinhVungGia(row);
-  const vungLenh = tinhVungLenh(row); // null neu khong dang giu
-  const sauTP3 = tinhSauTP3(row); // null neu chua chot du TP3
-  const muaGiuaChung = tinhMuaGiuaChung(row); // null neu khong dang giu vi the "giua chung"
-  // Chi MUA THEM GIUA CHUNG moi co gia von trung binh voi lenh goc -> the "Gia von cua ban"; lenh moi sau TP3 la lenh binh thuong (TP/SL moi), khong tinh trung binh.
-  const diemMuaThem = cacDiemMuaMoi(row).filter((d) => d.vong === "giua");
+  const vungLenh = tinhVungLenh(vt); // null neu khong dang giu
   const khoangCach = (muc) => (muc === null || !row.gia ? null : ((muc - row.gia) / row.gia) * 100);
   const tag = tinhCacTag(row);
   const mauDiem = row.diem >= 0 ? "#22C55E" : "#EF4444";
@@ -362,14 +405,9 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               ◐ {nhanGiaiNgan(row).nhan}
             </span>
           )}
-          {nhanMuaThem(row) && (
-            <span className="mt-2 text-[11px] font-bold" style={{ color: nhanMuaThem(row).mau }} title={nhanMuaThem(row).moTa}>
-              ➕ {nhanMuaThem(row).nhan}
-            </span>
-          )}
-          {nhanMuaGiuaChung(row) && (
-            <span className="mt-2 text-[11px] font-bold" style={{ color: nhanMuaGiuaChung(row).mau }} title={nhanMuaGiuaChung(row).moTa}>
-              ➕ {nhanMuaGiuaChung(row).nhan}
+          {nhanMuaMoi(row) && (
+            <span className="mt-2 text-[11px] font-bold" style={{ color: nhanMuaMoi(row).mau }} title={nhanMuaMoi(row).moTa}>
+              ➕ {nhanMuaMoi(row).nhan}
             </span>
           )}
           {nhanBaoVeLai(row) && (
@@ -408,24 +446,30 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               </p>
             )}
           </div>
-          {(row.tin === "MUA" || row.tin === "NAM GIU") && (
+          {lenh && (
             <div className="mt-3 pt-3 border-t w-full" style={{ borderColor: VIEN }}>
+              {cacLenh.length > 1 && (
+                <p className="text-[11px] font-bold mb-1" style={{ color: "#22D3EE" }}>
+                  Đang xem {vt.ten_lenh}
+                  {vt.la_lenh_moi ? " · Mua mới" : ""}
+                </p>
+              )}
               <p className="text-[11px]" style={{ color: "#8B8B99" }}>
-                Đang giữ {row.so_phien_giu ?? "—"} phiên
+                Đang giữ {vt.so_phien_giu ?? "—"} phiên
               </p>
               <p
                 className="text-sm font-bold"
-                style={{ fontFamily: "'JetBrains Mono', monospace", color: row.lai_lo_pct >= 0 ? "#22C55E" : "#EF4444" }}
+                style={{ fontFamily: "'JetBrains Mono', monospace", color: vt.lai_lo_pct >= 0 ? "#22C55E" : "#EF4444" }}
               >
-                {pct(row.lai_lo_pct, 2)}
+                {pct(vt.lai_lo_pct, 2)}
               </p>
-              {row.gia_mua_ghi_nhan && (
+              {vt.gia_mua_ghi_nhan && (
                 <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                  Giá mua {fmt(row.gia_mua)} ghi nhận lúc {gioGhiNhan(row)}, lãi/lỗ tính từ giá này.
-                  {row.sl_tp_ghi_nhan && " Stop-loss và TP cũng giữ theo lúc đó."}
+                  Giá mua {fmt(vt.gia_mua)} ghi nhận lúc {gioGhiNhan(vt)}, lãi/lỗ tính từ giá này.
+                  {vt.sl_tp_ghi_nhan && " Stop-loss và TP cũng giữ theo lúc đó."}
                 </p>
               )}
-              {row.che_do_vao === "MOI" && (
+              {vt.che_do_vao === "MOI" && (
                 <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
                   Vào lệnh tại mốc chuyển mua, Stop-loss đặt theo cấu trúc giá (dưới mây / đường cân bằng dài hạn / đáy nến / Kijun).
                 </p>
@@ -444,15 +488,15 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                   </p>
                 </div>
               )}
-              {mocKichHoat(row) && (
+              {mocKichHoat(vt) && (
                 <div className="mt-2" title="Giá mua trên hệ thống là giá đóng cửa phiên có tín hiệu; mốc chuyển mua là mức giá chính vừa bị vượt ở phiên điểm chuyển sang vùng mua.">
                   <p className="text-[11px]" style={{ color: "#8B8B99" }}>
-                    Mốc chuyển mua: {fmt(mocKichHoat(row).gia)}
+                    Mốc chuyển mua: {fmt(mocKichHoat(vt).gia)}
                   </p>
                   <p className="text-[10px] leading-snug" style={{ color: "#8B8B99" }}>
-                    {mocKichHoat(row).nhan}
-                    {mocKichHoat(row).chenhPct != null &&
-                      ` · giá mua ${mocKichHoat(row).chenhPct >= 0 ? "cao" : "thấp"} hơn mốc ${soAn(Math.abs(mocKichHoat(row).chenhPct), 1)}%`}
+                    {mocKichHoat(vt).nhan}
+                    {mocKichHoat(vt).chenhPct != null &&
+                      ` · giá mua ${mocKichHoat(vt).chenhPct >= 0 ? "cao" : "thấp"} hơn mốc ${soAn(Math.abs(mocKichHoat(vt).chenhPct), 1)}%`}
                   </p>
                 </div>
               )}
@@ -536,103 +580,12 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         </Card>
       </div>
 
-      {/* DA CHOT DU TP3: TACH VI THE CU VA DIEM MUA MOI */}
-      {sauTP3 && (
-        <Card className="mb-4">
-          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#6C5CE7" }}>
-            ★ Đã chạm TP3 — mốc tham khảo, phần còn lại vẫn giữ
-          </p>
-          <div className="grid sm:grid-cols-2 gap-4">
-            <div>
-              <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#8B8B99" }}>
-                Vị thế đang giữ
-              </p>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-lg">
-                Giá mua {fmt(sauTP3.viTheCu.giaMua)}
-              </p>
-              <p className="text-sm" style={{ fontFamily: "'JetBrains Mono', monospace", color: sauTP3.viTheCu.laiLoPct >= 0 ? "#22C55E" : "#EF4444" }}>
-                {pct(sauTP3.viTheCu.laiLoPct, 2)} so với giá mua cũ
-              </p>
-              <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                Đã chốt TP1 và TP2 (60% vị thế; lệnh cũ chốt thêm 25% ở TP3 nên đã chốt 85%). TP3 chỉ là mốc tham khảo, phần còn lại giữ chạy đến khi hệ thống báo BÁN.
-              </p>
-            </div>
-            <div>
-              <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#22C55E" }}>
-                Điểm mua mới (gợi ý)
-              </p>
-              {sauTP3.lenhMoi ? (
-                <>
-                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#22D3EE" }} className="text-lg">
-                    Đã MUA MỚI {fmt(sauTP3.lenhMoi.giaMua)}
-                  </p>
-                  <p className="text-sm" style={{ fontFamily: "'JetBrains Mono', monospace", color: sauTP3.lenhMoi.laiLoPct >= 0 ? "#22C55E" : "#EF4444" }}>
-                    {pct(sauTP3.lenhMoi.laiLoPct, 2)} so với giá mua của lệnh mới
-                  </p>
-                  <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                    {sauTP3.lenhMoi.stop ? `Cắt lỗ riêng ${fmt(sauTP3.lenhMoi.stop)}. ` : ""}
-                    {sauTP3.lenhMoi.tp1 ? `Chốt lời mới ${fmt(sauTP3.lenhMoi.tp1)} / ${fmt(sauTP3.lenhMoi.tp2)} / ${fmt(sauTP3.lenhMoi.tp3)}. ` : ""}
-                    Lệnh mới là lệnh bình thường, thoát khi chạm cắt lỗ riêng hoặc có tín hiệu BÁN.
-                  </p>
-                </>
-              ) : sauTP3.daDongMoi ? (
-                <p className="text-sm" style={{ color: "#8B8B99" }}>
-                  Lệnh mới sau TP3 đã đóng (chạm cắt lỗ riêng). Mỗi lệnh gốc chỉ mở 1 lệnh mới sau TP3.
-                </p>
-              ) : sauTP3.muaMoi ? (
-                <>
-                  <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#22C55E" }} className="text-lg">
-                    Vùng mua {chuoiVung(sauTP3.muaMoi.tu, sauTP3.muaMoi.den)}
-                  </p>
-                  <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                    Hỗ trợ gần nhất bên dưới giá: {sauTP3.muaMoi.hoTro}, cách giá hiện tại {pct(sauTP3.muaMoi.cachPct, 1)}.{" "}
-                    {sauTP3.muaMoi.trangThai === "trong" ? "Giá đang trong vùng mua mới." : "Chờ giá hồi về vùng này, không đuổi giá."}{" "}
-                    {sauTP3.diemDu ? "Điểm hiện vẫn đạt ngưỡng MUA." : "Điểm hiện chưa đạt ngưỡng MUA, nên chờ thêm."}
-                  </p>
-                </>
-              ) : (
-                <p className="text-sm" style={{ color: "#8B8B99" }}>
-                  Chưa có mức hỗ trợ nào bên dưới giá hiện tại, chờ giá hồi về.
-                </p>
-              )}
-              <p className="text-[10px] leading-snug mt-1.5" style={{ color: "#6B6B78" }}>
-                {sauTP3.lenhMoi || sauTP3.daDongMoi
-                  ? "Lệnh mới do AFL phát khi giá hồi về hỗ trợ sau TP3 (nến xanh, điểm còn đạt ngưỡng)."
-                  : "Vùng gợi ý từ dữ liệu web. Hệ thống sẽ báo MUA khi giá hồi về hỗ trợ với nến xanh và điểm còn đạt ngưỡng; lệnh mới có giá mua, Stop-loss và TP riêng."}
-              </p>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      {/* MUA THEM GIUA CHUNG: vi the doc lap voi vong 2, mo TRUOC khi cham du TP3 - co the cung
-          hien thi dong thoi voi card "Da chot du TP3" o tren (toi da 3 vi the: goc + giua chung +
-          sau TP3). Bo sung 2026-09-23. */}
-      {muaGiuaChung && (
-        <Card className="mb-4">
-          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#A78BFA" }}>
-            ★ Mua thêm giữa chừng (lệnh gốc chưa chạm TP3)
-          </p>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#A78BFA" }} className="text-lg">
-            Đã MUA THÊM {fmt(muaGiuaChung.giaMua)}
-          </p>
-          <p className="text-sm" style={{ fontFamily: "'JetBrains Mono', monospace", color: muaGiuaChung.laiLoPct >= 0 ? "#22C55E" : "#EF4444" }}>
-            {pct(muaGiuaChung.laiLoPct, 2)} so với giá mua thêm
-          </p>
-          <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-            {muaGiuaChung.stop ? `Cắt lỗ riêng ${fmt(muaGiuaChung.stop)}. ` : ""}
-            {muaGiuaChung.tp1 ? `Chốt lời riêng ${fmt(muaGiuaChung.tp1)} / ${fmt(muaGiuaChung.tp2)} / ${fmt(muaGiuaChung.tp3)}. ` : ""}
-            Vị thế tách khỏi lệnh gốc, tự thoát khi chạm cắt lỗ riêng hoặc khi lệnh gốc có tín hiệu BÁN.
-          </p>
-        </Card>
-      )}
-
-      {/* GIA VON CUA BAN: tinh gia von trung binh cho cac diem mua them / mua moi cua ma nay (truoc day o bang rieng trong So lenh dang mo) */}
-      {diemMuaThem.length > 0 && <TheGiaVon diem={diemMuaThem} daChonBanDau={daChonMuaThem} coTheLuu={coTheLuuMuaThem} />}
+      {/* THANH CHON LENH: ma co nhieu lenh dang mo (lenh dau + cac lenh Mua moi) thi chon lenh de xem gia mua / SL / TP / lai lo / bieu do theo dung lenh do */}
+      <ThanhChonLenh cacLenh={cacLenh} chon={Math.min(chon, Math.max(cacLenh.length - 1, 0))} datChon={setChon} />
 
       {/* BIEU DO KY THUAT */}
       <div className="mb-4">
-        <BieuDoKyThuat ma={row.ma} vung={vungLenh} ngayMua={row.ngay_mua} />
+        <BieuDoKyThuat ma={row.ma} vung={vungLenh} ngayMua={vt.ngay_mua} />
       </div>
 
       {/* VUNG GIA + STOP-LOSS - 3 MOC CHOT LOI */}
@@ -678,16 +631,16 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
             {"  ·  "}
             tới kháng cự 1: <strong style={{ color: "#F5F5F7" }}>{pct(khoangCach(vungGia.khangCu1), 2)}</strong>
           </p>
-          {row.stop_loss !== null && row.stop_loss !== undefined && (
+          {vt.stop_loss !== null && vt.stop_loss !== undefined && (
             <div className="rounded p-2" style={{ background: "#2C1420", border: "1px solid #4A2230" }}>
               <div className="flex items-center justify-between">
                 <span className="text-xs" style={{ color: "#F1A9A9" }}>
                   {vungLenh?.sl ? (vungLenh.sl.xa ? "Vùng cắt lỗ lúc mua (tham khảo)" : "Vùng cắt lỗ") : "Stop-loss (nếu đang giữ)"}
                 </span>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#EF4444" }} className="text-sm">
-                  {vungLenh?.sl ? chuoiVung(vungLenh.sl.tu, vungLenh.sl.den) : fmt(row.stop_loss)}
+                  {vungLenh?.sl ? chuoiVung(vungLenh.sl.tu, vungLenh.sl.den) : fmt(vt.stop_loss)}
                   <span className="text-[11px] ml-1" style={{ color: "#C08A8A" }}>
-                    ({pct(khoangCach(row.stop_loss), 2)})
+                    ({pct(khoangCach(vt.stop_loss), 2)})
                   </span>
                 </span>
               </div>
@@ -732,12 +685,12 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
             </div>
           )}
           {(() => {
-            const mucDaCham = chamTPCaoNhat(row); // "TP1"|"TP2"|"TP3"|null - da cham hay chua TUNG LUC NAO trong qua trinh giu
+            const mucDaCham = chamTPCaoNhat(vt); // "TP1"|"TP2"|"TP3"|null - da cham hay chua TUNG LUC NAO trong qua trinh giu
             const thuTu = { TP1: 1, TP2: 2, TP3: 3 };
             return [
-              ["TP1", "TP1 (gần, ngắn hạn)", row.tp1],
-              ["TP2", "TP2 (giữa, trung hạn)", row.tp2],
-              ["TP3", "TP3 (xa, 52 tuần)", row.tp3],
+              ["TP1", "TP1 (gần, ngắn hạn)", vt.tp1],
+              ["TP2", "TP2 (giữa, trung hạn)", vt.tp2],
+              ["TP3", "TP3 (xa, 52 tuần)", vt.tp3],
             ].map(([ma, nhan, gia]) => {
               const daCham = mucDaCham != null && thuTu[ma] <= thuTu[mucDaCham];
               return (
