@@ -4,9 +4,9 @@ import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import LenhMoNoiDung from "@/components/LenhMoNoiDung";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import NhanCapNhat from "@/components/NhanCapNhat";
-import { capNhatMoiNhat } from "@/components/dungChung";
+import { capNhatMoiNhat, chamTPCaoNhat } from "@/components/dungChung";
 import { layLichSuGia } from "@/lib/lichSuGia";
-import { cacDiemMuaMoi } from "@/lib/muaThemTinhToan";
+import { gopLenhMo } from "@/lib/muaThemTinhToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -46,9 +46,14 @@ export default async function TrangLenhMo({ searchParams }) {
   const dangMo = tatCa
     .filter((r) => r.tin === "MUA" || r.tin === "NAM GIU")
     .sort((a, b) => (b.mat_than ? 1 : 0) - (a.mat_than ? 1 : 0));
-  const soCanhBao = dangMo.filter((r) => r.mat_than).length;
-  // Diem mua them / mua moi cung nam chung 1 danh sach voi lenh goc (moi diem la 1 dong, xem gopLenhMo) nen dem rieng de ghi o dau trang.
-  const soMuaThem = dangMo.flatMap(cacDiemMuaMoi).length;
+  // Diem mua them / mua moi cung nam chung 1 danh sach voi lenh goc (moi diem la 1 dong, xem gopLenhMo). LENH DA CHAM TP (TP1/TP2/TP3) BI BO KHOI DANH SACH NAY:
+  // phan da chot tung phan da ghi o "Lenh da dong" (TP1/TP2/TP3), phan con lai (neu con) van duoc he thong theo doi va se ghi o do khi lenh ket thuc.
+  const lenhGop = gopLenhMo(dangMo);
+  const lenhMo = lenhGop.filter((r) => !chamTPCaoNhat(r));
+  const soDaChamTP = lenhGop.length - lenhMo.length;
+  const soLenhGoc = lenhMo.filter((r) => !r.la_mua_them).length;
+  const soMuaThem = lenhMo.length - soLenhGoc;
+  const soCanhBao = lenhMo.filter((r) => !r.la_mua_them && r.mat_than).length;
 
   // Lich su dong cua VNINDEX de so sanh hieu suat cac lenh dang mo voi thi truong cung ky (loi nguon gia khong duoc lam hong trang).
   let vnindex = null;
@@ -63,7 +68,9 @@ export default async function TrangLenhMo({ searchParams }) {
         Sổ lệnh đang mở
       </h1>
       <p className="text-sm mb-1" style={{ color: MUTED }}>
-        {loi ? "—" : `${dangMo.length} mã đang MUA hoặc NẮM GIỮ${soMuaThem > 0 ? ` (+ ${soMuaThem} lệnh mua thêm, mỗi lệnh một dòng riêng)` : ""} / tổng ${tatCa.length} mã theo dõi.`}
+        {loi
+          ? "—"
+          : `${soLenhGoc} mã đang MUA hoặc NẮM GIỮ${soMuaThem > 0 ? ` (+ ${soMuaThem} lệnh mua thêm, mỗi lệnh một dòng riêng)` : ""}${soDaChamTP > 0 ? ` · ${soDaChamTP} lệnh đã chạm chốt lời (TP) đã chuyển khỏi danh sách` : ""} / tổng ${tatCa.length} mã theo dõi.`}
       </p>
       {soCanhBao > 0 && (
         <p className="text-sm mb-6 flex items-center gap-1.5" style={{ color: DO }}>
@@ -81,9 +88,9 @@ export default async function TrangLenhMo({ searchParams }) {
         </p>
       )}
 
-      <LenhMoNoiDung dangMo={dangMo} vnindex={vnindex} tabDau={tabDau} locDau={locDau} />
+      <LenhMoNoiDung lenhMo={lenhMo} soDaChamTP={soDaChamTP} vnindex={vnindex} tabDau={tabDau} locDau={locDau} />
       <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-        Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Điểm mua thêm / mua mới hiện thành dòng riêng ngay dưới lệnh gốc của mã (giá vốn trung bình tính trong trang từng mã). Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở. Chốt lời báo mức TP cao nhất mà giá hiện tại đã chạm tới — không tự động bán, chỉ là gợi ý tham khảo. ⚠ Bán bớt xuất hiện khi điểm hôm nay đã tụt dưới ngưỡng bán nhưng chưa đủ điều kiện Bán hẳn — gợi ý giảm bớt vị thế sớm hơn, không đợi đến khi có tín hiệu Bán toàn bộ.
+        Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Điểm mua thêm / mua mới hiện thành dòng riêng ngay dưới lệnh gốc của mã (giá vốn trung bình tính trong trang từng mã). Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở. Lệnh đã chạm mốc chốt lời (TP1/TP2/TP3) không còn nằm ở đây: phần đã chốt xem ở trang Lệnh đã đóng, hệ thống không tự động bán, chỉ là gợi ý tham khảo. ⚠ Bán bớt xuất hiện khi điểm hôm nay đã tụt dưới ngưỡng bán nhưng chưa đủ điều kiện Bán hẳn — gợi ý giảm bớt vị thế sớm hơn, không đợi đến khi có tín hiệu Bán toàn bộ.
       </p>
     </div>
   );

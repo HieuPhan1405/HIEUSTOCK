@@ -5,8 +5,8 @@ import TraCuuMa from "@/components/TraCuuMa";
 import BangLenhMo, { LOC_LENH_MO_TRONG, locLenhMo } from "@/components/BangLenhMo";
 import HieuSuatVsVnindex from "@/components/HieuSuatVsVnindex";
 import HieuQuaDauTu from "@/components/HieuQuaDauTu";
-import { pct, chamTPCaoNhat, pctChotLoi } from "@/components/dungChung";
-import { gopLenhMo } from "@/lib/muaThemTinhToan";
+import Link from "next/link";
+import { pct } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -36,12 +36,12 @@ function The({ so, mau, nhan, phu, mauPhu }) {
 
 // Phan than trang So lenh dang mo: the thong ke + bieu do so sanh VNINDEX + bang. Bo loc nam O DAY (khong o trong bang) de
 // bam loc (vd "chi ma dat chuan") thi CA thong ke lan bieu do doi theo, khong chi bang.
-// MOT DANH SACH DUY NHAT: lenh goc + cac diem mua them / mua moi gop chung (gopLenhMo) - 1 ma co the co 2 dong, dong mua them co ghi chu rieng. Gia von trung binh
-// (chon "da mua dot dau chua") khong o day ma nam trong trang tung ma (components/TheGiaVon.js).
+// MOT DANH SACH DUY NHAT: lenh goc + cac diem mua them / mua moi gop chung (gopLenhMo, gop o trang cha) - 1 ma co the co 2 dong, dong mua them co ghi chu rieng. Gia von
+// trung binh (chon "da mua dot dau chua") khong o day ma nam trong trang tung ma (components/TheGiaVon.js). Lenh DA CHAM TP da bi loc bo o trang cha (soDaChamTP = so lenh do).
 const CAC_TAB = ["lenh", "hieuQua", "tungMa"];
 
 // tabDau: the mo san; locDau: "them" (chi lenh mua them) | "goc" - dung cho lien ket tu trang dau (/lenh-mo?loai=them).
-export default function LenhMoNoiDung({ dangMo, vnindex, tabDau, locDau }) {
+export default function LenhMoNoiDung({ lenhMo, soDaChamTP = 0, vnindex, tabDau, locDau }) {
   const tabBanDau = CAC_TAB.includes(tabDau) ? tabDau : "lenh";
   const [loc, datLoc] = useState({ ...LOC_LENH_MO_TRONG, loai: locDau === "them" || locDau === "goc" ? locDau : "" });
   // THANH GAT (tab) gom cac khoi phu de trang khong roi: mac dinh chi hien danh sach lenh. Khoi Hieu qua chi tai du lieu khi mo lan dau, roi giu nguyen
@@ -52,8 +52,8 @@ export default function LenhMoNoiDung({ dangMo, vnindex, tabDau, locDau }) {
     setTab(t);
     if (t === "hieuQua") setDaMoHieuQua(true);
   };
-  const lenhGop = useMemo(() => gopLenhMo(dangMo), [dangMo]);
-  const soMuaThem = lenhGop.length - dangMo.length;
+  const lenhGop = lenhMo;
+  const soMuaThem = lenhGop.filter((r) => r.la_mua_them).length;
   const soMuaThemHomNay = useMemo(() => lenhGop.filter((r) => r.la_mua_them && r.mua_them_hom_nay).length, [lenhGop]);
   const daLoc = useMemo(() => locLenhMo(lenhGop, loc), [lenhGop, loc]);
 
@@ -62,8 +62,6 @@ export default function LenhMoNoiDung({ dangMo, vnindex, tabDau, locDau }) {
     const soLenh = daLoc.length;
     const soLai = daLoc.filter((r) => r.lai_lo_pct > 0).length;
     const soLo = daLoc.filter((r) => r.lai_lo_pct < 0).length;
-    // Ty le chot loi = % SO LENH da cham it nhat 1 muc TP tren tong so lenh dang hien (giong Ty le lai/Ty le lo, khong phai lai TB).
-    const daChotLoi = daLoc.filter((r) => chamTPCaoNhat(r) != null);
     return {
       soLenh,
       soMuaThem: daLoc.filter((r) => r.la_mua_them).length,
@@ -72,9 +70,6 @@ export default function LenhMoNoiDung({ dangMo, vnindex, tabDau, locDau }) {
       tyLeLai: soLenh ? (soLai / soLenh) * 100 : 0,
       tyLeLo: soLenh ? (soLo / soLenh) * 100 : 0,
       laiLoTB: soLenh ? daLoc.reduce((tong, r) => tong + (r.lai_lo_pct ?? 0), 0) / soLenh : 0,
-      soDaChotLoi: daChotLoi.length,
-      tyLeChotLoi: soLenh ? (daChotLoi.length / soLenh) * 100 : 0,
-      chotLoiTB: daChotLoi.length ? daChotLoi.reduce((tong, r) => tong + (pctChotLoi(r) ?? 0), 0) / daChotLoi.length : 0,
     };
   }, [daLoc]);
 
@@ -128,16 +123,12 @@ export default function LenhMoNoiDung({ dangMo, vnindex, tabDau, locDau }) {
         <The so={`${tk.tyLeLai.toFixed(0)}%`} mau={XANH} nhan={`Tỷ lệ lãi (${tk.soLai} lệnh)`} />
         <The so={`${tk.tyLeLo.toFixed(0)}%`} mau={DO} nhan={`Tỷ lệ lỗ (${tk.soLo} lệnh)`} />
         <The so={pct(tk.laiLoTB, 2)} mau={tk.laiLoTB >= 0 ? XANH : DO} nhan="Lãi/lỗ trung bình" />
-        <The
-          so={`${tk.tyLeChotLoi.toFixed(0)}%`}
-          mau="#FBBF24"
-          nhan={`Tỷ lệ chốt lời (${tk.soDaChotLoi} lệnh)`}
-          phu={tk.soDaChotLoi > 0 ? `TB ${pct(tk.chotLoiTB, 2)}/lệnh` : undefined}
-          mauPhu={tk.chotLoiTB >= 0 ? XANH : DO}
-        />
+        <Link href="/lenh-da-dong" className="block hover:brightness-125 transition" title="Lệnh đã chạm TP1/TP2/TP3 đã chuyển khỏi danh sách này, xem phần đã chốt ở Lệnh đã đóng">
+          <The so={soDaChamTP} mau="#FBBF24" nhan="Đã chạm chốt lời (TP)" phu="đã chuyển sang Lệnh đã đóng →" />
+        </Link>
       </div>
 
-      <BangLenhMo duLieu={lenhGop} loc={loc} datLoc={datLoc} />
+      <BangLenhMo duLieu={lenhGop} loc={loc} datLoc={datLoc} anChotLoi />
       {soMuaThem > 0 && (
         <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
           Dòng <b style={{ color: TIM }}>➕ Mua thêm</b> là lệnh riêng (giá mua, cắt lỗ, chốt lời riêng) của cùng mã nên một mã có thể có 2 dòng. Lãi/lỗ ở dòng đó tính theo giá mua thêm; muốn xem{" "}

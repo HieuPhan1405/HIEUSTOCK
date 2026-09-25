@@ -191,7 +191,8 @@ function mauNenDong(row) {
 
 // loc/datLoc: bo loc do TRANG CHA giu (So lenh dang mo - de the thong ke o tren doi theo). Noi khac dung bang nay (vd Danh muc theo doi) khong truyen thi
 // bang tu giu bo loc rieng.
-export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai }) {
+// anChotLoi: an o "Chi da cham chot loi (TP)" (So lenh dang mo da bo het lenh cham TP nen o do luon rong).
+export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai, anChotLoi = false }) {
   const [locNoiBo, datLocNoiBo] = useState(LOC_LENH_MO_TRONG);
   const loc = locNgoai ?? locNoiBo;
   const datLoc = datLocNgoai ?? datLocNoiBo;
@@ -317,7 +318,7 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai 
         }
       />
 
-      <HangTichChung loc={loc} datLoc={datLoc} soUuTien={soUuTien}>
+      <HangTichChung loc={loc} datLoc={datLoc} soUuTien={soUuTien} anChotLoi={anChotLoi}>
         <OTich checked={loc.chiGiaiNgan} onChange={(v) => datLoc((cu) => ({ ...cu, chiGiaiNgan: v }))}>
           Chỉ lệnh đang giải ngân 1 phần
         </OTich>
