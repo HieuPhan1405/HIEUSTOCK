@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { thongKeLenhDaDong } from "@/lib/lenhDaDong";
+import { thongKeLenhDaDong } from "@/lib/thongKeLenh";
 import { fmt, pct } from "@/components/dungChung";
 import { TY_LE_CHOT, TY_LE_CHOT_CU, CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
 import { tenCongTy } from "@/lib/tenMa";
@@ -100,7 +100,11 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         <The
           so={tk.soLenh}
           nhan="Lệnh đã đóng"
-          phu={tk.soLenh ? `${tk.soThang} thắng · ${tk.soThua} thua${tk.soChotMotPhan ? ` · ${tk.soChotMotPhan} chốt lời từng phần` : ""}` : undefined}
+          phu={
+            tk.soLenh || tk.soDangChotTungPhan
+              ? `${tk.soThang} thắng · ${tk.soThua} thua${tk.soDangChotTungPhan ? ` · ${tk.soDangChotTungPhan} lệnh mới chốt một phần (còn giữ)` : ""}`
+              : undefined
+          }
         />
         <The
           so={tk.tyLeThang == null ? "—" : `${tk.tyLeThang.toFixed(0)}%`}
@@ -121,8 +125,8 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Với
         lệnh mới, mỗi lần giá chạm mốc chốt lời được ghi thành một dòng ngay lúc chạm theo tỷ lệ {CHUOI_TY_LE_CHOT}: TP1 chốt {TY_LE_CHOT.tp1}%, TP2 chốt {TY_LE_CHOT.tp2}%, TP3 chốt{" "}
         {TY_LE_CHOT.tp3}% và kết thúc lệnh (sau TP2, nếu giá đóng cửa dưới Kijun trước khi tới TP3 thì bán nốt phần còn lại) — lãi/lỗ của mỗi dòng là tỷ lệ giá của đúng phần đó (giá chốt so với giá mua), và khi lệnh đóng thật
-        sự thì chỉ ghi phần còn lại. Mỗi lần chốt lời từng phần được tính là một lệnh thắng nên tỷ lệ thắng ở trên cao hơn so với tính theo cả vị thế (số
-        dòng chốt từng phần ghi ở thẻ đầu). Dòng có nhãn <b style={{ color: "#A78BFA" }}>➕ Mua thêm</b> là lệnh mua thêm riêng của cùng mã (giá mua và Stop-loss riêng, ngày mua khác lệnh gốc): đóng khi
+        sự thì chỉ ghi phần còn lại. Các thẻ thống kê ở trên tính THEO TỪNG LỆNH: các dòng TP1/TP2/TP3/phần còn lại của cùng một lệnh được gộp lại và chỉ tính một lần khi lệnh đã đóng hẳn,
+        kết quả = tổng các phần theo tỷ trọng (ví dụ chốt 30% ở +10%, 30% ở +20%, 40% ở +40% thì lệnh lãi 25%); lệnh mới chốt một phần mà còn giữ chưa được tính vào thống kê. Dòng có nhãn <b style={{ color: "#A78BFA" }}>➕ Mua thêm</b> là lệnh mua thêm riêng của cùng mã (giá mua và Stop-loss riêng, ngày mua khác lệnh gốc): đóng khi
         chạm Stop-loss riêng hoặc khi lệnh gốc kết thúc. Lệnh cũ (trước 25/09/2026) chốt theo cách 30/30/25 còn 15% giữ chạy nên vẫn hiện dòng TP3 {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 -
         TY_LE_CHOT_CU.giu}%) và dòng phần còn lại {TY_LE_CHOT_CU.giu}% khi đóng thật sự. Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
       </p>

@@ -373,7 +373,9 @@ export const CAC_COT = {
           title={
             v.xa
               ? "Stop-loss lúc mua đã cách giá hiện tại rất xa nên chỉ còn mang tính tham khảo; thoát thật theo tín hiệu BÁN"
-              : "Từ Stop-loss (đáy vùng, cắt dứt khoát) lên tới đường hỗ trợ gần nhất phía trên"
+              : hoaVon
+                ? "Đã chạm TP2: dời Stop-loss của phần còn lại về giá mua (hòa vốn); nếu giá đóng cửa dưới Kijun trước khi tới TP3 thì bán nốt phần còn lại"
+                : "Từ Stop-loss (đáy vùng, cắt dứt khoát) lên tới đường hỗ trợ gần nhất phía trên"
           }
         >
           <span style={{ color: v.xa ? MUTED : DO }}>{chuoiVung(v.tu, v.den)}</span>

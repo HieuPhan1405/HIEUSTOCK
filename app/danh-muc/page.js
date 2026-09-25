@@ -92,14 +92,16 @@ export default async function TrangDanhMuc() {
   const ngayThamGia = new Map(thamGia.map((t) => [t.ma, t.ngay_tham_gia]));
   const cuaToi = tatCa.filter((r) => ngayThamGia.has(r.ma));
   const dsDangGiu = cuaToi.filter(dangGiu);
-  const dsTheoDoi = cuaToi.filter((r) => !dangGiu(r));
   const maChuaCoDuLieu = thamGia.filter((t) => !tatCa.some((r) => r.ma === t.ma));
   // Lenh da dong chi tinh tu luc tham gia (ban/chot tu ngay tham gia tro di).
   const dsDaDong = daDong.filter((x) => ngayThamGia.has(x.ma) && x.ngay_ban >= ngayThamGia.get(x.ma));
 
-  // 1 danh sach chung: lenh goc + cac diem mua them cua cac ma dang giu (moi diem mua them la 1 dong rieng, 1 ma co the co nhieu dong).
-  const dsLenh = gopLenhMo(dsDangGiu);
-  const soMuaThem = dsLenh.length - dsDangGiu.length;
+  // 1 danh sach chung: lenh goc + cac diem mua them cua cac ma dang giu (moi diem mua them la 1 dong rieng, 1 ma co the co nhieu dong). Giong So lenh dang mo:
+  // lenh da cham TP3 la KET THUC (da ghi o Lenh da dong) nen khong nam o day; ma khong con lenh nao thi chuyen xuong "Dang theo doi".
+  const dsLenh = gopLenhMo(dsDangGiu).filter((r) => chamTPCaoNhat(r) !== "TP3");
+  const soMuaThem = dsLenh.filter((r) => r.la_mua_them).length;
+  const maConLenh = new Set(dsLenh.map((r) => r.ma));
+  const dsTheoDoi = cuaToi.filter((r) => !maConLenh.has(r.ma));
   const soLai = dsLenh.filter((r) => r.lai_lo_pct > 0).length;
   const laiLoTB = dsLenh.length ? dsLenh.reduce((t, r) => t + (r.lai_lo_pct ?? 0), 0) / dsLenh.length : null;
   const soDaChot = dsLenh.filter((r) => chamTPCaoNhat(r) != null).length;
@@ -163,11 +165,11 @@ export default async function TrangDanhMuc() {
 
           <section className="mb-10">
             <TieuDeMuc phu="Giá mua, vùng mua, cắt lỗ, chốt lời và lãi/lỗ lấy theo lệnh của hệ thống, không phải giá khớp thật của bạn.">Đang nắm giữ</TieuDeMuc>
-            {dsDangGiu.length > 0 ? (
+            {dsLenh.length > 0 ? (
               <BangLenhMo duLieu={dsLenh} />
             ) : (
               <div className="rounded-2xl border p-5 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
-                Chưa có mã nào trong danh mục đang ở trạng thái MUA hoặc NẮM GIỮ.
+                Chưa có mã nào trong danh mục đang giữ lệnh (lệnh chạm TP3 đã kết thúc, xem ở Lệnh đã đóng bên dưới).
               </div>
             )}
           </section>

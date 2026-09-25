@@ -17,6 +17,7 @@ import {
   nhanMuaThem,
   nhanMuaGiuaChung,
   nhanBaoVeLai,
+  nhanLyDoBan,
   laChoPhienSau,
   kiemTraChuanUuTien,
   gioGhiNhan,
@@ -237,9 +238,10 @@ function ThanhMotChieu({ nhan, giaTri, mucMax, hauTo = "" }) {
 }
 
 function ketLuanTuDong(row) {
+  const lyDoBan = nhanLyDoBan(row);
   const cauMo = {
     MUA: "Đang phát tín hiệu MUA",
-    BAN: "Đang phát tín hiệu BÁN",
+    BAN: lyDoBan ? `Lệnh vừa kết thúc (${lyDoBan.nhan.toLowerCase()})` : "Đang phát tín hiệu BÁN",
     "NAM GIU": "Đang nắm giữ vị thế mở",
   }[row.tin] || "Chưa đủ điều kiện vào lệnh, đang trung lập";
 
@@ -348,6 +350,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
             điểm hợp lưu
           </p>
           <SignalPill tin={row.tin} />
+          {nhanLyDoBan(row) && (
+            <span className="mt-2 text-[11px] font-bold" style={{ color: nhanLyDoBan(row).mau }} title={nhanLyDoBan(row).moTa}>
+              {nhanLyDoBan(row).nhan}
+            </span>
+          )}
           {nhanGiaiNgan(row) && (
             <span className="mt-2 text-[11px] font-bold" style={{ color: nhanGiaiNgan(row).mau }}>
               ◐ {nhanGiaiNgan(row).nhan}
@@ -602,7 +609,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
       {muaGiuaChung && (
         <Card className="mb-4">
           <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#A78BFA" }}>
-            ★ Mua thêm giữa chừng (trước khi chốt đủ TP3)
+            ★ Mua thêm giữa chừng (lệnh gốc chưa chạm TP3)
           </p>
           <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#A78BFA" }} className="text-lg">
             Đã MUA THÊM {fmt(muaGiuaChung.giaMua)}
@@ -613,7 +620,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
             {muaGiuaChung.stop ? `Cắt lỗ riêng ${fmt(muaGiuaChung.stop)}. ` : ""}
             {muaGiuaChung.tp1 ? `Chốt lời riêng ${fmt(muaGiuaChung.tp1)} / ${fmt(muaGiuaChung.tp2)} / ${fmt(muaGiuaChung.tp3)}. ` : ""}
-            Vị thế tách khỏi lệnh gốc, tự thoát khi chạm cắt lỗ riêng hoặc khi lệnh gốc có tín hiệu BÁN.
+            Vị thế tách khỏi lệnh gốc, tự thoát khi chạm cắt lỗ riêng hoặc khi lệnh gốc kết thúc (tín hiệu BÁN, chạm TP3, thoát theo Kijun).
           </p>
         </Card>
       )}
@@ -692,6 +699,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               {vungLenh?.hoaVon && (
                 <p className="text-[10px] leading-snug mt-1 font-bold" style={{ color: "#FBBF24" }}>
                   Đã chạm TP2 → nên dời Stop-loss của phần còn lại về giá mua ({fmt(vungLenh.hoaVon)}) để không còn rủi ro lỗ.
+                  {row.kijun > 0 ? ` Nếu giá đóng cửa dưới Kijun (${fmt(row.kijun)}) trước khi tới TP3 thì bán nốt phần còn lại.` : ""}
                 </p>
               )}
               {vungLenh?.sl?.xa && vungLenh.sl.canhBao != null && (

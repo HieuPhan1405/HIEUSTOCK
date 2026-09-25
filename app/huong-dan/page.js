@@ -205,7 +205,9 @@ function NguyenTac() {
           <KyHieu ky="◐" mau="#FBBF24" chu={<><b style={{ color: XANH }}>Giải ngân 1 phần</b> — RS còn yếu nên chỉ mua một phần tỷ trọng.</>} />
           <KyHieu ky="➕" mau="#22D3EE" chu={<><b style={{ color: XANH }}>Bổ sung</b> — đủ điều kiện mua nốt phần tỷ trọng còn lại.</>} />
           <KyHieu ky="↺" mau={XANH} chu={<><b style={{ color: XANH }}>Mua lại</b> — mua lại sau khi bán không lỗ, giá hồi về hỗ trợ trong xu hướng tăng.</>} />
-          <KyHieu ky="➕" mau="#22D3EE" chu={<><b style={{ color: XANH }}>Mua thêm giữa chừng</b> — lệnh mua thêm khi đang giữ lệnh gốc (trước TP3): giá hồi về hỗ trợ rồi bật lên.</>} />
+          <KyHieu ky="➕" mau="#22D3EE" chu={<><b style={{ color: XANH }}>Mua thêm giữa chừng</b> — lệnh mua thêm khi đang giữ lệnh gốc (chưa chạm TP3): giá hồi về hỗ trợ rồi bật lên. Trong Sổ lệnh, bấm nút ➕ ▾ dưới tên mã để mở lệnh mua thêm.</>} />
+          <KyHieu ky="🎯" mau="#B7A4FF" chu={<><b style={{ color: XANH }}>Chạm TP3 · kết thúc lệnh</b> — giá chạm TP3, chốt nốt phần cuối (đủ 30/30/40), lệnh chuyển sang Lệnh đã đóng.</>} />
+          <KyHieu ky="↘" mau="#F97316" chu={<><b style={{ color: XANH }}>Thoát theo Kijun</b> — đã chốt TP1, TP2 rồi giá đóng cửa dưới Kijun trước khi tới TP3, bán nốt phần còn lại.</>} />
           <KyHieu ky="🛡" mau="#A78BFA" chu={<><b style={{ color: XANH }}>Bảo vệ lãi</b> — Stop-loss đã dời lên cao hơn (hòa vốn) sau khi chạm TP2.</>} />
           <KyHieu ky="⏳" mau="#FBBF24" chu={<><b style={{ color: XANH }}>Đạt điểm, chờ phiên sau</b> — đủ điểm MUA nhưng phiên đầu chưa đủ khối lượng xác nhận.</>} />
           <KyHieu ky="✓" mau={XANH} chu={<><b style={{ color: XANH }}>Đã chạm</b> (TP1/TP2/TP3) — giá đã từng lên tới mốc đó, kể cả nếu sau đó tụt lại.</>} />

@@ -4,7 +4,6 @@ import { tinhTongQuanThiTruong, nhanTamLy } from "@/lib/thiTruong";
 import { tenCongTy } from "@/lib/tenMa";
 import { fmt, pct, capNhatMoiNhat } from "@/components/dungChung";
 import { CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
-import { LOAI_DIEM_MUA } from "@/lib/muaThemTinhToan";
 
 // Khoi "Ra soat thi truong" dung o trang Tong quan thi truong: 3 the tong hop (xu huong, tam ly, muc giu lenh), muc LENH MUA - BAN
 // (mua, mua them, ban, ban bot, chot loi) va RA SOAT NHANH (do rong, top tang/giam, nganh, khoi ngoai...). Tinh tren cac ma he thong
@@ -20,6 +19,8 @@ const DO = "#EF4444";
 const VANG = "#FBBF24";
 const NGOC = "#22D3EE";
 const CAM = "#F97316";
+const TIM = "#A78BFA";
+const PRIMARY_SANG = "#B7A4FF";
 
 const mono = { fontFamily: "'JetBrains Mono', monospace" };
 const sans = { fontFamily: "'Inter', sans-serif" };
@@ -169,9 +170,57 @@ function TieuDeKhoi({ children, phu, ngay }) {
   );
 }
 
-// "Lenh mua - ban": dung o trang Tong quan (trang dau) - tap trung vao HUONG DI LENH/VI THE hien
-// tai cua he thong (mua, mua them, ban, ban bot, chot loi), khong keo theo cac chi so tong quan
-// rong hon (xem TongQuanThiTruong ben duoi, dung o trang Dashboard rieng).
+// 1 COT cua khoi "Lenh mua - ban" o trang dau: tieu de + so luong + cac nhom ma (moi nhom = 1 danh sach chip). Nhom rong thi an, ca cot rong thi hien `trong`.
+function CotLenh({ tieuDe, mau, dem, moTa, nhom, trong, chan }) {
+  const coDuLieu = nhom.some((n) => n.ds.length > 0);
+  return (
+    <div className="rounded-2xl border flex flex-col min-w-0" style={{ borderColor: VIEN, background: NEN_CARD, borderTop: `3px solid ${mau}` }}>
+      <div className="px-4 pt-4 pb-3 border-b" style={{ borderColor: "#1D1D26" }}>
+        <div className="flex items-baseline justify-between gap-2">
+          <h3 className="text-base" style={{ ...sans, fontWeight: 700, color: mau }}>
+            {tieuDe}
+          </h3>
+          <span className="text-2xl" style={{ ...mono, fontWeight: 700, color: dem > 0 ? mau : MUTED }}>
+            {dem}
+          </span>
+        </div>
+        <p className="text-[11px] mt-0.5 leading-snug" style={{ color: MUTED }}>
+          {moTa}
+        </p>
+      </div>
+      <div className="px-4 py-3 space-y-3.5 flex-1">
+        {coDuLieu ? (
+          nhom
+            .filter((n) => n.ds.length > 0)
+            .map((n) => (
+              <div key={n.nhan}>
+                {nhom.length > 1 && (
+                  <p className="text-[11px] mb-1.5" style={{ color: n.mau ?? mau, ...sans, fontWeight: 600 }}>
+                    {n.nhan} <span style={{ color: MUTED, fontWeight: 400 }}>· {n.ds.length}</span>
+                  </p>
+                )}
+                <DanhSachMa ds={n.ds} mau={n.mau ?? mau} hienThi={n.hienThi} />
+              </div>
+            ))
+        ) : (
+          <span className="text-sm" style={{ color: MUTED }}>
+            {trong}
+          </span>
+        )}
+      </div>
+      {chan && (
+        <div className="px-4 pb-3 text-[11px] leading-snug" style={{ color: MUTED }}>
+          {chan}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// "Lenh mua - ban": dung o trang Tong quan (trang dau) - 4 COT: Mua, Mua moi (mua them / mua moi), Ban, Ban bot - tap trung vao HUONG DI LENH/VI THE hien
+// tai cua he thong, khong keo theo cac chi so tong quan rong hon (xem TongQuanThiTruong ben duoi, dung o trang Dashboard rieng).
+//  - Ban: ban / cat lo + cac lenh vua KET THUC (cham TP3 = chot du 30/30/40, hoac thoat theo Kijun sau TP2) + lenh cu cham TP3 con phan chay.
+//  - Ban bot: chot loi tung phan (da cham TP1 = chot 30%, TP2 = chot 60%) + canh bao giam bot khi diem tut.
 export function LenhMuaBan({ tatCa }) {
   if (!tatCa?.length) return null;
   const tq = tinhTongQuanThiTruong(tatCa, null);
@@ -180,6 +229,9 @@ export function LenhMuaBan({ tatCa }) {
     ? new Date(capNhat).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "numeric", month: "numeric", year: "numeric" })
     : "";
   const l = tq.lenh;
+  const loaiDiem = (d) => (d.vong === "giua" ? "giữa chừng" : "sau TP3");
+  const soBan = l.ban.length + l.ketThucTP3.length + l.thoatKijun.length + l.chotTP3.length;
+  const soBanBot = l.chotTP2.length + l.chotTP1.length + l.banBot.length;
 
   return (
     <section aria-label="Lệnh mua - bán" className="mb-8">
@@ -189,85 +241,78 @@ export function LenhMuaBan({ tatCa }) {
         </p>
       )}
 
-      {/* LENH MUA - BAN */}
-      <div className="rounded-2xl border" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <TieuDeKhoi phu={`Các lệnh của hệ thống ở lần cập nhật gần nhất: mua, mua thêm / mua mới, bán, bán bớt, các mã đã chạm chốt lời (chốt ${CHUOI_TY_LE_CHOT} ở TP1/TP2/TP3, chạm TP3 là kết thúc lệnh) và các lệnh vừa kết thúc.`}>
+      <div className="mb-3">
+        <h2 className="text-lg" style={{ ...sans, fontWeight: 700 }}>
           Lệnh mua – bán
-        </TieuDeKhoi>
-        <div className="px-5">
-          <HangRaSoat so="1" nhan="Mua" nhan2="Bán / cắt lỗ" children2={<DanhSachMa ds={l.ban} mau={DO} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã BÁN" />}>
-            <DanhSachMa
-              ds={l.mua}
-              mau={XANH}
-              hienThi={(r) => `điểm ${fmt(r.diem)}${r.loai_vao === "MUA LAI" ? " · mua lại" : r.loai_vao === "MUA MUON" ? " · mua muộn" : ""}`}
-              trong="Không có mã MUA mới"
-            />
-          </HangRaSoat>
+        </h2>
+        <p className="text-xs mt-1" style={{ color: MUTED }}>
+          Các lệnh của hệ thống ở lần cập nhật gần nhất. Chốt lời {CHUOI_TY_LE_CHOT} ở TP1/TP2/TP3, chạm TP3 là kết thúc lệnh.
+        </p>
+      </div>
 
-          <HangRaSoat
-            so="2"
-            nhan="Mua thêm / mua mới (điểm mua hôm nay)"
-            mauNhan={NGOC}
-            nhan2="Đang giữ lệnh mua thêm / mua mới"
-            mauNhan2={NGOC}
-            children2={
-              <>
-                <DanhSachMa
-                  ds={l.dangMuaThem}
-                  mau={NGOC}
-                  hienThi={(d) => `${pct((d.gia / d.giaMua - 1) * 100, 1)} · ${d.vong === "giua" ? "giữa chừng" : "sau TP3"}`}
-                  trong="Chưa có lệnh mua thêm / mua mới nào đang giữ"
-                />
-                <p className="text-[11px] mt-2.5" style={{ color: MUTED }}>
-                  {LOAI_DIEM_MUA.giua.nhan}: mã đang giữ lệnh, hồi về hỗ trợ rồi bật lên. Mỗi điểm mua thêm là một dòng riêng (cùng mã có thể có 2 dòng) trong{" "}
-                  <Link href="/lenh-mo?loai=them" className="underline" style={{ color: NGOC }}>
-                    Sổ lệnh đang mở
-                  </Link>
-                  ; giá vốn trung bình của bạn (đã mua đợt đầu hay chưa) tính ngay trong trang của từng mã.
-                </p>
-              </>
-            }
-          >
-            {l.coDuLieuMuaThem ? (
-              <DanhSachMa
-                ds={l.muaThemHomNay}
-                mau={NGOC}
-                hienThi={(d) => `${fmt(d.giaMua)} · ${d.vong === "giua" ? "giữa chừng" : "sau TP3"}`}
-                trong="Chưa có điểm mua thêm / mua mới hôm nay"
-              />
-            ) : (
-              <span className="text-sm" style={{ color: MUTED }}>
-                Chưa có dữ liệu mua thêm (cần Explore file AFL 7 mới rồi đẩy dữ liệu).
-              </span>
-            )}
-          </HangRaSoat>
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <CotLenh
+          tieuDe="Mua"
+          mau={XANH}
+          dem={l.mua.length}
+          moTa="Tín hiệu MUA mới hôm nay"
+          nhom={[
+            {
+              nhan: "Mã MUA",
+              ds: l.mua,
+              hienThi: (r) => `điểm ${fmt(r.diem)}${r.loai_vao === "MUA LAI" ? " · mua lại" : r.loai_vao === "MUA MUON" ? " · mua muộn" : ""}`,
+            },
+          ]}
+          trong="Không có mã MUA mới"
+        />
 
-          <HangRaSoat so="3" nhan="Bán bớt (cảnh báo)" mauNhan={CAM}>
-            <DanhSachMa ds={l.banBot} mau={CAM} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có cảnh báo bán bớt" />
-          </HangRaSoat>
+        <CotLenh
+          tieuDe="Mua mới"
+          mau={NGOC}
+          dem={l.muaThemHomNay.length}
+          moTa="Mua thêm / mua mới khi đang giữ lệnh"
+          nhom={[
+            { nhan: "Điểm mua hôm nay", ds: l.muaThemHomNay, hienThi: (d) => `${fmt(d.giaMua)} · ${loaiDiem(d)}` },
+            { nhan: "Đang giữ lệnh mua thêm", ds: l.dangMuaThem, mau: TIM, hienThi: (d) => `${pct((d.gia / d.giaMua - 1) * 100, 1)} · ${loaiDiem(d)}` },
+          ]}
+          trong={l.coDuLieuMuaThem ? "Chưa có điểm mua thêm / mua mới hôm nay" : "Chưa có dữ liệu mua thêm (cần Explore file AFL 7 mới rồi đẩy dữ liệu)."}
+          chan={
+            <>
+              Mỗi điểm mua thêm là một dòng riêng trong{" "}
+              <Link href="/lenh-mo?loai=them" className="underline" style={{ color: NGOC }}>
+                Sổ lệnh đang mở
+              </Link>
+              ; giá vốn trung bình của bạn tính trong trang của từng mã.
+            </>
+          }
+        />
 
-          <HangRaSoat
-            so="4"
-            nhan={`Kết thúc lệnh: chốt đủ TP3 (đã chốt ${CHUOI_TY_LE_CHOT})`}
-            mauNhan={PRIMARY}
-            nhan2="Kết thúc lệnh: thoát theo Kijun (sau TP2)"
-            mauNhan2={CAM}
-            children2={<DanhSachMa ds={l.thoatKijun} mau={CAM} hienThi={(r) => `${pct(r.lai_lo_pct, 1)} phần còn lại`} trong="Không có mã nào" />}
-          >
-            <DanhSachMa ds={l.ketThucTP3} mau={PRIMARY} hienThi={(r) => `TP3 ${pct(r.lai_lo_pct, 1)}`} trong="Chưa có lệnh nào kết thúc ở TP3" />
-          </HangRaSoat>
+        <CotLenh
+          tieuDe="Bán"
+          mau={DO}
+          dem={soBan}
+          moTa="Bán, cắt lỗ và lệnh vừa kết thúc"
+          nhom={[
+            { nhan: "Bán / cắt lỗ", ds: l.ban, hienThi: (r) => pct(r.lai_lo_pct, 1) },
+            { nhan: `Chạm TP3 – kết thúc lệnh (đã chốt ${CHUOI_TY_LE_CHOT})`, ds: l.ketThucTP3, mau: PRIMARY_SANG, hienThi: (r) => `TP3 ${pct(r.lai_lo_pct, 1)}` },
+            { nhan: "Thoát theo Kijun (sau TP2)", ds: l.thoatKijun, mau: CAM, hienThi: (r) => `${pct(r.lai_lo_pct, 1)} phần còn lại` },
+            { nhan: "Lệnh cũ chạm TP3, còn phần chạy (cách chốt cũ)", ds: l.chotTP3, mau: PRIMARY_SANG, hienThi: (r) => pct(r.lai_lo_pct, 1) },
+          ]}
+          trong="Không có mã BÁN"
+        />
 
-          <HangRaSoat so="5" nhan="Chốt lời: đã chạm TP2 (đã chốt 60%)" nhan2="Chốt lời: đã chạm TP1 (đã chốt 30%)" mauNhan2={XANH} children2={<DanhSachMa ds={l.chotTP1} mau={XANH} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã nào" />}>
-            <DanhSachMa ds={l.chotTP2} mau={XANH} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã nào" />
-          </HangRaSoat>
-
-          {/* Lenh CU (cach chot 30/30/25/15 truoc 2026-09-25) con giu phan chay sau TP3 - chi hien khi con lenh nhu vay */}
-          {l.chotTP3.length > 0 && (
-            <HangRaSoat so="6" nhan="Lệnh cũ còn giữ phần chạy sau TP3 (cách chốt 30/30/25/15)" mauNhan={PRIMARY}>
-              <DanhSachMa ds={l.chotTP3} mau={PRIMARY} hienThi={(r) => pct(r.lai_lo_pct, 1)} />
-            </HangRaSoat>
-          )}
-        </div>
+        <CotLenh
+          tieuDe="Bán bớt"
+          mau={CAM}
+          dem={soBanBot}
+          moTa="Chốt lời từng phần và cảnh báo giảm bớt"
+          nhom={[
+            { nhan: "Đã chạm TP2 (đã chốt 60%)", ds: l.chotTP2, mau: XANH, hienThi: (r) => pct(r.lai_lo_pct, 1) },
+            { nhan: "Đã chạm TP1 (đã chốt 30%)", ds: l.chotTP1, mau: XANH, hienThi: (r) => pct(r.lai_lo_pct, 1) },
+            { nhan: "Cảnh báo giảm bớt (điểm tụt dưới ngưỡng)", ds: l.banBot, hienThi: (r) => pct(r.lai_lo_pct, 1) },
+          ]}
+          trong="Không có mã cần bán bớt"
+        />
       </div>
     </section>
   );

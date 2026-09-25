@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import { LenhMuaBan } from "@/components/RaSoatThiTruong";
-import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, tinhVungLenh, chuoiVung } from "@/components/dungChung";
+import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, nhanLyDoBan, tinhVungLenh, chuoiVung } from "@/components/dungChung";
 import SignalPill from "@/components/SignalPill";
 import NhanCapNhat from "@/components/NhanCapNhat";
 
@@ -509,6 +509,7 @@ function CotTinHieu({ tieuDe, mau, danhSach, hienRank }) {
           ) : (
             <span className="text-xs" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
               điểm {row.diem?.toFixed(2) ?? "—"}
+              {nhanLyDoBan(row) && <span style={{ color: nhanLyDoBan(row).mau, fontWeight: 700 }}> · {nhanLyDoBan(row).nhan}</span>}
             </span>
           )}
           <span

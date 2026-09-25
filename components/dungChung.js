@@ -2,7 +2,7 @@
 // tiet ma). Du lieu that tu AmiBroker co the thieu (ma moi len san, chua du
 // du lieu lich su de tinh chi bao) - moi ham phai an toan voi null/undefined/NaN.
 
-import { TY_LE_CHOT, TY_LE_CHOT_CU } from "@/lib/tyLeChot";
+import { TY_LE_CHOT, TY_LE_CHOT_CU, CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
 
 export const FONT_IMPORT = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -290,13 +290,29 @@ export function tinhMuaGiuaChung(row) {
   };
 }
 
+// LY DO BAN o phien BAN that su (cot ly_do_ban do AFL/engine xuat, chi co nghia khi tin = BAN): 5 = cham TP3 (chot du 30/30/40 = KET THUC lenh),
+// 4 = thoat theo Kijun sau TP2, 3 = bao ve lai, 2 = cat lo (Stop-loss), 1 = diem so tut duoi nguong (tin hieu BAN thuong). Tra null neu khong phai ma dang BAN
+// hoac chua co du lieu (CSV cu).
+export function nhanLyDoBan(row) {
+  if (row?.tin !== "BAN") return null;
+  return (
+    {
+      5: { nhan: "Chạm TP3 · kết thúc lệnh", mau: "#B7A4FF", moTa: `Giá chạm TP3: chốt nốt phần cuối, đủ ${CHUOI_TY_LE_CHOT} (TP1/TP2/TP3) — lệnh kết thúc.` },
+      4: { nhan: "Thoát theo Kijun (sau TP2)", mau: "#F97316", moTa: "Đã chốt TP1, TP2 rồi giá đóng cửa xuống dưới Kijun trước khi tới TP3 nên bán nốt phần còn lại." },
+      3: { nhan: "Bảo vệ lãi", mau: "#A78BFA", moTa: "Giá quay về mức Stop-loss đã dời lên (hòa vốn) sau khi chạm mốc chốt lời nên bán ngay." },
+      2: { nhan: "Cắt lỗ (chạm Stop-loss)", mau: "#EF4444", moTa: "Giá chạm Stop-loss của lệnh." },
+      1: { nhan: "Điểm số tụt dưới ngưỡng bán", mau: "#EF4444", moTa: "Tín hiệu BÁN theo điểm hợp lưu (3 phiên xác nhận)." },
+    }[Number(row.ly_do_ban)] ?? null
+  );
+}
+
 // Nhan "Mua thêm (giữa chừng)" khi AFL dang giu vi the phu nay.
 export function nhanMuaGiuaChung(row) {
   if (row?.dang_giu_giua !== true) return null;
   return {
     nhan: "Mua thêm giữa chừng",
     mau: "#A78BFA",
-    moTa: "Lệnh mua thêm khi giá hồi về hỗ trợ trong lúc đang giữ lệnh gốc (trước khi chốt đủ TP3), có giá mua, Stop-loss và chốt lời riêng, tách khỏi vị thế cũ.",
+    moTa: "Lệnh mua thêm khi giá hồi về hỗ trợ trong lúc đang giữ lệnh gốc (lệnh gốc chưa chạm TP3), có giá mua, Stop-loss và chốt lời riêng, tách khỏi lệnh gốc.",
   };
 }
 

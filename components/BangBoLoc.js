@@ -21,7 +21,7 @@ import {
   useCotHienThi,
   ChonCotHienThi,
 } from "@/components/boLocChung";
-import { chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, nhanMuaThem, nhanBaoVeLai, datChuanUuTien, sapChamMoc, laChoPhienSau, laDangGiu, NGUONG_DIEM_MUA } from "@/components/dungChung";
+import { chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, nhanMuaThem, nhanMuaGiuaChung, nhanLyDoBan, nhanBaoVeLai, datChuanUuTien, sapChamMoc, laChoPhienSau, laDangGiu, NGUONG_DIEM_MUA } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -97,6 +97,11 @@ const COT_RIENG = {
           {ctx.nguoiDung ? (
             <>
               <SignalPill tin={row.tin} />
+              {nhanLyDoBan(row) && (
+                <span className="text-[10px] font-bold" style={{ color: nhanLyDoBan(row).mau }} title={nhanLyDoBan(row).moTa}>
+                  {nhanLyDoBan(row).nhan}
+                </span>
+              )}
               {nhanGiaiNgan(row) && (
                 <span className="text-[10px] font-bold" style={{ color: nhanGiaiNgan(row).mau }} title={nhanGiaiNgan(row).moTa}>
                   ◐ {nhanGiaiNgan(row).nhan}
@@ -110,6 +115,11 @@ const COT_RIENG = {
               {nhanMuaThem(row) && (
                 <span className="text-[10px] font-bold" style={{ color: nhanMuaThem(row).mau }} title={nhanMuaThem(row).moTa}>
                   ➕ {nhanMuaThem(row).nhan}
+                </span>
+              )}
+              {nhanMuaGiuaChung(row) && (
+                <span className="text-[10px] font-bold" style={{ color: nhanMuaGiuaChung(row).mau }} title={nhanMuaGiuaChung(row).moTa}>
+                  ➕ {nhanMuaGiuaChung(row).nhan}
                 </span>
               )}
               {nhanBaoVeLai(row) && (
