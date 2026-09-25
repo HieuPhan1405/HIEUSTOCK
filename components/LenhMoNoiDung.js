@@ -77,6 +77,7 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem }) {
     ["lenh", "Lệnh đang mở", dangMo.length, null],
     ["muaMoi", "Điểm mua mới", diemMuaMoi.length, soMuaMoiHomNay > 0 ? NGOC : null],
     ["hieuQua", "Hiệu quả", null, null],
+    ["tungMa", "So sánh từng mã", null, null],
   ];
 
   return (
@@ -145,18 +146,22 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem }) {
         )}
       </div>
 
-      {/* TAB 3: HIEU QUA - duong TSSL vs VN-Index theo thoi gian + so sanh tung ma */}
+      {/* TAB 3: HIEU QUA - duong TSSL cua he thong vs VN-Index theo thoi gian */}
       {daMoHieuQua && (
         <div className={tab === "hieuQua" ? "" : "hidden"}>
           <HieuQuaDauTu />
-          {dangLoc && (
-            <p className="text-xs mb-2" style={{ color: MUTED }}>
-              Biểu đồ so sánh từng mã bên dưới đang tính trên <b>{daLoc.length}</b> / {dangMo.length} lệnh khớp bộ lọc ở tab Lệnh đang mở.
-            </p>
-          )}
-          <HieuSuatVsVnindex ds={daLoc} vnindex={vnindex} />
         </div>
       )}
+
+      {/* TAB 4: SO SANH TUNG MA voi VN-Index cung ky (theo bo loc o tab Lenh dang mo) */}
+      <div className={tab === "tungMa" ? "" : "hidden"}>
+        {dangLoc && (
+          <p className="text-xs mb-2" style={{ color: MUTED }}>
+            Biểu đồ đang tính trên <b>{daLoc.length}</b> / {dangMo.length} lệnh khớp bộ lọc ở tab Lệnh đang mở.
+          </p>
+        )}
+        <HieuSuatVsVnindex ds={daLoc} vnindex={vnindex} />
+      </div>
     </>
   );
 }
