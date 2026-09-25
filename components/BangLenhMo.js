@@ -165,7 +165,12 @@ function mauNenDong(row) {
   return row.mat_than ? "#241419" : row.ban_bot ? "#241C10" : NEN_CARD;
 }
 
-export default function BangLenhMo({ duLieu, loc, datLoc }) {
+// loc/datLoc: bo loc do TRANG CHA giu (So lenh dang mo - de the thong ke o tren doi theo). Noi khac dung bang nay (vd Danh muc theo doi) khong truyen thi
+// bang tu giu bo loc rieng.
+export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai }) {
+  const [locNoiBo, datLocNoiBo] = useState(LOC_LENH_MO_TRONG);
+  const loc = locNgoai ?? locNoiBo;
+  const datLoc = datLocNgoai ?? datLocNoiBo;
   // Mac dinh: canh bao Mat Than len dau (rui ro can chu y truoc), giu nguyen
   // hanh vi cu cho toi khi nguoi dung tu bam sap xep cot khac.
   const [sapXep, setSapXep] = useState(null);
