@@ -141,7 +141,9 @@ export function chayEngine({ cache, vni, soNenToiThieu = 300 }) {
 }
 
 // ---------- mo phong 1 lenh theo 1 cach chot loi (xem chu thich backtestChotLoi.mjs) ----------
-const mucGia = (t, muc) => (typeof muc === "string" ? t.tp[Number(muc.slice(2)) - 1] : muc.r != null ? t.E + muc.r * (t.E - t.S) : t.E * (1 + muc.pct / 100));
+// muc: "tp1"|"tp2"|"tp3" | { r: x } (x lan khoang cach cat lo) | { pct: x } (x% tren gia vao) | { tp3x: k } (gia vao + k x khoang cach tu gia vao toi TP3 cua engine - keo TP3 xa hon)
+const mucGia = (t, muc) =>
+  typeof muc === "string" ? t.tp[Number(muc.slice(2)) - 1] : muc.r != null ? t.E + muc.r * (t.E - t.S) : muc.tp3x != null ? t.E + muc.tp3x * (t.tp[2] - t.E) : t.E * (1 + muc.pct / 100);
 
 export function moPhong(t, cach) {
   const { E, S, iv, open, high, low, close, sell, n } = t;
