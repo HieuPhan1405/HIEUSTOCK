@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Clock } from "lucide-react";
 import { KHUNG_VAO_LENH } from "@/lib/khungGioVaoLenh";
 
@@ -74,8 +74,12 @@ function tinhTrangThai(d) {
   return { mau: MUTED, nhan: "Hết khung vào lệnh hôm nay", chiTiet: `Phiên mới (reset) 09:00 ${ngayResetSauCung} — còn ${conLai(toiReset)}`, trongKhung: false, thu, gio, phut, giay };
 }
 
+// DONG HO TREN THANH DAU CO DINH (moi trang): gio Viet Nam chay tung giay + trang thai khung vao lenh,
+// bam vao de xem chi tiet (dem nguoc, cac khung gio). Truoc day la 1 the lon rieng o tung trang.
 export default function DongHoGiaoDich({ className = "" }) {
   const [bayGio, setBayGio] = useState(null);
+  const [mo, setMo] = useState(false);
+  const goc = useRef(null);
 
   useEffect(() => {
     // Khoi tao sau khi mount (tranh lech gio giua server va trinh duyet), khong setState dong bo trong effect.
@@ -87,35 +91,62 @@ export default function DongHoGiaoDich({ className = "" }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!mo) return;
+    const dong = (e) => {
+      if (e.type === "keydown" ? e.key === "Escape" : goc.current && !goc.current.contains(e.target)) setMo(false);
+    };
+    document.addEventListener("mousedown", dong);
+    document.addEventListener("keydown", dong);
+    return () => {
+      document.removeEventListener("mousedown", dong);
+      document.removeEventListener("keydown", dong);
+    };
+  }, [mo]);
+
   if (!bayGio) {
-    return <div className={`rounded-2xl border ${className}`} style={{ borderColor: VIEN, background: NEN_CARD, minHeight: 74 }} />;
+    return <div className={`rounded-lg border ${className}`} style={{ borderColor: VIEN, background: NEN_CARD, width: 96, height: 36 }} />;
   }
 
   const tt = tinhTrangThai(bayGio);
   const gioChuoi = `${String(tt.gio).padStart(2, "0")}:${String(tt.phut).padStart(2, "0")}:${String(tt.giay).padStart(2, "0")}`;
 
   return (
-    <div className={`rounded-2xl border p-4 flex flex-wrap items-center gap-x-6 gap-y-2 ${className}`} style={{ borderColor: tt.trongKhung ? XANH : VIEN, background: NEN_CARD }}>
-      <div className="flex items-center gap-3">
-        <Clock size={20} color={tt.mau} strokeWidth={2} aria-hidden="true" />
-        <div>
+    <div ref={goc} className={`relative ${className}`}>
+      <button
+        type="button"
+        onClick={() => setMo((v) => !v)}
+        aria-expanded={mo}
+        aria-label={`Giờ Việt Nam ${gioChuoi} — ${tt.nhan}`}
+        className="flex items-center gap-2 rounded-lg border px-2.5 py-1.5"
+        style={{ borderColor: tt.trongKhung ? XANH : VIEN, background: NEN_CARD }}
+      >
+        <Clock size={15} color={tt.mau} strokeWidth={2} aria-hidden="true" />
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "13px", color: TEXT, lineHeight: 1 }}>{gioChuoi}</span>
+        <span className="hidden lg:inline text-[11px]" style={{ color: tt.mau, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          {tt.nhan}
+        </span>
+      </button>
+      {mo && (
+        <div
+          className="absolute right-0 top-full mt-2 w-[320px] max-w-[calc(100vw-24px)] rounded-2xl border p-4 shadow-xl"
+          style={{ borderColor: tt.trongKhung ? XANH : VIEN, background: NEN_CARD, zIndex: 40 }}
+        >
           <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: TEXT, lineHeight: 1 }}>{gioChuoi}</p>
           <p className="text-[11px] mt-1" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
             Giờ Việt Nam · {TEN_THU[tt.thu] || ""}
           </p>
+          <p className="text-sm mt-3" style={{ color: tt.mau, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+            {tt.nhan}
+          </p>
+          <p className="text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+            {tt.chiTiet}
+          </p>
+          <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+            Chỉ vào lệnh MUA trong khung <b style={{ color: TEXT }}>{KHUNG_VAO_LENH.map((k) => `${dinhDangGio(k.tu)}–${dinhDangGio(k.den)}`).join(" · ")}</b>. Ngoài khung: theo dõi, chưa đặt lệnh.
+          </p>
         </div>
-      </div>
-      <div className="min-w-[200px] flex-1">
-        <p className="text-sm" style={{ color: tt.mau, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-          {tt.nhan}
-        </p>
-        <p className="text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-          {tt.chiTiet}
-        </p>
-      </div>
-      <p className="text-[11px] max-w-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-        Chỉ vào lệnh MUA trong khung <b style={{ color: TEXT }}>{KHUNG_VAO_LENH.map((k) => `${dinhDangGio(k.tu)}–${dinhDangGio(k.den)}`).join(" · ")}</b>. Ngoài khung: theo dõi, chưa đặt lệnh.
-      </p>
+      )}
     </div>
   );
 }

@@ -149,15 +149,26 @@ const DS_KHOA_CHON = THU_TU_COT.filter((k) => k !== "ma" && k !== "tin");
 // Cac chi so khac van bat duoc bang nut "Cot hien thi" (hoac "Hien tat ca").
 const MAC_DINH = ["ma", "gia", "vung_mua", "vung_sl", "vung_tp", "lai_lo_pct", "tin"];
 
+// Bo loc cua So lenh mo - state nam o trang cha (LenhMoNoiDung) de the thong ke/bieu do o tren doi theo cung bo loc voi bang.
+export const LOC_LENH_MO_TRONG = { ...LOC_TRONG, tin: "", laiLo: "", chiGiaiNgan: false };
+
+export function locLenhMo(duLieu, loc) {
+  let ds = locChung(duLieu, loc);
+  if (loc.tin) ds = ds.filter((r) => r.tin === loc.tin);
+  if (loc.laiLo === "lai") ds = ds.filter((r) => r.lai_lo_pct > 0);
+  if (loc.laiLo === "lo") ds = ds.filter((r) => r.lai_lo_pct < 0);
+  if (loc.chiGiaiNgan) ds = ds.filter((r) => r.giai_ngan === "MOT PHAN" || r.giai_ngan === "GIU 1 PHAN");
+  return ds;
+}
+
 function mauNenDong(row) {
   return row.mat_than ? "#241419" : row.ban_bot ? "#241C10" : NEN_CARD;
 }
 
-export default function BangLenhMo({ duLieu }) {
+export default function BangLenhMo({ duLieu, loc, datLoc }) {
   // Mac dinh: canh bao Mat Than len dau (rui ro can chu y truoc), giu nguyen
   // hanh vi cu cho toi khi nguoi dung tu bam sap xep cot khac.
   const [sapXep, setSapXep] = useState(null);
-  const [loc, datLoc] = useState({ ...LOC_TRONG, tin: "", laiLo: "", chiGiaiNgan: false });
   const cotHienThi = useCotHienThi("cs_cot_lenhmo_v3", DS_KHOA_CHON, MAC_DINH);
   // Trang nay da bat buoc dang nhap tu server (xem app/lenh-mo/page.js) nen
   // luon coi la da dang nhap - chi can nap ban do Tham gia, khong can kiem
@@ -188,11 +199,7 @@ export default function BangLenhMo({ duLieu }) {
   const soUuTien = useMemo(() => duLieu.filter(datChuanUuTien).length, [duLieu]);
 
   const daLoc = useMemo(() => {
-    let ds = locChung(duLieu, loc);
-    if (loc.tin) ds = ds.filter((r) => r.tin === loc.tin);
-    if (loc.laiLo === "lai") ds = ds.filter((r) => r.lai_lo_pct > 0);
-    if (loc.laiLo === "lo") ds = ds.filter((r) => r.lai_lo_pct < 0);
-    if (loc.chiGiaiNgan) ds = ds.filter((r) => r.giai_ngan === "MOT PHAN" || r.giai_ngan === "GIU 1 PHAN");
+    const ds = locLenhMo(duLieu, loc);
 
     if (!sapXep) {
       return [...ds].sort((a, b) => (b.mat_than ? 1 : 0) - (a.mat_than ? 1 : 0));
@@ -237,7 +244,7 @@ export default function BangLenhMo({ duLieu }) {
         loc={loc}
         datLoc={datLoc}
         coBoLoc={coBoLoc}
-        onXoa={() => datLoc({ ...LOC_TRONG, tin: "", laiLo: "", chiGiaiNgan: false })}
+        onXoa={() => datLoc(LOC_LENH_MO_TRONG)}
         truocChon={
           <>
             <OSelect

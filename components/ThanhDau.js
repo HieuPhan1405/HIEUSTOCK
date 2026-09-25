@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import TimMaToanCuc from "@/components/TimMaToanCuc";
 import TaiKhoanNut from "@/components/TaiKhoanNut";
+import DongHoGiaoDich from "@/components/DongHoGiaoDich";
 
 const BG = "rgba(8,8,11,0.92)";
 const VIEN = "#26262F";
@@ -17,7 +18,8 @@ export default function ThanhDau() {
           <Image src="/logo-chu-toi.png" alt="CloudStock" width={420} height={64} priority className="hidden sm:block h-[18px] md:h-5 w-auto" />
         </Link>
         <TimMaToanCuc className="flex-1 min-w-0 md:max-w-xl" />
-        <div className="ml-auto shrink-0">
+        <DongHoGiaoDich className="ml-auto shrink-0" />
+        <div className="shrink-0">
           <TaiKhoanNut compact />
         </div>
       </div>

@@ -3,12 +3,13 @@ import { layDongTienNuocNgoai } from "@/lib/thiTruong";
 import { TongQuanThiTruong } from "@/components/RaSoatThiTruong";
 import BanDoNhiet from "@/components/BanDoNhiet";
 import ThanhKhoanThiTruong from "@/components/ThanhKhoanThiTruong";
+import AnhHuongIndex from "@/components/AnhHuongIndex";
 import KhoiNgoaiThiTruong from "@/components/KhoiNgoaiThiTruong";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Dashboard thị trường",
-  description: "Bản đồ nhiệt theo ngành, thanh khoản trong phiên và các chỉ số tổng quan thị trường.",
+  description: "Bản đồ nhiệt theo ngành, thanh khoản, ảnh hưởng tới VN-Index, định giá PE/PB và các chỉ số tổng quan thị trường.",
 };
 
 const TEXT = "#F5F5F7";
@@ -45,6 +46,7 @@ export default async function TrangDashboard() {
       <TongQuanThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} />
       <BanDoNhiet tatCa={tatCa} />
       <ThanhKhoanThiTruong ma="VNINDEX" />
+      <AnhHuongIndex />
       <KhoiNgoaiThiTruong ngoai={ngoai} />
     </div>
   );

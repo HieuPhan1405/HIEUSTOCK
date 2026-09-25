@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import BangBoLoc from "@/components/BangBoLoc";
-import DongHoGiaoDich from "@/components/DongHoGiaoDich";
 import NhanCapNhat from "@/components/NhanCapNhat";
 import { capNhatMoiNhat } from "@/components/dungChung";
 
@@ -28,7 +27,6 @@ export default async function TrangBoLoc() {
       <p className="text-sm mb-4" style={{ color: "#8B8B99" }}>
         Lọc và sắp xếp toàn bộ {tatCa.length} cổ phiếu đang theo dõi (HOSE, HNX, UPCOM) theo nhiều tiêu chí.
       </p>
-      <DongHoGiaoDich className="mb-3" />
       <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
 
       {loi ? (

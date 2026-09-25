@@ -21,7 +21,10 @@ const chuoiNgay = (v) => (v ? new Date(v).toISOString().slice(0, 10) : null);
 const soVon = (laiLoPct) => (laiLoPct == null ? null : (VON_GOC * (1 + laiLoPct / 100)).toFixed(1));
 
 const NHAN_LY_DO = {
-  TP3: (x) => `Chốt đủ TP3 (${x.phan_chot_pct ?? 85}% vị thế)`,
+  TP1: (x) => `Chốt lời TP1 (${x.phan_chot_pct ?? 30}% vị thế)`,
+  TP2: (x) => `Chốt lời TP2 (${x.phan_chot_pct ?? 30}% vị thế)`,
+  // Kieu cu: 1 dong gop 85% (30/30/25); kieu moi: chi phan 25% chot tai TP3 (TP1/TP2 da co dong rieng).
+  TP3: (x) => (x.phan_chot_pct != null && Number(x.phan_chot_pct) < 50 ? `Chốt lời TP3 (${x.phan_chot_pct}% vị thế)` : `Chốt đủ TP3 (${x.phan_chot_pct ?? 85}% vị thế)`),
   CAT_LO: () => "Cắt lỗ (chạm Stop-loss)",
   BAO_VE_LAI: () => "Bảo vệ lãi (SL đã dời lên cao hơn)",
   BAN: () => "Bán theo tín hiệu",
@@ -132,9 +135,15 @@ export default function NhatKyGiaoDich({
     suKien.push({
       ngay: d.ngay_ban,
       uuTien: UU_TIEN.DONG,
-      icon: d.ly_do === "CAT_LO" ? ArrowDownCircle : d.ly_do === "TP3" ? Target : d.ly_do === "BAO_VE_LAI" ? ShieldCheck : ArrowDownCircle,
+      icon: d.ly_do === "CAT_LO" ? ArrowDownCircle : /^TP[123]$/.test(d.ly_do ?? "") ? Target : d.ly_do === "BAO_VE_LAI" ? ShieldCheck : ArrowDownCircle,
       mau: d.lai_lo_pct >= 0 ? XANH : DO,
-      chinh: nhan(d) + (d.vong === 3 ? " · phần còn lại sau TP3" : ""),
+      chinh:
+        nhan(d) +
+        (d.vong === 3
+          ? " · phần còn lại sau TP3"
+          : d.vong === 1 && !/^TP[123]$/.test(d.ly_do ?? "") && d.phan_chot_pct != null && Number(d.phan_chot_pct) < 100
+            ? ` · phần còn lại ${d.phan_chot_pct}%`
+            : ""),
       phu: `Giá ${fmt(d.gia_ban)}${d.so_phien != null ? ` · giữ ${d.so_phien} phiên` : ""}`,
       giaTri: { hien: `${VON_GOC} → ${soVon(d.lai_lo_pct)}`, mau: d.lai_lo_pct >= 0 ? XANH : DO },
     });

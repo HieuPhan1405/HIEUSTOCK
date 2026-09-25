@@ -47,7 +47,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
       <p className="text-sm mb-6" style={{ color: MUTED }}>
         {moTa ?? (
           <>
-            Kết quả các lệnh đã bán, đã thoát vị thế hoặc đã chốt đủ TP3 kể từ khi web bắt đầu ghi nhận. Lệnh đang giữ xem ở{" "}
+            Kết quả các lệnh đã bán, đã thoát vị thế hoặc đã chốt lời từng phần (TP1 / TP2 / TP3) kể từ khi web bắt đầu ghi nhận. Lệnh đang giữ xem ở{" "}
             <Link href="/lenh-mo" className="underline" style={{ color: "#6C5CE7" }}>
               Sổ lệnh đang mở
             </Link>
@@ -63,7 +63,11 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
       )}
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
-        <The so={tk.soLenh} nhan="Lệnh đã đóng" phu={tk.soLenh ? `${tk.soThang} thắng · ${tk.soThua} thua` : undefined} />
+        <The
+          so={tk.soLenh}
+          nhan="Lệnh đã đóng"
+          phu={tk.soLenh ? `${tk.soThang} thắng · ${tk.soThua} thua${tk.soChotMotPhan ? ` · ${tk.soChotMotPhan} chốt lời từng phần` : ""}` : undefined}
+        />
         <The
           so={tk.tyLeThang == null ? "—" : `${tk.tyLeThang.toFixed(0)}%`}
           nhan="Tỷ lệ thắng"
@@ -80,11 +84,12 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
       )}
 
       <p className="text-[11px] mb-6" style={{ color: MUTED }}>
-        Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Lệnh
-        &quot;Chốt đủ TP3&quot; tính theo tỷ lệ chốt {CHUOI_TY_LE_CHOT} tại đúng mức TP1/TP2/TP3: lãi/lỗ là phần đã chốt ({100 - TY_LE_CHOT.giu}% vị thế), {TY_LE_CHOT.giu}% cuối
-        giữ chạy — khi phần này đóng thật sự, kết quả hiện thành một dòng riêng (&quot;phần còn lại sau TP3&quot;). Với lệnh đã chạm TP1/TP2 nhưng chưa
-        tới TP3 rồi phải thoát, lãi/lỗ đã tính gộp phần coi như chốt tại TP1/TP2 (theo đúng tỷ lệ {CHUOI_TY_LE_CHOT}) với phần còn lại tính theo giá thoát
-        thật — không còn hiện lỗ đầy đủ nếu một phần đã chốt lời trước đó. Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
+        Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Với
+        lệnh mới, mỗi lần giá chạm mốc chốt lời được ghi thành một dòng ngay lúc chạm theo tỷ lệ {CHUOI_TY_LE_CHOT}: TP1 chốt {TY_LE_CHOT.tp1}%, TP2 chốt {TY_LE_CHOT.tp2}%, TP3 chốt{" "}
+        {TY_LE_CHOT.tp3}%, còn {TY_LE_CHOT.giu}% giữ chạy — lãi/lỗ của mỗi dòng là tỷ lệ giá của đúng phần đó (giá chốt so với giá mua), và khi lệnh đóng thật
+        sự thì chỉ ghi phần còn lại. Mỗi lần chốt lời từng phần được tính là một lệnh thắng nên tỷ lệ thắng ở trên cao hơn so với tính theo cả vị thế (số
+        dòng chốt từng phần ghi ở thẻ đầu). Lệnh cũ đã chạm TP1/TP2 trước khi có cách ghi này vẫn giữ cách tính gộp một dòng: chốt đủ TP3 hiện một dòng {100 -
+        TY_LE_CHOT.giu}% vị thế, phần cuối tính khi đóng thật sự. Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
       </p>
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
@@ -111,7 +116,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                 </tr>
               )}
               {ds.map((x, i) => (
-                <tr key={`${x.ma}-${x.ngay_mua}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "#1D1D26" }}>
+                <tr key={`${x.ma}-${x.ngay_mua}-${x.vong}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "#1D1D26" }}>
                   <td className="py-2.5 px-3">
                     <Link href={`/ma/${x.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
                       {x.ma}
@@ -137,8 +142,12 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                     {x.so_phien ?? "—"}
                   </td>
                   <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-                    {x.ly_do === "TP3"
-                      ? `Chốt đủ TP3 (${x.phan_chot_pct ?? 100 - TY_LE_CHOT.giu}%) · giữ ${TY_LE_CHOT.giu}% chạy`
+                    {x.ly_do === "TP1" || x.ly_do === "TP2"
+                      ? `Chốt lời ${x.ly_do} (${x.phan_chot_pct}% vị thế)`
+                      : x.ly_do === "TP3"
+                        ? x.phan_chot_pct != null && Number(x.phan_chot_pct) < 50
+                          ? `Chốt lời TP3 (${x.phan_chot_pct}% vị thế) · giữ ${TY_LE_CHOT.giu}% chạy`
+                          : `Chốt đủ TP3 (${x.phan_chot_pct ?? 100 - TY_LE_CHOT.giu}%) · giữ ${TY_LE_CHOT.giu}% chạy`
                       : x.ly_do === "CAT_LO"
                         ? "Cắt lỗ (Stop-loss)"
                         : x.ly_do === "BAO_VE_LAI"
@@ -146,7 +155,8 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                           : x.ly_do === "BAN"
                             ? "Tín hiệu BÁN"
                             : "Đã thoát"}
-                    {x.ly_do !== "TP3" && x.vong !== 3 && x.da_cham_tp ? ` · đã chạm ${x.da_cham_tp}` : ""}
+                    {!/^TP[123]$/.test(x.ly_do ?? "") && x.vong !== 3 && x.da_cham_tp ? ` · đã chạm ${x.da_cham_tp}` : ""}
+                    {x.vong === 1 && !/^TP[123]$/.test(x.ly_do ?? "") && x.phan_chot_pct != null && Number(x.phan_chot_pct) < 100 ? ` · phần còn lại ${x.phan_chot_pct}%` : ""}
                     {x.vong === 2 ? " · mua thêm sau TP3" : ""}
                     {x.vong === 3 ? ` · phần còn lại ${TY_LE_CHOT.giu}% sau TP3` : ""}
                   </td>

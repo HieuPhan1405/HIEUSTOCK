@@ -4,7 +4,8 @@ import { tinhGiaVaoWeb, tinhGiaMuaThemWeb } from "@/lib/giaVaoWeb";
 import { tinhVungLenh, chuoiVung } from "@/components/dungChung";
 import {
   phatHienLenhDong,
-  phatHienChotTP3,
+  phatHienChotLoi,
+  layTPDaGhi,
   phatHienDongMuaMoi,
   phatHienDongMuaThemGiuaChung,
   ghiLenhDaDong,
@@ -479,6 +480,8 @@ export async function POST(request) {
   let dsBanMoi = []; // lenh vua dong lan upload nay - dung de bao Zalo BAN
   try {
     const ngayBan = ngayGiaoDichVN();
+    // Cac dong TP1/TP2 (chot loi tung phan) da co - quyet dinh vi the theo doi KIEU MOI hay KIEU CU va dong lenh chi ghi phan con lai.
+    const daGhi = await layTPDaGhi(dsMaLanNay0);
     const dsDong = phatHienLenhDong({
       dsMoi: hangDL.map((h) => ({
         ma: h.ma,
@@ -490,8 +493,9 @@ export async function POST(request) {
       })),
       banGhiCuTheoMa,
       ngayBan,
+      daGhi,
     });
-    const dsChotTP3 = phatHienChotTP3({
+    const dsChotTP3 = phatHienChotLoi({
       dsMoi: hangDL.map((h) => ({
         ma: h.ma,
         tin: h.tin || "TRUNG LAP",
@@ -504,6 +508,7 @@ export async function POST(request) {
       })),
       banGhiCuTheoMa,
       ngayBan,
+      daGhi,
     });
     dsBanMoi = dsDong;
     const dsDongMuaMoi = phatHienDongMuaMoi({
@@ -519,7 +524,7 @@ export async function POST(request) {
     lenhDaDong.dongMuaMoi = dsDongMuaMoi.length;
     lenhDaDong.dongMuaGiua = dsDongMuaGiua.length;
     lenhDaDong.ghi = await ghiLenhDaDong([...dsDong, ...dsChotTP3, ...dsDongMuaMoi, ...dsDongMuaGiua]);
-    lenhDaDong.chotTP3 = dsChotTP3.length;
+    lenhDaDong.chotTP3 = dsChotTP3.length; // gom ca dong chot TP1/TP2/TP3 (chot loi tung phan)
     // Doi soat: ma da bi ghi la dong nhung nay lai NAM GIU (tin hieu doi chieu trong phien) -> bo khoi Lenh da dong;
     // ma van BAN thi cap nhat gia chot theo gia moi nhat.
     const doiSoat = await doiSoatLenhDaDong({ ngayHomNay: ngayBan });

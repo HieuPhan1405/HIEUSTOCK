@@ -4,7 +4,6 @@ import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import { LenhMuaBan } from "@/components/RaSoatThiTruong";
 import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, tinhVungLenh, chuoiVung } from "@/components/dungChung";
 import SignalPill from "@/components/SignalPill";
-import DongHoGiaoDich from "@/components/DongHoGiaoDich";
 import NhanCapNhat from "@/components/NhanCapNhat";
 
 export const dynamic = "force-dynamic";
@@ -391,8 +390,6 @@ export default async function TrangTongQuan() {
           )
         )}
 
-        {/* DONG HO GIAO DICH + KHUNG GIO VAO LENH */}
-        <DongHoGiaoDich className="mb-3" />
         <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
 
         {/* LENH MUA - BAN: huong di lenh/vi the hien tai cua he thong. Tong quan/Ra soat nhanh
