@@ -132,7 +132,10 @@ export default function AnhHuongIndex() {
           </div>
           <p className="text-[11px] mt-3" style={{ color: MUTED }}>
             Tính theo vốn hoá: điểm đóng góp = (thay đổi vốn hoá của mã ÷ tổng vốn hoá phiên trước) × VN-Index phiên trước (giá và vốn hoá từ VNDirect). Tổng ước tính {dau(du.tongUocTinh)} điểm so với thực tế{" "}
-            {dau(du.thayDoiDiem)} — chênh nhẹ do làm tròn giá và điều chỉnh chỉ số. {du.laHomNay ? "Cập nhật trong phiên." : ""}
+            {dau(du.thayDoiDiem)} —{" "}
+            {du.laHomNay
+              ? "trong phiên hai số lấy ở hai thời điểm hơi khác nhau nên có thể lệch vài điểm khi chỉ số biến động nhanh; tự cập nhật mỗi 30 giây."
+              : "chênh nhẹ do làm tròn giá và điều chỉnh chỉ số."}
           </p>
         </>
       )}
