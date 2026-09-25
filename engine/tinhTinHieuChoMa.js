@@ -422,6 +422,6 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   };
   // CHI DE BACKTEST (mac dinh TAT, khong anh huong CSV/upload): thamSo.traChuoi = true tra them CA CHUOI theo tung nen de mo phong lai
   // cach quan ly lenh (vd kieu chot loi khac) tren dung cac lan vao lenh/tin hieu BAN cua engine - xem engine/dich-vu/backtestChotLoi.mjs.
-  if (p.traChuoi) hangCuoi._chuoi = { nen, close, open, high, low, kijun, tenkan, atr: atrArr, totalScore, sellTinHieu: sellTinHieuArr, kq, diemRank: diemRankArr, diemConfidence: diemConfidenceArr, adx, rsVsVni, relVol, cloudTop };
+  if (p.traChuoi) hangCuoi._chuoi = { nen, close, open, high, low, kijun, tenkan, atr: atrArr, totalScore, sellTinHieu: sellTinHieuArr, kq, diemRank: diemRankArr, diemConfidence: diemConfidenceArr, adx, rsVsVni, relVol, cloudTop, cloudBot, cbTop, cbBot };
   return hangCuoi;
 }

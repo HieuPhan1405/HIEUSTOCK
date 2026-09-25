@@ -70,10 +70,11 @@ export function chayEngine({ cache, vni, soNenToiThieu = 300 }) {
       continue;
     }
     soMa++;
-    const { close, open, high, low, kijun, tenkan, sellTinHieu, kq, diemRank, diemConfidence, totalScore, adx, rsVsVni, relVol } = hang._chuoi;
+    const { close, open, high, low, kijun, tenkan, sellTinHieu, kq, diemRank, diemConfidence, totalScore, adx, rsVsVni, relVol, atr, cloudTop, cloudBot, cbTop, cbBot } = hang._chuoi;
     const n = nen.length;
     const ngayArr = nen.map((b) => b.t);
     const sma50 = sma(close, 50);
+    const sma20 = sma(close, 20);
     const gtgd = sma(nen.map((b) => (b.c * b.v) / 1e6), 20);
     for (let i = 50; i < n; i++) {
       cong(breadth50, ngayArr[i], close[i] > sma50[i]);
@@ -93,7 +94,7 @@ export function chayEngine({ cache, vni, soNenToiThieu = 300 }) {
         }
       if (jEng < 0) continue;
       lenh.push({
-        ma, ngay: ngayArr[iv], iv, jEng, E, S, tp, loai: kq.loaiVaoLenh[iv], open, high, low, close, kijun, tenkan, sell: sellTinHieu, n, ngayArr,
+        ma, ngay: ngayArr[iv], iv, jEng, E, S, tp, loai: kq.loaiVaoLenh[iv], open, high, low, close, kijun, tenkan, sma20, sma50, atr, cloudTop, cloudBot, cbTop, cbBot, sell: sellTinHieu, n, ngayArr,
         // Dac trung TAI NEN VAO LENH (chi dung du lieu den het nen do) de xep hang lenh
         dacTrung: {
           "Diem xep hang engine (diem_rank)": diemRank[iv],
@@ -145,6 +146,12 @@ const mucGia = (t, muc) => (typeof muc === "string" ? t.tp[Number(muc.slice(2)) 
 export function moPhong(t, cach) {
   const { E, S, iv, open, high, low, close, sell, n } = t;
   const duongTheo = cach.duongTheo === "tenkan" ? t.tenkan : t.kijun;
+  const chay = cach.chay ?? null; // { duong: "kijun"|"tenkan"|"sma20"|"sma50", soNen: so dong cua lien tiep duoi duong, atrMult: k (bam gia cao nhat - k x ATR), chuyenSauLai: { pct, duong } }
+  const mangDuong = (ten) => ({ kijun: t.kijun, tenkan: t.tenkan, sma20: t.sma20, sma50: t.sma50, cloudTop: t.cloudTop, cloudBot: t.cloudBot, cbTop: t.cbTop, cbBot: t.cbBot })[ten];
+  let demDuoi = 0;
+  let dinhClose = t.close[iv];
+  let daLoLon = false; // da tung lai >= chuyenSauLai.pct (tinh theo dinh cao nhat cac nen truoc)
+  let dinhCao = E;
   const moc = cach.moc.map((m) => ({ w: m.w, gia: mucGia(t, m.muc), xong: false }));
   let conLai = 1;
   let thu = 0;
@@ -167,7 +174,22 @@ export function moPhong(t, cach) {
       }
     const chamStop = low[i] <= S;
     const chamBV = stopBV > 0 && low[i] <= stopBV;
-    const kichHoatDuong = cach.theoKijunSau != null && moc[cach.theoKijunSau].xong && duongTheo[i] != null && close[i] < duongTheo[i];
+    if (i - 1 > iv) dinhCao = Math.max(dinhCao, high[i - 1]);
+    if (chay?.chuyenSauLai && dinhCao >= E * (1 + chay.chuyenSauLai.pct / 100)) daLoLon = true;
+    dinhClose = Math.max(dinhClose, close[i - 1]);
+    const armed = cach.theoKijunSau != null && moc[cach.theoKijunSau].xong;
+    let kichHoatDuong = false;
+    if (armed) {
+      if (!chay) kichHoatDuong = duongTheo[i] != null && close[i] < duongTheo[i];
+      else if (chay.tenkanDuoiKijun) kichHoatDuong = t.tenkan[i] != null && t.kijun[i] != null && t.tenkan[i] < t.kijun[i];
+      else if (chay.atrMult != null) kichHoatDuong = t.atr[i] > 0 && close[i] < dinhClose - chay.atrMult * t.atr[i];
+      else {
+        const d = mangDuong(daLoLon && chay.chuyenSauLai ? chay.chuyenSauLai.duong : chay.duong);
+        if (d[i] != null && close[i] < d[i]) demDuoi++;
+        else demDuoi = 0;
+        kichHoatDuong = demDuoi >= (chay.soNen ?? 1);
+      }
+    }
     let giaThoat = null;
     if (chamStop) {
       giaThoat = Math.min(open[i], S);
