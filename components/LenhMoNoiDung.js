@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import TraCuuMa from "@/components/TraCuuMa";
 import BangLenhMo, { LOC_LENH_MO_TRONG, locLenhMo } from "@/components/BangLenhMo";
 import HieuSuatVsVnindex from "@/components/HieuSuatVsVnindex";
+import HieuQuaDauTu from "@/components/HieuQuaDauTu";
 import BangDiemMuaMoi from "@/components/BangDiemMuaMoi";
 import { pct, chamTPCaoNhat, pctChotLoi } from "@/components/dungChung";
 
@@ -79,6 +80,8 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem }) {
           mauPhu={tk.chotLoiTB >= 0 ? XANH : DO}
         />
       </div>
+
+      <HieuQuaDauTu />
 
       <HieuSuatVsVnindex ds={daLoc} vnindex={vnindex} />
 

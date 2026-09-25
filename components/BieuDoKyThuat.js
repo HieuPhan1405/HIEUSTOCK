@@ -256,7 +256,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   useEffect(() => {
     if (khungTG !== "D") return;
     const hen = setInterval(() => {
-      if (dangTrongPhienGiaoDich()) setLanThu((x) => x + 1);
+      if (dangTrongPhienGiaoDich() && document.visibilityState === "visible") setLanThu((x) => x + 1);
     }, 30_000);
     return () => clearInterval(hen);
   }, [khungTG]);

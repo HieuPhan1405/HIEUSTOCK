@@ -102,7 +102,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
     }
     tai();
     const hen = setInterval(() => {
-      if (dangTrongPhienGiaoDich()) tai();
+      if (dangTrongPhienGiaoDich() && document.visibilityState === "visible") tai();
     }, 30_000);
     return () => {
       huy = true;
