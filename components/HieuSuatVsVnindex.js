@@ -152,7 +152,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
       )}
       <p className="text-[11px] mt-2" style={{ color: MUTED }}>
         Chênh lệch = lãi/lỗ của mã (theo giá mua ghi nhận) trừ mức tăng/giảm VNINDEX từ ngày mua đến hiện tại. VNINDEX lấy theo giá đóng cửa ngày mua nên chỉ mang tính tương đối
-        {boQua > 0 ? ` (${boQua} lệnh chưa tính: mới mua hôm nay hoặc mua trước cửa sổ dữ liệu)` : ""}. Bộ lọc phía trên áp dụng cho cả biểu đồ này.
+        {boQua > 0 ? ` (${boQua} lệnh chưa tính: mới mua hôm nay hoặc mua trước cửa sổ dữ liệu)` : ""}. Bộ lọc ở tab Lệnh đang mở áp dụng cho biểu đồ này.
       </p>
     </div>
   );

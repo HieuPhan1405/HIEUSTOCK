@@ -7,12 +7,15 @@ import HieuSuatVsVnindex from "@/components/HieuSuatVsVnindex";
 import HieuQuaDauTu from "@/components/HieuQuaDauTu";
 import BangDiemMuaMoi from "@/components/BangDiemMuaMoi";
 import { pct, chamTPCaoNhat, pctChotLoi } from "@/components/dungChung";
+import { cacDiemMuaMoi } from "@/lib/muaThemTinhToan";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
 const MUTED = "#8B8B99";
 const DO = "#EF4444";
 const XANH = "#22C55E";
+const PRIMARY = "#6C5CE7";
+const NGOC = "#22D3EE";
 
 function The({ so, mau, nhan, phu, mauPhu }) {
   return (
@@ -36,6 +39,16 @@ function The({ so, mau, nhan, phu, mauPhu }) {
 // bam loc (vd "chi ma dat chuan") thi CA thong ke lan bieu do doi theo, khong chi bang.
 export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem }) {
   const [loc, datLoc] = useState(LOC_LENH_MO_TRONG);
+  // THANH GAT (tab) gom cac khoi phu de trang khong roi: mac dinh chi hien danh sach lenh. Khoi Hieu qua chi tai du lieu khi mo lan dau, roi giu nguyen
+  // (an di chu khong go bo) de khong tai lai; khoi Diem mua moi cung giu nguyen de lua chon vua tick khong bi mat khi doi tab.
+  const [tab, setTab] = useState("lenh");
+  const [daMoHieuQua, setDaMoHieuQua] = useState(false);
+  const chonTab = (t) => {
+    setTab(t);
+    if (t === "hieuQua") setDaMoHieuQua(true);
+  };
+  const diemMuaMoi = useMemo(() => dangMo.flatMap(cacDiemMuaMoi), [dangMo]);
+  const soMuaMoiHomNay = diemMuaMoi.filter((d) => d.homNay).length;
   const daLoc = useMemo(() => locLenhMo(dangMo, loc), [dangMo, loc]);
 
   // Thong ke nhanh hieu qua cac lenh DANG HIEN (sau loc) - khong tinh lenh da dong, vi trang nay chi hien vi the mo.
@@ -60,11 +73,42 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem }) {
 
   const dangLoc = daLoc.length !== dangMo.length;
 
+  const TABS = [
+    ["lenh", "Lệnh đang mở", dangMo.length, null],
+    ["muaMoi", "Điểm mua mới", diemMuaMoi.length, soMuaMoiHomNay > 0 ? NGOC : null],
+    ["hieuQua", "Hiệu quả", null, null],
+  ];
+
   return (
     <>
+      <div className="inline-flex max-w-full overflow-x-auto rounded-xl p-1 mb-6 gap-1" style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, fontFamily: "'Inter', sans-serif" }} role="tablist">
+        {TABS.map(([k, nhan, dem, mauDem]) => (
+          <button
+            key={k}
+            role="tab"
+            aria-selected={tab === k}
+            onClick={() => chonTab(k)}
+            className="px-4 py-2 rounded-lg text-sm whitespace-nowrap flex items-center gap-2"
+            style={tab === k ? { background: PRIMARY, color: "#fff", fontWeight: 700 } : { color: MUTED }}
+          >
+            {nhan}
+            {dem != null && (
+              <span
+                className="text-[11px] px-1.5 rounded-full"
+                style={tab === k ? { background: "rgba(255,255,255,0.2)" } : { background: mauDem ? "rgba(34,211,238,0.15)" : "#1D1D26", color: mauDem ?? MUTED }}
+              >
+                {dem}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* TAB 1: LENH DANG MO - the thong ke (doi theo bo loc) + bang co bo loc */}
+      <div className={tab === "lenh" ? "" : "hidden"}>
       {dangLoc && (
         <p className="text-xs mb-2" style={{ color: MUTED }}>
-          Thống kê và biểu đồ bên dưới đang tính trên <b>{daLoc.length}</b> / {dangMo.length} lệnh khớp bộ lọc.
+          Thống kê bên dưới đang tính trên <b>{daLoc.length}</b> / {dangMo.length} lệnh khớp bộ lọc.
         </p>
       )}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
@@ -81,20 +125,38 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem }) {
         />
       </div>
 
-      <HieuQuaDauTu />
+      <BangLenhMo duLieu={dangMo} loc={loc} datLoc={datLoc} />
 
-      <HieuSuatVsVnindex ds={daLoc} vnindex={vnindex} />
-
-      <BangDiemMuaMoi dangMo={dangMo} daChonBanDau={daChonMuaThem} />
-
-      <div className="mb-8 max-w-md rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
+      <div className="mt-8 max-w-md rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <p className="text-xs uppercase tracking-wide mb-2" style={{ color: MUTED }}>
           Tra cứu mã khác
         </p>
         <TraCuuMa />
       </div>
+      </div>
 
-      <BangLenhMo duLieu={dangMo} loc={loc} datLoc={datLoc} />
+      {/* TAB 2: DIEM MUA MOI (mua them / mua moi) */}
+      <div className={tab === "muaMoi" ? "" : "hidden"}>
+        <BangDiemMuaMoi dangMo={dangMo} daChonBanDau={daChonMuaThem} />
+        {diemMuaMoi.length === 0 && (
+          <p className="text-sm py-6" style={{ color: MUTED }}>
+            Hiện chưa có mã nào có điểm mua mới (mua thêm sau TP3 hoặc mua thêm giữa chừng).
+          </p>
+        )}
+      </div>
+
+      {/* TAB 3: HIEU QUA - duong TSSL vs VN-Index theo thoi gian + so sanh tung ma */}
+      {daMoHieuQua && (
+        <div className={tab === "hieuQua" ? "" : "hidden"}>
+          <HieuQuaDauTu />
+          {dangLoc && (
+            <p className="text-xs mb-2" style={{ color: MUTED }}>
+              Biểu đồ so sánh từng mã bên dưới đang tính trên <b>{daLoc.length}</b> / {dangMo.length} lệnh khớp bộ lọc ở tab Lệnh đang mở.
+            </p>
+          )}
+          <HieuSuatVsVnindex ds={daLoc} vnindex={vnindex} />
+        </div>
+      )}
     </>
   );
 }
