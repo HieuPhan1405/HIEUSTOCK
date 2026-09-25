@@ -161,18 +161,16 @@ export function HangBoLocChung({ loc, datLoc, truocChon, sauChon, coBoLoc, onXoa
 }
 
 // Hang checkbox chung: canh bao + tieu chi UU TIEN (kem so ma dat chuan).
-export function HangTichChung({ loc, datLoc, soUuTien, anChotLoi = false, children }) {
+export function HangTichChung({ loc, datLoc, soUuTien, children }) {
   const dat = (khoa) => (giaTri) => datLoc((cu) => ({ ...cu, [khoa]: giaTri }));
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4">
       <OTich checked={loc.chiMatThan} onChange={dat("chiMatThan")}>
         Chỉ cảnh báo Mắt Thần
       </OTich>
-      {!anChotLoi && (
-        <OTich checked={loc.chiChotLoi} onChange={dat("chiChotLoi")}>
-          Chỉ đã chạm chốt lời (TP)
-        </OTich>
-      )}
+      <OTich checked={loc.chiChotLoi} onChange={dat("chiChotLoi")}>
+        Chỉ đã chạm chốt lời (TP)
+      </OTich>
       <OTich checked={loc.chiBanBot} onChange={dat("chiBanBot")}>
         Chỉ cảnh báo Bán bớt
       </OTich>

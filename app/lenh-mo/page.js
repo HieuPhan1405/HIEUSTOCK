@@ -46,11 +46,11 @@ export default async function TrangLenhMo({ searchParams }) {
   const dangMo = tatCa
     .filter((r) => r.tin === "MUA" || r.tin === "NAM GIU")
     .sort((a, b) => (b.mat_than ? 1 : 0) - (a.mat_than ? 1 : 0));
-  // Diem mua them / mua moi cung nam chung 1 danh sach voi lenh goc (moi diem la 1 dong, xem gopLenhMo). LENH DA CHAM TP (TP1/TP2/TP3) BI BO KHOI DANH SACH NAY:
-  // phan da chot tung phan da ghi o "Lenh da dong" (TP1/TP2/TP3), phan con lai (neu con) van duoc he thong theo doi va se ghi o do khi lenh ket thuc.
+  // Diem mua them / mua moi cung nam chung 1 danh sach voi lenh goc (moi diem la 1 dong, xem gopLenhMo). LENH DA CHAM TP3 BI BO KHOI DANH SACH NAY (cach quan ly moi:
+  // cham TP3 la ket thuc lenh, da ghi o "Lenh da dong"); lenh moi cham TP1/TP2 van con phan giu nen van hien.
   const lenhGop = gopLenhMo(dangMo);
-  const lenhMo = lenhGop.filter((r) => !chamTPCaoNhat(r));
-  const soDaChamTP = lenhGop.length - lenhMo.length;
+  const lenhMo = lenhGop.filter((r) => chamTPCaoNhat(r) !== "TP3");
+  const soDaChamTP3 = lenhGop.length - lenhMo.length;
   const soLenhGoc = lenhMo.filter((r) => !r.la_mua_them).length;
   const soMuaThem = lenhMo.length - soLenhGoc;
   const soCanhBao = lenhMo.filter((r) => !r.la_mua_them && r.mat_than).length;
@@ -70,7 +70,7 @@ export default async function TrangLenhMo({ searchParams }) {
       <p className="text-sm mb-1" style={{ color: MUTED }}>
         {loi
           ? "—"
-          : `${soLenhGoc} mã đang MUA hoặc NẮM GIỮ${soMuaThem > 0 ? ` (+ ${soMuaThem} lệnh mua thêm, mỗi lệnh một dòng riêng)` : ""}${soDaChamTP > 0 ? ` · ${soDaChamTP} lệnh đã chạm chốt lời (TP) đã chuyển khỏi danh sách` : ""} / tổng ${tatCa.length} mã theo dõi.`}
+          : `${soLenhGoc} mã đang MUA hoặc NẮM GIỮ${soMuaThem > 0 ? ` (+ ${soMuaThem} lệnh mua thêm, mỗi lệnh một dòng riêng)` : ""}${soDaChamTP3 > 0 ? ` · ${soDaChamTP3} lệnh đã chạm TP3 (kết thúc lệnh) đã chuyển sang Lệnh đã đóng` : ""} / tổng ${tatCa.length} mã theo dõi.`}
       </p>
       {soCanhBao > 0 && (
         <p className="text-sm mb-6 flex items-center gap-1.5" style={{ color: DO }}>
@@ -88,9 +88,9 @@ export default async function TrangLenhMo({ searchParams }) {
         </p>
       )}
 
-      <LenhMoNoiDung lenhMo={lenhMo} soDaChamTP={soDaChamTP} vnindex={vnindex} tabDau={tabDau} locDau={locDau} />
+      <LenhMoNoiDung lenhMo={lenhMo} vnindex={vnindex} tabDau={tabDau} locDau={locDau} />
       <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-        Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Điểm mua thêm / mua mới hiện thành dòng riêng ngay dưới lệnh gốc của mã (giá vốn trung bình tính trong trang từng mã). Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở. Lệnh đã chạm mốc chốt lời (TP1/TP2/TP3) không còn nằm ở đây: phần đã chốt xem ở trang Lệnh đã đóng, hệ thống không tự động bán, chỉ là gợi ý tham khảo. ⚠ Bán bớt xuất hiện khi điểm hôm nay đã tụt dưới ngưỡng bán nhưng chưa đủ điều kiện Bán hẳn — gợi ý giảm bớt vị thế sớm hơn, không đợi đến khi có tín hiệu Bán toàn bộ.
+        Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Điểm mua thêm / mua mới hiện thành dòng riêng ngay dưới lệnh gốc của mã (giá vốn trung bình tính trong trang từng mã). Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở. Chốt lời báo mức TP cao nhất mà giá hiện tại đã chạm tới; lệnh chạm TP3 là kết thúc lệnh nên không còn nằm ở đây (xem ở trang Lệnh đã đóng). Hệ thống không tự động bán, chỉ là gợi ý tham khảo. ⚠ Bán bớt xuất hiện khi điểm hôm nay đã tụt dưới ngưỡng bán nhưng chưa đủ điều kiện Bán hẳn — gợi ý giảm bớt vị thế sớm hơn, không đợi đến khi có tín hiệu Bán toàn bộ.
       </p>
     </div>
   );

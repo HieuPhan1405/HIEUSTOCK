@@ -274,11 +274,11 @@ export default async function TrangHuongDan() {
 
       <Muc tieuDe="Sổ lệnh đang mở">
         <p>
-          Toàn bộ mã đang MUA hoặc NẮM GIỮ mà chưa chạm mốc chốt lời nào (lệnh đã chạm TP1/TP2/TP3 được chuyển khỏi danh sách này, phần đã chốt xem ở trang Lệnh đã đóng): ngày mua, giá mua, số phiên đã giữ, lãi/lỗ hiện tại, cảnh báo (Mắt Thần, Bán
+          Toàn bộ mã đang MUA hoặc NẮM GIỮ (lệnh chạm TP3 là kết thúc lệnh nên được chuyển sang trang Lệnh đã đóng; lệnh mới chạm TP1/TP2 vẫn còn phần giữ nên vẫn nằm ở đây): ngày mua, giá mua, số phiên đã giữ, lãi/lỗ hiện tại, mốc chốt lời cao nhất đã chạm, cảnh báo (Mắt Thần, Bán
           bớt) và nhãn giải ngân (Giải ngân 1 phần / Bổ sung). Nhãn ↺ Mua lại nghĩa là lệnh mua lại khi giá hồi về hỗ trợ trong xu hướng tăng (sau khi lệnh trước đã đóng không lỗ), có Stop-loss riêng; nhãn 🛡 Bảo vệ lãi nghĩa là Stop-loss đã được dời lên cao hơn (hòa vốn) sau khi giá từng chạm TP2 (xem mục &quot;Giải thích ký hiệu&quot; bên dưới). Giá mua, cắt lỗ và chốt lời được hiển thị dạng vùng: vùng mua (từ mốc chuyển mua đến cao hơn giá mua tối đa khoảng 2%, cao hơn nữa là đuổi giá), vùng cắt lỗ (từ Stop-loss lên tới đường hỗ trợ gần nhất phía trên) và vùng chốt lời (TP1 đến TP3). Bảng có bộ lọc (sàn, ngành, xu hướng, đang lãi/lỗ, mã ưu tiên...) và hiện đầy đủ các chỉ
           số: điểm, Rank, Confidence, vốn hoá, GTGD, Stop-loss, TP1–3... (dùng nút &quot;Cột hiển thị&quot; để bật/tắt). Nếu dữ liệu được cập nhật giữa phiên, giá mua là giá lúc mã lần đầu hiện MUA (dấu chấm xanh cạnh giá) và không đổi ở các lần cập nhật sau; lãi/lỗ, Stop-loss và TP đều giữ theo lúc đó. Cột &quot;Mốc chuyển mua&quot; là mức
           giá chính vừa bị vượt lúc điểm chuyển sang vùng mua, để so với giá mua thực tế xem mình đang mua cao hơn bao nhiêu. Các thẻ thống kê phía trên cho
-          biết tỷ lệ lãi, tỷ lệ lỗ, lãi/lỗ trung bình của các lệnh còn trong danh sách và số lệnh đã chạm chốt lời (đã chuyển sang Lệnh đã đóng).
+          biết tỷ lệ lãi, tỷ lệ lỗ, lãi/lỗ trung bình và tỷ lệ lệnh đã chạm chốt lời (ví dụ 10 lệnh có 7 lệnh đã chạm TP thì là 70%) của các lệnh còn trong danh sách.
         </p>
       </Muc>
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
-import { TriangleAlert, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { TriangleAlert, ArrowUpDown, ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import NutThamGia from "@/components/NutThamGia";
 import { CAC_COT } from "@/components/cotChung";
@@ -40,7 +40,20 @@ const COT_RIENG = {
     nhan: "Mã CP",
     canPhai: false,
     lay: (r) => r.ma,
-    hien: (row, ctx) => (
+    hien: (row, ctx) =>
+      row.la_dong_con ? (
+        // Dong MUA THEM xep gon duoi lenh goc (bam mui ten o lenh goc de mo/an): khong lap lai ma, chi ghi chu loai + ngay + lenh goc.
+        <div className="flex flex-col min-w-0 pl-3" style={{ borderLeft: `2px solid ${mauMuaThem(row)}` }}>
+          <span className="text-[11px] font-bold tracking-wide" style={{ color: mauMuaThem(row), fontFamily: "'Inter', sans-serif" }}>
+            ↳ ➕ {nhanDongMuaThem(row)}
+            {row.mua_them_hom_nay ? " · hôm nay" : ""}
+          </span>
+          <span className="text-[10px] leading-tight" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+            Lệnh riêng · lệnh gốc mua {ngayVN(row.ngay_mua_goc)}
+            {row.gia_mua_goc ? ` giá ${fmt(row.gia_mua_goc)}` : ""}
+          </span>
+        </div>
+      ) : (
       <div className="flex flex-col min-w-0" style={row.la_mua_them ? { borderLeft: `2px solid ${mauMuaThem(row)}`, paddingLeft: 8 } : undefined}>
         <div className="flex items-center gap-1.5">
           <Link href={`/ma/${row.ma}`} className="flex items-center gap-1 hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
@@ -68,10 +81,21 @@ const COT_RIENG = {
             </span>
           </>
         ) : (
-          row.co_mua_them > 0 && (
-            <span className="text-[10px] leading-tight mt-0.5" style={{ color: TIM, fontFamily: "'Inter', sans-serif" }}>
-              Lệnh gốc · có {row.co_mua_them} lệnh mua thêm bên dưới
-            </span>
+          // Lenh goc co lenh mua them: nut mui ten bam de mo/an cac dong mua them nam ngay duoi lenh nay.
+          row.so_con > 0 && (
+            <button
+              type="button"
+              onClick={() => ctx.doiMo(row.ma)}
+              aria-expanded={ctx.moRong.has(row.ma)}
+              aria-label={`${ctx.moRong.has(row.ma) ? "Ẩn" : "Xem"} ${row.so_con} lệnh mua thêm của ${row.ma}`}
+              title="Bấm để xem / ẩn lệnh mua thêm của mã này (gắn liền với lệnh gốc)"
+              className="mt-1 inline-flex items-center gap-1 self-start rounded px-1.5 py-0.5 text-[10px] font-bold tracking-wide hover:brightness-125"
+              style={{ color: TIM, border: `1px solid ${TIM}66`, background: "rgba(167,139,250,0.10)", fontFamily: "'Inter', sans-serif" }}
+            >
+              ➕ {row.so_con} mua thêm
+              {row.con_hom_nay ? " · hôm nay" : ""}
+              <ChevronDown size={12} strokeWidth={2.5} aria-hidden="true" style={{ transform: ctx.moRong.has(row.ma) ? "rotate(180deg)" : "none", transition: "transform .15s" }} />
+            </button>
           )
         )}
         {row.ten_ngan && (
@@ -84,7 +108,7 @@ const COT_RIENG = {
           </span>
         )}
       </div>
-    ),
+      ),
   },
   tin: {
     nhan: "Trạng thái",
@@ -191,8 +215,7 @@ function mauNenDong(row) {
 
 // loc/datLoc: bo loc do TRANG CHA giu (So lenh dang mo - de the thong ke o tren doi theo). Noi khac dung bang nay (vd Danh muc theo doi) khong truyen thi
 // bang tu giu bo loc rieng.
-// anChotLoi: an o "Chi da cham chot loi (TP)" (So lenh dang mo da bo het lenh cham TP nen o do luon rong).
-export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai, anChotLoi = false }) {
+export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai }) {
   const [locNoiBo, datLocNoiBo] = useState(LOC_LENH_MO_TRONG);
   const loc = locNgoai ?? locNoiBo;
   const datLoc = datLocNgoai ?? datLocNoiBo;
@@ -249,6 +272,38 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai,
     });
   }, [duLieu, loc, sapXep]);
 
+  // MUI TEN mua them: lenh goc co lenh mua them hien nut ➕ ▾, bam thi cac dong mua them hien ngay duoi lenh goc (gan chat voi lenh goc), mac dinh dang an.
+  // Dong mua them le loi (lenh goc khong co trong danh sach: da cham TP3 hoac bi loc) van hien rieng nhu 1 dong thuong.
+  const [moRong, setMoRong] = useState(() => new Set());
+  const doiMo = (ma) =>
+    setMoRong((s) => {
+      const moi = new Set(s);
+      if (moi.has(ma)) moi.delete(ma);
+      else moi.add(ma);
+      return moi;
+    });
+  const dongHienThi = useMemo(() => {
+    const maCoGoc = new Set(daLoc.filter((r) => !r.la_mua_them).map((r) => r.ma));
+    const conCua = new Map();
+    for (const r of daLoc) {
+      if (r.la_mua_them && maCoGoc.has(r.ma)) {
+        if (!conCua.has(r.ma)) conCua.set(r.ma, []);
+        conCua.get(r.ma).push(r);
+      }
+    }
+    const ra = [];
+    for (const r of daLoc) {
+      if (r.la_mua_them) {
+        if (!maCoGoc.has(r.ma)) ra.push(r);
+        continue;
+      }
+      const con = conCua.get(r.ma) ?? [];
+      ra.push(con.length ? { ...r, so_con: con.length, con_hom_nay: con.some((c) => c.mua_them_hom_nay) } : r);
+      if (con.length && moRong.has(r.ma)) for (const c of con) ra.push({ ...c, la_dong_con: true });
+    }
+    return ra;
+  }, [daLoc, moRong]);
+
   function doiSapXep(khoa) {
     if (!COT[khoa]?.lay) return;
     setSapXep((s) => (s?.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: "desc" }));
@@ -266,7 +321,7 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai,
 
   const coBoLoc = coLocChung(loc) || loc.tin || loc.laiLo || loc.chiGiaiNgan || loc.loai;
   const dsCot = THU_TU_COT.filter((k) => k === "ma" || k === "tin" || cotHienThi.dangChon.has(k));
-  const ctx = { nhanNganh: NGANH_NHAN, banDoThamGia, doiTrangThaiThamGia };
+  const ctx = { nhanNganh: NGANH_NHAN, banDoThamGia, doiTrangThaiThamGia, moRong, doiMo };
 
   return (
     <div>
@@ -318,7 +373,7 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai,
         }
       />
 
-      <HangTichChung loc={loc} datLoc={datLoc} soUuTien={soUuTien} anChotLoi={anChotLoi}>
+      <HangTichChung loc={loc} datLoc={datLoc} soUuTien={soUuTien}>
         <OTich checked={loc.chiGiaiNgan} onChange={(v) => datLoc((cu) => ({ ...cu, chiGiaiNgan: v }))}>
           Chỉ lệnh đang giải ngân 1 phần
         </OTich>
@@ -363,14 +418,15 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai,
               </tr>
             </thead>
             <tbody>
-              {daLoc.map((row, i) => {
+              {dongHienThi.map((row, i) => {
                 const nen = mauNenDong(row);
                 return (
                   <tr
                     key={row.khoa_lenh ?? row.ma}
                     className={i > 0 ? "border-t" : ""}
                     style={{
-                      borderColor: row.mat_than ? "#4A2230" : row.ban_bot ? "#4A3218" : "#1D1D26",
+                      borderColor: row.la_dong_con ? "#2A2A3A" : row.mat_than ? "#4A2230" : row.ban_bot ? "#4A3218" : "#1D1D26",
+                      borderStyle: row.la_dong_con ? "dashed" : undefined,
                       background: nen === NEN_CARD ? "transparent" : nen,
                     }}
                   >
