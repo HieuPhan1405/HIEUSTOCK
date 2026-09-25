@@ -18,7 +18,8 @@ import {
   useCotHienThi,
   ChonCotHienThi,
 } from "@/components/boLocChung";
-import { nhanGiaiNgan, nhanLoaiVao, nhanMuaThem, nhanBaoVeLai, datChuanUuTien } from "@/components/dungChung";
+import { fmt, nhanGiaiNgan, nhanLoaiVao, nhanBaoVeLai, datChuanUuTien } from "@/components/dungChung";
+import { nhanDongMuaThem } from "@/lib/muaThemTinhToan";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -26,6 +27,11 @@ const MUTED = "#8B8B99";
 const DO = "#EF4444";
 const PRIMARY = "#6C5CE7";
 const CAM = "#F97316";
+const TIM = "#A78BFA";
+const NGOC = "#22D3EE";
+const NEN_MUA_THEM = "#131B26"; // dong mua them: nen hoi xanh de tach khoi lenh goc cua cung ma
+const ngayVN = (s) => (s ? String(s).split("-").reverse().join("/") : "—");
+const mauMuaThem = (row) => (row.loai_mua_them === "giua" ? TIM : NGOC);
 
 // Cot ma + trang thai co logic rieng (nut Tham gia, canh bao Mat Than/Ban bot);
 // cac cot chi so con lai lay tu cotChung.js - dung chung voi bang Bo loc.
@@ -35,19 +41,39 @@ const COT_RIENG = {
     canPhai: false,
     lay: (r) => r.ma,
     hien: (row, ctx) => (
-      <div className="flex flex-col min-w-0">
+      <div className="flex flex-col min-w-0" style={row.la_mua_them ? { borderLeft: `2px solid ${mauMuaThem(row)}`, paddingLeft: 8 } : undefined}>
         <div className="flex items-center gap-1.5">
           <Link href={`/ma/${row.ma}`} className="flex items-center gap-1 hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
             {row.mat_than && <TriangleAlert size={13} color={DO} strokeWidth={2} aria-hidden="true" className="shrink-0" />}
             {row.ma}
           </Link>
-          <NutThamGia
-            ma={row.ma}
-            soNguoiThamGia={ctx.banDoThamGia[row.ma]?.soNguoiThamGia ?? 0}
-            daThamGia={ctx.banDoThamGia[row.ma]?.daThamGia ?? false}
-            onDoiTrangThai={ctx.doiTrangThaiThamGia}
-          />
+          {!row.la_mua_them && (
+            <NutThamGia
+              ma={row.ma}
+              soNguoiThamGia={ctx.banDoThamGia[row.ma]?.soNguoiThamGia ?? 0}
+              daThamGia={ctx.banDoThamGia[row.ma]?.daThamGia ?? false}
+              onDoiTrangThai={ctx.doiTrangThaiThamGia}
+            />
+          )}
         </div>
+        {row.la_mua_them ? (
+          <>
+            <span className="text-[10px] font-bold tracking-wide mt-0.5" style={{ color: mauMuaThem(row), fontFamily: "'Inter', sans-serif" }}>
+              ➕ {nhanDongMuaThem(row)}
+              {row.mua_them_hom_nay ? " · hôm nay" : ""}
+            </span>
+            <span className="text-[10px] leading-tight" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+              Lệnh riêng · lệnh gốc mua {ngayVN(row.ngay_mua_goc)}
+              {row.gia_mua_goc ? ` giá ${fmt(row.gia_mua_goc)}` : ""}
+            </span>
+          </>
+        ) : (
+          row.co_mua_them > 0 && (
+            <span className="text-[10px] leading-tight mt-0.5" style={{ color: TIM, fontFamily: "'Inter', sans-serif" }}>
+              Lệnh gốc · có {row.co_mua_them} lệnh mua thêm bên dưới
+            </span>
+          )
+        )}
         {row.ten_ngan && (
           <span
             className="block max-w-[190px] truncate text-[10px] font-normal leading-tight mt-0.5"
@@ -70,11 +96,6 @@ const COT_RIENG = {
         {nhanGiaiNgan(row) && (
           <span className="text-[10px] font-bold tracking-wide" style={{ color: nhanGiaiNgan(row).mau }} title={nhanGiaiNgan(row).moTa}>
             ◐ {nhanGiaiNgan(row).nhan}
-          </span>
-        )}
-        {nhanMuaThem(row) && (
-          <span className="text-[10px] font-bold tracking-wide" style={{ color: nhanMuaThem(row).mau }} title={nhanMuaThem(row).moTa}>
-            ➕ {nhanMuaThem(row).nhan}
           </span>
         )}
         {nhanBaoVeLai(row) && (
@@ -150,11 +171,14 @@ const DS_KHOA_CHON = THU_TU_COT.filter((k) => k !== "ma" && k !== "tin");
 const MAC_DINH = ["ma", "gia", "vung_mua", "vung_sl", "vung_tp", "lai_lo_pct", "tin"];
 
 // Bo loc cua So lenh mo - state nam o trang cha (LenhMoNoiDung) de the thong ke/bieu do o tren doi theo cung bo loc voi bang.
-export const LOC_LENH_MO_TRONG = { ...LOC_TRONG, tin: "", laiLo: "", chiGiaiNgan: false };
+// loai: "" (tat ca) | "goc" (chi lenh goc) | "them" (chi lenh mua them / mua moi - moi diem mua them la 1 dong rieng, xem gopLenhMo trong lib/muaThemTinhToan.js).
+export const LOC_LENH_MO_TRONG = { ...LOC_TRONG, tin: "", laiLo: "", chiGiaiNgan: false, loai: "" };
 
 export function locLenhMo(duLieu, loc) {
   let ds = locChung(duLieu, loc);
   if (loc.tin) ds = ds.filter((r) => r.tin === loc.tin);
+  if (loc.loai === "goc") ds = ds.filter((r) => !r.la_mua_them);
+  if (loc.loai === "them") ds = ds.filter((r) => r.la_mua_them);
   if (loc.laiLo === "lai") ds = ds.filter((r) => r.lai_lo_pct > 0);
   if (loc.laiLo === "lo") ds = ds.filter((r) => r.lai_lo_pct < 0);
   if (loc.chiGiaiNgan) ds = ds.filter((r) => r.giai_ngan === "MOT PHAN" || r.giai_ngan === "GIU 1 PHAN");
@@ -162,7 +186,7 @@ export function locLenhMo(duLieu, loc) {
 }
 
 function mauNenDong(row) {
-  return row.mat_than ? "#241419" : row.ban_bot ? "#241C10" : NEN_CARD;
+  return row.mat_than ? "#241419" : row.ban_bot ? "#241C10" : row.la_mua_them ? NEN_MUA_THEM : NEN_CARD;
 }
 
 // loc/datLoc: bo loc do TRANG CHA giu (So lenh dang mo - de the thong ke o tren doi theo). Noi khac dung bang nay (vd Danh muc theo doi) khong truyen thi
@@ -239,7 +263,7 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai 
     );
   }
 
-  const coBoLoc = coLocChung(loc) || loc.tin || loc.laiLo || loc.chiGiaiNgan;
+  const coBoLoc = coLocChung(loc) || loc.tin || loc.laiLo || loc.chiGiaiNgan || loc.loai;
   const dsCot = THU_TU_COT.filter((k) => k === "ma" || k === "tin" || cotHienThi.dangChon.has(k));
   const ctx = { nhanNganh: NGANH_NHAN, banDoThamGia, doiTrangThaiThamGia };
 
@@ -259,6 +283,15 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai 
               options={[
                 ["MUA", "MUA (mới hôm nay)"],
                 ["NAM GIU", "NẮM GIỮ"],
+              ]}
+            />
+            <OSelect
+              value={loc.loai}
+              onChange={(v) => datLoc((cu) => ({ ...cu, loai: v }))}
+              placeholder="Mọi loại lệnh"
+              options={[
+                ["goc", "Lệnh gốc"],
+                ["them", "Lệnh mua thêm / mua mới"],
               ]}
             />
             <OSelect
@@ -333,7 +366,7 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai 
                 const nen = mauNenDong(row);
                 return (
                   <tr
-                    key={row.ma}
+                    key={row.khoa_lenh ?? row.ma}
                     className={i > 0 ? "border-t" : ""}
                     style={{
                       borderColor: row.mat_than ? "#4A2230" : row.ban_bot ? "#4A3218" : "#1D1D26",

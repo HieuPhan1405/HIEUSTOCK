@@ -3,6 +3,8 @@ import { ArrowLeft, TriangleAlert } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import NhatKyGiaoDich from "@/components/NhatKyGiaoDich";
+import TheGiaVon from "@/components/TheGiaVon";
+import { cacDiemMuaMoi } from "@/lib/muaThemTinhToan";
 import {
   fmt,
   fmtTy,
@@ -22,6 +24,7 @@ import {
   tinhVungLenh,
   tinhSauTP3,
   tinhMuaGiuaChung,
+  laDangGiu,
   chuoiVung,
   VUNG,
   TREND_MAX,
@@ -288,11 +291,13 @@ function tinhVungGia(row) {
   return { hoTro1: hoTro[0] ?? null, hoTro2: hoTro[1] ?? null, khangCu1: khangCu[0] ?? null, khangCu2: khangCu[1] ?? null };
 }
 
-export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaDong = [] }) {
+// daChonMuaThem: lua chon "da mua dot dau chua" cua nguoi dang xem (chi khi da dang nhap va duoc duyet - coTheLuuMuaThem) cho tung diem mua them cua ma nay.
+export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaDong = [], daChonMuaThem = {}, coTheLuuMuaThem = false }) {
   const vungGia = tinhVungGia(row);
   const vungLenh = tinhVungLenh(row); // null neu khong dang giu
   const sauTP3 = tinhSauTP3(row); // null neu chua chot du TP3
   const muaGiuaChung = tinhMuaGiuaChung(row); // null neu khong dang giu vi the "giua chung"
+  const diemMuaThem = laDangGiu(row) ? cacDiemMuaMoi(row) : []; // cac diem mua them / mua moi -> the "Gia von cua ban"
   const khoangCach = (muc) => (muc === null || !row.gia ? null : ((muc - row.gia) / row.gia) * 100);
   const tag = tinhCacTag(row);
   const mauDiem = row.diem >= 0 ? "#22C55E" : "#EF4444";
@@ -612,6 +617,9 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           </p>
         </Card>
       )}
+
+      {/* GIA VON CUA BAN: tinh gia von trung binh cho cac diem mua them / mua moi cua ma nay (truoc day o bang rieng trong So lenh dang mo) */}
+      {diemMuaThem.length > 0 && <TheGiaVon diem={diemMuaThem} daChonBanDau={daChonMuaThem} coTheLuu={coTheLuuMuaThem} />}
 
       {/* BIEU DO KY THUAT */}
       <div className="mb-4">

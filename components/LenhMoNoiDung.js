@@ -5,9 +5,8 @@ import TraCuuMa from "@/components/TraCuuMa";
 import BangLenhMo, { LOC_LENH_MO_TRONG, locLenhMo } from "@/components/BangLenhMo";
 import HieuSuatVsVnindex from "@/components/HieuSuatVsVnindex";
 import HieuQuaDauTu from "@/components/HieuQuaDauTu";
-import BangDiemMuaMoi from "@/components/BangDiemMuaMoi";
 import { pct, chamTPCaoNhat, pctChotLoi } from "@/components/dungChung";
-import { cacDiemMuaMoi } from "@/lib/muaThemTinhToan";
+import { gopLenhMo } from "@/lib/muaThemTinhToan";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -15,7 +14,7 @@ const MUTED = "#8B8B99";
 const DO = "#EF4444";
 const XANH = "#22C55E";
 const PRIMARY = "#6C5CE7";
-const NGOC = "#22D3EE";
+const TIM = "#A78BFA";
 
 function The({ so, mau, nhan, phu, mauPhu }) {
   return (
@@ -37,24 +36,28 @@ function The({ so, mau, nhan, phu, mauPhu }) {
 
 // Phan than trang So lenh dang mo: the thong ke + bieu do so sanh VNINDEX + bang. Bo loc nam O DAY (khong o trong bang) de
 // bam loc (vd "chi ma dat chuan") thi CA thong ke lan bieu do doi theo, khong chi bang.
-const CAC_TAB = ["lenh", "muaMoi", "hieuQua", "tungMa"];
+// MOT DANH SACH DUY NHAT: lenh goc + cac diem mua them / mua moi gop chung (gopLenhMo) - 1 ma co the co 2 dong, dong mua them co ghi chu rieng. Gia von trung binh
+// (chon "da mua dot dau chua") khong o day ma nam trong trang tung ma (components/TheGiaVon.js).
+const CAC_TAB = ["lenh", "hieuQua", "tungMa"];
 
-export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem, tabDau }) {
+// tabDau: the mo san; locDau: "them" (chi lenh mua them) | "goc" - dung cho lien ket tu trang dau (/lenh-mo?loai=them).
+export default function LenhMoNoiDung({ dangMo, vnindex, tabDau, locDau }) {
   const tabBanDau = CAC_TAB.includes(tabDau) ? tabDau : "lenh";
-  const [loc, datLoc] = useState(LOC_LENH_MO_TRONG);
+  const [loc, datLoc] = useState({ ...LOC_LENH_MO_TRONG, loai: locDau === "them" || locDau === "goc" ? locDau : "" });
   // THANH GAT (tab) gom cac khoi phu de trang khong roi: mac dinh chi hien danh sach lenh. Khoi Hieu qua chi tai du lieu khi mo lan dau, roi giu nguyen
-  // (an di chu khong go bo) de khong tai lai; khoi Diem mua moi cung giu nguyen de lua chon vua tick khong bi mat khi doi tab.
+  // (an di chu khong go bo) de khong tai lai.
   const [tab, setTab] = useState(tabBanDau);
   const [daMoHieuQua, setDaMoHieuQua] = useState(tabBanDau === "hieuQua");
   const chonTab = (t) => {
     setTab(t);
     if (t === "hieuQua") setDaMoHieuQua(true);
   };
-  const diemMuaMoi = useMemo(() => dangMo.flatMap(cacDiemMuaMoi), [dangMo]);
-  const soMuaMoiHomNay = diemMuaMoi.filter((d) => d.homNay).length;
-  const daLoc = useMemo(() => locLenhMo(dangMo, loc), [dangMo, loc]);
+  const lenhGop = useMemo(() => gopLenhMo(dangMo), [dangMo]);
+  const soMuaThem = lenhGop.length - dangMo.length;
+  const soMuaThemHomNay = useMemo(() => lenhGop.filter((r) => r.la_mua_them && r.mua_them_hom_nay).length, [lenhGop]);
+  const daLoc = useMemo(() => locLenhMo(lenhGop, loc), [lenhGop, loc]);
 
-  // Thong ke nhanh hieu qua cac lenh DANG HIEN (sau loc) - khong tinh lenh da dong, vi trang nay chi hien vi the mo.
+  // Thong ke nhanh hieu qua cac lenh DANG HIEN (sau loc, gom ca dong mua them - moi dong la 1 lenh) - khong tinh lenh da dong, vi trang nay chi hien vi the mo.
   const tk = useMemo(() => {
     const soLenh = daLoc.length;
     const soLai = daLoc.filter((r) => r.lai_lo_pct > 0).length;
@@ -63,6 +66,7 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem, tabDau }
     const daChotLoi = daLoc.filter((r) => chamTPCaoNhat(r) != null);
     return {
       soLenh,
+      soMuaThem: daLoc.filter((r) => r.la_mua_them).length,
       soLai,
       soLo,
       tyLeLai: soLenh ? (soLai / soLenh) * 100 : 0,
@@ -74,11 +78,10 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem, tabDau }
     };
   }, [daLoc]);
 
-  const dangLoc = daLoc.length !== dangMo.length;
+  const dangLoc = daLoc.length !== lenhGop.length;
 
   const TABS = [
-    ["lenh", "Lệnh đang mở", dangMo.length, null],
-    ["muaMoi", "Điểm mua mới", diemMuaMoi.length, soMuaMoiHomNay > 0 ? NGOC : null],
+    ["lenh", "Lệnh đang mở", lenhGop.length, soMuaThemHomNay > 0 ? TIM : null],
     ["hieuQua", "Hiệu quả", null, null],
     ["tungMa", "So sánh từng mã", null, null],
   ];
@@ -99,7 +102,7 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem, tabDau }
             {dem != null && (
               <span
                 className="text-[11px] px-1.5 rounded-full"
-                style={tab === k ? { background: "rgba(255,255,255,0.2)" } : { background: mauDem ? "rgba(34,211,238,0.15)" : "#1D1D26", color: mauDem ?? MUTED }}
+                style={tab === k ? { background: "rgba(255,255,255,0.2)" } : { background: mauDem ? "rgba(167,139,250,0.15)" : "#1D1D26", color: mauDem ?? MUTED }}
               >
                 {dem}
               </span>
@@ -108,15 +111,20 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem, tabDau }
         ))}
       </div>
 
-      {/* TAB 1: LENH DANG MO - the thong ke (doi theo bo loc) + bang co bo loc */}
+      {/* TAB 1: LENH DANG MO - the thong ke (doi theo bo loc) + bang co bo loc (lenh goc va lenh mua them chung 1 danh sach) */}
       <div className={tab === "lenh" ? "" : "hidden"}>
       {dangLoc && (
         <p className="text-xs mb-2" style={{ color: MUTED }}>
-          Thống kê bên dưới đang tính trên <b>{daLoc.length}</b> / {dangMo.length} lệnh khớp bộ lọc.
+          Thống kê bên dưới đang tính trên <b>{daLoc.length}</b> / {lenhGop.length} lệnh khớp bộ lọc.
         </p>
       )}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-8">
-        <The so={tk.soLenh} nhan="Lệnh đang mở" phu={dangLoc ? `trên tổng ${dangMo.length}` : undefined} />
+        <The
+          so={tk.soLenh}
+          nhan="Lệnh đang mở"
+          phu={tk.soMuaThem > 0 ? `gồm ${tk.soMuaThem} lệnh mua thêm` : dangLoc ? `trên tổng ${lenhGop.length}` : undefined}
+          mauPhu={tk.soMuaThem > 0 ? TIM : undefined}
+        />
         <The so={`${tk.tyLeLai.toFixed(0)}%`} mau={XANH} nhan={`Tỷ lệ lãi (${tk.soLai} lệnh)`} />
         <The so={`${tk.tyLeLo.toFixed(0)}%`} mau={DO} nhan={`Tỷ lệ lỗ (${tk.soLo} lệnh)`} />
         <The so={pct(tk.laiLoTB, 2)} mau={tk.laiLoTB >= 0 ? XANH : DO} nhan="Lãi/lỗ trung bình" />
@@ -129,7 +137,13 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem, tabDau }
         />
       </div>
 
-      <BangLenhMo duLieu={dangMo} loc={loc} datLoc={datLoc} />
+      <BangLenhMo duLieu={lenhGop} loc={loc} datLoc={datLoc} />
+      {soMuaThem > 0 && (
+        <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+          Dòng <b style={{ color: TIM }}>➕ Mua thêm</b> là lệnh riêng (giá mua, cắt lỗ, chốt lời riêng) của cùng mã nên một mã có thể có 2 dòng. Lãi/lỗ ở dòng đó tính theo giá mua thêm; muốn xem{" "}
+          <b>giá vốn trung bình</b> khi bạn đã mua đợt đầu, mở trang của mã đó.
+        </p>
+      )}
 
       <div className="mt-8 max-w-md rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <p className="text-xs uppercase tracking-wide mb-2" style={{ color: MUTED }}>
@@ -139,28 +153,18 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem, tabDau }
       </div>
       </div>
 
-      {/* TAB 2: DIEM MUA MOI (mua them / mua moi) */}
-      <div className={tab === "muaMoi" ? "" : "hidden"}>
-        <BangDiemMuaMoi dangMo={dangMo} daChonBanDau={daChonMuaThem} />
-        {diemMuaMoi.length === 0 && (
-          <p className="text-sm py-6" style={{ color: MUTED }}>
-            Hiện chưa có mã nào có điểm mua thêm / mua mới (mua thêm giữa chừng, hoặc mua thêm sau TP3 của lệnh cũ).
-          </p>
-        )}
-      </div>
-
-      {/* TAB 3: HIEU QUA - duong TSSL cua he thong vs VN-Index theo thoi gian */}
+      {/* TAB 2: HIEU QUA - duong TSSL cua he thong vs VN-Index theo thoi gian */}
       {daMoHieuQua && (
         <div className={tab === "hieuQua" ? "" : "hidden"}>
           <HieuQuaDauTu />
         </div>
       )}
 
-      {/* TAB 4: SO SANH TUNG MA voi VN-Index cung ky (theo bo loc o tab Lenh dang mo) */}
+      {/* TAB 3: SO SANH TUNG MA voi VN-Index cung ky (theo bo loc o tab Lenh dang mo) */}
       <div className={tab === "tungMa" ? "" : "hidden"}>
         {dangLoc && (
           <p className="text-xs mb-2" style={{ color: MUTED }}>
-            Biểu đồ đang tính trên <b>{daLoc.length}</b> / {dangMo.length} lệnh khớp bộ lọc ở tab Lệnh đang mở.
+            Biểu đồ đang tính trên <b>{daLoc.length}</b> / {lenhGop.length} lệnh khớp bộ lọc ở tab Lệnh đang mở.
           </p>
         )}
         <HieuSuatVsVnindex ds={daLoc} vnindex={vnindex} />

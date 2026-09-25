@@ -9,6 +9,7 @@ import LenhDaDongView from "@/components/LenhDaDongView";
 import SignalPill from "@/components/SignalPill";
 import NhanCapNhat from "@/components/NhanCapNhat";
 import { fmt, pct, capNhatMoiNhat, chamTPCaoNhat } from "@/components/dungChung";
+import { gopLenhMo } from "@/lib/muaThemTinhToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -96,9 +97,12 @@ export default async function TrangDanhMuc() {
   // Lenh da dong chi tinh tu luc tham gia (ban/chot tu ngay tham gia tro di).
   const dsDaDong = daDong.filter((x) => ngayThamGia.has(x.ma) && x.ngay_ban >= ngayThamGia.get(x.ma));
 
-  const soLai = dsDangGiu.filter((r) => r.lai_lo_pct > 0).length;
-  const laiLoTB = dsDangGiu.length ? dsDangGiu.reduce((t, r) => t + (r.lai_lo_pct ?? 0), 0) / dsDangGiu.length : null;
-  const soDaChot = dsDangGiu.filter((r) => chamTPCaoNhat(r) != null).length;
+  // 1 danh sach chung: lenh goc + cac diem mua them cua cac ma dang giu (moi diem mua them la 1 dong rieng, 1 ma co the co nhieu dong).
+  const dsLenh = gopLenhMo(dsDangGiu);
+  const soMuaThem = dsLenh.length - dsDangGiu.length;
+  const soLai = dsLenh.filter((r) => r.lai_lo_pct > 0).length;
+  const laiLoTB = dsLenh.length ? dsLenh.reduce((t, r) => t + (r.lai_lo_pct ?? 0), 0) / dsLenh.length : null;
+  const soDaChot = dsLenh.filter((r) => chamTPCaoNhat(r) != null).length;
   const mauLai = (v) => (v == null ? MUTED : v >= 0 ? XANH : DO);
 
   return (
@@ -147,16 +151,20 @@ export default async function TrangDanhMuc() {
       {thamGia.length > 0 && (
         <>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <The so={dsDangGiu.length} nhan="Lệnh đang giữ" phu={`${cuaToi.length}/${thamGia.length} mã có dữ liệu`} />
+            <The
+              so={dsLenh.length}
+              nhan="Lệnh đang giữ"
+              phu={`${soMuaThem > 0 ? `gồm ${soMuaThem} lệnh mua thêm · ` : ""}${cuaToi.length}/${thamGia.length} mã có dữ liệu`}
+            />
             <The so={laiLoTB == null ? "—" : pct(laiLoTB, 2)} nhan="Lãi/lỗ trung bình" mau={mauLai(laiLoTB)} />
-            <The so={dsDangGiu.length ? `${soLai}/${dsDangGiu.length}` : "—"} nhan="Đang lãi" mau={XANH} />
-            <The so={dsDangGiu.length ? `${soDaChot}/${dsDangGiu.length}` : "—"} nhan="Đã chạm chốt lời" mau="#FBBF24" />
+            <The so={dsLenh.length ? `${soLai}/${dsLenh.length}` : "—"} nhan="Đang lãi" mau={XANH} />
+            <The so={dsLenh.length ? `${soDaChot}/${dsLenh.length}` : "—"} nhan="Đã chạm chốt lời" mau="#FBBF24" />
           </div>
 
           <section className="mb-10">
             <TieuDeMuc phu="Giá mua, vùng mua, cắt lỗ, chốt lời và lãi/lỗ lấy theo lệnh của hệ thống, không phải giá khớp thật của bạn.">Đang nắm giữ</TieuDeMuc>
             {dsDangGiu.length > 0 ? (
-              <BangLenhMo duLieu={dsDangGiu} />
+              <BangLenhMo duLieu={dsLenh} />
             ) : (
               <div className="rounded-2xl border p-5 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
                 Chưa có mã nào trong danh mục đang ở trạng thái MUA hoặc NẮM GIỮ.

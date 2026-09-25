@@ -219,11 +219,11 @@ export function LenhMuaBan({ tatCa }) {
                   trong="Chưa có lệnh mua thêm / mua mới nào đang giữ"
                 />
                 <p className="text-[11px] mt-2.5" style={{ color: MUTED }}>
-                  {LOAI_DIEM_MUA.giua.nhan}: mã đang giữ lệnh, hồi về hỗ trợ rồi bật lên. Đã mua đợt đầu thì ghi nhận là <b>mua thêm</b> (giá vốn trung bình), chưa mua thì là <b>mua mới</b> – chọn theo tài khoản của bạn ở{" "}
-                  <Link href="/lenh-mo?tab=muaMoi" className="underline" style={{ color: NGOC }}>
-                    Sổ lệnh đang mở → Điểm mua mới
+                  {LOAI_DIEM_MUA.giua.nhan}: mã đang giữ lệnh, hồi về hỗ trợ rồi bật lên. Mỗi điểm mua thêm là một dòng riêng (cùng mã có thể có 2 dòng) trong{" "}
+                  <Link href="/lenh-mo?loai=them" className="underline" style={{ color: NGOC }}>
+                    Sổ lệnh đang mở
                   </Link>
-                  .
+                  ; giá vốn trung bình của bạn (đã mua đợt đầu hay chưa) tính ngay trong trang của từng mã.
                 </p>
               </>
             }

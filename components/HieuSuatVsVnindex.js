@@ -41,7 +41,8 @@ export function tinhSoSanhVnindex(ds, vnindex) {
       continue;
     }
     const vn = (cuoi.c / goc.c - 1) * 100;
-    dong.push({ ma: r.ma, ngay, lai, vn, chenh: lai - vn });
+    // khoa: 1 ma co the co nhieu lenh (lenh goc + lenh mua them) nen khong dung rieng ma lam khoa.
+    dong.push({ khoa: r.khoa_lenh ?? r.ma, ma: r.ma, muaThem: !!r.la_mua_them, ngay, lai, vn, chenh: lai - vn });
   }
   dong.sort((a, b) => b.chenh - a.chenh);
   return { dong, boQua };
@@ -73,7 +74,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
   const thap = Math.min(0, ...dong.map((x) => x.chenh)) * 1.1;
   const bien = Math.max(cao - thap, 1);
   const y = (v) => TREN + ((cao - v) / bien) * (H - TREN - DUOI);
-  const dongChon = dong.find((x) => x.ma === chon) ?? null;
+  const dongChon = dong.find((x) => x.khoa === chon) ?? null;
 
   return (
     <div className="mb-8 rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
@@ -104,7 +105,8 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
           <p className="text-xs mb-2 min-h-[16px]" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
             {dongChon ? (
               <>
-                <b style={{ color: TEXT }}>{dongChon.ma}</b> · mua {ngayVN(dongChon.ngay)} · mã <b style={{ color: mau(dongChon.lai) }}>{pct(dongChon.lai, 2)}</b> · VNINDEX{" "}
+                <b style={{ color: TEXT }}>{dongChon.ma}</b>
+                {dongChon.muaThem ? " (mua thêm)" : ""} · mua {ngayVN(dongChon.ngay)} · mã <b style={{ color: mau(dongChon.lai) }}>{pct(dongChon.lai, 2)}</b> · VNINDEX{" "}
                 <b style={{ color: mau(dongChon.vn) }}>{pct(dongChon.vn, 2)}</b> · chênh <b style={{ color: mau(dongChon.chenh) }}>{pct(dongChon.chenh, 2)}</b>
               </>
             ) : (
@@ -127,9 +129,9 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
                 const w = RONG_COT - 8;
                 const yTren = y(Math.max(x.chenh, 0));
                 const yDuoi = y(Math.min(x.chenh, 0));
-                const laChon = chon === x.ma;
+                const laChon = chon === x.khoa;
                 return (
-                  <g key={x.ma} onMouseEnter={() => setChon(x.ma)} onMouseLeave={() => setChon(null)} onClick={() => setChon((c) => (c === x.ma ? null : x.ma))} style={{ cursor: "pointer" }}>
+                  <g key={x.khoa} onMouseEnter={() => setChon(x.khoa)} onMouseLeave={() => setChon(null)} onClick={() => setChon((c) => (c === x.khoa ? null : x.khoa))} style={{ cursor: "pointer" }}>
                     <rect x={TRAI + i * RONG_COT} y={TREN} width={RONG_COT} height={H - TREN - DUOI} fill="transparent" />
                     <rect x={x0} y={yTren} width={w} height={Math.max(yDuoi - yTren, 1)} rx="2" fill={mau(x.chenh)} opacity={laChon ? 1 : 0.8} />
                     <text
@@ -142,6 +144,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
                       style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: laChon ? 700 : 400 }}
                     >
                       {x.ma}
+                      {x.muaThem ? "+" : ""}
                     </text>
                   </g>
                 );
@@ -152,7 +155,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
       )}
       <p className="text-[11px] mt-2" style={{ color: MUTED }}>
         Chênh lệch = lãi/lỗ của mã (theo giá mua ghi nhận) trừ mức tăng/giảm VNINDEX từ ngày mua đến hiện tại. VNINDEX lấy theo giá đóng cửa ngày mua nên chỉ mang tính tương đối
-        {boQua > 0 ? ` (${boQua} lệnh chưa tính: mới mua hôm nay hoặc mua trước cửa sổ dữ liệu)` : ""}. Bộ lọc ở tab Lệnh đang mở áp dụng cho biểu đồ này.
+        {boQua > 0 ? ` (${boQua} lệnh chưa tính: mới mua hôm nay hoặc mua trước cửa sổ dữ liệu)` : ""}. Cột có dấu + là lệnh mua thêm (tính theo giá mua thêm). Bộ lọc ở tab Lệnh đang mở áp dụng cho biểu đồ này.
       </p>
     </div>
   );

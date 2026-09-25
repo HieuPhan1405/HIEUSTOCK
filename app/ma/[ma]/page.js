@@ -2,6 +2,8 @@ import Link from "next/link";
 import { layTinHieuTheoMa } from "@/lib/tinHieu";
 import { layDinhGia, layCauChuyen } from "@/lib/noiDung";
 import { layLichSuGiaoDichMa } from "@/lib/lenhDaDong";
+import { layNguoiDungHienTai } from "@/lib/nguoiDung";
+import { layMuaThemCuaToi } from "@/lib/muaThem";
 import ChiTietMa from "@/components/ChiTietMa";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import { tenCongTy } from "@/lib/tenMa";
@@ -79,5 +81,19 @@ export default async function TrangChiTietMa({ params }) {
     // giu mang rong, ChiTietMa se tu hien "Dang cap nhat..."
   }
 
-  return <ChiTietMa row={row} dinhGia={dinhGia} cauChuyen={cauChuyen} lichSuDaDong={lichSuDaDong} />;
+  // Lua chon "da mua dot dau chua" cua RIENG nguoi dang xem cho cac diem mua them cua ma nay (the "Gia von cua ban"). Chua dang nhap/chua duoc duyet thi chi tinh
+  // tren trang, khong luu; loi DB khong duoc lam hong trang.
+  let daChonMuaThem = {};
+  let coTheLuuMuaThem = false;
+  try {
+    const nguoiDung = await layNguoiDungHienTai();
+    if (nguoiDung?.da_duyet) {
+      daChonMuaThem = await layMuaThemCuaToi(nguoiDung.id);
+      coTheLuuMuaThem = true;
+    }
+  } catch {
+    // giu mac dinh: chua chon, khong luu
+  }
+
+  return <ChiTietMa row={row} dinhGia={dinhGia} cauChuyen={cauChuyen} lichSuDaDong={lichSuDaDong} daChonMuaThem={daChonMuaThem} coTheLuuMuaThem={coTheLuuMuaThem} />;
 }
