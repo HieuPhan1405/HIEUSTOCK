@@ -46,9 +46,16 @@ ok("thoat Kijun sau TP2: 1 lenh, 15%", tk.soLenh === 1 && gan(tk.laiTB, 15));
 ds = [d({ ly_do: "TP3", vong: 1, phan_chot_pct: 85, lai_lo_pct: 19, da_cham_tp: "TP3" }), d({ ly_do: "BAN", vong: 3, phan_chot_pct: 15, lai_lo_pct: 50, da_cham_tp: "TP3" })];
 tk = thongKeLenhDaDong(ds);
 ok("lenh cu 85% + 15%: 1 lenh, 26,5%", tk.soLenh === 1 && gan(tk.laiTB, 26.5), String(tk.laiTB));
-// ...luc moi cham TP3 (chua co phan 15%): van con giu chay -> chua dong
+// ...luc moi cham TP3 (chua co phan 15%): cham TP3 la KET THUC lenh -> tinh la lenh da dong, ket qua chuan hoa theo phan da chot = 19 / 0,85
 tk = thongKeLenhDaDong([ds[0]]);
-ok("lenh cu moi cham TP3 (con 15% chay): chua tinh la lenh da dong", tk.soLenh === 0 && tk.soDangChotTungPhan === 1);
+ok("lenh cu cham TP3 (con 15% chay): coi nhu ket thuc o TP3, ket qua tren phan da chot", tk.soLenh === 1 && tk.soDangChotTungPhan === 0 && gan(tk.laiTB, 19 / 0.85), String(tk.laiTB));
+// lenh cu chot tung phan 30/30/25 (3 dong, 85%): ket thuc o TP3, ket qua = (3 + 6 + 10) / 0,85
+tk = thongKeLenhDaDong([
+  d({ ly_do: "TP1", vong: 5, phan_chot_pct: 30, lai_lo_pct: 10 }),
+  d({ ly_do: "TP2", vong: 6, phan_chot_pct: 30, lai_lo_pct: 20 }),
+  d({ ly_do: "TP3", vong: 1, phan_chot_pct: 25, lai_lo_pct: 40 }),
+]);
+ok("lenh cu 30/30/25 (3 dong): 1 lenh, ket thuc o TP3", tk.soLenh === 1 && gan(tk.laiTB, 19 / 0.85), String(tk.laiTB));
 
 // 6. Lenh kieu cu chua co dong TP rieng (dong lenh 1 dong, lai da tinh co trong so): giu nguyen
 tk = thongKeLenhDaDong([d({ ly_do: "BAN", lai_lo_pct: 12.5, phan_chot_pct: null })]);
