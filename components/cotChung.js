@@ -374,7 +374,7 @@ export const CAC_COT = {
             v.xa
               ? "Stop-loss lúc mua đã cách giá hiện tại rất xa nên chỉ còn mang tính tham khảo; thoát thật theo tín hiệu BÁN"
               : hoaVon
-                ? "Đã chạm TP2: dời Stop-loss của phần còn lại về giá mua (hòa vốn); nếu giá đóng cửa dưới Kijun trước khi tới TP3 thì bán nốt phần còn lại"
+                ? "Đã chạm TP2: dời Stop-loss của phần còn lại về giá mua (hòa vốn)"
                 : "Từ Stop-loss (đáy vùng, cắt dứt khoát) lên tới đường hỗ trợ gần nhất phía trên"
           }
         >
@@ -398,7 +398,7 @@ export const CAC_COT = {
       return (
         <div
           className="flex flex-col items-end leading-tight"
-          title={`Tỷ lệ chốt ${c.tp1}/${c.tp2}/${c.tp3}: ${c.tp1}% ở TP1, ${c.tp2}% ở TP2, ${c.tp3}% ở TP3 (chạm TP3 là kết thúc lệnh); sau TP2 nếu đóng cửa dưới Kijun thì bán nốt phần còn lại`}
+          title={`Tỷ lệ chốt: ${c.tp1}% ở TP1, ${c.tp2}% ở TP2, ${c.giu}% còn lại giữ đến tín hiệu BÁN (TP3 chỉ là mốc tham khảo)`}
         >
           <span style={{ color: v.daCham >= 2 ? XANH : undefined }}>
             <span className="text-[10px]" style={{ color: MUTED }}>

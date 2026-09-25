@@ -33,7 +33,7 @@ const TINH_NANG = [
   {
     Icon: ShieldCheck,
     tieuDe: "Stop-loss cấu trúc & 3 mốc chốt lời",
-    mo: "Cắt lỗ đặt theo cấu trúc giá (mây / đường cân bằng / Kijun), chốt lời từng phần theo tỷ lệ 30/30/40 — chạm TP3 là kết thúc lệnh; sau TP2 nếu giá đóng cửa dưới Kijun thì thoát phần còn lại.",
+    mo: "Cắt lỗ đặt theo cấu trúc giá (mây / đường cân bằng / Kijun), chốt lời 30% ở TP1 và 30% ở TP2 — 40% còn lại giữ đến khi có tín hiệu BÁN để lệnh thắng lớn chạy tiếp.",
   },
   {
     Icon: LayoutGrid,

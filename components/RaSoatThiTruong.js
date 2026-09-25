@@ -3,7 +3,7 @@ import { CalendarDays } from "lucide-react";
 import { tinhTongQuanThiTruong, nhanTamLy } from "@/lib/thiTruong";
 import { tenCongTy } from "@/lib/tenMa";
 import { fmt, pct, capNhatMoiNhat } from "@/components/dungChung";
-import { CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
+import { CHUOI_TY_LE_CHOT, CHUOI_TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
 
 // Khoi "Ra soat thi truong" dung o trang Tong quan thi truong: 3 the tong hop (xu huong, tam ly, muc giu lenh), muc LENH MUA - BAN
 // (mua, mua them, ban, ban bot, chot loi) va RA SOAT NHANH (do rong, top tang/giam, nganh, khoi ngoai...). Tinh tren cac ma he thong
@@ -219,7 +219,7 @@ function CotLenh({ tieuDe, mau, dem, moTa, nhom, trong, chan }) {
 
 // "Lenh mua - ban": dung o trang Tong quan (trang dau) - 4 COT: Mua, Mua moi (mua them / mua moi), Ban, Ban bot - tap trung vao HUONG DI LENH/VI THE hien
 // tai cua he thong, khong keo theo cac chi so tong quan rong hon (xem TongQuanThiTruong ben duoi, dung o trang Dashboard rieng).
-//  - Ban: ban / cat lo + cac lenh vua KET THUC (cham TP3 = chot du 30/30/40, hoac thoat theo Kijun sau TP2) + lenh cu cham TP3 con phan chay.
+//  - Ban: ban / cat lo + thoat theo Kijun sau TP2 (chi khi AFL bat ThoatKijunSauTP2).
 //  - Ban bot: chot loi tung phan (da cham TP1 = chot 30%, TP2 = chot 60%) + canh bao giam bot khi diem tut.
 export function LenhMuaBan({ tatCa }) {
   if (!tatCa?.length) return null;
@@ -231,7 +231,7 @@ export function LenhMuaBan({ tatCa }) {
   const l = tq.lenh;
   const loaiDiem = (d) => (d.vong === "giua" ? "mua thêm giữa chừng" : "lệnh mới sau TP3");
   const soBan = l.ban.length + l.thoatKijun.length;
-  const soBanBot = l.ketThucTP3.length + l.chotTP2.length + l.chotTP1.length + l.banBot.length;
+  const soBanBot = l.ketThucTP3.length + l.chotTP3.length + l.chotTP2.length + l.chotTP1.length + l.banBot.length;
 
   return (
     <section aria-label="Lệnh mua - bán" className="mb-8">
@@ -246,7 +246,7 @@ export function LenhMuaBan({ tatCa }) {
           Lệnh mua – bán
         </h2>
         <p className="text-xs mt-1" style={{ color: MUTED }}>
-          Các lệnh của hệ thống ở lần cập nhật gần nhất. Chốt lời {CHUOI_TY_LE_CHOT} ở TP1/TP2/TP3; chạm TP3 là kết thúc lệnh, mã về trạng thái trung lập.
+          Các lệnh của hệ thống ở lần cập nhật gần nhất. Chốt lời: {CHUOI_TY_LE_CHOT}.
         </p>
       </div>
 
@@ -303,9 +303,10 @@ export function LenhMuaBan({ tatCa }) {
           tieuDe="Bán bớt"
           mau={CAM}
           dem={soBanBot}
-          moTa="Chốt lời TP1/TP2/TP3 và cảnh báo giảm bớt"
+          moTa="Chốt lời từng phần và cảnh báo giảm bớt"
           nhom={[
-            { nhan: `Chạm TP3 – hết vị thế, về trung lập (đủ ${CHUOI_TY_LE_CHOT})`, ds: l.ketThucTP3, mau: PRIMARY_SANG, hienThi: (r) => `TP3 ${pct(r.lai_lo_pct, 1)}` },
+            { nhan: `Chạm TP3 – hết vị thế, về trung lập (đủ ${CHUOI_TY_LE_CHOT_KET_THUC})`, ds: l.ketThucTP3, mau: PRIMARY_SANG, hienThi: (r) => `TP3 ${pct(r.lai_lo_pct, 1)}` },
+            { nhan: "Đã chạm TP3 (mốc tham khảo, phần còn lại giữ chạy)", ds: l.chotTP3, mau: PRIMARY_SANG, hienThi: (r) => pct(r.lai_lo_pct, 1) },
             { nhan: "Đã chạm TP2 (đã chốt 60%)", ds: l.chotTP2, mau: XANH, hienThi: (r) => pct(r.lai_lo_pct, 1) },
             { nhan: "Đã chạm TP1 (đã chốt 30%)", ds: l.chotTP1, mau: XANH, hienThi: (r) => pct(r.lai_lo_pct, 1) },
             { nhan: "Cảnh báo giảm bớt (điểm tụt dưới ngưỡng)", ds: l.banBot, hienThi: (r) => pct(r.lai_lo_pct, 1) },

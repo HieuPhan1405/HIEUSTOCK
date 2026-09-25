@@ -65,11 +65,11 @@ const MAC_DINH = {
   doChamHoTroPct: 1,
   muaLaiCaoToiDaPct: 0,
   soLanMuaLaiToiDa: 2,
-  // KET THUC LENH O TP3 (2026-09-25, theo backtest engine/dich-vu/backtestBaMocKetThuc.mjs): TP1 chot 30%, TP2 chot 30%, TP3 chot 40% = DONG lenh (bo phan 15% giu chay);
-  // sau TP2, dong cua < Kijun truoc khi toi TP3 thi ban not. Vi lenh da ket thuc o TP3 nen "Mua moi sau TP3" (vong 2) khong con dieu kien mo (batMuaMoi false) -
-  // diem mua sau TP3 la MUA BINH THUONG (Buy thuong / Mua lai) cua lenh moi.
-  ketThucTaiTP3: true,
-  thoatKijunSauTP2: true,
+  // 2 TP + PHAN CON LAI GIU DEN TIN HIEU BAN (2026-09-26, theo backtest engine/dich-vu/backtestHaiMocChayDenBan.mjs): TP1 chot 30%, TP2 chot 30%, 40% con lai giu cho toi khi
+  // he thong bao BAN / cham Stop-loss / bao ve hoa von sau TP2 (bvHoaVon). TP3 chi la moc tham khao. Hai cong tac duoi day la CACH KHAC (mac dinh TAT): ketThucTaiTP3 = dong lenh
+  // o TP3 (30/30/40, 2026-09-25); thoatKijunSauTP2 = sau TP2 ban not neu dong cua < Kijun. "Mua moi sau TP3" (vong 2, batMuaMoi) van tat mac dinh.
+  ketThucTaiTP3: false,
+  thoatKijunSauTP2: false,
   batMuaMoi: false,
   kieuHoTroMuaMoi: "Kijun",
   diemToiThieuMuaMoi: 1.25,

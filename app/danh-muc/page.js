@@ -96,8 +96,8 @@ export default async function TrangDanhMuc() {
   const dsDaDong = daDong.filter((x) => ngayThamGia.has(x.ma) && x.ngay_ban >= ngayThamGia.get(x.ma));
 
   // 1 danh sach chung: lenh goc + cac diem mua them cua cac ma dang giu (moi diem mua them la 1 dong rieng, 1 ma co the co nhieu dong). Giong So lenh dang mo:
-  // lenh da cham TP3 la KET THUC (da ghi o Lenh da dong) nen khong nam o day; ma khong con lenh nao thi chuyen xuong "Dang theo doi".
-  const dsLenh = lenhDangMo(cuaToi).filter((r) => chamTPCaoNhat(r) !== "TP3");
+  // ma khong con lenh nao thi chuyen xuong "Dang theo doi".
+  const dsLenh = lenhDangMo(cuaToi);
   const soMuaThem = dsLenh.filter((r) => r.la_mua_them).length;
   const maConLenh = new Set(dsLenh.map((r) => r.ma));
   const dsTheoDoi = cuaToi.filter((r) => !maConLenh.has(r.ma));
@@ -168,7 +168,7 @@ export default async function TrangDanhMuc() {
               <BangLenhMo duLieu={dsLenh} />
             ) : (
               <div className="rounded-2xl border p-5 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
-                Chưa có mã nào trong danh mục đang giữ lệnh (lệnh chạm TP3 đã kết thúc, xem ở Lệnh đã đóng bên dưới).
+                Chưa có mã nào trong danh mục đang giữ lệnh (các lệnh đã kết thúc xem ở Lệnh đã đóng bên dưới).
               </div>
             )}
           </section>

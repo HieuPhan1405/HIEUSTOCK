@@ -15,7 +15,9 @@ const NGAY_MUA = "2026-09-01";
 const NGAY_BAN = "2026-09-24";
 const cuGoc = (tp_da_cham = null, them = {}) => ({ ma: "ABC", tin: "NAM GIU", tp_da_cham, ngay_mua_txt: NGAY_MUA, gia_vao_web: 20, gia_mua: 20, vao_tp1: 22, vao_tp2: 24, vao_tp3: 28, ...them });
 const moi = (tp_da_cham, them = {}) => ({ ma: "ABC", tin: "NAM GIU", tp_da_cham, ngay_mua: NGAY_MUA, so_phien_giu: 12, tp1: 22.5, tp2: 24.5, tp3: 28.5, ...them });
-const chay = (cu, m, daGhi = new Set()) => phatHienChotLoiTungPhan({ dsMoi: [m], banGhiCuTheoMa: { [m.ma]: cu }, ngayBan: NGAY_BAN, daGhi });
+// chay = CACH CU (30/30/25, ghi ca dong TP3 25%): hangToiDa = 3. chayMoi = cach 2 TP + giu den BAN (mac dinh): chi ghi TP1/TP2, TP3 chi la moc tham khao.
+const chay = (cu, m, daGhi = new Set()) => phatHienChotLoiTungPhan({ dsMoi: [m], banGhiCuTheoMa: { [m.ma]: cu }, ngayBan: NGAY_BAN, daGhi, hangToiDa: 3 });
+const chayMoi = (cu, m, daGhi = new Set()) => phatHienChotLoiTungPhan({ dsMoi: [m], banGhiCuTheoMa: { [m.ma]: cu }, ngayBan: NGAY_BAN, daGhi });
 
 ok("hangTP", hangTP(null) === 0 && hangTP("TP1") === 1 && hangTP("TP2") === 2 && hangTP("TP3") === 3);
 
@@ -54,7 +56,9 @@ ok("kieu moi TP1->TP3: dong TP2 + TP3", r.dong.map((d) => d.vong).join() === "6,
 ok("theoDoiKieuMoi: TP2 thieu dong TP2 -> false", theoDoiKieuMoi(cuGoc("TP2"), daCoTP1) === false);
 ok("theoDoiKieuMoi: TP2 du 2 dong -> true", theoDoiKieuMoi(cuGoc("TP2"), new Set([khoaTP("ABC", NGAY_MUA, 1), khoaTP("ABC", NGAY_MUA, 2)])) === true);
 ok("theoDoiKieuMoi: chua TP -> true", theoDoiKieuMoi(cuGoc(null), new Set()) === true);
-ok("theoDoiKieuMoi: da TP3 -> false", theoDoiKieuMoi(cuGoc("TP3"), daCoTP1) === false);
+ok("theoDoiKieuMoi: da TP3 nhung thieu dong TP2 -> false", theoDoiKieuMoi(cuGoc("TP3"), daCoTP1) === false);
+ok("theoDoiKieuMoi: TP3 chi la moc tham khao, du dong TP1+TP2 -> true", theoDoiKieuMoi(cuGoc("TP3"), new Set([khoaTP("ABC", NGAY_MUA, 1), khoaTP("ABC", NGAY_MUA, 2)])) === true);
+ok("theoDoiKieuMoi: lenh cu da ghi dong TP3 -> false (giu kieu cu)", theoDoiKieuMoi(cuGoc("TP3"), new Set([khoaTP("ABC", NGAY_MUA, 1), khoaTP("ABC", NGAY_MUA, 2), khoaTP("ABC", NGAY_MUA, 3)])) === false);
 
 // 6. Khong ghi khi: khong tang muc, khong dang giu, khac ngay mua, VNINDEX, gia TP <= gia mua
 ok("khong tang muc -> khong ghi", chay(cuGoc("TP1"), moi("TP1"), daCoTP1).dong.length === 0);
@@ -77,7 +81,9 @@ ok("dong lenh sau TP2 (du 2 dong): con 40%", p && p.phan_chot_pct === 40 && gan(
 ok("dong lenh sau TP2 nhung thieu dong TP2 -> kieu cu (null)", tinhDongPhanConLai({ cu: cuGoc("TP2"), giaMua: 20, giaBan: 23, daGhi: daCoTP1 }) === null);
 ok("dong lenh sau TP1 khong co dong -> kieu cu (null)", tinhDongPhanConLai({ cu: cuGoc("TP1"), giaMua: 20, giaBan: 23, daGhi: new Set() }) === null);
 ok("dong lenh chua cham TP -> null (tinh nhu cu)", tinhDongPhanConLai({ cu: cuGoc(null), giaMua: 20, giaBan: 23, daGhi: day2 }) === null);
-ok("dong lenh sau TP3 -> null (vong 3 xu ly rieng)", tinhDongPhanConLai({ cu: cuGoc("TP3"), giaMua: 20, giaBan: 23, daGhi: day2 }) === null);
+ok("dong lenh sau TP3 cua lenh CU (da ghi dong TP3) -> null (vong 3 xu ly rieng)", tinhDongPhanConLai({ cu: cuGoc("TP3"), giaMua: 20, giaBan: 23, daGhi: new Set([...day2, khoaTP("ABC", NGAY_MUA, 3)]) }) === null);
+p = tinhDongPhanConLai({ cu: cuGoc("TP3"), giaMua: 20, giaBan: 23, daGhi: day2 });
+ok("dong lenh sau TP3 (TP3 chi la moc tham khao, chua co dong TP3) -> phan con lai 40%", p && p.phan_chot_pct === 40 && gan(p.lai_lo_pct, 15), JSON.stringify(p));
 
 // Tong 30+30+25 + phan con lai 15 = 100
 ok("30+30+25+15 = 100", 30 + 30 + 25 + 15 === 100);
@@ -118,8 +124,11 @@ ok("nap bu: khong co TP -> rong", dongNapBuTP12(uv(null), nen, chamGia, NGAY_BAN
   // vi the kieu cu (da o TP1, chua co dong TP1): khong ghi dong tung phan, bao tp3KieuCu de lenhDaDong.js gop 1 dong
   const r3 = chayKT(cuGoc("TP1"), moi("TP3"), new Set());
   ok("ket thuc TP3 vi the kieu cu: khong ghi dong tung phan, bao tp3KieuCu", r3.dong.length === 0 && r3.tp3KieuCu.length === 1);
-  // mac dinh (khong bat ketThucTP3) van la cach cu 25%
-  ok("mac dinh van la cach cu: TP3 = 25%", chay(cuGoc(null), moi("TP3")).dong.find((d) => d.vong === 1).phan_chot_pct === 25);
+  // MAC DINH (cach 2 TP + giu den BAN): nhay len TP3 chi ghi TP1 + TP2 (30/30), TP3 khong ghi dong nao; da co TP1+TP2 thi khong ghi them
+  const rm = chayMoi(cuGoc(null), moi("TP3"));
+  ok("mac dinh: nhay len TP3 chi ghi TP1/TP2 30/30, khong co dong TP3", rm.dong.length === 2 && rm.dong.map((d) => d.vong).join() === "5,6" && rm.dong.map((d) => d.phan_chot_pct).join() === "30,30" && rm.tp3KieuCu.length === 0, JSON.stringify(rm.dong.map((d) => [d.vong, d.phan_chot_pct])));
+  ok("mac dinh: da co TP1+TP2, len TP3 -> khong ghi gi", chayMoi(cuGoc("TP2"), moi("TP3"), new Set([khoaTP("ABC", NGAY_MUA, 1), khoaTP("ABC", NGAY_MUA, 2)])).dong.length === 0);
+  ok("cach cu (hangToiDa 3): TP3 van 25%", chay(cuGoc(null), moi("TP3")).dong.find((d) => d.vong === 1).phan_chot_pct === 25);
 }
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);

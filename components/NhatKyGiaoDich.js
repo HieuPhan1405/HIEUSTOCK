@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ArrowUpCircle, ArrowDownCircle, Target, ShieldCheck, TrendingUp, Rewind } from "lucide-react";
 import { ngayChamTP } from "@/lib/ngayChamMoc";
 import { fmt } from "@/components/dungChung";
-import { TY_LE_CHOT } from "@/lib/tyLeChot";
+import { TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -28,7 +28,7 @@ const NHAN_LY_DO = {
   // hoac 1 dong gop 85% (kieu cu), con 15% giu chay.
   TP3: (x) => {
     const pc = Number(x.phan_chot_pct);
-    if (pc === TY_LE_CHOT.tp3 || pc >= 100) return `Chốt TP3 (${pc}% vị thế) · kết thúc lệnh`;
+    if (pc === TY_LE_CHOT_KET_THUC.tp3 || pc >= 100) return `Chốt TP3 (${pc}% vị thế) · kết thúc lệnh`;
     return x.phan_chot_pct != null && pc < 50 ? `Chốt lời TP3 (${x.phan_chot_pct}% vị thế)` : `Chốt đủ TP3 (${x.phan_chot_pct ?? 85}% vị thế)`;
   },
   CHOT_TP3: () => "Chốt đủ TP3 (kết thúc lệnh)",

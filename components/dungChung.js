@@ -2,7 +2,7 @@
 // tiet ma). Du lieu that tu AmiBroker co the thieu (ma moi len san, chua du
 // du lieu lich su de tinh chi bao) - moi ham phai an toan voi null/undefined/NaN.
 
-import { TY_LE_CHOT, TY_LE_CHOT_CU, CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
+import { TY_LE_CHOT, TY_LE_CHOT_CU, CHUOI_TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
 
 export const FONT_IMPORT = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -171,8 +171,7 @@ export function sapChamMoc(row, bienPct) {
 //  - Vung cat lo: tu Stop-loss len toi duong ho tro GAN NHAT nam giua Stop-loss va gia mua
 //    (Kijun / duong can bang dai han), rong toi thieu rongSLToiThieuPct%. Cham day vung = cat.
 //  - Vung chot loi: GOM TP1-TP2 thanh "vung gan" (2 moc nay thuong sat nhau, gia di qua trong
-//    vai phien) + TP3 la "moc xa"; ty le chot 30/30/40 (TP1/TP2/TP3 - xem lib/tyLeChot.js): cham TP3 la KET THUC lenh (khong con
-//    phan giu chay); sau TP2 neu dong cua < Kijun truoc khi toi TP3 thi ban not phan con lai.
+//    vai phien) + TP3 la "moc xa" (chi THAM KHAO); ty le chot 30% o TP1 + 30% o TP2, 40% con lai giu den tin hieu BAN (xem lib/tyLeChot.js).
 //    Sau khi cham TP2, goi y doi Stop-loss phan con lai ve gia mua (hoa von).
 //  - Khi Stop-loss luc mua da cach gia hien tai qua xa (lenh lai lon) thi chi con mang tinh
 //    tham khao - thoat that van theo tin hieu BAN cua he thong.
@@ -294,7 +293,7 @@ export function tinhMuaGiuaChung(row) {
 // lib/tinHieu.js chuan hoa tin thanh TRUNG LAP va gan ket_thuc_tp3), 4 = thoat theo Kijun sau TP2, 3 = bao ve lai, 2 = cat lo (Stop-loss), 1 = diem so tut duoi nguong (tin hieu BAN
 // thuong). Tra null neu khong phai ma vua ket thuc lenh hoac chua co du lieu (CSV cu).
 const LY_DO_BAN = {
-  5: { nhan: "Chạm TP3 · kết thúc lệnh", mau: "#B7A4FF", moTa: `Giá chạm TP3: chốt nốt phần cuối, đủ ${CHUOI_TY_LE_CHOT} (TP1/TP2/TP3) — không còn nắm vị thế, trạng thái về TRUNG LẬP.` },
+  5: { nhan: "Chạm TP3 · kết thúc lệnh", mau: "#B7A4FF", moTa: `Giá chạm TP3: chốt nốt phần cuối, đủ ${CHUOI_TY_LE_CHOT_KET_THUC} (TP1/TP2/TP3) — không còn nắm vị thế, trạng thái về TRUNG LẬP.` },
   4: { nhan: "Thoát theo Kijun (sau TP2)", mau: "#F97316", moTa: "Đã chốt TP1, TP2 rồi giá đóng cửa xuống dưới Kijun trước khi tới TP3 nên bán nốt phần còn lại." },
   3: { nhan: "Bảo vệ lãi", mau: "#A78BFA", moTa: "Giá quay về mức Stop-loss đã dời lên (hòa vốn) sau khi chạm mốc chốt lời nên bán ngay." },
   2: { nhan: "Cắt lỗ (chạm Stop-loss)", mau: "#EF4444", moTa: "Giá chạm Stop-loss của lệnh." },

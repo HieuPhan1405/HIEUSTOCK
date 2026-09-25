@@ -4,7 +4,7 @@ import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import LenhMoNoiDung from "@/components/LenhMoNoiDung";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import NhanCapNhat from "@/components/NhanCapNhat";
-import { capNhatMoiNhat, chamTPCaoNhat } from "@/components/dungChung";
+import { capNhatMoiNhat } from "@/components/dungChung";
 import { layLichSuGia } from "@/lib/lichSuGia";
 import { lenhDangMo } from "@/lib/muaThemTinhToan";
 
@@ -41,10 +41,9 @@ export default async function TrangLenhMo({ searchParams }) {
     loi = String(e?.message || e);
   }
 
-  // "Dang mo" = ma vua phat tin hieu MUA hoac dang giu vi the (NAM GIU) + cac lenh phu con dang giu (mua them giua chung, lenh moi sau TP3) - xem lenhDangMo. Cham TP3 la KET THUC
-  // lenh (khong con nam vi the, tin hieu ve TRUNG LAP, da ghi o "Lenh da dong") nen khong nam o day; lenh moi cham TP1/TP2 van con phan giu nen van hien.
-  const lenhMo = lenhDangMo(tatCa).filter((r) => chamTPCaoNhat(r) !== "TP3");
-  const soDaChamTP3 = tatCa.filter((r) => r.ket_thuc_tp3).length;
+  // "Dang mo" = ma vua phat tin hieu MUA hoac dang giu vi the (NAM GIU) + cac lenh phu con dang giu (mua them giua chung, lenh moi sau TP3) - xem lenhDangMo. Cach 2 TP + giu den BAN:
+  // lenh cham TP1/TP2 van con phan giu (30% / 30% da chot) nen van nam o day cho toi khi he thong bao BAN; TP3 chi la moc tham khao.
+  const lenhMo = lenhDangMo(tatCa);
   const soLenhGoc = lenhMo.filter((r) => !r.la_mua_them && !r.sau_tp3).length;
   const soMuaThem = lenhMo.filter((r) => r.la_mua_them).length;
   const soMoiSauTP3 = lenhMo.filter((r) => r.sau_tp3).length; // lenh moi sau TP3: dong binh thuong (khong phai mua them)
@@ -65,7 +64,7 @@ export default async function TrangLenhMo({ searchParams }) {
       <p className="text-sm mb-1" style={{ color: MUTED }}>
         {loi
           ? "—"
-          : `${soLenhGoc} mã đang MUA hoặc NẮM GIỮ${soMuaThem > 0 ? ` (+ ${soMuaThem} lệnh mua thêm giữa chừng)` : ""}${soMoiSauTP3 > 0 ? ` (+ ${soMoiSauTP3} lệnh mới sau TP3)` : ""}${soDaChamTP3 > 0 ? ` · ${soDaChamTP3} lệnh đã chạm TP3 (kết thúc lệnh) đã chuyển sang Lệnh đã đóng` : ""} / tổng ${tatCa.length} mã theo dõi.`}
+          : `${soLenhGoc} mã đang MUA hoặc NẮM GIỮ${soMuaThem > 0 ? ` (+ ${soMuaThem} lệnh mua thêm giữa chừng)` : ""}${soMoiSauTP3 > 0 ? ` (+ ${soMoiSauTP3} lệnh mới sau TP3)` : ""} / tổng ${tatCa.length} mã theo dõi.`}
       </p>
       {soCanhBao > 0 && (
         <p className="text-sm mb-6 flex items-center gap-1.5" style={{ color: DO }}>
@@ -85,7 +84,7 @@ export default async function TrangLenhMo({ searchParams }) {
 
       <LenhMoNoiDung lenhMo={lenhMo} vnindex={vnindex} tabDau={tabDau} locDau={locDau} />
       <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-        Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Lệnh mua thêm giữa chừng nằm gọn dưới lệnh gốc của mã (bấm nút ➕ ▾ để mở, giá vốn trung bình tính trong trang từng mã); lệnh mới sau TP3 là một dòng bình thường với TP/SL mới. Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở. Chốt lời báo mức TP cao nhất mà giá hiện tại đã chạm tới; lệnh chạm TP3 là kết thúc lệnh nên không còn nằm ở đây (xem ở trang Lệnh đã đóng). Hệ thống không tự động bán, chỉ là gợi ý tham khảo. ⚠ Bán bớt xuất hiện khi điểm hôm nay đã tụt dưới ngưỡng bán nhưng chưa đủ điều kiện Bán hẳn — gợi ý giảm bớt vị thế sớm hơn, không đợi đến khi có tín hiệu Bán toàn bộ.
+        Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Lệnh mua thêm giữa chừng nằm gọn dưới lệnh gốc của mã (bấm nút ➕ ▾ để mở, giá vốn trung bình tính trong trang từng mã); lệnh mới sau TP3 là một dòng bình thường với TP/SL mới. Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở. Chốt lời báo mức TP cao nhất mà giá hiện tại đã chạm tới (TP1 chốt 30%, TP2 chốt 30%, 40% còn lại giữ đến tín hiệu BÁN; TP3 chỉ là mốc tham khảo). Hệ thống không tự động bán, chỉ là gợi ý tham khảo. ⚠ Bán bớt xuất hiện khi điểm hôm nay đã tụt dưới ngưỡng bán nhưng chưa đủ điều kiện Bán hẳn — gợi ý giảm bớt vị thế sớm hơn, không đợi đến khi có tín hiệu Bán toàn bộ.
       </p>
     </div>
   );

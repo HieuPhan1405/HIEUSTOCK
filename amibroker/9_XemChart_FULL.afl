@@ -653,11 +653,12 @@ BVHoaVon = KieuBaoVeLai == "Hoa von sau TP2";
 BVRong = KieuBaoVeLai == "Rong tu dinh sau TP1";
 BVBat = BVHoaVon OR BVRong;
 
-// KET THUC LENH O TP3 (2026-09-25, theo backtest engine/dich-vu/backtestBaMocKetThuc.mjs): TP1 chot 30%, TP2 chot 30%, TP3 chot 40% = DONG lenh (khong con phan 15% giu chay).
-// Sau TP2 (da chot 60%), neu dong cua < Kijun truoc khi toi TP3 thi ban not phan con lai. Vi lenh da ket thuc o TP3 nen "Mua moi sau TP3" (vong 2) khong con
-// dieu kien mo - diem mua sau TP3 la MUA BINH THUONG (Buy thuong / Mua lai) cua lenh moi. Tat 2 cong tac nay de ve lai cach cu (giu 15% chay) khi so backtest.
-KetThucTaiTP3    = ParamToggle("KET THUC LENH o TP3: chot 30/30/40 (TP1/TP2/TP3), khong giu phan chay", "Tat|Bat", 1);
-ThoatKijunSauTP2 = ParamToggle("Sau TP2: ban not neu dong cua < Kijun (truoc khi toi TP3)", "Tat|Bat", 1);
+// 2 TP + PHAN CON LAI GIU DEN TIN HIEU BAN (2026-09-26, theo backtest engine/dich-vu/backtestHaiMocChayDenBan.mjs): TP1 chot 30%, TP2 chot 30%, 40% con lai giu cho toi khi he thong
+// bao BAN / cham Stop-loss / bao ve hoa von sau TP2. TP3 chi la moc tham khao. Web ghi lenh theo ty le nay. 2 cong tac duoi day la CACH KHAC (mac dinh TAT):
+//  - KetThucTaiTP3: cham TP3 la DONG lenh (chot 30/30/40, ve TRUNG LAP) - cach 2026-09-25.
+//  - ThoatKijunSauTP2: sau TP2, dong cua < Kijun truoc khi toi TP3 thi ban not phan con lai (nhanh von hon nhung lai TB/lenh giam - xem backtest).
+KetThucTaiTP3    = ParamToggle("KET THUC LENH o TP3: chot 30/30/40 (TP1/TP2/TP3), khong giu phan chay", "Tat|Bat", 0);
+ThoatKijunSauTP2 = ParamToggle("Sau TP2: ban not neu dong cua < Kijun (truoc khi toi TP3)", "Tat|Bat", 0);
 
 // TP1/TP2 dung trong vong lap de biet "da cham TP chua" - CUNG cong thuc voi ChotLoi_TP1/2
 // o phan Chot loi phia duoi (neu doi cong thuc TP thi sua CA HAI cho khop).

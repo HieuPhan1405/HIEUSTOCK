@@ -540,12 +540,12 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
       {sauTP3 && (
         <Card className="mb-4">
           <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#6C5CE7" }}>
-            ★ Đã chạm TP3 — lệnh kết thúc, chờ lệnh mới
+            ★ Đã chạm TP3 — mốc tham khảo, phần còn lại vẫn giữ
           </p>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#8B8B99" }}>
-                Lệnh cũ (đã chạm TP3)
+                Vị thế đang giữ
               </p>
               <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-lg">
                 Giá mua {fmt(sauTP3.viTheCu.giaMua)}
@@ -554,12 +554,12 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 {pct(sauTP3.viTheCu.laiLoPct, 2)} so với giá mua cũ
               </p>
               <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                Chạm TP3 là kết thúc lệnh (đã chốt 85% theo cách chốt cũ 30/30/25; từ 25/09/2026 chốt 30/30/40 đủ 100%). Lệnh mới với TP/SL mới chỉ mở khi có tín hiệu mua (mua lại) sau đó.
+                Đã chốt TP1 và TP2 (60% vị thế; lệnh cũ chốt thêm 25% ở TP3 nên đã chốt 85%). TP3 chỉ là mốc tham khảo, phần còn lại giữ chạy đến khi hệ thống báo BÁN.
               </p>
             </div>
             <div>
               <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#22C55E" }}>
-                Lệnh mới (tham khảo)
+                Điểm mua mới (gợi ý)
               </p>
               {sauTP3.lenhMoi ? (
                 <>
@@ -622,7 +622,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
             {muaGiuaChung.stop ? `Cắt lỗ riêng ${fmt(muaGiuaChung.stop)}. ` : ""}
             {muaGiuaChung.tp1 ? `Chốt lời riêng ${fmt(muaGiuaChung.tp1)} / ${fmt(muaGiuaChung.tp2)} / ${fmt(muaGiuaChung.tp3)}. ` : ""}
-            Vị thế tách khỏi lệnh gốc, tự thoát khi chạm cắt lỗ riêng hoặc khi lệnh gốc kết thúc (tín hiệu BÁN, chạm TP3, thoát theo Kijun).
+            Vị thế tách khỏi lệnh gốc, tự thoát khi chạm cắt lỗ riêng hoặc khi lệnh gốc có tín hiệu BÁN.
           </p>
         </Card>
       )}
@@ -701,7 +701,6 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               {vungLenh?.hoaVon && (
                 <p className="text-[10px] leading-snug mt-1 font-bold" style={{ color: "#FBBF24" }}>
                   Đã chạm TP2 → nên dời Stop-loss của phần còn lại về giá mua ({fmt(vungLenh.hoaVon)}) để không còn rủi ro lỗ.
-                  {row.kijun > 0 ? ` Nếu giá đóng cửa dưới Kijun (${fmt(row.kijun)}) trước khi tới TP3 thì bán nốt phần còn lại.` : ""}
                 </p>
               )}
               {vungLenh?.sl?.xa && vungLenh.sl.canhBao != null && (
@@ -728,7 +727,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: "#22C55E" }}>{fmt(vungLenh.tp.xa)}</strong>
               </p>
               <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                Tỷ lệ chốt {VUNG.tyLeChot.tp1}/{VUNG.tyLeChot.tp2}/{VUNG.tyLeChot.tp3}: {VUNG.tyLeChot.tp1}% ở TP1, {VUNG.tyLeChot.tp2}% ở TP2, {VUNG.tyLeChot.tp3}% ở TP3 — chạm TP3 là kết thúc lệnh. Sau TP2, nếu giá đóng cửa dưới Kijun trước khi tới TP3 thì bán nốt phần còn lại.
+                Tỷ lệ chốt: {VUNG.tyLeChot.tp1}% ở TP1, {VUNG.tyLeChot.tp2}% ở TP2, {VUNG.tyLeChot.giu}% còn lại giữ đến khi hệ thống báo BÁN (TP3 chỉ là mốc tham khảo). Sau TP2, Stop-loss của phần còn lại dời về giá mua.
               </p>
             </div>
           )}
