@@ -209,6 +209,12 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   }
 
   // ---- May trang thai chinh ----
+  // SellTinHieu = TurnedPink AND BarsSince(buyTho da AND cong)>=2 - can buyTho HOAN CHINH
+  // (da AND cong) truoc, tinh o day thay vi trong tinHieuTho.js (xem chu thich file do).
+  const sellTinHieuArr = (() => {
+    const soPhienTuBuy = barsSince(buyTho);
+    return turnedPink.map((v, i) => v && soPhienTuBuy[i] >= 2);
+  })();
   const kq = chayMayTrangThai({
     close,
     open,
@@ -217,12 +223,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     atr: atrArr,
     totalScore,
     buyTho,
-    sellTinHieu: (() => {
-      // SellTinHieu = TurnedPink AND BarsSince(buyTho da AND cong)>=2 - can buyTho HOAN CHINH
-      // (da AND cong) truoc, tinh o day thay vi trong tinHieuTho.js (xem chu thich file do).
-      const soPhienTuBuy = barsSince(buyTho);
-      return turnedPink.map((v, i) => v && soPhienTuBuy[i] >= 2);
-    })(),
+    sellTinHieu: sellTinHieuArr,
     rsvniOk,
     giaVaoBar,
     stopVaoBar,
@@ -347,7 +348,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   const ngayMuaGiuaVT = nen[kq.muaGiuaVi[cuoi]]?.t ?? null;
   const laiLoTaiMuaCuoi = giaMuaTaiMua[cuoi] > 0 ? (close[cuoi] / giaMuaTaiMua[cuoi] - 1) * 100 : 0;
 
-  return {
+  const hangCuoi = {
     ma,
     tin,
     diem: totalScore[cuoi],
@@ -419,4 +420,8 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     tp3_giua: kq.muaGiuaGiu[cuoi] ? kq.muaGiuaTP3[cuoi] : null,
     ngay_mua_giua: kq.muaGiuaGiu[cuoi] ? ngayVN(ngayMuaGiuaVT) : null,
   };
+  // CHI DE BACKTEST (mac dinh TAT, khong anh huong CSV/upload): thamSo.traChuoi = true tra them CA CHUOI theo tung nen de mo phong lai
+  // cach quan ly lenh (vd kieu chot loi khac) tren dung cac lan vao lenh/tin hieu BAN cua engine - xem engine/dich-vu/backtestChotLoi.mjs.
+  if (p.traChuoi) hangCuoi._chuoi = { nen, close, open, high, low, kijun, tenkan, atr: atrArr, totalScore, sellTinHieu: sellTinHieuArr, kq };
+  return hangCuoi;
 }
