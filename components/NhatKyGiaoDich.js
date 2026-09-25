@@ -139,7 +139,11 @@ export default function NhatKyGiaoDich({
         phu: `Giá ${fmt(d.gia_mua)}`,
       });
     }
-    const nhan = NHAN_LY_DO[d.ly_do] || (() => "Đóng vị thế");
+    // Lenh MUA THEM (vong 2 = sau TP3, vong 4 = giua chung): dong theo Stop-loss RIENG hoac dong THEO lenh goc - khong co TP1/TP2 rieng.
+    const laMuaThem = d.vong === 2 || d.vong === 4;
+    const nhan = laMuaThem
+      ? () => (d.ly_do === "CAT_LO" ? "Cắt lỗ riêng của lệnh mua thêm (chạm Stop-loss)" : "Đóng lệnh mua thêm theo lệnh gốc")
+      : NHAN_LY_DO[d.ly_do] || (() => "Đóng vị thế");
     suKien.push({
       ngay: d.ngay_ban,
       uuTien: UU_TIEN.DONG,
@@ -149,7 +153,7 @@ export default function NhatKyGiaoDich({
         nhan(d) +
         (d.vong === 3
           ? " · phần còn lại sau TP3 (lệnh cũ)"
-          : d.vong === 1 && !/^TP[123]$/.test(d.ly_do ?? "") && d.phan_chot_pct != null && Number(d.phan_chot_pct) < 100
+          : d.vong === 1 && !/^(CHOT_)?TP[123]$/.test(d.ly_do ?? "") && d.phan_chot_pct != null && Number(d.phan_chot_pct) < 100
             ? ` · phần còn lại ${d.phan_chot_pct}%`
             : ""),
       phu: `Giá ${fmt(d.gia_ban)}${d.so_phien != null ? ` · giữ ${d.so_phien} phiên` : ""}`,

@@ -14,6 +14,40 @@ const DO = "#EF4444";
 // yyyy-mm-dd -> dd/mm/yyyy
 const ngayVN = (s) => (s && /^\d{4}-\d{2}-\d{2}$/.test(s) ? `${s.slice(8, 10)}/${s.slice(5, 7)}/${s.slice(0, 4)}` : "—");
 
+// Dong cua LENH MUA THEM (vi the phu, co gia mua/Stop-loss/ngay mua rieng, tach khoi lenh goc): vong 2 = mua them sau TP3 (lenh cu), vong 4 = mua them giua chung.
+const MUA_THEM = {
+  2: { nhan: "Mua thêm sau TP3", mau: "#22D3EE" },
+  4: { nhan: "Mua thêm giữa chừng", mau: "#A78BFA" },
+};
+
+// Cot "Ket thuc": ly do dong + ghi chu phan vi the. Lenh mua them dong theo Stop-loss RIENG hoac dong THEO lenh goc (lenh goc bi ban / ket thuc o TP3), khong co
+// TP1/TP2 rieng nen khong ghi "da cham TP" / "phan con lai" cua lenh goc.
+function nhanKetThuc(x) {
+  const pc = Number(x.phan_chot_pct);
+  if (MUA_THEM[x.vong]) {
+    if (x.ly_do === "CAT_LO") return "Cắt lỗ riêng (chạm Stop-loss của lệnh mua thêm)";
+    if (x.ly_do === "BAN") return "Đóng theo lệnh gốc (lệnh gốc có tín hiệu BÁN)";
+    return "Đóng theo lệnh gốc";
+  }
+  let chinh;
+  if (x.ly_do === "TP1" || x.ly_do === "TP2") chinh = `Chốt lời ${x.ly_do} (${x.phan_chot_pct}% vị thế)`;
+  else if (x.ly_do === "TP3" || x.ly_do === "CHOT_TP3") {
+    // Cach moi: TP3 = 40% vi the (hoac gop 100% cua vi the cu da cham TP1/TP2 truoc do) va KET THUC lenh; lenh cu (30/30/25/15): dong 25% hoac gop 85%, con 15% giu chay.
+    if (pc === TY_LE_CHOT.tp3 || pc >= 100 || x.ly_do === "CHOT_TP3") chinh = `Chốt TP3 (${x.phan_chot_pct ?? 100}% vị thế) · kết thúc lệnh`;
+    else if (x.phan_chot_pct != null && pc < 50) chinh = `Chốt lời TP3 (${x.phan_chot_pct}% vị thế) · giữ ${TY_LE_CHOT_CU.giu}% chạy (lệnh cũ)`;
+    else chinh = `Chốt đủ TP3 (${x.phan_chot_pct ?? 100 - TY_LE_CHOT_CU.giu}%) · giữ ${TY_LE_CHOT_CU.giu}% chạy (lệnh cũ)`;
+  } else if (x.ly_do === "THOAT_KIJUN") chinh = "Thoát theo Kijun (đóng cửa dưới Kijun sau TP2)";
+  else if (x.ly_do === "CAT_LO") chinh = "Cắt lỗ (Stop-loss)";
+  else if (x.ly_do === "BAO_VE_LAI") chinh = "Bảo vệ lãi (dời SL lên cao hơn)";
+  else if (x.ly_do === "BAN") chinh = "Tín hiệu BÁN";
+  else chinh = "Đã thoát";
+  const laDongTP = /^(CHOT_)?TP[123]$/.test(x.ly_do ?? "");
+  if (!laDongTP && x.vong !== 3 && x.da_cham_tp) chinh += ` · đã chạm ${x.da_cham_tp}`;
+  if (x.vong === 1 && !laDongTP && x.phan_chot_pct != null && pc < 100) chinh += ` · phần còn lại ${x.phan_chot_pct}%`;
+  if (x.vong === 3) chinh += ` · phần còn lại ${TY_LE_CHOT_CU.giu}% sau TP3 (lệnh cũ)`;
+  return chinh;
+}
+
 function The({ so, nhan, phu, mau }) {
   return (
     <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
@@ -88,7 +122,8 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         lệnh mới, mỗi lần giá chạm mốc chốt lời được ghi thành một dòng ngay lúc chạm theo tỷ lệ {CHUOI_TY_LE_CHOT}: TP1 chốt {TY_LE_CHOT.tp1}%, TP2 chốt {TY_LE_CHOT.tp2}%, TP3 chốt{" "}
         {TY_LE_CHOT.tp3}% và kết thúc lệnh (sau TP2, nếu giá đóng cửa dưới Kijun trước khi tới TP3 thì bán nốt phần còn lại) — lãi/lỗ của mỗi dòng là tỷ lệ giá của đúng phần đó (giá chốt so với giá mua), và khi lệnh đóng thật
         sự thì chỉ ghi phần còn lại. Mỗi lần chốt lời từng phần được tính là một lệnh thắng nên tỷ lệ thắng ở trên cao hơn so với tính theo cả vị thế (số
-        dòng chốt từng phần ghi ở thẻ đầu). Lệnh cũ (trước 25/09/2026) chốt theo cách 30/30/25 còn 15% giữ chạy nên vẫn hiện dòng TP3 {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 -
+        dòng chốt từng phần ghi ở thẻ đầu). Dòng có nhãn <b style={{ color: "#A78BFA" }}>➕ Mua thêm</b> là lệnh mua thêm riêng của cùng mã (giá mua và Stop-loss riêng, ngày mua khác lệnh gốc): đóng khi
+        chạm Stop-loss riêng hoặc khi lệnh gốc kết thúc. Lệnh cũ (trước 25/09/2026) chốt theo cách 30/30/25 còn 15% giữ chạy nên vẫn hiện dòng TP3 {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 -
         TY_LE_CHOT_CU.giu}%) và dòng phần còn lại {TY_LE_CHOT_CU.giu}% khi đóng thật sự. Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
       </p>
 
@@ -121,6 +156,11 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                     <Link href={`/ma/${x.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
                       {x.ma}
                     </Link>
+                    {MUA_THEM[x.vong] && (
+                      <span className="block text-[10px] font-bold tracking-wide leading-tight mt-0.5" style={{ color: MUA_THEM[x.vong].mau, fontFamily: "'Inter', sans-serif" }}>
+                        ➕ {MUA_THEM[x.vong].nhan}
+                      </span>
+                    )}
                     {tenCongTy(x.ma) && (
                       <span className="block max-w-[190px] truncate text-[10px] leading-tight" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }} title={tenCongTy(x.ma).ten}>
                         {tenCongTy(x.ma).ngan}
@@ -142,27 +182,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                     {x.so_phien ?? "—"}
                   </td>
                   <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-                    {x.ly_do === "TP1" || x.ly_do === "TP2"
-                      ? `Chốt lời ${x.ly_do} (${x.phan_chot_pct}% vị thế)`
-                      : x.ly_do === "TP3" || x.ly_do === "CHOT_TP3"
-                        ? Number(x.phan_chot_pct) === TY_LE_CHOT.tp3 || Number(x.phan_chot_pct) >= 100 || x.ly_do === "CHOT_TP3"
-                          ? `Chốt TP3 (${x.phan_chot_pct ?? 100}% vị thế) · kết thúc lệnh`
-                          : x.phan_chot_pct != null && Number(x.phan_chot_pct) < 50
-                            ? `Chốt lời TP3 (${x.phan_chot_pct}% vị thế) · giữ ${TY_LE_CHOT_CU.giu}% chạy (lệnh cũ)`
-                            : `Chốt đủ TP3 (${x.phan_chot_pct ?? 100 - TY_LE_CHOT_CU.giu}%) · giữ ${TY_LE_CHOT_CU.giu}% chạy (lệnh cũ)`
-                      : x.ly_do === "THOAT_KIJUN"
-                        ? "Thoát theo Kijun (đóng cửa dưới Kijun sau TP2)"
-                      : x.ly_do === "CAT_LO"
-                        ? "Cắt lỗ (Stop-loss)"
-                        : x.ly_do === "BAO_VE_LAI"
-                          ? "Bảo vệ lãi (dời SL lên cao hơn)"
-                          : x.ly_do === "BAN"
-                            ? "Tín hiệu BÁN"
-                            : "Đã thoát"}
-                    {!/^TP[123]$/.test(x.ly_do ?? "") && x.vong !== 3 && x.da_cham_tp ? ` · đã chạm ${x.da_cham_tp}` : ""}
-                    {x.vong === 1 && !/^TP[123]$/.test(x.ly_do ?? "") && x.phan_chot_pct != null && Number(x.phan_chot_pct) < 100 ? ` · phần còn lại ${x.phan_chot_pct}%` : ""}
-                    {x.vong === 2 ? " · mua thêm sau TP3" : ""}
-                    {x.vong === 3 ? ` · phần còn lại ${TY_LE_CHOT_CU.giu}% sau TP3 (lệnh cũ)` : ""}
+                    {nhanKetThuc(x)}
                   </td>
                 </tr>
               ))}
