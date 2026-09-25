@@ -9,7 +9,7 @@ import LenhDaDongView from "@/components/LenhDaDongView";
 import SignalPill from "@/components/SignalPill";
 import NhanCapNhat from "@/components/NhanCapNhat";
 import { fmt, pct, capNhatMoiNhat, chamTPCaoNhat } from "@/components/dungChung";
-import { gopLenhMo } from "@/lib/muaThemTinhToan";
+import { lenhDangMo } from "@/lib/muaThemTinhToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -91,14 +91,13 @@ export default async function TrangDanhMuc() {
 
   const ngayThamGia = new Map(thamGia.map((t) => [t.ma, t.ngay_tham_gia]));
   const cuaToi = tatCa.filter((r) => ngayThamGia.has(r.ma));
-  const dsDangGiu = cuaToi.filter(dangGiu);
   const maChuaCoDuLieu = thamGia.filter((t) => !tatCa.some((r) => r.ma === t.ma));
   // Lenh da dong chi tinh tu luc tham gia (ban/chot tu ngay tham gia tro di).
   const dsDaDong = daDong.filter((x) => ngayThamGia.has(x.ma) && x.ngay_ban >= ngayThamGia.get(x.ma));
 
   // 1 danh sach chung: lenh goc + cac diem mua them cua cac ma dang giu (moi diem mua them la 1 dong rieng, 1 ma co the co nhieu dong). Giong So lenh dang mo:
   // lenh da cham TP3 la KET THUC (da ghi o Lenh da dong) nen khong nam o day; ma khong con lenh nao thi chuyen xuong "Dang theo doi".
-  const dsLenh = gopLenhMo(dsDangGiu).filter((r) => chamTPCaoNhat(r) !== "TP3");
+  const dsLenh = lenhDangMo(cuaToi).filter((r) => chamTPCaoNhat(r) !== "TP3");
   const soMuaThem = dsLenh.filter((r) => r.la_mua_them).length;
   const maConLenh = new Set(dsLenh.map((r) => r.ma));
   const dsTheoDoi = cuaToi.filter((r) => !maConLenh.has(r.ma));

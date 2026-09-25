@@ -135,12 +135,12 @@ export default function NhatKyGiaoDich({
         uuTien: UU_TIEN.MUA,
         icon: ArrowUpCircle,
         mau: XANH,
-        chinh: d.vong === 2 ? "Mua thêm (sau TP3)" : d.vong === 4 ? "Mua thêm (giữa chừng)" : "Mua",
+        chinh: d.vong === 2 ? "Mua mới (sau TP3)" : d.vong === 4 ? "Mua thêm (giữa chừng)" : "Mua",
         phu: `Giá ${fmt(d.gia_mua)}`,
       });
     }
-    // Lenh MUA THEM (vong 2 = sau TP3, vong 4 = giua chung): dong theo Stop-loss RIENG hoac dong THEO lenh goc - khong co TP1/TP2 rieng.
-    const laMuaThem = d.vong === 2 || d.vong === 4;
+    // Lenh MUA THEM GIUA CHUNG (vong 4): dong theo Stop-loss RIENG hoac dong THEO lenh goc - khong co TP1/TP2 rieng. Lenh moi sau TP3 (vong 2) la lenh binh thuong.
+    const laMuaThem = d.vong === 4;
     const nhan = laMuaThem
       ? () => (d.ly_do === "CAT_LO" ? "Cắt lỗ riêng của lệnh mua thêm (chạm Stop-loss)" : "Đóng lệnh mua thêm theo lệnh gốc")
       : NHAN_LY_DO[d.ly_do] || (() => "Đóng vị thế");
@@ -191,7 +191,7 @@ export default function NhatKyGiaoDich({
     }
 
     if (dangGiuMoi && ngayMuaMoiStr && !daThemMua.has(`${ngayMuaMoiStr}|moi`)) {
-      suKien.push({ ngay: ngayMuaMoiStr, uuTien: UU_TIEN.MUA, icon: TrendingUp, mau: NGOC, chinh: "Mua thêm (sau TP3)", phu: `Giá ${fmt(giaMuaMoi)}` });
+      suKien.push({ ngay: ngayMuaMoiStr, uuTien: UU_TIEN.MUA, icon: TrendingUp, mau: NGOC, chinh: "Mua mới (sau TP3)", phu: `Giá ${fmt(giaMuaMoi)}` });
     }
 
     if (dangGiuGiua && ngayMuaGiuaStr && !daThemMua.has(`${ngayMuaGiuaStr}|giua`)) {

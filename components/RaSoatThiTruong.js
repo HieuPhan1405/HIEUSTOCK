@@ -229,9 +229,9 @@ export function LenhMuaBan({ tatCa }) {
     ? new Date(capNhat).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "numeric", month: "numeric", year: "numeric" })
     : "";
   const l = tq.lenh;
-  const loaiDiem = (d) => (d.vong === "giua" ? "giữa chừng" : "sau TP3");
-  const soBan = l.ban.length + l.ketThucTP3.length + l.thoatKijun.length + l.chotTP3.length;
-  const soBanBot = l.chotTP2.length + l.chotTP1.length + l.banBot.length;
+  const loaiDiem = (d) => (d.vong === "giua" ? "mua thêm giữa chừng" : "lệnh mới sau TP3");
+  const soBan = l.ban.length + l.thoatKijun.length;
+  const soBanBot = l.ketThucTP3.length + l.chotTP2.length + l.chotTP1.length + l.banBot.length;
 
   return (
     <section aria-label="Lệnh mua - bán" className="mb-8">
@@ -246,7 +246,7 @@ export function LenhMuaBan({ tatCa }) {
           Lệnh mua – bán
         </h2>
         <p className="text-xs mt-1" style={{ color: MUTED }}>
-          Các lệnh của hệ thống ở lần cập nhật gần nhất. Chốt lời {CHUOI_TY_LE_CHOT} ở TP1/TP2/TP3, chạm TP3 là kết thúc lệnh.
+          Các lệnh của hệ thống ở lần cập nhật gần nhất. Chốt lời {CHUOI_TY_LE_CHOT} ở TP1/TP2/TP3; chạm TP3 là kết thúc lệnh, mã về trạng thái trung lập.
         </p>
       </div>
 
@@ -270,19 +270,19 @@ export function LenhMuaBan({ tatCa }) {
           tieuDe="Mua mới"
           mau={NGOC}
           dem={l.muaThemHomNay.length}
-          moTa="Mua thêm / mua mới khi đang giữ lệnh"
+          moTa="Lệnh mới sau TP3 và mua thêm giữa chừng"
           nhom={[
             { nhan: "Điểm mua hôm nay", ds: l.muaThemHomNay, hienThi: (d) => `${fmt(d.giaMua)} · ${loaiDiem(d)}` },
-            { nhan: "Đang giữ lệnh mua thêm", ds: l.dangMuaThem, mau: TIM, hienThi: (d) => `${pct((d.gia / d.giaMua - 1) * 100, 1)} · ${loaiDiem(d)}` },
+            { nhan: "Đang giữ (mới sau TP3 / mua thêm)", ds: l.dangMuaThem, mau: TIM, hienThi: (d) => `${pct((d.gia / d.giaMua - 1) * 100, 1)} · ${loaiDiem(d)}` },
           ]}
           trong={l.coDuLieuMuaThem ? "Chưa có điểm mua thêm / mua mới hôm nay" : "Chưa có dữ liệu mua thêm (cần Explore file AFL 7 mới rồi đẩy dữ liệu)."}
           chan={
             <>
-              Mỗi điểm mua thêm là một dòng riêng trong{" "}
-              <Link href="/lenh-mo?loai=them" className="underline" style={{ color: NGOC }}>
+              Lệnh mới sau TP3 là một lệnh bình thường (TP/SL mới) trong{" "}
+              <Link href="/lenh-mo" className="underline" style={{ color: NGOC }}>
                 Sổ lệnh đang mở
               </Link>
-              ; giá vốn trung bình của bạn tính trong trang của từng mã.
+              ; mua thêm giữa chừng nằm gọn dưới lệnh gốc, giá vốn trung bình của bạn tính trong trang của từng mã.
             </>
           }
         />
@@ -291,12 +291,10 @@ export function LenhMuaBan({ tatCa }) {
           tieuDe="Bán"
           mau={DO}
           dem={soBan}
-          moTa="Bán, cắt lỗ và lệnh vừa kết thúc"
+          moTa="Bán, cắt lỗ và thoát lệnh"
           nhom={[
             { nhan: "Bán / cắt lỗ", ds: l.ban, hienThi: (r) => pct(r.lai_lo_pct, 1) },
-            { nhan: `Chạm TP3 – kết thúc lệnh (đã chốt ${CHUOI_TY_LE_CHOT})`, ds: l.ketThucTP3, mau: PRIMARY_SANG, hienThi: (r) => `TP3 ${pct(r.lai_lo_pct, 1)}` },
             { nhan: "Thoát theo Kijun (sau TP2)", ds: l.thoatKijun, mau: CAM, hienThi: (r) => `${pct(r.lai_lo_pct, 1)} phần còn lại` },
-            { nhan: "Lệnh cũ chạm TP3, còn phần chạy (cách chốt cũ)", ds: l.chotTP3, mau: PRIMARY_SANG, hienThi: (r) => pct(r.lai_lo_pct, 1) },
           ]}
           trong="Không có mã BÁN"
         />
@@ -305,8 +303,9 @@ export function LenhMuaBan({ tatCa }) {
           tieuDe="Bán bớt"
           mau={CAM}
           dem={soBanBot}
-          moTa="Chốt lời từng phần và cảnh báo giảm bớt"
+          moTa="Chốt lời TP1/TP2/TP3 và cảnh báo giảm bớt"
           nhom={[
+            { nhan: `Chạm TP3 – hết vị thế, về trung lập (đủ ${CHUOI_TY_LE_CHOT})`, ds: l.ketThucTP3, mau: PRIMARY_SANG, hienThi: (r) => `TP3 ${pct(r.lai_lo_pct, 1)}` },
             { nhan: "Đã chạm TP2 (đã chốt 60%)", ds: l.chotTP2, mau: XANH, hienThi: (r) => pct(r.lai_lo_pct, 1) },
             { nhan: "Đã chạm TP1 (đã chốt 30%)", ds: l.chotTP1, mau: XANH, hienThi: (r) => pct(r.lai_lo_pct, 1) },
             { nhan: "Cảnh báo giảm bớt (điểm tụt dưới ngưỡng)", ds: l.banBot, hienThi: (r) => pct(r.lai_lo_pct, 1) },

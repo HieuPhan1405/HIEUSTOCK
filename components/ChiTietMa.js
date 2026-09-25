@@ -242,6 +242,7 @@ function ketLuanTuDong(row) {
   const cauMo = {
     MUA: "Đang phát tín hiệu MUA",
     BAN: lyDoBan ? `Lệnh vừa kết thúc (${lyDoBan.nhan.toLowerCase()})` : "Đang phát tín hiệu BÁN",
+    "TRUNG LAP": row.ket_thuc_tp3 ? "Giá đã chạm TP3, lệnh kết thúc và không còn nắm vị thế (trung lập)" : "Chưa đủ điều kiện vào lệnh, đang trung lập",
     "NAM GIU": "Đang nắm giữ vị thế mở",
   }[row.tin] || "Chưa đủ điều kiện vào lệnh, đang trung lập";
 
@@ -299,7 +300,8 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
   const vungLenh = tinhVungLenh(row); // null neu khong dang giu
   const sauTP3 = tinhSauTP3(row); // null neu chua chot du TP3
   const muaGiuaChung = tinhMuaGiuaChung(row); // null neu khong dang giu vi the "giua chung"
-  const diemMuaThem = laDangGiu(row) ? cacDiemMuaMoi(row) : []; // cac diem mua them / mua moi -> the "Gia von cua ban"
+  // Chi MUA THEM GIUA CHUNG moi co gia von trung binh voi lenh goc -> the "Gia von cua ban"; lenh moi sau TP3 la lenh binh thuong (TP/SL moi), khong tinh trung binh.
+  const diemMuaThem = cacDiemMuaMoi(row).filter((d) => d.vong === "giua");
   const khoangCach = (muc) => (muc === null || !row.gia ? null : ((muc - row.gia) / row.gia) * 100);
   const tag = tinhCacTag(row);
   const mauDiem = row.diem >= 0 ? "#22C55E" : "#EF4444";
@@ -538,12 +540,12 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
       {sauTP3 && (
         <Card className="mb-4">
           <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#6C5CE7" }}>
-            ★ Lệnh cũ đã chốt đủ TP3 — còn phần giữ chạy
+            ★ Đã chạm TP3 — lệnh kết thúc, chờ lệnh mới
           </p>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#8B8B99" }}>
-                Vị thế cũ còn giữ ({sauTP3.viTheCu.tyLeConLai}%)
+                Lệnh cũ (đã chạm TP3)
               </p>
               <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-lg">
                 Giá mua {fmt(sauTP3.viTheCu.giaMua)}
@@ -552,30 +554,30 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 {pct(sauTP3.viTheCu.laiLoPct, 2)} so với giá mua cũ
               </p>
               <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                85% vị thế đã chốt ở TP1/TP2/TP3 (cách chốt cũ 30/30/25/15). Phần còn lại giữ chạy, thoát theo tín hiệu BÁN. Lệnh mới tính từ 25/09/2026 kết thúc ngay khi chạm TP3.
+                Chạm TP3 là kết thúc lệnh (đã chốt 85% theo cách chốt cũ 30/30/25; từ 25/09/2026 chốt 30/30/40 đủ 100%). Lệnh mới với TP/SL mới chỉ mở khi có tín hiệu mua (mua lại) sau đó.
               </p>
             </div>
             <div>
               <p className="text-[11px] uppercase tracking-wide mb-1" style={{ color: "#22C55E" }}>
-                Điểm mua mới (tham khảo)
+                Lệnh mới (tham khảo)
               </p>
               {sauTP3.lenhMoi ? (
                 <>
                   <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#22D3EE" }} className="text-lg">
-                    Đã MUA THÊM {fmt(sauTP3.lenhMoi.giaMua)}
+                    Đã MUA MỚI {fmt(sauTP3.lenhMoi.giaMua)}
                   </p>
                   <p className="text-sm" style={{ fontFamily: "'JetBrains Mono', monospace", color: sauTP3.lenhMoi.laiLoPct >= 0 ? "#22C55E" : "#EF4444" }}>
-                    {pct(sauTP3.lenhMoi.laiLoPct, 2)} so với giá mua mới
+                    {pct(sauTP3.lenhMoi.laiLoPct, 2)} so với giá mua của lệnh mới
                   </p>
                   <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
                     {sauTP3.lenhMoi.stop ? `Cắt lỗ riêng ${fmt(sauTP3.lenhMoi.stop)}. ` : ""}
                     {sauTP3.lenhMoi.tp1 ? `Chốt lời mới ${fmt(sauTP3.lenhMoi.tp1)} / ${fmt(sauTP3.lenhMoi.tp2)} / ${fmt(sauTP3.lenhMoi.tp3)}. ` : ""}
-                    Lệnh mua mới thoát khi chạm cắt lỗ riêng hoặc khi lệnh gốc có tín hiệu BÁN.
+                    Lệnh mới là lệnh bình thường, thoát khi chạm cắt lỗ riêng hoặc có tín hiệu BÁN.
                   </p>
                 </>
               ) : sauTP3.daDongMoi ? (
                 <p className="text-sm" style={{ color: "#8B8B99" }}>
-                  Lệnh mua thêm đã đóng (chạm cắt lỗ riêng). Mỗi lệnh gốc chỉ mua thêm tối đa 1 lần.
+                  Lệnh mới sau TP3 đã đóng (chạm cắt lỗ riêng). Mỗi lệnh gốc chỉ mở 1 lệnh mới sau TP3.
                 </p>
               ) : sauTP3.muaMoi ? (
                 <>
@@ -595,8 +597,8 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               )}
               <p className="text-[10px] leading-snug mt-1.5" style={{ color: "#6B6B78" }}>
                 {sauTP3.lenhMoi || sauTP3.daDongMoi
-                  ? "Tín hiệu MUA THÊM do AFL phát khi giá hồi về hỗ trợ sau TP3 (nến xanh, điểm còn đạt ngưỡng)."
-                  : "Vùng gợi ý từ dữ liệu web. Hệ thống sẽ báo MUA THÊM khi giá hồi về hỗ trợ với nến xanh và điểm còn đạt ngưỡng; lệnh mới có giá mua, Stop-loss riêng."}
+                  ? "Lệnh mới do AFL phát khi giá hồi về hỗ trợ sau TP3 (nến xanh, điểm còn đạt ngưỡng)."
+                  : "Vùng gợi ý từ dữ liệu web. Hệ thống sẽ báo MUA khi giá hồi về hỗ trợ với nến xanh và điểm còn đạt ngưỡng; lệnh mới có giá mua, Stop-loss và TP riêng."}
               </p>
             </div>
           </div>

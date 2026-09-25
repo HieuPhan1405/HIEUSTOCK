@@ -1,5 +1,5 @@
 // Test tay cho lib/muaThemTinhToan.js (bang "Diem mua moi" o So lenh dang mo). Chay: node engine/test/muaThemTinhToan.test.mjs
-import { phanConLaiLenhGoc, giaVonTrungBinh, cacDiemMuaMoi, ketQuaDiemMua, ngayChuoi, gopLenhMo, dongTuDiemMua, nhanDongMuaThem } from "../../lib/muaThemTinhToan.js";
+import { phanConLaiLenhGoc, giaVonTrungBinh, cacDiemMuaMoi, ketQuaDiemMua, ngayChuoi, gopLenhMo, dongTuDiemMua, nhanDongMuaThem, lenhDangMo } from "../../lib/muaThemTinhToan.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -69,7 +69,9 @@ ok("thieu gia goc: lui ve gia mua moi, tinhDuocTrungBinh=false", kq.giaVon === 9
   const ds = gopLenhMo([chiGoc, coGiua, co2]);
   ok("gop: 1 + 2 + 3 = 6 dong", ds.length === 6, String(ds.length));
   ok("gop: thu tu goc roi diem mua them cua cung ma", ds.map((x) => x.khoa_lenh).join() === "AAA,BBB,BBB|giua|2026-09-24,CCC,CCC|moi|2026-09-20,CCC|giua|2026-09-15", ds.map((x) => x.khoa_lenh).join());
-  ok("gop: dong goc danh dau co_mua_them", ds[0].co_mua_them === 0 && ds[1].co_mua_them === 1 && ds[3].co_mua_them === 2 && ds.filter((x) => !x.la_mua_them).length === 3);
+  // co_mua_them chi dem mua them GIUA CHUNG (lenh moi sau TP3 la lenh binh thuong: sau_tp3, khong phai mua them)
+  ok("gop: dong goc danh dau co_mua_them (chi giua chung)", ds[0].co_mua_them === 0 && ds[1].co_mua_them === 1 && ds[3].co_mua_them === 1 && ds.filter((x) => !x.la_mua_them).length === 4);
+  ok("gop: lenh moi sau TP3 la dong binh thuong (sau_tp3, khong la_mua_them)", ds[4].sau_tp3 === true && ds[4].la_mua_them === false && ds[4].loai_mua_them === "moi" && ds[5].la_mua_them === true && ds[5].sau_tp3 === false);
   const m = ds[2];
   ok("dong mua them: gia mua/SL/TP RIENG", m.la_mua_them && m.loai_mua_them === "giua" && m.gia_mua === 23 && m.stop_loss === 21 && m.tp1 === 25 && m.tp3 === 30 && m.ngay_mua === "2026-09-24");
   ok("dong mua them: lai/lo theo gia mua them", gan(m.lai_lo_pct, (24 / 23 - 1) * 100));
@@ -77,9 +79,17 @@ ok("thieu gia goc: lui ve gia mua moi, tinhDuocTrungBinh=false", kq.giaVon === 9
   ok("dong mua them: khong ke thua co bao lenh goc", m.tp_da_cham === null && m.ban_bot === false && m.dang_giu_giua === null && m.dang_giu_moi === null);
   ok("dong mua them: nho gia/ngay lenh goc de ghi chu", m.gia_mua_goc === 20 && m.ngay_mua_goc === "2026-09-10");
   ok("dong goc khong bi doi", ds[1].gia_mua === 20 && ds[1].tp_da_cham === "TP1" && ds[1].lai_lo_pct === 20 && ds[1].ban_bot === true);
-  ok("nhan dong mua them", nhanDongMuaThem(ds[2]) === "Mua thêm giữa chừng" && nhanDongMuaThem(ds[4]) === "Mua thêm sau TP3" && nhanDongMuaThem(ds[0]) === null);
+  ok("nhan dong mua them", nhanDongMuaThem(ds[2]) === "Mua thêm giữa chừng" && nhanDongMuaThem(ds[4]) === null && nhanDongMuaThem(ds[0]) === null);
   ok("thieu gia hien tai: lai/lo null", dongTuDiemMua({ ...chiGoc, ma: "Z" }, { khoa: "Z|giua|2026-09-24", vong: "giua", ngay: "2026-09-24", homNay: false, giaMua: 10, gia: null, giaMuaGoc: 9 }).lai_lo_pct === null);
   ok("danh sach rong -> rong", gopLenhMo([]).length === 0);
+
+  // lenhDangMo: ma da ve TRUNG LAP (vd cham TP3 = ket thuc lenh) khong con lenh goc nhung van giu lenh phu dang giu
+  const tl = { ...goc("DDD", { tin: "TRUNG LAP", tp_da_cham: "TP3" }) };
+  const tlCoLenhMoi = { ...goc("EEE", { tin: "TRUNG LAP", tp_da_cham: "TP3", dang_giu_moi: true, gia_mua_moi: 22, ngay_mua_moi: "2026-09-20" }) };
+  const dm = lenhDangMo([chiGoc, tl, tlCoLenhMoi, coGiua]);
+  ok("lenhDangMo: bo lenh goc cua ma trung lap", !dm.some((x) => x.ma === "DDD"));
+  ok("lenhDangMo: ma trung lap nhung con lenh moi sau TP3 dang giu -> chi giu dong lenh moi", dm.filter((x) => x.ma === "EEE").length === 1 && dm.find((x) => x.ma === "EEE").sau_tp3 === true);
+  ok("lenhDangMo: lenh goc dang giu van co (kem lenh mua them)", dm.filter((x) => x.ma === "AAA").length === 1 && dm.filter((x) => x.ma === "BBB").length === 2);
 }
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);

@@ -601,10 +601,10 @@ export async function POST(request) {
     if (cu && cu.dang_giu_moi === true && cu.ngay_mua_moi_txt === soNgayVN(h.ngay_mua_moi)) continue;
     try {
       const dong = [
-        `➕ MUA THÊM (sau khi chốt đủ TP3): ${h.ma}`,
+        `🟢 LỆNH MỚI SAU TP3: ${h.ma}`,
         `Giá mua mới: ${moiGia[k] ?? h.gia}${moiStop[k] ? ` · Cắt lỗ riêng: ${moiStop[k]}` : ""}`,
         moiTp1[k] ? `Chốt lời mới: ${moiTp1[k]} / ${moiTp2[k] ?? "—"} / ${moiTp3[k] ?? "—"}` : null,
-        cu?.gia_vao_web > 0 || cu?.gia_mua > 0 ? `Vị thế cũ còn giữ phần chạy (~15%): giá mua ${cu.gia_vao_web > 0 ? cu.gia_vao_web : cu.gia_mua}` : null,
+        cu?.gia_vao_web > 0 || cu?.gia_mua > 0 ? `Lệnh gốc (đã chạm TP3): giá mua ${cu.gia_vao_web > 0 ? cu.gia_vao_web : cu.gia_mua}` : null,
         trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa" : null,
         `Xem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`,
       ];

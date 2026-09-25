@@ -69,6 +69,12 @@ const COT_RIENG = {
             />
           )}
         </div>
+        {row.sau_tp3 && (
+          <span className="text-[10px] leading-tight mt-0.5" style={{ color: NGOC, fontFamily: "'Inter', sans-serif" }}>
+            Lệnh mới sau TP3 · lệnh gốc mua {ngayVN(row.ngay_mua_goc)}
+            {row.gia_mua_goc ? ` giá ${fmt(row.gia_mua_goc)}` : ""}
+          </span>
+        )}
         {row.la_mua_them ? (
           <>
             <span className="text-[10px] font-bold tracking-wide mt-0.5" style={{ color: mauMuaThem(row), fontFamily: "'Inter', sans-serif" }}>
@@ -347,7 +353,7 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai 
               placeholder="Mọi loại lệnh"
               options={[
                 ["goc", "Lệnh gốc"],
-                ["them", "Lệnh mua thêm / mua mới"],
+                ["them", "Lệnh mua thêm giữa chừng"],
               ]}
             />
             <OSelect

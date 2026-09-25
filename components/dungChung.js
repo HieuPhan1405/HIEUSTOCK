@@ -290,20 +290,20 @@ export function tinhMuaGiuaChung(row) {
   };
 }
 
-// LY DO BAN o phien BAN that su (cot ly_do_ban do AFL/engine xuat, chi co nghia khi tin = BAN): 5 = cham TP3 (chot du 30/30/40 = KET THUC lenh),
-// 4 = thoat theo Kijun sau TP2, 3 = bao ve lai, 2 = cat lo (Stop-loss), 1 = diem so tut duoi nguong (tin hieu BAN thuong). Tra null neu khong phai ma dang BAN
-// hoac chua co du lieu (CSV cu).
+// LY DO KET THUC LENH o phien BAN that su (cot ly_do_ban do AFL/engine xuat, chi co nghia khi tin = BAN): 5 = cham TP3 (chot du 30/30/40 = KET THUC lenh, khong con nam vi the ->
+// lib/tinHieu.js chuan hoa tin thanh TRUNG LAP va gan ket_thuc_tp3), 4 = thoat theo Kijun sau TP2, 3 = bao ve lai, 2 = cat lo (Stop-loss), 1 = diem so tut duoi nguong (tin hieu BAN
+// thuong). Tra null neu khong phai ma vua ket thuc lenh hoac chua co du lieu (CSV cu).
+const LY_DO_BAN = {
+  5: { nhan: "Chạm TP3 · kết thúc lệnh", mau: "#B7A4FF", moTa: `Giá chạm TP3: chốt nốt phần cuối, đủ ${CHUOI_TY_LE_CHOT} (TP1/TP2/TP3) — không còn nắm vị thế, trạng thái về TRUNG LẬP.` },
+  4: { nhan: "Thoát theo Kijun (sau TP2)", mau: "#F97316", moTa: "Đã chốt TP1, TP2 rồi giá đóng cửa xuống dưới Kijun trước khi tới TP3 nên bán nốt phần còn lại." },
+  3: { nhan: "Bảo vệ lãi", mau: "#A78BFA", moTa: "Giá quay về mức Stop-loss đã dời lên (hòa vốn) sau khi chạm mốc chốt lời nên bán ngay." },
+  2: { nhan: "Cắt lỗ (chạm Stop-loss)", mau: "#EF4444", moTa: "Giá chạm Stop-loss của lệnh." },
+  1: { nhan: "Điểm số tụt dưới ngưỡng bán", mau: "#EF4444", moTa: "Tín hiệu BÁN theo điểm hợp lưu (3 phiên xác nhận)." },
+};
 export function nhanLyDoBan(row) {
+  if (row?.ket_thuc_tp3) return LY_DO_BAN[5];
   if (row?.tin !== "BAN") return null;
-  return (
-    {
-      5: { nhan: "Chạm TP3 · kết thúc lệnh", mau: "#B7A4FF", moTa: `Giá chạm TP3: chốt nốt phần cuối, đủ ${CHUOI_TY_LE_CHOT} (TP1/TP2/TP3) — lệnh kết thúc.` },
-      4: { nhan: "Thoát theo Kijun (sau TP2)", mau: "#F97316", moTa: "Đã chốt TP1, TP2 rồi giá đóng cửa xuống dưới Kijun trước khi tới TP3 nên bán nốt phần còn lại." },
-      3: { nhan: "Bảo vệ lãi", mau: "#A78BFA", moTa: "Giá quay về mức Stop-loss đã dời lên (hòa vốn) sau khi chạm mốc chốt lời nên bán ngay." },
-      2: { nhan: "Cắt lỗ (chạm Stop-loss)", mau: "#EF4444", moTa: "Giá chạm Stop-loss của lệnh." },
-      1: { nhan: "Điểm số tụt dưới ngưỡng bán", mau: "#EF4444", moTa: "Tín hiệu BÁN theo điểm hợp lưu (3 phiên xác nhận)." },
-    }[Number(row.ly_do_ban)] ?? null
-  );
+  return LY_DO_BAN[Number(row.ly_do_ban)] ?? null;
 }
 
 // Nhan "Mua thêm (giữa chừng)" khi AFL dang giu vi the phu nay.
@@ -320,9 +320,9 @@ export function nhanMuaGiuaChung(row) {
 export function nhanMuaThem(row) {
   if (row?.dang_giu_moi !== true) return null;
   return {
-    nhan: "Mua thêm sau TP3",
+    nhan: "Mua mới sau TP3",
     mau: "#22D3EE",
-    moTa: "Lệnh mua mới sau khi lệnh gốc đã chốt đủ TP3, có giá mua, Stop-loss và chốt lời riêng, tách khỏi vị thế cũ.",
+    moTa: "Lệnh mới sau khi lệnh gốc chạm TP3: một lệnh bình thường có giá mua, Stop-loss và chốt lời riêng.",
   };
 }
 

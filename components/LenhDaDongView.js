@@ -14,9 +14,9 @@ const DO = "#EF4444";
 // yyyy-mm-dd -> dd/mm/yyyy
 const ngayVN = (s) => (s && /^\d{4}-\d{2}-\d{2}$/.test(s) ? `${s.slice(8, 10)}/${s.slice(5, 7)}/${s.slice(0, 4)}` : "—");
 
-// Dong cua LENH MUA THEM (vi the phu, co gia mua/Stop-loss/ngay mua rieng, tach khoi lenh goc): vong 2 = mua them sau TP3 (lenh cu), vong 4 = mua them giua chung.
+// Dong cua LENH MUA THEM GIUA CHUNG (vong 4: vi the phu gan voi lenh goc, co gia mua/Stop-loss/ngay mua rieng). Lenh MOI SAU TP3 (vong 2) la lenh binh thuong (TP/SL moi) nen
+// hien nhu moi lenh khac, khong gan nhan "mua them".
 const MUA_THEM = {
-  2: { nhan: "Mua thêm sau TP3", mau: "#22D3EE" },
   4: { nhan: "Mua thêm giữa chừng", mau: "#A78BFA" },
 };
 
@@ -32,10 +32,8 @@ function nhanKetThuc(x) {
   let chinh;
   if (x.ly_do === "TP1" || x.ly_do === "TP2") chinh = `Chốt lời ${x.ly_do} (${x.phan_chot_pct}% vị thế)`;
   else if (x.ly_do === "TP3" || x.ly_do === "CHOT_TP3") {
-    // Cach moi: TP3 = 40% vi the (hoac gop 100% cua vi the cu da cham TP1/TP2 truoc do) va KET THUC lenh; lenh cu (30/30/25/15): dong 25% hoac gop 85%, con 15% giu chay.
-    if (pc === TY_LE_CHOT.tp3 || pc >= 100 || x.ly_do === "CHOT_TP3") chinh = `Chốt TP3 (${x.phan_chot_pct ?? 100}% vị thế) · kết thúc lệnh`;
-    else if (x.phan_chot_pct != null && pc < 50) chinh = `Chốt lời TP3 (${x.phan_chot_pct}% vị thế) · giữ ${TY_LE_CHOT_CU.giu}% chạy (lệnh cũ)`;
-    else chinh = `Chốt đủ TP3 (${x.phan_chot_pct ?? 100 - TY_LE_CHOT_CU.giu}%) · giữ ${TY_LE_CHOT_CU.giu}% chạy (lệnh cũ)`;
+    // Cham TP3 luon la KET THUC lenh (lenh moi voi TP/SL moi chi mo khi co tin hieu mua sau do). Cach moi chot 40% (hoac gop 100%); lenh cu chot 30/30/25 nen dong TP3 25% (hoac gop 85%).
+    chinh = `Chạm TP3 (chốt ${x.phan_chot_pct ?? 100}% vị thế) · kết thúc lệnh`;
   } else if (x.ly_do === "THOAT_KIJUN") chinh = "Thoát theo Kijun (đóng cửa dưới Kijun sau TP2)";
   else if (x.ly_do === "CAT_LO") chinh = "Cắt lỗ (Stop-loss)";
   else if (x.ly_do === "BAO_VE_LAI") chinh = "Bảo vệ lãi (dời SL lên cao hơn)";
@@ -126,9 +124,9 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         lệnh mới, mỗi lần giá chạm mốc chốt lời được ghi thành một dòng ngay lúc chạm theo tỷ lệ {CHUOI_TY_LE_CHOT}: TP1 chốt {TY_LE_CHOT.tp1}%, TP2 chốt {TY_LE_CHOT.tp2}%, TP3 chốt{" "}
         {TY_LE_CHOT.tp3}% và kết thúc lệnh (sau TP2, nếu giá đóng cửa dưới Kijun trước khi tới TP3 thì bán nốt phần còn lại) — lãi/lỗ của mỗi dòng là tỷ lệ giá của đúng phần đó (giá chốt so với giá mua), và khi lệnh đóng thật
         sự thì chỉ ghi phần còn lại. Các thẻ thống kê ở trên tính THEO TỪNG LỆNH: các dòng TP1/TP2/TP3/phần còn lại của cùng một lệnh được gộp lại và chỉ tính một lần khi lệnh đã đóng hẳn,
-        kết quả = tổng các phần theo tỷ trọng (ví dụ chốt 30% ở +10%, 30% ở +20%, 40% ở +40% thì lệnh lãi 25%). Lệnh chạm TP3 tính là đã kết thúc (kể cả lệnh cũ còn 15% giữ chạy: tính theo phần đã chốt); lệnh mới chốt TP1/TP2 mà còn giữ chưa được tính vào thống kê. Dòng có nhãn <b style={{ color: "#A78BFA" }}>➕ Mua thêm</b> là lệnh mua thêm riêng của cùng mã (giá mua và Stop-loss riêng, ngày mua khác lệnh gốc): đóng khi
-        chạm Stop-loss riêng hoặc khi lệnh gốc kết thúc. Lệnh cũ (trước 25/09/2026) chốt theo cách 30/30/25 còn 15% giữ chạy nên vẫn hiện dòng TP3 {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 -
-        TY_LE_CHOT_CU.giu}%) và dòng phần còn lại {TY_LE_CHOT_CU.giu}% khi đóng thật sự. Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
+        kết quả = tổng các phần theo tỷ trọng (ví dụ chốt 30% ở +10%, 30% ở +20%, 40% ở +40% thì lệnh lãi 25%). Lệnh chạm TP3 tính là đã kết thúc (kể cả lệnh cũ còn 15% giữ chạy: tính theo phần đã chốt); lệnh mới chốt TP1/TP2 mà còn giữ chưa được tính vào thống kê. Dòng có nhãn <b style={{ color: "#A78BFA" }}>➕ Mua thêm giữa chừng</b> là lệnh mua thêm riêng của cùng mã (giá mua và Stop-loss riêng, ngày mua khác lệnh gốc): đóng khi
+        chạm Stop-loss riêng hoặc khi lệnh gốc kết thúc. Chạm TP3 là kết thúc lệnh; lệnh mới (TP/SL mới) mở sau đó là một lệnh bình thường nên cũng hiện như mọi lệnh khác. Lệnh cũ (trước 25/09/2026) chốt theo cách 30/30/25
+        nên dòng TP3 hiện {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 - TY_LE_CHOT_CU.giu}%). Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
       </p>
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
