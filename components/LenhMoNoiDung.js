@@ -37,12 +37,15 @@ function The({ so, mau, nhan, phu, mauPhu }) {
 
 // Phan than trang So lenh dang mo: the thong ke + bieu do so sanh VNINDEX + bang. Bo loc nam O DAY (khong o trong bang) de
 // bam loc (vd "chi ma dat chuan") thi CA thong ke lan bieu do doi theo, khong chi bang.
-export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem }) {
+const CAC_TAB = ["lenh", "muaMoi", "hieuQua", "tungMa"];
+
+export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem, tabDau }) {
+  const tabBanDau = CAC_TAB.includes(tabDau) ? tabDau : "lenh";
   const [loc, datLoc] = useState(LOC_LENH_MO_TRONG);
   // THANH GAT (tab) gom cac khoi phu de trang khong roi: mac dinh chi hien danh sach lenh. Khoi Hieu qua chi tai du lieu khi mo lan dau, roi giu nguyen
   // (an di chu khong go bo) de khong tai lai; khoi Diem mua moi cung giu nguyen de lua chon vua tick khong bi mat khi doi tab.
-  const [tab, setTab] = useState("lenh");
-  const [daMoHieuQua, setDaMoHieuQua] = useState(false);
+  const [tab, setTab] = useState(tabBanDau);
+  const [daMoHieuQua, setDaMoHieuQua] = useState(tabBanDau === "hieuQua");
   const chonTab = (t) => {
     setTab(t);
     if (t === "hieuQua") setDaMoHieuQua(true);
@@ -141,7 +144,7 @@ export default function LenhMoNoiDung({ dangMo, vnindex, daChonMuaThem }) {
         <BangDiemMuaMoi dangMo={dangMo} daChonBanDau={daChonMuaThem} />
         {diemMuaMoi.length === 0 && (
           <p className="text-sm py-6" style={{ color: MUTED }}>
-            Hiện chưa có mã nào có điểm mua mới (mua thêm sau TP3 hoặc mua thêm giữa chừng).
+            Hiện chưa có mã nào có điểm mua thêm / mua mới (mua thêm giữa chừng, hoặc mua thêm sau TP3 của lệnh cũ).
           </p>
         )}
       </div>

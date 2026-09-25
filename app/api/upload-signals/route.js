@@ -5,6 +5,7 @@ import { tinhVungLenh, chuoiVung } from "@/components/dungChung";
 import {
   phatHienLenhDong,
   phatHienChotLoi,
+  tinhChotTP3,
   layTPDaGhi,
   phatHienDongMuaMoi,
   phatHienDongMuaThemGiuaChung,
@@ -14,6 +15,7 @@ import {
   ngayGiaoDichVN,
 } from "@/lib/lenhDaDong";
 import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
+import { TY_LE_CHOT } from "@/lib/tyLeChot";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
 // amibroker/7_Export_LenWeb.afl). Header CSV (45 cot; 7 cot cuoi gia_kich_hoat,
@@ -475,7 +477,8 @@ export async function POST(request) {
 
   // Ghi nhan LENH DA DONG (ma vua tu NAM GIU chuyen sang BAN/TRUNG LAP) de co ket qua that theo doi.
   // Bao ve: loi o buoc nay KHONG duoc lam hong lan upload chinh (du lieu tin hieu da ghi xong o tren).
-  // Them: lenh VUA cham du TP3 (chot 30/30/25, giu 15% chay) cung duoc ghi vao Lenh da dong.
+  // Cach quan ly tu 2026-09-25: chot 30/30/40 va KET THUC lenh o TP3 (AFL/engine bao ly_do_ban = 5, hoac 4 = thoat Kijun sau TP2) - phien bao BAN do
+  // duoc ghi thanh cac dong TP1/TP2/TP3 (phatHienLenhDong, nhanh CHOT_TP3). Lenh CU van con phan giu chay (15%) duoc doc theo cach cu.
   const lenhDaDong = { ghi: 0 };
   let dsBanMoi = []; // lenh vua dong lan upload nay - dung de bao Zalo BAN
   try {
@@ -489,6 +492,7 @@ export async function POST(request) {
         gia: soFloat(h.gia),
         tp1: soFloat(h.tp1),
         tp2: soFloat(h.tp2),
+        tp3: soFloat(h.tp3),
         ly_do_ban: parseInt(h.ly_do_ban, 10) || 0,
       })),
       banGhiCuTheoMa,
@@ -551,13 +555,33 @@ export async function POST(request) {
   // Bao Zalo BAN / cat lo: ma tu NAM GIU vua chuyen sang BAN (gom ca chạm Stop-loss). Gio giao dich thi kem canh bao tin hieu tam thoi.
   const trongPhien = dangTrongPhien();
   for (const b of dsBanMoi) {
+    // Dong TP1/TP2 (vong 5/6) di kem cua lenh ket thuc o TP3 chi de ghi so sach - chi bao 1 tin cho ca lenh (o dong TP3).
+    if (b.vong === 5 || b.vong === 6) continue;
     try {
       const cu = banGhiCuTheoMa[b.ma];
       const stop = Number(cu?.vao_stop_loss) > 0 ? Number(cu.vao_stop_loss) : Number(cu?.stop_loss);
       const lai = `${b.lai_lo_pct >= 0 ? "+" : ""}${b.lai_lo_pct.toFixed(2)}%`;
+      // Lenh KET THUC O TP3 (30/30/40): tinh ket qua CA LENH tu 3 moc TP dong bang luc mua (uoc tinh; khong doi duoc phan da chot o dong TP1/TP2 cu thi bo qua).
+      let ketQuaCaLenh = null;
+      if (b.ly_do === "TP3") {
+        const hMoi = hangDL.find((x) => x.ma === b.ma);
+        const tp = [1, 2, 3].map((i) => (Number(cu?.[`vao_tp${i}`]) > 0 ? cu[`vao_tp${i}`] : soFloat(hMoi?.[`tp${i}`])));
+        ketQuaCaLenh = tinhChotTP3({ giaMua: b.gia_mua, tp1: tp[0], tp2: tp[1], tp3: tp[2], ngayMua: b.ngay_mua, ngayBan: b.ngay_ban, tyLe: TY_LE_CHOT });
+      }
+      const tieuDe =
+        b.ly_do === "TP3"
+          ? "🎯 CHỐT ĐỦ TP3 – KẾT THÚC LỆNH"
+          : b.ly_do === "THOAT_KIJUN"
+            ? "🟠 THOÁT THEO KIJUN (sau TP2)"
+            : b.ly_do === "BAN"
+              ? "TÍN HIỆU BÁN / CẮT LỖ"
+              : "THOÁT LỆNH";
       const dong = [
-        `🔴 ${b.ly_do === "BAN" ? "TÍN HIỆU BÁN / CẮT LỖ" : "THOÁT LỆNH"}: ${b.ma}`,
-        `Giá: ${b.gia_ban} (giá mua ${b.gia_mua}, ${lai})`,
+        `${b.ly_do === "TP3" || b.ly_do === "THOAT_KIJUN" ? "" : "🔴 "}${tieuDe}: ${b.ma}`,
+        b.ly_do === "TP3"
+          ? `Giá chốt TP3: ${b.gia_ban} (giá mua ${b.gia_mua})`
+          : `Giá: ${b.gia_ban} (giá mua ${b.gia_mua}, ${lai})`,
+        ketQuaCaLenh ? `Kết quả cả lệnh ≈ ${ketQuaCaLenh.lai_lo_pct >= 0 ? "+" : ""}${ketQuaCaLenh.lai_lo_pct.toFixed(2)}% (đã chốt ${TY_LE_CHOT.tp1}/${TY_LE_CHOT.tp2}/${TY_LE_CHOT.tp3}% tại TP1/TP2/TP3)` : null,
         stop > 0 ? `Stop-loss của lệnh: ${stop}` : null,
         trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa, xem lại sau ATC" : null,
         `Xem chi tiết: https://cloudstock.id.vn/ma/${b.ma}`,
@@ -580,7 +604,7 @@ export async function POST(request) {
         `➕ MUA THÊM (sau khi chốt đủ TP3): ${h.ma}`,
         `Giá mua mới: ${moiGia[k] ?? h.gia}${moiStop[k] ? ` · Cắt lỗ riêng: ${moiStop[k]}` : ""}`,
         moiTp1[k] ? `Chốt lời mới: ${moiTp1[k]} / ${moiTp2[k] ?? "—"} / ${moiTp3[k] ?? "—"}` : null,
-        cu?.gia_vao_web > 0 || cu?.gia_mua > 0 ? `Vị thế cũ còn giữ ~15%: giá mua ${cu.gia_vao_web > 0 ? cu.gia_vao_web : cu.gia_mua}` : null,
+        cu?.gia_vao_web > 0 || cu?.gia_mua > 0 ? `Vị thế cũ còn giữ phần chạy (~15%): giá mua ${cu.gia_vao_web > 0 ? cu.gia_vao_web : cu.gia_mua}` : null,
         trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa" : null,
         `Xem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`,
       ];

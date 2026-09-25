@@ -18,7 +18,8 @@ const TEXT = "#F5F5F7";
 const MUTED = "#8B8B99";
 const DO = "#EF4444";
 
-export default async function TrangLenhMo() {
+export default async function TrangLenhMo({ searchParams }) {
+  const tabDau = (await searchParams)?.tab; // vd /lenh-mo?tab=muaMoi (lien ket tu trang dau) mo san the "Diem mua moi"
   const nguoiDung = await layNguoiDungHienTai();
   if (!nguoiDung || !nguoiDung.da_duyet) {
     return (
@@ -82,7 +83,7 @@ export default async function TrangLenhMo() {
         </p>
       )}
 
-      <LenhMoNoiDung dangMo={dangMo} vnindex={vnindex} daChonMuaThem={daChonMuaThem} />
+      <LenhMoNoiDung dangMo={dangMo} vnindex={vnindex} daChonMuaThem={daChonMuaThem} tabDau={typeof tabDau === "string" ? tabDau : undefined} />
       <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
         Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở. Chốt lời báo mức TP cao nhất mà giá hiện tại đã chạm tới — không tự động bán, chỉ là gợi ý tham khảo. ⚠ Bán bớt xuất hiện khi điểm hôm nay đã tụt dưới ngưỡng bán nhưng chưa đủ điều kiện Bán hẳn — gợi ý giảm bớt vị thế sớm hơn, không đợi đến khi có tín hiệu Bán toàn bộ.
       </p>

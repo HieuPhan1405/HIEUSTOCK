@@ -3,6 +3,8 @@ import { CalendarDays } from "lucide-react";
 import { tinhTongQuanThiTruong, nhanTamLy } from "@/lib/thiTruong";
 import { tenCongTy } from "@/lib/tenMa";
 import { fmt, pct, capNhatMoiNhat } from "@/components/dungChung";
+import { CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
+import { LOAI_DIEM_MUA } from "@/lib/muaThemTinhToan";
 
 // Khoi "Ra soat thi truong" dung o trang Tong quan thi truong: 3 the tong hop (xu huong, tam ly, muc giu lenh), muc LENH MUA - BAN
 // (mua, mua them, ban, ban bot, chot loi) va RA SOAT NHANH (do rong, top tang/giam, nganh, khoi ngoai...). Tinh tren cac ma he thong
@@ -78,7 +80,7 @@ function DanhSachMa({ ds, mau, hienThi, trong = "Không có mã nào" }) {
         const t = tenCongTy(r.ma);
         return (
           <Link
-            key={r.ma}
+            key={r.khoa ?? r.ma}
             href={`/ma/${r.ma}`}
             title={t?.ten}
             className="inline-flex items-baseline gap-1.5 px-2 py-1 rounded-md text-xs hover:brightness-125 transition"
@@ -189,17 +191,50 @@ export function LenhMuaBan({ tatCa }) {
 
       {/* LENH MUA - BAN */}
       <div className="rounded-2xl border" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <TieuDeKhoi phu="Các lệnh của hệ thống ở lần cập nhật gần nhất: mua, mua thêm (sau khi chốt đủ TP3), bán, bán bớt và các mã đã chạm chốt lời.">
+        <TieuDeKhoi phu={`Các lệnh của hệ thống ở lần cập nhật gần nhất: mua, mua thêm / mua mới, bán, bán bớt, các mã đã chạm chốt lời (chốt ${CHUOI_TY_LE_CHOT} ở TP1/TP2/TP3, chạm TP3 là kết thúc lệnh) và các lệnh vừa kết thúc.`}>
           Lệnh mua – bán
         </TieuDeKhoi>
         <div className="px-5">
           <HangRaSoat so="1" nhan="Mua" nhan2="Bán / cắt lỗ" children2={<DanhSachMa ds={l.ban} mau={DO} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã BÁN" />}>
-            <DanhSachMa ds={l.mua} mau={XANH} hienThi={(r) => `điểm ${fmt(r.diem)}`} trong="Không có mã MUA mới" />
+            <DanhSachMa
+              ds={l.mua}
+              mau={XANH}
+              hienThi={(r) => `điểm ${fmt(r.diem)}${r.loai_vao === "MUA LAI" ? " · mua lại" : r.loai_vao === "MUA MUON" ? " · mua muộn" : ""}`}
+              trong="Không có mã MUA mới"
+            />
           </HangRaSoat>
 
-          <HangRaSoat so="2" nhan="Mua thêm (mới vào hôm nay)" mauNhan={NGOC} nhan2="Đang giữ lệnh mua thêm" mauNhan2={NGOC} children2={<DanhSachMa ds={l.dangMuaThem} mau={NGOC} hienThi={(r) => pct((r.gia / r.gia_mua_moi - 1) * 100, 1)} trong="Chưa có lệnh mua thêm nào đang giữ" />}>
+          <HangRaSoat
+            so="2"
+            nhan="Mua thêm / mua mới (điểm mua hôm nay)"
+            mauNhan={NGOC}
+            nhan2="Đang giữ lệnh mua thêm / mua mới"
+            mauNhan2={NGOC}
+            children2={
+              <>
+                <DanhSachMa
+                  ds={l.dangMuaThem}
+                  mau={NGOC}
+                  hienThi={(d) => `${pct((d.gia / d.giaMua - 1) * 100, 1)} · ${d.vong === "giua" ? "giữa chừng" : "sau TP3"}`}
+                  trong="Chưa có lệnh mua thêm / mua mới nào đang giữ"
+                />
+                <p className="text-[11px] mt-2.5" style={{ color: MUTED }}>
+                  {LOAI_DIEM_MUA.giua.nhan}: mã đang giữ lệnh, hồi về hỗ trợ rồi bật lên. Đã mua đợt đầu thì ghi nhận là <b>mua thêm</b> (giá vốn trung bình), chưa mua thì là <b>mua mới</b> – chọn theo tài khoản của bạn ở{" "}
+                  <Link href="/lenh-mo?tab=muaMoi" className="underline" style={{ color: NGOC }}>
+                    Sổ lệnh đang mở → Điểm mua mới
+                  </Link>
+                  .
+                </p>
+              </>
+            }
+          >
             {l.coDuLieuMuaThem ? (
-              <DanhSachMa ds={l.muaThemHomNay} mau={NGOC} hienThi={(r) => fmt(r.gia_mua_moi)} trong="Chưa có tín hiệu mua thêm hôm nay" />
+              <DanhSachMa
+                ds={l.muaThemHomNay}
+                mau={NGOC}
+                hienThi={(d) => `${fmt(d.giaMua)} · ${d.vong === "giua" ? "giữa chừng" : "sau TP3"}`}
+                trong="Chưa có điểm mua thêm / mua mới hôm nay"
+              />
             ) : (
               <span className="text-sm" style={{ color: MUTED }}>
                 Chưa có dữ liệu mua thêm (cần Explore file AFL 7 mới rồi đẩy dữ liệu).
@@ -211,13 +246,27 @@ export function LenhMuaBan({ tatCa }) {
             <DanhSachMa ds={l.banBot} mau={CAM} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có cảnh báo bán bớt" />
           </HangRaSoat>
 
-          <HangRaSoat so="4" nhan="Chốt lời: đã chạm TP3 (đã chốt 85%, tìm điểm mua mới)" mauNhan={PRIMARY}>
-            <DanhSachMa ds={l.chotTP3} mau={PRIMARY} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Chưa có mã nào chạm TP3" />
+          <HangRaSoat
+            so="4"
+            nhan={`Kết thúc lệnh: chốt đủ TP3 (đã chốt ${CHUOI_TY_LE_CHOT})`}
+            mauNhan={PRIMARY}
+            nhan2="Kết thúc lệnh: thoát theo Kijun (sau TP2)"
+            mauNhan2={CAM}
+            children2={<DanhSachMa ds={l.thoatKijun} mau={CAM} hienThi={(r) => `${pct(r.lai_lo_pct, 1)} phần còn lại`} trong="Không có mã nào" />}
+          >
+            <DanhSachMa ds={l.ketThucTP3} mau={PRIMARY} hienThi={(r) => `TP3 ${pct(r.lai_lo_pct, 1)}`} trong="Chưa có lệnh nào kết thúc ở TP3" />
           </HangRaSoat>
 
-          <HangRaSoat so="5" nhan="Chốt lời: đã chạm TP2" nhan2="Chốt lời: đã chạm TP1" mauNhan2={XANH} children2={<DanhSachMa ds={l.chotTP1} mau={XANH} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã nào" />}>
+          <HangRaSoat so="5" nhan="Chốt lời: đã chạm TP2 (đã chốt 60%)" nhan2="Chốt lời: đã chạm TP1 (đã chốt 30%)" mauNhan2={XANH} children2={<DanhSachMa ds={l.chotTP1} mau={XANH} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã nào" />}>
             <DanhSachMa ds={l.chotTP2} mau={XANH} hienThi={(r) => pct(r.lai_lo_pct, 1)} trong="Không có mã nào" />
           </HangRaSoat>
+
+          {/* Lenh CU (cach chot 30/30/25/15 truoc 2026-09-25) con giu phan chay sau TP3 - chi hien khi con lenh nhu vay */}
+          {l.chotTP3.length > 0 && (
+            <HangRaSoat so="6" nhan="Lệnh cũ còn giữ phần chạy sau TP3 (cách chốt 30/30/25/15)" mauNhan={PRIMARY}>
+              <DanhSachMa ds={l.chotTP3} mau={PRIMARY} hienThi={(r) => pct(r.lai_lo_pct, 1)} />
+            </HangRaSoat>
+          )}
         </div>
       </div>
     </section>

@@ -141,8 +141,8 @@ function NguyenTac() {
         <p>
           Mỗi mã có <b style={{ color: XANH }}>vùng chốt lời gần (TP1–TP2)</b> và <b style={{ color: XANH }}>mốc xa (TP3)</b> cố định từ lúc mua. Nhãn{" "}
           <b style={{ color: XANH }}>&quot;Đã chạm&quot;</b> nghĩa là giá đã từng lên tới mốc đó trong quá trình giữ (kể cả sau đó giá tụt lại).
-          Tỷ lệ chốt <b style={{ color: XANH }}>30/30/25/15</b>: chốt 30% ở TP1, 30% ở TP2, 25% ở TP3; <b style={{ color: XANH }}>15% cuối, nếu giá còn tăng thì nắm giữ lấy vị thế</b>
-          và thoát theo tín hiệu BÁN để lệnh thắng lớn chạy tiếp. Lệnh đã chạm TP3 được ghi vào trang Lệnh đã đóng (phần 85% đã chốt). Sau TP3 mã coi như cần tìm điểm mua mới: khi giá hồi về hỗ trợ (Kijun), nến xanh và điểm còn đạt ngưỡng, hệ thống báo <b style={{ color: XANH }}>MUA THÊM</b> (tối đa 1 lần mỗi lệnh gốc) với giá mua, cắt lỗ và chốt lời riêng, tách khỏi vị thế cũ còn giữ (xem thêm phần &quot;Mua lại &amp; Bảo vệ lãi&quot; bên dưới — sau khi chạm TP2, Stop-loss của phần còn lại tự động dời về giá mua). Hệ thống chỉ
+          Tỷ lệ chốt <b style={{ color: XANH }}>30/30/40</b>: chốt 30% ở TP1, 30% ở TP2 và <b style={{ color: XANH }}>40% còn lại ở TP3 — chạm TP3 là kết thúc lệnh</b>, không còn phần giữ chạy.
+          Sau khi đã chạm TP2 (đã chốt 60%), nếu giá <b style={{ color: XANH }}>đóng cửa dưới Kijun</b> trước khi tới TP3 thì bán nốt phần còn lại để giữ phần lãi (xem thêm phần &quot;Mua lại &amp; Bảo vệ lãi&quot; bên dưới — Stop-loss của phần còn lại cũng tự dời về giá mua). Lệnh kết thúc được ghi vào trang Lệnh đã đóng thành từng dòng TP1/TP2/TP3. Điểm mua sau khi một lệnh đã kết thúc là <b style={{ color: XANH }}>lệnh mua bình thường</b> như mọi lệnh khác. Trong lúc đang giữ lệnh, khi giá hồi về hỗ trợ (Kijun) rồi bật lên, hệ thống có thể báo <b style={{ color: XANH }}>MUA THÊM (giữa chừng)</b> với giá mua, cắt lỗ và chốt lời riêng, tách khỏi lệnh gốc — bạn chọn ở Sổ lệnh đang mở → Điểm mua mới là đã mua đợt đầu (mua thêm) hay chưa (mua mới). Hệ thống chỉ
           gợi ý, không tự bán.
         </p>
       </Muc>
@@ -205,7 +205,7 @@ function NguyenTac() {
           <KyHieu ky="◐" mau="#FBBF24" chu={<><b style={{ color: XANH }}>Giải ngân 1 phần</b> — RS còn yếu nên chỉ mua một phần tỷ trọng.</>} />
           <KyHieu ky="➕" mau="#22D3EE" chu={<><b style={{ color: XANH }}>Bổ sung</b> — đủ điều kiện mua nốt phần tỷ trọng còn lại.</>} />
           <KyHieu ky="↺" mau={XANH} chu={<><b style={{ color: XANH }}>Mua lại</b> — mua lại sau khi bán không lỗ, giá hồi về hỗ trợ trong xu hướng tăng.</>} />
-          <KyHieu ky="➕" mau="#22D3EE" chu={<><b style={{ color: XANH }}>Mua thêm sau TP3</b> — lệnh mới sau khi lệnh gốc đã chốt đủ TP3.</>} />
+          <KyHieu ky="➕" mau="#22D3EE" chu={<><b style={{ color: XANH }}>Mua thêm giữa chừng</b> — lệnh mua thêm khi đang giữ lệnh gốc (trước TP3): giá hồi về hỗ trợ rồi bật lên.</>} />
           <KyHieu ky="🛡" mau="#A78BFA" chu={<><b style={{ color: XANH }}>Bảo vệ lãi</b> — Stop-loss đã dời lên cao hơn (hòa vốn) sau khi chạm TP2.</>} />
           <KyHieu ky="⏳" mau="#FBBF24" chu={<><b style={{ color: XANH }}>Đạt điểm, chờ phiên sau</b> — đủ điểm MUA nhưng phiên đầu chưa đủ khối lượng xác nhận.</>} />
           <KyHieu ky="✓" mau={XANH} chu={<><b style={{ color: XANH }}>Đã chạm</b> (TP1/TP2/TP3) — giá đã từng lên tới mốc đó, kể cả nếu sau đó tụt lại.</>} />
@@ -292,7 +292,7 @@ export default async function TrangHuongDan() {
 
       <Muc tieuDe="Lệnh đã đóng">
         <p>
-          Kết quả các lệnh đã kết thúc (mã đang NẮM GIỮ chuyển sang BÁN hoặc thoát vị thế, hoặc chốt đủ TP3 theo tỷ lệ 30/30/25/15 với 15% cuối giữ chạy), tính từ khi web bắt đầu ghi nhận: giá mua, giá bán, lãi/lỗ, số phiên đã
+          Kết quả các lệnh đã kết thúc (mã đang NẮM GIỮ chuyển sang BÁN hoặc thoát vị thế, hoặc kết thúc ở TP3 theo tỷ lệ chốt 30/30/40, hoặc thoát theo Kijun sau TP2; các lệnh cũ trước 25/09/2026 còn tính theo cách 30/30/25 và 15% cuối giữ chạy), tính từ khi web bắt đầu ghi nhận: giá mua, giá bán, lãi/lỗ, số phiên đã
           giữ, tỷ lệ thắng, lãi trung bình lệnh thắng và lỗ trung bình lệnh thua. Ngày bán và giá bán lấy theo lần cập nhật dữ liệu lúc lệnh đổi trạng thái nên
           chỉ xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật; lệnh đã đóng trước khi web bắt đầu ghi nhận sẽ không có trong danh sách.
         </p>

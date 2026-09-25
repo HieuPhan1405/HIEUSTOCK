@@ -315,5 +315,110 @@ function khungRong(n) {
   ok("L: mua giua chung KHONG duoc mo vi da qua TP3", kq.muaGiuaGiu[4] !== true && kq.muaGiuaSuKien[4] !== true);
 }
 
+// ================= KET THUC LENH O TP3 + THOAT KIJUN SAU TP2 (2026-09-25) =================
+// Khung: vao lenh phien 1 gia 100, SL 90, TP1/TP2/TP3 = 110/120/130.
+function khungTP(n) {
+  const d = khungRong(n);
+  d.buyTho[1] = true;
+  d.giaVaoBar[1] = 100;
+  d.stopVaoBar[1] = 90;
+  d.tp1Vong[1] = 110;
+  d.tp2Vong[1] = 120;
+  d.tp3Vong[1] = 130;
+  d.low.fill(105); // tren SL 90 va tren gia vao
+  d.high.fill(108); // duoi TP1 tru khi ghi de
+  return d;
+}
+
+// ---- M: Cham TP3 -> DONG LENH (ly do 5) khi ketThucTaiTP3, khong dong khi tat ----
+{
+  const d = khungTP(6);
+  d.high[3] = 131; // cham TP3 ngay phien 3
+  const bat = chayMayTrangThai({ ...d, thamSo: { ketThucTaiTP3: true } });
+  const tat = chayMayTrangThai(d);
+  ok("M: bat -> ban dung phien 3, ly do = 5 (chot du TP3)", bat.sell[3] === true && bat.lyDoBanBar[3] === 5);
+  ok("M: bat -> het giu tu phien 3", bat.giuTrongVongLap[2] === 1 && bat.giuTrongVongLap[3] === 0 && bat.giuTrongVongLap[4] === 0);
+  ok("M: tat (mac dinh) -> van giu sau khi cham TP3 (hanh vi cu)", tat.sell[3] !== true && tat.giuTrongVongLap[3] === 1 && tat.giuTrongVongLap[5] === 1);
+}
+
+// ---- M2: Uu tien - cung nen vua cham stop vua cham TP3 -> cham stop truoc (ly do 2) ----
+{
+  const d = khungTP(5);
+  d.high[3] = 131;
+  d.low[3] = 89; // cham stop 90
+  const kq = chayMayTrangThai({ ...d, thamSo: { ketThucTaiTP3: true } });
+  ok("M2: vua stop vua TP3 cung nen -> ly do = 2 (stop truoc)", kq.sell[3] === true && kq.lyDoBanBar[3] === 2);
+}
+
+// ---- M3: Sau khi dong o TP3, co the vao lai binh thuong (Buy thuong moi) - va vong 2 (mua moi sau TP3) khong mo ----
+{
+  const d = khungTP(9);
+  d.high[3] = 131;
+  d.muaMoiTinHieu.fill(true); // neu con giu lenh thi vong 2 co the mo - nhung lenh da dong o TP3
+  d.stopMuaMoiBar.fill(95);
+  d.buyTho[6] = true; // tin hieu MUA moi sau do
+  d.giaVaoBar[6] = 112;
+  d.stopVaoBar[6] = 104;
+  d.tp1Vong[6] = 120;
+  d.tp2Vong[6] = 130;
+  d.tp3Vong[6] = 140;
+  const kq = chayMayTrangThai({ ...d, thamSo: { ketThucTaiTP3: true } });
+  ok("M3: dong o TP3 phien 3 roi khong giu phien 4-5", kq.giuTrongVongLap[3] === 0 && kq.giuTrongVongLap[4] === 0 && kq.giuTrongVongLap[5] === 0);
+  ok("M3: vong 2 (mua moi sau TP3) KHONG bao gio mo", kq.mua2SuKien.every((v) => v !== true) && kq.mua2Giu.every((v) => v !== true));
+  ok("M3: vao lenh moi phien 6 (Buy thuong) gia 112", kq.buy[6] === true && kq.giaVaoLuc[6] === 112 && kq.loaiVaoLenh[6] === 1);
+}
+
+// ---- N: Thoat Kijun sau TP2: sau khi TP2 da ghi nhan (phien truoc), dong cua < Kijun -> ban (ly do 4) ----
+{
+  const d = khungTP(8);
+  d.high[2] = 121; // cham TP2 phien 2 -> DaTP2Vong[3] = 1 (dung dinh phien truoc)
+  d.kijun = new Array(8).fill(104);
+  d.close.fill(107);
+  d.close[4] = 103; // dong cua duoi Kijun 104 phien 4
+  const kq = chayMayTrangThai({ ...d, thamSo: { thoatKijunSauTP2: true } });
+  ok("N: phien 3 da ghi nhan TP2 (dong cua 107 > Kijun 104 nen chua thoat)", kq.daTP2Vong[3] === 1 && kq.sell[3] !== true);
+  ok("N: phien 4 dong cua 103 < Kijun 104 -> ban, ly do = 4", kq.sell[4] === true && kq.lyDoBanBar[4] === 4);
+  const tat = chayMayTrangThai({ ...d, thamSo: {} });
+  ok("N (doi chung, tat): khong thoat theo Kijun", tat.sell[4] !== true);
+}
+
+// ---- N2: Chua cham TP2 thi dong cua duoi Kijun KHONG kich hoat thoat ----
+{
+  const d = khungTP(6);
+  d.kijun = new Array(6).fill(104);
+  d.close.fill(107);
+  d.close[3] = 103;
+  const kq = chayMayTrangThai({ ...d, thamSo: { thoatKijunSauTP2: true } });
+  ok("N2: chua tung cham TP2 -> khong thoat theo Kijun", kq.sell[3] !== true && kq.giuTrongVongLap[3] === 1);
+}
+
+// ---- N3: Uu tien ly do - tin hieu diem (1) > Kijun (4) > bao ve hoa von (3) ----
+{
+  const d = khungTP(8);
+  d.high[2] = 121; // TP2 ghi nhan tu phien 3
+  d.kijun = new Array(8).fill(104);
+  d.close.fill(107);
+  d.close[4] = 103; // duoi Kijun
+  d.low[4] = 99; // cham muc bao ve hoa von (gia vao 100)? 99 <= 100 -> cham bao ve; SL 90 khong cham
+  d.open[4] = 106;
+  let kq = chayMayTrangThai({ ...d, thamSo: { thoatKijunSauTP2: true, bvHoaVon: true } });
+  ok("N3: Kijun + bao ve cung nen -> ly do = 4 (Kijun truoc bao ve), gia ban = dong cua (khong phai muc bao ve)", kq.lyDoBanBar[4] === 4 && kq.giaBanBaoVe[4] === 0);
+  d.sellTinHieu[4] = true;
+  kq = chayMayTrangThai({ ...d, thamSo: { thoatKijunSauTP2: true, bvHoaVon: true } });
+  ok("N3: them tin hieu diem -> ly do = 1 (tin hieu truoc Kijun)", kq.lyDoBanBar[4] === 1);
+}
+
+// ---- P: Ban khi cham TP3 la co LAI -> cho phep Mua lai (banGanNhatCoLai) nhu cac lan ban co lai khac ----
+{
+  const d = khungTP(10);
+  d.high[3] = 131;
+  d.close.fill(115);
+  d.muaLaiTinHieu[5] = true;
+  d.stopMuaLaiBar[5] = 108;
+  d.close[5] = 125; // <= gia ban (TP3 130 vi open 100 < 130) => duoc mua lai
+  const kq = chayMayTrangThai({ ...d, thamSo: { ketThucTaiTP3: true } });
+  ok("P: sau chot TP3 co lai -> mua lai phien 5 (LoaiVaoLenh = 2)", kq.buy[5] === true && kq.loaiVaoLenh[5] === 2);
+}
+
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

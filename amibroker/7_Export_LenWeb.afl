@@ -618,6 +618,12 @@ BVHoaVon = KieuBaoVeLai == "Hoa von sau TP2";
 BVRong = KieuBaoVeLai == "Rong tu dinh sau TP1";
 BVBat = BVHoaVon OR BVRong;
 
+// KET THUC LENH O TP3 (2026-09-25, theo backtest engine/dich-vu/backtestBaMocKetThuc.mjs): TP1 chot 30%, TP2 chot 30%, TP3 chot 40% = DONG lenh (khong con phan 15% giu chay).
+// Sau TP2 (da chot 60%), neu dong cua < Kijun truoc khi toi TP3 thi ban not phan con lai. Vi lenh da ket thuc o TP3 nen "Mua moi sau TP3" (vong 2) khong con
+// dieu kien mo - diem mua sau TP3 la MUA BINH THUONG (Buy thuong / Mua lai) cua lenh moi. Tat 2 cong tac nay de ve lai cach cu (giu 15% chay) khi so backtest.
+KetThucTaiTP3    = ParamToggle("KET THUC LENH o TP3: chot 30/30/40 (TP1/TP2/TP3), khong giu phan chay", "Tat|Bat", 1);
+ThoatKijunSauTP2 = ParamToggle("Sau TP2: ban not neu dong cua < Kijun (truoc khi toi TP3)", "Tat|Bat", 1);
+
 // TP1/TP2 dung trong vong lap de biet "da cham TP chua" - CUNG cong thuc voi ChotLoi_TP1/2
 // o phan Chot loi phia duoi (neu doi cong thuc TP thi sua CA HAI cho khop).
 NGanV = Max(HHV(H, 60), GiaVaoBar * 1.05);
@@ -655,7 +661,7 @@ StopMuaLaiBar = IIf((HoTroMuaLaiGia > 0) AND (HoTroMuaLaiGia < C), SLMuaLaiTho,
 // => MUA MOI (tai gia dong cua), Stop-loss RIENG duoi ho tro, TP1/2/3 rieng. Toi da 1 lan cho moi lenh goc. Lenh moi thoat khi
 // cham Stop-loss rieng hoac khi lenh goc bi Ban (tin hieu). Vi the cu (15%) van giu gia mua cu.
 // ============================================================================
-BatMuaMoi = ParamToggle("MUA MOI sau TP3: bao mua moi khi hoi ve ho tro (chi xuat/hien thi)", "Tat|Bat", 1);
+BatMuaMoi = ParamToggle("MUA MOI sau TP3: bao mua moi khi hoi ve ho tro (chi xuat/hien thi)", "Tat|Bat", 0); // 2026-09-25: mac dinh Tat - lenh da ket thuc o TP3, diem mua sau do la MUA BINH THUONG
 KieuHoTroMuaMoi = ParamList("Mua moi sau TP3 - ho tro", "Kijun|Can bang dai han (duoi)", 0);
 DiemToiThieuMuaMoi = Param("Mua moi sau TP3 - diem toi thieu", 1.25, 0, 4, 0.05);
 MuaMoiCaoToiDaPct = Param("Mua moi sau TP3 - gia toi da cao hon ho tro (%)", 4, 1, 15, 0.5);
@@ -730,7 +736,7 @@ ThamDoTrongVongLap = 0;
 ViTriVaoTrongVongLap = 0;
 BoSungSuKien = 0;
 TP3VaoVong = 0; DaTP3Vong = 0;
-LyDoBanBar = 0;   // Chi co nghia dung phien Sell that su xay ra: 1=tin hieu diem so, 2=Stop-loss thuong, 3=Bao ve lai.
+LyDoBanBar = 0;   // Chi co nghia dung phien Sell that su xay ra: 1=tin hieu diem so, 2=Stop-loss thuong, 3=Bao ve lai, 4=Thoat Kijun sau TP2, 5=Chot du TP3.
 Mua2Giu = 0;        // 1 = dang giu lenh MUA MOI (vong 2)
 Mua2Gia = 0; Mua2Stop = 0; Mua2TP1 = 0; Mua2TP2 = 0; Mua2TP3 = 0;
 Mua2Vi = 0;         // vi tri nen vao lenh mua moi
@@ -801,10 +807,18 @@ for (i = 1; i < BarCount; i++)
         // Cham Stop-loss: mac dinh (SLChamLaCat = Bat) Ban NGAY khi gia thap nhat phien <= Stop-loss, khop Backtest (ApplyStop).
         // Tat = kieu cu: chi Ban khi diem cung da am (<0).
         chamStopThuong = L[i] <= stopGiaThucTe_vonglap AND (SLChamLaCat OR TotalScore[i] < 0);
-        if (SellTinHieu[i] == 1 OR chamStopThuong OR chamBaoVe == 1)
+        // KET THUC LENH O TP3 + THOAT KIJUN SAU TP2 (2026-09-25) - mirror engine/loi/mayTrangThai.js. Kijun sau TP2 dung DaTP2Vong (cac phien TRUOC hom nay)
+        // nhu bao ve hoa von. Cham TP3 (dinh phien >= TP3): dong lenh tai TP3 (hoac gia mo cua neu nhay len tren TP3) - uu tien THAP NHAT: cung nen vua cham
+        // stop vua cham TP3 = cham stop truoc (than trong).
+        chamKijunSauTP2 = 0;
+        if (ThoatKijunSauTP2 AND DaTP2Vong[i] == 1 AND C[i] < Kijun[i]) chamKijunSauTP2 = 1;
+        chamTP3 = 0;
+        if (KetThucTaiTP3 AND TP3VaoVong[i] > 0 AND H[i] >= TP3VaoVong[i]) chamTP3 = 1;
+        if (SellTinHieu[i] == 1 OR chamStopThuong OR chamBaoVe == 1 OR chamKijunSauTP2 == 1 OR chamTP3 == 1)
         {
             Sell[i] = 1;
-            LyDoBanBar[i] = IIf(chamStopThuong, 2, IIf(chamBaoVe == 1 AND SellTinHieu[i] == 0, 3, 1));
+            // Ly do ban (uu tien): 2 Stop-loss > 1 tin hieu diem > 4 thoat Kijun sau TP2 > 3 bao ve hoa von > 5 chot du TP3.
+            LyDoBanBar[i] = IIf(chamStopThuong, 2, IIf(SellTinHieu[i] == 1, 1, IIf(chamKijunSauTP2 == 1, 4, IIf(chamBaoVe == 1, 3, 5))));
             GiuTrongVongLap[i] = 0;
             ThamDoTrongVongLap[i] = 0;
             // MUA MOI SAU TP3: lenh goc bi Ban thi lenh moi (neu dang giu) dong theo.
@@ -820,9 +834,15 @@ for (i = 1; i < BarCount; i++)
             }
             // Gia ban de xet "lan ban nay co lo khong" (cho MUA LAI) va gia khop khi cham SL bao ve.
             giaBanLoop = C[i];
-            if (chamBaoVe == 1 AND SellTinHieu[i] == 0 AND chamStopThuong == 0)
+            if (LyDoBanBar[i] == 3)
             {
                 giaBanLoop = Min(O[i], stopBaoVe);
+                GiaBanBaoVe[i] = giaBanLoop;
+            }
+            else if (LyDoBanBar[i] == 5)
+            {
+                // Chot du TP3: khop tai muc TP3 (hoac gia mo cua neu nhay len tren TP3) - Backtest doc qua SellPrice.
+                giaBanLoop = Max(O[i], TP3VaoVong[i]);
                 GiaBanBaoVe[i] = giaBanLoop;
             }
             banGanNhatViTri = i;

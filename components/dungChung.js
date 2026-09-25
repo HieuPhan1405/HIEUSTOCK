@@ -2,7 +2,7 @@
 // tiet ma). Du lieu that tu AmiBroker co the thieu (ma moi len san, chua du
 // du lieu lich su de tinh chi bao) - moi ham phai an toan voi null/undefined/NaN.
 
-import { TY_LE_CHOT } from "@/lib/tyLeChot";
+import { TY_LE_CHOT, TY_LE_CHOT_CU } from "@/lib/tyLeChot";
 
 export const FONT_IMPORT = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -171,8 +171,8 @@ export function sapChamMoc(row, bienPct) {
 //  - Vung cat lo: tu Stop-loss len toi duong ho tro GAN NHAT nam giua Stop-loss va gia mua
 //    (Kijun / duong can bang dai han), rong toi thieu rongSLToiThieuPct%. Cham day vung = cat.
 //  - Vung chot loi: GOM TP1-TP2 thanh "vung gan" (2 moc nay thuong sat nhau, gia di qua trong
-//    vai phien) + TP3 la "moc xa"; ty le chot 30/30/25/15 (TP1/TP2/TP3/phan cuoi - xem lib/tyLeChot.js):
-//    15% cuoi neu gia con tang thi nam giu lay vi the, thoat theo tin hieu BAN.
+//    vai phien) + TP3 la "moc xa"; ty le chot 30/30/40 (TP1/TP2/TP3 - xem lib/tyLeChot.js): cham TP3 la KET THUC lenh (khong con
+//    phan giu chay); sau TP2 neu dong cua < Kijun truoc khi toi TP3 thi ban not phan con lai.
 //    Sau khi cham TP2, goi y doi Stop-loss phan con lai ve gia mua (hoa von).
 //  - Khi Stop-loss luc mua da cach gia hien tai qua xa (lenh lai lon) thi chi con mang tinh
 //    tham khao - thoat that van theo tin hieu BAN cua he thong.
@@ -223,7 +223,8 @@ export function tinhVungLenh(row) {
   return { mua, sl, tp, hoaVon };
 }
 
-// SAU KHI CHOT DU TP3 (chot 85%, con phan cuoi giu chay): ma coi nhu can TIM DIEM MUA MOI. Tach ro 2 thu:
+// LENH CU (cach 30/30/25/15 truoc 2026-09-25) SAU KHI CHOT DU TP3 (chot 85%, con 15% giu chay): ma coi nhu can TIM DIEM MUA MOI. Cach quan ly moi
+// khong con trang thai nay (cham TP3 la dong lenh) - ham chi con tra ve du lieu cho cac lenh cu dang giu phan chay. Tach ro 2 thu:
 //  - viTheCu: phan con giu (gia mua CU, lai/lo tu gia do);
 //  - muaMoi: vung mua moi THAM KHAO = tu ho tro gan nhat BEN DUOI gia (Kijun / duong can bang dai han) den ho tro + tranDuoiPct%.
 // Day chi la goi y hien thi tu du lieu web, CHUA phai tin hieu MUA cua he thong (AFL chua phat lenh mua thu 2 khi dang giu).
@@ -263,7 +264,7 @@ export function tinhSauTP3(row) {
     : null;
   const daDongMoi = !daVao && row.gia_mua_moi > 0; // da mua moi roi va da dong (cham Stop-loss rieng), khong mua them nua tren lenh goc nay
   return {
-    viTheCu: { giaMua: Number(row.gia_mua), laiLoPct: row.lai_lo_pct, tyLeConLai: TY_LE_CHOT.giu },
+    viTheCu: { giaMua: Number(row.gia_mua), laiLoPct: row.lai_lo_pct, tyLeConLai: TY_LE_CHOT_CU.giu },
     muaMoi,
     diemDu: row.diem >= NGUONG_DIEM_MUA,
     lenhMoi,

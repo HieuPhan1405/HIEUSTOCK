@@ -526,7 +526,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
       {sauTP3 && (
         <Card className="mb-4">
           <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#6C5CE7" }}>
-            ★ Đã chốt đủ TP3 — tìm điểm mua mới
+            ★ Lệnh cũ đã chốt đủ TP3 — còn phần giữ chạy
           </p>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
@@ -540,7 +540,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 {pct(sauTP3.viTheCu.laiLoPct, 2)} so với giá mua cũ
               </p>
               <p className="text-[11px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                85% vị thế đã chốt ở TP1/TP2/TP3. Phần còn lại giữ chạy, thoát theo tín hiệu BÁN.
+                85% vị thế đã chốt ở TP1/TP2/TP3 (cách chốt cũ 30/30/25/15). Phần còn lại giữ chạy, thoát theo tín hiệu BÁN. Lệnh mới tính từ 25/09/2026 kết thúc ngay khi chạm TP3.
               </p>
             </div>
             <div>
@@ -710,7 +710,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: "#22C55E" }}>{fmt(vungLenh.tp.xa)}</strong>
               </p>
               <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                Tỷ lệ chốt {VUNG.tyLeChot.tp1}/{VUNG.tyLeChot.tp2}/{VUNG.tyLeChot.tp3}/{VUNG.tyLeChot.giu}: {VUNG.tyLeChot.tp1}% ở TP1, {VUNG.tyLeChot.tp2}% ở TP2, {VUNG.tyLeChot.tp3}% ở TP3; {VUNG.tyLeChot.giu}% cuối nếu giá còn tăng thì nắm giữ lấy vị thế, thoát theo tín hiệu BÁN.
+                Tỷ lệ chốt {VUNG.tyLeChot.tp1}/{VUNG.tyLeChot.tp2}/{VUNG.tyLeChot.tp3}: {VUNG.tyLeChot.tp1}% ở TP1, {VUNG.tyLeChot.tp2}% ở TP2, {VUNG.tyLeChot.tp3}% ở TP3 — chạm TP3 là kết thúc lệnh. Sau TP2, nếu giá đóng cửa dưới Kijun trước khi tới TP3 thì bán nốt phần còn lại.
               </p>
             </div>
           )}

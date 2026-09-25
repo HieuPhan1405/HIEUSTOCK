@@ -46,6 +46,7 @@ const chiSoTB = new Map();
 // ---------- 2. Chay engine tung ma, gom cac lenh goc ----------
 const ketQuaBreadth = { theoNganh: new Map(), trungBinh: 50 };
 const lenh = [];
+const loMuaThem = []; // { loai, ngay, ret } - lo phu (mua them sau TP3 / giua chung), thoat khi cham stop rieng hoac lenh goc bi ban
 let soMa = 0;
 for (const [ma, nen] of Object.entries(cache)) {
   if (nen.length < SO_NEN_TOI_THIEU) continue;
@@ -56,7 +57,7 @@ for (const [ma, nen] of Object.entries(cache)) {
   });
   let hang;
   try {
-    hang = tinhTinHieuChoMa({ ma, nen, vniClose, san: "HOSE", ketQuaBreadth, thamSo: { traChuoi: true } });
+    hang = tinhTinHieuChoMa({ ma, nen, vniClose, san: "HOSE", ketQuaBreadth, thamSo: { traChuoi: true, ketThucTaiTP3: false, thoatKijunSauTP2: false, batMuaMoi: true } });
   } catch (e) {
     console.log("Loi", ma, String(e.message || e).slice(0, 80));
     continue;
@@ -65,6 +66,23 @@ for (const [ma, nen] of Object.entries(cache)) {
   const { close, open, high, low, kijun, tenkan, sellTinHieu, kq } = hang._chuoi;
   const n = nen.length;
   const ngayArr = nen.map((b) => b.t);
+  for (const [ten, suKien, giu, gia, stop, cat] of [
+    ["Mua them SAU TP3", kq.mua2SuKien, kq.mua2Giu, kq.mua2Gia, kq.mua2Stop, kq.mua2Cat],
+    ["Mua them GIUA CHUNG", kq.muaGiuaSuKien, kq.muaGiuaGiu, kq.muaGiuaGia, kq.muaGiuaStop, kq.muaGiuaCat],
+  ]) {
+    for (let i = 1; i < n - 1; i++) {
+      if (!suKien[i] || !(gia[i] > 0)) continue;
+      let j = -1;
+      for (let k = i + 1; k < n; k++)
+        if (giu[k] !== true) {
+          j = k;
+          break;
+        }
+      if (j < 0) continue;
+      const giaThoat = cat[j] === 1 ? Math.min(open[j], stop[i]) : close[j];
+      loMuaThem.push({ loai: ten, ngay: nen[i].t, ret: (giaThoat / gia[i] - 1) * 100 - CHI_PHI, phien: j - i });
+    }
+  }
   for (let iv = 1; iv < n - 1; iv++) {
     if (!kq.buy[iv]) continue;
     const E = kq.giaVaoLuc[iv];
@@ -335,6 +353,29 @@ console.log("\n=== Khoang cach muc cat lo / TP cua CAC LAN VAO LENH LICH SU (% s
     return (cao / t.E - 1) * 100;
   });
   console.log(`  Lai toi da tung dat duoc trong lenh (MFE): trung vi ${f(md(mfe), 1)}% | TB ${f(tb(mfe), 1)}% | cham TP1 ${((lenh.filter((t, i) => mfe[i] >= pc(t, t.tp[0])).length / lenh.length) * 100).toFixed(0)}% | TP2 ${((lenh.filter((t, i) => mfe[i] >= pc(t, t.tp[1])).length / lenh.length) * 100).toFixed(0)}% | TP3 ${((lenh.filter((t, i) => mfe[i] >= pc(t, t.tp[2])).length / lenh.length) * 100).toFixed(0)}%`);
+}
+
+console.log("\n=== Theo LOAI VAO LENH goc (cach hien tai / cach 'khong chot, sau TP1 thoat khi dong cua < Kijun') ===");
+{
+  const ten = { 1: "Mua thuong (tin hieu chinh)", 2: "Mua LAI (sau khi bi ban)", 3: "Mua MUON (bo lo dot mua)" };
+  const kijunTP1 = CACH.find((c) => c.ten.startsWith("Khong chot, nhung sau khi cham TP1"));
+  for (const loai of [1, 2, 3]) {
+    const ds = lenh.filter((t) => t.loai === loai);
+    if (!ds.length) continue;
+    const a = ds.map((t) => moPhong(t, CACH[0])).filter(Boolean);
+    const b = ds.map((t) => moPhong(t, kijunTP1)).filter(Boolean);
+    const ka = thongKe(a);
+    const kb = thongKe(b);
+    console.log(`  ${ten[loai].padEnd(30)} n=${String(ds.length).padStart(4)} | hien tai: lai TB ${f(ka.tb).padStart(5)}% thang ${f(ka.thang, 0)}% PF ${f(ka.pf)} | Kijun sau TP1: lai TB ${f(kb.tb).padStart(5)}% thang ${f(kb.thang, 0)}% PF ${f(kb.pf)}`);
+  }
+}
+console.log("\n=== Cac lo MUA THEM (lo phu, thoat khi cham stop rieng hoac lenh goc bi ban; chua tinh chot loi rieng) ===");
+for (const loai of ["Mua them SAU TP3", "Mua them GIUA CHUNG"]) {
+  const ds = loMuaThem.filter((x) => x.loai === loai);
+  if (!ds.length) continue;
+  const r = ds.map((x) => x.ret);
+  const ky = [0, 1, 2].map((k) => tb(ds.filter((x) => kyOf(x.ngay) === k).map((x) => x.ret)));
+  console.log(`  ${loai.padEnd(22)} n=${String(ds.length).padStart(4)} | lai TB ${f(tb(r)).padStart(5)}% | trung vi ${f(md(r))}% | thang ${f((r.filter((x) => x > 0).length / r.length) * 100, 0)}% | phien TB ${f(tb(ds.map((x) => x.phien)), 1)} | theo giai doan ${ky.map((v) => f(v)).join(" / ")}`);
 }
 
 console.log("\n=== Cat lo roi gia QUAY LAI? (lenh thoat vi cham cat lo ban dau, cach hien tai) ===");

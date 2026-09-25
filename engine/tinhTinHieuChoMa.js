@@ -65,7 +65,12 @@ const MAC_DINH = {
   doChamHoTroPct: 1,
   muaLaiCaoToiDaPct: 0,
   soLanMuaLaiToiDa: 2,
-  batMuaMoi: true,
+  // KET THUC LENH O TP3 (2026-09-25, theo backtest engine/dich-vu/backtestBaMocKetThuc.mjs): TP1 chot 30%, TP2 chot 30%, TP3 chot 40% = DONG lenh (bo phan 15% giu chay);
+  // sau TP2, dong cua < Kijun truoc khi toi TP3 thi ban not. Vi lenh da ket thuc o TP3 nen "Mua moi sau TP3" (vong 2) khong con dieu kien mo (batMuaMoi false) -
+  // diem mua sau TP3 la MUA BINH THUONG (Buy thuong / Mua lai) cua lenh moi.
+  ketThucTaiTP3: true,
+  thoatKijunSauTP2: true,
+  batMuaMoi: false,
   kieuHoTroMuaMoi: "Kijun",
   diemToiThieuMuaMoi: 1.25,
   muaMoiCaoToiDaPct: 4,
@@ -239,6 +244,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     stopMuaMuonBar,
     muaThemGiuaChungTinHieu,
     stopMuaThemGiuaChungBar,
+    kijun,
     thamSo: {
       slChamLaCat: p.slChamLaCat,
       bvHoaVon: p.bvHoaVon,
@@ -249,6 +255,8 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
       hanMuaLaiPhien: p.hanMuaLaiPhien,
       muaLaiCaoToiDaPct: p.muaLaiCaoToiDaPct,
       soLanMuaLaiToiDa: p.soLanMuaLaiToiDa,
+      ketThucTaiTP3: p.ketThucTaiTP3,
+      thoatKijunSauTP2: p.thoatKijunSauTP2,
     },
   });
 

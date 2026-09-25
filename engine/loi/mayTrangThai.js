@@ -37,6 +37,7 @@ export function chayMayTrangThai(dauVao) {
     stopMuaMuonBar,
     muaThemGiuaChungTinHieu,
     stopMuaThemGiuaChungBar,
+    kijun, // chi can khi thamSo.thoatKijunSauTP2 = true
   } = dauVao;
   const {
     slChamLaCat = true,
@@ -48,6 +49,11 @@ export function chayMayTrangThai(dauVao) {
     hanMuaLaiPhien = 60,
     muaLaiCaoToiDaPct = 0,
     soLanMuaLaiToiDa = 2,
+    // KET THUC LENH O TP3 (2026-09-25): chot 30/30 o TP1/TP2 roi 40% o TP3 -> cham TP3 la DONG LENH (khong con phan 15% giu chay). Mac dinh TAT o day
+    // (giu dung hanh vi AFL cu cho cac test); tinTinHieuChoMa.js bat theo cau hinh production.
+    ketThucTaiTP3 = false,
+    // Sau TP2 (da chot 60%), neu dong cua < Kijun truoc khi toi TP3 thi ban not phan con lai (bao ve bang Ichimoku).
+    thoatKijunSauTP2 = false,
   } = dauVao.thamSo || {};
 
   const n = close.length;
@@ -158,9 +164,16 @@ export function chayMayTrangThai(dauVao) {
       // Cham Stop-loss: mac dinh (slChamLaCat=true) ban ngay khi gia thap nhat <= Stop-loss.
       const chamStopThuong = low[i] <= stopGiaThucTe_vonglap && (slChamLaCat || totalScore[i] < 0);
 
-      if (sellTinHieu[i] === true || chamStopThuong || chamBaoVe) {
+      // Kijun sau TP2: dung DaTP2Vong (cac phien TRUOC hom nay) nhu bao ve hoa von - khong nhin truoc tuong lai.
+      const chamKijunSauTP2 = thoatKijunSauTP2 && daTP2Vong[i] === 1 && kijun != null && kijun[i] != null && close[i] < kijun[i];
+      // Cham TP3 (dinh phien >= TP3): dong lenh tai TP3 (hoac gia mo cua neu gap len tren TP3). Uu tien THAP NHAT - stop/tin hieu/Kijun/bao ve xet truoc
+      // (cung nen vua cham stop vua cham TP3 = cham stop truoc, than trong; khop backtest engine/dich-vu/backtestBaMocKetThuc.mjs).
+      const chamTP3 = ketThucTaiTP3 && tp3VaoVong[i] > 0 && high[i] >= tp3VaoVong[i];
+
+      if (sellTinHieu[i] === true || chamStopThuong || chamBaoVe || chamKijunSauTP2 || chamTP3) {
         sell[i] = true;
-        lyDoBanBar[i] = chamStopThuong ? 2 : chamBaoVe && !sellTinHieu[i] ? 3 : 1;
+        // Ly do ban (uu tien): 2 Stop-loss > 1 tin hieu diem > 4 thoat Kijun sau TP2 > 3 bao ve hoa von > 5 chot du TP3.
+        lyDoBanBar[i] = chamStopThuong ? 2 : sellTinHieu[i] ? 1 : chamKijunSauTP2 ? 4 : chamBaoVe ? 3 : 5;
         giuTrongVongLap[i] = 0;
         thamDoTrongVongLap[i] = 0;
         if (mua2Giu[i - 1] === true) {
@@ -172,9 +185,12 @@ export function chayMayTrangThai(dauVao) {
           muaGiuaCat[i] = 2;
         }
         let giaBanLoop = close[i];
-        if (chamBaoVe && !sellTinHieu[i] && !chamStopThuong) {
+        if (lyDoBanBar[i] === 3) {
           giaBanLoop = Math.min(open[i], stopBaoVe);
           giaBanBaoVe[i] = giaBanLoop;
+        } else if (lyDoBanBar[i] === 5) {
+          giaBanLoop = Math.max(open[i], tp3VaoVong[i]);
+          giaBanBaoVe[i] = giaBanLoop; // AFL: SellPrice doc qua GiaBanBaoVe -> backtest khop tai TP3
         }
         banGanNhatViTri = i;
         banGanNhatGia = giaBanLoop;

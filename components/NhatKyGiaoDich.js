@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ArrowUpCircle, ArrowDownCircle, Target, ShieldCheck, TrendingUp, Rewind } from "lucide-react";
 import { ngayChamTP } from "@/lib/ngayChamMoc";
 import { fmt } from "@/components/dungChung";
+import { TY_LE_CHOT } from "@/lib/tyLeChot";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -23,8 +24,15 @@ const soVon = (laiLoPct) => (laiLoPct == null ? null : (VON_GOC * (1 + laiLoPct 
 const NHAN_LY_DO = {
   TP1: (x) => `Chốt lời TP1 (${x.phan_chot_pct ?? 30}% vị thế)`,
   TP2: (x) => `Chốt lời TP2 (${x.phan_chot_pct ?? 30}% vị thế)`,
-  // Kieu cu: 1 dong gop 85% (30/30/25); kieu moi: chi phan 25% chot tai TP3 (TP1/TP2 da co dong rieng).
-  TP3: (x) => (x.phan_chot_pct != null && Number(x.phan_chot_pct) < 50 ? `Chốt lời TP3 (${x.phan_chot_pct}% vị thế)` : `Chốt đủ TP3 (${x.phan_chot_pct ?? 85}% vị thế)`),
+  // Cach moi (2026-09-25): phan 40% chot tai TP3 = KET THUC lenh (hoac 1 dong gop 100% vi the cu da cham TP1/TP2 tu truoc); lenh cu (30/30/25/15): dong 25% (kieu tung phan)
+  // hoac 1 dong gop 85% (kieu cu), con 15% giu chay.
+  TP3: (x) => {
+    const pc = Number(x.phan_chot_pct);
+    if (pc === TY_LE_CHOT.tp3 || pc >= 100) return `Chốt TP3 (${pc}% vị thế) · kết thúc lệnh`;
+    return x.phan_chot_pct != null && pc < 50 ? `Chốt lời TP3 (${x.phan_chot_pct}% vị thế)` : `Chốt đủ TP3 (${x.phan_chot_pct ?? 85}% vị thế)`;
+  },
+  CHOT_TP3: () => "Chốt đủ TP3 (kết thúc lệnh)",
+  THOAT_KIJUN: () => "Thoát theo Kijun (đóng cửa dưới Kijun sau TP2)",
   CAT_LO: () => "Cắt lỗ (chạm Stop-loss)",
   BAO_VE_LAI: () => "Bảo vệ lãi (SL đã dời lên cao hơn)",
   BAN: () => "Bán theo tín hiệu",
@@ -140,7 +148,7 @@ export default function NhatKyGiaoDich({
       chinh:
         nhan(d) +
         (d.vong === 3
-          ? " · phần còn lại sau TP3"
+          ? " · phần còn lại sau TP3 (lệnh cũ)"
           : d.vong === 1 && !/^TP[123]$/.test(d.ly_do ?? "") && d.phan_chot_pct != null && Number(d.phan_chot_pct) < 100
             ? ` · phần còn lại ${d.phan_chot_pct}%`
             : ""),

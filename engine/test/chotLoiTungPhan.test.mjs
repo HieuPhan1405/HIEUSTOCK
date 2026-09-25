@@ -104,5 +104,23 @@ nb = dongNapBuTP12(uv("TP1"), null, chamGia, NGAY_BAN);
 ok("nap bu: khong co lich su gia -> ngay mac dinh", nb.length === 1 && nb[0].ngay_ban === NGAY_BAN && nb[0].ngayTuLichSuGia === false && nb[0].so_phien === 9);
 ok("nap bu: khong co TP -> rong", dongNapBuTP12(uv(null), nen, chamGia, NGAY_BAN).length === 0);
 
+// 9. LENH KET THUC O TP3 (cach moi 30/30/40, ketThucTP3 = true): TP3 ghi 40%, 3 dong cong lai = 100% vi the
+{
+  const chayKT = (cu, m, daGhi = new Set()) => phatHienChotLoiTungPhan({ dsMoi: [m], banGhiCuTheoMa: { [m.ma]: cu }, ngayBan: NGAY_BAN, daGhi, ketThucTP3: true });
+  const r = chayKT(cuGoc(null), moi("TP3"));
+  ok("ket thuc TP3: 3 dong TP1/TP2/TP3 voi 30/30/40", r.dong.length === 3 && r.dong.map((d) => d.phan_chot_pct).join() === "30,30,40" && r.dong.map((d) => d.vong).join() === "5,6,1", JSON.stringify(r.dong.map((d) => [d.vong, d.phan_chot_pct])));
+  ok("ket thuc TP3: tong trong so = 100%", r.dong.reduce((s, d) => s + d.phan_chot_pct, 0) === 100);
+  const tongKT = r.dong.reduce((s, d) => s + (d.phan_chot_pct / 100) * d.lai_lo_pct, 0);
+  ok("ket thuc TP3: lai gop = 0,3x10 + 0,3x20 + 0,4x40 = 25%", gan(tongKT, 0.3 * 10 + 0.3 * 20 + 0.4 * 40, 1e-9), String(tongKT));
+  // da co dong TP1, TP2 (kieu moi) -> chi con dong TP3 40%
+  const r2 = chayKT(cuGoc("TP2"), moi("TP3"), new Set([khoaTP("ABC", NGAY_MUA, 1), khoaTP("ABC", NGAY_MUA, 2)]));
+  ok("ket thuc TP3 sau khi da co TP1+TP2: chi dong TP3 40%", r2.dong.length === 1 && r2.dong[0].vong === 1 && r2.dong[0].phan_chot_pct === 40 && r2.dong[0].gia_ban === 28, JSON.stringify(r2.dong));
+  // vi the kieu cu (da o TP1, chua co dong TP1): khong ghi dong tung phan, bao tp3KieuCu de lenhDaDong.js gop 1 dong
+  const r3 = chayKT(cuGoc("TP1"), moi("TP3"), new Set());
+  ok("ket thuc TP3 vi the kieu cu: khong ghi dong tung phan, bao tp3KieuCu", r3.dong.length === 0 && r3.tp3KieuCu.length === 1);
+  // mac dinh (khong bat ketThucTP3) van la cach cu 25%
+  ok("mac dinh van la cach cu: TP3 = 25%", chay(cuGoc(null), moi("TP3")).dong.find((d) => d.vong === 1).phan_chot_pct === 25);
+}
+
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

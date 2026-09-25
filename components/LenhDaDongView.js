@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { thongKeLenhDaDong } from "@/lib/lenhDaDong";
 import { fmt, pct } from "@/components/dungChung";
-import { TY_LE_CHOT, CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
+import { TY_LE_CHOT, TY_LE_CHOT_CU, CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
 import { tenCongTy } from "@/lib/tenMa";
 
 const VIEN = "#26262F";
@@ -86,10 +86,10 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
       <p className="text-[11px] mb-6" style={{ color: MUTED }}>
         Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Với
         lệnh mới, mỗi lần giá chạm mốc chốt lời được ghi thành một dòng ngay lúc chạm theo tỷ lệ {CHUOI_TY_LE_CHOT}: TP1 chốt {TY_LE_CHOT.tp1}%, TP2 chốt {TY_LE_CHOT.tp2}%, TP3 chốt{" "}
-        {TY_LE_CHOT.tp3}%, còn {TY_LE_CHOT.giu}% giữ chạy — lãi/lỗ của mỗi dòng là tỷ lệ giá của đúng phần đó (giá chốt so với giá mua), và khi lệnh đóng thật
+        {TY_LE_CHOT.tp3}% và kết thúc lệnh (sau TP2, nếu giá đóng cửa dưới Kijun trước khi tới TP3 thì bán nốt phần còn lại) — lãi/lỗ của mỗi dòng là tỷ lệ giá của đúng phần đó (giá chốt so với giá mua), và khi lệnh đóng thật
         sự thì chỉ ghi phần còn lại. Mỗi lần chốt lời từng phần được tính là một lệnh thắng nên tỷ lệ thắng ở trên cao hơn so với tính theo cả vị thế (số
-        dòng chốt từng phần ghi ở thẻ đầu). Lệnh cũ đã chạm TP1/TP2 trước khi có cách ghi này vẫn giữ cách tính gộp một dòng: chốt đủ TP3 hiện một dòng {100 -
-        TY_LE_CHOT.giu}% vị thế, phần cuối tính khi đóng thật sự. Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
+        dòng chốt từng phần ghi ở thẻ đầu). Lệnh cũ (trước 25/09/2026) chốt theo cách 30/30/25 còn 15% giữ chạy nên vẫn hiện dòng TP3 {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 -
+        TY_LE_CHOT_CU.giu}%) và dòng phần còn lại {TY_LE_CHOT_CU.giu}% khi đóng thật sự. Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
       </p>
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
@@ -144,10 +144,14 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                   <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
                     {x.ly_do === "TP1" || x.ly_do === "TP2"
                       ? `Chốt lời ${x.ly_do} (${x.phan_chot_pct}% vị thế)`
-                      : x.ly_do === "TP3"
-                        ? x.phan_chot_pct != null && Number(x.phan_chot_pct) < 50
-                          ? `Chốt lời TP3 (${x.phan_chot_pct}% vị thế) · giữ ${TY_LE_CHOT.giu}% chạy`
-                          : `Chốt đủ TP3 (${x.phan_chot_pct ?? 100 - TY_LE_CHOT.giu}%) · giữ ${TY_LE_CHOT.giu}% chạy`
+                      : x.ly_do === "TP3" || x.ly_do === "CHOT_TP3"
+                        ? Number(x.phan_chot_pct) === TY_LE_CHOT.tp3 || Number(x.phan_chot_pct) >= 100 || x.ly_do === "CHOT_TP3"
+                          ? `Chốt TP3 (${x.phan_chot_pct ?? 100}% vị thế) · kết thúc lệnh`
+                          : x.phan_chot_pct != null && Number(x.phan_chot_pct) < 50
+                            ? `Chốt lời TP3 (${x.phan_chot_pct}% vị thế) · giữ ${TY_LE_CHOT_CU.giu}% chạy (lệnh cũ)`
+                            : `Chốt đủ TP3 (${x.phan_chot_pct ?? 100 - TY_LE_CHOT_CU.giu}%) · giữ ${TY_LE_CHOT_CU.giu}% chạy (lệnh cũ)`
+                      : x.ly_do === "THOAT_KIJUN"
+                        ? "Thoát theo Kijun (đóng cửa dưới Kijun sau TP2)"
                       : x.ly_do === "CAT_LO"
                         ? "Cắt lỗ (Stop-loss)"
                         : x.ly_do === "BAO_VE_LAI"
@@ -158,7 +162,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                     {!/^TP[123]$/.test(x.ly_do ?? "") && x.vong !== 3 && x.da_cham_tp ? ` · đã chạm ${x.da_cham_tp}` : ""}
                     {x.vong === 1 && !/^TP[123]$/.test(x.ly_do ?? "") && x.phan_chot_pct != null && Number(x.phan_chot_pct) < 100 ? ` · phần còn lại ${x.phan_chot_pct}%` : ""}
                     {x.vong === 2 ? " · mua thêm sau TP3" : ""}
-                    {x.vong === 3 ? ` · phần còn lại ${TY_LE_CHOT.giu}% sau TP3` : ""}
+                    {x.vong === 3 ? ` · phần còn lại ${TY_LE_CHOT_CU.giu}% sau TP3 (lệnh cũ)` : ""}
                   </td>
                 </tr>
               ))}

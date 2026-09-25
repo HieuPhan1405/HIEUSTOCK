@@ -159,7 +159,7 @@ export default function BangDiemMuaMoi({ dangMo, daChonBanDau = {} }) {
         </table>
       </div>
       <p className="text-[11px] mt-3" style={{ color: MUTED }}>
-        Giá vốn trung bình giả định bạn mua thêm bằng đúng khối lượng một lệnh gốc đầy đủ; phần lệnh gốc còn lại theo tỷ lệ chốt lời 30/30/25/15 đã chạm (sau TP3 còn 15%). Số liệu tham khảo, không phải khuyến nghị đầu tư.
+        Giá vốn trung bình giả định bạn mua thêm bằng đúng khối lượng một lệnh gốc đầy đủ; phần lệnh gốc còn lại theo tỷ lệ chốt lời 30/30/40 đã chạm (sau TP1 còn 70%, sau TP2 còn 40%; lệnh cũ trước 25/09/2026 sau TP3 còn 15%). Số liệu tham khảo, không phải khuyến nghị đầu tư.
       </p>
     </div>
   );
