@@ -3,10 +3,8 @@ import { CalendarDays } from "lucide-react";
 import { tinhTongQuanThiTruong, nhanTamLy } from "@/lib/thiTruong";
 import { tenCongTy } from "@/lib/tenMa";
 import { fmt, pct, capNhatMoiNhat } from "@/components/dungChung";
-import { CHUOI_TY_LE_CHOT, CHUOI_TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
 
-// Khoi "Ra soat thi truong" dung o trang Tong quan thi truong: 3 the tong hop (xu huong, tam ly, muc giu lenh), muc LENH MUA - BAN
-// (mua, mua them, ban, ban bot, chot loi) va RA SOAT NHANH (do rong, top tang/giam, nganh, khoi ngoai...). Tinh tren cac ma he thong
+// Khoi "Ra soat thi truong" dung o trang Dashboard: 3 the tong hop (xu huong, tam ly, muc giu lenh) va RA SOAT NHANH (do rong, top tang/giam, nganh, khoi ngoai...). Tinh tren cac ma he thong
 // dang theo doi, khong phai toan thi truong.
 
 const VIEN = "#26262F";
@@ -17,10 +15,6 @@ const PRIMARY = "#6C5CE7";
 const XANH = "#22C55E";
 const DO = "#EF4444";
 const VANG = "#FBBF24";
-const NGOC = "#22D3EE";
-const CAM = "#F97316";
-const TIM = "#A78BFA";
-const PRIMARY_SANG = "#B7A4FF";
 
 const mono = { fontFamily: "'JetBrains Mono', monospace" };
 const sans = { fontFamily: "'Inter', sans-serif" };
@@ -170,152 +164,8 @@ function TieuDeKhoi({ children, phu, ngay }) {
   );
 }
 
-// 1 COT cua khoi "Lenh mua - ban" o trang dau: tieu de + so luong + cac nhom ma (moi nhom = 1 danh sach chip). Nhom rong thi an, ca cot rong thi hien `trong`.
-function CotLenh({ tieuDe, mau, dem, moTa, nhom, trong, chan }) {
-  const coDuLieu = nhom.some((n) => n.ds.length > 0);
-  return (
-    <div className="rounded-2xl border flex flex-col min-w-0" style={{ borderColor: VIEN, background: NEN_CARD, borderTop: `3px solid ${mau}` }}>
-      <div className="px-4 pt-4 pb-3 border-b" style={{ borderColor: "#1D1D26" }}>
-        <div className="flex items-baseline justify-between gap-2">
-          <h3 className="text-base" style={{ ...sans, fontWeight: 700, color: mau }}>
-            {tieuDe}
-          </h3>
-          <span className="text-2xl" style={{ ...mono, fontWeight: 700, color: dem > 0 ? mau : MUTED }}>
-            {dem}
-          </span>
-        </div>
-        <p className="text-[11px] mt-0.5 leading-snug" style={{ color: MUTED }}>
-          {moTa}
-        </p>
-      </div>
-      <div className="px-4 py-3 space-y-3.5 flex-1">
-        {coDuLieu ? (
-          nhom
-            .filter((n) => n.ds.length > 0)
-            .map((n) => (
-              <div key={n.nhan}>
-                {nhom.length > 1 && (
-                  <p className="text-[11px] mb-1.5" style={{ color: n.mau ?? mau, ...sans, fontWeight: 600 }}>
-                    {n.nhan} <span style={{ color: MUTED, fontWeight: 400 }}>· {n.ds.length}</span>
-                  </p>
-                )}
-                <DanhSachMa ds={n.ds} mau={n.mau ?? mau} hienThi={n.hienThi} />
-              </div>
-            ))
-        ) : (
-          <span className="text-sm" style={{ color: MUTED }}>
-            {trong}
-          </span>
-        )}
-      </div>
-      {chan && (
-        <div className="px-4 pb-3 text-[11px] leading-snug" style={{ color: MUTED }}>
-          {chan}
-        </div>
-      )}
-    </div>
-  );
-}
-
-// "Lenh mua - ban": dung o trang Tong quan (trang dau) - 4 COT: Mua, Mua moi (mua them / mua moi), Ban, Ban bot - tap trung vao HUONG DI LENH/VI THE hien
-// tai cua he thong, khong keo theo cac chi so tong quan rong hon (xem TongQuanThiTruong ben duoi, dung o trang Dashboard rieng).
-//  - Ban: ban / cat lo + thoat theo Kijun sau TP2 (chi khi AFL bat ThoatKijunSauTP2).
-//  - Ban bot: chot loi tung phan (da cham TP1 = chot 30%, TP2 = chot 60%) + canh bao giam bot khi diem tut.
-export function LenhMuaBan({ tatCa }) {
-  if (!tatCa?.length) return null;
-  const tq = tinhTongQuanThiTruong(tatCa, null);
-  const capNhat = capNhatMoiNhat(tatCa);
-  const ngayHienThi = capNhat
-    ? new Date(capNhat).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "numeric", month: "numeric", year: "numeric" })
-    : "";
-  const l = tq.lenh;
-  const soBan = l.ban.length + l.thoatKijun.length;
-  const soBanBot = l.ketThucTP3.length + l.chotTP3.length + l.chotTP2.length + l.chotTP1.length + l.banBot.length;
-
-  return (
-    <section aria-label="Lệnh mua - bán" className="mb-8">
-      {ngayHienThi && (
-        <p className="flex items-center gap-1.5 text-xs mb-3" style={{ color: MUTED, ...mono }}>
-          <CalendarDays size={13} aria-hidden="true" /> Số liệu ngày {ngayHienThi}
-        </p>
-      )}
-
-      <div className="mb-3">
-        <h2 className="text-lg" style={{ ...sans, fontWeight: 700 }}>
-          Lệnh mua – bán
-        </h2>
-        <p className="text-xs mt-1" style={{ color: MUTED }}>
-          Các lệnh của hệ thống ở lần cập nhật gần nhất (mua, mua mới, bán, bán bớt). Chốt lời: {CHUOI_TY_LE_CHOT}.
-        </p>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <CotLenh
-          tieuDe="Mua"
-          mau={XANH}
-          dem={l.mua.length}
-          moTa="Tín hiệu MUA mới hôm nay"
-          nhom={[
-            {
-              nhan: "Mã MUA",
-              ds: l.mua,
-              hienThi: (r) => `điểm ${fmt(r.diem)}${r.loai_vao === "MUA LAI" ? " · mua lại" : r.loai_vao === "MUA MUON" ? " · mua muộn" : ""}`,
-            },
-          ]}
-          trong="Không có mã MUA mới"
-        />
-
-        <CotLenh
-          tieuDe="Mua mới"
-          mau={NGOC}
-          dem={l.muaMoiHomNay.length}
-          moTa="Điểm vào đợt sau khi bỏ qua lệnh đầu"
-          nhom={[{ nhan: "Mua mới hôm nay", ds: l.muaMoiHomNay, hienThi: (d) => fmt(d.giaMua) }]}
-          trong={l.coDuLieuMuaThem ? "Chưa có điểm mua mới hôm nay" : "Chưa có dữ liệu mua mới (cần Explore file AFL 7 mới rồi đẩy dữ liệu)."}
-          chan={
-            <>
-              Mua mới là lệnh riêng (giá mua, cắt lỗ, chốt lời, lãi/lỗ tính riêng): khi bạn bỏ qua lệnh đầu có thể đợi đợt sau. Xem trong{" "}
-              <Link href="/lenh-mo" className="underline" style={{ color: NGOC }}>
-                Sổ lệnh đang mở
-              </Link>
-              , mã có nhiều lệnh được đánh số (1), (2).
-            </>
-          }
-        />
-
-        <CotLenh
-          tieuDe="Bán"
-          mau={DO}
-          dem={soBan}
-          moTa="Bán, cắt lỗ và thoát lệnh"
-          nhom={[
-            { nhan: "Bán / cắt lỗ", ds: l.ban, hienThi: (r) => pct(r.lai_lo_pct, 1) },
-            { nhan: "Thoát theo Kijun (sau TP2)", ds: l.thoatKijun, mau: CAM, hienThi: (r) => `${pct(r.lai_lo_pct, 1)} phần còn lại` },
-          ]}
-          trong="Không có mã BÁN"
-        />
-
-        <CotLenh
-          tieuDe="Bán bớt"
-          mau={CAM}
-          dem={soBanBot}
-          moTa="Chốt lời từng phần và cảnh báo giảm bớt"
-          nhom={[
-            { nhan: `Chạm TP3 – hết vị thế, về trung lập (đủ ${CHUOI_TY_LE_CHOT_KET_THUC})`, ds: l.ketThucTP3, mau: PRIMARY_SANG, hienThi: (r) => `TP3 ${pct(r.lai_lo_pct, 1)}` },
-            { nhan: "Đã chạm TP3 (mốc tham khảo, phần còn lại giữ chạy)", ds: l.chotTP3, mau: PRIMARY_SANG, hienThi: (r) => pct(r.lai_lo_pct, 1) },
-            { nhan: "Đã chạm TP2 (đã chốt 60%)", ds: l.chotTP2, mau: XANH, hienThi: (r) => pct(r.lai_lo_pct, 1) },
-            { nhan: "Đã chạm TP1 (đã chốt 30%)", ds: l.chotTP1, mau: XANH, hienThi: (r) => pct(r.lai_lo_pct, 1) },
-            { nhan: "Cảnh báo giảm bớt (điểm tụt dưới ngưỡng)", ds: l.banBot, hienThi: (r) => pct(r.lai_lo_pct, 1) },
-          ]}
-          trong="Không có mã cần bán bớt"
-        />
-      </div>
-    </section>
-  );
-}
-
 // "Tong quan thi truong" (3 the tong hop + ra soat nhanh) - dung o trang Dashboard rieng, tach khoi
-// trang Tong quan (trang dau) de trang dau chi tap trung vao huong di lenh/vi the (xem LenhMuaBan).
+// trang Tong quan (trang dau) de trang dau chi tap trung vao huong di lenh/vi the (xem components/CoHoiHomNay.js).
 export function TongQuanThiTruong({ tatCa, vnindex }) {
   if (!tatCa?.length) return null;
   const tq = tinhTongQuanThiTruong(tatCa, vnindex);

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
-import { LenhMuaBan } from "@/components/RaSoatThiTruong";
-import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, nhanLyDoBan, tinhVungLenh, chuoiVung } from "@/components/dungChung";
+import CoHoiHomNay from "@/components/CoHoiHomNay";
+import { layLenhCoSuKienNgay, ngayGiaoDichVN } from "@/lib/lenhDaDong";
+import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat } from "@/components/dungChung";
 import SignalPill from "@/components/SignalPill";
 import NhanCapNhat from "@/components/NhanCapNhat";
 
@@ -183,6 +184,16 @@ export default async function TrangTongQuan() {
     loi = String(e?.message || e);
   }
 
+  // Phien giao dich cua du lieu moi nhat + nhat ky lenh co su kien trong phien do (chot TP / dong lenh) cho o "Top co hoi dang chu y" - loi o day khong lam hong trang.
+  const capNhat = capNhatMoiNhat(tatCa);
+  const ngayPhien = capNhat ? ngayGiaoDichVN(new Date(capNhat)) : null;
+  let dongLenh = [];
+  try {
+    dongLenh = await layLenhCoSuKienNgay(ngayPhien);
+  } catch {
+    // giu rong - o Ban / Ban bot van hien tu tin hieu
+  }
+
   const nhanDinh = sinhNhanDinh(tatCa);
 
   const tong = tatCa.length;
@@ -198,15 +209,6 @@ export default async function TrangTongQuan() {
   // trang thai cua vi the DANG giu, khac ban chat.
   const soChotLoi = tatCa.filter((r) => r.tin === "NAM GIU" && chamTPCaoNhat(r)).length;
   const soBanBot = tatCa.filter((r) => r.ban_bot).length;
-
-  // tatCa da ORDER BY diem DESC tu lib/tinHieu.js. Tach rieng tin hieu MUA
-  // (diem cao nhat truoc) va tin hieu BAN (diem thap nhat/am nhieu nhat
-  // truoc, vi day la ben "dang chu y" cua phe ban) thanh 2 cot rieng.
-  const tinHieuMua = tatCa.filter((r) => r.tin === "MUA").slice(0, 10);
-  const tinHieuBan = tatCa
-    .filter((r) => r.tin === "BAN")
-    .sort((a, b) => (a.diem ?? 0) - (b.diem ?? 0))
-    .slice(0, 10);
 
   const doRongVonHoa = [
     ["VN30", tinhDoRongNhom(tatCa, "VN30")],
@@ -390,11 +392,11 @@ export default async function TrangTongQuan() {
           )
         )}
 
-        <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
+        <NhanCapNhat luc={capNhat} className="mb-6" />
 
-        {/* LENH MUA - BAN: huong di lenh/vi the hien tai cua he thong. Tong quan/Ra soat nhanh
-            (breadth, top nganh, khoi ngoai...) da chuyen sang trang /dashboard rieng. */}
-        <LenhMuaBan tatCa={tatCa} />
+        {/* TOP CO HOI DANG CHU Y: 4 o lenh CUA PHIEN HOM NAY - hang tren Mua | Ban, hang duoi Mua moi | Ban bot. Tong quan/Ra soat nhanh
+            (breadth, top nganh, khoi ngoai...) o trang /dashboard rieng. */}
+        {tatCa.length > 0 && <CoHoiHomNay tatCa={tatCa} dongLenh={dongLenh} ngay={ngayPhien} />}
 
         {/* HANG KPI */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
@@ -447,79 +449,7 @@ export default async function TrangTongQuan() {
             </p>
           </div>
         </div>
-
-        {/* TOP CO HOI - CHIA 2 COT MUA / BAN */}
-        <div className="flex items-baseline justify-between mb-4">
-          <h2 className="text-lg" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-            Top cơ hội đáng chú ý
-          </h2>
-          <Link href="/lenh-mo" className="text-xs" style={{ color: PRIMARY, fontFamily: "'JetBrains Mono', monospace" }}>
-            xem lệnh đang mở →
-          </Link>
-        </div>
-
-        <div className="grid sm:grid-cols-2 gap-4">
-          <CotTinHieu tieuDe="Tín hiệu MUA" mau={XANH} danhSach={tinHieuMua} hienRank />
-          <CotTinHieu tieuDe="Tín hiệu BÁN" mau={DO} danhSach={tinHieuBan} />
-        </div>
       </div>
-    </div>
-  );
-}
-
-function CotTinHieu({ tieuDe, mau, danhSach, hienRank }) {
-  return (
-    <div className="rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p
-        className="text-xs uppercase tracking-wide mb-1 pb-3 border-b"
-        style={{ color: mau, borderColor: VIEN, fontFamily: "'JetBrains Mono', monospace" }}
-      >
-        {tieuDe} ({danhSach.length})
-      </p>
-      {danhSach.length === 0 && (
-        <p className="py-6 text-sm" style={{ color: MUTED }}>
-          Chưa có mã nào.
-        </p>
-      )}
-      {danhSach.map((row) => (
-        <Link
-          key={row.ma}
-          href={`/ma/${row.ma}`}
-          className="w-full text-left grid grid-cols-[64px_1fr_auto] items-center gap-3 py-3 border-b hover:bg-white/[0.04] rounded-lg px-2 -mx-2 transition-colors"
-          style={{ borderColor: "#1D1D26" }}
-        >
-          <span style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "16px" }}>{row.ma}</span>
-          {hienRank && tinhVungLenh(row) ? (
-            // Lenh MUA chi can 3 thong tin: vung mua, vung cat lo, vung chot loi.
-            <span className="text-xs leading-relaxed" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
-              <span>
-                Mua <b style={{ color: "#F5F5F7" }}>{chuoiVung(tinhVungLenh(row).mua.tu, tinhVungLenh(row).mua.den)}</b>
-                {nhanGiaiNgan(row) && <span style={{ color: nhanGiaiNgan(row).mau, fontWeight: 700 }}> · ◐ {nhanGiaiNgan(row).nhan}</span>}
-                {nhanLoaiVao(row) && <span style={{ color: nhanLoaiVao(row).mau, fontWeight: 700 }}> · ↺ {nhanLoaiVao(row).nhan}</span>}
-              </span>
-              <br />
-              <span>
-                Cắt lỗ <b style={{ color: DO }}>{tinhVungLenh(row).sl ? chuoiVung(tinhVungLenh(row).sl.tu, tinhVungLenh(row).sl.den) : "—"}</b>
-                {" · "}Chốt lời{" "}
-                <b style={{ color: XANH }}>
-                  {tinhVungLenh(row).tp ? `${chuoiVung(tinhVungLenh(row).tp.gan.tu, tinhVungLenh(row).tp.gan.den)} / ${fmt(tinhVungLenh(row).tp.xa)}` : "—"}
-                </b>
-              </span>
-            </span>
-          ) : (
-            <span className="text-xs" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
-              điểm {row.diem?.toFixed(2) ?? "—"}
-              {nhanLyDoBan(row) && <span style={{ color: nhanLyDoBan(row).mau, fontWeight: 700 }}> · {nhanLyDoBan(row).nhan}</span>}
-            </span>
-          )}
-          <span
-            className="text-right"
-            style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: "13px", color: row.doi >= 0 ? XANH : DO }}
-          >
-            {pct(row.doi, 2)}
-          </span>
-        </Link>
-      ))}
     </div>
   );
 }
