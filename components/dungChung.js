@@ -167,7 +167,8 @@ export function sapChamMoc(row, bienPct) {
 
 // VUNG MUA / VUNG CAT LO / VUNG CHOT LOI cua lenh dang giu - thay cho tung diem don le:
 //  - Vung mua: tu MOC CHUYEN MUA (neu co, khong cao hon gia mua) den gia mua + tranDuoiPct%
-//    (mua cao hon nua la dui gia). Chua co moc thi bat dau tu chinh gia mua.
+//    (mua cao hon nua la dui gia). Chua co moc thi bat dau tu chinh gia mua. 1% (truoc 2026-09-27 la 2%): backtest 11 nam (4.010 lenh, mua mo cua
+//    phien sau + T+2) cho thay gia mo cua cao hon moc <= 1% van lai +0,4..+1,1%/lenh, cao hon 1% thi lo - xem engine/dich-vu/backtestVaoThucTe.mjs.
 //  - Vung cat lo: tu Stop-loss len toi duong ho tro GAN NHAT nam giua Stop-loss va gia mua
 //    (Kijun / duong can bang dai han), rong toi thieu rongSLToiThieuPct%. Cham day vung = cat.
 //  - Vung chot loi: GOM TP1-TP2 thanh "vung gan" (2 moc nay thuong sat nhau, gia di qua trong
@@ -176,7 +177,7 @@ export function sapChamMoc(row, bienPct) {
 //  - Khi Stop-loss luc mua da cach gia hien tai qua xa (lenh lai lon) thi chi con mang tinh
 //    tham khao - thoat that van theo tin hieu BAN cua he thong.
 // Tra null neu ma khong dang giu. Hang so o day chinh duoc neu can doi.
-export const VUNG = { tranDuoiPct: 2, rongSLToiThieuPct: 1, slXaPct: 15, tyLeChot: TY_LE_CHOT };
+export const VUNG = { tranDuoiPct: 1, rongSLToiThieuPct: 1, slXaPct: 15, tyLeChot: TY_LE_CHOT };
 
 export function tinhVungLenh(row) {
   if (!laDangGiu(row) || !(row.gia_mua > 0)) return null;

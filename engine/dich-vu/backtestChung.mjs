@@ -41,7 +41,9 @@ export function thongKe(kqs) {
 }
 
 // ---------- chay engine tung ma ----------
-// cache: { MA: [{t,o,h,l,c,v}] }; vni: [{t,c,h,l}] VNINDEX tang dan. Tra ve { lenh, soMa, thiTruong(ngay) }.
+// cache: { MA: [{t,o,h,l,c,v}] }; vni: [{t,c,h,l}] VNINDEX tang dan. Tra ve { lenh, lenhMuaMoi, soMa, thiTruong(ngay) }.
+// lenh: cac lan vao lenh GOC (loai 1 Mua thuong / 2 Mua lai / 3 Mua muon). lenhMuaMoi: cac lenh MUA MOI (dot sau, gia hoi ve Kijun roi bat len - muaGiua trong mayTrangThai):
+// gia vao = dong cua phien tin hieu, Stop-loss / TP rieng, jGoc = nen lenh dau dong (lenh mua moi dong CUNG luc - xem mayTrangThai).
 export function chayEngine({ cache, vni, soNenToiThieu = 300 }) {
   const vniMap = new Map(vni.map((b) => [b.t, b.c]));
   const ketQuaBreadth = { theoNganh: new Map([...NGANH.keys()].map((k) => [k, 50])), trungBinh: 50 };
@@ -54,6 +56,7 @@ export function chayEngine({ cache, vni, soNenToiThieu = 300 }) {
     m.set(d, x);
   };
   const lenh = [];
+  const lenhMuaMoi = [];
   let soMa = 0;
   for (const [ma, nen] of Object.entries(cache)) {
     if (nen.length < soNenToiThieu) continue;
@@ -80,6 +83,36 @@ export function chayEngine({ cache, vni, soNenToiThieu = 300 }) {
       cong(breadth50, ngayArr[i], close[i] > sma50[i]);
       if (kijun[i] != null) cong(breadthKijun, ngayArr[i], close[i] > kijun[i]);
     }
+    // Dac trung TAI NEN VAO LENH (chi dung du lieu den het nen do) de xep hang / loc lenh.
+    const dacTrungTai = (iv, E, S, tp) => ({
+      "Diem xep hang engine (diem_rank)": diemRank[iv],
+      "Diem tin cay (diem_confidence)": diemConfidence[iv],
+      "Tong diem luc vao (diem)": totalScore[iv],
+      "ADX": adx[iv],
+      "Suc manh so voi VN-Index (RS 20 phien)": rsVsVni[iv],
+      "Khoi luong tuong doi (RelVol)": relVol[iv],
+      "GTGD TB20 (ty/phien)": gtgd[iv],
+      "Cat lo CHAT (cat lo % nho hon = tot hon)": -((E - S) / E) * 100,
+      "TP1 / cat lo (ty le thuong/rui ro)": (tp[0] - E) / (E - S),
+      "Tang 20 phien truoc do (dong luc)": iv >= 20 ? (close[iv] / close[iv - 20] - 1) * 100 : NaN,
+      "Gia so voi Kijun (% tren Kijun)": kijun[iv] > 0 ? (E / kijun[iv] - 1) * 100 : NaN,
+    });
+    const chung = { ma, open, high, low, close, kijun, tenkan, sma20, sma50, atr, cloudTop, cloudBot, cbTop, cbBot, sell: sellTinHieu, n, ngayArr };
+    for (let iv = 1; iv < n - 1; iv++) {
+      if (!kq.muaGiuaSuKien?.[iv]) continue;
+      const E = kq.muaGiuaGia[iv];
+      const S = kq.muaGiuaStop[iv];
+      const tp = [kq.muaGiuaTP1[iv], kq.muaGiuaTP2[iv], kq.muaGiuaTP3[iv]];
+      if (!(E > 0) || !(S > 0) || !(S < E) || tp.some((x) => !(x > E))) continue;
+      let jGoc = -1;
+      for (let j = iv + 1; j < n; j++)
+        if (kq.giuTrongVongLap[j] !== 1) {
+          jGoc = j;
+          break;
+        }
+      if (jGoc < 0) continue;
+      lenhMuaMoi.push({ ...chung, ngay: ngayArr[iv], iv, jGoc, E, S, tp, dacTrung: dacTrungTai(iv, E, S, tp) });
+    }
     for (let iv = 1; iv < n - 1; iv++) {
       if (!kq.buy[iv]) continue;
       const E = kq.giaVaoLuc[iv];
@@ -93,23 +126,7 @@ export function chayEngine({ cache, vni, soNenToiThieu = 300 }) {
           break;
         }
       if (jEng < 0) continue;
-      lenh.push({
-        ma, ngay: ngayArr[iv], iv, jEng, E, S, tp, loai: kq.loaiVaoLenh[iv], open, high, low, close, kijun, tenkan, sma20, sma50, atr, cloudTop, cloudBot, cbTop, cbBot, sell: sellTinHieu, n, ngayArr,
-        // Dac trung TAI NEN VAO LENH (chi dung du lieu den het nen do) de xep hang lenh
-        dacTrung: {
-          "Diem xep hang engine (diem_rank)": diemRank[iv],
-          "Diem tin cay (diem_confidence)": diemConfidence[iv],
-          "Tong diem luc vao (diem)": totalScore[iv],
-          "ADX": adx[iv],
-          "Suc manh so voi VN-Index (RS 20 phien)": rsVsVni[iv],
-          "Khoi luong tuong doi (RelVol)": relVol[iv],
-          "GTGD TB20 (ty/phien)": gtgd[iv],
-          "Cat lo CHAT (cat lo % nho hon = tot hon)": -((E - S) / E) * 100,
-          "TP1 / cat lo (ty le thuong/rui ro)": (tp[0] - E) / (E - S),
-          "Tang 20 phien truoc do (dong luc)": iv >= 20 ? (close[iv] / close[iv - 20] - 1) * 100 : NaN,
-          "Gia so voi Kijun (% tren Kijun)": kijun[iv] > 0 ? (E / kijun[iv] - 1) * 100 : NaN,
-        },
-      });
+      lenh.push({ ...chung, ngay: ngayArr[iv], iv, jEng, E, S, tp, loai: kq.loaiVaoLenh[iv], dacTrung: dacTrungTai(iv, E, S, tp) });
     }
   }
 
@@ -137,7 +154,7 @@ export function chayEngine({ cache, vni, soNenToiThieu = 300 }) {
       doRongKijun: bk && bk.tong >= 150 ? (bk.tren / bk.tong) * 100 : null,
     };
   };
-  return { lenh, soMa, thiTruong };
+  return { lenh, lenhMuaMoi, soMa, thiTruong };
 }
 
 // ---------- mo phong 1 lenh theo 1 cach chot loi (xem chu thich backtestChotLoi.mjs) ----------
@@ -221,6 +238,80 @@ export function moPhong(t, cach) {
   }
   if (jThoat < 0) return null;
   return { ret: (thu - 1) * 100 - CHI_PHI, phien: phienTrongso, jThoat, lyDo };
+}
+
+// ---------- MO PHONG VOI GIA VAO THUC TE + QUY TAC T+2 (bo sung 2026-09-27) ----------
+// moPhong() o tren vao lenh o t.E (lenh goc: MOC CHUYEN MUA - gia chi dat duoc neu mua dung luc vuot moc trong phien) va cho ban tu phien ngay sau. Ham nay cho chon:
+//  E: gia vao; vao: chi so nen vao lenh (t.iv = mua trong phien tin hieu / ATC, t.iv + 1 = mua phien sau); banTu: nen DAU TIEN duoc ban (VN: co phieu ve chieu T+2 -> vao + 2).
+//  Truoc banTu: cham cat lo / co tin hieu dong thi ghi nho, ban o gia mo cua phien banTu; cham TP truoc banTu thi bo lo (chua co hang de ban).
+//  moc: cac muc chot tung phan [{ w, i }] (i = chi so trong t.tp) - mac dinh 30% TP1 + 30% TP2, phan con lai chay; baoVe: sau khi da cham TP2 thi cat lo phan con lai ve gia vao.
+//  dongTai: chi so nen buoc dong o gia dong cua (lenh mua moi dong cung lenh dau - t.jGoc); theoTinHieuBan: thoat khi co tin hieu BAN (lenh goc).
+// Cat lo, TP la cua engine (tinh tu gia engine), khong tinh lai theo gia vao moi - dung nhu nguoi di sau thay tren web. Tra ve lai/lo % (da tru chi phi) hoac null.
+export const MOC_HAI_TP = [{ w: 0.3, i: 0 }, { w: 0.3, i: 1 }];
+export function moPhongThucTe(t, { E, vao, banTu, moc = MOC_HAI_TP, baoVe = true, dongTai = null, theoTinHieuBan = true, chiPhi = CHI_PHI }) {
+  const { S, tp, open, high, low, close, sell, n } = t;
+  if (!(E > 0) || !(S < E)) return null;
+  const cacMoc = moc.map((m) => ({ w: m.w, gia: tp[m.i], xong: false }));
+  let conLai = 1;
+  let thu = 0;
+  let daTP2 = false;
+  let choBan = false;
+  let dinhTruoc = -Infinity;
+  const ban = (w, g) => {
+    thu += w * (g / E);
+    conLai -= w;
+  };
+  const ketQua = () => (thu - 1) * 100 - chiPhi;
+  const coLenhDong = (i) => (theoTinHieuBan && sell[i]) || (dongTai != null && i === dongTai);
+  for (let i = vao; i < n; i++) {
+    if (i === t.iv && vao === t.iv) continue; // mua trong phien tin hieu / ATC: nen vao da het
+    if (i < banTu) {
+      if (low[i] <= S || coLenhDong(i)) choBan = true;
+      dinhTruoc = Math.max(dinhTruoc, high[i]);
+      continue;
+    }
+    if (i === banTu && choBan) {
+      ban(conLai, open[i]);
+      return ketQua();
+    }
+    if (baoVe && (i === banTu ? dinhTruoc : high[i - 1]) >= tp[1]) daTP2 = true;
+    const stopBV = daTP2 ? E : 0;
+    for (const m of cacMoc)
+      if (!m.xong && open[i] >= m.gia) {
+        ban(m.w, open[i]);
+        m.xong = true;
+      }
+    let g = null;
+    if (low[i] <= S) g = Math.min(open[i], S);
+    else if (coLenhDong(i)) g = close[i];
+    else if (stopBV > 0 && low[i] <= stopBV) g = Math.min(open[i], stopBV);
+    if (g != null) {
+      if (conLai > 1e-12) ban(conLai, g);
+      return ketQua();
+    }
+    for (const m of cacMoc)
+      if (!m.xong && high[i] >= m.gia) {
+        ban(m.w, m.gia);
+        m.xong = true;
+      }
+    if (conLai <= 1e-12) return ketQua();
+  }
+  return null;
+}
+
+// Nguoi di sau DAT LENH CHO (mua gioi han) o gia E0 x (1 + x%) trong N phien sau phien tin hieu, khong mua duoi: khop khi gia thap nhat cham gia dat, gia khop = min(mo cua, gia dat).
+// Huy neu da co tin hieu BAN / lenh dau dong truoc khi khop, hoac gia khop duoi cat lo. tuyChon: nhu moPhongThucTe (tru E, vao, banTu).
+export function lenhChoThucTe(t, x, N, tuyChon = {}) {
+  const gia = t.E * (1 + x / 100);
+  for (let j = t.iv + 1; j <= Math.min(t.n - 1, t.iv + N); j++) {
+    if (j - 1 > t.iv && (t.sell[j - 1] || (tuyChon.dongTai != null && j - 1 >= tuyChon.dongTai))) return null;
+    if (t.low[j] <= gia) {
+      const E = Math.min(t.open[j], gia);
+      if (!(E > t.S)) return null;
+      return moPhongThucTe(t, { ...tuyChon, E, vao: j, banTu: j + 2 });
+    }
+  }
+  return null;
 }
 
 export const CACH_HIEN_TAI = { ten: "Hien tai 30/30/25/15", moc: [{ w: 0.3, muc: "tp1" }, { w: 0.3, muc: "tp2" }, { w: 0.25, muc: "tp3" }] };

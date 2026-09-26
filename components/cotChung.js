@@ -307,7 +307,7 @@ export const CAC_COT = {
       return (
         <div
           className="flex flex-col items-end leading-tight"
-          title={v.mua.coMoc ? "Từ mốc chuyển mua đến giá mua cao hơn tối đa 2% (cao hơn nữa là đuổi giá)" : "Từ giá mua đến cao hơn tối đa 2% (cao hơn nữa là đuổi giá)"}
+          title={v.mua.coMoc ? `Từ mốc chuyển mua đến giá mua cao hơn tối đa ${VUNG.tranDuoiPct}% (cao hơn nữa là đuổi giá)` : `Từ giá mua đến cao hơn tối đa ${VUNG.tranDuoiPct}% (cao hơn nữa là đuổi giá)`}
         >
           <span>{chuoiVung(v.mua.tu, v.mua.den)}</span>
           <span className="text-[10px]" style={{ color: tt[1] }}>

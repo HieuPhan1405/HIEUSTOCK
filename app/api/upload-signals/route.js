@@ -16,6 +16,8 @@ import {
 } from "@/lib/lenhDaDong";
 import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
 import { TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
+import { phatHienXuatHien } from "@/lib/xuatHienTinHieu";
+import { ghiXuatHien } from "@/lib/xuatHienDb";
 
 // Nhan CSV tu script day_du_lieu_len_web.py (duoc xuat boi AFL
 // amibroker/7_Export_LenWeb.afl). Header CSV (45 cot; 7 cot cuoi gia_kich_hoat,
@@ -475,6 +477,34 @@ export async function POST(request) {
 
   xoaBoNhoTinHieu(); // du lieu vua doi - cac trang doc lai tu DB, khong doi het han bo nho 30 giay
 
+  // NHAT KY TIN HIEU XUAT HIEN: gia / gio luc lenh Mua, Mua moi hien lan dau, gia cuoi ngay tin hieu, tin hieu mat trong ngay (vuot gia) - de do nguoi that mua duoc cach
+  // gia vao cua he thong bao xa (xem lib/xuatHienTinHieu.js). Loi o day KHONG duoc lam hong lan upload.
+  const xuatHien = {};
+  try {
+    const kq = phatHienXuatHien({
+      dsMoi: hangDL.map((h) => ({
+        ma: h.ma,
+        tin: h.tin || "TRUNG LAP",
+        gia: soFloat(h.gia),
+        ngay_mua: soNgayVN(h.ngay_mua),
+        gia_mua: soFloat(h.gia_mua),
+        dang_giu_giua: boolTriState(h.dang_giu_giua),
+        ngay_mua_giua: soNgayVN(h.ngay_mua_giua),
+        gia_mua_giua: soFloat(h.gia_mua_giua),
+        dang_giu_moi: boolTriState(h.dang_giu_moi),
+        ngay_mua_moi: soNgayVN(h.ngay_mua_moi),
+        gia_mua_moi: soFloat(h.gia_mua_moi),
+      })),
+      banGhiCuTheoMa,
+      bayGio,
+      ngayHomNay: ngayGiaoDichVN(),
+      trongPhien: dangTrongPhien(),
+    });
+    Object.assign(xuatHien, await ghiXuatHien(kq));
+  } catch (e) {
+    xuatHien.loi = String(e?.message || e);
+  }
+
   // Ghi nhan LENH DA DONG (ma vua tu NAM GIU chuyen sang BAN/TRUNG LAP) de co ket qua that theo doi.
   // Bao ve: loi o buoc nay KHONG duoc lam hong lan upload chinh (du lieu tin hieu da ghi xong o tren).
   // Cach chot MAC DINH (2026-09-26): TP1 30% + TP2 30%, 40% con lai giu den tin hieu BAN (khong co dong TP3). Cach "ket thuc o TP3" (chi khi AFL bat KetThucTaiTP3, ly_do_ban = 5, hoac 4 =
@@ -649,6 +679,7 @@ export async function POST(request) {
   return Response.json({
     trangThai: "ok",
     lenhDaDong,
+    xuatHien,
     soDongDaLuu: hangDL.length,
     tongSoDongNhan: hangDL.length,
     soDongLoiDaBoQua: soDongLoi,
