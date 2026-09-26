@@ -119,9 +119,14 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
           }
         />
         <The
-          so={tk.tyLeThang == null ? "—" : `${tk.tyLeThang.toFixed(0)}%`}
+          so={tk.tyLeThangGomKhoaLai == null ? "—" : `${tk.tyLeThangGomKhoaLai.toFixed(0)}%`}
           nhan="Tỷ lệ thắng"
-          mau={tk.tyLeThang == null ? MUTED : tk.tyLeThang >= 50 ? XANH : DO}
+          phu={
+            tk.soKhoaLai > 0
+              ? `gồm ${tk.soKhoaLai} lệnh đang giữ đã khóa lãi (chạm TP2) · chỉ lệnh đã đóng: ${tk.tyLeThang == null ? "—" : `${tk.tyLeThang.toFixed(0)}%`}`
+              : undefined
+          }
+          mau={tk.tyLeThangGomKhoaLai == null ? MUTED : tk.tyLeThangGomKhoaLai >= 50 ? XANH : DO}
         />
         <The
           so={tk.laiTB == null ? "—" : pct(tk.laiTB, 2)}
@@ -142,7 +147,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Với
         lệnh mới, mỗi lần giá chạm mốc chốt lời được ghi thành một dòng ngay lúc chạm theo tỷ lệ chốt: TP1 chốt {TY_LE_CHOT.tp1}%, TP2 chốt {TY_LE_CHOT.tp2}%, {TY_LE_CHOT.giu}% còn lại giữ đến khi hệ thống báo BÁN (TP3 chỉ là mốc tham khảo, không ghi dòng riêng) — lãi/lỗ của mỗi dòng là tỷ lệ giá của đúng phần đó (giá chốt so với giá mua), và khi lệnh đóng thật
         sự thì chỉ ghi phần còn lại. Các thẻ thống kê ở trên tính THEO TỪNG LỆNH: các dòng TP1/TP2/TP3/phần còn lại của cùng một lệnh được gộp lại và chỉ tính một lần khi lệnh đã đóng hẳn,
-        kết quả = tổng các phần theo tỷ trọng (ví dụ chốt 30% ở +10%, 30% ở +20%, 40% ở +40% thì lệnh lãi 25%). Lệnh mới chốt TP1/TP2 mà còn giữ chưa được tính vào thống kê; lệnh cũ (30/30/25) đã chốt tới TP3 tính là đã kết thúc theo phần đã chốt (bỏ qua 15% còn chạy). Dòng có nhãn <b style={{ color: "#22D3EE" }}>Mua mới</b> là lệnh vào đợt sau của cùng mã (khi bạn bỏ qua lệnh đầu có thể đợi đợt sau): là một lệnh độc lập với giá mua, Stop-loss và chốt lời
+        kết quả = tổng các phần theo tỷ trọng (ví dụ chốt 30% ở +10%, 30% ở +20%, 40% ở +40% thì lệnh lãi 25%). Lệnh mới chốt TP1/TP2 mà còn giữ chưa được tính vào số lệnh, lãi/lỗ trung bình; riêng <b>tỷ lệ thắng</b> tính thêm các lệnh đang giữ đã chạm TP2 (đã chốt 60%, 40% còn lại dời cắt lỗ về giá mua nên cả lệnh không thể lỗ — coi là lệnh thắng), lệnh mới chạm TP1 thì chưa tính vì phần còn lại vẫn có thể thành lỗ; lệnh cũ (30/30/25) đã chốt tới TP3 tính là đã kết thúc theo phần đã chốt (bỏ qua 15% còn chạy). Dòng có nhãn <b style={{ color: "#22D3EE" }}>Mua mới</b> là lệnh vào đợt sau của cùng mã (khi bạn bỏ qua lệnh đầu có thể đợi đợt sau): là một lệnh độc lập với giá mua, Stop-loss và chốt lời
         riêng, chốt giống lệnh Mua (từ 27/09/2026: {TY_LE_CHOT.tp1}% ở TP1, {TY_LE_CHOT.tp2}% ở TP2 của riêng lệnh đó), phần còn lại đóng khi chạm Stop-loss riêng, về hòa vốn sau TP2 hoặc cùng lúc với lệnh đầu. Lãi/lỗ
         tính theo giá, <b>chưa trừ phí giao dịch và thuế</b> (khoảng {CHI_PHI_UOC_TINH}% mỗi lệnh mua + bán). Lệnh cũ (trước 26/09/2026) chốt theo cách 30/30/25
         nên dòng TP3 hiện {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 - TY_LE_CHOT_CU.giu}%). Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.

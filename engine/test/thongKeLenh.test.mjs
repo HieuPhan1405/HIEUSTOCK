@@ -83,5 +83,20 @@ tk = thongKeLenhDaDong([]);
 ok("rong: 0 lenh, cac so trung binh null", tk.soLenh === 0 && tk.tyLeThang === null && tk.laiTB === null && tk.phienTB === null);
 ok("gomTheoLenh: khoa theo ma|ngay mua|loai", gomTheoLenh([d({}), d({ vong: 2 })]).map((n) => n.khoa).join() === "AAA|2026-09-01|goc,AAA|2026-09-01|moi");
 
+// Ty le thang gom lenh da khoa lai (dang giu da cham TP2)
+{
+  const e = (o) => ({ ma: "KL", ngay_mua: "2026-09-01", gia_mua: 20, ngay_ban: "2026-09-20", gia_ban: 22, lai_lo_pct: 10, so_phien: 5, ly_do: "BAN", da_cham_tp: null, phan_chot_pct: 100, vong: 1, ...o });
+  const ds2 = [
+    e({ ma: "L1", lai_lo_pct: -5 }), // da dong, thua
+    e({ ma: "L2", lai_lo_pct: 8 }), // da dong, thang
+    e({ ma: "K1", ly_do: "TP1", vong: 5, phan_chot_pct: 30 }),
+    e({ ma: "K1", ly_do: "TP2", vong: 6, phan_chot_pct: 30 }), // dang giu, da cham TP2 -> khoa lai
+    e({ ma: "K2", ly_do: "TP1", vong: 5, phan_chot_pct: 30 }), // dang giu, moi TP1 -> khong tinh
+  ];
+  const t = thongKeLenhDaDong(ds2);
+  ok("khoa lai: 1 lenh (K1), K2 chi TP1 khong tinh", t.soKhoaLai === 1 && t.soDangChotTungPhan === 2);
+  ok("ty le thang chi lenh da dong 50%, gom khoa lai 2/3", Math.abs(t.tyLeThang - 50) < 1e-9 && Math.abs(t.tyLeThangGomKhoaLai - (200 / 3)) < 1e-9);
+}
+
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);
