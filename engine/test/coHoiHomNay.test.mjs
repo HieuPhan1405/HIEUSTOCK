@@ -47,6 +47,17 @@ ok("Ban bot JJJ: mua moi, TP2 30% +11%", chot[0].laMuaMoi && chot[0].tp === "TP2
 const canhBao = kq.banBot.filter((b) => b.loai === "canhBao");
 ok("Canh bao giam bot: chi ma dang giu (EEE), sau cac lan chot", canhBao.length === 1 && canhBao[0].ma === "EEE" && kq.banBot[kq.banBot.length - 1].loai === "canhBao");
 ok("khong co ngay -> khong su kien nhat ky", dungCoHoiHomNay({ tatCa, dongLenh, ngay: null }).banBot.filter((b) => b.loai === "chot").length === 0);
+// Cung 1 lenh cham TP1 + TP2 trong phien -> 1 dong, chot 60%, lai TB theo ty trong
+{
+  const r = dungCoHoiHomNay({
+    ngay: NGAY,
+    dongLenh: [
+      { ma: "HAH", ngay_mua: "2026-09-01", gia_mua: 47, ngay_ban: NGAY, gia_ban: 50.82, lai_lo_pct: 8, ly_do: "TP1", phan_chot_pct: 30, vong: 5 },
+      { ma: "HAH", ngay_mua: "2026-09-01", gia_mua: 47, ngay_ban: NGAY, gia_ban: 51.63, lai_lo_pct: 10, ly_do: "TP2", phan_chot_pct: 30, vong: 6 },
+    ],
+  });
+  ok("gop TP1 + TP2 cung phien: 1 dong, 60%, lai 9%", r.banBot.length === 1 && r.banBot[0].tp === "TP1 + TP2" && r.banBot[0].phanPct === 60 && gan(r.banBot[0].laiPct, 9) && r.banBot[0].moc.length === 2);
+}
 ok("rong -> rong", (() => { const r = dungCoHoiHomNay({ ngay: NGAY }); return !r.mua.length && !r.ban.length && !r.muaMoi.length && !r.banBot.length; })());
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);

@@ -241,7 +241,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
                   Chạm {x.tp} — chốt {x.phanPct ?? 30}%
                 </span>
                 <br />
-                giá chốt {fmt(x.gia)}
+                giá chốt {x.moc.length > 1 ? x.moc.map((m) => `${m.tp} ${fmt(m.gia)}`).join(" · ") : fmt(x.gia)}
               </Dong>
             ) : (
               <Dong
