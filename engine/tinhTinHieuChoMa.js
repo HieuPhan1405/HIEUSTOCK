@@ -58,7 +58,9 @@ const MAC_DINH = {
   bvHoaVon: true, // KieuBaoVeLai = "Hoa von sau TP2" (index 1) - da BAT theo chot "Chot ca 2".
   bvRong: false,
   baoVeRongPct: 20,
-  batMuaLai: true,
+  // MUA LAI tat tu 2026-09-27: backtest 11 nam (engine/dich-vu/backtestVaoThucTe.mjs) chi 73 lenh, lai TB ~0 (+0,16% mua ATC, -0,21% mua mo cua phien sau <= +1%) - khong them
+  // loi the; he thong chi con Mua / Mua moi / Ban / Ban bot. Van bat lai duoc bang thamSo.batMuaLai = true (va Param "MUA LAI" trong AFL 7/9).
+  batMuaLai: false,
   kieuHoTroMuaLai: "Kijun",
   diemToiThieuMuaLai: 0.75,
   hanMuaLaiPhien: 60,
@@ -301,6 +303,15 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   const chamTP2TuKhiMua = dinhCaoNhatTuKhiMua.map((v, i) => v != null && kq.tp2VaoVong[i] != null && v >= kq.tp2VaoVong[i]);
   const chamTP3TuKhiMua = dinhCaoNhatTuKhiMua.map((v, i) => v != null && kq.tp3VaoVong[i] != null && v >= kq.tp3VaoVong[i]);
   const tpDaChamCuoi = chamTP3TuKhiMua[cuoi] ? "TP3" : chamTP2TuKhiMua[cuoi] ? "TP2" : chamTP1TuKhiMua[cuoi] ? "TP1" : "";
+  // LENH MUA MOI da cham TP nao (dinh cao nhat cac phien SAU phien vao lenh mua moi, tinh ca hom nay - phien vao lenh mua o gia dong cua nen khong tinh dinh cua no) - web ghi
+  // dong chot 30% TP1 / 30% TP2 cua lenh mua moi theo cot nay. Chi co gia tri khi lenh mua moi dang giu hoac vua dong hom nay. AFL 7: MucTPDaChamMuaGiua.
+  const dinhSauMuaGiua = highestSince(
+    kq.muaGiuaSuKien,
+    high.map((h, i) => (kq.muaGiuaSuKien[i] ? -Infinity : h))
+  );
+  const conLenhGiua = kq.muaGiuaGiu[cuoi] === true || kq.muaGiuaCat[cuoi] > 0;
+  const chamGiua = (tp) => conLenhGiua && tp > 0 && dinhSauMuaGiua[cuoi] != null && dinhSauMuaGiua[cuoi] >= tp;
+  const tpDaChamGiuaCuoi = chamGiua(kq.muaGiuaTP3[cuoi]) ? "TP3" : chamGiua(kq.muaGiuaTP2[cuoi]) ? "TP2" : chamGiua(kq.muaGiuaTP1[cuoi]) ? "TP1" : "";
 
   // ---- Trang thai giai ngan (tham do 1 phan / bo sung) ----
   const soPhienTuVaoCuoi = cuoi - kq.viTriVaoTrongVongLap[cuoi];
@@ -427,6 +438,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     tp2_giua: kq.muaGiuaGiu[cuoi] ? kq.muaGiuaTP2[cuoi] : null,
     tp3_giua: kq.muaGiuaGiu[cuoi] ? kq.muaGiuaTP3[cuoi] : null,
     ngay_mua_giua: kq.muaGiuaGiu[cuoi] ? ngayVN(ngayMuaGiuaVT) : null,
+    tp_da_cham_giua: tpDaChamGiuaCuoi,
   };
   // CHI DE BACKTEST (mac dinh TAT, khong anh huong CSV/upload): thamSo.traChuoi = true tra them CA CHUOI theo tung nen de mo phong lai
   // cach quan ly lenh (vd kieu chot loi khac) tren dung cac lan vao lenh/tin hieu BAN cua engine - xem engine/dich-vu/backtestChotLoi.mjs.

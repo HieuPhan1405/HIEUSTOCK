@@ -9,6 +9,7 @@ import {
   layTPDaGhi,
   phatHienDongMuaMoi,
   phatHienDongMuaThemGiuaChung,
+  phatHienChotLoiMuaMoi,
   ghiLenhDaDong,
   doiSoatLenhDaDong,
   dangTrongPhien,
@@ -168,7 +169,7 @@ export async function POST(request) {
       `SELECT ma, tin, giai_ngan, gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3,
               gia_mua, so_phien_giu, tp_da_cham, stop_loss, tp1, tp2, tp3,
               dang_giu_moi, gia_mua_moi, stop_moi, tp1_moi, tp2_moi, tp3_moi,
-              dang_giu_giua, gia_mua_giua, stop_giua, tp1_giua, tp2_giua, tp3_giua,
+              dang_giu_giua, gia_mua_giua, stop_giua, tp1_giua, tp2_giua, tp3_giua, tp_da_cham_giua,
               to_char(ngay_mua_moi, 'YYYY-MM-DD') AS ngay_mua_moi_txt,
               to_char(ngay_mua_giua, 'YYYY-MM-DD') AS ngay_mua_giua_txt,
               to_char(ngay_mua, 'YYYY-MM-DD') AS ngay_mua_txt
@@ -275,7 +276,7 @@ export async function POST(request) {
          gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3, che_do_vao, loai_vao, cho_phien_sau,
          mua_moi, dang_giu_moi, cat_moi, gia_mua_moi, stop_moi, tp1_moi, tp2_moi, tp3_moi, ngay_mua_moi,
          ly_do_ban, dang_bao_ve_lai, stop_bao_ve,
-         mua_giua, dang_giu_giua, cat_giua, gia_mua_giua, stop_giua, tp1_giua, tp2_giua, tp3_giua, ngay_mua_giua)
+         mua_giua, dang_giu_giua, cat_giua, gia_mua_giua, stop_giua, tp1_giua, tp2_giua, tp3_giua, ngay_mua_giua, tp_da_cham_giua)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -290,7 +291,7 @@ export async function POST(request) {
          $51::text[], $52::text[], $53::boolean[],
          $54::boolean[], $55::boolean[], $56::float8[], $57::float8[], $58::float8[], $59::float8[], $60::float8[], $61::float8[], $62::date[],
          $63::int2[], $64::boolean[], $65::float8[],
-         $66::boolean[], $67::boolean[], $68::float8[], $69::float8[], $70::float8[], $71::float8[], $72::float8[], $73::float8[], $74::date[]
+         $66::boolean[], $67::boolean[], $68::float8[], $69::float8[], $70::float8[], $71::float8[], $72::float8[], $73::float8[], $74::date[], $75::text[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -366,6 +367,7 @@ export async function POST(request) {
          tp2_giua = EXCLUDED.tp2_giua,
          tp3_giua = EXCLUDED.tp3_giua,
          ngay_mua_giua = EXCLUDED.ngay_mua_giua,
+         tp_da_cham_giua = EXCLUDED.tp_da_cham_giua,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -449,6 +451,8 @@ export async function POST(request) {
         giuaTp2,
         giuaTp3,
         cot("ngay_mua_giua", soNgayVN),
+        // Lenh mua moi da cham TP nao (TP1/TP2/TP3) - CSV cu chua co cot -> null.
+        cot("tp_da_cham_giua", soText),
       ]
     );
 
@@ -551,13 +555,35 @@ export async function POST(request) {
       ngayBan,
     });
     const dsDongMuaGiua = phatHienDongMuaThemGiuaChung({
-      dsMoi: hangDL.map((h) => ({ ma: h.ma, tin: h.tin || "TRUNG LAP", gia: soFloat(h.gia), dang_giu_giua: boolTriState(h.dang_giu_giua), cat_giua: soFloat(h.cat_giua) })),
+      dsMoi: hangDL.map((h) => ({
+        ma: h.ma,
+        tin: h.tin || "TRUNG LAP",
+        gia: soFloat(h.gia),
+        dang_giu_giua: boolTriState(h.dang_giu_giua),
+        cat_giua: soFloat(h.cat_giua),
+        tp_da_cham_giua: soText(h.tp_da_cham_giua),
+      })),
       banGhiCuTheoMa,
       ngayBan,
     });
+    // Lenh MUA MOI chot 30% TP1 / 30% TP2 giong lenh Mua (vong 7/8) - gia mua / TP la gia da dong bang tren web (giua*).
+    const dsChotMuaMoi = phatHienChotLoiMuaMoi({
+      dsMoi: hangDL.map((h, k) => ({
+        ma: h.ma,
+        dang_giu_giua: boolTriState(h.dang_giu_giua),
+        ngay_mua_giua: soNgayVN(h.ngay_mua_giua),
+        gia_mua_giua: giuaGia[k],
+        tp1_giua: giuaTp1[k],
+        tp2_giua: giuaTp2[k],
+        tp_da_cham_giua: soText(h.tp_da_cham_giua),
+      })),
+      banGhiCuTheoMa,
+      ngayBan,
+    });
+    lenhDaDong.chotMuaMoi = dsChotMuaMoi.length;
     lenhDaDong.dongMuaMoi = dsDongMuaMoi.length;
     lenhDaDong.dongMuaGiua = dsDongMuaGiua.length;
-    lenhDaDong.ghi = await ghiLenhDaDong([...dsDong, ...dsChotTP3, ...dsDongMuaMoi, ...dsDongMuaGiua]);
+    lenhDaDong.ghi = await ghiLenhDaDong([...dsDong, ...dsChotTP3, ...dsDongMuaMoi, ...dsChotMuaMoi, ...dsDongMuaGiua]);
     lenhDaDong.chotTP3 = dsChotTP3.length; // gom ca dong chot TP1/TP2/TP3 (chot loi tung phan)
     // Doi soat: ma da bi ghi la dong nhung nay lai NAM GIU (tin hieu doi chieu trong phien) -> bo khoi Lenh da dong;
     // ma van BAN thi cap nhat gia chot theo gia moi nhat.
@@ -656,7 +682,7 @@ export async function POST(request) {
       const dong = [
         `🟢 MUA MỚI (đợt sau): ${h.ma}`,
         `Giá mua mới: ${giuaGia[k] ?? h.gia}${giuaStop[k] ? ` · Cắt lỗ riêng: ${giuaStop[k]}` : ""}`,
-        giuaTp1[k] ? `Chốt lời mới: ${giuaTp1[k]} / ${giuaTp2[k] ?? "—"} / ${giuaTp3[k] ?? "—"}` : null,
+        giuaTp1[k] ? `Chốt lời: 30% ở TP1 ${giuaTp1[k]} · 30% ở TP2 ${giuaTp2[k] ?? "—"} · 40% giữ đến tín hiệu BÁN (TP3 ${giuaTp3[k] ?? "—"} tham khảo)` : null,
         cu?.gia_vao_web > 0 || cu?.gia_mua > 0 ? `Lệnh đầu đang giữ: giá mua ${cu.gia_vao_web > 0 ? cu.gia_vao_web : cu.gia_mua}` : null,
         trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa" : null,
         `Xem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`,

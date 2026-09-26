@@ -65,7 +65,7 @@ if (ketQua) {
     "mua_moi", "dang_giu_moi", "cat_moi", "gia_mua_moi", "stop_moi", "tp1_moi", "tp2_moi",
     "tp3_moi", "ngay_mua_moi", "ly_do_ban", "dang_bao_ve_lai", "stop_bao_ve",
     "mua_giua", "dang_giu_giua", "cat_giua", "gia_mua_giua", "stop_giua", "tp1_giua", "tp2_giua",
-    "tp3_giua", "ngay_mua_giua",
+    "tp3_giua", "ngay_mua_giua", "tp_da_cham_giua",
   ];
   const thieu = CAC_TRUONG_BAT_BUOC.filter((k) => !(k in ketQua));
   ok(`co du ca 66 truong can thiet (chua tinh cap_nhat_luc do server tu dien)`, thieu.length === 0, JSON.stringify(thieu));

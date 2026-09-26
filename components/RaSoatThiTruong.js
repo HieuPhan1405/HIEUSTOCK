@@ -81,13 +81,13 @@ function DanhSachMa({ ds, mau, hienThi, trong = "Không có mã nào" }) {
         const t = tenCongTy(r.ma);
         return (
           <Link
-            key={r.khoa ?? r.ma}
+            key={r.khoa ?? r.khoa_lenh ?? r.ma}
             href={`/ma/${r.ma}`}
             title={t?.ten}
             className="inline-flex items-baseline gap-1.5 px-2 py-1 rounded-md text-xs hover:brightness-125 transition"
             style={{ background: mau + "1F", color: mau, border: `1px solid ${mau}33` }}
           >
-            <b style={{ ...mono, fontWeight: 700 }}>{r.ma}</b>
+            <b style={{ ...mono, fontWeight: 700 }}>{r.ten_lenh ?? r.ma}</b>
             {hienThi && <span style={{ ...mono, opacity: 0.85, fontSize: 10 }}>{hienThi(r)}</span>}
           </Link>
         );

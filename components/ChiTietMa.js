@@ -489,7 +489,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 </div>
               )}
               {mocKichHoat(vt) && (
-                <div className="mt-2" title="Giá mua trên hệ thống là giá đóng cửa phiên có tín hiệu; mốc chuyển mua là mức giá chính vừa bị vượt ở phiên điểm chuyển sang vùng mua.">
+                <div className="mt-2" title="Mốc chuyển mua là mức giá chính (mây / đường cân bằng dài hạn) vừa bị vượt ở phiên điểm chuyển sang vùng mua. Giá mua của hệ thống lấy tại mốc này (không thấp hơn giá thấp hơn giữa mở cửa và đóng cửa phiên đó) — chỉ đạt được nếu mua đúng lúc giá vượt mốc; mua sau thì so với vùng mua (tối đa +1%).">
                   <p className="text-[11px]" style={{ color: "#8B8B99" }}>
                     Mốc chuyển mua: {fmt(mocKichHoat(vt).gia)}
                   </p>

@@ -634,7 +634,8 @@ TP1Vong = Min(Min(NGanV, NGiuaV), NXaV);
 TP3Vong = Max(Max(NGanV, NGiuaV), NXaV);
 TP2Vong = NGanV + NGiuaV + NXaV - TP1Vong - TP3Vong;
 
-BatMuaLai = ParamToggle("MUA LAI: mua lai khi hoi ve ho tro trong xu huong tang (Tat = cu)", "Tat|Bat", 1);
+// MUA LAI mac dinh TAT tu 2026-09-27: backtest 11 nam chi 73 lenh, lai TB ~0 - khong them loi the (engine/dich-vu/backtestVaoThucTe.mjs). He thong chi con Mua / Mua moi / Ban / Ban bot.
+BatMuaLai = ParamToggle("MUA LAI (tu 27/09/2026 mac dinh Tat): mua lai khi hoi ve ho tro trong xu huong tang", "Tat|Bat", 0);
 KieuHoTroMuaLai = ParamList("Mua lai - ho tro", "Kijun|Can bang dai han (duoi)", 0);
 DiemToiThieuMuaLai = Param("Mua lai - diem toi thieu", 0.75, 0, 3, 0.05);
 HanMuaLaiPhien = Param("Mua lai - trong vong (phien) sau lan ban truoc", 60, 5, 250, 5);
@@ -682,7 +683,7 @@ StopMuaMoiBar = IIf((HoTroMuaMoi > 0) AND (HoTroMuaMoi < C), SLMuaMoiTho,
 // moi". Dung DotKetThucBoLo (1 dot tren nguong da ket thuc ma CHUA TUNG mua duoc trong suot dot -
 // xem khoi TurnedGreen o tren) + gia kich hoat tai LAN BO LO GAN NHAT (GiaKichHoatTaiVuaVao, dung
 // chung voi GiaKichHoatTaiMua ben duoi) de biet gia co con trong han "vung mua cu" khong.
-BatMuaMuon          = ParamToggle("MUA MUON: bat kip tin hieu bi bo lo hoan toan (chi xuat/hien thi)", "Tat|Bat", 0);
+BatMuaMuon          = ParamToggle("MUA MUON: bat kip tin hieu bi bo lo hoan toan (chi xuat/hien thi)", "Tat|Bat", 1); // mac dinh Bat cho khop engine + cach dang dung (2026-09-27)
 HanPhienMuaMuon     = Param("Mua muon - trong vong (phien) sau khi bo lo tin hieu", 10, 1, 60, 1);
 DiemToiThieuMuaMuon = Param("Mua muon - diem toi thieu", 0.75, 0, 3, 0.05);
 MuaMuonCaoToiDaPct  = Param("Mua muon - gia toi da cao hon moc kich hoat bi bo lo (%)", 2, 0.5, 10, 0.5);
@@ -701,7 +702,7 @@ StopMuaMuonBar = IIf((GiaKichHoatBoLo > 0) AND (GiaKichHoatBoLo < C), SLMuaMuonT
 // Ban sao CO CHU DICH cua khoi MUA MOI SAU TP3 o tren (dung tinh than dich sat tung khoi AFL,
 // khong gop chung 2 khoi ve mat y nghia khac nhau) - tham so RIENG, dung chung cac nguong SL cau
 // truc/ATR/tran 6% da co.
-BatMuaThemGiuaChung = ParamToggle("MUA THEM GIUA CHUNG: bao mua them khi hoi ve ho tro TRUOC TP3 (chi xuat/hien thi)", "Tat|Bat", 0);
+BatMuaThemGiuaChung = ParamToggle("MUA THEM GIUA CHUNG: bao mua them khi hoi ve ho tro TRUOC TP3 (chi xuat/hien thi)", "Tat|Bat", 1); // = lenh MUA MOI tren web; mac dinh Bat cho khop engine (2026-09-27)
 KieuHoTroMuaGiua    = ParamList("Mua them giua chung - ho tro", "Kijun|Can bang dai han (duoi)", 0);
 DiemToiThieuMuaGiua = Param("Mua them giua chung - diem toi thieu", 1.25, 0, 4, 0.05);
 MuaGiuaCaoToiDaPct  = Param("Mua them giua chung - gia toi da cao hon ho tro (%)", 4, 1, 15, 0.5);
@@ -748,6 +749,9 @@ Mua2DaTung = 0;     // 1 = lenh goc hien tai da mua moi roi (toi da 1 lan)
 // Cau truc GIONG HET Mua2* o tren.
 MuaGiuaGiu = 0; MuaGiuaGia = 0; MuaGiuaStop = 0; MuaGiuaTP1 = 0; MuaGiuaTP2 = 0; MuaGiuaTP3 = 0;
 MuaGiuaVi = 0; MuaGiuaSuKien = 0; MuaGiuaCat = 0; MuaGiuaDaTung = 0;
+// Lenh MUA MOI chot giong lenh Mua (2026-09-27): 30% TP1 + 30% TP2 (web ghi so), 40% con lai giu den tin hieu BAN; da cham TP2 (cac phien TRUOC hom nay) thi cat lo phan con lai
+// doi ve GIA MUA (hoa von, BVHoaVon) -> MuaGiuaCat = 3. Mirror engine/loi/mayTrangThai.js (muaGiuaDaTP2).
+MuaGiuaDaTP2 = 0;
 // MUA MUON: co nho "da bat kip 1 lan cho lan bo lo gan nhat" - chan mua-cat-mua lap lai cung 1
 // vung gia bo lo, reset khi co 1 dot bo lo MOI (DotKetThucBoLo[i] moi).
 DaMuaMuonSauBoLo = 0;
@@ -783,6 +787,7 @@ for (i = 1; i < BarCount; i++)
         MuaGiuaTP2[i] = MuaGiuaTP2[i-1];
         MuaGiuaTP3[i] = MuaGiuaTP3[i-1];
         MuaGiuaVi[i] = MuaGiuaVi[i-1];
+        MuaGiuaDaTP2[i] = MuaGiuaDaTP2[i-1];
         // Stop-loss dong bang luc vao lenh (che do Cu = dung cong thuc ATR/6% nhu truoc).
         stopGiaThucTe_vonglap = StopVaoTrongVongLap[i];
 
@@ -896,10 +901,20 @@ for (i = 1; i < BarCount; i++)
             // MUA THEM GIUA CHUNG (vong doc lap voi Mua2, CHI mo TRUOC khi cham du TP3 - DaTP3Vong==0).
             if (MuaGiuaGiu[i-1] == 1)
             {
+                hPrevGiua = 0;
+                if ((i - 1) > MuaGiuaVi[i]) hPrevGiua = H[i-1];
+                if (MuaGiuaDaTP2[i-1] == 1 OR (MuaGiuaTP2[i] > 0 AND hPrevGiua >= MuaGiuaTP2[i])) MuaGiuaDaTP2[i] = 1;
+                stopHoaVonGiua = 0;
+                if (BVHoaVon AND MuaGiuaDaTP2[i] == 1) stopHoaVonGiua = MuaGiuaGia[i];
                 if (L[i] <= MuaGiuaStop[i] AND (SLChamLaCat OR TotalScore[i] < 0))
                 {
                     MuaGiuaGiu[i] = 0;
                     MuaGiuaCat[i] = 1;
+                }
+                else if (stopHoaVonGiua > 0 AND L[i] <= stopHoaVonGiua)
+                {
+                    MuaGiuaGiu[i] = 0;
+                    MuaGiuaCat[i] = 3;
                 }
             }
             else if (DaTP3Vong[i] == 0 AND MuaGiuaDaTung[i] == 0 AND MuaThemGiuaChungTinHieu[i])
@@ -913,6 +928,7 @@ for (i = 1; i < BarCount; i++)
                 MuaGiuaTP2[i] = TP2Vong[i];
                 MuaGiuaTP3[i] = TP3Vong[i];
                 MuaGiuaVi[i] = i;
+                MuaGiuaDaTP2[i] = 0;
             }
         }
     }
@@ -1260,6 +1276,16 @@ MuaGiuaTP3Cuoi = Nz(LastValue(MuaGiuaTP3));
 NamMuaGiua = ValueWhen(MuaGiuaSuKien, Year(), 1);
 ThangMuaGiua = ValueWhen(MuaGiuaSuKien, Month(), 1);
 NgayMuaGiua = ValueWhen(MuaGiuaSuKien, Day(), 1);
+// LENH MUA MOI da cham TP nao: dinh cao nhat cac phien SAU phien vao lenh mua moi (tinh ca hom nay; phien vao lenh mua o gia dong cua nen khong tinh dinh cua no). Chi co gia tri
+// khi lenh mua moi dang giu hoac vua dong hom nay - web ghi dong chot 30% TP1 / 30% TP2 cua lenh mua moi theo cot nay. Mirror engine tp_da_cham_giua.
+DinhSauMuaGiua = HighestSince(MuaGiuaSuKien, IIf(MuaGiuaSuKien, 0, H));
+ConLenhGiua = MuaGiuaGiu == 1 OR MuaGiuaCat > 0;
+ChamGiuaTP1 = ConLenhGiua AND MuaGiuaTP1 > 0 AND DinhSauMuaGiua >= MuaGiuaTP1;
+ChamGiuaTP2 = ConLenhGiua AND MuaGiuaTP2 > 0 AND DinhSauMuaGiua >= MuaGiuaTP2;
+ChamGiuaTP3 = ConLenhGiua AND MuaGiuaTP3 > 0 AND DinhSauMuaGiua >= MuaGiuaTP3;
+MucTPDaChamMuaGiua = WriteIf(LastValue(ChamGiuaTP3), "TP3",
+                     WriteIf(LastValue(ChamGiuaTP2), "TP2",
+                     WriteIf(LastValue(ChamGiuaTP1), "TP1", "")));
 
 if (Status("stocknum") == 0)
 {
@@ -1273,7 +1299,7 @@ if (Status("stocknum") == 0)
               "moc_gia,moc_loai,moc_cach_pct,diem_neu_vuot,che_do_vao,loai_vao,cho_phien_sau,"+
               "mua_moi,dang_giu_moi,cat_moi,gia_mua_moi,stop_moi,tp1_moi,tp2_moi,tp3_moi,ngay_mua_moi,"+
               "ly_do_ban,dang_bao_ve_lai,stop_bao_ve,"+
-              "mua_giua,dang_giu_giua,cat_giua,gia_mua_giua,stop_giua,tp1_giua,tp2_giua,tp3_giua,ngay_mua_giua\n", fh);
+              "mua_giua,dang_giu_giua,cat_giua,gia_mua_giua,stop_giua,tp1_giua,tp2_giua,tp3_giua,ngay_mua_giua,tp_da_cham_giua\n", fh);
         fclose(fh);
     }
 }
@@ -1379,7 +1405,8 @@ Dong = Name() + "," + TinCuoi + ","
          NumToStr(LastValue(NgayMuaGiua),1.0,False) + "/" +
          NumToStr(LastValue(ThangMuaGiua),1.0,False) + "/" +
          NumToStr(LastValue(NamMuaGiua),1.0,False),
-         "");
+         "")
+     + "," + MucTPDaChamMuaGiua;
 
 if ((!LaMaETF AND ThuocHOSE) OR LaVNIndex)
 {

@@ -98,6 +98,9 @@ export function chayMayTrangThai(dauVao) {
   const muaGiuaSuKien = new Array(n).fill(false);
   const muaGiuaCat = A();
   const muaGiuaDaTung = new Array(n).fill(false);
+  // Lenh MUA MOI chot giong lenh Mua (2026-09-27): 30% TP1 + 30% TP2 (chi ghi so tren web), 40% con lai giu den tin hieu BAN; sau khi da cham TP2 thi cat lo phan con lai
+  // doi ve GIA MUA (hoa von, bvHoaVon) -> muaGiuaCat = 3. muaGiuaDaTP2: da cham TP2 o cac phien TRUOC hom nay (giong daTP2Vong cua lenh goc, khong nhin truoc tuong lai).
+  const muaGiuaDaTP2 = new Array(n).fill(0);
   // MUA MUON: co nho "da bat kip 1 lan cho lan bo lo gan nhat" - chan mua-cat-mua lap lai cung 1
   // vung gia bo lo, reset khi co 1 dot bo lo MOI (dotKetThucBoLo[i] moi).
   const daMuaMuonSauBoLo = new Array(n).fill(false);
@@ -144,6 +147,7 @@ export function chayMayTrangThai(dauVao) {
       muaGiuaTP2[i] = muaGiuaTP2[i - 1];
       muaGiuaTP3[i] = muaGiuaTP3[i - 1];
       muaGiuaVi[i] = muaGiuaVi[i - 1];
+      muaGiuaDaTP2[i] = muaGiuaDaTP2[i - 1];
       const stopGiaThucTe_vonglap = stopVaoTrongVongLap[i];
 
       tp1VaoVong[i] = tp1VaoVong[i - 1];
@@ -233,9 +237,15 @@ export function chayMayTrangThai(dauVao) {
 
         // MUA THEM GIUA CHUNG (vong doc lap voi mua2, CHI mo TRUOC khi cham du TP3 - DaTP3Vong===0).
         if (muaGiuaGiu[i - 1] === true) {
+          const hPrevGiua = i - 1 > muaGiuaVi[i] ? high[i - 1] : 0;
+          if (muaGiuaDaTP2[i - 1] === 1 || (muaGiuaTP2[i] > 0 && hPrevGiua >= muaGiuaTP2[i])) muaGiuaDaTP2[i] = 1;
+          const stopHoaVonGiua = bvHoaVon && muaGiuaDaTP2[i] === 1 ? muaGiuaGia[i] : 0;
           if (low[i] <= muaGiuaStop[i] && (slChamLaCat || totalScore[i] < 0)) {
             muaGiuaGiu[i] = false;
             muaGiuaCat[i] = 1;
+          } else if (stopHoaVonGiua > 0 && low[i] <= stopHoaVonGiua) {
+            muaGiuaGiu[i] = false;
+            muaGiuaCat[i] = 3;
           }
         } else if (daTP3Vong[i] === 0 && muaGiuaDaTung[i] === false && muaThemGiuaChungTinHieu[i]) {
           muaGiuaGiu[i] = true;
@@ -247,6 +257,7 @@ export function chayMayTrangThai(dauVao) {
           muaGiuaTP2[i] = tp2Vong[i];
           muaGiuaTP3[i] = tp3Vong[i];
           muaGiuaVi[i] = i;
+          muaGiuaDaTP2[i] = 0;
         }
       }
     } else if (buyTho[i] || duDieuKienMuaLai || duDieuKienMuaMuon) {
@@ -334,6 +345,7 @@ export function chayMayTrangThai(dauVao) {
     muaGiuaSuKien,
     muaGiuaCat,
     muaGiuaDaTung,
+    muaGiuaDaTP2,
     daMuaMuonSauBoLo,
     stopBaoVeMoiNen,
   };

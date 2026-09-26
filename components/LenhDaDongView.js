@@ -14,20 +14,31 @@ const DO = "#EF4444";
 // yyyy-mm-dd -> dd/mm/yyyy
 const ngayVN = (s) => (s && /^\d{4}-\d{2}-\d{2}$/.test(s) ? `${s.slice(8, 10)}/${s.slice(5, 7)}/${s.slice(0, 4)}` : "—");
 
-// LENH MUA MOI (dot sau khi bo qua lenh dau: vong 4 = gia hoi ve ho tro luc lenh dau con giu, vong 2 = sau TP3): la lenh DOC LAP co gia mua / Stop-loss / ngay mua rieng, gan nhan "Mua moi".
+// LENH MUA MOI (dot sau khi bo qua lenh dau: vong 4 = gia hoi ve ho tro luc lenh dau con giu, vong 2 = sau TP3; 7/8 = dong chot 30% TP1 / TP2 cua lenh do): la lenh DOC LAP
+// co gia mua / Stop-loss / TP / ngay mua rieng, gan nhan "Mua moi".
 const MUA_THEM = {
   2: { nhan: "Mua mới", mau: "#22D3EE" },
   4: { nhan: "Mua mới", mau: "#22D3EE" },
+  7: { nhan: "Mua mới", mau: "#22D3EE" },
+  8: { nhan: "Mua mới", mau: "#22D3EE" },
 };
+const CHI_PHI_UOC_TINH = 0.4; // % ca vong (phi mua + ban + thue ban) - dung trong backtest engine/dich-vu/backtestChung.mjs
 
-// Cot "Ket thuc": ly do dong + ghi chu phan vi the. Lenh mua them dong theo Stop-loss RIENG hoac dong THEO lenh goc (lenh goc bi ban / ket thuc o TP3), khong co
-// TP1/TP2 rieng nen khong ghi "da cham TP" / "phan con lai" cua lenh goc.
+// Cot "Ket thuc": ly do dong + ghi chu phan vi the. Lenh mua moi chot giong lenh Mua (tu 27/09/2026): 30% TP1, 30% TP2 rieng, phan con lai dong khi cham Stop-loss rieng,
+// hoa von sau TP2 hoac cung luc lenh dau (lenh dau ban / thoat).
 function nhanKetThuc(x) {
   const pc = Number(x.phan_chot_pct);
   if (MUA_THEM[x.vong]) {
-    if (x.ly_do === "CAT_LO") return "Cắt lỗ (chạm Stop-loss của lệnh này)";
-    if (x.ly_do === "BAN") return "Đóng cùng lệnh đầu (có tín hiệu BÁN)";
-    return "Đóng cùng lệnh đầu";
+    if (x.ly_do === "TP1" || x.ly_do === "TP2") return `Chốt lời ${x.ly_do} (${x.phan_chot_pct}% vị thế)`;
+    const chinh =
+      x.ly_do === "CAT_LO"
+        ? "Cắt lỗ (chạm Stop-loss của lệnh này)"
+        : x.ly_do === "BAO_VE_LAI"
+          ? "Hòa vốn (sau TP2, Stop-loss dời về giá mua)"
+          : x.ly_do === "BAN"
+            ? "Đóng cùng lệnh đầu (có tín hiệu BÁN)"
+            : "Đóng cùng lệnh đầu";
+    return x.phan_chot_pct != null && pc < 100 ? `${chinh} · phần còn lại ${x.phan_chot_pct}%` : chinh;
   }
   let chinh;
   if (x.ly_do === "TP1" || x.ly_do === "TP2") chinh = `Chốt lời ${x.ly_do} (${x.phan_chot_pct}% vị thế)`;
@@ -110,7 +121,12 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
           nhan="Tỷ lệ thắng"
           mau={tk.tyLeThang == null ? MUTED : tk.tyLeThang >= 50 ? XANH : DO}
         />
-        <The so={tk.laiTB == null ? "—" : pct(tk.laiTB, 2)} nhan="Lãi/lỗ trung bình mỗi lệnh" mau={mauLai(tk.laiTB)} />
+        <The
+          so={tk.laiTB == null ? "—" : pct(tk.laiTB, 2)}
+          nhan="Lãi/lỗ trung bình mỗi lệnh"
+          phu={tk.laiTB == null ? undefined : `≈ ${pct(tk.laiTB - CHI_PHI_UOC_TINH, 2)} sau phí + thuế (~${CHI_PHI_UOC_TINH}%/lệnh)`}
+          mau={mauLai(tk.laiTB)}
+        />
         <The so={tk.phienTB == null ? "—" : `${tk.phienTB.toFixed(0)} phiên`} nhan="Thời gian giữ trung bình" />
       </div>
       {tk.soLenh > 0 && (
@@ -125,7 +141,8 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         lệnh mới, mỗi lần giá chạm mốc chốt lời được ghi thành một dòng ngay lúc chạm theo tỷ lệ chốt: TP1 chốt {TY_LE_CHOT.tp1}%, TP2 chốt {TY_LE_CHOT.tp2}%, {TY_LE_CHOT.giu}% còn lại giữ đến khi hệ thống báo BÁN (TP3 chỉ là mốc tham khảo, không ghi dòng riêng) — lãi/lỗ của mỗi dòng là tỷ lệ giá của đúng phần đó (giá chốt so với giá mua), và khi lệnh đóng thật
         sự thì chỉ ghi phần còn lại. Các thẻ thống kê ở trên tính THEO TỪNG LỆNH: các dòng TP1/TP2/TP3/phần còn lại của cùng một lệnh được gộp lại và chỉ tính một lần khi lệnh đã đóng hẳn,
         kết quả = tổng các phần theo tỷ trọng (ví dụ chốt 30% ở +10%, 30% ở +20%, 40% ở +40% thì lệnh lãi 25%). Lệnh mới chốt TP1/TP2 mà còn giữ chưa được tính vào thống kê; lệnh cũ (30/30/25) đã chốt tới TP3 tính là đã kết thúc theo phần đã chốt (bỏ qua 15% còn chạy). Dòng có nhãn <b style={{ color: "#22D3EE" }}>Mua mới</b> là lệnh vào đợt sau của cùng mã (khi bạn bỏ qua lệnh đầu có thể đợi đợt sau): là một lệnh độc lập với giá mua, Stop-loss và chốt lời
-        riêng, đóng khi chạm Stop-loss riêng hoặc cùng lúc với lệnh đầu. Lệnh cũ (trước 26/09/2026) chốt theo cách 30/30/25
+        riêng, chốt giống lệnh Mua (từ 27/09/2026: {TY_LE_CHOT.tp1}% ở TP1, {TY_LE_CHOT.tp2}% ở TP2 của riêng lệnh đó), phần còn lại đóng khi chạm Stop-loss riêng, về hòa vốn sau TP2 hoặc cùng lúc với lệnh đầu. Lãi/lỗ
+        tính theo giá, <b>chưa trừ phí giao dịch và thuế</b> (khoảng {CHI_PHI_UOC_TINH}% mỗi lệnh mua + bán). Lệnh cũ (trước 26/09/2026) chốt theo cách 30/30/25
         nên dòng TP3 hiện {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 - TY_LE_CHOT_CU.giu}%). Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
       </p>
 

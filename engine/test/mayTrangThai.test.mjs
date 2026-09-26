@@ -252,6 +252,36 @@ function khungRong(n) {
   ok("I: phien 5 cham Stop-loss rieng -> cat (Cat=1), het giu", kq.muaGiuaCat[5] === 1 && kq.muaGiuaGiu[5] === false);
 }
 
+// ---- I2: LENH MUA MOI sau khi cham TP2 rieng -> cat lo phan con lai doi ve gia mua (hoa von, Cat=3) - chot giong lenh Mua (2026-09-27) ----
+{
+  const d = khungRong(8);
+  d.buyTho[1] = true;
+  d.giaVaoBar[1] = 100;
+  d.stopVaoBar[1] = 50;
+  d.tp1Vong[1] = 200;
+  d.tp2Vong[1] = 210;
+  d.tp3Vong[1] = 220;
+  d.low.fill(104);
+  d.high.fill(106);
+  d.muaThemGiuaChungTinHieu[2] = true;
+  d.close[2] = 107;
+  d.stopMuaThemGiuaChungBar[2] = 100;
+  d.tp1Vong[2] = 112;
+  d.tp2Vong[2] = 118; // TP rieng cua lenh mua moi
+  d.tp3Vong[2] = 125;
+  d.high[3] = 119; // phien 3 cham TP2 rieng
+  d.low[4] = 108; // phien 4: da cham TP2 (tu phien 3) nhung chua ve gia mua -> van giu
+  d.low[5] = 106.5; // phien 5 thung gia mua (107) -> hoa von
+  let kq = chayMayTrangThai({ ...d, thamSo: { bvHoaVon: true } });
+  ok("I2: mua moi mo phien 2, TP rieng 112/118", kq.muaGiuaSuKien[2] === true && kq.muaGiuaTP2[2] === 118);
+  ok("I2: cham TP2 phien 3 chi tinh tu phien 4 (khong nhin truoc)", kq.muaGiuaDaTP2[3] === 0 && kq.muaGiuaDaTP2[4] === 1);
+  ok("I2: phien 4 van giu (low 108 > gia mua 107)", kq.muaGiuaGiu[4] === true);
+  ok("I2: phien 5 thung gia mua -> dong hoa von (Cat=3)", kq.muaGiuaGiu[5] === false && kq.muaGiuaCat[5] === 3);
+  ok("I2: lenh goc van giu", kq.giuTrongVongLap[5] === 1);
+  kq = chayMayTrangThai({ ...d, thamSo: { bvHoaVon: false } });
+  ok("I2: tat bvHoaVon -> khong dong hoa von", kq.muaGiuaGiu[5] === true && !kq.muaGiuaCat[5]);
+}
+
 // ---- J: MUA THEM GIUA CHUNG dong THEO lenh goc khi lenh goc bi Ban (doc lap voi vong 2) ----
 {
   const d = khungRong(6);
