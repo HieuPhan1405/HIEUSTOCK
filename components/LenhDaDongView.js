@@ -24,6 +24,7 @@ const MUA_THEM = {
   8: { nhan: "Mua mới", mau: "#22D3EE" },
 };
 const CHI_PHI_UOC_TINH = 0.4; // % ca vong (phi mua + ban + thue ban) - dung trong backtest engine/dich-vu/backtestChung.mjs
+const CHI_PHI_CHU = String(CHI_PHI_UOC_TINH).replace(".", ","); // hien kieu Viet Nam: 0,4
 
 // Cot "Ket thuc": ly do dong + ghi chu phan vi the. Lenh mua moi chot giong lenh Mua (tu 27/09/2026): 30% TP1, 30% TP2 rieng, phan con lai dong khi cham Stop-loss rieng,
 // hoa von sau TP2 hoac cung luc lenh dau (lenh dau ban / thoat).
@@ -135,7 +136,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
           so={tk.laiTB == null ? "—" : pct(tk.laiTB, 2)}
           nhan="Lãi/lỗ trung bình mỗi lệnh"
           may="lai-tb"
-          phu={tk.laiTB == null ? undefined : `≈ ${pct(tk.laiTB - CHI_PHI_UOC_TINH, 2)} sau phí + thuế (~${CHI_PHI_UOC_TINH}%/lệnh)`}
+          phu={tk.laiTB == null ? undefined : `≈ ${pct(tk.laiTB - CHI_PHI_UOC_TINH, 2)} sau phí + thuế (~${CHI_PHI_CHU}%/lệnh)`}
           mau={mauLai(tk.laiTB)}
         />
         <The so={tk.phienTB == null ? "—" : `${tk.phienTB.toFixed(0)} phiên`} nhan="Thời gian giữ trung bình" may="so-phien" />
@@ -147,13 +148,13 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         </div>
       )}
 
-      <GiaiThichThem className="mb-6" tomTat={`Tính theo từng lệnh (gộp các lần chốt TP1, TP2 và phần còn lại). Lãi/lỗ chưa trừ phí + thuế (~${CHI_PHI_UOC_TINH}%/lệnh).`}>
+      <GiaiThichThem className="mb-6" tomTat={`Tính theo từng lệnh (gộp các lần chốt TP1, TP2 và phần còn lại). Lãi/lỗ chưa trừ phí + thuế (~${CHI_PHI_CHU}%/lệnh).`}>
         Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Với
         lệnh mới, mỗi lần giá chạm mốc chốt lời được ghi thành một dòng ngay lúc chạm theo tỷ lệ chốt: TP1 chốt {TY_LE_CHOT.tp1}%, TP2 chốt {TY_LE_CHOT.tp2}%, {TY_LE_CHOT.giu}% còn lại giữ đến khi hệ thống báo BÁN (TP3 chỉ là mốc tham khảo, không ghi dòng riêng) — lãi/lỗ của mỗi dòng là tỷ lệ giá của đúng phần đó (giá chốt so với giá mua), và khi lệnh đóng thật
         sự thì chỉ ghi phần còn lại. Các thẻ thống kê ở trên tính THEO TỪNG LỆNH: các dòng TP1/TP2/TP3/phần còn lại của cùng một lệnh được gộp lại và chỉ tính một lần khi lệnh đã đóng hẳn,
         kết quả = tổng các phần theo tỷ trọng (ví dụ chốt 30% ở +10%, 30% ở +20%, 40% ở +40% thì lệnh lãi 25%). Lệnh mới chốt TP1/TP2 mà còn giữ chưa được tính vào số lệnh, lãi/lỗ trung bình; riêng <b>tỷ lệ thắng</b> tính thêm các lệnh đang giữ đã chạm TP2 (đã chốt 60%, 40% còn lại dời cắt lỗ về giá mua nên cả lệnh không thể lỗ — coi là lệnh thắng), lệnh mới chạm TP1 thì chưa tính vì phần còn lại vẫn có thể thành lỗ; lệnh cũ (30/30/25) đã chốt tới TP3 tính là đã kết thúc theo phần đã chốt (bỏ qua 15% còn chạy). Dòng có nhãn <b style={{ color: "#22D3EE" }}>Mua mới</b> là lệnh vào đợt sau của cùng mã (khi bạn bỏ qua lệnh đầu có thể đợi đợt sau): là một lệnh độc lập với giá mua, mức cắt lỗ và chốt lời
         riêng, chốt giống lệnh Mua (từ 27/09/2026: {TY_LE_CHOT.tp1}% ở TP1, {TY_LE_CHOT.tp2}% ở TP2 của riêng lệnh đó), phần còn lại đóng khi chạm mức cắt lỗ riêng, về hòa vốn sau TP2 hoặc cùng lúc với lệnh đầu. Lãi/lỗ
-        tính theo giá, <b>chưa trừ phí giao dịch và thuế</b> (khoảng {CHI_PHI_UOC_TINH}% mỗi lệnh mua + bán). Lệnh cũ (trước 26/09/2026) chốt theo cách 30/30/25
+        tính theo giá, <b>chưa trừ phí giao dịch và thuế</b> (khoảng {CHI_PHI_CHU}% mỗi lệnh mua + bán). Lệnh cũ (trước 26/09/2026) chốt theo cách 30/30/25
         nên dòng TP3 hiện {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 - TY_LE_CHOT_CU.giu}%). Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
       </GiaiThichThem>
 
