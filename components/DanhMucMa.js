@@ -44,13 +44,13 @@ const COT_VI_THE = [
   ["chot_loi", "Chốt lời", true],
 ];
 
-function The({ so, nhan, phu, mau }) {
+function The({ so, nhan, phu, mau, may }) {
   return (
     <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <p className="text-2xl" style={{ fontFamily: CHU_SO, fontWeight: 700, color: mau }}>
         {so}
       </p>
-      <p className="text-xs mt-1" style={{ color: MUTED }}>
+      <p className="text-xs mt-1" style={{ color: MUTED }} data-may={may}>
         {nhan}
       </p>
       {phu && (
@@ -77,7 +77,7 @@ function BangViThe({ m, hien }) {
               <th className="py-2 px-2 font-normal text-left">Vị thế</th>
               {COT_VI_THE.map(([khoa, nhan, canPhai]) => (
                 <th key={khoa} className={`py-2 px-2 font-normal whitespace-nowrap ${canPhai ? "text-right" : "text-left"}`}>
-                  {nhan}
+                  <span data-may={`cot-${khoa}`}>{nhan}</span>
                 </th>
               ))}
             </tr>
@@ -89,18 +89,20 @@ function BangViThe({ m, hien }) {
                 <tr key={l.khoa_lenh} className={i > 0 ? "border-t" : ""} style={{ borderColor: "#1D1D26" }}>
                   <td className="py-2 px-2">
                     <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5" style={{ fontFamily: CHU_THAN }}>
-                      <span className="font-bold text-sm">{l.ten_lenh}</span>
-                      <span className="text-[10px] font-bold" style={{ color: l.la_lenh_moi ? NGOC : MUTED }}>
+                      <span className="font-bold text-sm" data-may={nhieu ? "danh-so" : undefined}>
+                        {l.ten_lenh}
+                      </span>
+                      <span className="text-[10px] font-bold" style={{ color: l.la_lenh_moi ? NGOC : MUTED }} data-may={l.la_lenh_moi ? "mua-moi" : "lenh-dau"}>
                         {l.la_lenh_moi ? "Mua mới" : "Lệnh đầu"}
                         {l.mua_moi_hom_nay ? " · hôm nay" : ""}
                       </span>
                       {l === totNhat && (
-                        <span className="text-[10px] font-bold px-1 rounded" style={{ background: "rgba(251,191,36,0.15)", color: VANG }} title="Vị thế đang lãi nhiều nhất của mã này">
+                        <span className="text-[10px] font-bold px-1 rounded" style={{ background: "rgba(251,191,36,0.15)", color: VANG }} title="Vị thế đang lãi nhiều nhất của mã này" data-may="vi-the-tot">
                           ★ Tốt nhất
                         </span>
                       )}
                       {l === viTheSau && (
-                        <span className="text-[10px] font-bold px-1 rounded" style={{ background: "rgba(167,139,250,0.15)", color: TIM }} title="Vị thế mở gần nhất của mã này">
+                        <span className="text-[10px] font-bold px-1 rounded" style={{ background: "rgba(167,139,250,0.15)", color: TIM }} title="Vị thế mở gần nhất của mã này" data-may="vi-the-sau">
                           Vị thế sau
                         </span>
                       )}
@@ -167,7 +169,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
     <div>
       {tongViThe > 0 && (
         <div className="flex flex-wrap items-center gap-2 mb-4" role="tablist" aria-label="Lọc vị thế">
-          <span className="text-xs mr-1" style={{ color: MUTED, fontFamily: CHU_THAN }}>
+          <span className="text-xs mr-1" style={{ color: MUTED, fontFamily: CHU_THAN }} data-may="loc-vi-the">
             Hiện:
           </span>
           {BO_LOC.map((b) => {
@@ -255,6 +257,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                             onClick={() => doi(m.ma)}
                             aria-expanded={mo}
                             aria-label={`${mo ? "Thu gọn" : "Xổ ra"} các vị thế của ${m.ma}`}
+                            data-may="xo-vi-the"
                             className="p-1 rounded hover:bg-white/10"
                           >
                             <ChevronRight size={16} color="#A6A6B3" style={{ transform: mo ? "rotate(90deg)" : "none", transition: "transform .15s" }} />

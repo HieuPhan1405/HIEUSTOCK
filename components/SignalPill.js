@@ -16,6 +16,7 @@ export default function SignalPill({ tin }) {
   const mo = tin === "MUA" && !trongKhung;
   return (
     <span
+      data-may={`tin-${map[tin] ? tin : "TRUNG LAP"}`}
       style={{ background: s.bg, color: s.text, fontFamily: "'JetBrains Mono', monospace", opacity: mo ? 0.4 : 1 }}
       className="px-2 py-0.5 text-xs font-bold tracking-wide rounded-sm"
       title={mo ? "Ngoài khung giờ vào lệnh (xem Đồng hồ giao dịch) — chỉ để theo dõi" : undefined}

@@ -27,12 +27,12 @@ const TRANG_THAI_VUNG = {
 };
 
 // 1 O LENH: tieu de + so luong + mo ta, danh sach dong (moi dong 1 lenh, bam vao mo trang ma).
-function OLenh({ tieuDe, mau, moTa, ds, trong, hien }) {
+function OLenh({ tieuDe, mau, moTa, ds, trong, hien, may }) {
   return (
     <div className="rounded-2xl border flex flex-col min-w-0" style={{ borderColor: VIEN, background: NEN_CARD, borderTop: `3px solid ${mau}` }}>
       <div className="px-4 pt-4 pb-3 border-b" style={{ borderColor: "#1D1D26" }}>
         <div className="flex items-baseline justify-between gap-2">
-          <h3 className="text-base" style={{ ...sans, fontWeight: 700, color: mau }}>
+          <h3 className="text-base" style={{ ...sans, fontWeight: 700, color: mau }} data-may={may}>
             {tieuDe}
           </h3>
           <span className="text-2xl" style={{ ...mono, fontWeight: 700, color: ds.length > 0 ? mau : MUTED }}>
@@ -70,7 +70,7 @@ function Dong({ ma, ten, nhan, mauNhan, children, phai }) {
           {ten ?? ma}
         </span>
         {nhan ? (
-          <span className="block text-[10px] font-bold" style={{ ...sans, color: mauNhan }}>
+          <span className="block text-[10px] font-bold" style={{ ...sans, color: mauNhan }} data-may={nhan === "Mua mới" ? "mua-moi" : undefined}>
             {nhan}
           </span>
         ) : (
@@ -98,11 +98,14 @@ function VungLenh({ row }) {
   const [ttNhan, ttMau] = TRANG_THAI_VUNG[v.mua.trangThai] ?? TRANG_THAI_VUNG.trong;
   return (
     <>
-      Mua <b style={{ color: TEXT }}>{chuoiVung(v.mua.tu, v.mua.den)}</b>{" "}
-      <span style={{ color: ttMau, fontWeight: 700, ...sans, fontSize: 10 }}>· {ttNhan}</span>
+      <span data-may="vung-mua">Mua</span> <b style={{ color: TEXT }}>{chuoiVung(v.mua.tu, v.mua.den)}</b>{" "}
+      <span style={{ color: ttMau, fontWeight: 700, ...sans, fontSize: 10 }} data-may="vung-mua">
+        · {ttNhan}
+      </span>
       <br />
-      Cắt lỗ <b style={{ color: DO }}>{v.sl ? chuoiVung(v.sl.tu, v.sl.den) : "—"}</b>
-      {" · "}TP1/TP2{" "}
+      <span data-may="cat-lo">Cắt lỗ</span> <b style={{ color: DO }}>{v.sl ? chuoiVung(v.sl.tu, v.sl.den) : "—"}</b>
+      {" · "}
+      <span data-may="tp">TP1/TP2</span>{" "}
       <b style={{ color: XANH }}>
         {v.tp ? `${fmt(row.tp1)} / ${fmt(row.tp2)}` : "—"}
       </b>
@@ -131,6 +134,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
       <div className="grid gap-4 md:grid-cols-2">
         <OLenh
           tieuDe="Mua"
+          may="mua"
           mau={XANH}
           moTa="Tín hiệu MUA mới trong phiên"
           ds={mua}
@@ -157,6 +161,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
 
         <OLenh
           tieuDe="Bán"
+          may="ban"
           mau={DO}
           moTa="Lệnh đóng trong phiên: bán, cắt lỗ, hòa vốn, thoát lệnh"
           ds={ban}
@@ -172,7 +177,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
                   <span className="font-bold" style={{ color: mauLai(b.ketQuaPct) }}>
                     {pct(b.ketQuaPct, 2)}
                   </span>
-                  <span className="block text-[10px]" style={{ color: MUTED, ...sans }}>
+                  <span className="block text-[10px]" style={{ color: MUTED, ...sans }} data-may="ket-qua-ca-lenh">
                     cả lệnh
                   </span>
                 </>
@@ -188,6 +193,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
 
         <OLenh
           tieuDe="Mua mới"
+          may="mua-moi"
           mau={NGOC}
           moTa="Lệnh vào đợt sau (giá hồi về hỗ trợ rồi bật lên) — cho người đã lỡ lệnh đầu"
           ds={muaMoi}
@@ -215,6 +221,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
 
         <OLenh
           tieuDe="Bán bớt"
+          may="ban-bot"
           mau={CAM}
           moTa="Chốt 30% khi chạm TP1 / TP2 trong phiên, và cảnh báo giảm bớt khi điểm tụt"
           ds={banBot}
@@ -237,7 +244,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
                   </>
                 }
               >
-                <span style={{ color: XANH, ...sans, fontWeight: 600 }}>
+                <span style={{ color: XANH, ...sans, fontWeight: 600 }} data-may="ban-bot">
                   Chạm {x.tp} — chốt {x.phanPct ?? 30}%
                 </span>
                 <br />
@@ -256,7 +263,9 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
                   </>
                 }
               >
-                <span style={{ color: CAM, ...sans, fontWeight: 600 }}>Cảnh báo giảm bớt</span>
+                <span style={{ color: CAM, ...sans, fontWeight: 600 }} data-may="canh-bao-giam-bot">
+                  Cảnh báo giảm bớt
+                </span>
                 <br />
                 điểm {fmt(x.diem)} dưới ngưỡng, chưa đủ điều kiện BÁN
               </Dong>

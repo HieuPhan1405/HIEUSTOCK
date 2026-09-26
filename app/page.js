@@ -86,7 +86,7 @@ function phanLoaiTrend(trend) {
 // (mo phong hieu ung "glow" cua dashboard fintech hien dai).
 // href tuy chon - neu co, ca the tro thanh 1 link bam duoc dan sang Bo loc
 // co phieu voi dung bo loc tuong ung (vd Xu huong tang -> ?xuhuong=xanh).
-function TheKPI({ nhan, giaTri, phu, mau, href }) {
+function TheKPI({ nhan, giaTri, phu, mau, href, may }) {
   const noiDung = (
     <>
       <div
@@ -94,7 +94,7 @@ function TheKPI({ nhan, giaTri, phu, mau, href }) {
         className="absolute -right-8 -top-8 w-28 h-28 rounded-full blur-3xl opacity-25 pointer-events-none"
         style={{ background: mau || PRIMARY }}
       />
-      <p className="text-xs uppercase tracking-wide mb-2 relative" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+      <p className="text-xs uppercase tracking-wide mb-2 relative" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }} data-may={may}>
         {nhan}
       </p>
       <p className="text-3xl relative" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mau || TEXT }}>
@@ -403,7 +403,7 @@ export default async function TrangTongQuan() {
           <TheKPI nhan="Mã đang theo dõi" giaTri={tong} mau={TEXT} href="/bo-loc" />
           <TheKPI nhan="Xu hướng tăng" giaTri={`${pctXanh.toFixed(0)}%`} phu={`${soXanh} mã`} mau={XANH} href="/bo-loc?xuhuong=xanh" />
           <TheKPI nhan="Tín hiệu MUA" giaTri={soMua} phu="hôm nay" mau={PRIMARY} href="/bo-loc?tin=MUA" />
-          <TheKPI nhan="Cảnh báo Mắt Thần" giaTri={soMatThan} phu="rủi ro đảo chiều" mau={soMatThan > 0 ? DO : MUTED} href="/bo-loc?matthan=1" />
+          <TheKPI may="mat-than" nhan="Cảnh báo Mắt Thần" giaTri={soMatThan} phu="rủi ro đảo chiều" mau={soMatThan > 0 ? DO : MUTED} href="/bo-loc?matthan=1" />
           <TheKPI nhan="Cơ hội chốt lời" giaTri={soChotLoi} phu="đã chạm TP" mau={soChotLoi > 0 ? "#FBBF24" : MUTED} href="/bo-loc?chotloi=1" />
           <TheKPI nhan="Cảnh báo bán bớt" giaTri={soBanBot} phu="điểm dưới ngưỡng" mau={soBanBot > 0 ? "#F97316" : MUTED} href="/bo-loc?banbot=1" />
         </div>

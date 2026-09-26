@@ -302,7 +302,7 @@ function ThanhChonLenh({ cacLenh, chon, datChon }) {
   if (cacLenh.length < 2) return null;
   return (
     <div className="mb-4 rounded-2xl border p-3" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#8B8B99" }}>
+      <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#8B8B99" }} data-may="chon-lenh">
         Các lệnh đang mở của mã · chọn 1 lệnh để xem giá mua, cắt lỗ, chốt lời và lãi/lỗ theo đúng lệnh đó
       </p>
       <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Chọn lệnh của mã">
@@ -391,7 +391,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mauDiem, fontSize: "40px", lineHeight: 1 }}>
             {soAn(row.diem)}
           </p>
-          <p className="text-xs mt-1 mb-3" style={{ color: "#8B8B99" }}>
+          <p className="text-xs mt-1 mb-3" style={{ color: "#8B8B99" }} data-may="diem">
             điểm hợp lưu
           </p>
           <SignalPill tin={row.tin} />
@@ -476,7 +476,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               )}
               {vungLenh && (
                 <div className="mt-2">
-                  <p className="text-[11px]" style={{ color: "#8B8B99" }}>
+                  <p className="text-[11px]" style={{ color: "#8B8B99" }} data-may="vung-mua">
                     Vùng mua: <strong style={{ color: "#F5F5F7" }}>{chuoiVung(vungLenh.mua.tu, vungLenh.mua.den)}</strong>
                   </p>
                   <p className="text-[10px] leading-snug" style={{ color: "#8B8B99" }}>
@@ -634,7 +634,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           {vt.stop_loss !== null && vt.stop_loss !== undefined && (
             <div className="rounded p-2" style={{ background: "#2C1420", border: "1px solid #4A2230" }}>
               <div className="flex items-center justify-between">
-                <span className="text-xs" style={{ color: "#F1A9A9" }}>
+                <span className="text-xs" style={{ color: "#F1A9A9" }} data-may="cat-lo">
                   {vungLenh?.sl ? (vungLenh.sl.xa ? "Vùng cắt lỗ lúc mua (tham khảo)" : "Vùng cắt lỗ") : "Stop-loss (nếu đang giữ)"}
                 </span>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#EF4444" }} className="text-sm">
@@ -666,7 +666,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         </Card>
 
         <Card>
-          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
+          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }} data-may="tp">
             3 mốc chốt lời từng phần
           </p>
           {vungLenh?.tp && (

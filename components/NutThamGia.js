@@ -42,6 +42,7 @@ export default function NutThamGia({ ma, soNguoiThamGia, daThamGia, coDangNhap =
       type="button"
       onClick={bam}
       disabled={dangXuLy}
+      data-may="tham-gia"
       title={coDangNhap ? (daThamGia ? "Rời khỏi mã này" : "Tham gia theo dõi mã này") : "Đăng ký/Đăng nhập để tham gia"}
       className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold transition-colors"
       style={{

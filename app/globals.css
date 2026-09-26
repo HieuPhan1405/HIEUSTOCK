@@ -30,3 +30,105 @@ html {
   color-scheme: dark;
   scrollbar-color: #2E2E3A #0B0B10;
 }
+
+/* ---------- "MÂY" - nhan vat huong dan (components/MayHuongDan.js) ---------- */
+/* Nap o mep phai (lap lo), re chuot thi lo them, bam thi ra han + mo khung chi dan. */
+.may-nut {
+  right: -46px;
+  top: 42%;
+  width: 92px;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  transform: rotate(-12deg);
+  transition: right 0.3s ease, transform 0.3s ease;
+  filter: drop-shadow(0 6px 14px rgba(108, 92, 231, 0.35));
+}
+.may-nut:hover,
+.may-nut:focus-visible {
+  right: -22px;
+  transform: rotate(-5deg);
+}
+.may-nut.may-nut-mo {
+  right: 12px;
+  transform: rotate(0deg);
+}
+.may-khung {
+  right: 116px;
+  top: max(72px, calc(42% - 150px));
+  width: 360px;
+  max-height: 70vh;
+  overflow-y: auto;
+}
+@media (max-width: 639px) {
+  .may-nut {
+    width: 68px;
+    right: -34px;
+    top: 46%;
+  }
+  .may-nut:hover,
+  .may-nut:focus-visible {
+    right: -18px;
+  }
+  .may-nut.may-nut-mo {
+    right: 10px;
+    top: auto;
+    bottom: calc(58vh + 18px);
+  }
+  .may-khung {
+    left: 12px;
+    right: 12px;
+    top: auto;
+    bottom: 12px;
+    width: auto;
+    max-height: 58vh;
+  }
+}
+/* Khi Mây dang mo: cac cho co giai thich hien vien cham tim; cho dang duoc giai thich to dam. */
+body.may-mo [data-may] {
+  outline: 1px dashed rgba(167, 139, 250, 0.75);
+  outline-offset: 2px;
+  border-radius: 3px;
+  cursor: help;
+}
+body.may-mo [data-may].may-dang-xem {
+  outline: 2px solid #a78bfa;
+  background-color: rgba(167, 139, 250, 0.12);
+}
+@keyframes may-nhun {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes may-chop {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+.may-nhun {
+  animation: may-nhun 3.2s ease-in-out infinite;
+}
+.may-mat {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: may-chop 4.5s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .may-nhun,
+  .may-mat {
+    animation: none;
+  }
+  .may-nut {
+    transition: none;
+  }
+}

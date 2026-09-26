@@ -50,7 +50,7 @@ export default function ChatLuongTinHieu({ rows = [], ngayHomNay, loi }) {
   return (
     <section className="mt-10">
       <h2 className="text-lg mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-        Giá thực tế lúc tín hiệu hiện
+        <span data-may="gia-thuc-te">Giá thực tế lúc tín hiệu hiện</span>
       </h2>
       <p className="text-xs mb-4" style={{ color: MUTED }}>
         Giá mua của lệnh Mua trên web là <b>mốc chuyển mua</b> — chỉ đạt được nếu mua đúng lúc giá vượt mốc. Phần này ghi giá lúc tín hiệu hiện <b>lần đầu</b> trên web, giá cuối

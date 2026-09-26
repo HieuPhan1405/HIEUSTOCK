@@ -60,13 +60,13 @@ function nhanKetThuc(x) {
   return chinh;
 }
 
-function The({ so, nhan, phu, mau }) {
+function The({ so, nhan, phu, mau, may }) {
   return (
     <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mau }}>
         {so}
       </p>
-      <p className="text-xs mt-1" style={{ color: MUTED }}>
+      <p className="text-xs mt-1" style={{ color: MUTED }} data-may={may}>
         {nhan}
       </p>
       {phu && (
@@ -112,6 +112,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         <The
           so={tk.soLenh}
           nhan="Lệnh đã đóng"
+          may="lenh-da-dong"
           phu={
             tk.soLenh || tk.soDangChotTungPhan
               ? `${tk.soThang} thắng · ${tk.soThua} thua${tk.soDangChotTungPhan ? ` · ${tk.soDangChotTungPhan} lệnh mới chốt một phần (còn giữ)` : ""}`
@@ -121,6 +122,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         <The
           so={tk.tyLeThangGomKhoaLai == null ? "—" : `${tk.tyLeThangGomKhoaLai.toFixed(0)}%`}
           nhan="Tỷ lệ thắng"
+          may="ty-le-thang"
           phu={
             tk.soKhoaLai > 0
               ? `gồm ${tk.soKhoaLai} lệnh đang giữ đã khóa lãi (chạm TP2) · chỉ lệnh đã đóng: ${tk.tyLeThang == null ? "—" : `${tk.tyLeThang.toFixed(0)}%`}`
@@ -131,10 +133,11 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         <The
           so={tk.laiTB == null ? "—" : pct(tk.laiTB, 2)}
           nhan="Lãi/lỗ trung bình mỗi lệnh"
+          may="lai-tb"
           phu={tk.laiTB == null ? undefined : `≈ ${pct(tk.laiTB - CHI_PHI_UOC_TINH, 2)} sau phí + thuế (~${CHI_PHI_UOC_TINH}%/lệnh)`}
           mau={mauLai(tk.laiTB)}
         />
-        <The so={tk.phienTB == null ? "—" : `${tk.phienTB.toFixed(0)} phiên`} nhan="Thời gian giữ trung bình" />
+        <The so={tk.phienTB == null ? "—" : `${tk.phienTB.toFixed(0)} phiên`} nhan="Thời gian giữ trung bình" may="so-phien" />
       </div>
       {tk.soLenh > 0 && (
         <div className="grid grid-cols-2 gap-4 mb-3">

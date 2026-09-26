@@ -227,7 +227,7 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], cacLenh = [] }) 
   return (
     <div className="rounded-2xl border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "#6C5CE7", fontFamily: "'JetBrains Mono', monospace" }}>
-        ★ Nhật ký giao dịch {ma}
+        <span data-may="nhat-ky">★ Nhật ký giao dịch {ma}</span>
       </p>
       <p className="text-[11px] mb-3" style={{ color: MUTED }}>
         {nhieuLenh ? "Mỗi lệnh có dòng thời gian riêng: chọn ngày mua để xem từng lệnh. " : ""}

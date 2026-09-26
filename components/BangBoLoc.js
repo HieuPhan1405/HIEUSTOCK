@@ -438,7 +438,7 @@ export default function BangBoLoc({ duLieu }) {
                       style={k === "ma" ? { background: NEN_CARD } : undefined}
                       onClick={() => doiSapXep(k)}
                     >
-                      <span className="inline-flex items-center gap-1">
+                      <span className="inline-flex items-center gap-1" data-may={`cot-${k}`}>
                         {c.nhan}
                         {c.lay &&
                           (sapXep.khoa === k ? (

@@ -54,7 +54,7 @@ const COT_RIENG = {
           )}
         </div>
         {row.la_lenh_moi && (
-          <span className="text-[10px] font-bold tracking-wide mt-0.5" style={{ color: NGOC, fontFamily: "'Inter', sans-serif" }} title="Lệnh mua mới (đợt sau): có giá mua, Stop-loss, chốt lời và lãi/lỗ tính riêng">
+          <span className="text-[10px] font-bold tracking-wide mt-0.5" data-may="mua-moi" style={{ color: NGOC, fontFamily: "'Inter', sans-serif" }} title="Lệnh mua mới (đợt sau): có giá mua, Stop-loss, chốt lời và lãi/lỗ tính riêng">
             Mua mới{row.mua_moi_hom_nay ? " · hôm nay" : ""}
           </span>
         )}
@@ -315,7 +315,7 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai 
                       style={i === 0 ? { background: NEN_CARD } : undefined}
                       onClick={() => doiSapXep(k)}
                     >
-                      <span className="inline-flex items-center gap-1">
+                      <span className="inline-flex items-center gap-1" data-may={`cot-${k}`}>
                         {c.nhan}
                         {c.lay &&
                           (sapXep?.khoa === k ? (
