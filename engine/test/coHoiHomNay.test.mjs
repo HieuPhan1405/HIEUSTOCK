@@ -58,6 +58,7 @@ ok("khong co ngay -> khong su kien nhat ky", dungCoHoiHomNay({ tatCa, dongLenh, 
   });
   ok("gop TP1 + TP2 cung phien: 1 dong, 60%, lai 9%", r.banBot.length === 1 && r.banBot[0].tp === "TP1 + TP2" && r.banBot[0].phanPct === 60 && gan(r.banBot[0].laiPct, 9) && r.banBot[0].moc.length === 2);
 }
+ok("dong TP3 (lenh cu 85%) khong hien o Ban bot", dungCoHoiHomNay({ ngay: NGAY, dongLenh: [{ ma: "DRI", ngay_mua: "2026-08-21", gia_mua: 13, ngay_ban: NGAY, gia_ban: 14.64, lai_lo_pct: 9.71, ly_do: "TP3", phan_chot_pct: 85, vong: 1 }] }).banBot.length === 0);
 ok("rong -> rong", (() => { const r = dungCoHoiHomNay({ ngay: NGAY }); return !r.mua.length && !r.ban.length && !r.muaMoi.length && !r.banBot.length; })());
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);
