@@ -92,7 +92,7 @@ export function nhanLoaiVao(row) {
   return {
     nhan: "Mua lại",
     mau: "#22D3EE",
-    moTa: "Lệnh mua lại: giá hồi về hỗ trợ trong xu hướng tăng, sau khi lệnh trước đã đóng không lỗ. Có Stop-loss riêng dưới hỗ trợ.",
+    moTa: "Lệnh mua lại: giá hồi về hỗ trợ trong xu hướng tăng, sau khi lệnh trước đã đóng không lỗ. Có mức cắt lỗ riêng dưới hỗ trợ.",
   };
 }
 
@@ -230,8 +230,8 @@ export function tinhVungLenh(row) {
 const LY_DO_BAN = {
   5: { nhan: "Chạm TP3 · kết thúc lệnh", mau: "#B7A4FF", moTa: `Giá chạm TP3: chốt nốt phần cuối, đủ ${CHUOI_TY_LE_CHOT_KET_THUC} (TP1/TP2/TP3) — không còn nắm vị thế, trạng thái về TRUNG LẬP.` },
   4: { nhan: "Thoát theo Kijun (sau TP2)", mau: "#F97316", moTa: "Đã chốt TP1, TP2 rồi giá đóng cửa xuống dưới Kijun trước khi tới TP3 nên bán nốt phần còn lại." },
-  3: { nhan: "Bảo vệ lãi", mau: "#A78BFA", moTa: "Giá quay về mức Stop-loss đã dời lên (hòa vốn) sau khi chạm mốc chốt lời nên bán ngay." },
-  2: { nhan: "Cắt lỗ (chạm Stop-loss)", mau: "#EF4444", moTa: "Giá chạm Stop-loss của lệnh." },
+  3: { nhan: "Bảo vệ lãi", mau: "#A78BFA", moTa: "Giá quay về mức cắt lỗ đã dời lên (hòa vốn) sau khi chạm mốc chốt lời nên bán ngay." },
+  2: { nhan: "Cắt lỗ", mau: "#EF4444", moTa: "Giá chạm mức cắt lỗ của lệnh." },
   1: { nhan: "Điểm số tụt dưới ngưỡng bán", mau: "#EF4444", moTa: "Tín hiệu BÁN theo điểm hợp lưu (3 phiên xác nhận)." },
 };
 export function nhanLyDoBan(row) {
@@ -264,7 +264,7 @@ export function nhanMuaMoi(row) {
   return {
     nhan: "Có lệnh mua mới",
     mau: "#22D3EE",
-    moTa: "Có lệnh Mua mới (đợt sau, khi giá hồi về hỗ trợ rồi bật lên) đang mở, có giá mua, Stop-loss và chốt lời riêng, tính riêng với lệnh đầu.",
+    moTa: "Có lệnh Mua mới (đợt sau, khi giá hồi về hỗ trợ rồi bật lên) đang mở, có giá mua, mức cắt lỗ và chốt lời riêng, tính riêng với lệnh đầu.",
   };
 }
 
@@ -274,7 +274,7 @@ export function nhanBaoVeLai(row) {
   return {
     nhan: "Bảo vệ lãi",
     mau: "#A78BFA",
-    moTa: `Đã từng chạm mốc chốt lời nên Stop-loss được dời lên ${fmt(row.stop_loss)} (cao hơn Stop-loss ban đầu) — chạm là bán ngay, không chờ điểm âm.`,
+    moTa: `Đã từng chạm mốc chốt lời nên mức cắt lỗ được dời lên ${fmt(row.stop_loss)} (cao hơn mức cắt lỗ ban đầu) — chạm là bán ngay, không chờ điểm âm.`,
   };
 }
 

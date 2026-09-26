@@ -1,4 +1,5 @@
 import { fmt, pct } from "@/components/dungChung";
+import GiaiThichThem from "@/components/GiaiThichThem";
 import { thongKeXuatHien, chenhLech } from "@/lib/xuatHienTinHieu";
 
 const VIEN = "#26262F";
@@ -52,11 +53,11 @@ export default function ChatLuongTinHieu({ rows = [], ngayHomNay, loi }) {
       <h2 className="text-lg mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
         <span data-may="gia-thuc-te">Giá thực tế lúc tín hiệu hiện</span>
       </h2>
-      <p className="text-xs mb-4" style={{ color: MUTED }}>
+      <GiaiThichThem className="mb-4" tomTat="Giá lúc tín hiệu hiện lần đầu so với mốc, và các tín hiệu vượt giả (hiện rồi mất trước khi đóng cửa).">
         Giá mua của lệnh Mua trên web là <b>mốc chuyển mua</b> — chỉ đạt được nếu mua đúng lúc giá vượt mốc. Phần này ghi giá lúc tín hiệu hiện <b>lần đầu</b> trên web, giá cuối
         ngày tín hiệu, và những tín hiệu hiện trong phiên rồi <b>mất trước khi đóng cửa</b> (vượt giả) — để biết người mua thật cách mốc bao xa. Backtest 11 năm: mua cao hơn mốc quá 1%
         thì trung bình lỗ. Bắt đầu ghi từ 27/09/2026.
-      </p>
+      </GiaiThichThem>
       {loi && (
         <p className="text-sm mb-3" style={{ color: DO }}>
           Không tải được dữ liệu: {loi}

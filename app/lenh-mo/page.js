@@ -4,6 +4,7 @@ import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import LenhMoNoiDung from "@/components/LenhMoNoiDung";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import NhanCapNhat from "@/components/NhanCapNhat";
+import GiaiThichThem from "@/components/GiaiThichThem";
 import { capNhatMoiNhat } from "@/components/dungChung";
 import { layLichSuGia } from "@/lib/lichSuGia";
 import { lenhDangMo } from "@/lib/muaThemTinhToan";
@@ -80,9 +81,9 @@ export default async function TrangLenhMo({ searchParams }) {
       )}
 
       <LenhMoNoiDung lenhMo={lenhMo} vnindex={vnindex} tabDau={tabDau} />
-      <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+      <GiaiThichThem className="mt-3" tomTat="Mỗi dòng là một lệnh riêng; chốt 30% ở TP1, 30% ở TP2, 40% giữ đến tín hiệu BÁN. Hệ thống không tự bán, chỉ gợi ý tham khảo.">
         Ngày mua/Giá mua lấy đúng thời điểm phát tín hiệu MUA thật trên AmiBroker (không ước tính). Mỗi lệnh là một dòng riêng với giá mua, cắt lỗ, chốt lời và lãi/lỗ tính riêng; mã có nhiều lệnh được đánh số (1), (2)... theo ngày mua, lệnh có nhãn Mua mới là lệnh vào đợt sau. Ngày bán/Giá bán luôn trống vì đây là các lệnh còn đang mở. Chốt lời báo mức TP cao nhất mà giá hiện tại đã chạm tới (TP1 chốt 30%, TP2 chốt 30%, 40% còn lại giữ đến tín hiệu BÁN; TP3 chỉ là mốc tham khảo). Hệ thống không tự động bán, chỉ là gợi ý tham khảo. ⚠ Bán bớt xuất hiện khi điểm hôm nay đã tụt dưới ngưỡng bán nhưng chưa đủ điều kiện Bán hẳn — gợi ý giảm bớt vị thế sớm hơn, không đợi đến khi có tín hiệu Bán toàn bộ.
-      </p>
+      </GiaiThichThem>
     </div>
   );
 }

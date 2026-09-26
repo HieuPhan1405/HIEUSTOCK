@@ -1,4 +1,5 @@
 import Link from "next/link";
+import GiaiThichThem from "@/components/GiaiThichThem";
 import { thongKeLenhDaDong } from "@/lib/thongKeLenh";
 import { fmt, pct } from "@/components/dungChung";
 import { TY_LE_CHOT, TY_LE_CHOT_CU, TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
@@ -32,9 +33,9 @@ function nhanKetThuc(x) {
     if (x.ly_do === "TP1" || x.ly_do === "TP2") return `Chốt lời ${x.ly_do} (${x.phan_chot_pct}% vị thế)`;
     const chinh =
       x.ly_do === "CAT_LO"
-        ? "Cắt lỗ (chạm Stop-loss của lệnh này)"
+        ? "Cắt lỗ (chạm mức cắt lỗ của lệnh này)"
         : x.ly_do === "BAO_VE_LAI"
-          ? "Hòa vốn (sau TP2, Stop-loss dời về giá mua)"
+          ? "Hòa vốn (sau TP2, mức cắt lỗ dời về giá mua)"
           : x.vong === 2 && x.ly_do === "THOAT"
             ? "Đóng lệnh (kiểu Mua mới sau TP3 đã bỏ từ 27/09/2026)"
             : x.ly_do === "BAN"
@@ -49,8 +50,8 @@ function nhanKetThuc(x) {
     if (pc === TY_LE_CHOT_KET_THUC.tp3 || pc >= 100 || x.ly_do === "CHOT_TP3") chinh = `Chạm TP3 (chốt ${x.phan_chot_pct ?? 100}% vị thế) · kết thúc lệnh`;
     else chinh = `Chốt TP3 (${x.phan_chot_pct}% vị thế) · lệnh cũ, còn ${TY_LE_CHOT_CU.giu}% giữ chạy`;
   } else if (x.ly_do === "THOAT_KIJUN") chinh = "Thoát theo Kijun (đóng cửa dưới Kijun sau TP2)";
-  else if (x.ly_do === "CAT_LO") chinh = "Cắt lỗ (Stop-loss)";
-  else if (x.ly_do === "BAO_VE_LAI") chinh = "Bảo vệ lãi (dời SL lên cao hơn)";
+  else if (x.ly_do === "CAT_LO") chinh = "Cắt lỗ";
+  else if (x.ly_do === "BAO_VE_LAI") chinh = "Bảo vệ lãi (mức cắt lỗ đã dời lên cao hơn)";
   else if (x.ly_do === "BAN") chinh = "Tín hiệu BÁN";
   else chinh = "Đã thoát";
   const laDongTP = /^(CHOT_)?TP[123]$/.test(x.ly_do ?? "");
@@ -146,15 +147,15 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         </div>
       )}
 
-      <p className="text-[11px] mb-6" style={{ color: MUTED }}>
+      <GiaiThichThem className="mb-6" tomTat={`Tính theo từng lệnh (gộp các lần chốt TP1, TP2 và phần còn lại). Lãi/lỗ chưa trừ phí + thuế (~${CHI_PHI_UOC_TINH}%/lệnh).`}>
         Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Với
         lệnh mới, mỗi lần giá chạm mốc chốt lời được ghi thành một dòng ngay lúc chạm theo tỷ lệ chốt: TP1 chốt {TY_LE_CHOT.tp1}%, TP2 chốt {TY_LE_CHOT.tp2}%, {TY_LE_CHOT.giu}% còn lại giữ đến khi hệ thống báo BÁN (TP3 chỉ là mốc tham khảo, không ghi dòng riêng) — lãi/lỗ của mỗi dòng là tỷ lệ giá của đúng phần đó (giá chốt so với giá mua), và khi lệnh đóng thật
         sự thì chỉ ghi phần còn lại. Các thẻ thống kê ở trên tính THEO TỪNG LỆNH: các dòng TP1/TP2/TP3/phần còn lại của cùng một lệnh được gộp lại và chỉ tính một lần khi lệnh đã đóng hẳn,
-        kết quả = tổng các phần theo tỷ trọng (ví dụ chốt 30% ở +10%, 30% ở +20%, 40% ở +40% thì lệnh lãi 25%). Lệnh mới chốt TP1/TP2 mà còn giữ chưa được tính vào số lệnh, lãi/lỗ trung bình; riêng <b>tỷ lệ thắng</b> tính thêm các lệnh đang giữ đã chạm TP2 (đã chốt 60%, 40% còn lại dời cắt lỗ về giá mua nên cả lệnh không thể lỗ — coi là lệnh thắng), lệnh mới chạm TP1 thì chưa tính vì phần còn lại vẫn có thể thành lỗ; lệnh cũ (30/30/25) đã chốt tới TP3 tính là đã kết thúc theo phần đã chốt (bỏ qua 15% còn chạy). Dòng có nhãn <b style={{ color: "#22D3EE" }}>Mua mới</b> là lệnh vào đợt sau của cùng mã (khi bạn bỏ qua lệnh đầu có thể đợi đợt sau): là một lệnh độc lập với giá mua, Stop-loss và chốt lời
-        riêng, chốt giống lệnh Mua (từ 27/09/2026: {TY_LE_CHOT.tp1}% ở TP1, {TY_LE_CHOT.tp2}% ở TP2 của riêng lệnh đó), phần còn lại đóng khi chạm Stop-loss riêng, về hòa vốn sau TP2 hoặc cùng lúc với lệnh đầu. Lãi/lỗ
+        kết quả = tổng các phần theo tỷ trọng (ví dụ chốt 30% ở +10%, 30% ở +20%, 40% ở +40% thì lệnh lãi 25%). Lệnh mới chốt TP1/TP2 mà còn giữ chưa được tính vào số lệnh, lãi/lỗ trung bình; riêng <b>tỷ lệ thắng</b> tính thêm các lệnh đang giữ đã chạm TP2 (đã chốt 60%, 40% còn lại dời cắt lỗ về giá mua nên cả lệnh không thể lỗ — coi là lệnh thắng), lệnh mới chạm TP1 thì chưa tính vì phần còn lại vẫn có thể thành lỗ; lệnh cũ (30/30/25) đã chốt tới TP3 tính là đã kết thúc theo phần đã chốt (bỏ qua 15% còn chạy). Dòng có nhãn <b style={{ color: "#22D3EE" }}>Mua mới</b> là lệnh vào đợt sau của cùng mã (khi bạn bỏ qua lệnh đầu có thể đợi đợt sau): là một lệnh độc lập với giá mua, mức cắt lỗ và chốt lời
+        riêng, chốt giống lệnh Mua (từ 27/09/2026: {TY_LE_CHOT.tp1}% ở TP1, {TY_LE_CHOT.tp2}% ở TP2 của riêng lệnh đó), phần còn lại đóng khi chạm mức cắt lỗ riêng, về hòa vốn sau TP2 hoặc cùng lúc với lệnh đầu. Lãi/lỗ
         tính theo giá, <b>chưa trừ phí giao dịch và thuế</b> (khoảng {CHI_PHI_UOC_TINH}% mỗi lệnh mua + bán). Lệnh cũ (trước 26/09/2026) chốt theo cách 30/30/25
         nên dòng TP3 hiện {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 - TY_LE_CHOT_CU.giu}%). Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
-      </p>
+      </GiaiThichThem>
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <div className="overflow-x-auto">

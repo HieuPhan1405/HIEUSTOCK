@@ -325,17 +325,17 @@ export const CAC_COT = {
     hien: (r) => {
       const v = tinhVungLenh(r)?.sl;
       if (!v) return Trong;
-      const tt = { cham: ["đã chạm Stop-loss", DO], trong: ["giá trong vùng", VANG], tren: ["giá còn an toàn", MUTED] }[v.trangThai];
+      const tt = { cham: ["đã chạm mức cắt lỗ", DO], trong: ["giá trong vùng", VANG], tren: ["giá còn an toàn", MUTED] }[v.trangThai];
       const hoaVon = tinhVungLenh(r)?.hoaVon;
       return (
         <div
           className="flex flex-col items-end leading-tight"
           title={
             v.xa
-              ? "Stop-loss lúc mua đã cách giá hiện tại rất xa nên chỉ còn mang tính tham khảo; thoát thật theo tín hiệu BÁN"
+              ? "Mức cắt lỗ lúc mua đã cách giá hiện tại rất xa nên chỉ còn mang tính tham khảo; thoát thật theo tín hiệu BÁN"
               : hoaVon
-                ? "Đã chạm TP2: dời Stop-loss của phần còn lại về giá mua (hòa vốn)"
-                : "Từ Stop-loss (đáy vùng, cắt dứt khoát) lên tới đường hỗ trợ gần nhất phía trên"
+                ? "Đã chạm TP2: dời mức cắt lỗ của phần còn lại về giá mua (hòa vốn)"
+                : "Từ mức cắt lỗ (đáy vùng, cắt dứt khoát) lên tới đường hỗ trợ gần nhất phía trên"
           }
         >
           <span style={{ color: v.xa ? MUTED : DO }}>{chuoiVung(v.tu, v.den)}</span>
@@ -416,7 +416,7 @@ export const CAC_COT = {
   },
 
   // --- Gia muc tieu & ho tro
-  stop_loss: cotGiaMucTieu("stop_loss", "Stop-loss", 0),
+  stop_loss: cotGiaMucTieu("stop_loss", "Mức cắt lỗ", 0),
   tp1: cotGiaMucTieu("tp1", "TP1", 1),
   tp2: cotGiaMucTieu("tp2", "TP2", 2),
   tp3: cotGiaMucTieu("tp3", "TP3", 3),

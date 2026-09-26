@@ -2,21 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, LayoutDashboard, Briefcase, ListFilter, Newspaper, Mail, TrendingDown, BookOpen, History, CandlestickChart, Wallet } from "lucide-react";
+import { LayoutGrid, Briefcase, ListFilter, TrendingDown, BookOpen, CandlestickChart, Wallet, Mail } from "lucide-react";
+import { MENU, mucDangMo } from "@/lib/menu";
 
-const MUC = [
-  { href: "/", nhan: "Tổng quan thị trường", Icon: LayoutGrid },
-  { href: "/dashboard", nhan: "Dashboard thị trường", Icon: LayoutDashboard },
-  { href: "/bo-loc", nhan: "Bộ lọc cổ phiếu", Icon: ListFilter },
-  { href: "/bieu-do", nhan: "Biểu đồ kỹ thuật", Icon: CandlestickChart },
-  { href: "/lenh-mo", nhan: "Sổ lệnh đang mở", Icon: Briefcase },
-  { href: "/danh-muc", nhan: "Danh mục theo dõi", Icon: Wallet },
-  { href: "/lenh-da-dong", nhan: "Lệnh đã đóng", Icon: History },
-  { href: "/bat-day", nhan: "Checklist bắt đáy", Icon: TrendingDown },
-  { href: "/thi-truong", nhan: "Thông tin thị trường", Icon: Newspaper },
-  { href: "/huong-dan", nhan: "Hướng dẫn & nguyên tắc", Icon: BookOpen },
-  { href: "/lien-he", nhan: "Liên hệ", Icon: Mail },
-];
+const ICON = { "/": LayoutGrid, "/bo-loc": ListFilter, "/bieu-do": CandlestickChart, "/lenh-mo": Briefcase, "/danh-muc": Wallet, "/bat-day": TrendingDown, "/huong-dan": BookOpen };
 
 const BG = "#08080B";
 const VIEN = "#26262F";
@@ -24,8 +13,11 @@ const PRIMARY = "#6C5CE7";
 const TEXT = "#F5F5F7";
 const MUTED = "#8B8B99";
 
+// MENU GON (7 muc - xem lib/menu.js): cac trang cung nhom (Thi truong: Tong quan / Dashboard / Tin tuc; So lenh: Dang mo / Da dong) gop 1 muc, trong trang co thanh tab
+// (components/ThanhTabNhom.js). Lien he o cuoi thanh ben + chan trang.
 export default function Sidebar() {
   const pathname = usePathname();
+  const dangMo = mucDangMo(pathname);
 
   return (
     <>
@@ -35,15 +27,17 @@ export default function Sidebar() {
         style={{ background: BG, borderRight: `1px solid ${VIEN}` }}
       >
         <nav className="flex-1 px-3 py-2 flex flex-col gap-1 overflow-y-auto">
-          {MUC.map(({ href, nhan, Icon }) => {
-            const active = pathname === href;
+          {MENU.map(({ href, nhan }) => {
+            const active = dangMo?.href === href;
+            const Icon = ICON[href];
             return (
               <Link
                 key={href}
                 href={href}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors"
+                aria-current={active ? "page" : undefined}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors hover:bg-white/[0.04]"
                 style={{
-                  background: active ? "rgba(108,92,231,0.16)" : "transparent",
+                  background: active ? "rgba(108,92,231,0.16)" : undefined,
                   color: active ? PRIMARY : MUTED,
                   fontFamily: "'Inter', sans-serif",
                   fontWeight: active ? 600 : 500,
@@ -56,25 +50,29 @@ export default function Sidebar() {
           })}
         </nav>
 
-        <div
-          className="px-6 py-4 text-[11px]"
-          style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace", borderTop: `1px solid ${VIEN}` }}
-        >
-          Hệ thống hỗ trợ
-          <br />
-          đầu tư CloudStock
+        <div className="px-6 py-4 text-[11px] flex flex-col gap-2" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace", borderTop: `1px solid ${VIEN}` }}>
+          <Link href="/lien-he" className="inline-flex items-center gap-1.5 hover:text-white" style={{ color: pathname === "/lien-he" ? PRIMARY : MUTED }}>
+            <Mail size={13} /> Liên hệ
+          </Link>
+          <span>
+            Hệ thống hỗ trợ
+            <br />
+            đầu tư CloudStock
+          </span>
         </div>
       </aside>
 
       {/* Mobile: thanh ngang tren cung (<768px) */}
       <div className="md:hidden sticky top-14 z-20" style={{ background: BG, borderBottom: `1px solid ${VIEN}` }}>
         <div className="px-4 flex items-center gap-2 overflow-x-auto">
-          {MUC.map(({ href, nhan, Icon }) => {
-            const active = pathname === href;
+          {MENU.map(({ href, nhanNgan }) => {
+            const active = dangMo?.href === href;
+            const Icon = ICON[href];
             return (
               <Link
                 key={href}
                 href={href}
+                aria-current={active ? "page" : undefined}
                 className="flex items-center gap-1.5 py-3 px-2 text-xs whitespace-nowrap border-b-2 transition-colors"
                 style={{
                   borderColor: active ? PRIMARY : "transparent",
@@ -84,7 +82,7 @@ export default function Sidebar() {
                 }}
               >
                 <Icon size={14} />
-                {nhan}
+                {nhanNgan}
               </Link>
             );
           })}

@@ -54,7 +54,7 @@ const COT_RIENG = {
           )}
         </div>
         {row.la_lenh_moi && (
-          <span className="text-[10px] font-bold tracking-wide mt-0.5" data-may="mua-moi" style={{ color: NGOC, fontFamily: "'Inter', sans-serif" }} title="Lệnh mua mới (đợt sau): có giá mua, Stop-loss, chốt lời và lãi/lỗ tính riêng">
+          <span className="text-[10px] font-bold tracking-wide mt-0.5" data-may="mua-moi" style={{ color: NGOC, fontFamily: "'Inter', sans-serif" }} title="Lệnh mua mới (đợt sau): có giá mua, mức cắt lỗ, chốt lời và lãi/lỗ tính riêng">
             Mua mới{row.mua_moi_hom_nay ? " · hôm nay" : ""}
           </span>
         )}

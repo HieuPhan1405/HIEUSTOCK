@@ -394,7 +394,7 @@ export default function BangBoLoc({ duLieu }) {
             onBat={cotHienThi.bat}
             onHienTatCa={cotHienThi.hienTatCa}
             onMacDinh={cotHienThi.macDinh}
-            ghiChu={nguoiDung ? null : "Đăng nhập để xem thêm các cột vị thế: giá mua, lãi/lỗ, Stop-loss, TP."}
+            ghiChu={nguoiDung ? null : "Đăng nhập để xem thêm các cột vị thế: giá mua, lãi/lỗ, mức cắt lỗ, TP."}
           />
         }
       />

@@ -32,7 +32,7 @@ const TINH_NANG = [
   },
   {
     Icon: ShieldCheck,
-    tieuDe: "Stop-loss cấu trúc & 3 mốc chốt lời",
+    tieuDe: "Cắt lỗ theo cấu trúc giá & chốt lời từng phần",
     mo: "Cắt lỗ đặt theo cấu trúc giá (mây / đường cân bằng / Kijun), chốt lời 30% ở TP1 và 30% ở TP2 — 40% còn lại giữ đến khi có tín hiệu BÁN để lệnh thắng lớn chạy tiếp.",
   },
   {
@@ -63,7 +63,7 @@ const TINH_NANG = [
   {
     Icon: Eye,
     tieuDe: "Cảnh báo Mắt Thần & bảo vệ lãi",
-    mo: "Nhận diện sớm rủi ro đảo chiều, tự động dời Stop-loss lên cao hơn khi lệnh đã có lãi để bảo toàn thành quả.",
+    mo: "Nhận diện sớm rủi ro đảo chiều, tự động dời mức cắt lỗ lên cao hơn khi lệnh đã có lãi để bảo toàn thành quả.",
   },
 ];
 

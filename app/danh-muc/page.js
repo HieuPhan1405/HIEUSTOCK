@@ -8,6 +8,7 @@ import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import DanhMucMa from "@/components/DanhMucMa";
 import LenhDaDongView from "@/components/LenhDaDongView";
 import NhanCapNhat from "@/components/NhanCapNhat";
+import GiaiThichThem from "@/components/GiaiThichThem";
 import { capNhatMoiNhat } from "@/components/dungChung";
 import { lenhDangMo, cacDiemMuaMoi } from "@/lib/muaThemTinhToan";
 
@@ -114,8 +115,13 @@ export default async function TrangDanhMuc() {
         <Link href="/lenh-mo" className="underline" style={{ color: PRIMARY }}>
           Sổ lệnh
         </Link>
-        ) sẽ tự vào đây. Mỗi mã một dòng; mã đang có vị thế có mũi tên <b>▾</b> ở đầu dòng — bấm để xổ ra các <b>vị thế</b> (lệnh) của mã đó: mã có nhiều lệnh được đánh số (1), (2)... theo ngày mua, nhãn <b style={{ color: "#22D3EE" }}>Mua mới</b> là đợt vào sau lệnh đầu. Lệnh kết thúc sẽ tự chuyển sang &quot;Lệnh đã đóng&quot;.
+        ) sẽ tự vào đây. Bấm mũi tên <b>▾</b> cạnh mã để xem từng vị thế.
       </p>
+      <GiaiThichThem className="mb-3">
+        Mỗi mã một dòng; mã đang có vị thế có mũi tên ở đầu dòng — bấm để xổ ra các vị thế (lệnh) của mã đó: mã có nhiều lệnh được đánh số (1), (2)... theo ngày mua, nhãn{" "}
+        <b style={{ color: "#22D3EE" }}>Mua mới</b> là đợt vào sau lệnh đầu. Bộ lọc &quot;Vị thế tốt nhất&quot; / &quot;Vị thế sau&quot; cho mỗi mã chỉ hiện 1 vị thế. Lệnh kết thúc sẽ tự chuyển
+        sang &quot;Lệnh đã đóng của tôi&quot; ở cuối trang.
+      </GiaiThichThem>
       <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
 
       {loi && (

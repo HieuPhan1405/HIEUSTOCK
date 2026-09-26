@@ -460,12 +460,12 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               {vt.gia_mua_ghi_nhan && (
                 <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
                   Giá mua {fmt(vt.gia_mua)} ghi nhận lúc {gioGhiNhan(vt)}, lãi/lỗ tính từ giá này.
-                  {vt.sl_tp_ghi_nhan && " Stop-loss và TP cũng giữ theo lúc đó."}
+                  {vt.sl_tp_ghi_nhan && " Mức cắt lỗ và chốt lời cũng giữ theo lúc đó."}
                 </p>
               )}
               {vt.che_do_vao === "MOI" && (
                 <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                  Vào lệnh tại mốc chuyển mua, Stop-loss đặt theo cấu trúc giá (dưới mây / đường cân bằng dài hạn / đáy nến / Kijun).
+                  Vào lệnh tại mốc chuyển mua, mức cắt lỗ đặt theo cấu trúc giá (dưới mây / đường cân bằng dài hạn / đáy nến / Kijun).
                 </p>
               )}
               {vungLenh && (
@@ -523,33 +523,6 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
             <TagInfo nhan="Dòng tiền" giaTri={tag.dongTien.nhan} mau={tag.dongTien.mau} />
             <TagInfo nhan="Sức mạnh ADX" giaTri={tag.adxSucManh.nhan} mau={tag.adxSucManh.mau} />
             {row.von_hoa && <TagInfo nhan="Vốn hoá" giaTri={row.von_hoa} mau="#22C55E" />}
-            {(() => {
-              const chuan = kiemTraChuanUuTien(row);
-              return (
-                <TagInfo
-                  nhan="Chuẩn ưu tiên"
-                  giaTri={chuan.dat ? "Đạt 4/4" : `${chuan.tieuChi.filter((t) => t.dat).length}/4`}
-                  mau={chuan.dat ? "#22C55E" : "#A6A6B3"}
-                />
-              );
-            })()}
-            {row.sanyaku !== null && row.sanyaku !== undefined && (
-              <TagInfo nhan="Độ tin cậy" giaTri={`${row.sanyaku}/3`} mau={row.sanyaku >= 2 ? "#22C55E" : "#A6A6B3"} />
-            )}
-            {row.diem_rank !== null && row.diem_rank !== undefined && (
-              <TagInfo
-                nhan="Rank (chất lượng setup)"
-                giaTri={`${soAn(row.diem_rank, 0)}/100`}
-                mau={row.diem_rank >= 70 ? "#22C55E" : row.diem_rank >= 40 ? "#FBBF24" : "#A6A6B3"}
-              />
-            )}
-            {row.diem_confidence !== null && row.diem_confidence !== undefined && (
-              <TagInfo
-                nhan="Confidence (độ tự tin)"
-                giaTri={`${soAn(row.diem_confidence, 0)}/100`}
-                mau={row.diem_confidence >= 70 ? "#22C55E" : row.diem_confidence >= 40 ? "#FBBF24" : "#A6A6B3"}
-              />
-            )}
             {row.kumo_twist && (
               <TagInfo
                 nhan="Mây tương lai"
@@ -559,6 +532,35 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
             )}
             {row.ngay_bien_doi && <TagInfo nhan="Time Theory" giaTri="Ngày biến đổi" mau="#A78BFA" />}
           </div>
+          {/* Diem phu: khong dung de ra lenh, backtest khong thay phan biet ro lenh tot / xau -> thu gon, bam moi mo. */}
+          <details className="group mt-3">
+            <summary className="cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden text-[11px] underline decoration-dotted underline-offset-2" style={{ color: "#A6A6B3" }}>
+              <span className="group-open:hidden">Xem điểm phụ (tham khảo)</span>
+              <span className="hidden group-open:inline">Thu gọn điểm phụ</span>
+            </summary>
+            <div className="flex flex-wrap gap-2 mt-2">
+              {(() => {
+                const chuan = kiemTraChuanUuTien(row);
+                return (
+                  <TagInfo
+                    nhan="Chuẩn ưu tiên"
+                    giaTri={chuan.dat ? "Đạt 4/4" : `${chuan.tieuChi.filter((t) => t.dat).length}/4`}
+                    mau={chuan.dat ? "#22C55E" : "#A6A6B3"}
+                  />
+                );
+              })()}
+              {row.sanyaku !== null && row.sanyaku !== undefined && (
+                <TagInfo nhan="Độ tin cậy" giaTri={`${row.sanyaku}/3`} mau={row.sanyaku >= 2 ? "#22C55E" : "#A6A6B3"} />
+              )}
+              {row.diem_rank !== null && row.diem_rank !== undefined && <TagInfo nhan="Rank" giaTri={`${soAn(row.diem_rank, 0)}/100`} mau="#A6A6B3" />}
+              {row.diem_confidence !== null && row.diem_confidence !== undefined && (
+                <TagInfo nhan="Confidence" giaTri={`${soAn(row.diem_confidence, 0)}/100`} mau="#A6A6B3" />
+              )}
+            </div>
+            <p className="text-[10px] mt-2 leading-snug" style={{ color: "#6B6B78" }}>
+              Các điểm phụ không dùng để ra lệnh. Backtest 11 năm cho thấy chúng không phân biệt rõ lệnh tốt và lệnh xấu, nên chỉ để tham khảo.
+            </p>
+          </details>
         </Card>
 
         <Card>
@@ -629,7 +631,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
             <div className="rounded p-2" style={{ background: "#2C1420", border: "1px solid #4A2230" }}>
               <div className="flex items-center justify-between">
                 <span className="text-xs" style={{ color: "#F1A9A9" }} data-may="cat-lo">
-                  {vungLenh?.sl ? (vungLenh.sl.xa ? "Vùng cắt lỗ lúc mua (tham khảo)" : "Vùng cắt lỗ") : "Stop-loss (nếu đang giữ)"}
+                  {vungLenh?.sl ? (vungLenh.sl.xa ? "Vùng cắt lỗ lúc mua (tham khảo)" : "Vùng cắt lỗ") : "Mức cắt lỗ (nếu đang giữ)"}
                 </span>
                 <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#EF4444" }} className="text-sm">
                   {vungLenh?.sl ? chuoiVung(vungLenh.sl.tu, vungLenh.sl.den) : fmt(vt.stop_loss)}
@@ -647,7 +649,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               )}
               {vungLenh?.hoaVon && (
                 <p className="text-[10px] leading-snug mt-1 font-bold" style={{ color: "#FBBF24" }}>
-                  Đã chạm TP2 → nên dời Stop-loss của phần còn lại về giá mua ({fmt(vungLenh.hoaVon)}) để không còn rủi ro lỗ.
+                  Đã chạm TP2 → nên dời mức cắt lỗ của phần còn lại về giá mua ({fmt(vungLenh.hoaVon)}) để không còn rủi ro lỗ.
                 </p>
               )}
               {vungLenh?.sl?.xa && vungLenh.sl.canhBao != null && (
@@ -674,7 +676,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: "#22C55E" }}>{fmt(vungLenh.tp.xa)}</strong>
               </p>
               <p className="text-[10px] leading-snug mt-1" style={{ color: "#8B8B99" }}>
-                Tỷ lệ chốt: {VUNG.tyLeChot.tp1}% ở TP1, {VUNG.tyLeChot.tp2}% ở TP2, {VUNG.tyLeChot.giu}% còn lại giữ đến khi hệ thống báo BÁN (TP3 chỉ là mốc tham khảo). Sau TP2, Stop-loss của phần còn lại dời về giá mua.
+                Tỷ lệ chốt: {VUNG.tyLeChot.tp1}% ở TP1, {VUNG.tyLeChot.tp2}% ở TP2, {VUNG.tyLeChot.giu}% còn lại giữ đến khi hệ thống báo BÁN (TP3 chỉ là mốc tham khảo). Sau TP2, mức cắt lỗ của phần còn lại dời về giá mua.
               </p>
             </div>
           )}
