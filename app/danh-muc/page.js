@@ -3,13 +3,13 @@ import { layTatCaTinHieu } from "@/lib/tinHieu";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import { layThamGiaCuaToi } from "@/lib/thamGia";
 import { layLenhDaDong } from "@/lib/lenhDaDong";
+import { layLichPhien } from "@/lib/lichSuGia";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
-import BangLenhMo from "@/components/BangLenhMo";
+import DanhMucMa from "@/components/DanhMucMa";
 import LenhDaDongView from "@/components/LenhDaDongView";
-import SignalPill from "@/components/SignalPill";
 import NhanCapNhat from "@/components/NhanCapNhat";
-import { fmt, pct, capNhatMoiNhat, chamTPCaoNhat } from "@/components/dungChung";
-import { lenhDangMo } from "@/lib/muaThemTinhToan";
+import { capNhatMoiNhat } from "@/components/dungChung";
+import { lenhDangMo, cacDiemMuaMoi } from "@/lib/muaThemTinhToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -22,28 +22,7 @@ const NEN_CARD = "#15151F";
 const TEXT = "#F5F5F7";
 const MUTED = "#8B8B99";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
 const DO = "#EF4444";
-
-const dangGiu = (r) => r.tin === "MUA" || r.tin === "NAM GIU";
-
-function The({ so, nhan, phu, mau }) {
-  return (
-    <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mau }}>
-        {so}
-      </p>
-      <p className="text-xs mt-1" style={{ color: MUTED }}>
-        {nhan}
-      </p>
-      {phu && (
-        <p className="text-[11px]" style={{ color: MUTED }}>
-          {phu}
-        </p>
-      )}
-    </div>
-  );
-}
 
 function TieuDeMuc({ children, phu }) {
   return (
@@ -91,20 +70,35 @@ export default async function TrangDanhMuc() {
 
   const ngayThamGia = new Map(thamGia.map((t) => [t.ma, t.ngay_tham_gia]));
   const cuaToi = tatCa.filter((r) => ngayThamGia.has(r.ma));
-  const maChuaCoDuLieu = thamGia.filter((t) => !tatCa.some((r) => r.ma === t.ma));
   // Lenh da dong chi tinh tu luc tham gia (ban/chot tu ngay tham gia tro di).
   const dsDaDong = daDong.filter((x) => ngayThamGia.has(x.ma) && x.ngay_ban >= ngayThamGia.get(x.ma));
 
   // 1 danh sach chung: MOI LENH 1 dong rieng (lenh dau + cac lenh mua moi dang giu cua cac ma ban tham gia; 1 ma co nhieu lenh thi danh so (1), (2)). Giong So lenh dang mo:
   // ma khong con lenh nao thi chuyen xuong "Dang theo doi".
-  const dsLenh = lenhDangMo(cuaToi);
-  const soMaCoLenh = new Set(dsLenh.map((r) => r.ma)).size;
-  const maConLenh = new Set(dsLenh.map((r) => r.ma));
-  const dsTheoDoi = cuaToi.filter((r) => !maConLenh.has(r.ma));
-  const soLai = dsLenh.filter((r) => r.lai_lo_pct > 0).length;
-  const laiLoTB = dsLenh.length ? dsLenh.reduce((t, r) => t + (r.lai_lo_pct ?? 0), 0) / dsLenh.length : null;
-  const soDaChot = dsLenh.filter((r) => chamTPCaoNhat(r) != null).length;
-  const mauLai = (v) => (v == null ? MUTED : v >= 0 ? XANH : DO);
+  const dsLenh = lenhDangMo(cuaToi, cuaToi.some((r) => cacDiemMuaMoi(r).length) ? await layLichPhien() : null);
+  // DANH MUC = danh sach MA (moi ma 1 dong); ma dang co vi the (lenh) co mui ten xo ra cac vi the cua ma do. Ma co vi the len truoc.
+  const lenhTheoMa = new Map();
+  for (const l of dsLenh) {
+    if (!lenhTheoMa.has(l.ma)) lenhTheoMa.set(l.ma, []);
+    lenhTheoMa.get(l.ma).push(l);
+  }
+  const tinHieuTheoMa = new Map(cuaToi.map((r) => [r.ma, r]));
+  const dsMa = thamGia
+    .map((t) => {
+      const r = tinHieuTheoMa.get(t.ma);
+      return {
+        ma: t.ma,
+        ngayThamGia: t.ngay_tham_gia,
+        coDuLieu: !!r,
+        tenNgan: r?.ten_ngan ?? null,
+        tenCongTy: r?.ten_cong_ty ?? null,
+        tin: r?.tin ?? null,
+        gia: r?.gia ?? null,
+        diem: r?.diem ?? null,
+        lenh: lenhTheoMa.get(t.ma) ?? [],
+      };
+    })
+    .sort((a, b) => Number(b.lenh.length > 0) - Number(a.lenh.length > 0) || a.ma.localeCompare(b.ma));
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
@@ -120,7 +114,7 @@ export default async function TrangDanhMuc() {
         <Link href="/lenh-mo" className="underline" style={{ color: PRIMARY }}>
           Sổ lệnh
         </Link>
-        ) sẽ tự vào đây cùng lệnh hiện tại của mã đó, và tự chuyển sang &quot;Lệnh đã đóng&quot; khi lệnh kết thúc hoặc chốt đủ TP3.
+        ) sẽ tự vào đây. Mỗi mã một dòng; mã đang có vị thế có mũi tên <b>▾</b> ở đầu dòng — bấm để xổ ra các <b>vị thế</b> (lệnh) của mã đó: mã có nhiều lệnh được đánh số (1), (2)... theo ngày mua, nhãn <b style={{ color: "#22D3EE" }}>Mua mới</b> là đợt vào sau lệnh đầu. Lệnh kết thúc sẽ tự chuyển sang &quot;Lệnh đã đóng&quot;.
       </p>
       <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
 
@@ -151,85 +145,10 @@ export default async function TrangDanhMuc() {
 
       {thamGia.length > 0 && (
         <>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-            <The
-              so={dsLenh.length}
-              nhan="Lệnh đang giữ"
-              phu={`${soMaCoLenh < dsLenh.length ? `của ${soMaCoLenh} mã · ` : ""}${cuaToi.length}/${thamGia.length} mã có dữ liệu`}
-            />
-            <The so={laiLoTB == null ? "—" : pct(laiLoTB, 2)} nhan="Lãi/lỗ trung bình" mau={mauLai(laiLoTB)} />
-            <The so={dsLenh.length ? `${soLai}/${dsLenh.length}` : "—"} nhan="Đang lãi" mau={XANH} />
-            <The so={dsLenh.length ? `${soDaChot}/${dsLenh.length}` : "—"} nhan="Đã chạm chốt lời" mau="#FBBF24" />
-          </div>
-
           <section className="mb-10">
-            <TieuDeMuc phu="Giá mua, vùng mua, cắt lỗ, chốt lời và lãi/lỗ lấy theo lệnh của hệ thống, không phải giá khớp thật của bạn.">Đang nắm giữ</TieuDeMuc>
-            {dsLenh.length > 0 ? (
-              <BangLenhMo duLieu={dsLenh} />
-            ) : (
-              <div className="rounded-2xl border p-5 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
-                Chưa có mã nào trong danh mục đang giữ lệnh (các lệnh đã kết thúc xem ở Lệnh đã đóng bên dưới).
-              </div>
-            )}
+            <TieuDeMuc phu="Giá mua, vùng cắt lỗ, chốt lời và lãi/lỗ lấy theo lệnh của hệ thống, không phải giá khớp thật của bạn. Bấm mũi tên ▾ cạnh mã để xem từng vị thế; lọc &quot;Vị thế tốt nhất&quot; / &quot;Vị thế sau&quot; để mỗi mã chỉ hiện 1 vị thế.">Mã đang theo dõi</TieuDeMuc>
+            <DanhMucMa dsMa={dsMa} soCoDuLieu={cuaToi.length} soTheoDoi={thamGia.length} />
           </section>
-
-          {(dsTheoDoi.length > 0 || maChuaCoDuLieu.length > 0) && (
-            <section className="mb-10">
-              <TieuDeMuc phu="Đã tham gia nhưng hiện chưa có lệnh mở (chưa có tín hiệu MUA hoặc lệnh đã kết thúc).">Đang theo dõi</TieuDeMuc>
-              <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                    <thead>
-                      <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-                        <th className="py-3 px-3 font-normal">Mã</th>
-                        <th className="py-3 px-3 font-normal">Trạng thái</th>
-                        <th className="py-3 px-3 font-normal text-right">Giá</th>
-                        <th className="py-3 px-3 font-normal text-right">Điểm</th>
-                        <th className="py-3 px-3 font-normal text-right">Tham gia từ</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {dsTheoDoi.map((r, i) => (
-                        <tr key={r.ma} className={i > 0 ? "border-t" : ""} style={{ borderColor: "#1D1D26" }}>
-                          <td className="py-2.5 px-3">
-                            <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-                              {r.ma}
-                            </Link>
-                            {r.ten_ngan && (
-                              <span className="block max-w-[190px] truncate text-[10px] leading-tight" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }} title={r.ten_cong_ty}>
-                                {r.ten_ngan}
-                              </span>
-                            )}
-                          </td>
-                          <td className="py-2.5 px-3">
-                            <SignalPill tin={r.tin} />
-                          </td>
-                          <td className="py-2.5 px-3 text-right">{fmt(r.gia)}</td>
-                          <td className="py-2.5 px-3 text-right">{fmt(r.diem)}</td>
-                          <td className="py-2.5 px-3 text-right" style={{ color: MUTED }}>
-                            {ngayThamGia.get(r.ma)?.split("-").reverse().join("/")}
-                          </td>
-                        </tr>
-                      ))}
-                      {maChuaCoDuLieu.map((t) => (
-                        <tr key={t.ma} className="border-t" style={{ borderColor: "#1D1D26" }}>
-                          <td className="py-2.5 px-3" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-                            {t.ma}
-                          </td>
-                          <td className="py-2.5 px-3 text-xs" colSpan={3} style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-                            Chưa có dữ liệu tín hiệu cho mã này
-                          </td>
-                          <td className="py-2.5 px-3 text-right" style={{ color: MUTED }}>
-                            {t.ngay_tham_gia.split("-").reverse().join("/")}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </section>
-          )}
 
           <section>
             {loiDaDong && (

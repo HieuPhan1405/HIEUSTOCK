@@ -336,10 +336,10 @@ function ThanhChonLenh({ cacLenh, chon, datChon }) {
   );
 }
 
-export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaDong = [] }) {
+export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaDong = [], lichPhien = [] }) {
   // Cac LENH DANG MO cua ma: moi lenh 1 dong rieng (gia mua, Stop-loss, TP, lai/lo rieng), danh so (1), (2) neu co nhieu lenh - xem lenhDangMo. Chon 1 lenh o thanh ngang de xem
   // moi thu theo lenh do. vt = lenh dang xem (hoac chinh dong tin hieu khi ma khong giu lenh nao); row van la du lieu chung cua ma (diem, xu huong, trang thai...).
-  const cacLenh = useMemo(() => lenhDangMo([row]), [row]);
+  const cacLenh = useMemo(() => lenhDangMo([row], lichPhien), [row, lichPhien]);
   const [chon, setChon] = useState(0);
   const lenh = cacLenh.length ? cacLenh[Math.min(chon, cacLenh.length - 1)] : null;
   const vt = lenh ?? row;
@@ -724,25 +724,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
 
       {/* NHAT KY GIAO DICH */}
       <div className="mb-4">
-        <NhatKyGiaoDich
-          ma={row.ma}
-          lichSuDaDong={lichSuDaDong}
-          dangGiu={row.tin === "MUA" || row.tin === "NAM GIU"}
-          ngayMua={row.ngay_mua}
-          giaMua={row.gia_mua}
-          gia={row.gia}
-          laiLoPct={row.lai_lo_pct}
-          tp1={row.tp1}
-          tp2={row.tp2}
-          tp3={row.tp3}
-          daChamTp={chamTPCaoNhat(row)}
-          dangGiuMoi={row.dang_giu_moi === true}
-          ngayMuaMoi={row.ngay_mua_moi}
-          giaMuaMoi={row.gia_mua_moi}
-          dangGiuGiua={row.dang_giu_giua === true}
-          ngayMuaGiua={row.ngay_mua_giua}
-          giaMuaGiua={row.gia_mua_giua}
-        />
+        <NhatKyGiaoDich ma={row.ma} lichSuDaDong={lichSuDaDong} cacLenh={cacLenh} />
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4 mb-10">

@@ -284,9 +284,12 @@ export default async function TrangHuongDan() {
 
       <Muc tieuDe="Danh mục theo dõi">
         <p>
-          Bấm nút tham gia (biểu tượng người cạnh mã ở Bộ lọc hoặc Sổ lệnh) để thêm mã vào danh mục. Danh mục tự hiện lệnh hiện tại của từng mã bạn tham gia (giá mua, vùng mua, cắt
-          lỗ, chốt lời, lãi/lỗ) và tự chuyển sang &quot;Lệnh đã đóng của tôi&quot; khi lệnh bán/thoát hoặc chốt đủ TP3 — chỉ tính từ ngày bạn tham gia mã đó. Số liệu theo lệnh của hệ
-          thống, không phải giá khớp thật trong tài khoản chứng khoán của bạn.
+          Bấm nút tham gia (biểu tượng người cạnh mã ở Bộ lọc hoặc Sổ lệnh) để thêm mã vào danh mục. Danh mục là danh sách <b>mã</b> bạn theo dõi (mỗi mã một dòng); mã đang có lệnh
+          có mũi tên ▾ ở đầu dòng — bấm để xổ ra các <b>vị thế</b> (lệnh) của mã đó với giá mua, vùng cắt lỗ, chốt lời, lãi/lỗ và số phiên giữ. Mã có nhiều vị thế được đánh số (1), (2)... theo
+          ngày mua; nhãn &quot;Lệnh đầu&quot; / &quot;Mua mới&quot; cho biết đó là đợt nào, và mỗi vị thế ghi rõ mở trước hay sau khi bạn theo dõi mã. Bộ lọc <b>Vị thế tốt nhất</b> (lãi nhiều
+          nhất) và <b>Vị thế sau</b> (mở gần nhất) cho mỗi mã chỉ hiện đúng 1 vị thế, các thẻ thống kê tính theo bộ lọc đó. Lệnh tự chuyển sang &quot;Lệnh đã đóng của tôi&quot; khi bán/thoát —
+          chỉ tính từ ngày bạn tham gia mã đó. Số liệu theo lệnh của hệ thống, không phải giá khớp thật trong tài khoản chứng khoán của bạn. Trang của từng mã có <b>Nhật ký giao dịch</b>: chọn ngày
+          mua để xem riêng từng lệnh (mua, chạm/chốt TP, đóng, số phiên giữ, kết quả quy ra 100 đơn vị vốn), hoặc &quot;Tất cả&quot; để xem gộp theo thời gian.
         </p>
       </Muc>
 

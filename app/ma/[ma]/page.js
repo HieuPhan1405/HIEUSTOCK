@@ -2,6 +2,7 @@ import Link from "next/link";
 import { layTinHieuTheoMa } from "@/lib/tinHieu";
 import { layDinhGia, layCauChuyen } from "@/lib/noiDung";
 import { layLichSuGiaoDichMa } from "@/lib/lenhDaDong";
+import { layLichPhien } from "@/lib/lichSuGia";
 import ChiTietMa from "@/components/ChiTietMa";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import { tenCongTy } from "@/lib/tenMa";
@@ -73,11 +74,12 @@ export default async function TrangChiTietMa({ params }) {
   let dinhGia = [];
   let cauChuyen = [];
   let lichSuDaDong = [];
+  let lichPhien = [];
   try {
-    [dinhGia, cauChuyen, lichSuDaDong] = await Promise.all([layDinhGia(ma), layCauChuyen(ma), layLichSuGiaoDichMa(ma)]);
+    [dinhGia, cauChuyen, lichSuDaDong, lichPhien] = await Promise.all([layDinhGia(ma), layCauChuyen(ma), layLichSuGiaoDichMa(ma), layLichPhien()]);
   } catch {
     // giu mang rong, ChiTietMa se tu hien "Dang cap nhat..."
   }
 
-  return <ChiTietMa row={row} dinhGia={dinhGia} cauChuyen={cauChuyen} lichSuDaDong={lichSuDaDong} />;
+  return <ChiTietMa row={row} dinhGia={dinhGia} cauChuyen={cauChuyen} lichSuDaDong={lichSuDaDong} lichPhien={lichPhien} />;
 }

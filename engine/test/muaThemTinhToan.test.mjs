@@ -1,5 +1,5 @@
 // Test tay cho lib/muaThemTinhToan.js (danh sach LENH DANG MO: moi lenh 1 dong rieng, danh so (1)(2) neu 1 ma co nhieu lenh). Chay: node engine/test/muaThemTinhToan.test.mjs
-import { cacDiemMuaMoi, ngayChuoi, dongTuDiemMua, lenhDangMo } from "../../lib/muaThemTinhToan.js";
+import { cacDiemMuaMoi, ngayChuoi, dongTuDiemMua, lenhDangMo, chonViThe } from "../../lib/muaThemTinhToan.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -67,6 +67,20 @@ ok("thieu ngay mua rieng -> bo", cacDiemMuaMoi({ ma: "X", gia: 10, gia_mua: 9, d
   // lenh mua moi cung ngay voi lenh dau: lenh dau xep truoc
   const cungNgay = lenhDangMo([goc("FFF", { dang_giu_giua: true, gia_mua_giua: 21, ngay_mua_giua: "2026-09-10" })]);
   ok("cung ngay mua: lenh dau (1) truoc lenh mua moi (2)", cungNgay[0].la_lenh_moi === false && cungNgay[1].la_lenh_moi === true && cungNgay[1].ten_lenh === "FFF (2)");
+}
+
+// ---- BO LOC VI THE (tot nhat / sau)
+{
+  const l = (ten, ngay, lai) => ({ ten_lenh: ten, ngay_mua: ngay, lai_lo_pct: lai });
+  const ds = [l("A (1)", "2026-09-01", 12), l("A (2)", "2026-09-10", 25), l("A (3)", "2026-09-20", -3)];
+  ok("chonViThe tatca: giu nguyen", chonViThe(ds, "tatca").length === 3 && chonViThe(ds, "").length === 3);
+  ok("chonViThe tot: lai cao nhat", chonViThe(ds, "tot").length === 1 && chonViThe(ds, "tot")[0].ten_lenh === "A (2)");
+  ok("chonViThe sau: lenh mo gan nhat", chonViThe(ds, "sau").length === 1 && chonViThe(ds, "sau")[0].ten_lenh === "A (3)");
+  ok("chonViThe: ma 1 vi the -> chinh no", chonViThe([ds[0]], "tot")[0] === ds[0] && chonViThe([ds[0]], "sau")[0] === ds[0]);
+  ok("chonViThe: rong -> rong", chonViThe([], "tot").length === 0 && chonViThe(undefined, "sau").length === 0);
+  ok("chonViThe tot: bang nhau lay lenh mo sau", chonViThe([l("B (1)", "2026-09-01", 5), l("B (2)", "2026-09-05", 5)], "tot")[0].ten_lenh === "B (2)");
+  ok("chonViThe tot: lai null xep cuoi", chonViThe([l("C (1)", "2026-09-01", null), l("C (2)", "2026-09-05", -8)], "tot")[0].ten_lenh === "C (2)");
+  ok("chonViThe sau: ngay la Date/chuoi deu duoc", chonViThe([l("D (1)", new Date(Date.UTC(2026, 8, 20)), 1), l("D (2)", "2026-09-10", 2)], "sau")[0].ten_lenh === "D (1)");
 }
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);

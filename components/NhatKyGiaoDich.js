@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowUpCircle, ArrowDownCircle, Target, ShieldCheck, TrendingUp, Rewind } from "lucide-react";
-import { ngayChamTP } from "@/lib/ngayChamMoc";
-import { fmt } from "@/components/dungChung";
-import { TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
+import { fmt, pct } from "@/components/dungChung";
+import { dungNhatKyLenh } from "@/lib/nhatKyLenh";
+import { ngayChuoi } from "@/lib/muaThemTinhToan";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -16,30 +16,45 @@ const VANG = "#FBBF24";
 const NGOC = "#22D3EE";
 const TIM = "#A78BFA";
 
-const VON_GOC = 100; // gia dinh moi luot vao lenh bo 100 don vi von, de quy lai/lo ra so cu the thay vi chi %.
 const ngayVN = (s) => (s ? String(s).slice(0, 10).split("-").reverse().join("/") : "—");
-const chuoiNgay = (v) => (v ? new Date(v).toISOString().slice(0, 10) : null);
-const soVon = (laiLoPct) => (laiLoPct == null ? null : (VON_GOC * (1 + laiLoPct / 100)).toFixed(1));
+// Von 100 don vi -> hien 1 chu so thap phan khi can (vd 33, 105.3).
+const so = (n) => {
+  const v = Math.round(Number(n) * 10) / 10;
+  return Number.isInteger(v) ? String(v) : v.toFixed(1);
+};
+const mauLaiLo = (v) => (v == null ? MUTED : v >= 0 ? XANH : DO);
 
-const NHAN_LY_DO = {
-  TP1: (x) => `Chốt lời TP1 (${x.phan_chot_pct ?? 30}% vị thế)`,
-  TP2: (x) => `Chốt lời TP2 (${x.phan_chot_pct ?? 30}% vị thế)`,
-  // Cach moi (2026-09-25): phan 40% chot tai TP3 = KET THUC lenh (hoac 1 dong gop 100% vi the cu da cham TP1/TP2 tu truoc); lenh cu (30/30/25/15): dong 25% (kieu tung phan)
-  // hoac 1 dong gop 85% (kieu cu), con 15% giu chay.
-  TP3: (x) => {
-    const pc = Number(x.phan_chot_pct);
-    if (pc === TY_LE_CHOT_KET_THUC.tp3 || pc >= 100) return `Chốt TP3 (${pc}% vị thế) · kết thúc lệnh`;
-    return x.phan_chot_pct != null && pc < 50 ? `Chốt lời TP3 (${x.phan_chot_pct}% vị thế)` : `Chốt đủ TP3 (${x.phan_chot_pct ?? 85}% vị thế)`;
-  },
-  CHOT_TP3: () => "Chốt đủ TP3 (kết thúc lệnh)",
-  THOAT_KIJUN: () => "Thoát theo Kijun (đóng cửa dưới Kijun sau TP2)",
-  CAT_LO: () => "Cắt lỗ (chạm Stop-loss)",
-  BAO_VE_LAI: () => "Bảo vệ lãi (SL đã dời lên cao hơn)",
-  BAN: () => "Bán theo tín hiệu",
-  THOAT: () => "Thoát vị thế",
+// Icon + mau cua tung loai su kien (lib/nhatKyLenh.js chi tra ve "kieu"); mau null = theo lai/lo cua chinh dong do.
+const KIEU = {
+  mua: { icon: ArrowUpCircle, mau: XANH },
+  mua_moi: { icon: TrendingUp, mau: NGOC },
+  cham_tp: { icon: Target, mau: VANG },
+  chot_tp: { icon: Target, mau: null },
+  cat_lo: { icon: ArrowDownCircle, mau: null },
+  bao_ve: { icon: ShieldCheck, mau: null },
+  dong: { icon: ArrowDownCircle, mau: null },
+  dang_giu: { icon: Rewind, mau: TIM },
 };
 
-function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri }) {
+function hienSuKien(s) {
+  const k = KIEU[s.kieu] ?? KIEU.dong;
+  let phu;
+  if (s.kieu === "mua" || s.kieu === "mua_moi") phu = `Giá ${fmt(s.gia)}`;
+  else if (s.kieu === "cham_tp") phu = `Giá vượt ${fmt(s.moc)} · sau ${s.soPhien} phiên`;
+  else if (s.kieu === "dang_giu") phu = `Tính đến lần cập nhật dữ liệu gần nhất${s.soPhien != null ? ` · giữ ${s.soPhien} phiên` : ""}`;
+  else phu = `Giá ${fmt(s.gia)}${s.soPhien != null ? ` · giữ ${s.soPhien} phiên` : ""}`;
+  const mauLai = mauLaiLo(s.laiLoPct);
+  return {
+    icon: k.icon,
+    mau: k.mau ?? mauLai,
+    ngay: s.ngay,
+    chinh: s.chinh,
+    phu,
+    giaTri: s.giaTriPhan != null ? { hien: `${so(s.phanVon)} → ${so(s.giaTriPhan)}`, mau: mauLai, nhan: `trên ${so(s.phanVon)} vốn` } : null,
+  };
+}
+
+function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri, nhanLenh }) {
   return (
     <div className="flex gap-3 py-3 border-b last:border-b-0" style={{ borderColor: "#1D1D26" }}>
       <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: mau + "20" }}>
@@ -51,13 +66,18 @@ function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri }) {
             {chinh}
           </p>
           <span className="text-xs shrink-0" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
-            {ngay}
+            {ngay ? ngayVN(ngay) : "—"}
           </span>
         </div>
         {phu && (
           <p className="text-xs mt-0.5" style={{ color: MUTED }}>
             {phu}
           </p>
+        )}
+        {nhanLenh && (
+          <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px]" style={{ background: "#1D1D26", color: "#A6A6B3", fontFamily: "'JetBrains Mono', monospace" }}>
+            {nhanLenh}
+          </span>
         )}
       </div>
       {giaTri && (
@@ -66,7 +86,7 @@ function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri }) {
             {giaTri.hien}
           </p>
           <p className="text-[10px]" style={{ color: MUTED }}>
-            trên 100 vốn
+            {giaTri.nhan}
           </p>
         </div>
       )}
@@ -74,32 +94,110 @@ function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri }) {
   );
 }
 
-// Nhat ky mua-ban rieng cua 1 ma: goc tu cac lenh da dong (lichSuDaDong) + vi the dang giu hien tai (neu co).
-// Moi diem lai/lo quy doi ra so cu the tren gia dinh 100 don vi von cho de hinh dung thay vi chi xem %.
-export default function NhatKyGiaoDich({
-  ma,
-  lichSuDaDong = [],
-  dangGiu,
-  ngayMua,
-  giaMua,
-  laiLoPct,
-  tp1,
-  tp2,
-  tp3,
-  daChamTp,
-  dangGiuMoi,
-  ngayMuaMoi,
-  giaMuaMoi,
-  dangGiuGiua,
-  ngayMuaGiua,
-  giaMuaGiua,
-}) {
-  const [nen, setNen] = useState(null);
+// THANH CHON LENH THEO NGAY MUA: "Tat ca" + moi lenh (dang giu / da dong) la 1 nut ghi ngay mua, gia mua va ket qua - chon lenh nao thi nhat ky chi hien dong thoi gian cua lenh do.
+function ThanhChonNhatKy({ lenh, khoaChon, datKhoa }) {
+  const soDangGiu = lenh.filter((l) => l.dangGiu).length;
+  const nut = (khoa, noiDung) => {
+    const dangChon = khoaChon === khoa;
+    return (
+      <button
+        key={khoa || "tat-ca"}
+        type="button"
+        role="tab"
+        aria-selected={dangChon}
+        onClick={() => datKhoa(khoa)}
+        className="shrink-0 text-left rounded-xl border px-3 py-2"
+        style={dangChon ? { borderColor: "#6C5CE7", background: "rgba(108,92,231,0.15)" } : { borderColor: VIEN, background: "transparent" }}
+      >
+        {noiDung}
+      </button>
+    );
+  };
+  return (
+    <div className="flex gap-2 overflow-x-auto pb-1 mb-3" role="tablist" aria-label="Chọn lệnh theo ngày mua">
+      {nut(
+        "",
+        <>
+          <span className="block text-sm font-bold" style={{ fontFamily: "'Inter', sans-serif" }}>
+            Tất cả
+          </span>
+          <span className="block text-[11px]" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+            {lenh.length} lệnh
+          </span>
+          <span className="block text-xs" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+            {soDangGiu} đang giữ · {lenh.length - soDangGiu} đã đóng
+          </span>
+        </>
+      )}
+      {lenh.map((l) =>
+        nut(
+          l.khoa,
+          <>
+            <span className="block text-sm font-bold" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Mua {ngayVN(l.ngayMua)}
+              {l.laMuaMoi && <span style={{ color: NGOC }}> · Mua mới</span>}
+              {l.tenLenh && (
+                <span className="font-normal" style={{ color: MUTED }}>
+                  {" "}
+                  · {l.tenLenh}
+                </span>
+              )}
+            </span>
+            <span className="block text-[11px]" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+              giá {fmt(l.giaMua)}
+              {l.soPhien != null ? ` · ${l.soPhien} phiên` : ""}
+            </span>
+            <span className="block text-xs font-bold" style={{ fontFamily: "'JetBrains Mono', monospace", color: mauLaiLo(l.ketQuaPct) }}>
+              {l.dangGiu ? "Đang giữ" : "Đã đóng"} · {pct(l.ketQuaPct, 2)}
+            </span>
+          </>
+        )
+      )}
+    </div>
+  );
+}
 
-  const ngayMuaStr = chuoiNgay(ngayMua);
-  const ngayMuaMoiStr = chuoiNgay(ngayMuaMoi);
-  const ngayMuaGiuaStr = chuoiNgay(ngayMuaGiua);
-  const canTimNgayCham = dangGiu && ngayMuaStr && (tp1 > 0 || tp2 > 0 || tp3 > 0);
+// Tom tat 1 lenh dang xem: ngay mua/gia mua, dang giu hay da dong, so phien giu va ket qua ca lenh tren 100 von.
+function TomTatLenh({ l }) {
+  const kq = l.ketQuaPct;
+  return (
+    <div className="rounded-xl border p-3 mb-1 flex flex-wrap items-center justify-between gap-2" style={{ borderColor: VIEN, background: "#0B0B10" }}>
+      <div className="min-w-0">
+        <p className="text-sm font-bold" style={{ color: TEXT, fontFamily: "'Inter', sans-serif" }}>
+          Lệnh mua {ngayVN(l.ngayMua)} · giá {fmt(l.giaMua)}
+          {l.laMuaMoi && <span style={{ color: NGOC }}> · Mua mới</span>}
+          {l.tenLenh && (
+            <span className="font-normal" style={{ color: MUTED }}>
+              {" "}
+              · {l.tenLenh}
+            </span>
+          )}
+        </p>
+        <p className="text-[11px] mt-0.5" style={{ color: MUTED }}>
+          {l.dangGiu ? `Đang giữ ${so(l.conLaiPct)}% vị thế${l.daChotPct > 0 ? ` · đã chốt ${so(l.daChotPct)}%` : ""}` : "Đã đóng hoàn toàn"}
+          {l.soPhien != null ? ` · giữ ${l.soPhien} phiên` : ""}
+        </p>
+      </div>
+      <div className="text-right" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+        <p className="text-sm font-bold" style={{ color: mauLaiLo(kq) }}>
+          {kq == null ? "—" : `100 → ${so(100 + kq)}`}
+        </p>
+        <p className="text-[10px]" style={{ color: MUTED }}>
+          {l.tamTinh ? "tạm tính · " : ""}
+          {pct(kq, 2)} trên 100 vốn
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Nhat ky mua-ban cua 1 ma THEO TUNG LENH (moi lenh = 1 ngay mua): goc tu cac lenh da dong (lichSuDaDong) + cac lenh DANG MO cua ma (cacLenh - lenhDangMo). Chon ngay mua o thanh
+// ngang de xem rieng 1 lenh; "Tat ca" gop moi lenh theo thoi gian (moi dong co nhan lenh). Moi lenh gia dinh 100 don vi von - xem lib/nhatKyLenh.js.
+export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], cacLenh = [] }) {
+  const [nen, setNen] = useState(null);
+  const [khoaChon, setKhoaChon] = useState("");
+
+  const canTimNgayCham = cacLenh.some((l) => ngayChuoi(l.ngay_mua) && (l.tp1 > 0 || l.tp2 > 0 || l.tp3 > 0));
   const dangTai = canTimNgayCham && nen === null; // suy ra tu trang thai da tai chua, khong can them 1 state rieng
 
   useEffect(() => {
@@ -118,122 +216,34 @@ export default function NhatKyGiaoDich({
     };
   }, [ma, canTimNgayCham]);
 
-  // ---------- Xay danh sach su kien ----------
-  // uuTien: thu tu hien thi khi 2 su kien trung ngay (vd Cham TP3 va Chot du TP3 thuong cung 1 ngay phat hien).
-  const UU_TIEN = { MUA: 0, CHAM_TP: 1, DONG: 2, DANG_GIU: 3 };
-  const suKien = [];
+  const { lenh, tatCa } = useMemo(() => dungNhatKyLenh({ lichSuDaDong, cacLenhMo: cacLenh, nen }), [lichSuDaDong, cacLenh, nen]);
+  if (lenh.length === 0) return null;
 
-  // 1. Cac dot DA DONG trong qua khu (moi dong lenh_da_dong = 1 su kien MUA + 1 su kien DONG; khu trung MUA khi
-  // nhieu dong (vd vong 1 chot TP3 + vong 3 phan con lai) cung 1 ngay_mua).
-  const daThemMua = new Set();
-  for (const d of lichSuDaDong) {
-    const khoaMua = `${d.ngay_mua}|${d.vong === 2 ? "moi" : d.vong === 4 ? "giua" : "goc"}`;
-    if (!daThemMua.has(khoaMua)) {
-      daThemMua.add(khoaMua);
-      suKien.push({
-        ngay: d.ngay_mua,
-        uuTien: UU_TIEN.MUA,
-        icon: ArrowUpCircle,
-        mau: XANH,
-        chinh: d.vong === 2 || d.vong === 4 ? "Mua mới" : "Mua",
-        phu: `Giá ${fmt(d.gia_mua)}`,
-      });
-    }
-    // Lenh MUA MOI (vong 2 = sau TP3, vong 4 = dot sau): lenh doc lap, dong theo Stop-loss RIENG hoac dong CUNG lenh dau - khong co TP1/TP2 rieng.
-    const laMuaThem = d.vong === 2 || d.vong === 4;
-    const nhan = laMuaThem
-      ? () => (d.ly_do === "CAT_LO" ? "Cắt lỗ (chạm Stop-loss của lệnh mua mới)" : "Đóng lệnh mua mới cùng lệnh đầu")
-      : NHAN_LY_DO[d.ly_do] || (() => "Đóng vị thế");
-    suKien.push({
-      ngay: d.ngay_ban,
-      uuTien: UU_TIEN.DONG,
-      icon: d.ly_do === "CAT_LO" ? ArrowDownCircle : /^TP[123]$/.test(d.ly_do ?? "") ? Target : d.ly_do === "BAO_VE_LAI" ? ShieldCheck : ArrowDownCircle,
-      mau: d.lai_lo_pct >= 0 ? XANH : DO,
-      chinh:
-        nhan(d) +
-        (d.vong === 3
-          ? " · phần còn lại sau TP3 (lệnh cũ)"
-          : d.vong === 1 && !/^(CHOT_)?TP[123]$/.test(d.ly_do ?? "") && d.phan_chot_pct != null && Number(d.phan_chot_pct) < 100
-            ? ` · phần còn lại ${d.phan_chot_pct}%`
-            : ""),
-      phu: `Giá ${fmt(d.gia_ban)}${d.so_phien != null ? ` · giữ ${d.so_phien} phiên` : ""}`,
-      giaTri: { hien: `${VON_GOC} → ${soVon(d.lai_lo_pct)}`, mau: d.lai_lo_pct >= 0 ? XANH : DO },
-    });
-  }
-
-  // 2. Vi the DANG GIU hien tai (chua co trong lichSuDaDong vi chua dong). Neu dot mua nay da co san trong lich su
-  // (vd. da tung chot TP3 nen co dong "vong 1" ghi lai ngay mua nay roi) thi KHONG them "Mua" trung nua.
-  if (dangGiu && ngayMuaStr) {
-    if (!daThemMua.has(`${ngayMuaStr}|goc`)) {
-      suKien.push({ ngay: ngayMuaStr, uuTien: UU_TIEN.MUA, icon: ArrowUpCircle, mau: XANH, chinh: "Mua", phu: `Giá ${fmt(giaMua)}` });
-    }
-
-    if (nen) {
-      const moc = [
-        ["TP1", tp1, "Chạm TP1"],
-        ["TP2", tp2, "Chạm TP2"],
-        ["TP3", tp3, "Chạm TP3"],
-      ];
-      const thuTu = { TP1: 1, TP2: 2, TP3: 3 };
-      for (const [ky, gia_, nhan] of moc) {
-        if (!(gia_ > 0) || thuTu[ky] > (thuTu[daChamTp] ?? 0)) continue;
-        const cham = ngayChamTP(nen, ngayMuaStr, gia_);
-        if (cham)
-          suKien.push({
-            ngay: cham.ngay,
-            uuTien: UU_TIEN.CHAM_TP,
-            icon: Target,
-            mau: VANG,
-            chinh: nhan,
-            phu: `Giá vượt ${fmt(gia_)} · sau ${cham.soPhien} phiên`,
-          });
-      }
-    }
-
-    if (dangGiuMoi && ngayMuaMoiStr && !daThemMua.has(`${ngayMuaMoiStr}|moi`)) {
-      suKien.push({ ngay: ngayMuaMoiStr, uuTien: UU_TIEN.MUA, icon: TrendingUp, mau: NGOC, chinh: "Mua mới", phu: `Giá ${fmt(giaMuaMoi)}` });
-    }
-
-    if (dangGiuGiua && ngayMuaGiuaStr && !daThemMua.has(`${ngayMuaGiuaStr}|giua`)) {
-      suKien.push({ ngay: ngayMuaGiuaStr, uuTien: UU_TIEN.MUA, icon: TrendingUp, mau: TIM, chinh: "Mua mới", phu: `Giá ${fmt(giaMuaGiua)}` });
-    }
-
-    suKien.push({
-      ngay: null,
-      uuTien: UU_TIEN.DANG_GIU,
-      icon: Rewind,
-      mau: TIM,
-      chinh: "Đang giữ",
-      phu: "Tính đến lần cập nhật dữ liệu gần nhất",
-      giaTri: laiLoPct != null ? { hien: `${VON_GOC} → ${soVon(laiLoPct)}`, mau: laiLoPct >= 0 ? XANH : DO } : null,
-    });
-  }
-
-  if (suKien.length === 0) return null;
-  suKien.sort((a, b) => {
-    if (a.ngay == null) return 1;
-    if (b.ngay == null) return -1;
-    if (a.ngay !== b.ngay) return a.ngay < b.ngay ? -1 : 1;
-    return a.uuTien - b.uuTien;
-  });
+  const nhieuLenh = lenh.length > 1;
+  const dangXem = nhieuLenh ? (lenh.find((l) => l.khoa === khoaChon) ?? null) : lenh[0];
+  const dsSuKien = dangXem ? dangXem.suKien : tatCa;
+  const nhanLenh = Object.fromEntries(lenh.map((l) => [l.khoa, `lệnh mua ${ngayVN(l.ngayMua)}${l.laMuaMoi ? " · Mua mới" : ""}`]));
 
   return (
     <div className="rounded-2xl border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "#6C5CE7", fontFamily: "'JetBrains Mono', monospace" }}>
         ★ Nhật ký giao dịch {ma}
       </p>
-      <p className="text-[11px] mb-2" style={{ color: MUTED }}>
-        Mỗi lượt vào lệnh giả định 100 đơn vị vốn để quy lãi/lỗ ra số cụ thể, dễ so sánh giữa các đợt.
+      <p className="text-[11px] mb-3" style={{ color: MUTED }}>
+        {nhieuLenh ? "Mỗi lệnh có dòng thời gian riêng: chọn ngày mua để xem từng lệnh. " : ""}
+        Mỗi lệnh giả định vào 100 đơn vị vốn để quy lãi/lỗ ra số cụ thể.
         {dangTai && " Đang tính ngày chạm các mốc chốt lời…"}
       </p>
+      {nhieuLenh && <ThanhChonNhatKy lenh={lenh} khoaChon={dangXem ? dangXem.khoa : ""} datKhoa={setKhoaChon} />}
+      {dangXem && <TomTatLenh l={dangXem} />}
       <div>
-        {suKien.map((s, i) => (
-          <Dong key={i} icon={s.icon} mau={s.mau} ngay={ngayVN(s.ngay)} chinh={s.chinh} phu={s.phu} giaTri={s.giaTri} />
+        {dsSuKien.map((s, i) => (
+          <Dong key={i} {...hienSuKien(s)} nhanLenh={!dangXem && nhieuLenh ? nhanLenh[s.khoaLenh] : null} />
         ))}
       </div>
       <p className="text-[10px] mt-2" style={{ color: "#6B6B78" }}>
-        Đợt đã đóng chỉ ghi mốc Mua và mốc Đóng (chưa lưu ngày chạm TP giữa chừng cho các lệnh đóng trước khi có tính năng này). Số liệu tham khảo, không
-        phải khuyến nghị đầu tư.
+        Lệnh chốt từng phần ghi phần vốn của mỗi lần chốt (vd 30 → 33: 30 vốn đã chốt thành 33), cộng các phần lại ra kết quả cả lệnh; lệnh đang giữ tính phần còn lại theo giá hiện tại
+        (tạm tính). Lệnh đóng trước khi có tính năng này chỉ ghi mốc Mua và mốc Đóng. Số liệu tham khảo, không phải khuyến nghị đầu tư.
       </p>
     </div>
   );

@@ -58,7 +58,7 @@ const TINH_NANG = [
   {
     Icon: History,
     tieuDe: "Nhật ký giao dịch & sổ lệnh",
-    mo: "Theo dõi lệnh đang mở, lịch sử lệnh đã đóng, lãi/lỗ từng đợt — quy đổi ra số cụ thể trên 100 đơn vị vốn giả định để dễ so sánh.",
+    mo: "Theo dõi lệnh đang mở, lịch sử lệnh đã đóng, chọn từng lệnh theo ngày mua để xem lãi/lỗ và số phiên giữ — quy đổi ra số cụ thể trên 100 đơn vị vốn giả định để dễ so sánh.",
   },
   {
     Icon: Eye,

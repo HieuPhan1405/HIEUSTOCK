@@ -40,18 +40,18 @@ export default async function TrangLenhMo({ searchParams }) {
     loi = String(e?.message || e);
   }
 
-  // "Dang mo" = MOI LENH la 1 dong rieng (gia mua, Stop-loss, TP, lai/lo rieng): lenh dau cua ma dang MUA/NAM GIU + cac lenh MUA MOI (dot sau) dang giu - xem lenhDangMo; ma co nhieu
-  // lenh thi danh so (1), (2). Cach 2 TP + giu den BAN: lenh cham TP1/TP2 van con phan giu nen van nam o day cho toi khi he thong bao BAN; TP3 chi la moc tham khao.
-  const lenhMo = lenhDangMo(tatCa);
-  const soMa = new Set(lenhMo.map((r) => r.ma)).size;
-  const soCanhBao = new Set(lenhMo.filter((r) => r.mat_than).map((r) => r.ma)).size;
-
-  // Lich su dong cua VNINDEX de so sanh hieu suat cac lenh dang mo voi thi truong cung ky (loi nguon gia khong duoc lam hong trang).
+  // Lich su dong cua VNINDEX: (1) so sanh hieu suat cac lenh dang mo voi thi truong cung ky, (2) lich phien de dem so phien giu cua lenh mua moi (loi nguon gia khong duoc lam hong trang).
   let vnindex = null;
   try {
     const nen = await layLichSuGia("VNINDEX", 400);
     vnindex = { nen: nen.map((b) => ({ t: b.t, c: b.c })) };
   } catch {}
+
+  // "Dang mo" = MOI LENH la 1 dong rieng (gia mua, Stop-loss, TP, lai/lo rieng): lenh dau cua ma dang MUA/NAM GIU + cac lenh MUA MOI (dot sau) dang giu - xem lenhDangMo; ma co nhieu
+  // lenh thi danh so (1), (2). Cach 2 TP + giu den BAN: lenh cham TP1/TP2 van con phan giu nen van nam o day cho toi khi he thong bao BAN; TP3 chi la moc tham khao.
+  const lenhMo = lenhDangMo(tatCa, vnindex?.nen.map((b) => b.t) ?? null);
+  const soMa = new Set(lenhMo.map((r) => r.ma)).size;
+  const soCanhBao = new Set(lenhMo.filter((r) => r.mat_than).map((r) => r.ma)).size;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
