@@ -21,7 +21,7 @@ import {
   useCotHienThi,
   ChonCotHienThi,
 } from "@/components/boLocChung";
-import { chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, nhanMuaMoi, nhanLyDoBan, nhanBaoVeLai, datChuanUuTien, sapChamMoc, laChoPhienSau, laDangGiu, NGUONG_DIEM_MUA } from "@/components/dungChung";
+import { chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, nhanMuaMoi, nhanLyDoBan, nhanChoHoi, nhanBaoVeLai, datChuanUuTien, sapChamMoc, laChoPhienSau, laDangGiu, NGUONG_DIEM_MUA } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -97,6 +97,11 @@ const COT_RIENG = {
           {ctx.nguoiDung ? (
             <>
               <SignalPill tin={row.tin} />
+              {nhanChoHoi(row) && (
+                <span className="text-[10px] font-bold" style={{ color: nhanChoHoi(row).mau }} title={nhanChoHoi(row).moTa} data-may="vung-mua">
+                  ⏳ Chờ hồi
+                </span>
+              )}
               {nhanLyDoBan(row) && (
                 <span className="text-[10px] font-bold" style={{ color: nhanLyDoBan(row).mau }} title={nhanLyDoBan(row).moTa}>
                   {nhanLyDoBan(row).nhan}

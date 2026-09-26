@@ -384,7 +384,7 @@ export const CAC_COT = {
     nhom: "Vị thế đang giữ",
     canPhai: true,
     lay: chiKhiGiu("so_phien_giu"),
-    hien: (r) => (laDangGiu(r) ? `${r.so_phien_giu ?? "—"} phiên` : Trong),
+    hien: (r) => (laDangGiu(r) ? (r.so_phien_giu === 0 ? "hôm nay" : `${r.so_phien_giu ?? "—"} phiên`) : Trong),
   },
   lai_lo_pct: {
     nhan: "Lãi/Lỗ",

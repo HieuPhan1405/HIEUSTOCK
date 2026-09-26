@@ -18,7 +18,7 @@ import {
   useCotHienThi,
   ChonCotHienThi,
 } from "@/components/boLocChung";
-import { fmt, nhanGiaiNgan, nhanLoaiVao, nhanBaoVeLai, datChuanUuTien } from "@/components/dungChung";
+import { fmt, nhanGiaiNgan, nhanLoaiVao, nhanBaoVeLai, nhanChoHoi, datChuanUuTien } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -77,6 +77,11 @@ const COT_RIENG = {
     hien: (row) => (
       <div className="flex flex-col items-end gap-1">
         <SignalPill tin={row.tin} />
+        {nhanChoHoi(row) && (
+          <span className="text-[10px] font-bold tracking-wide" style={{ color: nhanChoHoi(row).mau }} title={nhanChoHoi(row).moTa} data-may="vung-mua">
+            ⏳ Chờ hồi
+          </span>
+        )}
         {nhanGiaiNgan(row) && (
           <span className="text-[10px] font-bold tracking-wide" style={{ color: nhanGiaiNgan(row).mau }} title={nhanGiaiNgan(row).moTa}>
             ◐ {nhanGiaiNgan(row).nhan}

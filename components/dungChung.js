@@ -3,6 +3,7 @@
 // du lieu lich su de tinh chi bao) - moi ham phai an toan voi null/undefined/NaN.
 
 import { TY_LE_CHOT, TY_LE_CHOT_CU, CHUOI_TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
+import { kiemTraDuLieuCu } from "@/lib/phienGiaoDich";
 
 export const FONT_IMPORT = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -240,6 +241,24 @@ export function nhanLyDoBan(row) {
 }
 
 // Nhan "Có lệnh mua mới" khi ma DANG GIU them lenh MUA MOI (dot sau: sau khi bo qua lenh dau, hoac lenh moi sau TP3). Moi lenh la 1 dong rieng, xem lenhDangMo.
+// Nhan "Đã vượt vùng mua — chờ hồi": tin hieu MUA nhung gia hien tai da cao hon vung mua (moc + 1%) - backtest: mua cao hon moc qua 1% thi trung binh lo, nen cho gia hoi ve.
+export function nhanChoHoi(row) {
+  if (row?.tin !== "MUA") return null;
+  const v = tinhVungLenh(row);
+  if (!v || v.mua.trangThai !== "tren") return null;
+  return {
+    nhan: "Đã vượt vùng mua — chờ hồi",
+    mau: "#FBBF24",
+    moTa: `Giá ${fmt(row.gia)} đã cao hơn vùng mua ${chuoiVung(v.mua.tu, v.mua.den)}. Mua cao hơn mốc quá 1% thì trung bình lỗ (backtest 11 năm) — chờ giá hồi về vùng mua, không đuổi giá.`,
+  };
+}
+
+// So phien giu dang chu: 0 phien = vua mua hom nay.
+export function chuoiGiuPhien(n) {
+  if (n == null || !Number.isFinite(Number(n))) return "—";
+  return Number(n) === 0 ? "mua hôm nay" : `giữ ${n} phiên`;
+}
+
 export function nhanMuaMoi(row) {
   if (row?.dang_giu_giua !== true && row?.dang_giu_moi !== true) return null;
   return {
@@ -334,7 +353,7 @@ export function capNhatMoiNhat(ds) {
 }
 
 // Du lieu cu hon ~36 gio (qua 1 ngay giao dich) thi nhan cap nhat chuyen sang canh bao mau vang.
-export function duLieuDaCu(luc, gioToiDa = 36) {
-  const t = new Date(luc).getTime();
-  return !Number.isNaN(t) && (Date.now() - t) / 3600e3 > gioToiDa;
+// Du lieu "cu" = chua co du lieu cua phien giao dich gan nhat DA DONG CUA (tinh theo ngay lam viec: cuoi tuan / sang thu 2 van la du lieu thu 6) - xem lib/phienGiaoDich.js.
+export function duLieuDaCu(luc) {
+  return kiemTraDuLieuCu(luc).cu;
 }

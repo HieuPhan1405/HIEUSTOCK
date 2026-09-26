@@ -4,7 +4,6 @@ import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import CoHoiHomNay from "@/components/CoHoiHomNay";
 import { layLenhCoSuKienNgay, ngayGiaoDichVN } from "@/lib/lenhDaDong";
 import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat } from "@/components/dungChung";
-import SignalPill from "@/components/SignalPill";
 import NhanCapNhat from "@/components/NhanCapNhat";
 
 export const dynamic = "force-dynamic";
@@ -256,9 +255,8 @@ export default async function TrangTongQuan() {
             </span>
           </h1>
           <p className="max-w-xl" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-            Điểm hợp lưu Trend · Động lượng · Dòng tiền, kiểm chứng backtest 12
-            năm trên VN100. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc
-            biểu đồ nhanh hơn.
+            Điểm hợp lưu Xu hướng · Động lượng · Dòng tiền cho {tong > 0 ? tong : "gần 400"} cổ phiếu HOSE, HNX, UPCOM, kiểm chứng
+            bằng backtest 11 năm với giá vào lệnh thực tế. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc thị trường nhanh hơn.
           </p>
           <div className="flex flex-wrap gap-3 mt-6 text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>
             <Link href="/bo-loc" className="px-4 py-2.5 rounded-lg font-semibold" style={{ background: PRIMARY, color: "#FFFFFF" }}>
@@ -334,10 +332,16 @@ export default async function TrangTongQuan() {
                   </span>
                 </div>
               </div>
-              <SignalPill tin={chiSoVNIndex.tin} />
+              {/* Chi so khong "nam giu" duoc - hien xu huong thay cho nhan lenh MUA / NAM GIU / BAN. */}
+              <span
+                className="px-2 py-0.5 text-xs font-bold tracking-wide rounded-sm"
+                style={{ color: phanLoaiTrend(chiSoVNIndex.trend).mau, background: `${phanLoaiTrend(chiSoVNIndex.trend).mau}22`, fontFamily: "'JetBrains Mono', monospace" }}
+              >
+                XU HƯỚNG {phanLoaiTrend(chiSoVNIndex.trend).nhan.toUpperCase()}
+              </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className={`grid grid-cols-2 gap-4 ${chiSoVNIndex.kumo_twist ? "sm:grid-cols-4" : "sm:grid-cols-3"}`}>
               <div>
                 <p className="text-[11px] mb-1" style={{ color: MUTED }}>Điểm tổng hợp</p>
                 <p
@@ -359,12 +363,15 @@ export default async function TrangTongQuan() {
                   {fmt(chiSoVNIndex.kijun)}
                 </p>
               </div>
-              <div>
-                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Mây tương lai</p>
-                <p className="text-lg" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
-                  {chiSoVNIndex.kumo_twist === "TANG" ? "Tăng" : chiSoVNIndex.kumo_twist === "GIAM" ? "Giảm" : "—"}
-                </p>
-              </div>
+              {/* May tuong lai chi co gia tri o phien may doi chieu - khong co thi an o nay (khong hien "—"). */}
+              {chiSoVNIndex.kumo_twist && (
+                <div>
+                  <p className="text-[11px] mb-1" style={{ color: MUTED }}>Mây tương lai đổi chiều</p>
+                  <p className="text-lg" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: chiSoVNIndex.kumo_twist === "TANG" ? XANH : DO }}>
+                    {chiSoVNIndex.kumo_twist === "TANG" ? "Tăng" : "Giảm"}
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4 mt-5 pt-5 border-t" style={{ borderColor: VIEN }}>

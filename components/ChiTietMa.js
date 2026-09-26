@@ -19,6 +19,7 @@ import {
   nhanMuaMoi,
   nhanBaoVeLai,
   nhanLyDoBan,
+  nhanChoHoi,
   laChoPhienSau,
   kiemTraChuanUuTien,
   gioGhiNhan,
@@ -137,18 +138,6 @@ function CardCauChuyen({ cauChuyen }) {
   );
 }
 
-function CardDangCapNhat({ tieuDe }) {
-  return (
-    <div className="rounded-2xl border border-dashed p-5" style={{ borderColor: VIEN }}>
-      <p className="text-xs uppercase tracking-wide mb-4" style={{ color: "#9D8CF0" }}>
-        {tieuDe}
-      </p>
-      <div className="flex items-center justify-center h-20 text-sm" style={{ color: "#5B5B66" }}>
-        Đang cập nhật...
-      </div>
-    </div>
-  );
-}
 
 function BannerMatThan() {
   return (
@@ -395,6 +384,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
             điểm hợp lưu
           </p>
           <SignalPill tin={row.tin} />
+          {nhanChoHoi(row) && (
+            <span className="mt-2 text-[11px] font-bold" style={{ color: nhanChoHoi(row).mau }} title={nhanChoHoi(row).moTa} data-may="vung-mua">
+              ⏳ {nhanChoHoi(row).nhan}
+            </span>
+          )}
           {nhanLyDoBan(row) && (
             <span className="mt-2 text-[11px] font-bold" style={{ color: nhanLyDoBan(row).mau }} title={nhanLyDoBan(row).moTa}>
               {nhanLyDoBan(row).nhan}
@@ -455,7 +449,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 </p>
               )}
               <p className="text-[11px]" style={{ color: "#8B8B99" }}>
-                Đang giữ {vt.so_phien_giu ?? "—"} phiên
+                {vt.so_phien_giu === 0 ? "Mua hôm nay" : `Đang giữ ${vt.so_phien_giu ?? "—"} phiên`}
               </p>
               <p
                 className="text-sm font-bold"
@@ -727,10 +721,13 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         <NhatKyGiaoDich ma={row.ma} lichSuDaDong={lichSuDaDong} cacLenh={cacLenh} />
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4 mb-10">
-        {dinhGia.length > 0 ? <CardDinhGia dinhGia={dinhGia} /> : <CardDangCapNhat tieuDe="Khuyến nghị công ty chứng khoán" />}
-        {cauChuyen.length > 0 ? <CardCauChuyen cauChuyen={cauChuyen} /> : <CardDangCapNhat tieuDe="Câu chuyện kỳ vọng" />}
-      </div>
+      {/* Khuyen nghi CTCK / cau chuyen ky vong: chi hien khi co du lieu (khong de o "Dang cap nhat..." trong). */}
+      {(dinhGia.length > 0 || cauChuyen.length > 0) && (
+        <div className={`grid gap-4 mb-10 ${dinhGia.length > 0 && cauChuyen.length > 0 ? "sm:grid-cols-2" : ""}`}>
+          {dinhGia.length > 0 && <CardDinhGia dinhGia={dinhGia} />}
+          {cauChuyen.length > 0 && <CardCauChuyen cauChuyen={cauChuyen} />}
+        </div>
+      )}
     </div>
   );
 }

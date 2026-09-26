@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ArrowUpCircle, ArrowDownCircle, Target, ShieldCheck, TrendingUp, Rewind } from "lucide-react";
-import { fmt, pct } from "@/components/dungChung";
+import { fmt, pct, chuoiGiuPhien } from "@/components/dungChung";
 import { dungNhatKyLenh } from "@/lib/nhatKyLenh";
 import { ngayChuoi } from "@/lib/muaThemTinhToan";
 
@@ -41,7 +41,7 @@ function hienSuKien(s) {
   let phu;
   if (s.kieu === "mua" || s.kieu === "mua_moi") phu = `Giá ${fmt(s.gia)}`;
   else if (s.kieu === "cham_tp") phu = `Giá vượt ${fmt(s.moc)} · sau ${s.soPhien} phiên`;
-  else if (s.kieu === "dang_giu") phu = `Tính đến lần cập nhật dữ liệu gần nhất${s.soPhien != null ? ` · giữ ${s.soPhien} phiên` : ""}`;
+  else if (s.kieu === "dang_giu") phu = `Tính đến lần cập nhật dữ liệu gần nhất${s.soPhien != null ? ` · ${chuoiGiuPhien(s.soPhien)}` : ""}`;
   else phu = `Giá ${fmt(s.gia)}${s.soPhien != null ? ` · giữ ${s.soPhien} phiên` : ""}`;
   const mauLai = mauLaiLo(s.laiLoPct);
   return {
@@ -145,7 +145,7 @@ function ThanhChonNhatKy({ lenh, khoaChon, datKhoa }) {
             </span>
             <span className="block text-[11px]" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
               giá {fmt(l.giaMua)}
-              {l.soPhien != null ? ` · ${l.soPhien} phiên` : ""}
+              {l.soPhien != null ? ` · ${chuoiGiuPhien(l.soPhien)}` : ""}
             </span>
             <span className="block text-xs font-bold" style={{ fontFamily: "'JetBrains Mono', monospace", color: mauLaiLo(l.ketQuaPct) }}>
               {l.dangGiu ? "Đang giữ" : "Đã đóng"} · {pct(l.ketQuaPct, 2)}
@@ -175,7 +175,7 @@ function TomTatLenh({ l }) {
         </p>
         <p className="text-[11px] mt-0.5" style={{ color: MUTED }}>
           {l.dangGiu ? `Đang giữ ${so(l.conLaiPct)}% vị thế${l.daChotPct > 0 ? ` · đã chốt ${so(l.daChotPct)}%` : ""}` : "Đã đóng hoàn toàn"}
-          {l.soPhien != null ? ` · giữ ${l.soPhien} phiên` : ""}
+          {l.soPhien != null ? ` · ${chuoiGiuPhien(l.soPhien)}` : ""}
         </p>
       </div>
       <div className="text-right" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
