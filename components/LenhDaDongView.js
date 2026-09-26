@@ -35,7 +35,9 @@ function nhanKetThuc(x) {
         ? "Cắt lỗ (chạm Stop-loss của lệnh này)"
         : x.ly_do === "BAO_VE_LAI"
           ? "Hòa vốn (sau TP2, Stop-loss dời về giá mua)"
-          : x.ly_do === "BAN"
+          : x.vong === 2 && x.ly_do === "THOAT"
+            ? "Đóng lệnh (kiểu Mua mới sau TP3 đã bỏ từ 27/09/2026)"
+            : x.ly_do === "BAN"
             ? "Đóng cùng lệnh đầu (có tín hiệu BÁN)"
             : "Đóng cùng lệnh đầu";
     return x.phan_chot_pct != null && pc < 100 ? `${chinh} · phần còn lại ${x.phan_chot_pct}%` : chinh;

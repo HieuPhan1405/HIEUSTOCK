@@ -57,7 +57,7 @@ for (const [ma, nen] of Object.entries(cache)) {
   });
   let hang;
   try {
-    hang = tinhTinHieuChoMa({ ma, nen, vniClose, san: "HOSE", ketQuaBreadth, thamSo: { traChuoi: true, ketThucTaiTP3: false, thoatKijunSauTP2: false, batMuaMoi: true } });
+    hang = tinhTinHieuChoMa({ ma, nen, vniClose, san: "HOSE", ketQuaBreadth, thamSo: { traChuoi: true, ketThucTaiTP3: false, thoatKijunSauTP2: false } });
   } catch (e) {
     console.log("Loi", ma, String(e.message || e).slice(0, 80));
     continue;

@@ -69,7 +69,7 @@ const MAC_DINH = {
   soLanMuaLaiToiDa: 2,
   // 2 TP + PHAN CON LAI GIU DEN TIN HIEU BAN (2026-09-26, theo backtest engine/dich-vu/backtestHaiMocChayDenBan.mjs): TP1 chot 30%, TP2 chot 30%, 40% con lai giu cho toi khi
   // he thong bao BAN / cham Stop-loss / bao ve hoa von sau TP2 (bvHoaVon). TP3 chi la moc tham khao. Hai cong tac duoi day la CACH KHAC (mac dinh TAT): ketThucTaiTP3 = dong lenh
-  // o TP3 (30/30/40, 2026-09-25); thoatKijunSauTP2 = sau TP2 ban not neu dong cua < Kijun. "Mua moi sau TP3" (vong 2, batMuaMoi) van tat mac dinh.
+  // o TP3 (30/30/40, 2026-09-25); thoatKijunSauTP2 = sau TP2 ban not neu dong cua < Kijun. "Mua moi sau TP3" (vong 2, batMuaMoi) DA BO 27/09/2026 (AFL khoa cung Tat) - chi con de backtest / doc lenh cu.
   ketThucTaiTP3: false,
   thoatKijunSauTP2: false,
   batMuaMoi: false,

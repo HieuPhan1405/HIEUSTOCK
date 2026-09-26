@@ -649,28 +649,7 @@ export async function POST(request) {
       /* loi bao Zalo khong duoc lam hong upload */
     }
   }
-  // Bao Zalo MUA MOI: lenh MUA MOI sau khi lenh goc cham TP3 (vong 2) - lenh doc lap, bao 1 lan cho moi lenh moi (khong lap khi upload lai).
-  for (let k = 0; k < hangDL.length; k++) {
-    const h = hangDL[k];
-    if (boolTriState(h.mua_moi) !== true) continue;
-    const cu = banGhiCuTheoMa[h.ma];
-    if (cu && cu.dang_giu_moi === true && cu.ngay_mua_moi_txt === soNgayVN(h.ngay_mua_moi)) continue;
-    try {
-      const dong = [
-        `🟢 MUA MỚI (sau TP3): ${h.ma}`,
-        `Giá mua mới: ${moiGia[k] ?? h.gia}${moiStop[k] ? ` · Cắt lỗ riêng: ${moiStop[k]}` : ""}`,
-        moiTp1[k] ? `Chốt lời mới: ${moiTp1[k]} / ${moiTp2[k] ?? "—"} / ${moiTp3[k] ?? "—"}` : null,
-        cu?.gia_vao_web > 0 || cu?.gia_mua > 0 ? `Lệnh đầu: giá mua ${cu.gia_vao_web > 0 ? cu.gia_vao_web : cu.gia_mua}` : null,
-        trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa" : null,
-        `Xem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`,
-      ];
-      const ketQua = await guiZaloNeuDuocPhep(dong.filter(Boolean).join("\n"));
-      if (ketQua.gui) zaloDaGui++;
-      else if (!zaloLoi) zaloLoi = ketQua.ly_do;
-    } catch {
-      /* loi bao Zalo khong duoc lam hong upload */
-    }
-  }
+  // (Bao Zalo "MUA MOI sau TP3" - vong 2 - da bo 27/09/2026 cung tinh nang.)
   // Bao Zalo MUA THEM GIUA CHUNG: vi the phu doc lap voi vong 2, mo TRUOC khi cham du TP3 (bo
   // sung 2026-09-23) - bao 1 lan cho moi lenh moi (khong lap khi upload lai).
   for (let k = 0; k < hangDL.length; k++) {

@@ -663,10 +663,12 @@ StopMuaLaiBar = IIf((HoTroMuaLaiGia > 0) AND (HoTroMuaLaiGia < C), SLMuaLaiTho,
 // => MUA MOI (tai gia dong cua), Stop-loss RIENG duoi ho tro, TP1/2/3 rieng. Toi da 1 lan cho moi lenh goc. Lenh moi thoat khi
 // cham Stop-loss rieng hoac khi lenh goc bi Ban (tin hieu). Vi the cu (15%) van giu gia mua cu.
 // ============================================================================
-BatMuaMoi = ParamToggle("MUA MOI sau TP3: bao mua moi khi hoi ve ho tro (chi xuat/hien thi)", "Tat|Bat", 0); // 2026-09-25: mac dinh Tat - lenh da ket thuc o TP3, diem mua sau do la MUA BINH THUONG
-KieuHoTroMuaMoi = ParamList("Mua moi sau TP3 - ho tro", "Kijun|Can bang dai han (duoi)", 0);
-DiemToiThieuMuaMoi = Param("Mua moi sau TP3 - diem toi thieu", 1.25, 0, 4, 0.05);
-MuaMoiCaoToiDaPct = Param("Mua moi sau TP3 - gia toi da cao hon ho tro (%)", 4, 1, 15, 0.5);
+// MUA MOI SAU TP3 (vong 2) DA BO 27/09/2026: TP3 chi con la moc tham khao (40% cua lenh dau van chay den tin hieu BAN) nen khong con "sau TP3"; nguoi lo lenh dau dung lenh
+// MUA MOI dot sau (Mua them giua chung / MuaGiua*). Khoa cung o Tat (khong con trong hop tham so) - cac cot CSV mua_moi..ngay_mua_moi van xuat (luon 0 / rong) de web doc on dinh.
+BatMuaMoi = 0;
+KieuHoTroMuaMoi = "Kijun";
+DiemToiThieuMuaMoi = 1.25;
+MuaMoiCaoToiDaPct = 4;
 HoTroMuaMoi = IIf(KieuHoTroMuaMoi == "Kijun", Kijun, CBBot);
 MuaMoiTinHieu = BatMuaMoi AND (HoTroMuaMoi > 0)
     AND (L <= HoTroMuaMoi * (1 + DoChamHoTroPct/100)) AND (C > HoTroMuaMoi) AND (C <= HoTroMuaMoi * (1 + MuaMoiCaoToiDaPct/100))
