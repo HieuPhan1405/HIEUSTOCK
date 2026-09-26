@@ -132,3 +132,52 @@ body.may-mo [data-may].may-dang-xem {
     transition: none;
   }
 }
+
+/* Mây chao: tho ra xa hon mot chut + bong bong loi chao ben trai (tu an). */
+.may-nut.may-nut-chao {
+  right: -20px;
+  transform: rotate(-4deg);
+}
+.may-bong-chao {
+  right: 82px;
+  top: calc(42% + 8px);
+  max-width: 240px;
+  animation: may-hien 0.25s ease-out;
+}
+.may-bong-chao::after {
+  content: "";
+  position: absolute;
+  right: -7px;
+  top: 16px;
+  width: 12px;
+  height: 12px;
+  background: #1b1830;
+  border-top: 1px solid rgba(167, 139, 250, 0.55);
+  border-right: 1px solid rgba(167, 139, 250, 0.55);
+  transform: rotate(45deg);
+}
+@keyframes may-hien {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (max-width: 639px) {
+  .may-nut.may-nut-chao {
+    right: -14px;
+  }
+  .may-bong-chao {
+    right: 62px;
+    top: calc(46% + 4px);
+    max-width: 200px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .may-bong-chao {
+    animation: none;
+  }
+}
