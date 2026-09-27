@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 3,
+  "composition": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 23.0333,
+    "layout": "portrait",
+    "themeId": "noir",
+    "seed": 42
+  },
+  "videoTrack": {
+    "sourcePath": "input-video.mp4",
+    "startSec": 0,
+    "endSec": 23.0333,
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1080,
+      "height": 1920
+    }
+  },
+  "subtitles": {
+    "enabled": true,
+    "style": "kinetic 2 dòng, ngang vai"
+  },
+  "cards": [
+    {
+      "id": "card-hook",
+      "startSec": 0.0,
+      "endSec": 3.3
+    },
+    {
+      "id": "card-japan",
+      "startSec": 6.68,
+      "endSec": 10.0
+    },
+    {
+      "id": "card-vpbank",
+      "startSec": 11.54,
+      "endSec": 12.8
+    },
+    {
+      "id": "card-chart",
+      "startSec": 12.8,
+      "endSec": 19.01
+    },
+    {
+      "id": "card-two",
+      "startSec": 20.38,
+      "endSec": 23.0333
+    }
+  ]
+}
