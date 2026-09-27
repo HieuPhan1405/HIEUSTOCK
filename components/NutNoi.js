@@ -21,7 +21,7 @@ export default function NutNoi({ zalo, facebook }) {
   const coKenh = Boolean(zalo || facebook);
 
   return (
-    <div className="fixed bottom-4 right-3 md:bottom-5 md:right-4 z-30 flex flex-col items-center gap-2 md:gap-2.5">
+    <div className="nut-noi fixed bottom-4 right-3 md:bottom-5 md:right-4 z-30 flex flex-col items-center gap-2 md:gap-2.5">
       {daCuon && (
         <button
           type="button"

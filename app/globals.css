@@ -85,10 +85,11 @@ html {
     max-height: 58vh;
   }
 }
-/* Dien thoai: khung chuong thong bao / dong ho tren thanh dau rong het chieu ngang -> tam an Mây dang nap o mep phai (Mây dang mo thi giu nguyen). */
+/* Dien thoai: khung chuong thong bao / dong ho tren thanh dau rong het chieu ngang -> tam an Mây dang nap o mep phai (Mây dang mo thi giu nguyen) va cac nut noi goc duoi. */
 @media (max-width: 639px) {
   body.thanh-dau-mo .may-nut:not(.may-nut-mo),
-  body.thanh-dau-mo .may-bong-chao {
+  body.thanh-dau-mo .may-bong-chao,
+  body.thanh-dau-mo .nut-noi {
     display: none;
   }
 }
