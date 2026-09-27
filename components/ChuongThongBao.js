@@ -173,10 +173,10 @@ export default function ChuongThongBao() {
       setDu((c) => ({ ...c, nguoiDung: { ...c.nguoiDung, phamVi } }));
     });
 
-  // Nhom theo ngay (gio Viet Nam).
+  // Nhom theo PHIEN cua su kien (dang ky moi: ngay dang ky, gio Viet Nam).
   const nhom = [];
   for (const t of du?.ds ?? []) {
-    const ngay = ngayVN(t.tao_luc);
+    const ngay = t.ngay ?? ngayVN(t.tao_luc);
     if (!nhom.length || nhom[nhom.length - 1].ngay !== ngay) nhom.push({ ngay, ds: [] });
     nhom[nhom.length - 1].ds.push(t);
   }
@@ -348,9 +348,12 @@ export default function ChuongThongBao() {
                             <span className="text-[13px] font-semibold truncate" style={{ color: TEXT }}>
                               {t.tieu_de}
                             </span>
-                            <span className="ml-auto text-[10px] shrink-0" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
-                              {gioVN(t.tao_luc)}
-                            </span>
+                            {/* Gio web thay su kien - chi hien khi cung ngay voi phien (nap lai sau phien thi an, tranh nham gio). */}
+                            {ngayVN(t.tao_luc) === n.ngay && (
+                              <span className="ml-auto text-[10px] shrink-0" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+                                {gioVN(t.tao_luc)}
+                              </span>
+                            )}
                           </span>
                           {t.noi_dung && (
                             <span className="block text-[11px] leading-snug mt-0.5" style={{ color: MUTED }}>

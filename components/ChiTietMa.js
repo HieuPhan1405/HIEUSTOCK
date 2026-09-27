@@ -567,9 +567,9 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
             Vì sao {row.ma} {row.diem >= 0 ? "được" : "bị trừ"} {soAn(row.diem)} điểm?
           </p>
-          <ThanhDiem nhan="Trend (x1.5)" giaTri={row.trend} mucMax={TREND_MAX} />
-          <ThanhDiem nhan="Momentum (x1.0)" giaTri={row.mom} mucMax={MOM_MAX} />
-          <ThanhDiem nhan="Dòng tiền (x1.2)" giaTri={row.dt} mucMax={DT_MAX} />
+          <ThanhDiem nhan="Trend (x1,5)" giaTri={row.trend} mucMax={TREND_MAX} />
+          <ThanhDiem nhan="Momentum (x1,0)" giaTri={row.mom} mucMax={MOM_MAX} />
+          <ThanhDiem nhan="Dòng tiền (x1,2)" giaTri={row.dt} mucMax={DT_MAX} />
           <ThanhMotChieu nhan="ADX (sức mạnh xu hướng)" giaTri={row.adx} mucMax={60} />
           <ThanhDiem nhan="RS so với VNI (20 phiên, %)" giaTri={row.rs_vni} mucMax={RS_MAX} />
           <ThanhMotChieu nhan="Breadth ngành (%)" giaTri={row.breadth_nganh} mucMax={100} hauTo="%" />
