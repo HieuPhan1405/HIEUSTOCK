@@ -29,6 +29,10 @@ ok("ban co ket qua ca lenh", ds[1].noi_dung.includes("cả lệnh -3,1%"), ds[1]
 ok("mua moi dung khoa lenh", ds[2].khoa === "mua_moi:FPT|giua|2026-09-28");
 ok("ban bot TP1, TP2 khoa rieng", ds[3].khoa.endsWith(":TP1") && ds[4].khoa.endsWith(":TP2"));
 ok("giam bot", ds[5].loai === "giam_bot" && ds[5].tieu_de === "GIẢM BỚT MWG");
+ok(
+  "giam bot: 1 lan cho moi lenh (khoa theo ngay mua, khong theo phien)",
+  dungThongBaoTinHieu({ ngay: "2026-09-30", banBot: [{ khoa: "MWG|canhBao", ma: "MWG", loai: "canhBao", ngayMua: "2026-09-10", diem: 0.4 }] })[0].khoa === "giam_bot:MWG:2026-09-10"
+);
 ok("khong co ngay -> rong", dungThongBaoTinHieu({ ...coHoi, ngay: null }).length === 0);
 ok(
   "mua: khoa theo ngay tin hieu (upload du lieu cu sang phien sau khong bao lai)",
