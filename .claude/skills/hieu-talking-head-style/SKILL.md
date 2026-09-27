@@ -61,17 +61,21 @@ Phân tích từ 3 video mẫu (9:16, 576x1024, 25–84s). Khi dựng video mớ
 
 ## 5. Chuyển cảnh & chuyển động
 
-- **Keyframe là chủ chốt**: punch-in/zoom nhẹ giữa các câu (đổi khung hình 100% → 115%),
-  không để cảnh người nói đứng yên quá ~5s.
+- **Keyframe là chủ chốt — và phải MƯỢT**: mọi keyframe dùng easing (tương đương
+  "Easy Ease / F9" + chỉnh đồ thị tốc độ trong After Effects) → trong HyperFrames dùng
+  ease `power2/power3.inOut` hoặc `expo.out`, không dùng `linear`. Video "clean" = animation mượt.
+- Punch-in/zoom nhẹ giữa các câu (100% → 115%), không để cảnh người nói đứng yên quá ~5s.
 - Chuyển cảnh: flash trắng/light leak, glitch/pixel dissolve, dấu X đỏ khi nói "sai".
 - Đổi sang đen trắng + vignette cho khoảnh khắc nhấn mạnh/tiêu cực.
 - Gradient tối ở đáy khung để chữ dễ đọc.
 
 ## 6. Âm thanh
 
-- **Sound effect phải hợp** với hiệu ứng, với element và với animation
+- **Không bỏ SFX "đại" vào.** SFX phải hợp với chuyển động và element trên màn hình
   (whoosh khi trượt, pop khi chữ bật, click khi gõ chữ, ding khi hiện số).
-- Giọng nói: thêm **Studio Reverb nhẹ** cho ấm, lọc ồn.
+- **Bản thân SFX cũng cần hiệu ứng**: thêm **Studio Reverb** lên SFX để nó hoà vào không gian,
+  không bị "khô" và tách rời giọng nói.
+- Giọng nói: lọc ồn, âm lượng đều.
 - Nhạc nền nhỏ, duck (giảm) khi đang nói.
 
 ## 7. Áp dụng với HyperFrames
@@ -88,6 +92,7 @@ Phân tích từ 3 video mẫu (9:16, 576x1024, 25–84s). Khi dựng video mớ
 - [ ] Không caption nào quá 2 dòng, caption ở ngang vai
 - [ ] ≤ 3 font, ≤ 1 màu nhấn (+ xanh/đỏ cho số liệu)
 - [ ] Đổi hình mỗi 3–5s
-- [ ] Mỗi animation có SFX đi kèm
+- [ ] Mỗi animation có SFX đi kèm, SFX có reverb
+- [ ] Mọi keyframe có easing mượt (không linear)
 - [ ] Số liệu tài chính đã kiểm chứng từ ≥ 2 nguồn; có dòng "không phải khuyến nghị đầu tư"
 - [ ] CTA ở cuối
