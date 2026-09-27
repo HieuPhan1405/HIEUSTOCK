@@ -5,6 +5,7 @@ import CoHoiHomNay from "@/components/CoHoiHomNay";
 import { layLenhCoSuKienNgay, ngayGiaoDichVN } from "@/lib/lenhDaDong";
 import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat } from "@/components/dungChung";
 import NhanCapNhat from "@/components/NhanCapNhat";
+import { soVN } from "@/lib/soVN";
 
 export const dynamic = "force-dynamic";
 
@@ -59,7 +60,7 @@ function sinhNhanDinh(tatCa) {
   else if (pctTang - pctGiam > 30) { sacThai = "TÍCH CỰC"; mau = XANH; }
 
   const cau = [
-    `Thị trường nghiêng ${sacThai.toLowerCase()} với ${pctGiam.toFixed(1)}% mã giảm điểm / ${pctTang.toFixed(1)}% mã tăng điểm trong ${tong} mã VN30-Midcap-Smallcap đang theo dõi (HOSE, HNX, UPCOM), trong đó ${soGiamManh} mã (${pctGiamManh.toFixed(1)}%) giảm mạnh trên 3%.`,
+    `Thị trường nghiêng ${sacThai.toLowerCase()} với ${soVN(pctGiam, 1, true)}% mã giảm điểm / ${soVN(pctTang, 1, true)}% mã tăng điểm trong ${tong} mã VN30-Midcap-Smallcap đang theo dõi (HOSE, HNX, UPCOM), trong đó ${soGiamManh} mã (${soVN(pctGiamManh, 1, true)}%) giảm mạnh trên 3%.`,
   ];
   if (soMatThan > 0) {
     cau.push(`Có ${soMatThan} mã đang cảnh báo Mắt Thần — rủi ro đảo chiều cần theo dõi sát trong các phiên tới.`);
@@ -348,7 +349,7 @@ export default async function TrangTongQuan() {
                   className="text-lg"
                   style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: chiSoVNIndex.diem >= 0 ? XANH : DO }}
                 >
-                  {chiSoVNIndex.diem?.toFixed(2) ?? "—"}
+                  {soVN(chiSoVNIndex.diem, 2, true)}
                 </p>
               </div>
               <div>
@@ -443,7 +444,7 @@ export default async function TrangTongQuan() {
                 <div className="flex justify-between text-xs mb-1" style={{ color: "#A6A6B3" }}>
                   <span>{nhan}</span>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>
-                    {tongNhom === 0 ? "chưa có dữ liệu" : `${xanh}/${tongNhom} mã xanh (${pctXanhNhom.toFixed(1)}%)`}
+                    {tongNhom === 0 ? "chưa có dữ liệu" : `${xanh}/${tongNhom} mã xanh (${soVN(pctXanhNhom, 1, true)}%)`}
                   </span>
                 </div>
                 <div className="h-2 rounded-full overflow-hidden" style={{ background: NEN_INSET }}>

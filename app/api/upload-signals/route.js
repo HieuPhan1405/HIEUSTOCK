@@ -16,6 +16,7 @@ import {
   ngayGiaoDichVN,
 } from "@/lib/lenhDaDong";
 import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
+import { thongBaoPhien } from "@/lib/thongBaoDb";
 import { TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
 import { phatHienXuatHien } from "@/lib/xuatHienTinHieu";
 import { ghiXuatHien } from "@/lib/xuatHienDb";
@@ -681,10 +682,22 @@ export async function POST(request) {
     else if (!zaloLoi) zaloLoi = ketQua.ly_do;
   }
 
+  // THONG BAO (chuong tren web + thong bao ve may): su kien cua phien DUNG nhu 4 o "Top co hoi dang chu y" o trang dau - Mua / Ban / Mua moi / Ban bot. Moi su kien chi bao 1 lan
+  // (khoa chong trung), upload lai trong phien chi bao su kien moi. Nguon thu nghiem (header x-skip-zalo) khong bao. Loi o day KHONG lam hong lan upload.
+  let thongBao = {};
+  if (!boQuaZalo) {
+    try {
+      thongBao = await thongBaoPhien({ trongPhien });
+    } catch (e) {
+      thongBao.loi = String(e?.message || e);
+    }
+  }
+
   return Response.json({
     trangThai: "ok",
     lenhDaDong,
     xuatHien,
+    thongBao,
     soDongDaLuu: hangDL.length,
     tongSoDongNhan: hangDL.length,
     soDongLoiDaBoQua: soDongLoi,

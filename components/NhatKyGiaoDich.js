@@ -5,6 +5,7 @@ import { ArrowUpCircle, ArrowDownCircle, Target, ShieldCheck, TrendingUp, Rewind
 import { fmt, pct, chuoiGiuPhien } from "@/components/dungChung";
 import { dungNhatKyLenh } from "@/lib/nhatKyLenh";
 import { ngayChuoi } from "@/lib/muaThemTinhToan";
+import { soVN } from "@/lib/soVN";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -20,7 +21,7 @@ const ngayVN = (s) => (s ? String(s).slice(0, 10).split("-").reverse().join("/")
 // Von 100 don vi -> hien 1 chu so thap phan khi can (vd 33, 105.3).
 const so = (n) => {
   const v = Math.round(Number(n) * 10) / 10;
-  return Number.isInteger(v) ? String(v) : v.toFixed(1);
+  return soVN(v, 1);
 };
 const mauLaiLo = (v) => (v == null ? MUTED : v >= 0 ? XANH : DO);
 

@@ -1,3 +1,4 @@
+import { soVN } from "@/lib/soVN";
 // Danh muc CAC COT CHI SO dung chung cho bang Bo loc co phieu va bang So lenh
 // dang mo - moi chi so dinh nghia 1 lan (nhan, cach sap xep, cach hien thi).
 // Hai bang tu chon thu tu + cot mac dinh (xem BangBoLoc.js / BangLenhMo.js) va
@@ -131,7 +132,7 @@ export const CAC_COT = {
     lay: (r) => r.diem,
     hien: (r) => (
       <span className="font-bold" style={{ color: r.diem >= 0 ? XANH : DO }}>
-        {r.diem?.toFixed(2) ?? "—"}
+        {soVN(r.diem, 2, true)}
       </span>
     ),
   },
@@ -176,7 +177,7 @@ export const CAC_COT = {
       r.diem_neu_vuot == null ? (
         Trong
       ) : (
-        <span style={{ color: r.diem_neu_vuot >= NGUONG_DIEM_MUA ? XANH : undefined }} title="Ước tính: mỗi mốc vượt được cộng khoảng +1.5 điểm">
+        <span style={{ color: r.diem_neu_vuot >= NGUONG_DIEM_MUA ? XANH : undefined }} title="Ước tính: mỗi mốc vượt được cộng khoảng +1,5 điểm">
           {soAn(r.diem_neu_vuot, 2)}
         </span>
       ),

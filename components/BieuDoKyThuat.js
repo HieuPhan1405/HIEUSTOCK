@@ -6,6 +6,7 @@ import { tinhIchimoku, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib
 import { DaiMay, DaiGia } from "@/components/bieuDoPlugin";
 import { fmt } from "@/components/dungChung";
 import { dangTrongPhienGiaoDich } from "@/lib/khungGioVaoLenh";
+import { soVN, pctVN } from "@/lib/soVN";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -122,7 +123,7 @@ function timNenTruoc(nen, ngay) {
 }
 
 const chuoiThoiGian = (t) => (typeof t === "object" && t ? `${t.year}-${String(t.month).padStart(2, "0")}-${String(t.day).padStart(2, "0")}` : String(t));
-const chuoiKL = (v) => (v >= 1e6 ? `${(v / 1e6).toFixed(2)}tr` : v >= 1e3 ? `${(v / 1e3).toFixed(0)}k` : String(v ?? 0));
+const chuoiKL = (v) => (v >= 1e6 ? `${soVN(v / 1e6, 2, true)} tr` : v >= 1e3 ? `${soVN(v / 1e3, 0)} nghìn` : soVN(v ?? 0, 0));
 
 function Chip({ bat, onClick, children, mau }) {
   return (
@@ -172,7 +173,8 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       crosshair: { mode: CrosshairMode.Normal },
       rightPriceScale: { borderColor: VIEN, scaleMargins: { top: 0.06, bottom: 0.22 } },
       timeScale: { borderColor: VIEN, rightOffset: 4, minBarSpacing: 2 },
-      localization: { locale: "vi-VN" },
+      // Gia kieu Viet Nam tren truc gia / nhan gia (25,50 thay vi 25.50).
+      localization: { locale: "vi-VN", priceFormatter: (p) => soVN(p, 2, true) },
     });
     const dong = (mau, rong = 1, them = {}) =>
       chart.addSeries(LineSeries, { color: mau, lineWidth: rong, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false, ...them });
@@ -374,7 +376,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             <span>
               Đ <b style={{ color: mauDoi }}>{fmt(hienTai.c)}</b>
             </span>
-            {doiPct != null && <b style={{ color: mauDoi }}>{`${doiPct > 0 ? "+" : ""}${doiPct.toFixed(2)}%`}</b>}
+            {doiPct != null && <b style={{ color: mauDoi }}>{pctVN(doiPct, 2)}</b>}
             <span>
               KL <b style={{ color: TEXT }}>{chuoiKL(hienTai.v)}</b>
             </span>

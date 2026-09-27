@@ -1,4 +1,8 @@
+import { after } from "next/server";
 import { dangKy } from "@/lib/nguoiDung";
+import { thongBaoDangKy } from "@/lib/thongBao";
+import { ghiThongBao, guiDay } from "@/lib/thongBaoDb";
+import { guiTinNhanZalo } from "@/lib/zalo";
 
 const TEN_COOKIE = "cs_token";
 const SO_NGAY_PHIEN = 30;
@@ -23,6 +27,16 @@ export async function POST(request) {
       sdt: body?.sdt,
       matKhau: body?.matKhau,
       ten: body?.ten,
+    });
+    // Bao QUAN TRI co nguoi dang ky moi (chuong thong bao + thong bao ve may + Zalo cua chu web) - chay SAU khi tra ket qua, loi o day khong anh huong nguoi dang ky.
+    after(async () => {
+      try {
+        const moi = await ghiThongBao([thongBaoDangKy(nguoiDung)]);
+        if (moi.length) await guiDay(moi);
+        await guiTinNhanZalo(`👤 NGƯỜI MỚI ĐĂNG KÝ: ${nguoiDung.ten || "Chưa đặt tên"} · ${nguoiDung.sdt}\nĐang chờ duyệt: https://cloudstock.id.vn/quan-tri`);
+      } catch {
+        /* bo qua */
+      }
     });
     return Response.json(
       { trangThai: "ok", nguoiDung },

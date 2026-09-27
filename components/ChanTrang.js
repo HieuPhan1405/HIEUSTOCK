@@ -85,7 +85,7 @@ export default async function ChanTrang() {
   return (
     <>
       <footer className="mt-16" style={{ background: NEN, borderTop: `1px solid ${VIEN}` }}>
-        <div className="max-w-6xl mx-auto px-6 pt-10 pb-6">
+        <div className="max-w-6xl mx-auto px-6 pt-10 pb-20 md:pb-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
             <div className="col-span-2 lg:col-span-1">
               <Link href="/gioi-thieu" aria-label="CloudStock - về trang giới thiệu" className="inline-block mb-3">

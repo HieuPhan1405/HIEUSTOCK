@@ -4,6 +4,7 @@
 
 import { TY_LE_CHOT, TY_LE_CHOT_CU, CHUOI_TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
 import { kiemTraDuLieuCu } from "@/lib/phienGiaoDich";
+import { soVN, pctVN, tyVN, khoiLuongVN } from "@/lib/soVN";
 
 export const FONT_IMPORT = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -14,18 +15,15 @@ export function fmt(n) {
   // Gia CP VN co buoc gia le (0.01-0.1 nghin dong) - lam tron ve so nguyen
   // (Math.round) xoa mat phan thap phan, khien Gia mua/Gia hien tai gan nhau
   // (vd 14.05 va 14.6) hien ra giong het nhau la "14"/"15". Giu toi da 2 chu
-  // so thap phan, bo so 0 thua (243 -> "243", khong phai "243.00").
-  return new Intl.NumberFormat("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 }).format(Number(n));
+  // so thap phan, bo so 0 thua (243 -> "243", khong phai "243,00"). Kieu Viet Nam: 1.785,11 (lib/soVN.js).
+  return soVN(n, 2);
 }
 
 // Khoi luong TB20 (co phieu) - dung SO CO PHIEU truc tiep (khop dung cach
 // he thong xet "an toan thanh khoan" trong AFL: MA(V,20) >= 100.000 cp),
 // thay vi gia tri giao dich quy doi ra tien (de nham lan don vi truoc day).
 export function chuoiKhoiLuong(v) {
-  if (v === null || v === undefined || Number.isNaN(Number(v))) return "—";
-  const n = Number(v);
-  if (n >= 1000) return `${(n / 1000).toFixed(1)}K cp`;
-  return `${n.toFixed(0)} cp`;
+  return khoiLuongVN(v);
 }
 
 // Trang thai GIAI NGAN cua lenh dang mo (cot giai_ngan tu AFL): khi RS so voi
@@ -51,9 +49,7 @@ export function nhanGiaiNgan(row) {
 // Ty dong (von hoa, GTGD): >= 100 lam tron ve so nguyen, nho hon giu 1 chu so
 // thap phan (GTGD 10.4 ty khac 10 ty khi so voi nguong "tren 10 ty").
 export function fmtTy(n) {
-  if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
-  const v = Number(n);
-  return new Intl.NumberFormat("en-US", { maximumFractionDigits: v >= 100 ? 0 : 1 }).format(v);
+  return tyVN(n);
 }
 
 // TIEU CHI CHON CO PHIEU UU TIEN (bo loc "Chi ma uu tien"): gia tren 10.000d,
@@ -285,18 +281,15 @@ export function chuoiVung(tu, den) {
 }
 
 export function pct(n, digits = 2) {
-  if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
-  const v = Number(Number(n).toFixed(digits));
-  return `${v > 0 ? "+" : ""}${v}%`;
+  return pctVN(n, digits);
 }
 
 export function so1So(n) {
-  if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";
-  return Number(n).toFixed(1);
+  return soVN(n, 1, true);
 }
 
 export function soAn(n, chuSo = 2) {
-  return n === null || n === undefined || Number.isNaN(Number(n)) ? "—" : Number(n).toFixed(chuSo);
+  return soVN(n, chuSo, true);
 }
 
 // Phan loai xu huong theo TrendScore (da tinh san trong AFL) - dung chung

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { hierarchy, treemap, treemapSquarify } from "d3-hierarchy";
 import { NGANH_NHAN } from "@/lib/nganh";
+import { soVN, pctVN } from "@/lib/soVN";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -111,8 +112,8 @@ export default function BanDoNhiet({ tatCa }) {
               if (w <= 0 || h <= 0) return null;
               const hienCa2 = w >= 44 && h >= 30;
               const hienMa = !hienCa2 && w >= 24 && h >= 16;
-              const chuThich = `${la.data.ma} ${la.data.doi >= 0 ? "+" : ""}${la.data.doi?.toFixed(2)}%${
-                la.data.gtgd_tb20 ? ` · GTGD TB20 ${la.data.gtgd_tb20.toFixed(1)} tỷ` : ""
+              const chuThich = `${la.data.ma} ${pctVN(la.data.doi, 2)}${
+                la.data.gtgd_tb20 ? ` · GTGD TB20 ${soVN(la.data.gtgd_tb20, 1, true)} tỷ` : ""
               }`;
               return (
                 <a key={la.data.ma} href={`/ma/${la.data.ma}`} title={chuThich}>
@@ -124,7 +125,7 @@ export default function BanDoNhiet({ tatCa }) {
                       </text>
                       <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 11} textAnchor="middle" fontSize="10" fill="#E5E5EA" style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
                         {la.data.doi >= 0 ? "+" : ""}
-                        {la.data.doi?.toFixed(1)}%
+                        {soVN(la.data.doi, 1, true)}%
                       </text>
                     </>
                   )}

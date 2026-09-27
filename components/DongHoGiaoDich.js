@@ -105,7 +105,7 @@ export default function DongHoGiaoDich({ className = "" }) {
   }, [mo]);
 
   if (!bayGio) {
-    return <div className={`rounded-lg border ${className}`} style={{ borderColor: VIEN, background: NEN_CARD, width: 96, height: 36 }} />;
+    return <div className={`rounded-lg border w-9 sm:w-24 h-9 ${className}`} style={{ borderColor: VIEN, background: NEN_CARD }} />;
   }
 
   const tt = tinhTrangThai(bayGio);
@@ -118,18 +118,21 @@ export default function DongHoGiaoDich({ className = "" }) {
         onClick={() => setMo((v) => !v)}
         aria-expanded={mo}
         aria-label={`Giờ Việt Nam ${gioChuoi} — ${tt.nhan}`}
-        className="flex items-center gap-2 rounded-lg border px-2.5 py-1.5"
+        className="flex items-center justify-center gap-2 rounded-lg border h-9 w-9 sm:w-auto sm:px-2.5"
         style={{ borderColor: tt.trongKhung ? XANH : VIEN, background: NEN_CARD }}
       >
         <Clock size={15} color={tt.mau} strokeWidth={2} aria-hidden="true" />
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "13px", color: TEXT, lineHeight: 1 }}>{gioChuoi}</span>
+        {/* Dien thoai: chi hien bieu tuong (mau theo trang thai khung vao lenh) de nhuong cho o tim kiem - bam vao xem gio + chi tiet. */}
+        <span className="hidden sm:inline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "13px", color: TEXT, lineHeight: 1 }}>
+          {gioChuoi}
+        </span>
         <span className="hidden lg:inline text-[11px]" style={{ color: tt.mau, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
           {tt.nhan}
         </span>
       </button>
       {mo && (
         <div
-          className="absolute right-0 top-full mt-2 w-[320px] max-w-[calc(100vw-24px)] rounded-2xl border p-4 shadow-xl"
+          className="fixed left-2 right-2 top-[60px] sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-[320px] rounded-2xl border p-4 shadow-xl"
           style={{ borderColor: tt.trongKhung ? XANH : VIEN, background: NEN_CARD, zIndex: 40 }}
         >
           <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: TEXT, lineHeight: 1 }}>{gioChuoi}</p>

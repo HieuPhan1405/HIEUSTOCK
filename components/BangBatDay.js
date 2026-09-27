@@ -4,6 +4,7 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { fmt, pct } from "@/components/dungChung";
+import { soVN } from "@/lib/soVN";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -130,7 +131,7 @@ export default function BangBatDay({ duLieu }) {
                     <td className="py-2.5 px-3" style={{ color: MUTED }}>
                       {formatNgay(row.ngay_tin_hieu)}
                     </td>
-                    <td className="py-2.5 px-3 text-right">{row.diem?.toFixed(2) ?? "—"}</td>
+                    <td className="py-2.5 px-3 text-right">{soVN(row.diem, 2, true)}</td>
                     <td className="py-2.5 px-3 text-right">{fmt(row.gia_luc_tin_hieu)}</td>
                     <td className="py-2.5 px-3 text-right">
                       {fmt(row.gia_hien_tai)}
@@ -153,7 +154,7 @@ export default function BangBatDay({ duLieu }) {
                       {pct(row.pct_sau_20, 2)}
                     </td>
                     <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED }}>
-                      {row.chiet_khau != null ? `${row.chiet_khau.toFixed(1)}%` : "—"}
+                      {row.chiet_khau != null ? `${soVN(row.chiet_khau, 1, true)}%` : "—"}
                     </td>
                     <td className="py-2.5 px-3">
                       <span

@@ -151,8 +151,8 @@ export default function TimMaToanCuc({ className = "" }) {
           aria-expanded={coGoiY}
           aria-controls="danh-sach-goi-y-ma"
           aria-label="Tìm mã cổ phiếu hoặc tên công ty"
-          placeholder="Tìm mã hoặc tên công ty…"
-          className="w-full pl-9 pr-9 py-2 text-sm outline-none rounded-lg truncate"
+          placeholder="Tìm mã, công ty…"
+          className="w-full h-9 pl-9 pr-3 md:pr-9 text-sm outline-none rounded-lg truncate"
           style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
         />
         <kbd
@@ -167,7 +167,7 @@ export default function TimMaToanCuc({ className = "" }) {
         <ul
           id="danh-sach-goi-y-ma"
           role="listbox"
-          className="absolute left-0 right-0 mt-1.5 rounded-xl overflow-hidden shadow-2xl z-40"
+          className="fixed left-2 right-2 top-[60px] sm:absolute sm:left-0 sm:right-0 sm:top-full sm:mt-1.5 rounded-xl overflow-hidden shadow-2xl z-40"
           style={{ background: NEN_CARD, border: `1px solid ${VIEN}` }}
         >
           {goiY.length === 0 ? (
