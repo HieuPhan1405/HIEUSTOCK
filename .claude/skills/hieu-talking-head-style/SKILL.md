@@ -1,0 +1,93 @@
+---
+name: hieu-talking-head-style
+description: Phong cách dựng video talking head dọc (9:16 TikTok/Reels) của Hiếu cho kênh "Chứng khoán cùng Mây" — rút ra từ 3 video mẫu. Dùng khi Hiếu gửi video talking head để edit, hoặc hỏi cách dựng cho "giống mấy video mẫu". Áp dụng cùng /talking-head-recut, /embedded-captions, /hyperframes-keyframes, /media-use.
+---
+
+# Phong cách talking head của Hiếu
+
+Phân tích từ 3 video mẫu (9:16, 576x1024, 25–84s). Khi dựng video mới cho Hiếu,
+áp dụng toàn bộ quy tắc dưới đây trừ khi Hiếu nói khác.
+
+## 1. Nhịp dựng (pacing)
+
+- **Hook 0–3s phải có tiêu đề lớn**: 1–3 chữ khổng lồ + 1 dòng phụ nhỏ.
+  Ví dụ mẫu: "talking head **VIDEO**" (chữ nằm *sau đầu* người nói), "**NEVER** post…",
+  "ĐỪNG LÀM **3 ĐIỀU NÀY** — Video talking head *cao cấp hơn!*".
+- Có nhãn series nhỏ ("ep.1") nếu là loạt bài.
+- **Đổi hình ảnh mỗi 3–5 giây**: cắt cảnh, cutaway full màn hình, PiP, hoặc punch-in.
+  Video mẫu mạnh nhất có ~20 lần đổi cảnh trong 72s.
+- Kết bằng CTA chữ lớn: "follow mình", "hẹn gặp lại".
+
+## 2. Caption (quy tắc quan trọng nhất)
+
+- **Tối đa 2 dòng**, không bao giờ 3 dòng.
+- **Cỡ chữ vừa phải**: không quá to, không quá nhỏ.
+- **Vị trí: ngang vai / ngực** (không che mặt, không sát đáy màn hình vì UI TikTok che).
+- Mỗi lần hiện **1–4 chữ**, bật theo từng cụm lời nói (kinetic, word-by-word).
+- **Phối 2 font trong cùng một cụm**:
+  - chữ thường/chữ nối → sans nhỏ, trắng (`#FAFAFA`)
+  - **từ khoá** → serif nghiêng to (hoặc sans đậm to) bằng **màu nhấn**
+  - ví dụ: "tất tần tật / *bạn cần biết* / những thứ", "everyone's / *obsessed* / with fixing"
+- Thỉnh thoảng đặt từ khoá **phía sau người nói** (text-behind-subject) cho cảnh hook.
+- Có thể dùng caption dạng hộp màu (nền đỏ/xanh bo nhẹ, viền nét đứt) khi so sánh Đúng/Sai.
+
+## 3. Font & màu
+
+- **3 vai trò font** (không dùng nhiều hơn):
+  | Vai trò | Mẫu dùng | Thay thế miễn phí có dấu tiếng Việt |
+  |---|---|---|
+  | Sans — nội dung | SF Pro Display | Inter, Be Vietnam Pro |
+  | Serif — nhấn mạnh | Playfair Display Italic, IvyPresto | Playfair Display, Cormorant Garamond |
+  | Script — sáng tạo, thỉnh thoảng | Whisper | Whisper, Dancing Script (kiểm tra dấu) |
+  | Viết tay — nhãn chương | (kiểu Pacifico) | Pacifico, Kaushan Script |
+- **Màu: 1 trắng + 1 tối + 1 màu nhấn.** Mẫu: `#FAFAFA` + `#111111` + tím/đỏ.
+- Gợi ý cho kênh chứng khoán: nhấn **vàng `#F5C542`** hoặc **tím `#8B5CF6`**;
+  xanh `#22C55E` / đỏ `#EF4444` **chỉ** dùng cho số liệu tăng/giảm.
+- **Drop shadow nhẹ** (opacity thấp, blur nhỏ) để chữ tách nền, không dùng viền dày.
+- Đừng làm quá phức tạp.
+
+## 4. Các loại "card" đồ hoạ lặp lại
+
+1. **Cutaway full màn hình**: nền trơn (trắng ngà / gradient tím nhạt / đỏ đậm / lụa tối)
+   + 1 từ khoá hoặc 1 tên chủ đề ("fonts", "SF Pro Display 03", "how do I get more").
+2. **Thẻ chương (chapter card)**: nền kem, 2 thanh xám trượt vào từ trên/dưới, nhãn khung
+   nét đứt + icon nhỏ, chữ gõ dần ("Caption" → "Sound Effect" → "Animation").
+3. **PiP bo góc**: người nói thu nhỏ vào thẻ bo tròn trên nền sáng, chữ bao quanh
+   ("mình là … Việt … một editor").
+4. **Montage/bằng chứng**: khung hình video/screenshot cong nhẹ, trượt qua;
+   thẻ UI giả lập (số view, bảng giá) — với kênh chứng khoán: bảng giá, biểu đồ nến, % thay đổi.
+5. **Nhãn chú thích tay**: chữ viết tay + mũi tên cong chỉ vào đồ hoạ ("Quan trọng!", "Chủ chốt!").
+6. **Cutout người đen trắng** trên nền trắng + dấu "?" màu nhấn cho câu hỏi tu từ.
+
+## 5. Chuyển cảnh & chuyển động
+
+- **Keyframe là chủ chốt**: punch-in/zoom nhẹ giữa các câu (đổi khung hình 100% → 115%),
+  không để cảnh người nói đứng yên quá ~5s.
+- Chuyển cảnh: flash trắng/light leak, glitch/pixel dissolve, dấu X đỏ khi nói "sai".
+- Đổi sang đen trắng + vignette cho khoảnh khắc nhấn mạnh/tiêu cực.
+- Gradient tối ở đáy khung để chữ dễ đọc.
+
+## 6. Âm thanh
+
+- **Sound effect phải hợp** với hiệu ứng, với element và với animation
+  (whoosh khi trượt, pop khi chữ bật, click khi gõ chữ, ding khi hiện số).
+- Giọng nói: thêm **Studio Reverb nhẹ** cho ấm, lọc ồn.
+- Nhạc nền nhỏ, duck (giảm) khi đang nói.
+
+## 7. Áp dụng với HyperFrames
+
+- Caption kinetic + text-behind-subject → `/embedded-captions`.
+- Card, PiP, cutaway, CTA → `/talking-head-recut`.
+- Punch-in / zoom → `/hyperframes-keyframes`.
+- SFX, nhạc nền, lọc giọng → `/media-use` + `/hyperframes-audio`.
+- Hiệu ứng có sẵn (glitch, light leak, biểu đồ) → tìm trong `/hyperframes-registry` trước.
+
+## 8. Checklist trước khi xuất
+
+- [ ] Hook có tiêu đề lớn trong 3s đầu
+- [ ] Không caption nào quá 2 dòng, caption ở ngang vai
+- [ ] ≤ 3 font, ≤ 1 màu nhấn (+ xanh/đỏ cho số liệu)
+- [ ] Đổi hình mỗi 3–5s
+- [ ] Mỗi animation có SFX đi kèm
+- [ ] Số liệu tài chính đã kiểm chứng từ ≥ 2 nguồn; có dòng "không phải khuyến nghị đầu tư"
+- [ ] CTA ở cuối
