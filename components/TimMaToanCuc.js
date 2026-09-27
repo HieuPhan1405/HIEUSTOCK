@@ -41,6 +41,16 @@ export default function TimMaToanCuc({ className = "" }) {
   const [q, setQ] = useState("");
   const [mo, setMo] = useState(false);
   const [chon, setChon] = useState(0);
+  // Dien thoai: o tim hep -> goi y ngan; chu 16px de iPhone khong tu phong to trang khi bam vao o.
+  const [hep, setHep] = useState(false);
+
+  useEffect(() => {
+    const m = window.matchMedia("(max-width: 639px)");
+    const kiem = () => setHep(m.matches);
+    kiem();
+    m.addEventListener("change", kiem);
+    return () => m.removeEventListener("change", kiem);
+  }, []);
 
   // Phim tat "/" (khi khong dang go trong o nhap nao khac).
   useEffect(() => {
@@ -151,8 +161,8 @@ export default function TimMaToanCuc({ className = "" }) {
           aria-expanded={coGoiY}
           aria-controls="danh-sach-goi-y-ma"
           aria-label="Tìm mã cổ phiếu hoặc tên công ty"
-          placeholder="Tìm mã, công ty…"
-          className="w-full h-9 pl-9 pr-3 md:pr-9 text-sm outline-none rounded-lg truncate"
+          placeholder={hep ? "Tìm mã…" : "Tìm mã hoặc tên công ty…"}
+          className="w-full h-9 pl-9 pr-3 md:pr-9 text-base sm:text-sm outline-none rounded-lg truncate"
           style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
         />
         <kbd

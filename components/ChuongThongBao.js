@@ -62,13 +62,13 @@ export default function ChuongThongBao() {
   const tai = useCallback(async () => {
     try {
       const res = await fetch("/api/thong-bao", { cache: "no-store" });
-      if (!res.ok) return;
+      if (!res.ok) return setDu((c) => c ?? { ds: [], loi: true });
       const d = await res.json();
       setDu(d);
       // Khach: moc da xem luu o trinh duyet; chua mo lan nao -> chi tinh 24 gio qua (giong tai khoan).
       if (!d.nguoiDung) setChuaXemKhach(demChuaXem(d.ds, docLS(KHOA_XEM_KHACH) ?? new Date(Date.now() - 86400e3)));
     } catch {
-      /* mat mang - giu du lieu cu */
+      setDu((c) => c ?? { ds: [], loi: true }); // mat mang - giu du lieu cu neu da co
     }
   }, []);
 
@@ -99,8 +99,9 @@ export default function ChuongThongBao() {
     };
   }, [daDangNhap]);
 
-  // Bam ra ngoai / Esc thi dong.
+  // Bam ra ngoai / Esc thi dong. Dang mo thi an Mây (dien thoai: khung rong het chieu ngang, Mây nap o mep phai de len - xem globals.css .thanh-dau-mo).
   useEffect(() => {
+    document.body.classList.toggle("thanh-dau-mo", mo);
     if (!mo) return;
     const dong = (e) => {
       if (e.type === "keydown" ? e.key === "Escape" : goc.current && !goc.current.contains(e.target)) setMo(false);
@@ -322,7 +323,7 @@ export default function ChuongThongBao() {
               </p>
             ) : nhom.length === 0 ? (
               <p className="px-4 py-6 text-xs" style={{ color: MUTED }}>
-                Chưa có thông báo nào trong 7 ngày qua.
+                {du.loi ? "Chưa tải được thông báo — thử lại sau ít phút." : "Chưa có thông báo nào trong 7 ngày qua."}
               </p>
             ) : (
               nhom.map((n) => (

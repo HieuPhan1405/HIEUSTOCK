@@ -85,6 +85,13 @@ html {
     max-height: 58vh;
   }
 }
+/* Dien thoai: khung chuong thong bao / dong ho tren thanh dau rong het chieu ngang -> tam an Mây dang nap o mep phai (Mây dang mo thi giu nguyen). */
+@media (max-width: 639px) {
+  body.thanh-dau-mo .may-nut:not(.may-nut-mo),
+  body.thanh-dau-mo .may-bong-chao {
+    display: none;
+  }
+}
 /* Khi Mây dang mo: cac cho co giai thich hien vien cham tim; cho dang duoc giai thich to dam. */
 body.may-mo [data-may] {
   outline: 1px dashed rgba(167, 139, 250, 0.75);

@@ -92,6 +92,7 @@ export default function DongHoGiaoDich({ className = "" }) {
   }, []);
 
   useEffect(() => {
+    document.body.classList.toggle("thanh-dau-mo", mo); // an Mây khi khung dong ho dang mo tren dien thoai (globals.css)
     if (!mo) return;
     const dong = (e) => {
       if (e.type === "keydown" ? e.key === "Escape" : goc.current && !goc.current.contains(e.target)) setMo(false);
