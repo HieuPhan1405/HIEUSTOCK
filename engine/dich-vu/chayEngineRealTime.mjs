@@ -23,6 +23,7 @@ import { ketNoiWebSocketDNSE } from "../dnse/wsClient.js";
 import { taiLichSuToanBo, tinhTinHieuToanBo, capNhatNenMoiNhat, chiaNhoMang } from "../loi/quetToanBo.js";
 import { xayDungCSV } from "../loi/csvDauRa.js";
 import { tinhChecklistBatDayToanBo, xayDungCsvBatDay } from "../loi/checklistBatDay.js";
+import { tinhChiBaoLocToanBo, xayDungCsvChiBao } from "../loi/chiBaoLoc.js";
 
 const apiKey = process.env.DNSE_API_KEY;
 const apiSecret = process.env.DNSE_API_SECRET;
@@ -36,6 +37,9 @@ const CHU_KY_TINH_LAI_MS = 10000; // 10s - du "gan real-time", tranh tinh lai qu
 // nhu tin hieu MUA/BAN chinh - tinh lai/upload rieng theo chu ky THUA hon (15 phut) de tranh ghi DB
 // (upload-bat-day) qua day trong khi tin hieu chinh van tinh lai moi 10s nhu binh thuong.
 const CHU_KY_BAT_DAY_MS = 15 * 60 * 1000;
+// Chi bao ky thuat cho bo loc (RSI, MACD, MA...): tinh ~0,3 giay cho ca 389 ma nhung ghi DB 389 dong, nen gui moi 1 phut NEU co nen moi (khong can moi 10 giay nhu tin hieu).
+// Chay bang bo hen RIENG, loi o day khong bao gio duoc anh huong toi luong tin hieu chinh.
+const CHU_KY_CHI_BAO_MS = 60 * 1000;
 
 const ngayIsoTuGiay = (giay) => new Date(giay * 1000).toISOString().slice(0, 10);
 function chuyenDoiNenTuWS(doi) {
@@ -62,6 +66,7 @@ async function main() {
   mkdirSync(thuMucOutput, { recursive: true });
   const duongDanCsv = thuMucOutput + "tin_hieu_realtime_moi_nhat.csv";
   const duongDanCsvBatDay = thuMucOutput + "bat_day_realtime_moi_nhat.csv";
+  const duongDanCsvChiBao = thuMucOutput + "chi_bao_realtime_moi_nhat.csv";
 
   const uploadBat = process.argv.includes("--upload");
   const uploadKey = process.env.CS_UPLOAD_API_KEY;
@@ -109,7 +114,44 @@ async function main() {
     }
   }
 
+  async function guiChiBaoLenWebNeuDuocPhep(csv) {
+    if (!uploadDuocPhep) return;
+    try {
+      const gocWeb = process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn";
+      const res = await fetch(`${gocWeb}/api/upload-chi-bao`, {
+        method: "POST",
+        headers: { "Content-Type": "text/csv", "x-api-key": uploadKey },
+        body: csv,
+        signal: AbortSignal.timeout(120000),
+      });
+      console.log(`[upload chi-bao] HTTP ${res.status}`);
+    } catch (loi) {
+      console.log(`[upload chi-bao] LOI: ${loi.message}`);
+    }
+  }
+
   let coThayDoi = true; // tinh lan dau ngay sau khi tai xong lich su, khong doi tick WebSocket
+  let chiBaoCu = true; // co nen moi ke tu lan gui chi bao gan nhat
+  let dangTinhChiBao = false;
+
+  async function tinhVaGuiChiBao() {
+    if (!chiBaoCu || dangTinhChiBao) return;
+    chiBaoCu = false;
+    dangTinhChiBao = true;
+    try {
+      const { ds, loi } = tinhChiBaoLocToanBo(nenTheoMa);
+      if (loi.length > 0) console.log(`[canh bao] ${loi.length} ma loi khi tinh chi bao ky thuat: ${loi.slice(0, 5).map((l) => l.ma).join(", ")}`);
+      const csv = xayDungCsvChiBao(ds);
+      writeFileSync(duongDanCsvChiBao, csv, "utf-8");
+      console.log(`[${new Date().toLocaleTimeString("vi-VN")}] Chi bao ky thuat (bo loc): ${ds.length} ma.`);
+      await guiChiBaoLenWebNeuDuocPhep(csv);
+    } catch (loi) {
+      chiBaoCu = true; // thu lai o chu ky sau
+      console.log(`[chi bao] LOI: ${loi.message}`);
+    } finally {
+      dangTinhChiBao = false;
+    }
+  }
   let dangTinh = false;
   let lanCuoiTinhBatDay = 0;
 
@@ -162,6 +204,7 @@ async function main() {
     if (!mang) return; // ma khong nam trong vu tru dang theo doi (khong nen xay ra, phong thu)
     capNhatNenMoiNhat(mang, chuyenDoiNenTuWS(doi));
     coThayDoi = true;
+    chiBaoCu = true;
   };
 
   const dsKetNoi = nhomMa.map((nhom, idx) =>
@@ -178,10 +221,13 @@ async function main() {
 
   await tinhLaiVaGhi(); // tinh ngay lan dau voi du lieu REST vua tai, khong doi tick WebSocket
   const henGio = setInterval(tinhLaiVaGhi, CHU_KY_TINH_LAI_MS);
+  await tinhVaGuiChiBao();
+  const henGioChiBao = setInterval(tinhVaGuiChiBao, CHU_KY_CHI_BAO_MS);
 
   process.on("SIGINT", () => {
     console.log("\nDang dung dich vu...");
     clearInterval(henGio);
+    clearInterval(henGioChiBao);
     dsKetNoi.forEach((k) => k.dong());
     process.exit(0);
   });

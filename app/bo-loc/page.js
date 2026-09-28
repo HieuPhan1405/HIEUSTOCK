@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
+import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
+import { COT_CHI_BAO } from "@/lib/cotChiBaoKyThuat";
 import BangBoLoc from "@/components/BangBoLoc";
 import NhanCapNhat from "@/components/NhanCapNhat";
 import { capNhatMoiNhat } from "@/components/dungChung";
@@ -13,10 +15,23 @@ export const metadata = {
 export default async function TrangBoLoc() {
   let tatCa = [];
   let loi = null;
+  let chiBaoLuc = null;
   try {
     tatCa = await layTatCaTinHieu();
   } catch (e) {
     loi = String(e?.message || e);
+  }
+  // Chi bao ky thuat (RSI, MACD, MA...) gop vao tung ma - loi o day khong duoc lam mat bang chinh, chi mat bo loc chi bao.
+  if (!loi) {
+    try {
+      const { hang, capNhatLuc } = await layChiBaoKyThuat();
+      const theoMa = new Map(hang.map((h) => [h.ma, h]));
+      tatCa = tatCa.map((r) => {
+        const h = theoMa.get(r.ma);
+        return h ? { ...r, ...Object.fromEntries(COT_CHI_BAO.map((k) => [k, h[k]])) } : r;
+      });
+      chiBaoLuc = capNhatLuc;
+    } catch {}
   }
 
   return (
@@ -35,7 +50,7 @@ export default async function TrangBoLoc() {
         </p>
       ) : (
         <Suspense fallback={null}>
-          <BangBoLoc duLieu={tatCa} />
+          <BangBoLoc duLieu={tatCa} chiBaoLuc={chiBaoLuc} />
         </Suspense>
       )}
     </div>

@@ -27,6 +27,7 @@ import { taoOpenApiClient } from "../dnse/openApiClient.js";
 import { taiLichSuToanBo, tinhTinHieuToanBo } from "../loi/quetToanBo.js";
 import { xayDungCSV } from "../loi/csvDauRa.js";
 import { tinhChecklistBatDayToanBo, xayDungCsvBatDay } from "../loi/checklistBatDay.js";
+import { tinhChiBaoLocToanBo, xayDungCsvChiBao } from "../loi/chiBaoLoc.js";
 
 const apiKey = process.env.DNSE_API_KEY;
 const apiSecret = process.env.DNSE_API_SECRET;
@@ -88,6 +89,15 @@ async function main() {
   writeFileSync(duongDanBatDay, csvBatDay, "utf-8");
   console.log(`Da ghi file: ${duongDanBatDay}`);
 
+  // Chi bao ky thuat cho bo loc (RSI, MACD, MA...) - cung dung lai nenTheoMa, POST rieng vao /api/upload-chi-bao.
+  const { ds: dsChiBao, loi: loiChiBao } = tinhChiBaoLocToanBo(nenTheoMa);
+  console.log(`
+Chi bao ky thuat (bo loc): ${dsChiBao.length} ma${loiChiBao.length ? `, ${loiChiBao.length} ma loi` : ""}.`);
+  const csvChiBao = xayDungCsvChiBao(dsChiBao);
+  const duongDanChiBao = thuMucOutput + `chi_bao_engine_${new Date().toISOString().replace(/[:.]/g, "-")}.csv`;
+  writeFileSync(duongDanChiBao, csvChiBao, "utf-8");
+  console.log(`Da ghi file: ${duongDanChiBao}`);
+
   if (!process.argv.includes("--upload")) return;
 
   const uploadKey = process.env.CS_UPLOAD_API_KEY;
@@ -117,6 +127,16 @@ async function main() {
     signal: AbortSignal.timeout(120000),
   });
   console.log(`HTTP ${resBatDay.status}:`, (await resBatDay.text()).slice(0, 1000));
+
+  console.log(`
+Dang POST chi bao ky thuat len ${gocWeb}/api/upload-chi-bao...`);
+  const resChiBao = await fetch(`${gocWeb}/api/upload-chi-bao`, {
+    method: "POST",
+    headers: { "Content-Type": "text/csv", "x-api-key": uploadKey },
+    body: csvChiBao,
+    signal: AbortSignal.timeout(120000),
+  });
+  console.log(`HTTP ${resChiBao.status}:`, (await resChiBao.text()).slice(0, 1000));
 }
 
 main().catch((loi) => {

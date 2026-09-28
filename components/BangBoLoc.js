@@ -8,6 +8,9 @@ import SignalPill from "@/components/SignalPill";
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import NutThamGia from "@/components/NutThamGia";
 import { CAC_COT } from "@/components/cotChung";
+import { COT_CHI_BAO_HIEN, THU_TU_COT_CHI_BAO } from "@/components/cotChiBao";
+import BoLocChiBaoKyThuat from "@/components/BoLocChiBaoKyThuat";
+import { locTheoChiBao, cotChoBoLoc } from "@/lib/boLocChiBao";
 import {
   NGANH_NHAN,
   LOC_TRONG,
@@ -165,7 +168,7 @@ const COT_RIENG = {
   },
 };
 
-const COT = { ...CAC_COT, ...COT_RIENG };
+const COT = { ...CAC_COT, ...COT_RIENG, ...COT_CHI_BAO_HIEN };
 
 // Thu tu cot tren bang. Mac dinh chi hien cac cot chinh - bam "Cot hien thi" de
 // bat them (hoac "Hien tat ca") cho du moi chi so cua he thong.
@@ -209,6 +212,7 @@ const THU_TU_COT = [
   "gg_top",
   "gg_bot",
   "dinh_52t",
+  ...THU_TU_COT_CHI_BAO,
   "tin",
 ];
 const MAC_DINH = ["ma", "san", "von_hoa", "von_hoa_ty", "nganh", "gia", "doi", "diem", "trend", "adx", "rs_vni", "khoi_luong_tb20", "gtgd_tb20", "tin"];
@@ -219,7 +223,7 @@ const DS_KHOA_CHON = THU_TU_COT.filter((k) => k !== "ma" && k !== "tin");
 // se suy ra duoc cot Tin hieu dang bi lam mo.
 const COT_CAN_DANG_NHAP = new Set(["gia_mua", "ngay_mua", "so_phien_giu", "lai_lo_pct", "gia_kich_hoat", "vung_mua", "vung_sl", "vung_tp", "stop_loss", "tp1", "tp2", "tp3", "chot_loi"]);
 
-export default function BangBoLoc({ duLieu }) {
+export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
   const searchParams = useSearchParams();
   const [sapXep, setSapXep] = useState({ khoa: "diem", chieu: "desc" });
   // Doc bo loc ban dau tu URL - chi doc 1 LAN luc khoi tao state, sau do nguoi
@@ -231,6 +235,8 @@ export default function BangBoLoc({ duLieu }) {
     bienMoc: 3,
   }));
   const cotHienThi = useCotHienThi("cs_cot_boloc_v1", DS_KHOA_CHON, MAC_DINH);
+  // Bo loc chi bao ky thuat (RSI, MACD, MA...) - khung rieng, moi bo loc: { id, chiBao, dieuKien, tu, den } (xem lib/boLocChiBao.js).
+  const [locChiBao, datLocChiBao] = useState([]);
   // Cot "Tin hieu" (MUA/BAN/NAM GIU/TRUNG LAP) bi lam mo cho khach CHUA dang
   // ky/dang nhap - de mac dinh la CHUA dang nhap (an toan hon, tranh nhap
   // nhoang lo tin hieu that truoc khi fetch xong).
@@ -279,6 +285,7 @@ export default function BangBoLoc({ duLieu }) {
     let ds = locChung(duLieu, loc);
     if (loc.tin && nguoiDung) ds = ds.filter((r) => r.tin === loc.tin);
     if (loc.chiGanDiemMua) ds = ds.filter((r) => laMaTheoDoi(r, coDuLieuMoc, loc.bienMoc));
+    ds = locTheoChiBao(ds, locChiBao);
 
     const lay = COT[sapXep.khoa]?.lay;
     if (!lay) return ds;
@@ -293,7 +300,7 @@ export default function BangBoLoc({ duLieu }) {
       }
       return sapXep.chieu === "asc" ? so : -so;
     });
-  }, [duLieu, loc, sapXep, nguoiDung, coDuLieuMoc]);
+  }, [duLieu, loc, sapXep, nguoiDung, coDuLieuMoc, locChiBao]);
 
   function doiSapXep(khoa) {
     if (!COT[khoa]?.lay) return;
@@ -307,15 +314,19 @@ export default function BangBoLoc({ duLieu }) {
 
   function xoaBoLoc() {
     datLoc({ ...LOC_TRONG, tin: "", chiGanDiemMua: false, bienMoc: 3 });
+    datLocChiBao([]);
   }
 
-  const coBoLoc = coLocChung(loc) || loc.tin || loc.chiGanDiemMua;
+  const coBoLoc = coLocChung(loc) || loc.tin || loc.chiGanDiemMua || locChiBao.length > 0;
   const duocXemCot = (k) => !!nguoiDung || !COT_CAN_DANG_NHAP.has(k);
   const dsKhoaChon = DS_KHOA_CHON.filter(duocXemCot);
   // Dang loc "ma theo doi" thi tu hien 2 cot moc can vuot + diem neu vuot.
   const hienCotTheoDoi = loc.chiGanDiemMua && coDuLieuMoc;
+  // Dang loc theo chi bao nao thi tu hien cot cua chi bao do de xem gia tri.
+  const cotTuHien = cotChoBoLoc(locChiBao);
   const dsCot = THU_TU_COT.filter(
-    (k) => k === "ma" || k === "tin" || ((cotHienThi.dangChon.has(k) || (hienCotTheoDoi && COT_THEO_DOI.includes(k))) && duocXemCot(k))
+    (k) =>
+      COT[k] && (k === "ma" || k === "tin" || ((cotHienThi.dangChon.has(k) || cotTuHien.includes(k) || (hienCotTheoDoi && COT_THEO_DOI.includes(k))) && duocXemCot(k)))
   );
   const ctx = {
     nhanNganh: NGANH_NHAN,
@@ -421,6 +432,8 @@ export default function BangBoLoc({ duLieu }) {
           />
         )}
       </HangTichChung>
+
+      <BoLocChiBaoKyThuat dsLoc={locChiBao} datDsLoc={datLocChiBao} duLieu={duLieu} luc={chiBaoLuc} />
 
       <p className="text-xs mb-2" style={{ color: MUTED }}>
         Hiển thị {daLoc.length} / {duLieu.length} mã · {soDung} mã đứng giá

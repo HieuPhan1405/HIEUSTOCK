@@ -30,7 +30,7 @@ const XANH = "#22C55E";
 const DO = "#EF4444";
 const VANG = "#FBBF24";
 
-export const NHOM_COT = ["Cơ bản", "Điểm & chỉ báo", "Thanh khoản & vốn hoá", "Vị thế đang giữ", "Giá mục tiêu & hỗ trợ"];
+export const NHOM_COT = ["Cơ bản", "Điểm & chỉ báo", "Chỉ báo kỹ thuật", "Thanh khoản & vốn hoá", "Vị thế đang giữ", "Giá mục tiêu & hỗ trợ"];
 
 const Trong = <span style={{ color: MUTED }}>—</span>;
 
