@@ -3,6 +3,7 @@
 // hieu tung ma. Tach rieng file nay de tranh lap code giua 2 kich ban dung, dam bao CUNG 1 cong
 // thuc duoc dung du chay theo kieu nao.
 import { layNenOHLC } from "../dnse/openApiClient.js";
+import { layNenDieuChinh } from "./nenDieuChinh.js";
 import { VN30, VN_MIDCAP, VN_SMALLCAP } from "../danh-sach/vonHoa.js";
 import { laySanTheoDanhSachMa } from "./vndirectSanNganh.js";
 import { tinhTatCaBreadth } from "./breadth.js";
@@ -59,23 +60,54 @@ export async function taiLichSuToanBo(client, { onTienDo } = {}) {
     return new Map();
   });
 
+  // Lich su tung ma: DNSE OpenAPI (gia da dieu chinh co tuc - kiem 28/09/2026: VPB 23/09 = 22,06 giong VNDirect adClose); DNSE loi thi lay DU PHONG VNDirect (cung gia dieu chinh,
+  // cung khoi luong khop lenh). Ma loi ca 2 nguon duoc thu lai 1 luot cuoi - 28/09/2026 engine khoi dong lai mat 37/387 ma vi loi tai lich su, web xoa cac ma do (ca ma dang giu lenh).
   const nenTheoMa = new Map();
-  const loiTheoMa = [];
+  const nguonTheoMa = new Map();
+  let loiTheoMa = [];
+  const layMotMa = async (ma) => {
+    let nen = null;
+    let nguon = "dnse";
+    try {
+      nen = await layNenAnToan(client, ma, "STOCK");
+      if (!nen || nen.length < 60) throw new Error(`chi ${nen?.length ?? 0} nen`);
+    } catch {
+      nguon = "vndirect";
+      nen = await layNenDieuChinh(ma);
+    }
+    if (!nen || nen.length < 60) throw new Error(`chi ${nen?.length ?? 0} nen - qua it de tinh chi bao`);
+    nenTheoMa.set(ma, nen);
+    nguonTheoMa.set(ma, nguon);
+  };
   onTienDo?.("Dang lay lich su gia tung ma (co the mat vai phut)...");
   for (let i = 0; i < dsMa.length; i++) {
     const ma = dsMa[i];
     try {
-      const nen = await layNenAnToan(client, ma, "STOCK");
-      if (!nen || nen.length < 60) throw new Error(`chi ${nen?.length ?? 0} nen - qua it de tinh chi bao`);
-      nenTheoMa.set(ma, nen);
+      await layMotMa(ma);
     } catch (loi) {
       loiTheoMa.push({ ma, loi: String(loi.message || loi) });
     }
     if ((i + 1) % 20 === 0 || i === dsMa.length - 1) onTienDo?.(`  ${i + 1}/${dsMa.length} ma (${loiTheoMa.length} loi)...`);
     await cho(CHO_GIUA_MOI_MA_MS);
   }
+  if (loiTheoMa.length) {
+    onTienDo?.(`Thu lai ${loiTheoMa.length} ma loi sau 5 giay...`);
+    await cho(5000);
+    const conLoi = [];
+    for (const { ma } of loiTheoMa) {
+      try {
+        await layMotMa(ma);
+      } catch (loi) {
+        conLoi.push({ ma, loi: String(loi.message || loi) });
+      }
+      await cho(CHO_GIUA_MOI_MA_MS * 2);
+    }
+    loiTheoMa = conLoi;
+  }
+  const soDuPhong = [...nguonTheoMa.values()].filter((n) => n === "vndirect").length;
+  onTienDo?.(`Xong lich su: ${nenTheoMa.size}/${dsMa.length} ma (${soDuPhong} ma lay du phong tu VNDirect), ${loiTheoMa.length} ma loi.`);
 
-  return { dsMa, vniNen, sanTheoMa, nenTheoMa, loiTheoMa };
+  return { dsMa, vniNen, sanTheoMa, nenTheoMa, loiTheoMa, nguonTheoMa };
 }
 
 // Tinh breadth toan thi truong + tin hieu tung ma tu du lieu DA CO SAN trong bo nho (khong goi
