@@ -383,7 +383,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           <p className="text-xs mt-1 mb-3" style={{ color: "#8B8B99" }} data-may="diem">
             điểm hợp lưu
           </p>
-          <SignalPill tin={row.tin} />
+          <SignalPill tin={row.tin} banTheoDoiTu={row.ban_theo_doi ? row.ban_theo_doi_tu : null} />
           {nhanChoHoi(row) && (
             <span className="mt-2 text-[11px] font-bold" style={{ color: nhanChoHoi(row).mau }} title={nhanChoHoi(row).moTa} data-may="vung-mua">
               ⏳ {nhanChoHoi(row).nhan}

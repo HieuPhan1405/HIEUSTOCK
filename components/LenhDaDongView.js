@@ -28,7 +28,13 @@ const CHI_PHI_CHU = String(CHI_PHI_UOC_TINH).replace(".", ","); // hien kieu Vie
 
 // Cot "Ket thuc": ly do dong + ghi chu phan vi the. Lenh mua moi chot giong lenh Mua (tu 27/09/2026): 30% TP1, 30% TP2 rieng, phan con lai dong khi cham Stop-loss rieng,
 // hoa von sau TP2 hoac cung luc lenh dau (lenh dau ban / thoat).
+// Lenh ban / cat lo dang THEO DOI (ghi ngoai khung gio vao lenh, chua chot - lib/khungGioVaoLenh.js): gia ban la gia tam tinh, chot o khung ke tiep neu tin hieu con.
 function nhanKetThuc(x) {
+  const chinh = nhanKetThucGoc(x);
+  return x.theo_doi ? `THEO DÕI (ngoài khung giờ, chưa chốt — giá tạm tính) · ${chinh}` : chinh;
+}
+
+function nhanKetThucGoc(x) {
   const pc = Number(x.phan_chot_pct);
   if (MUA_THEM[x.vong]) {
     if (x.ly_do === "TP1" || x.ly_do === "TP2") return `Chốt lời ${x.ly_do} (${x.phan_chot_pct}% vị thế)`;

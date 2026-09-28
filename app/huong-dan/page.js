@@ -212,10 +212,17 @@ function NguyenTac() {
         </div>
         <p className="mt-3">Bốn màu trạng thái tín hiệu dùng xuyên suốt trang:</p>
         <div className="flex flex-wrap gap-2 mt-2">
-          <SignalPill tin="MUA" />
-          <SignalPill tin="NAM GIU" />
-          <SignalPill tin="BAN" />
-          <SignalPill tin="TRUNG LAP" />
+          <SignalPill tin="MUA" minhHoa="co-dinh" />
+          <SignalPill tin="NAM GIU" minhHoa="co-dinh" />
+          <SignalPill tin="BAN" minhHoa="co-dinh" />
+          <SignalPill tin="TRUNG LAP" minhHoa="co-dinh" />
+        </div>
+        <p className="mt-3">Ngoài khung giờ vào lệnh (10:30–11:30, 14:00–14:45) tín hiệu hiện <b style={{ color: XANH }}>THEO DÕI</b>:</p>
+        <div className="flex flex-wrap items-center gap-2 mt-2">
+          <SignalPill tin="MUA" minhHoa="theo-doi" />
+          <span className="text-xs">xanh — có tín hiệu MUA, chỉ mua khi vào khung giờ;</span>
+          <SignalPill tin="BAN" minhHoa="theo-doi" />
+          <span className="text-xs">đỏ — tín hiệu bán / cắt lỗ chưa chốt, đến giờ mở khung kế tiếp mà vẫn còn thì chốt bán ở giá lúc đó.</span>
         </div>
       </Muc>
     </>

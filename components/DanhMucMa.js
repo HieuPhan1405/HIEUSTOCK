@@ -285,7 +285,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                       {m.coDuLieu ? (
                         <>
                           <td className="py-2.5 px-3 align-top">
-                            <SignalPill tin={m.tin} />
+                            <SignalPill tin={m.tin} banTheoDoiTu={m.ban_theo_doi ? m.ban_theo_doi_tu : null} />
                           </td>
                           <td className="py-2.5 px-3 align-top" style={{ fontFamily: CHU_THAN }}>
                             {coViThe ? (

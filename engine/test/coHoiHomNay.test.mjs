@@ -59,6 +59,14 @@ ok("khong co ngay -> khong su kien nhat ky", dungCoHoiHomNay({ tatCa, dongLenh, 
   ok("gop TP1 + TP2 cung phien: 1 dong, 60%, lai 9%", r.banBot.length === 1 && r.banBot[0].tp === "TP1 + TP2" && r.banBot[0].phanPct === 60 && gan(r.banBot[0].laiPct, 9) && r.banBot[0].moc.length === 2);
 }
 ok("dong TP3 (lenh cu 85%) khong hien o Ban bot", dungCoHoiHomNay({ ngay: NGAY, dongLenh: [{ ma: "DRI", ngay_mua: "2026-08-21", gia_mua: 13, ngay_ban: NGAY, gia_ban: 14.64, lai_lo_pct: 9.71, ly_do: "TP3", phan_chot_pct: 85, vong: 1 }] }).banBot.length === 0);
+// Lenh ban THEO DOI (ghi ngoai khung gio phien truoc, chua chot) van hien o o Ban cua phien nay, danh dau theoDoi + luc ghi.
+{
+  const r = dungCoHoiHomNay({
+    ngay: NGAY,
+    dongLenh: [{ ma: "PVD", ngay_mua: "2026-09-10", gia_mua: 30, ngay_ban: "2026-09-25", gia_ban: 28.5, lai_lo_pct: -5, ly_do: "BAN", phan_chot_pct: 100, vong: 1, theo_doi: true, tao_luc: "2026-09-25T07:50:00Z" }],
+  });
+  ok("ban theo doi tu phien truoc van hien, co co theoDoi", r.ban.length === 1 && r.ban[0].theoDoi === true && r.ban[0].theoDoiTu === "2026-09-25T07:50:00Z");
+}
 ok("rong -> rong", (() => { const r = dungCoHoiHomNay({ ngay: NGAY }); return !r.mua.length && !r.ban.length && !r.muaMoi.length && !r.banBot.length; })());
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);

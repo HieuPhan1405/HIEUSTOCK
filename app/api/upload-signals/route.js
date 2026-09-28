@@ -17,6 +17,7 @@ import {
 } from "@/lib/lenhDaDong";
 import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
 import { thongBaoPhien } from "@/lib/thongBaoDb";
+import { dangTrongKhungVaoLenh, canChoKhung, nhanKhungKeTiep, KHUNG_VAO_LENH } from "@/lib/khungGioVaoLenh";
 import { TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
 import { phatHienXuatHien } from "@/lib/xuatHienTinHieu";
 import { ghiXuatHien } from "@/lib/xuatHienDb";
@@ -515,6 +516,10 @@ export async function POST(request) {
   // Cach chot MAC DINH (2026-09-26): TP1 30% + TP2 30%, 40% con lai giu den tin hieu BAN (khong co dong TP3). Cach "ket thuc o TP3" (chi khi AFL bat KetThucTaiTP3, ly_do_ban = 5, hoac 4 =
   // thoat Kijun sau TP2) duoc ghi thanh cac dong TP1/TP2/TP3 (phatHienLenhDong, nhanh CHOT_TP3). Lenh CU (30/30/25/15) van con phan giu chay (15%) duoc doc theo cach cu.
   const lenhDaDong = { ghi: 0 };
+  // CHOT BAN THEO KHUNG GIO: ban theo tin hieu / cat lo ghi NGOAI khung gio vao lenh -> THEO DOI (chua chot), chot o khung ke tiep (lib/khungGioVaoLenh.js).
+  const trongKhung = dangTrongKhungVaoLenh(new Date(bayGio));
+  const hh = (phut) => `${String(Math.floor(phut / 60)).padStart(2, "0")}:${String(phut % 60).padStart(2, "0")}`;
+  const chuKhung = KHUNG_VAO_LENH.map((k) => `${hh(k.tu)}–${hh(k.den)}`).join(" / ");
   let dsBanMoi = []; // lenh vua dong lan upload nay - dung de bao Zalo BAN
   try {
     const ngayBan = ngayGiaoDichVN();
@@ -584,13 +589,13 @@ export async function POST(request) {
     lenhDaDong.chotMuaMoi = dsChotMuaMoi.length;
     lenhDaDong.dongMuaMoi = dsDongMuaMoi.length;
     lenhDaDong.dongMuaGiua = dsDongMuaGiua.length;
-    lenhDaDong.ghi = await ghiLenhDaDong([...dsDong, ...dsChotTP3, ...dsDongMuaMoi, ...dsChotMuaMoi, ...dsDongMuaGiua]);
+    lenhDaDong.ghi = await ghiLenhDaDong([...dsDong, ...dsChotTP3, ...dsDongMuaMoi, ...dsChotMuaMoi, ...dsDongMuaGiua], { trongKhung });
     lenhDaDong.chotTP3 = dsChotTP3.length; // gom ca dong chot TP1/TP2/TP3 (chot loi tung phan)
-    // Doi soat: ma da bi ghi la dong nhung nay lai NAM GIU (tin hieu doi chieu trong phien) -> bo khoi Lenh da dong;
-    // ma van BAN thi cap nhat gia chot theo gia moi nhat.
-    const doiSoat = await doiSoatLenhDaDong({ ngayHomNay: ngayBan });
+    // Doi soat lenh dang THEO DOI (chua chot): tin hieu quay lai NAM GIU -> bo khoi Lenh da dong; con ban thi cap nhat gia tam tinh, den gio mo khung ke tiep thi chot.
+    const doiSoat = await doiSoatLenhDaDong({ ngayHomNay: ngayBan, bayGio });
     lenhDaDong.moLai = doiSoat.moLai.map((x) => x.ma);
     lenhDaDong.capNhatGia = doiSoat.capNhat;
+    lenhDaDong.daChotTrongKhung = doiSoat.daChot;
   } catch (e) {
     lenhDaDong.loi = String(e?.message || e);
   }
@@ -604,7 +609,7 @@ export async function POST(request) {
     const ketQua = await guiZaloNeuDuocPhep(
       `🟢 TÍN HIỆU ${h.loai_vao === "MUA LAI" ? "MUA LẠI" : "MUA MỚI"}: ${h.ma}\n${dongVung(h)}${
         h.giai_ngan === "MOT PHAN" ? "\n⚠ Giải ngân 1 phần (RS yếu) — chờ phiên sau để bổ sung" : ""
-      }\nXem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`
+      }${trongKhung ? "" : `\n👀 THEO DÕI — ngoài khung giờ vào lệnh, chỉ mua trong khung ${chuKhung}`}\nXem chi tiết: https://cloudstock.id.vn/ma/${h.ma}`
     );
     if (ketQua.gui) zaloDaGui++;
     else if (!zaloLoi) zaloLoi = ketQua.ly_do;
@@ -640,6 +645,7 @@ export async function POST(request) {
           : `Giá: ${b.gia_ban} (giá mua ${b.gia_mua}, ${lai})`,
         ketQuaCaLenh ? `Kết quả cả lệnh ≈ ${ketQuaCaLenh.lai_lo_pct >= 0 ? "+" : ""}${ketQuaCaLenh.lai_lo_pct.toFixed(2)}% (đã chốt ${TY_LE_CHOT_KET_THUC.tp1}/${TY_LE_CHOT_KET_THUC.tp2}/${TY_LE_CHOT_KET_THUC.tp3}% tại TP1/TP2/TP3)` : null,
         stop > 0 ? `Stop-loss của lệnh: ${stop}` : null,
+        !trongKhung && canChoKhung(b.ly_do) ? `👀 THEO DÕI — ngoài khung giờ, chốt bán ở khung ${nhanKhungKeTiep(bayGio, bayGio)} nếu tín hiệu vẫn còn` : null,
         trongPhien ? "⚠ Dữ liệu trong phiên: tín hiệu có thể đổi chiều trước khi đóng cửa, xem lại sau ATC" : null,
         `Xem chi tiết: https://cloudstock.id.vn/ma/${b.ma}`,
       ];

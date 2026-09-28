@@ -86,7 +86,7 @@ export default async function TrangBieuDo({ searchParams }) {
       )}
       {row && ma !== "VNINDEX" && (
         <div className="flex flex-wrap items-center gap-3 mb-3 text-sm">
-          {nguoiDung && <SignalPill tin={row.tin} />}
+          {nguoiDung && <SignalPill tin={row.tin} banTheoDoiTu={row.ban_theo_doi ? row.ban_theo_doi_tu : null} />}
           <Link href={`/ma/${ma}`} className="underline" style={{ color: PRIMARY }}>
             Xem chi tiết {ma} →
           </Link>

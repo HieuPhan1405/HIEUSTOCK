@@ -38,6 +38,20 @@ ok(
   "mua: khoa theo ngay tin hieu (upload du lieu cu sang phien sau khong bao lai)",
   dungThongBaoTinHieu({ ngay: "2026-09-29", mua: [{ ma: "VPB", gia: 25.5, ngay_mua: "2026-09-28" }] })[0].khoa === "mua:VPB:2026-09-28"
 );
+// Ngoai khung gio vao lenh: Mua / Mua moi -> THEO DOI (khoa rieng, vao khung con tin hieu thi bao them MUA); ban dang cho chot -> THEO DOI BAN kem khung chot.
+{
+  const ngoai = dungThongBaoTinHieu({ ...coHoi, trongKhung: false, bayGio: new Date("2026-09-28T02:40:00Z") });
+  const muaTD = ngoai.find((t) => t.ma === "VPB");
+  ok("ngoai khung: THEO DOI MUA, khoa rieng", muaTD.loai === "mua_theo_doi" && muaTD.tieu_de === "THEO DÕI MUA VPB" && muaTD.khoa === "mua_theo_doi:VPB:2026-09-28", JSON.stringify(muaTD));
+  ok("ngoai khung: THEO DOI MUA MOI", ngoai.find((t) => t.ma === "FPT").tieu_de === "THEO DÕI MUA MỚI FPT");
+  const banTD = dungThongBaoTinHieu({
+    ngay: "2026-09-28",
+    bayGio: new Date("2026-09-28T02:40:00Z"), // 09:40 gio VN
+    ban: [{ khoa: "PVD|2026-09-10|goc", ma: "PVD", laMuaMoi: false, lyDo: "Bán theo tín hiệu", giaBan: 28.5, theoDoi: true, theoDoiTu: "2026-09-28T02:35:00Z" }],
+  })[0];
+  ok("ban theo doi: tieu de + khung chot 10:30", banTD.loai === "ban_theo_doi" && banTD.tieu_de === "THEO DÕI BÁN PVD" && banTD.noi_dung.includes("chốt ở khung 10:30"), banTD.noi_dung);
+  ok("ban theo doi: khoa theo lenh (khong theo phien)", banTD.khoa === "ban_theo_doi:PVD|2026-09-10|goc");
+}
 ok("upload lai cung phien -> cung khoa", JSON.stringify(dungThongBaoTinHieu(coHoi).map((t) => t.khoa)) === JSON.stringify(ds.map((t) => t.khoa)));
 
 const dk = thongBaoDangKy({ id: 7, ten: "Lan", sdt: "0912345678" });

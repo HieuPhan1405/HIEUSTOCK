@@ -3,6 +3,7 @@ import { fmt, pct, tinhVungLenh, chuoiVung, nhanGiaiNgan, nhanLoaiVao } from "@/
 import { dungCoHoiHomNay } from "@/lib/coHoiHomNay";
 import { tenCongTy } from "@/lib/tenMa";
 import { CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
+import NhanTheoDoi from "@/components/NhanTheoDoi";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -57,7 +58,7 @@ function OLenh({ tieuDe, mau, moTa, ds, trong, hien, may }) {
 }
 
 // 1 DONG trong o: ma (+ ten ngan / nhan) ben trai, noi dung o giua, con so ben phai.
-function Dong({ ma, ten, nhan, mauNhan, children, phai }) {
+function Dong({ ma, ten, nhan, mauNhan, children, phai, the = null }) {
   const t = tenCongTy(ma);
   return (
     <Link
@@ -80,6 +81,7 @@ function Dong({ ma, ten, nhan, mauNhan, children, phai }) {
             </span>
           )
         )}
+        {the}
       </span>
       <span className="text-xs leading-relaxed min-w-0" style={{ ...mono, color: MUTED }}>
         {children}
@@ -136,7 +138,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
           tieuDe="Mua"
           may="mua"
           mau={XANH}
-          moTa="Tín hiệu MUA mới trong phiên"
+          moTa="Tín hiệu MUA mới trong phiên — ngoài khung giờ vào lệnh hiện THEO DÕI, chỉ mua trong khung"
           ds={mua}
           trong="Phiên này không có tín hiệu MUA."
           hien={(r) => (
@@ -145,6 +147,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
               ma={r.ma}
               nhan={nhanLoaiVao(r)?.nhan ?? nhanGiaiNgan(r)?.nhan}
               mauNhan={nhanLoaiVao(r)?.mau ?? nhanGiaiNgan(r)?.mau}
+              the={<NhanTheoDoi loai="mua" />}
               phai={
                 <>
                   <span style={{ color: TEXT }}>{fmt(r.gia)}</span>
@@ -163,7 +166,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
           tieuDe="Bán"
           may="ban"
           mau={DO}
-          moTa="Lệnh đóng trong phiên: bán, cắt lỗ, hòa vốn, thoát lệnh"
+          moTa="Lệnh đóng trong phiên: bán, cắt lỗ, hòa vốn, thoát lệnh — ngoài khung giờ hiện THEO DÕI, chốt ở khung kế tiếp nếu tín hiệu còn"
           ds={ban}
           trong="Phiên này không có lệnh bán."
           hien={(b) => (
@@ -172,13 +175,14 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
               ma={b.ma}
               nhan={b.laMuaMoi ? "Mua mới" : null}
               mauNhan={NGOC}
+              the={b.theoDoi ? <NhanTheoDoi loai="ban" tu={b.theoDoiTu} /> : null}
               phai={
                 <>
                   <span className="font-bold" style={{ color: mauLai(b.ketQuaPct) }}>
                     {pct(b.ketQuaPct, 2)}
                   </span>
                   <span className="block text-[10px]" style={{ color: MUTED, ...sans }} data-may="ket-qua-ca-lenh">
-                    cả lệnh
+                    {b.theoDoi ? "tạm tính" : "cả lệnh"}
                   </span>
                 </>
               }
@@ -186,7 +190,9 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
               <span style={{ color: TEXT, ...sans, fontWeight: 600 }}>{b.lyDo}</span>
               {b.phanConLaiPct != null && <span> · phần còn lại {b.phanConLaiPct}%</span>}
               <br />
-              {b.giaMua != null && `mua ${ngayNgan(b.ngayMua)} giá ${fmt(b.giaMua)} → `}bán {fmt(b.giaBan)}
+              {b.giaMua != null && `mua ${ngayNgan(b.ngayMua)} giá ${fmt(b.giaMua)} → `}
+              {b.theoDoi ? "giá hiện " : "bán "}
+              {fmt(b.giaBan)}
             </Dong>
           )}
         />
@@ -205,6 +211,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
               ten={l.ten_lenh}
               nhan="Mua mới"
               mauNhan={NGOC}
+              the={<NhanTheoDoi loai="mua" />}
               phai={
                 <>
                   <span style={{ color: TEXT }}>{fmt(l.gia)}</span>

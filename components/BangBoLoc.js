@@ -96,7 +96,7 @@ const COT_RIENG = {
         <div className="flex flex-col items-end gap-1">
           {ctx.nguoiDung ? (
             <>
-              <SignalPill tin={row.tin} />
+              <SignalPill tin={row.tin} banTheoDoiTu={row.ban_theo_doi ? row.ban_theo_doi_tu : null} />
               {nhanChoHoi(row) && (
                 <span className="text-[10px] font-bold" style={{ color: nhanChoHoi(row).mau }} title={nhanChoHoi(row).moTa} data-may="vung-mua">
                   ⏳ Chờ hồi

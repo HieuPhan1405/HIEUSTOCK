@@ -94,6 +94,8 @@ export default async function TrangDanhMuc() {
         tenNgan: r?.ten_ngan ?? null,
         tenCongTy: r?.ten_cong_ty ?? null,
         tin: r?.tin ?? null,
+        ban_theo_doi: r?.ban_theo_doi ?? false,
+        ban_theo_doi_tu: r?.ban_theo_doi_tu ?? null,
         gia: r?.gia ?? null,
         diem: r?.diem ?? null,
         lenh: lenhTheoMa.get(t.ma) ?? [],

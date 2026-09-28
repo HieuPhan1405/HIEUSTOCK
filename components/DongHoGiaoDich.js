@@ -147,7 +147,7 @@ export default function DongHoGiaoDich({ className = "" }) {
             {tt.chiTiet}
           </p>
           <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-            Chỉ vào lệnh MUA trong khung <b style={{ color: TEXT }}>{KHUNG_VAO_LENH.map((k) => `${dinhDangGio(k.tu)}–${dinhDangGio(k.den)}`).join(" · ")}</b>. Ngoài khung: theo dõi, chưa đặt lệnh.
+            Chỉ mua và chốt bán (bán theo tín hiệu, cắt lỗ) trong khung <b style={{ color: TEXT }}>{KHUNG_VAO_LENH.map((k) => `${dinhDangGio(k.tu)}–${dinhDangGio(k.den)}`).join(" · ")}</b>. Ngoài khung: tín hiệu hiện THEO DÕI, chưa đặt lệnh.
           </p>
         </div>
       )}
