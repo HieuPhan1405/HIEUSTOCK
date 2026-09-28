@@ -147,7 +147,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
               ma={r.ma}
               nhan={nhanLenhWeb(r)?.nhan ?? nhanLoaiVao(r)?.nhan ?? nhanGiaiNgan(r)?.nhan}
               mauNhan={nhanLenhWeb(r)?.mau ?? nhanLoaiVao(r)?.mau ?? nhanGiaiNgan(r)?.mau}
-              the={r.lenh_web ? null : <NhanTheoDoi loai="mua" />}
+              the={r.lenh_web || r.da_chot_mua ? null : <NhanTheoDoi loai="mua" />}
               phai={
                 <>
                   <span style={{ color: TEXT }}>{fmt(r.gia)}</span>

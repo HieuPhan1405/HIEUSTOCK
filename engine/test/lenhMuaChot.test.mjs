@@ -19,7 +19,7 @@ const tatCa = [
   { ma: "FPT", tin: "NAM GIU", gia: 121, gia_mua: 110, ngay_mua: "2026-08-01", mua_giua: true, dang_giu_giua: true, gia_mua_giua: 120.5, ngay_mua_giua: NGAY, stop_giua: 115, tp1_giua: 126, tp2_giua: 132 },
 ];
 const uv = ungVienChotMua(tatCa);
-ok("ung vien: GMD (lenh dau) + FPT (mua moi)", uv.map((x) => `${x.ma}:${x.loai}`).join() === "GMD:goc,FPT:giua", JSON.stringify(uv));
+ok("ung vien: moi lenh he thong dang giu (GMD vua MUA, VPB + FPT NAM GIU, FPT mua moi)", uv.map((x) => `${x.ma}:${x.loai}`).join() === "GMD:goc,VPB:goc,FPT:goc,FPT:giua", JSON.stringify(uv));
 ok("gia / cat lo / TP dong bang", uv[0].gia_mua === 78.2 && uv[0].stop_loss === 73.5 && uv[0].tp1 === 82.11 && uv[0].ngay_mua === NGAY);
 
 const lGMD = { ma: "GMD", loai: "goc", ngay_mua: NGAY, gia_mua: 78.2, stop_loss: 73.5, tp1: 82.11, tp2: 86.02, tp3: 89.93, so_phien_diem_thap: 0, ngay_diem: null, diem_cuoi: null, tp_da_cham: null };

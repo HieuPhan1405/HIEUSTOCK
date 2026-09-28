@@ -97,6 +97,8 @@ export default async function TrangDanhMuc() {
         ban_theo_doi: r?.ban_theo_doi ?? false,
         ban_theo_doi_tu: r?.ban_theo_doi_tu ?? null,
         coLenhWeb: Array.isArray(r?.lenh_web) && r.lenh_web.length > 0,
+        mua_theo_doi_tu: r?.mua_theo_doi_tu ?? null,
+        da_chot_mua: r?.da_chot_mua === true,
         gia: r?.gia ?? null,
         diem: r?.diem ?? null,
         lenh: lenhTheoMa.get(t.ma) ?? [],

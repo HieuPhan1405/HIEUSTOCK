@@ -1,7 +1,7 @@
 "use client";
 
 import { useTrongKhungVaoLenh } from "@/components/KhungGioContext";
-import { KHUNG_VAO_LENH, nhanKhungKeTiep } from "@/lib/khungGioVaoLenh";
+import { KHUNG_VAO_LENH, nhanKhungKeTiep, muaDangTheoDoi } from "@/lib/khungGioVaoLenh";
 
 const hh = (phut) => `${String(Math.floor(phut / 60)).padStart(2, "0")}:${String(phut % 60).padStart(2, "0")}`;
 const CHU_KHUNG = KHUNG_VAO_LENH.map((k) => `${hh(k.tu)}–${hh(k.den)}`).join(" / ");
@@ -10,7 +10,8 @@ const CHU_KHUNG = KHUNG_VAO_LENH.map((k) => `${hh(k.tu)}–${hh(k.den)}`).join("
 // (banTheoDoiTu: luc lenh ban duoc ghi ngoai khung - cot ban_theo_doi_tu cua lib/tinHieu.js; lenh ban da chot trong khung thi hien BAN binh thuong).
 // minhHoa (chi trang Huong dan): "co-dinh" = hien dung nhan goc bat ke gio; "theo-doi" = luon hien THEO DOI (MUA xanh / BAN do) de minh hoa.
 // webGiu: ma co LENH WEB GIU (da mua trong khung, tin hieu mat - lib/lenhMuaChot.js) ma he thong khong giu -> hien NAM GIU (nguoi dung dang cam co phieu), ghi chu tin hieu he thong.
-export default function SignalPill({ tin: tinHeThong, banTheoDoiTu = null, minhHoa = null, webGiu = false }) {
+// muaTheoDoiTu: lenh he thong dang giu ma web chua chot mua - luc lan dau thay MUA (cot mua_theo_doi_tu cua lib/tinHieu.js): ngoai khung, chua toi khung ke tiep -> THEO DOI xanh.
+export default function SignalPill({ tin: tinHeThong, banTheoDoiTu = null, minhHoa = null, webGiu = false, muaTheoDoiTu = null, daChotMua = false }) {
   const doiWebGiu = webGiu && tinHeThong !== "MUA" && tinHeThong !== "NAM GIU";
   const tin = doiWebGiu ? "NAM GIU" : tinHeThong;
   const map = {
@@ -20,12 +21,14 @@ export default function SignalPill({ tin: tinHeThong, banTheoDoiTu = null, minhH
     "TRUNG LAP": { bg: "#26262F", text: "#A6A6B3", label: "TRUNG LẬP" },
   };
   const trongKhung = useTrongKhungVaoLenh();
-  const theoDoiMua = minhHoa === "theo-doi" ? tin === "MUA" : minhHoa !== "co-dinh" && tin === "MUA" && !trongKhung;
+  const theoDoiMua = minhHoa === "theo-doi" ? tin === "MUA" : minhHoa !== "co-dinh" && !doiWebGiu && muaDangTheoDoi({ tin, muaTheoDoiTu, daChotMua, trongKhung });
   const theoDoiBan = minhHoa === "theo-doi" ? tin === "BAN" : minhHoa !== "co-dinh" && banTheoDoiTu != null && (tin === "BAN" || tin === "TRUNG LAP");
   const s = theoDoiBan ? map.BAN : map[tin] || map["TRUNG LAP"];
   const khoaMay = theoDoiMua ? "tin-THEO DOI MUA" : theoDoiBan ? "tin-THEO DOI BAN" : doiWebGiu ? "lenh-web" : `tin-${map[tin] ? tin : "TRUNG LAP"}`;
   const title = theoDoiMua
-    ? `Tín hiệu MUA ngoài khung giờ vào lệnh — theo dõi, chỉ mua trong khung ${CHU_KHUNG}`
+    ? tin === "NAM GIU" && muaTheoDoiTu
+      ? `Tín hiệu MUA xuất hiện ngoài khung giờ — chưa chốt mua, chốt ở khung ${nhanKhungKeTiep(muaTheoDoiTu)} nếu hệ thống vẫn giữ`
+      : `Tín hiệu MUA ngoài khung giờ vào lệnh — theo dõi, chỉ mua trong khung ${CHU_KHUNG}`
     : theoDoiBan
       ? `Tín hiệu bán / cắt lỗ ngoài khung giờ — chốt bán ở khung ${banTheoDoiTu ? nhanKhungKeTiep(banTheoDoiTu) : "kế tiếp"} nếu tín hiệu vẫn còn`
       : doiWebGiu

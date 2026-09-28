@@ -1,5 +1,5 @@
 // Test tay cho lib/khungGioVaoLenh.js (chot ban theo khung gio vao lenh). Chay: node engine/test/khungGioVaoLenh.test.mjs
-import { dangTrongKhungVaoLenh, batDauKhungKeTiep, daDenLucChot, nhanKhungKeTiep, canChoKhung, xuLyLenhTheoDoi } from "../../lib/khungGioVaoLenh.js";
+import { dangTrongKhungVaoLenh, batDauKhungKeTiep, daDenLucChot, nhanKhungKeTiep, canChoKhung, xuLyLenhTheoDoi, batDauKhungHienTai, catLoCanChoKhung, muaDangTheoDoi } from "../../lib/khungGioVaoLenh.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -46,6 +46,31 @@ ok("chot TP khong cho khung", !["TP1", "TP2", "TP3", "CHOT_TP3"].some(canChoKhun
   const ban = { ly_do: "BAN", tao_luc: vn("2026-09-14T13:45") };
   ok("ban theo tin hieu: cho den khung", xuLyLenhTheoDoi(ban, 70, vn("2026-09-14T13:55")).ketQua === "cho");
   ok("ban theo tin hieu: tu 14:00 chot bat ke gia", xuLyLenhTheoDoi(ban, 80, vn("2026-09-14T14:01")).ketQua === "chot");
+}
+
+// Cat lo phat hien trong khung nhung lan cap nhat truoc o truoc khung (cham luc 9:20, cap nhat dau tien 10:31, gia da hoi)
+ok("khung hien tai 10:45 -> 10:30", gioVN(batDauKhungHienTai(vn("2026-09-14T10:45"))) === "2026-09-14 10:30" && batDauKhungHienTai(vn("2026-09-14T12:00")) === null);
+ok(
+  "cham truoc khung, gia da hoi: chua cat (cho)",
+  catLoCanChoKhung({ lyDo: "CAT_LO", gia: 74.6, mucCatLo: 73.508, lucTruoc: vn("2026-09-14T09:10"), bayGio: vn("2026-09-14T10:31") })
+);
+ok(
+  "lan truoc cung trong khung (cham giua 2 lan cap nhat): cat ngay",
+  !catLoCanChoKhung({ lyDo: "CAT_LO", gia: 73.6, mucCatLo: 73.508, lucTruoc: vn("2026-09-14T10:44"), bayGio: vn("2026-09-14T10:45") })
+);
+ok("gia van duoi muc cat lo: cat ngay", !catLoCanChoKhung({ lyDo: "CAT_LO", gia: 73.4, mucCatLo: 73.508, lucTruoc: vn("2026-09-14T09:10"), bayGio: vn("2026-09-14T10:31") }));
+ok("ban theo tin hieu: khong ap dung", !catLoCanChoKhung({ lyDo: "BAN", gia: 80, mucCatLo: 73.508, lucTruoc: vn("2026-09-14T09:10"), bayGio: vn("2026-09-14T10:31") }));
+
+// Mua chi chot trong khung: MUA luc 14:50 thu Sau (ngoai khung) -> sang thu Hai he thong NAM GIU van THEO DOI den 10:30
+{
+  const tu = vn("2026-09-25T14:50");
+  ok("MUA ngoai khung: theo doi", muaDangTheoDoi({ tin: "MUA", trongKhung: false }));
+  ok("MUA trong khung: khong theo doi", !muaDangTheoDoi({ tin: "MUA", trongKhung: true }));
+  ok("NAM GIU chua chot mua, 9:20 thu Hai: theo doi", muaDangTheoDoi({ tin: "NAM GIU", muaTheoDoiTu: tu, trongKhung: false, bayGio: vn("2026-09-28T09:20") }));
+  ok("NAM GIU chua chot mua, trong khung: het theo doi (chot)", !muaDangTheoDoi({ tin: "NAM GIU", muaTheoDoiTu: tu, trongKhung: true, bayGio: vn("2026-09-28T10:35") }));
+  ok("NAM GIU chua chot mua, sau khung (khong co cap nhat trong khung): coi nhu da chot", !muaDangTheoDoi({ tin: "NAM GIU", muaTheoDoiTu: tu, trongKhung: false, bayGio: vn("2026-09-28T15:30") }));
+  ok("NAM GIU da chot mua (khong co moc theo doi): binh thuong", !muaDangTheoDoi({ tin: "NAM GIU", muaTheoDoiTu: null, trongKhung: false }));
+  ok("MUA da chot mua luc 10:53, 13:00 van MUA: khong quay lai THEO DOI", !muaDangTheoDoi({ tin: "MUA", daChotMua: true, trongKhung: false }));
 }
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);

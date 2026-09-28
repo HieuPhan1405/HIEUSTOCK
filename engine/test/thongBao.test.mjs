@@ -44,6 +44,8 @@ ok(
   const muaTD = ngoai.find((t) => t.ma === "VPB");
   ok("ngoai khung: THEO DOI MUA, khoa rieng", muaTD.loai === "mua_theo_doi" && muaTD.tieu_de === "THEO DÕI MUA VPB" && muaTD.khoa === "mua_theo_doi:VPB:2026-09-28", JSON.stringify(muaTD));
   ok("ngoai khung: THEO DOI MUA MOI", ngoai.find((t) => t.ma === "FPT").tieu_de === "THEO DÕI MUA MỚI FPT");
+  const daChot = dungThongBaoTinHieu({ ngay: "2026-09-28", trongKhung: false, mua: [{ ma: "GMD", gia: 78.2, ngay_mua: "2026-09-28", da_chot_mua: true }] })[0];
+  ok("da chot mua trong khung, sau khung van MUA: khoa mua (khong bao THEO DOI MUA)", daChot.khoa === "mua:GMD:2026-09-28" && daChot.tieu_de === "MUA GMD", JSON.stringify(daChot));
   const banTD = dungThongBaoTinHieu({
     ngay: "2026-09-28",
     bayGio: new Date("2026-09-28T02:40:00Z"), // 09:40 gio VN

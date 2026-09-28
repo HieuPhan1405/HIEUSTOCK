@@ -19,7 +19,7 @@ import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
 import { thongBaoPhien } from "@/lib/thongBaoDb";
 import { capNhatLenhMuaChot } from "@/lib/lenhMuaChotDb";
 import { themMucCatLo } from "@/lib/lenhMuaChot";
-import { dangTrongKhungVaoLenh, canChoKhung, nhanKhungKeTiep, KHUNG_VAO_LENH } from "@/lib/khungGioVaoLenh";
+import { dangTrongKhungVaoLenh, canChoKhung, nhanKhungKeTiep, KHUNG_VAO_LENH, catLoCanChoKhung } from "@/lib/khungGioVaoLenh";
 import { TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
 import { phatHienXuatHien } from "@/lib/xuatHienTinHieu";
 import { ghiXuatHien } from "@/lib/xuatHienDb";
@@ -172,7 +172,7 @@ export async function POST(request) {
     await daoDamBangTinHieu(client);
     const { rows } = await client.query(
       `SELECT ma, tin, giai_ngan, gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3,
-              gia_mua, so_phien_giu, tp_da_cham, stop_loss, tp1, tp2, tp3, stop_bao_ve,
+              gia_mua, so_phien_giu, tp_da_cham, stop_loss, tp1, tp2, tp3, stop_bao_ve, cap_nhat_luc,
               dang_giu_moi, gia_mua_moi, stop_moi, tp1_moi, tp2_moi, tp3_moi,
               dang_giu_giua, gia_mua_giua, stop_giua, tp1_giua, tp2_giua, tp3_giua, tp_da_cham_giua,
               to_char(ngay_mua_moi, 'YYYY-MM-DD') AS ngay_mua_moi_txt,
@@ -602,7 +602,13 @@ export async function POST(request) {
     lenhDaDong.dongMuaMoi = dsDongMuaMoi.length;
     lenhDaDong.dongMuaGiua = dsDongMuaGiua.length;
     // Dong cat lo / hoa von mang theo muc cat lo + stop / TP luc mua: ghi ngoai khung thi chi cat khi gia <= muc cat lo TRONG khung (doiSoatLenhDaDong).
-    const vaoSo = [...dsDong, ...dsChotTP3, ...dsDongMuaMoi, ...dsChotMuaMoi, ...dsDongMuaGiua].map((d) => themMucCatLo(d, banGhiCuTheoMa[d.ma]));
+    // Cat lo phat hien TRONG khung ma lan cap nhat truoc con o truoc khung va gia da hoi tren muc cat lo -> co the da cham NGOAI khung: chua cat, treo THEO DOI (catLoCanChoKhung).
+    const giaMoiTheoMa = new Map(hangDL.map((h) => [h.ma, soFloat(h.gia)]));
+    const vaoSo = [...dsDong, ...dsChotTP3, ...dsDongMuaMoi, ...dsChotMuaMoi, ...dsDongMuaGiua].map((d) => {
+      const x = themMucCatLo(d, banGhiCuTheoMa[d.ma]);
+      const choKhung = trongKhung && catLoCanChoKhung({ lyDo: x.ly_do, gia: giaMoiTheoMa.get(x.ma), mucCatLo: x.muc_cat_lo, lucTruoc: banGhiCuTheoMa[x.ma]?.cap_nhat_luc, bayGio: new Date(bayGio) });
+      return choKhung ? { ...x, choKhung: true } : x;
+    });
     lenhDaDong.ghi = await ghiLenhDaDong(vaoSo, { trongKhung });
     lenhDaDong.chotTP3 = dsChotTP3.length; // gom ca dong chot TP1/TP2/TP3 (chot loi tung phan)
     // Doi soat lenh dang THEO DOI (chua chot): tin hieu quay lai NAM GIU -> bo khoi Lenh da dong; con ban thi cap nhat gia tam tinh, den gio mo khung ke tiep thi chot.
