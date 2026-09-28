@@ -310,6 +310,7 @@ function ThanhChonLenh({ cacLenh, chon, datChon }) {
               <span className="block text-sm font-bold" style={{ fontFamily: "'Inter', sans-serif" }}>
                 {l.ten_lenh}
                 {l.la_lenh_moi ? <span style={{ color: "#22D3EE" }}> · Mua mới</span> : ""}
+                {l.lenh_web === true ? <span style={{ color: "#FBBF24" }}> · Web giữ</span> : ""}
               </span>
               <span className="block text-[11px]" style={{ color: "#8B8B99", fontFamily: "'JetBrains Mono', monospace" }}>
                 mua {ngayNgan(l.ngay_mua)} · giá {fmt(l.gia_mua)}
@@ -446,6 +447,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 <p className="text-[11px] font-bold mb-1" style={{ color: "#22D3EE" }}>
                   Đang xem {vt.ten_lenh}
                   {vt.la_lenh_moi ? " · Mua mới" : ""}
+                  {vt.lenh_web === true ? " · Web giữ lệnh" : ""}
                 </p>
               )}
               <p className="text-[11px]" style={{ color: "#8B8B99" }}>

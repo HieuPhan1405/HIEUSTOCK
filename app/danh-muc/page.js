@@ -76,7 +76,7 @@ export default async function TrangDanhMuc() {
 
   // 1 danh sach chung: MOI LENH 1 dong rieng (lenh dau + cac lenh mua moi dang giu cua cac ma ban tham gia; 1 ma co nhieu lenh thi danh so (1), (2)). Giong So lenh dang mo:
   // ma khong con lenh nao thi chuyen xuong "Dang theo doi".
-  const dsLenh = lenhDangMo(cuaToi, cuaToi.some((r) => cacDiemMuaMoi(r).length) ? await layLichPhien() : null);
+  const dsLenh = lenhDangMo(cuaToi, cuaToi.some((r) => cacDiemMuaMoi(r).length || r.lenh_web?.length) ? await layLichPhien() : null);
   // DANH MUC = danh sach MA (moi ma 1 dong); ma dang co vi the (lenh) co mui ten xo ra cac vi the cua ma do. Ma co vi the len truoc.
   const lenhTheoMa = new Map();
   for (const l of dsLenh) {

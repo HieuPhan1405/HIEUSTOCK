@@ -17,6 +17,7 @@ import {
 } from "@/lib/lenhDaDong";
 import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
 import { thongBaoPhien } from "@/lib/thongBaoDb";
+import { capNhatLenhMuaChot } from "@/lib/lenhMuaChotDb";
 import { dangTrongKhungVaoLenh, canChoKhung, nhanKhungKeTiep, KHUNG_VAO_LENH } from "@/lib/khungGioVaoLenh";
 import { TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
 import { phatHienXuatHien } from "@/lib/xuatHienTinHieu";
@@ -600,6 +601,15 @@ export async function POST(request) {
     lenhDaDong.loi = String(e?.message || e);
   }
 
+  // LENH MUA DA CHOT TRONG KHUNG GIO (lib/lenhMuaChot.js): MUA / Mua moi hien trong khung = da mua that; tin hieu mat trong phien thi web tu giu lenh (chot TP, cat lo, ban khi
+  // diem thap 3 phien). Loi o day KHONG lam hong lan upload.
+  let lenhMuaChot = {};
+  try {
+    lenhMuaChot = await capNhatLenhMuaChot({ trongKhung, ngay: ngayGiaoDichVN() });
+  } catch (e) {
+    lenhMuaChot.loi = String(e?.message || e);
+  }
+
   // Bao Zalo cho tung ma MOI chuyen sang MUA hom nay - loi Zalo (chua ket noi,
   // token het han,...) KHONG duoc lam hong response upload, chi ghi vao ket
   // qua tra ve de admin biet.
@@ -702,6 +712,7 @@ export async function POST(request) {
   return Response.json({
     trangThai: "ok",
     lenhDaDong,
+    lenhMuaChot,
     xuatHien,
     thongBao,
     soDongDaLuu: hangDL.length,

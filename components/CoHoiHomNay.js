@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { fmt, pct, tinhVungLenh, chuoiVung, nhanGiaiNgan, nhanLoaiVao } from "@/components/dungChung";
+import { fmt, pct, tinhVungLenh, chuoiVung, nhanGiaiNgan, nhanLoaiVao, nhanLenhWeb } from "@/components/dungChung";
 import { dungCoHoiHomNay } from "@/lib/coHoiHomNay";
 import { tenCongTy } from "@/lib/tenMa";
 import { CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
@@ -143,11 +143,11 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
           trong="Phiên này không có tín hiệu MUA."
           hien={(r) => (
             <Dong
-              key={r.ma}
+              key={r.khoa_lenh ?? r.ma}
               ma={r.ma}
-              nhan={nhanLoaiVao(r)?.nhan ?? nhanGiaiNgan(r)?.nhan}
-              mauNhan={nhanLoaiVao(r)?.mau ?? nhanGiaiNgan(r)?.mau}
-              the={<NhanTheoDoi loai="mua" />}
+              nhan={nhanLenhWeb(r)?.nhan ?? nhanLoaiVao(r)?.nhan ?? nhanGiaiNgan(r)?.nhan}
+              mauNhan={nhanLenhWeb(r)?.mau ?? nhanLoaiVao(r)?.mau ?? nhanGiaiNgan(r)?.mau}
+              the={r.lenh_web ? null : <NhanTheoDoi loai="mua" />}
               phai={
                 <>
                   <span style={{ color: TEXT }}>{fmt(r.gia)}</span>
@@ -209,9 +209,9 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
               key={l.khoa_lenh}
               ma={l.ma}
               ten={l.ten_lenh}
-              nhan="Mua mới"
-              mauNhan={NGOC}
-              the={<NhanTheoDoi loai="mua" />}
+              nhan={l.lenh_web ? "Mua mới · web giữ" : "Mua mới"}
+              mauNhan={l.lenh_web ? "#FBBF24" : NGOC}
+              the={l.lenh_web ? null : <NhanTheoDoi loai="mua" />}
               phai={
                 <>
                   <span style={{ color: TEXT }}>{fmt(l.gia)}</span>

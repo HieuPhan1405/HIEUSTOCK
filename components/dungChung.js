@@ -249,6 +249,16 @@ export function nhanChoHoi(row) {
   };
 }
 
+// Nhan "Web giữ lệnh": lenh da mua trong khung gio nhung tin hieu mat trong phien, he thong khong xac nhan -> web tu giu (lib/lenhMuaChot.js).
+export function nhanLenhWeb(row) {
+  if (!row?.lenh_web || row.lenh_web !== true) return null;
+  return {
+    nhan: "Web giữ lệnh",
+    mau: "#FBBF24",
+    moTa: "Đã mua trong khung giờ nhưng tín hiệu mất trong phiên (hệ thống không xác nhận). Web tự giữ lệnh: chốt 30% ở TP1, 30% ở TP2, cắt lỗ khi chạm mức cắt lỗ, bán khi điểm ≤ −1,5 đủ 3 phiên.",
+  };
+}
+
 // So phien giu dang chu: 0 phien = vua mua hom nay.
 export function chuoiGiuPhien(n) {
   if (n == null || !Number.isFinite(Number(n))) return "—";

@@ -18,7 +18,7 @@ import {
   useCotHienThi,
   ChonCotHienThi,
 } from "@/components/boLocChung";
-import { fmt, nhanGiaiNgan, nhanLoaiVao, nhanBaoVeLai, nhanChoHoi, datChuanUuTien } from "@/components/dungChung";
+import { fmt, nhanGiaiNgan, nhanLoaiVao, nhanBaoVeLai, nhanChoHoi, datChuanUuTien, nhanLenhWeb } from "@/components/dungChung";
 
 const VIEN = "#26262F";
 const NEN_CARD = "#15151F";
@@ -56,6 +56,11 @@ const COT_RIENG = {
         {row.la_lenh_moi && (
           <span className="text-[10px] font-bold tracking-wide mt-0.5" data-may="mua-moi" style={{ color: NGOC, fontFamily: "'Inter', sans-serif" }} title="Lệnh mua mới (đợt sau): có giá mua, mức cắt lỗ, chốt lời và lãi/lỗ tính riêng">
             Mua mới{row.mua_moi_hom_nay ? " · hôm nay" : ""}
+          </span>
+        )}
+        {nhanLenhWeb(row) && (
+          <span className="text-[10px] font-bold tracking-wide mt-0.5" data-may="lenh-web" style={{ color: nhanLenhWeb(row).mau, fontFamily: "'Inter', sans-serif" }} title={nhanLenhWeb(row).moTa}>
+            {nhanLenhWeb(row).nhan}
           </span>
         )}
         {row.ten_ngan && (

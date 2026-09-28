@@ -96,6 +96,11 @@ function BangViThe({ m, hien }) {
                         {l.la_lenh_moi ? "Mua mới" : "Lệnh đầu"}
                         {l.mua_moi_hom_nay ? " · hôm nay" : ""}
                       </span>
+                      {l.lenh_web === true && (
+                        <span className="text-[10px] font-bold" style={{ color: VANG }} data-may="lenh-web" title="Đã mua trong khung giờ nhưng tín hiệu mất trong phiên — web tự giữ lệnh">
+                          Web giữ lệnh
+                        </span>
+                      )}
                       {l === totNhat && (
                         <span className="text-[10px] font-bold px-1 rounded" style={{ background: "rgba(251,191,36,0.15)", color: VANG }} title="Vị thế đang lãi nhiều nhất của mã này" data-may="vi-the-tot">
                           ★ Tốt nhất
