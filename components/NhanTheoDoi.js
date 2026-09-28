@@ -17,7 +17,7 @@ export default function NhanTheoDoi({ loai, tu = null }) {
   return (
     <span
       data-may={mua ? "tin-THEO DOI MUA" : "tin-THEO DOI BAN"}
-      className="inline-block mt-0.5 px-1.5 py-px rounded-sm text-[10px] font-bold whitespace-nowrap"
+      className="inline-flex flex-col mt-0.5 px-1.5 py-px rounded-sm text-[10px] leading-tight font-bold max-w-full"
       style={{ color: mau, border: `1px dashed ${mau}`, background: mua ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)", fontFamily: "'JetBrains Mono', monospace" }}
       title={
         mua
@@ -25,7 +25,9 @@ export default function NhanTheoDoi({ loai, tu = null }) {
           : `Tín hiệu bán / cắt lỗ ngoài khung giờ — chốt bán ở khung ${khung || "kế tiếp"} nếu tín hiệu vẫn còn`
       }
     >
-      THEO DÕI{khung ? ` · chờ ${khung}` : ""}
+      {/* 2 dong (THEO DOI / cho 14:00) de vua cot ma hep (76px) o Top co hoi tren dien thoai, khong tran de len chu ben canh. */}
+      <span className="whitespace-nowrap">THEO DÕI</span>
+      {khung && <span className="whitespace-nowrap font-medium">chờ {khung}</span>}
     </span>
   );
 }
