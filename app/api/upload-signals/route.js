@@ -158,6 +158,7 @@ export async function POST(request) {
   const cot = (ten, chuyenDoi) => hangDL.map((h) => chuyenDoi(h[ten]));
   let soDongDaXoa = 0;
   let daBoQuaXoa = false;
+  let soMaThieu = 0;
 
   // Lay tin hieu CU (truoc khi ghi de) cho dung cac ma sap upload, de sau do
   // so sanh phat hien "ma nao MOI chuyen sang MUA hom nay" (tin cu KHAC MUA,
@@ -474,8 +475,17 @@ export async function POST(request) {
     // Co dong bi loi dinh dang (AmiBroker Explore da luong ghi dinh dong vao nhau) thi CAC MA CUA
     // NHUNG DONG DO khong co trong danh sach nay - neu xoa thi chung bien mat khoi web chi vi loi
     // ghi file. Bo qua buoc xoa cho toi khi co 1 lan upload sach.
-    if (hangDL.length >= SO_DONG_TOI_THIEU_DE_XOA && soDongLoi === 0) {
-      const { rowCount } = await client.query(`DELETE FROM tin_hieu WHERE NOT (ma = ANY($1::text[]))`, [dsMaLanNay]);
+    // Lan upload THIEU NHIEU MA so voi du lieu dang co (vd engine real-time khoi dong lai tai lich su gia loi vai chuc ma - 28/09/2026 mat 37 ma, ca NAB dang giu lenh)
+    // -> day la lan quet thieu, KHONG phai cac ma do bi huy niem yet: bo qua buoc xoa. Huy niem yet that chi vai ma 1 lan.
+    // Ma DANG GIU LENH (MUA / NAM GIU / dang giu lenh mua moi) khong bao gio bi xoa o day - xoa la mat trang thai lenh (gia mua da ghi nhan, cat lo, TP).
+    const SO_MA_XOA_TOI_DA = 10;
+    const { rows: thieu } = await client.query(`SELECT COUNT(*)::int AS dem FROM tin_hieu WHERE NOT (ma = ANY($1::text[]))`, [dsMaLanNay]);
+    soMaThieu = thieu[0].dem;
+    if (hangDL.length >= SO_DONG_TOI_THIEU_DE_XOA && soDongLoi === 0 && soMaThieu <= SO_MA_XOA_TOI_DA) {
+      const { rowCount } = await client.query(
+        `DELETE FROM tin_hieu WHERE NOT (ma = ANY($1::text[])) AND NOT (tin IN ('MUA', 'NAM GIU') OR dang_giu_giua IS TRUE OR dang_giu_moi IS TRUE)`,
+        [dsMaLanNay]
+      );
       soDongDaXoa = rowCount;
     } else {
       daBoQuaXoa = true;
@@ -726,7 +736,9 @@ export async function POST(request) {
       canhBao:
         soDongLoi > 0
           ? `Co ${soDongLoi} dong bi loi dinh dang (thuong do AmiBroker Explore chay da luong ghi dinh dong) - cac ma o dong loi KHONG duoc cap nhat lan nay, da BO QUA buoc xoa du lieu cu. Dat so luong thread cua Analysis ve 1 roi Explore lai.`
-          : `Chi nhan duoc ${hangDL.length} dong (< ${100}) - da BO QUA buoc xoa du lieu cu de tranh mat du lieu. Kiem tra lai AmiBroker "Apply to" co dang = "All Symbols" khong.`,
+          : soMaThieu > 10
+            ? `Lan nay THIEU ${soMaThieu} ma so voi du lieu dang co - da BO QUA buoc xoa (cac ma thieu giu nguyen du lieu cu). Neu dung engine real-time: khoi dong lai de tai du lich su gia.`
+            : `Chi nhan duoc ${hangDL.length} dong (< ${100}) - da BO QUA buoc xoa du lieu cu de tranh mat du lieu. Kiem tra lai AmiBroker "Apply to" co dang = "All Symbols" khong.`,
     }),
   });
 }
