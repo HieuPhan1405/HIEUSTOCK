@@ -175,12 +175,15 @@ def slide(sel, t, d=0.45, dist=-120):
 
 def draw(sel, t, d=0.6):
     return (f"(function(){{const el=document.querySelector('{sel}');if(el){{const L=el.getTotalLength();"
-            f"tl.set('{sel}',{{strokeDasharray:L,strokeDashoffset:L}},0);"
+            f"tl.set('{sel}',{{strokeDasharray:L,strokeDashoffset:L,opacity:0}},0);tl.set('{sel}',{{opacity:1}},{q(t)});"
             f"tl.to('{sel}',{{strokeDashoffset:0,duration:{d},ease:'power2.inOut'}},{q(t)});}}}})();")
 
 
-def count(sel, t, to, d=0.9, dec=0, suffix=""):
-    return (f"(function(){{const o={{v:0}};tl.to(o,{{v:{to},duration:{d},ease:'power2.out',onUpdate:function(){{"
+def count(sel, t, to, d=0.9, dec=0, suffix="", wrap=None):
+    """Đếm số; `wrap` (khối chứa số) ẩn tới lúc bắt đầu đếm để không hiện "0" chờ sẵn."""
+    pre = (f"tl.set('{wrap}',{{opacity:0}},0);tl.fromTo('{wrap}',{{opacity:0,y:20}},{{opacity:1,y:0,duration:.25,ease:'power2.out'}},{q(t)});"
+           if wrap else "")
+    return pre + (f"(function(){{const o={{v:0}};tl.to(o,{{v:{to},duration:{d},ease:'power2.out',onUpdate:function(){{"
             f"const el=document.querySelector('{sel}');if(el)el.textContent=o.v.toFixed({dec}).replace('.',',')+'{suffix}';}}}},{q(t)});}})();")
 
 
@@ -342,7 +345,7 @@ SEL .big{{font:800 150px 'Be Vietnam Pro';color:{WHITE};line-height:1.1;margin-t
 SEL .big .gt{{color:{GREEN};margin-right:8px}}
 SEL .big small{{font:700 40px 'Be Vietnam Pro';color:#bbb;margin-left:14px}}
 SEL .up{{position:absolute;right:40px;top:60px}}""",
-     [rise("#c08-p", 51.15, 0.4, -30), count("#c08-n", 52.4, 106, 0.9), draw("#c08-ar", 52.6, 0.5)])
+     [rise("#c08-p", 51.15, 0.4, -30), count("#c08-n", 52.4, 106, 0.9, wrap="#c08-p .big"), draw("#c08-ar", 52.6, 0.5)])
 
 # 9) Hormuz — cutaway có PiP: tin + chuỗi tác động
 card("c09-hormuz", 55.0, 64.95, f"""
@@ -406,9 +409,9 @@ SEL .res{{position:absolute;left:70px;right:70px;top:760px;padding:24px 30px;bor
 SEL .rk{{font:700 32px 'Be Vietnam Pro';color:#cfcfcf}} SEL .rv{{font:800 120px 'Be Vietnam Pro';color:{GREEN};line-height:1.05}}
 SEL .src{{position:absolute;left:70px;top:1030px;font:400 24px 'Be Vietnam Pro';color:#777}}""",
      [rise("#c12-k", 72.65), rise("#c12-b1", 72.75), f"tl.fromTo('#c12-f1',{{width:0}},{{width:'100%',duration:1,ease:'power3.out'}},{q(74.52)});",
-      count("#c12-n1", 74.52, 166, 1.0), rise("#c12-b2", 76.2),
-      f"tl.fromTo('#c12-f2',{{width:0}},{{width:'71%',duration:1,ease:'power3.out'}},{q(77.0)});", count("#c12-n2", 77.0, 118, 1.0),
-      slide("#c12-r", 79.7, 0.45, -80), rise("#c12-res", 82.0, 0.5, 60), count("#c12-n3", 85.2, 42, 0.9)],
+      count("#c12-n1", 74.52, 166, 1.0, wrap="#c12-b1 .val"), rise("#c12-b2", 76.2),
+      f"tl.fromTo('#c12-f2',{{width:0}},{{width:'71%',duration:1,ease:'power3.out'}},{q(77.0)});", count("#c12-n2", 77.0, 118, 1.0, wrap="#c12-b2 .val"),
+      slide("#c12-r", 79.7, 0.45, -80), rise("#c12-res", 82.0, 0.5, 60), count("#c12-n3", 85.2, 42, 0.9, wrap="#c12-res .rv")],
      full=True, pip=True, bg=f"radial-gradient(110% 70% at 50% 30%,#1d1d1f 0%,{DARK} 70%)")
 
 # 13) Vietcap dự báo
@@ -419,7 +422,7 @@ SEL .p{{position:absolute;left:60px;right:60px;top:80px;padding:22px 34px;{PANEL
 SEL .k{{font:700 26px 'Be Vietnam Pro';color:#9a9a9a;letter-spacing:3px}}
 SEL .big{{font:800 130px 'Be Vietnam Pro';color:{GREEN};line-height:1.05}}
 SEL .d{{font:400 26px 'Be Vietnam Pro';color:#cfcfcf;font-style:italic}}""",
-     [rise("#c13-p", 86.75, 0.4, -30), count("#c13-n", 90.24, 46, 0.9), rise("#c13-d", 88.5, 0.4, 20)])
+     [rise("#c13-p", 86.75, 0.4, -30), count("#c13-n", 90.24, 46, 0.9, wrap="#c13-p .big"), rise("#c13-d", 88.5, 0.4, 20)])
 
 chapter("c14-ch3", 92.47, 94.0, "03", "1 lãi suất", "— 2 chiều ngược nhau —")
 
