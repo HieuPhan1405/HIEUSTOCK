@@ -19,8 +19,26 @@ PURPLE, CYAN, YELLOW = "#C084FC", "#22D3EE", "#FACC15"
 PRICES = json.loads((ROOT / "prices.json").read_text())
 
 
+# Trả lại 1,2s ở mỗi chỗ chuyển chương (01 Dầu khí, 02 Bảo hiểm) để thẻ chương không bị chớp nhoáng.
+# Mọi thời điểm trong file viết theo mốc cũ; S() đổi sang mốc của input-video.mp4 mới.
+HOLDS = [(39.4667, 1.2), (65.0333, 1.2)]
+
+
+def S(t):
+    return t + sum(d for at, d in HOLDS if t >= at)
+
+
 def q(t):
-    return f"{round(t * FPS) / FPS:.4f}"
+    return f"{round(S(t) * FPS) / FPS:.4f}"
+
+
+def qa(t_new):
+    """Thời điểm đã ở mốc mới (không qua S)."""
+    return f"{round(t_new * FPS) / FPS:.4f}"
+
+
+def qd(s, e):
+    return f"{round(S(e) * FPS) / FPS - round(S(s) * FPS) / FPS:.4f}"
 
 
 def pct(sym):
@@ -292,12 +310,13 @@ SEL .tt{{font:italic 700 110px 'Playfair Display';color:{DARK};line-height:1.15}
 SEL .sb{{font:400 40px 'Pacifico';color:#555}}""",
          [f"tl.fromTo('#{cid}-bt',{{y:-560}},{{y:0,duration:.3,ease:'power3.out'}},{q(s)});",
           f"tl.fromTo('#{cid}-bb',{{y:600}},{{y:0,duration:.3,ease:'power3.out'}},{q(s)});",
-          f"tl.fromTo('#{cid}-l',{{opacity:0,scale:.85}},{{opacity:1,scale:1,duration:.3,ease:'power3.out'}},{q(s + 0.08)});",
-          f"tl.fromTo('#{cid}-tt',{{clipPath:'inset(0 100% 0 0)'}},{{clipPath:'inset(0 0% 0 0)',duration:.4,ease:'power2.inOut'}},{q(s + 0.1)});"],
+          f"tl.fromTo('#{cid}-l',{{opacity:0,scale:.85}},{{opacity:1,scale:1,duration:.3,ease:'power3.out'}},{qa(S(s) + 0.08)});",
+          f"tl.fromTo('#{cid}-tt',{{clipPath:'inset(0 100% 0 0)'}},{{clipPath:'inset(0 0% 0 0)',duration:.4,ease:'power2.inOut'}},{qa(S(s) + 0.1)});",
+          f"tl.to('#{cid}-l',{{scale:1.05,duration:{max(0.5, S(e) - S(s) - 0.5):.2f},ease:'power1.inOut'}},{qa(S(s) + 0.4)});"],
          full=True, bg="radial-gradient(120% 80% at 50% 45%,#FFFBF1 0%,#F3EBDA 100%)")
 
 
-chapter("c06-ch1", 39.47, 40.43, "01", "Dầu khí", "ăn theo giá dầu")
+chapter("c06-ch1", 39.40, 40.43, "01", "Dầu khí", "ăn theo giá dầu")
 
 # 7) Nhóm dầu khí + phân bón
 oil = ["BSR", "PVS", "PET", "DCM", "BFC"]
@@ -376,7 +395,7 @@ SEL .ar{{margin:4px 0}}""",
       f"tl.to('#c09-s3',{{borderColor:'{GREEN}',duration:.3}},{q(63.36)});"],
      full=True, pip=True, bg=f"radial-gradient(110% 70% at 50% 30%,#1d1d1f 0%,{DARK} 70%)")
 
-chapter("c10-ch2", 65.03, 65.7, "02", "Bảo hiểm", "ăn theo lãi suất cao")
+chapter("c10-ch2", 65.0, 65.7, "02", "Bảo hiểm", "ăn theo lãi suất cao")
 
 # 11) BVH trần — B-roll từ CloudStock (thẻ giá + biểu đồ), cutaway có PiP
 card("c11-bvh", 69.16, 72.6, BRAND_HTML.replace('class="brand"','class="brand" id="c11-br"') + f"""<div class="hd" id="c11-hd"><b>BVH · Bảo Việt</b><span style="background:{PURPLE}">TRẦN {fmt_pct(pct('BVH'))}</span></div>
@@ -523,7 +542,7 @@ def main():
     for cid, c in CARDS.items():
         s, e = c["s"], c["e"]
         (PUB / "cards" / f"{cid}.html").write_text(c["html"] + "\n")
-        hosts.append(f'<div class="card-host clip" id="{cid}" data-card-id="{cid}" data-start="{q(s)}" data-duration="{q(e - s)}" '
+        hosts.append(f'<div class="card-host clip" id="{cid}" data-card-id="{cid}" data-start="{q(s)}" data-duration="{qd(s, e)}" '
                      f'data-track-index="{c["track"]}" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;">{c["html"]}</div>')
         sel = f'.card-host[data-card-id="{cid}"]'
         fi = 0.12 if c["full"] else 0.25
@@ -531,7 +550,7 @@ def main():
         js.append(f"tl.fromTo('{sel}',{{opacity:0}},{{opacity:1,duration:{fi},ease:'power2.out'}},{q(s)});")
         js.extend(c["js"])
         if e < DUR - 0.05:
-            js.append(f"tl.to('{sel}',{{opacity:0,duration:{fi},ease:'power2.in'}},{q(e - fi)});")
+            js.append(f"tl.to('{sel}',{{opacity:0,duration:{fi},ease:'power2.in'}},{qa(S(e) - fi)});")
             js.append(f"tl.set('{sel}',{{visibility:'hidden'}},{q(e)});")
 
     # PiP: gộp các cutaway liền nhau thành một khoảng để PiP không nhảy ra vào
@@ -545,8 +564,8 @@ def main():
     for s0, e0 in wins:
         js.append(f"tl.set('#video-wrap',{{className:'video-wrapper pip'}},{q(s0)});")
         js.append(f"tl.fromTo('#video-wrap',{{x:0,y:0,scale:1}},{{x:810,y:1470,scale:.22,duration:.45,ease:'power3.inOut'}},{q(s0)});")
-        js.append(f"tl.to('#video-wrap',{{x:0,y:0,scale:1,duration:.45,ease:'power3.inOut'}},{q(e0 - 0.3)});")
-        js.append(f"tl.set('#video-wrap',{{className:'video-wrapper'}},{q(e0 + 0.15)});")
+        js.append(f"tl.to('#video-wrap',{{x:0,y:0,scale:1,duration:.45,ease:'power3.inOut'}},{qa(S(e0) - 0.3)});")
+        js.append(f"tl.set('#video-wrap',{{className:'video-wrapper'}},{qa(S(e0) + 0.15)});")
 
     # caption
     caps = []
@@ -557,13 +576,13 @@ def main():
         cls = {"k": "kk", "b": "kb", "g": "kg", "r": "kr"}[kind]
         words = "".join(f'<span class="w">{w}</span> ' for w in key.split())
         sm = f'<div class="sm">{small}</div>' if small else ""
-        caps.append(f'<div class="cap clip" id="cap-{i}" data-start="{q(s)}" data-duration="{q(e - s)}" data-track-index="5">{sm}<div class="{cls}">{words}</div></div>')
+        caps.append(f'<div class="cap clip" id="cap-{i}" data-start="{q(s)}" data-duration="{qd(s, e)}" data-track-index="5">{sm}<div class="{cls}">{words}</div></div>')
         c = f"#cap-{i}"
         if small:
             js.append(f"tl.fromTo('{c} .sm',{{opacity:0,y:16}},{{opacity:1,y:0,duration:.2,ease:'power2.out'}},{q(s)});")
         js.append(f"tl.fromTo('{c} .w',{{opacity:0,y:20,scale:.85}},{{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06}},{q(s + (0.07 if small else 0))});")
         if e < DUR - 0.05:
-            js.append(f"tl.to('{c}',{{opacity:0,duration:.08,ease:'power1.in'}},{q(e - 0.08)});")
+            js.append(f"tl.to('{c}',{{opacity:0,duration:.08,ease:'power1.in'}},{qa(S(e) - 0.08)});")
 
     # zoom: xen kẽ 1.0 / 1.1 tại mỗi cut; đẩy thêm ở câu nhấn, về lại mức nền ở cut kế tiếp
     base = 1.0
