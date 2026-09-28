@@ -232,11 +232,14 @@ function ketLuanTuDong(row) {
     "TRUNG LAP": row.ket_thuc_tp3 ? "Giá đã chạm TP3, lệnh kết thúc và không còn nắm vị thế (trung lập)" : "Chưa đủ điều kiện vào lệnh, đang trung lập",
     "NAM GIU": "Đang nắm giữ vị thế mở",
   }[row.tin] || "Chưa đủ điều kiện vào lệnh, đang trung lập";
+  // Lenh web giu (da mua trong khung, tin hieu mat, chua cham cat lo trong khung) - van dang nam giu du he thong bao trung lap / ban.
+  const coLenhWeb = Array.isArray(row.lenh_web) && row.lenh_web.length > 0 && row.tin !== "MUA" && row.tin !== "NAM GIU";
+  const cauMoCuoi = coLenhWeb ? "Đang nắm giữ lệnh web giữ (hệ thống đã thoát nhưng giá chưa chạm cắt lỗ trong khung giờ)" : cauMo;
 
   const xuHuong = row.trend > 0.5 ? "xu hướng tăng" : row.trend < -0.5 ? "xu hướng giảm" : "đi ngang";
   const dongTien = row.dt > 0.2 ? "dòng tiền đang ủng hộ" : row.dt < -0.2 ? "dòng tiền đang rút ra" : "dòng tiền trung tính";
 
-  return `${cauMo}, cổ phiếu đang ${xuHuong}, ${dongTien}.`;
+  return `${cauMoCuoi}, cổ phiếu đang ${xuHuong}, ${dongTien}.`;
 }
 
 // Cac tag tom tat nhanh - mo phong hang the mau cua trang tham khao
@@ -384,7 +387,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           <p className="text-xs mt-1 mb-3" style={{ color: "#8B8B99" }} data-may="diem">
             điểm hợp lưu
           </p>
-          <SignalPill tin={row.tin} banTheoDoiTu={row.ban_theo_doi ? row.ban_theo_doi_tu : null} />
+          <SignalPill tin={row.tin} banTheoDoiTu={row.ban_theo_doi ? row.ban_theo_doi_tu : null} webGiu={Array.isArray(row.lenh_web) && row.lenh_web.length > 0} />
           {nhanChoHoi(row) && (
             <span className="mt-2 text-[11px] font-bold" style={{ color: nhanChoHoi(row).mau }} title={nhanChoHoi(row).moTa} data-may="vung-mua">
               ⏳ {nhanChoHoi(row).nhan}

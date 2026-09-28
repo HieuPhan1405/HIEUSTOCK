@@ -96,6 +96,7 @@ export default async function TrangDanhMuc() {
         tin: r?.tin ?? null,
         ban_theo_doi: r?.ban_theo_doi ?? false,
         ban_theo_doi_tu: r?.ban_theo_doi_tu ?? null,
+        coLenhWeb: Array.isArray(r?.lenh_web) && r.lenh_web.length > 0,
         gia: r?.gia ?? null,
         diem: r?.diem ?? null,
         lenh: lenhTheoMa.get(t.ma) ?? [],

@@ -9,7 +9,10 @@ const CHU_KHUNG = KHUNG_VAO_LENH.map((k) => `${hh(k.tu)}–${hh(k.den)}`).join("
 // Nhan trang thai tin hieu. NGOAI khung gio vao lenh (lib/khungGioVaoLenh.js) hien THEO DOI: xanh = tin hieu MUA (chi mua trong khung), do = lenh BAN / cat lo dang cho chot
 // (banTheoDoiTu: luc lenh ban duoc ghi ngoai khung - cot ban_theo_doi_tu cua lib/tinHieu.js; lenh ban da chot trong khung thi hien BAN binh thuong).
 // minhHoa (chi trang Huong dan): "co-dinh" = hien dung nhan goc bat ke gio; "theo-doi" = luon hien THEO DOI (MUA xanh / BAN do) de minh hoa.
-export default function SignalPill({ tin, banTheoDoiTu = null, minhHoa = null }) {
+// webGiu: ma co LENH WEB GIU (da mua trong khung, tin hieu mat - lib/lenhMuaChot.js) ma he thong khong giu -> hien NAM GIU (nguoi dung dang cam co phieu), ghi chu tin hieu he thong.
+export default function SignalPill({ tin: tinHeThong, banTheoDoiTu = null, minhHoa = null, webGiu = false }) {
+  const doiWebGiu = webGiu && tinHeThong !== "MUA" && tinHeThong !== "NAM GIU";
+  const tin = doiWebGiu ? "NAM GIU" : tinHeThong;
   const map = {
     MUA: { bg: "#123423", text: "#22C55E", label: "MUA" },
     BAN: { bg: "#3A1620", text: "#EF4444", label: "BÁN" },
@@ -20,12 +23,14 @@ export default function SignalPill({ tin, banTheoDoiTu = null, minhHoa = null })
   const theoDoiMua = minhHoa === "theo-doi" ? tin === "MUA" : minhHoa !== "co-dinh" && tin === "MUA" && !trongKhung;
   const theoDoiBan = minhHoa === "theo-doi" ? tin === "BAN" : minhHoa !== "co-dinh" && banTheoDoiTu != null && (tin === "BAN" || tin === "TRUNG LAP");
   const s = theoDoiBan ? map.BAN : map[tin] || map["TRUNG LAP"];
-  const khoaMay = theoDoiMua ? "tin-THEO DOI MUA" : theoDoiBan ? "tin-THEO DOI BAN" : `tin-${map[tin] ? tin : "TRUNG LAP"}`;
+  const khoaMay = theoDoiMua ? "tin-THEO DOI MUA" : theoDoiBan ? "tin-THEO DOI BAN" : doiWebGiu ? "lenh-web" : `tin-${map[tin] ? tin : "TRUNG LAP"}`;
   const title = theoDoiMua
     ? `Tín hiệu MUA ngoài khung giờ vào lệnh — theo dõi, chỉ mua trong khung ${CHU_KHUNG}`
     : theoDoiBan
       ? `Tín hiệu bán / cắt lỗ ngoài khung giờ — chốt bán ở khung ${banTheoDoiTu ? nhanKhungKeTiep(banTheoDoiTu) : "kế tiếp"} nếu tín hiệu vẫn còn`
-      : undefined;
+      : doiWebGiu
+        ? `Web giữ lệnh (đã mua trong khung, chưa chạm cắt lỗ trong khung) — tín hiệu hệ thống hiện ${map[tinHeThong]?.label ?? tinHeThong}`
+        : undefined;
   return (
     <span
       data-may={khoaMay}
