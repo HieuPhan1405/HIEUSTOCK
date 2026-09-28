@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 3,
+  "composition": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 141.8,
+    "layout": "portrait",
+    "themeId": "noir",
+    "seed": 42
+  },
+  "videoTrack": {
+    "sourcePath": "input-video.mp4",
+    "startSec": 0,
+    "endSec": 141.8
+  },
+  "subtitles": {
+    "enabled": true,
+    "style": "kinetic 2 dòng, ngang ngực"
+  },
+  "cards": [
+    {
+      "id": "c01-hook",
+      "startSec": 0.0,
+      "endSec": 1.25,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c02-board",
+      "startSec": 1.25,
+      "endSec": 6.45,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c03-stats",
+      "startSec": 6.69,
+      "endSec": 17.3,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c04-upgrade",
+      "startSec": 19.5,
+      "endSec": 30.1,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c05-three",
+      "startSec": 30.4,
+      "endSec": 39.45,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c06-ch1",
+      "startSec": 39.47,
+      "endSec": 40.43,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c07-oil",
+      "startSec": 40.43,
+      "endSec": 51.0,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c07b-bsrweb",
+      "startSec": 42.88,
+      "endSec": 45.85,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c08-brent",
+      "startSec": 51.13,
+      "endSec": 54.95,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c09-hormuz",
+      "startSec": 55.0,
+      "endSec": 64.95,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c10-ch2",
+      "startSec": 65.03,
+      "endSec": 65.7,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c11-bvh",
+      "startSec": 69.16,
+      "endSec": 72.6,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c12-bs",
+      "startSec": 72.6,
+      "endSec": 86.45,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c13-vcap",
+      "startSec": 86.72,
+      "endSec": 92.3,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c14-ch3",
+      "startSec": 92.47,
+      "endSec": 94.0,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c15-twoway",
+      "startSec": 95.4,
+      "endSec": 102.55,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c16-losers",
+      "startSec": 102.64,
+      "endSec": 110.85,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c17-sides",
+      "startSec": 116.16,
+      "endSec": 120.4,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c18-close",
+      "startSec": 122.45,
+      "endSec": 131.4,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c19-cta",
+      "startSec": 136.63,
+      "endSec": 141.8,
+      "zone": "video-overlay"
+    }
+  ]
+}

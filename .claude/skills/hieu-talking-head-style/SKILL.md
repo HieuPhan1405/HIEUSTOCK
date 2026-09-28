@@ -86,7 +86,28 @@ Phân tích từ 3 video mẫu (9:16, 576x1024, 25–84s). Khi dựng video mớ
 - SFX, nhạc nền, lọc giọng → `/media-use` + `/hyperframes-audio`.
 - Hiệu ứng có sẵn (glitch, light leak, biểu đồ) → tìm trong `/hyperframes-registry` trước.
 
-## 8. Checklist trước khi xuất
+## 8. Quy trình đã chạy tốt (video 28/9/2026 — `videos/2026-09-28-nganh-nguoc-dong/build.py` làm mẫu)
+
+- **Nhận video >30 MB**: Hiếu gửi link Google Drive (chia sẻ "bất kỳ ai có link") → tải bằng
+  `https://drive.usercontent.google.com/download?id=<ID>&export=download&confirm=t`.
+- **Cắt khoảng lặng > 0,5s** (đo mức dB mỗi 100ms, ngưỡng −40 dB, đệm 0,15s trước / 0,2s sau,
+  bỏ khúc nói vấp) → cắt từng đoạn bằng ffmpeg rồi concat (filter_complex một lần bị hết RAM).
+  Tại mỗi điểm nối đổi khung zoom 1.0 ↔ 1.1 để giấu jump cut.
+- **Tách lời**: whisper.cpp `ggml-medium` + `--prompt` chứa mã CK/thuật ngữ; kịch bản của Hiếu
+  dùng để sửa chữ. Đoạn nào timestamp dồn cục → tách riêng đoạn đó chạy lại.
+- **Kiểm chứng số liệu** bằng API DNSE (`services.entrade.com.vn/chart-api/v2/ohlcs/stock|index`)
+  — so từng con số trong kịch bản; đánh dấu **trần (tím) / sàn (xanh lơ)** đúng giá trần/sàn HOSE.
+- **B-roll từ web CloudStock của Hiếu** (`https://www.cloudstock.id.vn/ma/<MÃ>`): chụp bằng
+  Playwright (viewport 430×932, scale 2.5; tin CA proxy qua NSS `certutil`, không tắt TLS),
+  ẩn header sticky, **tắt lớp "Vùng lệnh"**, khung 3T, chuột ra ngoài biểu đồ. Chỉ lấy khối giá
+  (giá/%/KL/vốn hoá) + biểu đồ — **không đưa "NẮM GIỮ", "Có lệnh mua mới", vùng mua/chốt lời/cắt lỗ**
+  vào video công khai (dễ bị hiểu là khuyến nghị).
+- **Logo CloudStock phải hiện rõ** trên mọi cảnh lấy từ web (badge logo + "CloudStock" +
+  `cloudstock.id.vn`) và ở CTA cuối (icon 512px bo góc + domain). Logo gốc: `public/logo-bieu-tuong-toi.png`
+  (260px, chỉ dùng cỡ nhỏ), `public/icon-512.png` (dùng cỡ lớn).
+- Caption **xanh/đỏ** trên áo sáng màu → thêm nền tối bo góc để đủ tương phản.
+
+## 9. Checklist trước khi xuất
 
 - [ ] Hook có tiêu đề lớn trong 3s đầu
 - [ ] Không caption nào quá 2 dòng, caption ở ngang vai
