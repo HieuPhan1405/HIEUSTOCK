@@ -1,5 +1,5 @@
 // Test tay cho lib/khungGioVaoLenh.js (chot ban theo khung gio vao lenh). Chay: node engine/test/khungGioVaoLenh.test.mjs
-import { dangTrongKhungVaoLenh, batDauKhungKeTiep, daDenLucChot, nhanKhungKeTiep, canChoKhung } from "../../lib/khungGioVaoLenh.js";
+import { dangTrongKhungVaoLenh, batDauKhungKeTiep, daDenLucChot, nhanKhungKeTiep, canChoKhung, xuLyLenhTheoDoi } from "../../lib/khungGioVaoLenh.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -33,6 +33,20 @@ ok("sang hom sau truoc 10:30: cung ngay", nhanKhungKeTiep(vn("2026-09-25T14:50")
 
 ok("ban theo tin hieu / cat lo phai cho khung", ["BAN", "THOAT", "THOAT_KIJUN", "CAT_LO", "BAO_VE_LAI"].every(canChoKhung));
 ok("chot TP khong cho khung", !["TP1", "TP2", "TP3", "CHOT_TP3"].some(canChoKhung));
+
+// Cat lo chi trong khung gio (GMD 14/09/2026: cham 73,5 luc 13:45 ngoai khung, 14:00-14:45 gia 73,6+ -> khong cat)
+{
+  const d = { ly_do: "CAT_LO", muc_cat_lo: 73.508, thay_trong_khung: false, tao_luc: vn("2026-09-14T13:45") };
+  ok("13:50 ngoai khung: cho", xuLyLenhTheoDoi(d, 73.5, vn("2026-09-14T13:50")).ketQua === "cho");
+  const k1 = xuLyLenhTheoDoi(d, 73.7, vn("2026-09-14T14:05"));
+  ok("14:05 trong khung gia tren muc cat lo: cho + da thay trong khung", k1.ketQua === "cho" && k1.thayTrongKhung === true);
+  ok("14:12 trong khung gia <= muc cat lo: chot", xuLyLenhTheoDoi(d, 73.5, vn("2026-09-14T14:12")).ketQua === "chot");
+  ok("14:50 het khung, da thay trong khung chua cham: HUY", xuLyLenhTheoDoi({ ...d, thay_trong_khung: true }, 74.6, vn("2026-09-14T14:50")).ketQua === "huy");
+  ok("khong co cap nhat trong khung, hom sau sau gio dong cua: chot (du phong)", xuLyLenhTheoDoi(d, 74.9, vn("2026-09-15T15:30")).ketQua === "chot");
+  const ban = { ly_do: "BAN", tao_luc: vn("2026-09-14T13:45") };
+  ok("ban theo tin hieu: cho den khung", xuLyLenhTheoDoi(ban, 70, vn("2026-09-14T13:55")).ketQua === "cho");
+  ok("ban theo tin hieu: tu 14:00 chot bat ke gia", xuLyLenhTheoDoi(ban, 80, vn("2026-09-14T14:01")).ketQua === "chot");
+}
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

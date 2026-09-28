@@ -1,5 +1,5 @@
 // Test tay cho lib/lenhMuaChot.js (lenh mua da chot trong khung gio, web tu giu khi tin hieu mat). Chay: node engine/test/lenhMuaChot.test.mjs
-import { ungVienChotMua, danhGiaLenhMuaChot, heThongDangGiu } from "../../lib/lenhMuaChot.js";
+import { ungVienChotMua, danhGiaLenhMuaChot, heThongDangGiu, themMucCatLo } from "../../lib/lenhMuaChot.js";
 import { lenhDangMo } from "../../lib/muaThemTinhToan.js";
 
 let loi = 0;
@@ -61,6 +61,21 @@ ok("he thong con MUA cung ngay -> he thong giu", heThongDangGiu(lGMD, { tin: "MU
   ok("phien thu 3 diem <= -1,5: BAN", phien3.dongMoi.length === 1 && phien3.dongMoi[0].ly_do === "BAN" && phien3.capNhat.so_phien_diem_thap === 2);
   const hoiPhuc = danhGiaLenhMuaChot({ l: { ...l, diem_cuoi: 0.5 }, row: { ma: "GMD", tin: "TRUNG LAP", gia: 76, diem: -1.8 }, ngay: "2026-10-01" });
   ok("phien truoc diem hoi phuc: dem lai tu 0", hoiPhuc.dongMoi.length === 0 && hoiPhuc.capNhat.so_phien_diem_thap === 0);
+}
+// Cat lo CHI trong khung gio: ngoai khung cham muc cat lo -> giu tiep
+ok(
+  "ngoai khung cham cat lo: khong cat",
+  danhGiaLenhMuaChot({ l: lGMD, row: { ma: "GMD", tin: "TRUNG LAP", gia: 73.4, diem: -0.5 }, ngay: NGAY, trongKhung: false }).dongMoi.length === 0
+);
+// Gan muc cat lo vao dong cat lo sap ghi
+{
+  const cu = { vao_stop_loss: 73.508, stop_loss: 72, vao_tp1: 82.11, vao_tp2: 86.02, vao_tp3: 89.93, stop_bao_ve: 78.2 };
+  const d = themMucCatLo({ ma: "GMD", ly_do: "CAT_LO", vong: 1, gia_mua: 78.2 }, cu);
+  ok("cat lo: muc cat lo = stop dong bang luc mua", d.muc_cat_lo === 73.508 && d.stop_goc === 73.508 && d.tp1_goc === 82.11);
+  ok("hoa von: muc cat lo = stop bao ve", themMucCatLo({ ma: "GMD", ly_do: "BAO_VE_LAI", vong: 1, gia_mua: 78.2 }, cu).muc_cat_lo === 78.2);
+  ok("dong thuong: khong gan", themMucCatLo({ ma: "GMD", ly_do: "BAN", vong: 1 }, cu).muc_cat_lo === undefined);
+  const lo = themMucCatLo({ ma: "FPT", ly_do: "CAT_LO", vong: 4, gia_mua: 120.5 }, { stop_giua: 115, tp1_giua: 126, tp2_giua: 132 });
+  ok("lenh mua moi: dung stop / TP rieng", lo.muc_cat_lo === 115 && lo.tp1_goc === 126);
 }
 // He thong da dong lenh -> ket thuc
 ok("he thong da ghi dong (vong 1) -> ket thuc", danhGiaLenhMuaChot({ l: lGMD, row: { ma: "GMD", tin: "TRUNG LAP", gia: 80 }, daGhi: new Set([1]), ngay: NGAY }).capNhat.trang_thai === "dong");
