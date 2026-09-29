@@ -19,10 +19,10 @@ window.KHUNG_LIVE = {
 
   // Các mục của buổi live hôm nay (tối đa 6 mục, mỗi mục nên dưới ~45 chữ)
   muc: [
-    "Nhận định thị trường phiên hôm nay",
-    "Điểm lại tín hiệu Mua – Bán trong ngày",
-    "Hướng dẫn dùng bộ lọc chỉ báo kỹ thuật",
-    "Giải đáp câu hỏi của mọi người"
+    "Nhận định thị trường hôm nay",
+    "Tín hiệu Mua – Bán trong ngày",
+    "Cách dùng bộ lọc chỉ báo",
+    "Giải đáp câu hỏi mọi người"
   ],
 
   // Mây nói gì (lần lượt từng câu, bong bóng dưới khung camera)
