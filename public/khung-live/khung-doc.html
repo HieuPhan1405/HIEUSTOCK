@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
   /* KHUNG LIVE TIKTOK DOC 1080x1920 - kenh Phan Hieu Stock, phong cach CloudStock.
-     2 o TRONG SUOT:  CAMERA/MAN HINH 1000x620 tai (40,368)  ·  CAMERA MAT 290x290 tai (40,1010).
+     2 o TRONG SUOT:  CAMERA/MAN HINH 1000x584 tai (40,356)  ·  CAMERA MAT 290x290 tai (40,956).
      Vung DUOI CUNG (tu y ~1570 tro xuong) de trong: TikTok phu binh luan + o nhap + nut qua tang len do, khong dat noi dung quan trong o do.
      Vung TREN CUNG (0-170): TikTok phu avatar / so nguoi xem / nut dong.
      Che do: mac dinh = chuyen dong (Link source);  ?png=1 = anh tinh de xuat PNG;  ?xem=1 = them o gia de xem truoc. */
@@ -21,7 +21,7 @@
 
   /* ---------- NEN (cat 2 lo trong suot bang clip-path; lop giao dien cung bi cat de anh sang khong tran vao camera) ---------- */
   .nen { position: absolute; inset: 0; background: var(--nen); }
-  .nen, #ui { clip-path: path(evenodd, "M0 0 H1080 V1920 H0 Z M40 392 A24 24 0 0 1 64 368 H1016 A24 24 0 0 1 1040 392 V964 A24 24 0 0 1 1016 988 H64 A24 24 0 0 1 40 964 Z M40 1034 A24 24 0 0 1 64 1010 H306 A24 24 0 0 1 330 1034 V1276 A24 24 0 0 1 306 1300 H64 A24 24 0 0 1 40 1276 Z"); }
+  .nen, #ui { clip-path: path(evenodd, "M0 0 H1080 V1920 H0 Z M40 380 A24 24 0 0 1 64 356 H1016 A24 24 0 0 1 1040 380 V916 A24 24 0 0 1 1016 940 H64 A24 24 0 0 1 40 916 Z M40 980 A24 24 0 0 1 64 956 H306 A24 24 0 0 1 330 980 V1222 A24 24 0 0 1 306 1246 H64 A24 24 0 0 1 40 1222 Z"); }
   #ui { position: absolute; inset: 0; }
   .luoi { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.024) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.024) 1px, transparent 1px); background-size: 54px 54px; }
   .sang { position: absolute; border-radius: 50%; filter: blur(6px); }
@@ -59,23 +59,23 @@
   @keyframes goc-tho { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
 
   /* ---------- DAU TRANG: logo + ten kenh + LIVE, roi thanh dong ho ---------- */
-  .dau { position: absolute; left: 40px; right: 40px; top: 176px; height: 118px; display: flex; align-items: center; justify-content: space-between; animation: none; }
+  .dau { position: absolute; left: 40px; right: 40px; top: 216px; height: 84px; display: flex; align-items: center; justify-content: space-between; animation: none; }
   .dau .logo { animation: logo-sang 4s ease-in-out infinite; display: flex; }
   @keyframes logo-sang { 0%, 100% { filter: drop-shadow(0 0 4px rgba(108,92,231,0.35)); } 50% { filter: drop-shadow(0 0 14px rgba(165,148,255,0.85)); } }
-  .dau .logo img { height: 64px; }
-  .dau .logo { margin-left: 136px; }
+  .dau .logo img { height: 50px; }
+  .dau .logo { margin-left: 104px; }
   /* O avatar tron: anh avatar.png (hoac link) - chua co anh thi hien chu cai dau tren nen tim. */
-  .avatar { position: absolute; left: 40px; top: 184px; width: 110px; height: 110px; border-radius: 50%; overflow: hidden; background: linear-gradient(140deg, #8B7CF6, #4B3FC0); display: grid; place-items: center; }
+  .avatar { position: absolute; left: 40px; top: 218px; width: 84px; height: 84px; border-radius: 50%; overflow: hidden; background: linear-gradient(140deg, #8B7CF6, #4B3FC0); display: grid; place-items: center; }
   .avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
   .avatar.co-anh img { display: block; }
-  .avatar .don-vi { font-weight: 900; font-size: 46px; letter-spacing: 0.02em; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.35); }
+  .avatar .don-vi { font-weight: 900; font-size: 36px; letter-spacing: 0.02em; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.35); }
   .avatar.co-anh .don-vi { display: none; }
   .khoi-ten { position: absolute; left: 0; right: 0; top: 0; bottom: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; filter: drop-shadow(0 0 16px rgba(165,148,255,0.55)); animation: ten-tho 3.2s ease-in-out infinite; }
   @keyframes ten-tho { 0%, 100% { filter: drop-shadow(0 0 10px rgba(165,148,255,0.35)); } 50% { filter: drop-shadow(0 0 22px rgba(165,148,255,0.8)); } }
-  .kenh { position: relative; font-size: 58px; font-weight: 900; letter-spacing: -0.015em; line-height: 1.05; background: linear-gradient(100deg, #fff 0%, #C9BFFF 30%, #fff 50%, #8B7CF6 75%, #fff 100%); background-size: 240% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: anh 5s linear infinite; }
+  .kenh { position: relative; font-size: 50px; font-weight: 900; letter-spacing: -0.015em; line-height: 1.05; background: linear-gradient(100deg, #fff 0%, #C9BFFF 30%, #fff 50%, #8B7CF6 75%, #fff 100%); background-size: 240% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: anh 5s linear infinite; }
   @keyframes anh { to { background-position: -240% 0; } }
-  .phu-de { position: relative; height: 30px; width: 700px; margin-top: 4px; text-align: center; }
-  .phu-de span { position: absolute; left: 0; right: 0; top: 0; font-size: 22px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #C9BFFF; opacity: 0; animation: luan 15s ease-in-out infinite; }
+  .phu-de { position: relative; height: 26px; width: 700px; margin-top: 2px; text-align: center; }
+  .phu-de span { position: absolute; left: 0; right: 0; top: 0; font-size: 20px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #C9BFFF; opacity: 0; animation: luan 15s ease-in-out infinite; }
   .phu-de span:nth-child(2) { animation-delay: 5s; } .phu-de span:nth-child(3) { animation-delay: 10s; }
   @keyframes luan { 0% { opacity: 0; transform: translateY(8px); } 4%, 30% { opacity: 1; transform: translateY(0); } 34%, 100% { opacity: 0; transform: translateY(-8px); } }
   body.png .phu-de span { opacity: 0; animation: none; } body.png .phu-de span:first-child { opacity: 1; }
@@ -90,17 +90,17 @@
   @keyframes eq { from { transform: scaleY(0.25); } to { transform: scaleY(1); } }
   .dau::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; background: linear-gradient(90deg, transparent, rgba(165,148,255,0.75), transparent); background-size: 300px 100%; background-repeat: no-repeat; animation: quet 4.6s linear infinite; }
   @keyframes quet { from { background-position: -300px 0; } to { background-position: 1100px 0; } }
-  .dong-ho, .ngay-chip { position: absolute; left: 40px; width: 1000px; top: 306px; height: 52px; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 16px; border-radius: 16px; background: rgba(21,21,31,0.96); border: 2px solid #3A3A48; }
-  .dong-ho svg { width: 26px; height: 26px; }
-  .dong-ho .gio { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 30px; }
-  .dong-ho .tt { font-weight: 800; font-size: 22px; }
+  .dong-ho, .ngay-chip { position: absolute; left: 40px; width: 1000px; top: 308px; height: 44px; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 16px; border-radius: 16px; background: rgba(21,21,31,0.96); border: 2px solid #3A3A48; }
+  .dong-ho svg { width: 24px; height: 24px; }
+  .dong-ho .gio { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 28px; }
+  .dong-ho .tt { font-weight: 800; font-size: 20px; }
   .dong-ho.xanh { border-color: var(--xanh); animation: nhap-xanh 2s ease-out infinite; }
   @keyframes nhap-xanh { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,0.45); } 100% { box-shadow: 0 0 0 16px rgba(34,197,94,0); } }
-  .ngay-chip { display: none; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 27px; color: #C9BFFF; }
+  .ngay-chip { display: none; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 25px; color: #C9BFFF; }
   body.png .dong-ho { display: none; } body.png .ngay-chip { display: flex; }
 
   /* ---------- NOI DUNG HOM NAY ---------- */
-  .nd { position: absolute; left: 354px; top: 1010px; width: 686px; height: 290px; border-radius: 22px; padding: 14px 22px 10px; display: flex; flex-direction: column;
+  .nd { position: absolute; left: 354px; top: 956px; width: 686px; height: 290px; border-radius: 22px; padding: 14px 22px 10px; display: flex; flex-direction: column;
     background: linear-gradient(160deg, rgba(108,92,231,0.26), rgba(21,21,31,0.97) 46%); border: 1px solid rgba(165,148,255,0.28); box-shadow: 0 24px 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08); overflow: hidden; }
   .nd::after { content: ""; position: absolute; top: 0; bottom: 0; width: 140px; left: -160px; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.08), transparent); animation: bong 7s ease-in-out infinite; }
   @keyframes bong { 0% { left: -160px; } 45%, 100% { left: 860px; } }
@@ -116,7 +116,7 @@
   @keyframes tien { from { width: 0; } to { width: 100%; } }
   .nd li { position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; padding: 6px 12px; border-radius: 14px; font-size: var(--nd-fs, 27px); font-weight: 800; line-height: 1.15; color: #E0E0EC; transition: color 0.4s; animation: vao 0.7s cubic-bezier(.2,.9,.3,1) both; animation-delay: calc(var(--i) * 0.14s); }
   @keyframes vao { from { opacity: 0; transform: translateX(46px); } to { opacity: 1; transform: none; } }
-  .nd li b { flex: none; width: calc(var(--nd-fs, 27px) * 1.4); height: calc(var(--nd-fs, 27px) * 1.4); border-radius: 50%; display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: calc(var(--nd-fs, 27px) * 0.78); background: #2C2C3A; color: #D0D0DE; transition: all 0.4s; }
+  .nd li b { flex: none; width: calc(var(--nd-fs, 27px) * 1.2); height: calc(var(--nd-fs, 27px) * 1.2); border-radius: 50%; display: grid; place-items: center; font-family: 'JetBrains Mono', monospace; font-size: calc(var(--nd-fs, 27px) * 0.7); background: #2C2C3A; color: #D0D0DE; transition: background 0.4s, color 0.4s, box-shadow 0.4s; }
   .nd li span { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .nd li.on { color: #fff; }
   .nd li.on b { background: var(--tim); color: #fff; box-shadow: 0 0 14px rgba(108,92,231,0.85); animation: so-nhip 1.6s ease-in-out infinite; }
@@ -124,7 +124,7 @@
   .nd footer { position: relative; z-index: 1; margin-top: 4px; font-size: 16px; color: #C4C4D6; text-align: center; }
 
   /* ---------- MAY + BONG NOI + 2 THE ---------- */
-  .may { position: absolute; left: 40px; top: 1298px; width: 190px; }
+  .may { position: absolute; left: 40px; top: 1252px; width: 176px; }
   .may svg.hinh { width: 100%; height: auto; display: block; overflow: visible; }
   .may .nhun { animation: nhun 3.2s ease-in-out infinite; transform-origin: center bottom; }
   .may .lac { transform-origin: center bottom; }
@@ -145,34 +145,34 @@
   .may-nho { position: absolute; color: rgba(217,209,255,0.65); animation: troi-may 7s ease-in-out infinite alternate; }
   @keyframes troi-may { from { transform: translate(0, 0); } to { transform: translate(14px, -10px); } }
 
-  .bong { position: absolute; left: 254px; top: 1322px; width: 786px; height: 122px; padding: 14px 24px; border-radius: 26px; background: var(--card); border: 2px solid rgba(190,175,255,0.8);
+  .bong { position: absolute; left: 236px; top: 1264px; width: 804px; height: 110px; padding: 12px 24px; border-radius: 26px; background: var(--card); border: 2px solid rgba(190,175,255,0.8);
     display: flex; align-items: center; box-shadow: 0 18px 44px rgba(0,0,0,0.5), 0 0 30px rgba(108,92,231,0.25), inset 0 1px 0 rgba(255,255,255,0.07); }
   .bong.pop { animation: pop 0.45s cubic-bezier(.2,1.6,.4,1); }
   @keyframes pop { 0% { transform: scale(0.94); box-shadow: 0 0 0 rgba(165,148,255,0); } 40% { box-shadow: 0 0 44px rgba(165,148,255,0.7); } 100% { transform: scale(1); } }
-  .bong::before { content: ""; position: absolute; left: -16px; top: 48px; width: 26px; height: 26px; background: var(--card); border-left: 2px solid rgba(190,175,255,0.8); border-bottom: 2px solid rgba(190,175,255,0.8); transform: rotate(45deg); border-radius: 0 0 0 6px; }
+  .bong::before { content: ""; position: absolute; left: -16px; top: 42px; width: 26px; height: 26px; background: var(--card); border-left: 2px solid rgba(190,175,255,0.8); border-bottom: 2px solid rgba(190,175,255,0.8); transform: rotate(45deg); border-radius: 0 0 0 6px; }
   .bong .ten { position: absolute; left: 22px; top: -15px; padding: 2px 14px; border-radius: 999px; font-size: 18px; font-weight: 900; letter-spacing: 0.08em; color: #fff; background: linear-gradient(90deg, var(--tim), #8B7CF6); }
   .bong p { font-size: 27px; font-weight: 800; line-height: 1.22; color: #fff; }
   .bong p::after { content: "▍"; color: var(--tim-sang); margin-left: 2px; animation: con-tro 0.9s steps(1) infinite; }
   body.png .bong p::after { content: ""; }
   @keyframes con-tro { 50% { opacity: 0; } }
 
-  .the { position: absolute; top: 1460px; height: 92px; border-radius: 22px; padding: 8px 20px; display: flex; flex-direction: column; justify-content: center; gap: 2px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); animation: troi-the 5s ease-in-out infinite alternate; }
-  .the small { font-size: 18px; font-weight: 900; letter-spacing: 0.06em; }
+  .the { position: absolute; top: 1392px; height: 66px; border-radius: 20px; padding: 0 20px; display: flex; flex-direction: row; align-items: center; gap: 14px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); animation: troi-the 5s ease-in-out infinite alternate; }
+  .the small { font-size: 17px; font-weight: 900; letter-spacing: 0.06em; flex: none; }
   .the strong { font-family: 'JetBrains Mono', monospace; font-weight: 700; line-height: 1.15; }
   .the.web { left: 40px; width: 488px; background: linear-gradient(150deg, rgba(108,92,231,0.7), rgba(21,21,31,0.97) 78%); border: 2px solid rgba(190,175,255,0.85); }
   .the.web small { color: #E4DFFF; } .the.web strong { font-size: 30px; }
   .the.room { left: 552px; width: 488px; background: linear-gradient(150deg, rgba(0,104,255,0.72), rgba(12,22,48,0.97) 78%); border: 2px solid rgba(120,175,255,0.9); animation: troi-the 5s ease-in-out infinite alternate -2.5s, ping-room 4s ease-out infinite; }
-  .the.room small { color: #DCE8FF; } .the.room strong { font-size: 21px; }
+  .the.room small { color: #DCE8FF; } .the.room strong { font-size: 19px; }
   .the::after { content: ""; position: absolute; top: 0; bottom: 0; width: 90px; left: -120px; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.18), transparent); animation: quet-the 5.5s ease-in-out infinite; }
   .the.room::after { animation-delay: 1.6s; }
   @keyframes quet-the { 0% { left: -120px; } 40%, 100% { left: 560px; } }
   @keyframes troi-the { from { transform: translateY(0); } to { transform: translateY(-4px); } }
   @keyframes ping-room { 0% { box-shadow: 0 0 0 0 rgba(0,104,255,0.6), inset 0 1px 0 rgba(255,255,255,0.1); } 55%, 100% { box-shadow: 0 0 0 22px rgba(0,104,255,0), inset 0 1px 0 rgba(255,255,255,0.1); } }
-  .the .mui { position: absolute; right: 18px; top: 22px; font-size: 32px; font-weight: 900; color: #fff; animation: mui 1.2s ease-in-out infinite; }
+  .the .mui { position: absolute; right: 18px; top: 14px; font-size: 32px; font-weight: 900; color: #fff; animation: mui 1.2s ease-in-out infinite; }
   @keyframes mui { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
 
   /* ---------- THANH CHU CHAY (nam tren vung TikTok phu binh luan) ---------- */
-  .duoi { position: absolute; left: 40px; right: 40px; top: 1570px; height: 54px; }
+  .duoi { display: none; }
   .ticker { width: 100%; height: 54px; border-radius: 16px; background: rgba(21,21,31,0.92); border: 2px solid #33333F; overflow: hidden; display: flex; align-items: center;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); mask-image: linear-gradient(90deg, transparent, #000 40px, #000 calc(100% - 40px), transparent); }
   .ticker .chay { display: flex; white-space: nowrap; animation: chay 60s linear infinite; }
@@ -180,7 +180,7 @@
   .ticker .chay span::before { content: "◆"; color: var(--tim-sang); margin-right: 14px; font-size: 12px; display: inline-block; animation: xoay-nho 3s linear infinite; }
   @keyframes xoay-nho { to { transform: rotate(360deg); } }
   @keyframes chay { to { transform: translateX(-50%); } }
-  .tim { position: absolute; top: 1540px; width: 26px; height: 26px; color: #FE2C55; pointer-events: none; filter: drop-shadow(0 0 6px rgba(254,44,85,0.7)); animation: tim-bay 3s ease-out forwards; }
+  .tim { position: absolute; top: 1440px; width: 26px; height: 26px; color: #FE2C55; pointer-events: none; filter: drop-shadow(0 0 6px rgba(254,44,85,0.7)); animation: tim-bay 3s ease-out forwards; }
   @keyframes tim-bay { 0% { opacity: 0; transform: translate(0, 0) scale(0.4); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx, 20px), -190px) scale(1.15) rotate(var(--rot, 12deg)); } }
 
   /* ---------- XEM TRUOC (o gia, vung TikTok phu) ---------- */
@@ -188,10 +188,10 @@
     background: repeating-linear-gradient(45deg, rgba(255,255,255,0.05) 0 20px, rgba(255,255,255,0.09) 20px 40px); }
   .gia small { display: block; font-size: 22px; font-weight: 600; opacity: 0.75; }
   .vung-tiktok { display: none; position: absolute; left: 0; width: 1080px; pointer-events: none; color: rgba(255,255,255,0.75); font-weight: 800; font-size: 26px; text-align: center; letter-spacing: 0.04em; }
-  .vung-tiktok.tren { top: 0; height: 170px; background: rgba(255,60,90,0.16); border-bottom: 2px dashed rgba(255,120,140,0.8); }
-  .vung-tiktok.duoi { top: 1650px; height: 270px; background: rgba(255,60,90,0.16); border-top: 2px dashed rgba(255,120,140,0.8); }
-  .vung-tiktok span { display: block; margin-top: 60px; }
-  .vung-tiktok.duoi span { margin-top: 90px; }
+  .vung-tiktok.tren { top: 0; height: 225px; background: rgba(255,60,90,0.16); border-bottom: 2px dashed rgba(255,120,140,0.8); }
+  .vung-tiktok.duoi { top: 1500px; height: 420px; background: rgba(255,60,90,0.16); border-top: 2px dashed rgba(255,120,140,0.8); }
+  .vung-tiktok span { display: block; margin-top: 90px; }
+  .vung-tiktok.duoi span { margin-top: 150px; }
   body.xem .gia { display: grid; } body.xem .vung-tiktok { display: block; }
   body.xem #kv { background: #2A2A35; }
 
@@ -218,14 +218,14 @@
 
   <div id="ui">
     <!-- Vien sang: o chinh, o camera mat, bang noi dung -->
-    <div class="vien" style="left:37px;top:365px;width:1006px;height:626px"></div>
-    <div class="vien nho" style="left:37px;top:1007px;width:296px;height:296px"></div>
-    <div class="vien nho" style="left:351px;top:1007px;width:692px;height:296px"></div>
-    <div class="goc tl" style="left:22px;top:350px"></div><div class="goc tr" style="left:1008px;top:350px"></div>
-    <div class="goc bl" style="left:22px;top:956px"></div><div class="goc br" style="left:1008px;top:956px"></div>
+    <div class="vien" style="left:37px;top:353px;width:1006px;height:590px"></div>
+    <div class="vien nho" style="left:37px;top:953px;width:296px;height:296px"></div>
+    <div class="vien nho" style="left:351px;top:953px;width:692px;height:296px"></div>
+    <div class="goc tl" style="left:22px;top:338px"></div><div class="goc tr" style="left:1008px;top:338px"></div>
+    <div class="goc bl" style="left:22px;top:908px"></div><div class="goc br" style="left:1008px;top:908px"></div>
 
     <!-- O avatar -->
-    <div class="vien nho" style="left:37px;top:181px;width:116px;height:116px;border-radius:50%"></div>
+    <div class="vien nho" style="left:37px;top:215px;width:90px;height:90px;border-radius:50%"></div>
     <div class="avatar" id="avatar"><img id="avatar-anh" alt=""><span class="don-vi" id="avatar-chu">PH</span></div>
 
     <!-- Dau trang -->
@@ -274,16 +274,16 @@
       <svg class="may-nho" style="right:-26px;top:88px;width:30px;height:20px;animation-delay:-3s" viewBox="0 0 40 26" fill="currentColor"><circle cx="12" cy="15" r="9"/><circle cx="22" cy="10" r="10"/><circle cx="31" cy="16" r="8"/><rect x="8" y="15" width="28" height="9" rx="4.5"/></svg>
     </div>
     <div class="bong" id="bong"><span class="ten">MÂY</span><p id="bong-noi"></p></div>
-    <div class="the web"><small>TRUY CẬP WEB</small><strong id="web">cloudstock.id.vn</strong><span class="mui">→</span></div>
-    <div class="the room"><small>MỜI VÀO ROOM ZALO</small><strong id="room">zalo.me/g/8eniikqvdzc9degqps7g</strong></div>
+    <div class="the web"><small>WEB</small><strong id="web">cloudstock.id.vn</strong><span class="mui">→</span></div>
+    <div class="the room"><small>ZALO</small><strong id="room">zalo.me/g/8eniikqvdzc9degqps7g</strong></div>
 
     <!-- Chu chay -->
     <div class="duoi"><div class="ticker"><div class="chay" id="ticker"></div></div></div>
   </div>
 
   <!-- O gia xem truoc -->
-  <div class="gia" style="left:40px;top:368px;width:1000px;height:620px">CAMERA / MÀN HÌNH<small>1000 × 620 · lớp dưới khung</small></div>
-  <div class="gia" style="left:40px;top:1010px;width:290px;height:290px;font-size:26px">CAMERA<br>MẶT<small>290 × 290</small></div>
+  <div class="gia" style="left:40px;top:356px;width:1000px;height:584px">CAMERA / MÀN HÌNH<small>1000 × 584 · lớp dưới khung</small></div>
+  <div class="gia" style="left:40px;top:956px;width:290px;height:290px;font-size:26px">CAMERA<br>MẶT<small>290 × 290</small></div>
   <div class="vung-tiktok tren"><span>TikTok phủ: avatar, số người xem, nút đóng</span></div>
   <div class="vung-tiktok duoi"><span>TikTok phủ: bình luận, ô nhập, nút quà tặng<br>(đừng đặt nội dung quan trọng ở đây)</span></div>
 </div>
