@@ -388,6 +388,7 @@
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(datLai);
   addEventListener('load', datLai);
   [1200, 3000, 6000].forEach((ms) => setTimeout(datLai, ms));
+  if (!PNG) setInterval(() => { vuaND(); const r = li[dang]; if (r) { chon.style.top = r.offsetTop + 'px'; chon.style.height = r.offsetHeight + 'px'; } }, 4000);
   if (!PNG && li.length > 1) setInterval(() => { dang = (dang + 1) % li.length; bat(dang); }, TG);
 
   // Chu chay
