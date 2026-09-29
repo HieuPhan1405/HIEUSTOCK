@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Soạn nội dung khung LIVE – Phan Hiếu Stock</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --nen: #0B0B10; --card: #15151F; --vien: #26262F; --chu: #F5F5F7; --mo: #9A9AAB; --tim: #6C5CE7; --sang: #A594FF; --xanh: #22C55E; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--nen); color: var(--chu); font-family: 'Inter', 'Segoe UI', sans-serif; line-height: 1.5; padding: 24px 16px 60px; }
+  .khung { max-width: 980px; margin: 0 auto; display: grid; gap: 18px; }
+  h1 { font-size: 26px; font-weight: 900; } h1 span { color: var(--sang); }
+  .goi-y { color: var(--mo); font-size: 14px; }
+  .the { background: var(--card); border: 1px solid var(--vien); border-radius: 18px; padding: 18px; }
+  .the h2 { font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sang); margin-bottom: 12px; }
+  label { display: block; font-size: 13px; color: var(--mo); margin: 10px 0 4px; }
+  input, textarea { width: 100%; background: #0F0F17; border: 1px solid var(--vien); color: var(--chu); border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 15px; outline: none; }
+  input:focus, textarea:focus { border-color: var(--tim); }
+  textarea { min-height: 120px; resize: vertical; }
+  .luoi2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
+  @media (max-width: 720px) { .luoi2 { grid-template-columns: 1fr; } }
+  .link { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; word-break: break-all; background: #0F0F17; border: 1px solid var(--vien); border-radius: 10px; padding: 12px; color: #C9D8FF; max-height: 130px; overflow: auto; }
+  .hang { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+  button, a.nut { background: var(--tim); color: #fff; border: 0; border-radius: 12px; padding: 12px 20px; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; text-decoration: none; display: inline-block; }
+  button.phu, a.nut.phu { background: #23232F; color: var(--chu); border: 1px solid var(--vien); }
+  .ok { color: var(--xanh); font-weight: 700; font-size: 14px; }
+  .xem { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 12px; border: 1px solid var(--vien); background: #2A2A35; }
+  .xem iframe { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; transform-origin: 0 0; }
+  .canh-bao { color: #FBBF24; font-size: 13px; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="khung">
+  <div>
+    <h1>Soạn nội dung khung LIVE <span>Phan Hiếu Stock</span></h1>
+    <p class="goi-y">Sửa chữ bên dưới, hệ thống tạo sẵn <b>link</b>. Dán link đó vào TikTok LIVE Studio (Thêm nguồn → Liên kết). Mỗi ngày chỉ cần sửa nội dung, sao chép link mới và dán lại.</p>
+  </div>
+
+  <div class="the">
+    <h2>Tên kênh và dòng chữ nhỏ</h2>
+    <label for="kenh">Tên kênh</label>
+    <input id="kenh" maxlength="40">
+    <div class="luoi2">
+      <div><label for="pd1">Dòng nhỏ 1</label><input id="pd1" maxlength="60"></div>
+      <div><label for="pd2">Dòng nhỏ 2</label><input id="pd2" maxlength="60"></div>
+      <div><label for="pd3">Dòng nhỏ 3</label><input id="pd3" maxlength="60"></div>
+    </div>
+  </div>
+
+  <div class="the">
+    <h2>Nội dung hôm nay (tối đa 6 mục, mục nào để trống thì không hiện)</h2>
+    <div class="luoi2" id="muc"></div>
+  </div>
+
+  <div class="the">
+    <h2>Mây nói gì (mỗi dòng là một câu, Mây nói lần lượt)</h2>
+    <textarea id="may"></textarea>
+  </div>
+
+  <div class="the">
+    <h2>Link dán vào TikTok LIVE Studio</h2>
+    <div class="link" id="link"></div>
+    <p class="canh-bao" id="canhbao" hidden>Link khá dài, nếu Live Studio không nhận thì rút ngắn bớt chữ.</p>
+    <div class="hang">
+      <button id="chep">Sao chép link</button>
+      <a class="nut phu" id="mo" target="_blank" rel="noopener">Mở xem thử</a>
+      <button class="phu" id="macdinh">Về nội dung mặc định</button>
+      <span class="ok" id="ketqua"></span>
+    </div>
+  </div>
+
+  <div class="the">
+    <h2>Xem trước (ô xám là chỗ camera và chat)</h2>
+    <div class="xem" id="xem"><iframe id="khung" title="Xem trước"></iframe></div>
+  </div>
+</div>
+
+<script src="noi-dung-hom-nay.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const MD = Object.assign({ kenh: 'Phan Hiếu Stock', phuDe: [], muc: [], mayNoi: [] }, window.KHUNG_LIVE || {});
+  const KHOA = 'khung-live-noi-dung-v1';
+  const mucIn = [];
+  for (let i = 0; i < 6; i++) {
+    const d = document.createElement('div');
+    d.innerHTML = '<label for="m' + i + '">Mục ' + (i + 1) + '</label><input id="m' + i + '" maxlength="70">';
+    $('muc').appendChild(d);
+    mucIn.push(d.querySelector('input'));
+  }
+  const doc = () => { try { return JSON.parse(localStorage.getItem(KHOA) || 'null'); } catch (e) { return null; } };
+  const luu = (v) => { try { localStorage.setItem(KHOA, JSON.stringify(v)); } catch (e) {} };
+  const datForm = (v) => {
+    $('kenh').value = v.kenh || '';
+    [1, 2, 3].forEach((n) => { $('pd' + n).value = (v.phuDe || [])[n - 1] || ''; });
+    mucIn.forEach((el, i) => { el.value = (v.muc || [])[i] || ''; });
+    $('may').value = (v.mayNoi || []).join('\n');
+  };
+  const layForm = () => ({
+    kenh: $('kenh').value.trim(),
+    phuDe: [1, 2, 3].map((n) => $('pd' + n).value.trim()).filter(Boolean),
+    muc: mucIn.map((el) => el.value.trim()).filter(Boolean),
+    mayNoi: $('may').value.split('\n').map((t) => t.trim()).filter(Boolean)
+  });
+  const goc = location.href.replace(/[?#].*$/, '').replace(/[^/]*$/, '') + 'khung-live.html';
+  let hen;
+  function capNhat() {
+    const v = layForm();
+    luu(v);
+    const cfg = {};
+    for (const k of ['kenh', 'phuDe', 'muc', 'mayNoi']) if (v[k] && v[k].length) cfg[k] = v[k];
+    const link = goc + '?c=' + encodeURIComponent(JSON.stringify(cfg));
+    $('link').textContent = link;
+    $('mo').href = link;
+    $('canhbao').hidden = link.length < 1800;
+    clearTimeout(hen);
+    hen = setTimeout(() => { $('khung').src = link + '&xem=1'; }, 500);
+  }
+  datForm(doc() || MD);
+  document.querySelectorAll('input, textarea').forEach((el) => el.addEventListener('input', capNhat));
+  $('macdinh').addEventListener('click', () => { datForm(MD); capNhat(); });
+  $('chep').addEventListener('click', async () => {
+    const t = $('link').textContent;
+    try { await navigator.clipboard.writeText(t); }
+    catch (e) { const r = document.createRange(); r.selectNodeContents($('link')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); }
+    $('ketqua').textContent = 'Đã sao chép!'; setTimeout(() => { $('ketqua').textContent = ''; }, 2500);
+  });
+  const vua = () => { const w = $('xem').clientWidth; $('khung').style.transform = 'scale(' + w / 1920 + ')'; };
+  addEventListener('resize', vua); vua();
+  capNhat();
+})();
+</script>
+</body>
+</html>
