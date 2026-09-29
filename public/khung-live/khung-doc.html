@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
   /* KHUNG LIVE TIKTOK DOC 1080x1920 (ban 3: khong bang noi dung, man hinh to nhat) - kenh Phan Hieu Stock, phong cach CloudStock.
-     2 o TRONG SUOT:  MAN HINH / CAMERA 1000x740 tai (40,364)  ·  CAMERA MAT 250x250 tai (40,1120).
+     2 o TRONG SUOT:  CAMERA MAT 250x250 tai (40,366)  ·  MAN HINH / CAMERA 1000x600 tai (40,632).
      May doc NOI DUNG HOM NAY (cac muc) roi cac loi nhan them; hang so 1 2 3 4 sang len theo muc dang doc.
      Vung tren cung (~225px) va vung duoi (tu ~1480) de trong: TikTok phu avatar/chip/so nguoi xem o tren, binh luan + o nhap + nut qua tang o duoi.
      Che do: mac dinh = chuyen dong (Link source);  ?png=1 = anh tinh de xuat PNG;  ?xem=1 = them o gia de xem truoc. */
@@ -21,7 +21,7 @@
 
   /* ---------- NEN (cat 2 lo trong suot bang clip-path; lop giao dien cung bi cat de anh sang khong tran vao camera) ---------- */
   .nen { position: absolute; inset: 0; background: var(--nen); }
-  .nen, #ui { clip-path: path(evenodd, "M0 0 H1080 V1920 H0 Z M40 388 A24 24 0 0 1 64 364 H1016 A24 24 0 0 1 1040 388 V1080 A24 24 0 0 1 1016 1104 H64 A24 24 0 0 1 40 1080 Z M40 1144 A24 24 0 0 1 64 1120 H266 A24 24 0 0 1 290 1144 V1346 A24 24 0 0 1 266 1370 H64 A24 24 0 0 1 40 1346 Z"); }
+  .nen, #ui { clip-path: path(evenodd, "M0 0 H1080 V1920 H0 Z M40 390 A24 24 0 0 1 64 366 H266 A24 24 0 0 1 290 390 V592 A24 24 0 0 1 266 616 H64 A24 24 0 0 1 40 592 Z M40 656 A24 24 0 0 1 64 632 H1016 A24 24 0 0 1 1040 656 V1208 A24 24 0 0 1 1016 1232 H64 A24 24 0 0 1 40 1208 Z"); }
   #ui { position: absolute; inset: 0; }
   .luoi { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.024) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.024) 1px, transparent 1px); background-size: 54px 54px; }
   .sang { position: absolute; border-radius: 50%; filter: blur(6px); }
@@ -59,12 +59,12 @@
   @keyframes goc-tho { 0%, 100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
 
   /* ---------- DAU TRANG: avatar + logo + ten kenh + LIVE, roi thanh dong ho ---------- */
-  .dau { position: absolute; left: 40px; right: 40px; top: 216px; height: 84px; display: flex; align-items: center; justify-content: space-between; }
+  .dau { position: absolute; left: 40px; right: 40px; top: 226px; height: 84px; display: flex; align-items: center; justify-content: space-between; }
   .dau .logo { animation: logo-sang 4s ease-in-out infinite; display: flex; margin-left: 104px; }
   @keyframes logo-sang { 0%, 100% { filter: drop-shadow(0 0 4px rgba(108,92,231,0.35)); } 50% { filter: drop-shadow(0 0 14px rgba(165,148,255,0.85)); } }
   .dau .logo img { height: 50px; }
   /* O avatar tron: anh avatar.png (hoac link) - chua co anh thi hien chu cai dau tren nen tim. */
-  .avatar { position: absolute; left: 40px; top: 218px; width: 84px; height: 84px; border-radius: 50%; overflow: hidden; background: linear-gradient(140deg, #8B7CF6, #4B3FC0); display: grid; place-items: center; }
+  .avatar { position: absolute; left: 40px; top: 228px; width: 84px; height: 84px; border-radius: 50%; overflow: hidden; background: linear-gradient(140deg, #8B7CF6, #4B3FC0); display: grid; place-items: center; }
   .avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: none; }
   .avatar.co-anh img { display: block; }
   .avatar .don-vi { font-weight: 900; font-size: 36px; letter-spacing: 0.02em; color: #fff; text-shadow: 0 2px 8px rgba(0,0,0,0.35); }
@@ -89,7 +89,7 @@
   @keyframes eq { from { transform: scaleY(0.25); } to { transform: scaleY(1); } }
   .dau::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; background: linear-gradient(90deg, transparent, rgba(165,148,255,0.75), transparent); background-size: 300px 100%; background-repeat: no-repeat; animation: quet 4.6s linear infinite; }
   @keyframes quet { from { background-position: -300px 0; } to { background-position: 1100px 0; } }
-  .dong-ho, .ngay-chip { position: absolute; left: 40px; width: 1000px; top: 308px; height: 44px; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 16px; border-radius: 16px; background: rgba(21,21,31,0.96); border: 2px solid #3A3A48; }
+  .dong-ho, .ngay-chip { position: absolute; left: 40px; width: 1000px; top: 318px; height: 40px; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 16px; border-radius: 16px; background: rgba(21,21,31,0.96); border: 2px solid #3A3A48; }
   .dong-ho svg { width: 24px; height: 24px; }
   .dong-ho .gio { font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: 28px; }
   .dong-ho .tt { font-weight: 800; font-size: 20px; }
@@ -99,7 +99,7 @@
   body.png .dong-ho { display: none; } body.png .ngay-chip { display: flex; }
 
   /* ---------- HANG 2: mat · May doc NOI DUNG HOM NAY ---------- */
-  .tieu-nd { position: absolute; left: 480px; top: 1128px; width: 560px; }
+  .tieu-nd { position: absolute; left: 480px; top: 376px; width: 560px; }
   .tieu-nd b { display: block; font-size: 30px; font-weight: 900; letter-spacing: 0.04em; line-height: 1.1; color: #fff; }
   .buoc { display: flex; gap: 8px; margin-top: 10px; flex-wrap: nowrap; }
   .buoc i { flex: none; width: var(--bk, 48px); height: var(--bk, 48px); border-radius: 50%; display: grid; place-items: center; font-style: normal; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: calc(var(--bk, 48px) * 0.55); background: #2C2C3A; color: #D0D0DE; border: 2px solid #3A3A4A; transition: background 0.4s, color 0.4s, box-shadow 0.4s, border-color 0.4s; }
@@ -107,7 +107,7 @@
   .buoc i.xong { background: rgba(108,92,231,0.35); color: #E4DFFF; border-color: rgba(165,148,255,0.6); }
   @keyframes so-nhip { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.14); } }
 
-  .may { position: absolute; left: 318px; top: 1124px; width: 150px; }
+  .may { position: absolute; left: 318px; top: 372px; width: 150px; }
   .may svg.hinh { width: 100%; height: auto; display: block; overflow: visible; }
   .may .nhun { animation: nhun 3.2s ease-in-out infinite; transform-origin: center bottom; }
   .may .lac { transform-origin: center bottom; }
@@ -126,7 +126,7 @@
   @keyframes bong-mo { 0%, 100% { transform: scaleX(1); opacity: 0.9; } 50% { transform: scaleX(0.8); opacity: 0.45; } }
   .sao { position: absolute; color: var(--tim-sang); animation: lap-lanh 2.6s ease-in-out infinite; }
 
-  .bong { position: absolute; left: 310px; top: 1250px; width: 730px; height: 120px; padding: 12px 26px; border-radius: 26px; background: var(--card); border: 2px solid rgba(190,175,255,0.8);
+  .bong { position: absolute; left: 310px; top: 496px; width: 730px; height: 120px; padding: 12px 26px; border-radius: 26px; background: var(--card); border: 2px solid rgba(190,175,255,0.8);
     display: flex; align-items: center; box-shadow: 0 18px 44px rgba(0,0,0,0.5), 0 0 30px rgba(108,92,231,0.25), inset 0 1px 0 rgba(255,255,255,0.07); }
   .bong.pop { animation: pop 0.45s cubic-bezier(.2,1.6,.4,1); }
   @keyframes pop { 0% { transform: scale(0.94); box-shadow: 0 0 0 rgba(165,148,255,0); } 40% { box-shadow: 0 0 44px rgba(165,148,255,0.7); } 100% { transform: scale(1); } }
@@ -137,7 +137,7 @@
   body.png .bong p::after { content: ""; }
   @keyframes con-tro { 50% { opacity: 0; } }
 
-  .the { position: absolute; top: 1388px; height: 66px; border-radius: 20px; padding: 0 20px; display: flex; flex-direction: row; align-items: center; gap: 14px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); animation: troi-the 5s ease-in-out infinite alternate; }
+  .the { position: absolute; top: 1248px; height: 66px; border-radius: 20px; padding: 0 20px; display: flex; flex-direction: row; align-items: center; gap: 14px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); animation: troi-the 5s ease-in-out infinite alternate; }
   .the small { font-size: 17px; font-weight: 900; letter-spacing: 0.06em; flex: none; }
   .the strong { font-family: 'JetBrains Mono', monospace; font-weight: 700; line-height: 1.15; }
   .the.web { left: 40px; width: 488px; background: linear-gradient(150deg, rgba(108,92,231,0.7), rgba(21,21,31,0.97) 78%); border: 2px solid rgba(190,175,255,0.85); }
@@ -151,7 +151,7 @@
   @keyframes ping-room { 0% { box-shadow: 0 0 0 0 rgba(0,104,255,0.6), inset 0 1px 0 rgba(255,255,255,0.1); } 55%, 100% { box-shadow: 0 0 0 22px rgba(0,104,255,0), inset 0 1px 0 rgba(255,255,255,0.1); } }
   .the .mui { position: absolute; right: 18px; top: 14px; font-size: 32px; font-weight: 900; color: #fff; animation: mui 1.2s ease-in-out infinite; }
   @keyframes mui { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
-  .tim { position: absolute; top: 1440px; width: 26px; height: 26px; color: #FE2C55; pointer-events: none; filter: drop-shadow(0 0 6px rgba(254,44,85,0.7)); animation: tim-bay 3s ease-out forwards; }
+  .tim { position: absolute; top: 1300px; width: 26px; height: 26px; color: #FE2C55; pointer-events: none; filter: drop-shadow(0 0 6px rgba(254,44,85,0.7)); animation: tim-bay 3s ease-out forwards; }
   @keyframes tim-bay { 0% { opacity: 0; transform: translate(0, 0) scale(0.4); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx, 20px), -190px) scale(1.15) rotate(var(--rot, 12deg)); } }
 
   /* ---------- XEM TRUOC (o gia, vung TikTok phu) ---------- */
@@ -160,9 +160,9 @@
   .gia small { display: block; font-size: 22px; font-weight: 600; opacity: 0.75; }
   .vung-tiktok { display: none; position: absolute; left: 0; width: 1080px; pointer-events: none; color: rgba(255,255,255,0.75); font-weight: 800; font-size: 26px; text-align: center; letter-spacing: 0.04em; }
   .vung-tiktok.tren { top: 0; height: 225px; background: rgba(255,60,90,0.16); border-bottom: 2px dashed rgba(255,120,140,0.8); }
-  .vung-tiktok.duoi { top: 1500px; height: 420px; background: rgba(255,60,90,0.16); border-top: 2px dashed rgba(255,120,140,0.8); }
+  .vung-tiktok.duoi { top: 1330px; height: 590px; background: rgba(255,60,90,0.16); border-top: 2px dashed rgba(255,120,140,0.8); }
   .vung-tiktok span { display: block; margin-top: 90px; }
-  .vung-tiktok.duoi span { margin-top: 150px; }
+  .vung-tiktok.duoi span { margin-top: 240px; }
   body.xem .gia { display: grid; } body.xem .vung-tiktok { display: block; }
   body.xem #kv { background: #2A2A35; }
 
@@ -189,13 +189,13 @@
 
   <div id="ui">
     <!-- Vien sang: man hinh chinh, camera mat -->
-    <div class="vien" style="left:37px;top:361px;width:1006px;height:746px"></div>
-    <div class="vien nho" style="left:37px;top:1117px;width:256px;height:256px"></div>
-    <div class="goc tl" style="left:22px;top:346px"></div><div class="goc tr" style="left:1008px;top:346px"></div>
-    <div class="goc bl" style="left:22px;top:1072px"></div><div class="goc br" style="left:1008px;top:1072px"></div>
+    <div class="vien" style="left:37px;top:629px;width:1006px;height:606px"></div>
+    <div class="vien nho" style="left:37px;top:363px;width:256px;height:256px"></div>
+    <div class="goc tl" style="left:22px;top:614px"></div><div class="goc tr" style="left:1008px;top:614px"></div>
+    <div class="goc bl" style="left:22px;top:1200px"></div><div class="goc br" style="left:1008px;top:1200px"></div>
 
     <!-- O avatar -->
-    <div class="vien nho" style="left:37px;top:215px;width:90px;height:90px;border-radius:50%"></div>
+    <div class="vien nho" style="left:37px;top:225px;width:90px;height:90px;border-radius:50%"></div>
     <div class="avatar" id="avatar"><img id="avatar-anh" alt=""><span class="don-vi" id="avatar-chu">PH</span></div>
 
     <!-- Dau trang -->
@@ -239,8 +239,8 @@
   </div>
 
   <!-- O gia xem truoc -->
-  <div class="gia" style="left:40px;top:364px;width:1000px;height:740px">MÀN HÌNH / CAMERA<small>1000 × 740 · lớp dưới khung</small></div>
-  <div class="gia" style="left:40px;top:1120px;width:250px;height:250px;font-size:26px">CAMERA<br>MẶT<small>250 × 250</small></div>
+  <div class="gia" style="left:40px;top:632px;width:1000px;height:600px">MÀN HÌNH / CAMERA<small>1000 × 600 · lớp dưới khung</small></div>
+  <div class="gia" style="left:40px;top:366px;width:250px;height:250px;font-size:26px">CAMERA<br>MẶT<small>250 × 250</small></div>
   <div class="vung-tiktok tren"><span>TikTok phủ: avatar, số người xem, chip, nút đóng</span></div>
   <div class="vung-tiktok duoi"><span>TikTok phủ: bình luận, ô nhập, nút quà tặng<br>(đừng đặt nội dung quan trọng ở đây)</span></div>
 </div>
