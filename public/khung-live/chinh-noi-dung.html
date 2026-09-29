@@ -16,26 +16,45 @@
   .the { background: var(--card); border: 1px solid var(--vien); border-radius: 18px; padding: 18px; }
   .the h2 { font-size: 14px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--sang); margin-bottom: 12px; }
   label { display: block; font-size: 13px; color: var(--mo); margin: 10px 0 4px; }
-  input, textarea { width: 100%; background: #0F0F17; border: 1px solid var(--vien); color: var(--chu); border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 15px; outline: none; }
+  input[type=text], input:not([type]), textarea { width: 100%; background: #0F0F17; border: 1px solid var(--vien); color: var(--chu); border-radius: 10px; padding: 10px 12px; font: inherit; font-size: 15px; outline: none; }
   input:focus, textarea:focus { border-color: var(--tim); }
   textarea { min-height: 120px; resize: vertical; }
   .luoi2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0 14px; }
   @media (max-width: 720px) { .luoi2 { grid-template-columns: 1fr; } }
+  .chon-loai { display: flex; gap: 12px; flex-wrap: wrap; }
+  .chon-loai label { display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 16px; border: 1px solid var(--vien); border-radius: 12px; color: var(--chu); font-size: 15px; font-weight: 700; cursor: pointer; background: #0F0F17; }
+  .chon-loai input { width: auto; accent-color: var(--tim); }
+  .chon-loai label:has(input:checked) { border-color: var(--tim); background: rgba(108,92,231,0.16); }
   .link { font-family: 'JetBrains Mono', monospace; font-size: 12.5px; word-break: break-all; background: #0F0F17; border: 1px solid var(--vien); border-radius: 10px; padding: 12px; color: #C9D8FF; max-height: 130px; overflow: auto; }
   .hang { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
   button, a.nut { background: var(--tim); color: #fff; border: 0; border-radius: 12px; padding: 12px 20px; font: inherit; font-weight: 800; font-size: 15px; cursor: pointer; text-decoration: none; display: inline-block; }
   button.phu, a.nut.phu { background: #23232F; color: var(--chu); border: 1px solid var(--vien); }
   .ok { color: var(--xanh); font-weight: 700; font-size: 14px; }
   .xem { position: relative; width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 12px; border: 1px solid var(--vien); background: #2A2A35; }
-  .xem iframe { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; border: 0; transform-origin: 0 0; }
+  .xem.doc { aspect-ratio: 9 / 16; max-width: 340px; margin: 0 auto; }
+  .xem iframe { position: absolute; left: 0; top: 0; border: 0; transform-origin: 0 0; }
   .canh-bao { color: #FBBF24; font-size: 13px; margin-top: 8px; }
+  .ghi-chu { color: var(--mo); font-size: 12.5px; margin-top: 6px; }
 </style>
 </head>
 <body>
 <div class="khung">
   <div>
     <h1>Soạn nội dung khung LIVE <span>Phan Hiếu Stock</span></h1>
-    <p class="goi-y">Sửa chữ bên dưới, hệ thống tạo sẵn <b>link</b>. Dán link đó vào TikTok LIVE Studio (Thêm nguồn → Liên kết). Mỗi ngày chỉ cần sửa nội dung, sao chép link mới và dán lại.</p>
+    <p class="goi-y">Chọn loại khung, sửa chữ bên dưới, hệ thống tạo sẵn <b>link</b>. Dán link đó vào TikTok LIVE Studio (Thêm nguồn → Liên kết). Mỗi ngày chỉ cần sửa nội dung, sao chép link mới và dán lại.</p>
+  </div>
+
+  <div class="the">
+    <h2>Loại khung</h2>
+    <div class="chon-loai">
+      <label><input type="radio" name="loai" value="ngang" checked> Khung NGANG 1920 × 1080</label>
+      <label><input type="radio" name="loai" value="doc"> Khung DỌC 1080 × 1920</label>
+    </div>
+    <div id="hop-avatar" hidden>
+      <label for="avatar">Link ảnh avatar (tuỳ chọn, dạng https://…)</label>
+      <input id="avatar" maxlength="300" placeholder="Để trống = hiện chữ cái đầu tên kênh trên nền tím">
+      <p class="ghi-chu">Chỉ khung dọc có ô avatar. Cách chắc chắn nhất là gửi ảnh avatar cho người làm khung để đưa thẳng vào khung.</p>
+    </div>
   </div>
 
   <div class="the">
@@ -69,6 +88,7 @@
       <button class="phu" id="macdinh">Về nội dung mặc định</button>
       <span class="ok" id="ketqua"></span>
     </div>
+    <p class="ghi-chu" id="ghichu-kich-thuoc"></p>
   </div>
 
   <div class="the">
@@ -82,7 +102,7 @@
 (() => {
   const $ = (id) => document.getElementById(id);
   const MD = Object.assign({ kenh: 'Phan Hiếu Stock', phuDe: [], muc: [], mayNoi: [] }, window.KHUNG_LIVE || {});
-  const KHOA = 'khung-live-noi-dung-v1';
+  const KHOA = 'khung-live-noi-dung-v2';
   const mucIn = [];
   for (let i = 0; i < 6; i++) {
     const d = document.createElement('div');
@@ -90,6 +110,7 @@
     $('muc').appendChild(d);
     mucIn.push(d.querySelector('input'));
   }
+  const loai = () => document.querySelector('input[name=loai]:checked').value;
   const doc = () => { try { return JSON.parse(localStorage.getItem(KHOA) || 'null'); } catch (e) { return null; } };
   const luu = (v) => { try { localStorage.setItem(KHOA, JSON.stringify(v)); } catch (e) {} };
   const datForm = (v) => {
@@ -97,38 +118,52 @@
     [1, 2, 3].forEach((n) => { $('pd' + n).value = (v.phuDe || [])[n - 1] || ''; });
     mucIn.forEach((el, i) => { el.value = (v.muc || [])[i] || ''; });
     $('may').value = (v.mayNoi || []).join('\n');
+    $('avatar').value = v.avatar || '';
+    const r = document.querySelector('input[name=loai][value=' + (v.loai === 'doc' ? 'doc' : 'ngang') + ']');
+    if (r) r.checked = true;
   };
   const layForm = () => ({
+    loai: loai(),
     kenh: $('kenh').value.trim(),
     phuDe: [1, 2, 3].map((n) => $('pd' + n).value.trim()).filter(Boolean),
     muc: mucIn.map((el) => el.value.trim()).filter(Boolean),
-    mayNoi: $('may').value.split('\n').map((t) => t.trim()).filter(Boolean)
+    mayNoi: $('may').value.split('\n').map((t) => t.trim()).filter(Boolean),
+    avatar: $('avatar').value.trim()
   });
-  const goc = location.href.replace(/[?#].*$/, '').replace(/[^/]*$/, '') + 'khung-live.html';
+  const thuMuc = location.href.replace(/[?#].*$/, '').replace(/[^/]*$/, '');
   let hen;
   function capNhat() {
     const v = layForm();
     luu(v);
+    const doc9 = v.loai === 'doc';
+    $('hop-avatar').hidden = !doc9;
     const cfg = {};
     for (const k of ['kenh', 'phuDe', 'muc', 'mayNoi']) if (v[k] && v[k].length) cfg[k] = v[k];
-    const link = goc + '?c=' + encodeURIComponent(JSON.stringify(cfg));
+    if (doc9 && v.avatar) cfg.avatar = v.avatar;
+    const link = thuMuc + (doc9 ? 'khung-doc.html' : 'khung-live.html') + '?c=' + encodeURIComponent(JSON.stringify(cfg));
     $('link').textContent = link;
     $('mo').href = link;
     $('canhbao').hidden = link.length < 1800;
+    $('ghichu-kich-thuoc').textContent = doc9 ? 'Trong Live Studio: chế độ DỌC, nguồn Liên kết đặt Custom resolution W = 1080, H = 1920.' : 'Trong Live Studio: chế độ NGANG, nguồn Liên kết đặt Custom resolution W = 1920, H = 1080.';
+    $('xem').classList.toggle('doc', doc9);
+    const f = $('khung');
+    f.style.width = doc9 ? '1080px' : '1920px';
+    f.style.height = doc9 ? '1920px' : '1080px';
+    vua();
     clearTimeout(hen);
-    hen = setTimeout(() => { $('khung').src = link + '&xem=1'; }, 500);
+    hen = setTimeout(() => { f.src = link + '&xem=1'; }, 500);
   }
+  function vua() { const w = $('xem').clientWidth; $('khung').style.transform = 'scale(' + w / (loai() === 'doc' ? 1080 : 1920) + ')'; }
   datForm(doc() || MD);
   document.querySelectorAll('input, textarea').forEach((el) => el.addEventListener('input', capNhat));
-  $('macdinh').addEventListener('click', () => { datForm(MD); capNhat(); });
+  $('macdinh').addEventListener('click', () => { datForm(Object.assign({}, MD, { loai: loai() })); capNhat(); });
   $('chep').addEventListener('click', async () => {
     const t = $('link').textContent;
     try { await navigator.clipboard.writeText(t); }
     catch (e) { const r = document.createRange(); r.selectNodeContents($('link')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); document.execCommand('copy'); }
     $('ketqua').textContent = 'Đã sao chép!'; setTimeout(() => { $('ketqua').textContent = ''; }, 2500);
   });
-  const vua = () => { const w = $('xem').clientWidth; $('khung').style.transform = 'scale(' + w / 1920 + ')'; };
-  addEventListener('resize', vua); vua();
+  addEventListener('resize', vua);
   capNhat();
 })();
 </script>
