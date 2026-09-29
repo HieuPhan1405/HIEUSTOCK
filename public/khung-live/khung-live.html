@@ -13,8 +13,9 @@
   @property --ang2 { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
   :root { --nen: #0B0B10; --card: #15151F; --vien: #26262F; --chu: #F5F5F7; --mo: #9A9AAB; --tim: #6C5CE7; --tim-sang: #A594FF; --xanh: #22C55E; --vang: #FBBF24; --zalo: #0068FF; --cyan: #38BDF8; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { width: 1920px; height: 1080px; background: transparent; overflow: hidden; font-family: 'Inter', 'Segoe UI', sans-serif; color: var(--chu); }
-  #kv { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+  /* Khung thiet ke co dinh 1920x1080 (#kv), JS tu CO GIAN de vua khit cua so trinh duyet - Live Studio/OBS co the ve trang o vung nho hon 1920x1080 (vd man hinh Windows dat ti le 125% -> 1536x864) nen khong co dinh kich thuoc. */
+  html, body { width: 100%; height: 100%; background: transparent; overflow: hidden; font-family: 'Inter', 'Segoe UI', sans-serif; color: var(--chu); }
+  #kv { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; transform-origin: 0 0; }
 
   /* ---------- NEN (co 2 lo trong suot cat bang clip-path) ---------- */
   .nen { position: absolute; inset: 0; background: var(--nen); }
@@ -324,6 +325,17 @@
   document.body.classList.toggle('png', PNG);
   document.body.classList.toggle('xem', P.has('xem'));
   const $ = (id) => document.getElementById(id);
+  // Co gian khung 1920x1080 cho vua cua so (giu ti le 16:9, can giua). Cua so ~1920x1080 (sai lech <= 2px) thi giu nguyen ti le 1 de anh PNG khop tung diem anh.
+  const kv = $('kv');
+  const vua = () => {
+    const w = innerWidth || 1920, h = innerHeight || 1080;
+    const gan = Math.abs(w - 1920) <= 2 && Math.abs(h - 1080) <= 2;
+    const t = gan ? 1 : Math.min(w / 1920, h / 1080);
+    kv.style.transform = t === 1 ? 'none' : 'scale(' + t + ')';
+    kv.style.left = (gan ? 0 : (w - 1920 * t) / 2) + 'px';
+    kv.style.top = (gan ? 0 : (h - 1080 * t) / 2) + 'px';
+  };
+  addEventListener('resize', vua); addEventListener('load', vua); vua();
   const MAC_DINH = {
     kenh: 'Phan Hiếu Stock',
     phuDe: ['Chứng khoán · CloudStock', 'Bấm THEO DÕI để không lỡ buổi live', 'Vào room Zalo cùng trao đổi'],
