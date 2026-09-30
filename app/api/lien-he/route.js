@@ -1,5 +1,5 @@
 import { themLienHe, layTatCaLienHe, danhDauDaDoc, xoaLienHe } from "@/lib/lienHe";
-import { choPhep, layIp, traLoiQuaNhieuLan } from "@/lib/gioiHan";
+import { choPhep, layIp, layIpTho, traLoiQuaNhieuLan } from "@/lib/gioiHan";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 
 function kiemTraApiKey(request) {
@@ -18,7 +18,8 @@ export async function POST(request) {
   }
   // Chong spam: o bay an "website" + toi da 5 tin / gio / dia chi mang.
   if (body?.website) return Response.json({ loi: "Không thể gửi lúc này, vui lòng thử lại sau." }, { status: 400 });
-  const gioiHan = await choPhep({ khoa: `lh:ip:${layIp(request)}`, toiDa: 5, cuaSoGiay: 3600 });
+  const ipTho = layIpTho(request);
+  const gioiHan = await choPhep({ khoa: `lh:ip:${layIp(request)}`, toiDa: 5, cuaSoGiay: 3600, nhan: "Liên hệ (theo IP)", nguon: ipTho, ipTho });
   if (!gioiHan.duocPhep) return traLoiQuaNhieuLan(gioiHan.thuLaiSau, "Bạn đã gửi quá nhiều tin. Vui lòng thử lại sau khoảng {phut} phút.");
   const hoTen = (body?.hoTen || "").trim();
   const lienLac = (body?.lienLac || "").trim();

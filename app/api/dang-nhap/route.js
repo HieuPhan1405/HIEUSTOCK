@@ -1,5 +1,5 @@
 import { dangNhap, chuanHoaSdt } from "@/lib/nguoiDung";
-import { choPhep, dem, xoaKhoa, layIp, bamKhoa, traLoiQuaNhieuLan } from "@/lib/gioiHan";
+import { choPhep, dem, xoaKhoa, layIp, layIpTho, bamKhoa, cheSdt, traLoiQuaNhieuLan } from "@/lib/gioiHan";
 import { LoiNguoiDung, thongBaoLoi } from "@/lib/loiAnToan";
 
 const TEN_COOKIE = "cs_token";
@@ -23,7 +23,8 @@ export async function POST(request) {
     return Response.json({ loi: "Dữ liệu gửi lên không đúng định dạng" }, { status: 400 });
   }
 
-  const gIp = await choPhep({ khoa: `dn:ip:${layIp(request)}`, toiDa: TOI_DA_MOI_IP, cuaSoGiay: CUA_SO_GIAY });
+  const ipTho = layIpTho(request);
+  const gIp = await choPhep({ khoa: `dn:ip:${layIp(request)}`, toiDa: TOI_DA_MOI_IP, cuaSoGiay: CUA_SO_GIAY, nhan: "Đăng nhập (theo IP)", nguon: ipTho, ipTho });
   if (!gIp.duocPhep) return traLoiQuaNhieuLan(gIp.thuLaiSau, "Bạn thử đăng nhập quá nhiều lần. Vui lòng thử lại sau khoảng {phut} phút.");
 
   const sdtChuan = chuanHoaSdt(body?.sdt);
@@ -38,7 +39,7 @@ export async function POST(request) {
     if (khoaSdt) await xoaKhoa(khoaSdt);
     return Response.json({ trangThai: "ok", nguoiDung }, { headers: { "Set-Cookie": dongYCookie(token) } });
   } catch (loi) {
-    if (loi?.loai === "sai" && khoaSdt) await choPhep({ khoa: khoaSdt, toiDa: TOI_DA_SAI_MOI_SDT, cuaSoGiay: CUA_SO_GIAY });
+    if (loi?.loai === "sai" && khoaSdt) await choPhep({ khoa: khoaSdt, toiDa: TOI_DA_SAI_MOI_SDT - 1, cuaSoGiay: CUA_SO_GIAY, nhan: "Sai mật khẩu (theo SĐT)", nguon: cheSdt(sdtChuan), ipTho });
     return Response.json({ loi: thongBaoLoi(loi) }, { status: loi instanceof LoiNguoiDung ? 400 : 500 });
   }
 }

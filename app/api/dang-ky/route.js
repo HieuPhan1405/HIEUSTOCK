@@ -3,7 +3,7 @@ import { dangKy } from "@/lib/nguoiDung";
 import { thongBaoDangKy } from "@/lib/thongBao";
 import { ghiThongBao, guiDay } from "@/lib/thongBaoDb";
 import { guiTinNhanZalo } from "@/lib/zalo";
-import { choPhep, dem, layIp, traLoiQuaNhieuLan } from "@/lib/gioiHan";
+import { choPhep, dem, layIp, layIpTho, traLoiQuaNhieuLan } from "@/lib/gioiHan";
 import { LoiNguoiDung, thongBaoLoi } from "@/lib/loiAnToan";
 
 const TEN_COOKIE = "cs_token";
@@ -33,7 +33,8 @@ export async function POST(request) {
 
   if (body?.website) return Response.json({ loi: "Không thể đăng ký lúc này, vui lòng thử lại sau." }, { status: 400 });
 
-  const gIp = await choPhep({ khoa: `dk:ip:${layIp(request)}`, toiDa: TOI_DA_MOI_IP, cuaSoGiay: CUA_SO_GIO });
+  const ipTho = layIpTho(request);
+  const gIp = await choPhep({ khoa: `dk:ip:${layIp(request)}`, toiDa: TOI_DA_MOI_IP, cuaSoGiay: CUA_SO_GIO, nhan: "Đăng ký (theo IP)", nguon: ipTho, ipTho });
   if (!gIp.duocPhep) return traLoiQuaNhieuLan(gIp.thuLaiSau, "Bạn đã thử đăng ký quá nhiều lần. Vui lòng thử lại sau khoảng {phut} phút.");
   const tong = await dem({ khoa: "dk:toan-he-thong", cuaSoGiay: CUA_SO_GIO });
   if (tong.soLan >= TOI_DA_TOAN_HE_THONG) {
@@ -48,7 +49,7 @@ export async function POST(request) {
       matKhau2: body?.matKhau2,
       ten: body?.ten,
     });
-    await choPhep({ khoa: "dk:toan-he-thong", toiDa: TOI_DA_TOAN_HE_THONG, cuaSoGiay: CUA_SO_GIO });
+    await choPhep({ khoa: "dk:toan-he-thong", toiDa: TOI_DA_TOAN_HE_THONG - 1, cuaSoGiay: CUA_SO_GIO, nhan: "Đăng ký toàn hệ thống", nguon: "tất cả người dùng" });
     // Bao QUAN TRI co nguoi dang ky moi (chuong thong bao + thong bao ve may + Zalo cua chu web) - chay SAU khi tra ket qua, loi o day khong anh huong nguoi dang ky.
     after(async () => {
       try {
