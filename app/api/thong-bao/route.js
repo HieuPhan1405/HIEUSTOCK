@@ -1,6 +1,7 @@
 import { layNguoiDungTuToken } from "@/lib/nguoiDung";
 import { layThongBao, danhDauDaXem, datPhamVi, layKhoaCongKhai, demDangKyDay } from "@/lib/thongBaoDb";
 import { demChuaXem } from "@/lib/thongBao";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 const TEN_COOKIE = "cs_token";
 
@@ -26,7 +27,7 @@ export async function GET(request) {
       { headers: { "Cache-Control": "no-store" } }
     );
   } catch (loi) {
-    return Response.json({ loi: String(loi?.message || loi) }, { status: 500 });
+    return Response.json({ loi: thongBaoLoi(loi) }, { status: 500 });
   }
 }
 
@@ -46,6 +47,6 @@ export async function POST(request) {
     else return Response.json({ loi: "Hành động không hợp lệ." }, { status: 400 });
     return Response.json({ trangThai: "ok" });
   } catch (loi) {
-    return Response.json({ loi: String(loi?.message || loi) }, { status: 400 });
+    return Response.json({ loi: thongBaoLoi(loi) }, { status: 400 });
   }
 }

@@ -11,6 +11,7 @@ import NhanCapNhat from "@/components/NhanCapNhat";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import { capNhatMoiNhat } from "@/components/dungChung";
 import { lenhDangMo, cacDiemMuaMoi } from "@/lib/muaThemTinhToan";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -58,7 +59,7 @@ export default async function TrangDanhMuc() {
   try {
     [thamGia, tatCa] = await Promise.all([layThamGiaCuaToi(nguoiDung.id), layTatCaTinHieu()]);
   } catch (e) {
-    loi = String(e?.message || e);
+    loi = thongBaoLoi(e);
   }
   // Lenh da dong tai rieng: loi o day khong duoc lam mat phan lenh dang giu.
   let daDong = [];
@@ -66,7 +67,7 @@ export default async function TrangDanhMuc() {
   try {
     daDong = await layLenhDaDong();
   } catch (e) {
-    loiDaDong = String(e?.message || e);
+    loiDaDong = thongBaoLoi(e);
   }
 
   const ngayThamGia = new Map(thamGia.map((t) => [t.ma, t.ngay_tham_gia]));

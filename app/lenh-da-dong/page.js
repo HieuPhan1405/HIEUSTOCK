@@ -4,6 +4,7 @@ import ChatLuongTinHieu from "@/components/ChatLuongTinHieu";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import LenhDaDongView from "@/components/LenhDaDongView";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -28,7 +29,7 @@ export default async function TrangLenhDaDong() {
   try {
     ds = await layLenhDaDong();
   } catch (e) {
-    loi = String(e?.message || e);
+    loi = thongBaoLoi(e);
   }
   // Nhat ky tin hieu xuat hien tai rieng: loi o day khong lam hong phan Lenh da dong.
   let xuatHien = [];
@@ -36,7 +37,7 @@ export default async function TrangLenhDaDong() {
   try {
     xuatHien = await layXuatHien();
   } catch (e) {
-    loiXuatHien = String(e?.message || e);
+    loiXuatHien = thongBaoLoi(e);
   }
   return (
     <>

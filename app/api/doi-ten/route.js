@@ -1,4 +1,5 @@
 import { layNguoiDungTuToken, capNhatTen } from "@/lib/nguoiDung";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 const TEN_COOKIE = "cs_token";
 
@@ -18,6 +19,6 @@ export async function POST(request) {
     const capNhat = await capNhatTen(nguoiDung.id, ten);
     return Response.json({ trangThai: "ok", nguoiDung: capNhat });
   } catch (loi) {
-    return Response.json({ loi: String(loi?.message || loi) }, { status: 500 });
+    return Response.json({ loi: thongBaoLoi(loi) }, { status: 500 });
   }
 }

@@ -1,4 +1,5 @@
 import { layTinTucThiTruong } from "@/lib/tinTuc";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -86,7 +87,7 @@ export default async function TrangThiTruong() {
     theoDanhMuc = ket.theoDanhMuc;
     danhSachDanhMuc = ket.danhSachDanhMuc;
   } catch (e) {
-    loi = String(e?.message || e);
+    loi = thongBaoLoi(e);
   }
 
   return (

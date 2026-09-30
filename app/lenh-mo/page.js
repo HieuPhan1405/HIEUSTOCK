@@ -8,6 +8,7 @@ import GiaiThichThem from "@/components/GiaiThichThem";
 import { capNhatMoiNhat } from "@/components/dungChung";
 import { layLichSuGia } from "@/lib/lichSuGia";
 import { lenhDangMo } from "@/lib/muaThemTinhToan";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -38,7 +39,7 @@ export default async function TrangLenhMo({ searchParams }) {
   try {
     tatCa = await layTatCaTinHieu();
   } catch (e) {
-    loi = String(e?.message || e);
+    loi = thongBaoLoi(e);
   }
 
   // Lich su dong cua VNINDEX: (1) so sanh hieu suat cac lenh dang mo voi thi truong cung ky, (2) lich phien de dem so phien giu cua lenh mua moi (loi nguon gia khong duoc lam hong trang).

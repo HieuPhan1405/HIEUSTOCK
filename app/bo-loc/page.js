@@ -5,6 +5,7 @@ import { COT_CHI_BAO } from "@/lib/cotChiBaoKyThuat";
 import BangBoLoc from "@/components/BangBoLoc";
 import NhanCapNhat from "@/components/NhanCapNhat";
 import { capNhatMoiNhat } from "@/components/dungChung";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -19,7 +20,7 @@ export default async function TrangBoLoc() {
   try {
     tatCa = await layTatCaTinHieu();
   } catch (e) {
-    loi = String(e?.message || e);
+    loi = thongBaoLoi(e);
   }
   // Chi bao ky thuat (RSI, MACD, MA...) gop vao tung ma - loi o day khong duoc lam mat bang chinh, chi mat bo loc chi bao.
   if (!loi) {

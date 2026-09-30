@@ -2,6 +2,7 @@ import { layDinhGiaThiTruong, gopTySo } from "@/lib/thiTruongHOSE";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import { NGANH_NHAN } from "@/lib/nganh";
 import { LICH_SU_DINH_GIA } from "@/lib/lichSuDinhGiaThiTruong";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 // Dinh gia PE/PB cua thi truong (HOSE) + theo nganh + lich su hang thang: GET /api/dinh-gia-thi-truong
 // Du lieu doi 1 lan/ngay nen cache dai. Phan theo nganh can bang tin_hieu (DB) - loi DB chi lam mat bang nganh, khong lam hong phan con lai.
@@ -33,6 +34,6 @@ export async function GET() {
 
     return Response.json({ trangThai: "ok", ...dg, theoNganh, lichSu: LICH_SU_DINH_GIA }, { headers: { "Cache-Control": "public, s-maxage=1800, stale-while-revalidate=3600" } });
   } catch (loi) {
-    return Response.json({ trangThai: "loi", thongBao: String(loi?.message || loi) }, { status: 502 });
+    return Response.json({ trangThai: "loi", thongBao: thongBaoLoi(loi) }, { status: 502 });
   }
 }

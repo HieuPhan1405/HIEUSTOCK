@@ -1,5 +1,6 @@
 import { layNguoiDungTuToken } from "@/lib/nguoiDung";
 import { layHieuQuaHeThong } from "@/lib/hieuQuaDauTu";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 const TEN_COOKIE = "cs_token";
 
@@ -17,6 +18,6 @@ export async function GET(request) {
     const kq = await layHieuQuaHeThong();
     return Response.json({ trangThai: "ok", ...kq }, { headers: { "Cache-Control": "private, max-age=120" } });
   } catch (loi) {
-    return Response.json({ trangThai: "loi", thongBao: String(loi?.message || loi) }, { status: 502 });
+    return Response.json({ trangThai: "loi", thongBao: thongBaoLoi(loi) }, { status: 502 });
   }
 }

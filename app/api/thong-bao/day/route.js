@@ -1,5 +1,6 @@
 import { layNguoiDungTuToken } from "@/lib/nguoiDung";
 import { luuDangKyDay, xoaDangKyDay, guiDay } from "@/lib/thongBaoDb";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 const TEN_COOKIE = "cs_token";
 
@@ -33,6 +34,6 @@ export async function POST(request) {
     }
     return Response.json({ loi: "Hành động không hợp lệ." }, { status: 400 });
   } catch (loi) {
-    return Response.json({ loi: String(loi?.message || loi) }, { status: 400 });
+    return Response.json({ loi: thongBaoLoi(loi) }, { status: 400 });
   }
 }

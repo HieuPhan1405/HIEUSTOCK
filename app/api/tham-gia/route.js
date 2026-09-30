@@ -1,5 +1,6 @@
 import { layNguoiDungTuToken } from "@/lib/nguoiDung";
 import { toggleThamGia, layDemThamGiaTatCa, layMaDaThamGia } from "@/lib/thamGia";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 const TEN_COOKIE = "cs_token";
 
@@ -36,6 +37,6 @@ export async function POST(request) {
     const ketQua = await toggleThamGia(nguoiDung.id, ma);
     return Response.json({ trangThai: "ok", ...ketQua });
   } catch (loi) {
-    return Response.json({ trangThai: "loi", thongBao: String(loi?.message || loi) }, { status: 500 });
+    return Response.json({ trangThai: "loi", thongBao: thongBaoLoi(loi) }, { status: 500 });
   }
 }

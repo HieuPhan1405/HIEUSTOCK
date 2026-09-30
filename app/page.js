@@ -6,6 +6,7 @@ import { layLenhCoSuKienNgay, ngayGiaoDichVN } from "@/lib/lenhDaDong";
 import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat } from "@/components/dungChung";
 import NhanCapNhat from "@/components/NhanCapNhat";
 import { soVN } from "@/lib/soVN";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
 
@@ -181,7 +182,7 @@ export default async function TrangTongQuan() {
   try {
     [tatCa, chiSoVNIndex] = await Promise.all([layTatCaTinHieu(), layChiSoVNIndex()]);
   } catch (e) {
-    loi = String(e?.message || e);
+    loi = thongBaoLoi(e);
   }
 
   // Phien giao dich cua du lieu moi nhat + nhat ky lenh co su kien trong phien do (chot TP / dong lenh) cho o "Top co hoi dang chu y" - loi o day khong lam hong trang.

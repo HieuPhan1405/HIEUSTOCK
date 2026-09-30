@@ -5,6 +5,7 @@ import BanDoNhiet from "@/components/BanDoNhiet";
 import ThanhKhoanThiTruong from "@/components/ThanhKhoanThiTruong";
 import AnhHuongIndex from "@/components/AnhHuongIndex";
 import KhoiNgoaiThiTruong from "@/components/KhoiNgoaiThiTruong";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -22,7 +23,7 @@ export default async function TrangDashboard() {
   try {
     [tatCa, chiSoVNIndex] = await Promise.all([layTatCaTinHieu(), layChiSoVNIndex()]);
   } catch (e) {
-    loi = String(e?.message || e);
+    loi = thongBaoLoi(e);
   }
 
   // Khoi ngoai: nguon ben ngoai, cho toi da 4 giay de khong lam cham trang.

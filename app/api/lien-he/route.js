@@ -1,4 +1,6 @@
 import { themLienHe, layTatCaLienHe, danhDauDaDoc, xoaLienHe } from "@/lib/lienHe";
+import { choPhep, layIp, traLoiQuaNhieuLan } from "@/lib/gioiHan";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -14,6 +16,10 @@ export async function POST(request) {
   } catch {
     return Response.json({ loi: "Du lieu gui len khong dung dinh dang" }, { status: 400 });
   }
+  // Chong spam: o bay an "website" + toi da 5 tin / gio / dia chi mang.
+  if (body?.website) return Response.json({ loi: "Không thể gửi lúc này, vui lòng thử lại sau." }, { status: 400 });
+  const gioiHan = await choPhep({ khoa: `lh:ip:${layIp(request)}`, toiDa: 5, cuaSoGiay: 3600 });
+  if (!gioiHan.duocPhep) return traLoiQuaNhieuLan(gioiHan.thuLaiSau, "Bạn đã gửi quá nhiều tin. Vui lòng thử lại sau khoảng {phut} phút.");
   const hoTen = (body?.hoTen || "").trim();
   const lienLac = (body?.lienLac || "").trim();
   const noiDung = (body?.noiDung || "").trim();
@@ -24,7 +30,7 @@ export async function POST(request) {
     const ketQua = await themLienHe({ hoTen, lienLac, noiDung });
     return Response.json({ trangThai: "ok", id: ketQua.id });
   } catch (loi) {
-    return Response.json({ trangThai: "loi", thongBao: String(loi?.message || loi) }, { status: 500 });
+    return Response.json({ trangThai: "loi", thongBao: thongBaoLoi(loi) }, { status: 500 });
   }
 }
 

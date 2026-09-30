@@ -1,5 +1,6 @@
 import { layNenPhutNgay, MA_HOP_LE } from "@/lib/lichSuGia";
 import { layChuoiThanhKhoanHOSE, layBangGiaHOSENgay, topGTGD, ngayVNHomNay } from "@/lib/thiTruongHOSE";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 // Thanh khoan trong phien (mac dinh VNINDEX, dai dien toan thi truong): GET /api/thanh-khoan?ma=VNINDEX
 // So sanh PHIEN MOI NHAT (hom nay neu dang/da giao dich, neu khong la phien gan nhat) voi PHIEN LIEN TRUOC + TB20. Tra ve:
@@ -23,6 +24,6 @@ export async function GET(request) {
       { headers: { "Cache-Control": "public, s-maxage=20, stale-while-revalidate=60" } }
     );
   } catch (loi) {
-    return Response.json({ trangThai: "loi", thongBao: String(loi?.message || loi) }, { status: 502 });
+    return Response.json({ trangThai: "loi", thongBao: thongBaoLoi(loi) }, { status: 502 });
   }
 }

@@ -6,6 +6,7 @@ import { layLichPhien } from "@/lib/lichSuGia";
 import ChiTietMa from "@/components/ChiTietMa";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import { tenCongTy } from "@/lib/tenMa";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
 
@@ -27,7 +28,7 @@ export default async function TrangChiTietMa({ params }) {
   try {
     row = await layTinHieuTheoMa(ma);
   } catch (e) {
-    loi = String(e?.message || e);
+    loi = thongBaoLoi(e);
   }
 
   if (loi) {

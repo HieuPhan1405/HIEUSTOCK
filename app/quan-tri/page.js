@@ -497,6 +497,7 @@ export default function TrangQuanTri() {
               <span>
                 <strong style={{ fontFamily: "'JetBrains Mono', monospace" }}>{nd.sdt}</strong>
                 {nd.ten && <span style={{ color: "#8B8B99" }}> — {nd.ten}</span>}
+                {nd.email && <span style={{ color: "#8B8B99", fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}> · {nd.email}</span>}
                 {nd.la_admin && (
                   <span
                     className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded"

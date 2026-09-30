@@ -14,6 +14,7 @@ export default function FormGuiTinNhan() {
   const [hoTen, setHoTen] = useState("");
   const [lienLac, setLienLac] = useState("");
   const [noiDung, setNoiDung] = useState("");
+  const [website, setWebsite] = useState(""); // o bay chong bot: nguoi that khong thay / khong dien
   const [dangGui, setDangGui] = useState(false);
   const [ketQua, setKetQua] = useState(null);
 
@@ -29,9 +30,9 @@ export default function FormGuiTinNhan() {
       const res = await fetch("/api/lien-he", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ hoTen: hoTen.trim(), lienLac: lienLac.trim(), noiDung: noiDung.trim() }),
+        body: JSON.stringify({ hoTen: hoTen.trim(), lienLac: lienLac.trim(), noiDung: noiDung.trim(), website }),
       });
-      const d = await res.json();
+      const d = await res.json().catch(() => ({}));
       if (res.ok) {
         setKetQua({ ok: true, thongBao: "Đã gửi thành công! Cảm ơn bạn, sẽ phản hồi sớm nhất có thể." });
         setHoTen("");
@@ -40,8 +41,8 @@ export default function FormGuiTinNhan() {
       } else {
         setKetQua({ ok: false, thongBao: d.loi || "Có lỗi xảy ra, thử lại sau." });
       }
-    } catch (e) {
-      setKetQua({ ok: false, thongBao: "Lỗi kết nối: " + String(e?.message || e) });
+    } catch {
+      setKetQua({ ok: false, thongBao: "Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại." });
     } finally {
       setDangGui(false);
     }
@@ -88,6 +89,8 @@ export default function FormGuiTinNhan() {
           style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
         />
       </div>
+
+      <input type="text" name="website" value={website} onChange={(e) => setWebsite(e.target.value)} tabIndex={-1} autoComplete="off" aria-hidden="true" style={{ position: "absolute", left: "-9999px", width: 1, height: 1, opacity: 0 }} />
 
       {ketQua && (
         <p className="text-sm" style={{ color: ketQua.ok ? XANH : DO }}>

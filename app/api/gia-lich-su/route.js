@@ -1,4 +1,5 @@
 import { layLichSuGia, gopNenTuan, MA_HOP_LE } from "@/lib/lichSuGia";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 // Gia lich su OHLCV cho bieu do ky thuat: GET /api/gia-lich-su?ma=STB&kt=D|W  (du lieu thi truong cong khai, co cache).
 export async function GET(request) {
@@ -17,6 +18,6 @@ export async function GET(request) {
       { headers: { "Cache-Control": "public, s-maxage=20, stale-while-revalidate=120" } }
     );
   } catch (loi) {
-    return Response.json({ trangThai: "loi", thongBao: String(loi?.message || loi) }, { status: 502 });
+    return Response.json({ trangThai: "loi", thongBao: thongBaoLoi(loi) }, { status: 502 });
   }
 }

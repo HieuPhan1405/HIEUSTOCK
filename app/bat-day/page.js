@@ -3,6 +3,7 @@ import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import BangBatDay from "@/components/BangBatDay";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import { pct } from "@/components/dungChung";
+import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -52,7 +53,7 @@ export default async function TrangBatDay() {
   try {
     duLieu = await layTatCaBatDay();
   } catch (e) {
-    loi = String(e?.message || e);
+    loi = thongBaoLoi(e);
   }
 
   // Chi tinh ty le thanh cong tren cac lan DA CO DU DU LIEU 20 phien sau -
