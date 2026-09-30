@@ -5,10 +5,10 @@ import { layThongTinLienHe } from "@/lib/thongTinLienHe";
 import NutNoi from "@/components/NutNoi";
 import { linkZalo, linkNgoai } from "@/components/kenhLienHe";
 
-const VIEN = "#26262F";
-const NEN = "#08080B";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN = "var(--nen-sau)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
 
 const CONG_CU = [
@@ -40,7 +40,7 @@ function DanhSachLink({ ds }) {
     <ul className="flex flex-col gap-2">
       {ds.map((x) => (
         <li key={x.href}>
-          <Link href={x.href} className="text-sm transition-colors hover:text-white" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+          <Link href={x.href} className="text-sm transition-colors hover:text-[color:var(--chu)]" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
             {x.nhan}
           </Link>
         </li>
@@ -58,8 +58,8 @@ function NutMangXaHoi({ href, nhan, children }) {
       rel="noopener noreferrer"
       aria-label={nhan}
       title={nhan}
-      className="w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-[#2A2A36]"
-      style={{ background: "#1D1D26", color: TEXT }}
+      className="w-9 h-9 rounded-full flex items-center justify-center transition-colors hover:bg-[color:var(--nen-hover)]"
+      style={{ background: "var(--vien-nhe)", color: TEXT }}
     >
       {children}
     </a>
@@ -89,13 +89,14 @@ export default async function ChanTrang() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-8">
             <div className="col-span-2 lg:col-span-1">
               <Link href="/gioi-thieu" aria-label="CloudStock - về trang giới thiệu" className="inline-block mb-3">
-                <Image src="/logo-day-du-toi.png" alt="CloudStock" width={640} height={427} className="w-28 h-auto" />
+                <Image src="/logo-day-du-toi.png" alt="CloudStock" width={640} height={427} className="chi-toi w-28 h-auto" />
+                <Image src="/logo-day-du.png" alt="CloudStock" width={640} height={427} className="chi-sang w-28 h-auto" />
               </Link>
               <p className="text-sm mb-4 max-w-xs" style={{ color: MUTED }}>
                 Hệ thống hỗ trợ đầu tư chứng khoán, quét toàn bộ cổ phiếu HOSE, HNX, UPCOM và cập nhật sau mỗi phiên.
               </p>
               {sdt && (
-                <a href={hrefSdt} className="inline-flex items-center gap-2 text-sm hover:text-white" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+                <a href={hrefSdt} className="inline-flex items-center gap-2 text-sm hover:text-[color:var(--chu)]" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
                   <Phone size={14} color={PRIMARY} aria-hidden="true" />
                   {sdt}
                 </a>
@@ -132,7 +133,7 @@ export default async function ChanTrang() {
                   </NutMangXaHoi>
                 </div>
               ) : (
-                <Link href="/lien-he" className="text-sm hover:text-white" style={{ color: MUTED }}>
+                <Link href="/lien-he" className="text-sm hover:text-[color:var(--chu)]" style={{ color: MUTED }}>
                   Xem kênh liên hệ →
                 </Link>
               )}

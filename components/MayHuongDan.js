@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { layGioiThieu, layGiaiThich, duocChao, chonLoiChao, CHAO } from "@/lib/noiDungMay";
 
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
-const TIM = "#A78BFA";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
+const TIM = "var(--tim-nhat)";
 
 // Hinh "Mây" (tam thoi ve bang SVG theo logo dam may - co hinh Mây that cua kenh TikTok thi thay vao day). Mat chop, nguoi nhun nhe (CSS trong globals.css, tat khi
 // nguoi dung chon giam chuyen dong).
@@ -174,14 +174,14 @@ export default function MayHuongDan() {
       {chaoHienTai && (
         <div
           className="may-bong-chao fixed z-[60] flex items-start gap-1 rounded-2xl border pl-3 pr-1 py-2 shadow-xl"
-          style={{ background: "#1B1830", borderColor: "rgba(167,139,250,0.55)", color: TEXT, fontFamily: "'Inter', sans-serif" }}
+          style={{ background: "var(--panel-tim)", borderColor: "rgba(167,139,250,0.55)", color: TEXT, fontFamily: "'Inter', sans-serif" }}
           role="status"
           aria-live="polite"
         >
           <button type="button" onClick={moKhung} className="text-left text-[13px] leading-snug" title="Bấm để Mây hướng dẫn">
             {chaoHienTai.noiDung}
           </button>
-          <button type="button" onClick={tatChao} aria-label="Tắt lời chào" className="p-1 rounded hover:bg-white/10 shrink-0">
+          <button type="button" onClick={tatChao} aria-label="Tắt lời chào" className="p-1 rounded hover:bg-[color:var(--hover-dam)] shrink-0">
             <X size={13} color={MUTED} />
           </button>
         </div>
@@ -193,7 +193,7 @@ export default function MayHuongDan() {
           role="dialog"
           aria-label="Mây hướng dẫn"
           className="may-khung fixed z-[60] rounded-2xl border p-4 shadow-2xl"
-          style={{ background: "#15151F", borderColor: "rgba(167,139,250,0.45)", color: TEXT, fontFamily: "'Inter', sans-serif" }}
+          style={{ background: "var(--card)", borderColor: "rgba(167,139,250,0.45)", color: TEXT, fontFamily: "'Inter', sans-serif" }}
         >
           <div className="flex items-start justify-between gap-3 mb-3">
             <div>
@@ -202,27 +202,27 @@ export default function MayHuongDan() {
               </p>
               <p className="text-base font-bold">{gioiThieu.ten}</p>
             </div>
-            <button type="button" onClick={() => setMo(false)} aria-label="Đóng Mây hướng dẫn" className="p-1 rounded hover:bg-white/10">
+            <button type="button" onClick={() => setMo(false)} aria-label="Đóng Mây hướng dẫn" className="p-1 rounded hover:bg-[color:var(--hover-dam)]">
               <X size={16} color={MUTED} />
             </button>
           </div>
 
           {xem && (
             <div className="rounded-xl p-3 mb-3" style={{ background: "rgba(167,139,250,0.12)", border: "1px solid rgba(167,139,250,0.4)" }} aria-live="polite">
-              <p className="text-xs font-bold" style={{ color: "#C9BEFF" }}>
+              <p className="text-xs font-bold" style={{ color: "var(--tim-chu)" }}>
                 {xem.ten}
               </p>
               <p className="text-sm leading-relaxed mt-1">{xem.noiDung}</p>
             </div>
           )}
 
-          <p className="text-sm leading-relaxed" style={{ color: "#D8D8E0" }}>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--chu-2)" }}>
             {gioiThieu.gioiThieu}
           </p>
           {gioiThieu.meo.length > 0 && (
             <ul className="mt-3 space-y-1.5">
               {gioiThieu.meo.map((m) => (
-                <li key={m} className="text-xs leading-relaxed flex gap-1.5" style={{ color: "#C4C4CF" }}>
+                <li key={m} className="text-xs leading-relaxed flex gap-1.5" style={{ color: "var(--chu-3)" }}>
                   <span style={{ color: TIM }}>•</span>
                   <span>{m}</span>
                 </li>

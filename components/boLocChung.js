@@ -10,10 +10,10 @@ import { Search, Columns3 } from "lucide-react";
 import { phanLoaiXuHuong, chamTPCaoNhat, laDangGiu, datChuanUuTien } from "@/components/dungChung";
 import { NHOM_COT } from "@/components/cotChung";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const MUTED = "#8B8B99";
-const TEXT = "#F5F5F7";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const MUTED = "var(--mo)";
+const TEXT = "var(--chu)";
 const PRIMARY = "#6C5CE7";
 
 // Gia tri "nganh" AFL xuat ra KHONG dau (quy uoc chung toan he thong) - map
@@ -178,7 +178,7 @@ export function HangTichChung({ loc, datLoc, soUuTien, children }) {
       <OTich checked={loc.chiUuTien} onChange={dat("chiUuTien")}>
         <span>
           {NHAN_UU_TIEN}
-          {soUuTien != null && <b style={{ color: "#22C55E" }}> · {soUuTien} mã đạt</b>}
+          {soUuTien != null && <b style={{ color: "var(--xanh)" }}> · {soUuTien} mã đạt</b>}
         </span>
       </OTich>
     </div>
@@ -286,7 +286,7 @@ export function ChonCotHienThi({ cot, dsKhoa, dangChon, onBat, onHienTatCa, onMa
             </button>
           </div>
           {ghiChu && (
-            <p className="text-[11px] mb-3" style={{ color: "#FBBF24" }}>
+            <p className="text-[11px] mb-3" style={{ color: "var(--vang)" }}>
               {ghiChu}
             </p>
           )}

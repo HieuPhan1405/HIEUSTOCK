@@ -7,14 +7,14 @@ import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import { LOAI_THONG_BAO, PHAM_VI, demChuaXem } from "@/lib/thongBao";
 import { hoTroDay, laIOSChuaCaiDat, quyenHienTai, layDangKyHienTai, batDay, tatDay, dongBoDay, guiThu } from "@/lib/dayTrinhDuyet";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
-const DO = "#EF4444";
-const XANH = "#22C55E";
-const VANG = "#FBBF24";
+const DO = "var(--do)";
+const XANH = "var(--xanh)";
+const VANG = "var(--vang)";
 const sans = { fontFamily: "'Inter', sans-serif" };
 
 const CHU_KY_MS = 3 * 60 * 1000;
@@ -190,14 +190,14 @@ export default function ChuongThongBao() {
         onClick={batTat}
         aria-expanded={mo}
         aria-label={chuaXem ? `Thông báo — ${chuaXem} chưa xem` : "Thông báo"}
-        className="relative w-9 h-9 rounded-lg border flex items-center justify-center transition-colors hover:bg-white/[0.04]"
+        className="relative w-9 h-9 rounded-lg border flex items-center justify-center transition-colors hover:bg-[color:var(--hover-nhe)]"
         style={{ borderColor: mo ? PRIMARY : VIEN, background: NEN_CARD, color: chuaXem ? TEXT : MUTED }}
       >
         {chuaXem ? <BellRing size={17} strokeWidth={2} aria-hidden="true" /> : <Bell size={17} strokeWidth={2} aria-hidden="true" />}
         {chuaXem > 0 && (
           <span
             className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
-            style={{ background: DO, color: "#FFFFFF", ...sans, border: "2px solid #0B0B10" }}
+            style={{ background: DO, color: "#FFFFFF", ...sans, border: "2px solid var(--nen)" }}
           >
             {chuaXem > 9 ? "9+" : chuaXem}
           </span>
@@ -339,7 +339,7 @@ export default function ChuongThongBao() {
                         key={t.id}
                         href={t.duong_dan || "/"}
                         onClick={() => setMo(false)}
-                        className="flex gap-3 px-4 py-2.5 transition-colors hover:bg-white/[0.04]"
+                        className="flex gap-3 px-4 py-2.5 transition-colors hover:bg-[color:var(--hover-nhe)]"
                         style={{ background: moi ? "rgba(108,92,231,0.08)" : undefined }}
                       >
                         <span className="mt-1.5 w-2 h-2 rounded-full shrink-0" style={{ background: loai.mau }} aria-hidden="true" />

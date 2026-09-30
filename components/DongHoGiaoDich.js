@@ -4,12 +4,12 @@ import { useState, useEffect, useRef } from "react";
 import { Clock } from "lucide-react";
 import { KHUNG_VAO_LENH } from "@/lib/khungGioVaoLenh";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
-const XANH = "#22C55E";
-const VANG = "#FBBF24";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
+const XANH = "var(--xanh)";
+const VANG = "var(--vang)";
 
 // KHUNG GIO VAO LENH (gio Viet Nam) - chi vao lenh MUA trong cac khung nay,
 // tranh dat lenh o phien sang som/bien dong manh dau phien va giai doan cuoi

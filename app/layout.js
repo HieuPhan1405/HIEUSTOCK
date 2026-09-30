@@ -35,10 +35,16 @@ export const metadata = {
   },
 };
 
+// Dat che do sang/toi TRUOC khi ve trang (script nho chay ngay trong <head>) de khong bi nhay tu toi sang sang. Mac dinh TOI; nguoi dung doi bang nut o thanh dau (components/NutGiaoDien.js).
+const SCRIPT_GIAO_DIEN = `(function(){try{var t=localStorage.getItem("cs-giao-dien");document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark")}catch(e){}})()`;
+
 export default function RootLayout({ children }) {
   return (
-    <html lang="vi" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col" style={{ background: "#0B0B10" }}>
+    <html lang="vi" data-theme="dark" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: SCRIPT_GIAO_DIEN }} />
+      </head>
+      <body className="min-h-full flex flex-col" style={{ background: "var(--nen)" }}>
         <style>{FONT_IMPORT}</style>
         <KhungGioProvider>
           <TuDongLamMoi />

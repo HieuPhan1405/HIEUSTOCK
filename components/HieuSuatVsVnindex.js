@@ -4,12 +4,12 @@ import { useMemo, useState } from "react";
 import { pct } from "@/components/dungChung";
 import { ngayChuoi } from "@/lib/muaThemTinhToan";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
-const XANH = "#22C55E";
-const DO = "#EF4444";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
 
 const ngayVN = (s) => (s ? s.split("-").reverse().join("/") : "—");
 
@@ -117,7 +117,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
             <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label="Chênh lệch lãi/lỗ từng mã so với VNINDEX cùng kỳ" style={{ display: "block", minWidth: W }}>
               {[cao, 0, thap].map((v, i) => (
                 <g key={i}>
-                  <line x1={TRAI} x2={W - 6} y1={y(v)} y2={y(v)} stroke={v === 0 ? "#3A3A47" : VIEN} strokeDasharray={v === 0 ? undefined : "3 4"} />
+                  <line x1={TRAI} x2={W - 6} y1={y(v)} y2={y(v)} stroke={v === 0 ? "var(--vien-dam)" : VIEN} strokeDasharray={v === 0 ? undefined : "3 4"} />
                   <text x={TRAI - 6} y={y(v) + 3} textAnchor="end" fontSize="9" fill={MUTED}>
                     {v === 0 ? "0" : `${v > 0 ? "+" : ""}${v.toFixed(0)}%`}
                   </text>

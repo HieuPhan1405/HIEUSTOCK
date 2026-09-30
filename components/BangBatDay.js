@@ -3,16 +3,16 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
-import { fmt, pct } from "@/components/dungChung";
+import { fmt, pct, nhe } from "@/components/dungChung";
 import { soVN } from "@/lib/soVN";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const MUTED = "#8B8B99";
-const TEXT = "#F5F5F7";
-const XANH = "#22C55E";
-const DO = "#EF4444";
-const VANG = "#FBBF24";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const MUTED = "var(--mo)";
+const TEXT = "var(--chu)";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+const VANG = "var(--vang)";
 const PRIMARY = "#6C5CE7";
 
 // Ket qua bat day - CHI xet dc khi da co du du lieu gia sau 20 phien (con
@@ -122,7 +122,7 @@ export default function BangBatDay({ duLieu }) {
               {daLoc.map((row, i) => {
                 const kq = ketQuaBatDay(row);
                 return (
-                  <tr key={row.id} className={i > 0 ? "border-t" : ""} style={{ borderColor: "#1D1D26" }}>
+                  <tr key={row.id} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                     <td className="py-2.5 px-3">
                       <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
                         {row.ma}
@@ -159,7 +159,7 @@ export default function BangBatDay({ duLieu }) {
                     <td className="py-2.5 px-3">
                       <span
                         className="px-2 py-0.5 text-xs font-bold tracking-wide rounded-sm"
-                        style={{ background: `${kq.mau}22`, color: kq.mau }}
+                        style={{ background: nhe(kq.mau, 13), color: kq.mau }}
                       >
                         {kq.nhan}
                       </span>

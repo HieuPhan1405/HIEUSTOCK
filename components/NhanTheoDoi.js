@@ -12,7 +12,7 @@ export default function NhanTheoDoi({ loai, tu = null }) {
   const trongKhung = useTrongKhungVaoLenh();
   if (loai === "mua" && trongKhung) return null;
   const mua = loai === "mua";
-  const mau = mua ? "#22C55E" : "#EF4444";
+  const mau = mua ? "var(--xanh)" : "var(--do)";
   const khung = !mua && tu ? nhanKhungKeTiep(tu) : "";
   return (
     <span

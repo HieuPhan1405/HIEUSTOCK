@@ -20,13 +20,13 @@ import {
 } from "@/components/boLocChung";
 import { fmt, nhanGiaiNgan, nhanLoaiVao, nhanBaoVeLai, nhanChoHoi, datChuanUuTien, nhanLenhWeb } from "@/components/dungChung";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const MUTED = "#8B8B99";
-const DO = "#EF4444";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const MUTED = "var(--mo)";
+const DO = "var(--do)";
 const PRIMARY = "#6C5CE7";
-const CAM = "#F97316";
-const NGOC = "#22D3EE";
+const CAM = "var(--cam)";
+const NGOC = "var(--cyan)";
 const ngayVN = (s) => (s ? String(s).split("-").reverse().join("/") : "—");
 
 // Cot ma + trang thai co logic rieng (nut Tham gia, canh bao Mat Than/Ban bot);
@@ -177,7 +177,7 @@ export function locLenhMo(duLieu, loc) {
 }
 
 function mauNenDong(row) {
-  return row.mat_than ? "#241419" : row.ban_bot ? "#241C10" : NEN_CARD;
+  return row.mat_than ? "var(--do-nen)" : row.ban_bot ? "var(--vang-nen)" : NEN_CARD;
 }
 
 // loc/datLoc: bo loc do TRANG CHA giu (So lenh dang mo - de the thong ke o tren doi theo). Noi khac dung bang nay (vd Danh muc theo doi) khong truyen thi
@@ -351,7 +351,7 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai 
                     key={row.khoa_lenh ?? row.ma}
                     className={i > 0 ? "border-t" : ""}
                     style={{
-                      borderColor: row.mat_than ? "#4A2230" : row.ban_bot ? "#4A3218" : "#1D1D26",
+                      borderColor: row.mat_than ? "var(--do-vien)" : row.ban_bot ? "var(--vang-vien)" : "var(--vien-nhe)",
                       background: nen === NEN_CARD ? "transparent" : nen,
                     }}
                   >

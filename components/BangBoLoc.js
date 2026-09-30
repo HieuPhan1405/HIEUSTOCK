@@ -26,11 +26,11 @@ import {
 } from "@/components/boLocChung";
 import { chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, nhanMuaMoi, nhanLyDoBan, nhanChoHoi, nhanBaoVeLai, datChuanUuTien, sapChamMoc, laChoPhienSau, laDangGiu, NGUONG_DIEM_MUA } from "@/components/dungChung";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const MUTED = "#8B8B99";
-const XANH = "#22C55E";
-const DO = "#EF4444";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const MUTED = "var(--mo)";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
 const PRIMARY = "#6C5CE7";
 
 // Bo loc "MA THEO DOI" gom 2 nhom: (1) da DAT DIEM MUA nhung dang doi phien sau (laChoPhienSau) va
@@ -133,7 +133,7 @@ const COT_RIENG = {
               {laChoPhienSau(row) && (
                 <span
                   className="text-[10px] font-bold"
-                  style={{ color: "#FBBF24" }}
+                  style={{ color: "var(--vang)" }}
                   title="Đã đạt điểm MUA nhưng phiên đầu chưa đủ khối lượng xác nhận. Nếu phiên sau vẫn trên ngưỡng điểm thì sẽ MUA."
                 >
                   ⏳ Đạt điểm, chờ phiên sau
@@ -145,7 +145,7 @@ const COT_RIENG = {
               type="button"
               onClick={ctx.moModalTK}
               className="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-bold"
-              style={{ background: "rgba(255,255,255,0.06)", color: MUTED }}
+              style={{ background: "var(--phu)", color: MUTED }}
               title="Đăng ký/Đăng nhập để xem tín hiệu"
             >
               <Lock size={10} />
@@ -153,12 +153,12 @@ const COT_RIENG = {
             </button>
           )}
           {tp && (
-            <span className="text-[10px] font-bold" style={{ color: "#FBBF24" }}>
+            <span className="text-[10px] font-bold" style={{ color: "var(--vang)" }}>
               🎯 {tp}
             </span>
           )}
           {row.ban_bot && (
-            <span className="text-[10px] font-bold" style={{ color: "#F97316" }}>
+            <span className="text-[10px] font-bold" style={{ color: "var(--cam)" }}>
               ⚠ Bán bớt
             </span>
           )}
@@ -420,7 +420,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
           }}
         >
           <span title="Mã chưa có lệnh và (1) đã đạt điểm MUA nhưng đang đợi phiên sau xác nhận khối lượng, hoặc (2) giá đang sát một mốc (mây / đường cân bằng dài hạn) mà vượt qua thì được cộng điểm và đủ điểm MUA">
-            Mã theo dõi: đạt điểm chờ phiên sau + sắp chạm mốc tính điểm +<b style={{ color: "#22C55E" }}> · {soTheoDoi} mã</b>
+            Mã theo dõi: đạt điểm chờ phiên sau + sắp chạm mốc tính điểm +<b style={{ color: "var(--xanh)" }}> · {soTheoDoi} mã</b>
           </span>
         </OTich>
         {loc.chiGanDiemMua && coDuLieuMoc && (
@@ -476,7 +476,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
             </thead>
             <tbody>
               {daLoc.map((row, i) => (
-                <tr key={row.ma} className={`hover:bg-white/[0.04] transition-colors ${i > 0 ? "border-t" : ""}`} style={{ borderColor: "#1D1D26" }}>
+                <tr key={row.ma} className={`hover:bg-[color:var(--hover-nhe)] transition-colors ${i > 0 ? "border-t" : ""}`} style={{ borderColor: "var(--vien-nhe)" }}>
                   {dsCot.map((k) => {
                     const c = COT[k];
                     return (

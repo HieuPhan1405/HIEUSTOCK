@@ -2,13 +2,13 @@
 
 import { useState } from "react";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
-const DO = "#EF4444";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
 
 export default function FormGuiTinNhan() {
   const [hoTen, setHoTen] = useState("");
@@ -59,7 +59,7 @@ export default function FormGuiTinNhan() {
           onChange={(e) => setHoTen(e.target.value)}
           placeholder="Nguyễn Văn A"
           className="w-full px-3 py-2.5 text-sm rounded-lg outline-none"
-          style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
+          style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
         />
       </div>
 
@@ -72,7 +72,7 @@ export default function FormGuiTinNhan() {
           onChange={(e) => setLienLac(e.target.value)}
           placeholder="ban@email.com hoặc 09xx xxx xxx"
           className="w-full px-3 py-2.5 text-sm rounded-lg outline-none"
-          style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}
+          style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}
         />
       </div>
 
@@ -86,7 +86,7 @@ export default function FormGuiTinNhan() {
           placeholder="Bạn muốn góp ý hay hỏi điều gì?"
           rows={5}
           className="w-full px-3 py-2.5 text-sm rounded-lg outline-none resize-none"
-          style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
+          style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
         />
       </div>
 

@@ -3,10 +3,10 @@ import { giaiMaCat } from "@/lib/boLocChiBao";
 
 // Cot CHI BAO KY THUAT cho bang Bo loc co phieu (khoa cot = ten truong trong bang chi_bao_ky_thuat, xem lib/cotChiBaoKyThuat.js).
 // Chi hien khi nguoi dung bat trong "Cot hien thi" hoac dang loc theo chi bao do (BangBoLoc tu hien cot cua bo loc dang dung).
-const MUTED = "#8B8B99";
-const XANH = "#22C55E";
-const DO = "#EF4444";
-const VANG = "#FBBF24";
+const MUTED = "var(--mo)";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+const VANG = "var(--vang)";
 const NHOM = "Chỉ báo kỹ thuật";
 
 const Trong = <span style={{ color: MUTED }}>—</span>;

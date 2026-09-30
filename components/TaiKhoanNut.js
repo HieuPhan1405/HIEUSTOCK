@@ -7,12 +7,12 @@ import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import { tatDay } from "@/lib/dayTrinhDuyet";
 
 const PRIMARY = "#6C5CE7";
-const MUTED = "#8B8B99";
-const TEXT = "#F5F5F7";
-const XANH = "#22C55E";
-const VANG = "#FBBF24";
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
+const MUTED = "var(--mo)";
+const TEXT = "var(--chu)";
+const XANH = "var(--xanh)";
+const VANG = "var(--vang)";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
 
 // Form doi ten hien thi (dung o ca kieu thuong va menu tai khoan tren thanh dau).
 function FormDoiTen({ tenMoi, setTenMoi, dangLuu, onLuu, onHuy, rong = 140 }) {
@@ -25,7 +25,7 @@ function FormDoiTen({ tenMoi, setTenMoi, dangLuu, onLuu, onHuy, rong = 140 }) {
         maxLength={200}
         placeholder="Tên hiển thị"
         className="px-2 py-1 text-xs rounded outline-none min-w-0"
-        style={{ background: "#0B0B10", border: `1px solid ${PRIMARY}`, color: TEXT, width: rong }}
+        style={{ background: "var(--nen)", border: `1px solid ${PRIMARY}`, color: TEXT, width: rong }}
       />
       <button type="submit" disabled={dangLuu} style={{ color: XANH }} aria-label="Lưu tên">
         <Check size={14} strokeWidth={2.5} />
@@ -38,7 +38,7 @@ function FormDoiTen({ tenMoi, setTenMoi, dangLuu, onLuu, onHuy, rong = 140 }) {
 }
 
 const TheNho = ({ mau, children, title }) => (
-  <span className="px-1.5 py-0.5 text-[10px] font-bold rounded" style={{ background: mau, color: "#0B0B10" }} title={title}>
+  <span className="px-1.5 py-0.5 text-[10px] font-bold rounded" style={{ background: mau, color: "var(--nen)" }} title={title}>
     {children}
   </span>
 );
@@ -125,12 +125,12 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
           onClick={() => setMoMenu((v) => !v)}
           aria-expanded={moMenu}
           aria-label={`Tài khoản: ${ten}`}
-          className="flex items-center gap-2 h-9 pl-1 pr-1 sm:pr-2 rounded-lg border transition-colors hover:bg-white/[0.04]"
+          className="flex items-center gap-2 h-9 pl-1 pr-1 sm:pr-2 rounded-lg border transition-colors hover:bg-[color:var(--hover-nhe)]"
           style={{ borderColor: moMenu ? PRIMARY : VIEN, background: NEN_CARD }}
         >
-          <span className="relative w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold" style={{ background: "rgba(108,92,231,0.22)", color: "#C4B8FF" }}>
+          <span className="relative w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold" style={{ background: "rgba(108,92,231,0.22)", color: "var(--tim-chu)" }}>
             {String(ten).trim().charAt(0).toUpperCase() || "?"}
-            {!nguoiDung.da_duyet && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full" style={{ background: VANG, border: "2px solid #0B0B10" }} aria-hidden="true" />}
+            {!nguoiDung.da_duyet && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full" style={{ background: VANG, border: "2px solid var(--nen)" }} aria-hidden="true" />}
           </span>
           <span className="hidden sm:block max-w-[120px] truncate text-xs" style={{ color: TEXT }}>
             {ten}
@@ -168,15 +168,15 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
               )}
             </div>
             <div className="border-t my-1" style={{ borderColor: VIEN }} />
-            <Link href="/danh-muc" onClick={() => setMoMenu(false)} className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.04]" style={{ color: TEXT }}>
+            <Link href="/danh-muc" onClick={() => setMoMenu(false)} className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[color:var(--hover-nhe)]" style={{ color: TEXT }}>
               <Wallet size={15} color={MUTED} aria-hidden="true" /> Danh mục theo dõi
             </Link>
             {nguoiDung.la_admin && (
-              <Link href="/quan-tri" onClick={() => setMoMenu(false)} className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.04]" style={{ color: TEXT }}>
+              <Link href="/quan-tri" onClick={() => setMoMenu(false)} className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[color:var(--hover-nhe)]" style={{ color: TEXT }}>
                 <ShieldCheck size={15} color={MUTED} aria-hidden="true" /> Trang quản trị
               </Link>
             )}
-            <button type="button" onClick={dangXuat} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-white/[0.04] text-left" style={{ color: PRIMARY }}>
+            <button type="button" onClick={dangXuat} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[color:var(--hover-nhe)] text-left" style={{ color: PRIMARY }}>
               <LogOut size={15} aria-hidden="true" /> Đăng xuất
             </button>
           </div>

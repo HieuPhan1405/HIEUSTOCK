@@ -11,12 +11,12 @@ export const metadata = {
   description: "Danh sách kiểm tra điều kiện bắt đáy cho từng cổ phiếu.",
 };
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
-const XANH = "#22C55E";
-const DO = "#EF4444";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
 
 function TheKPI({ nhan, giaTri, phu, mau }) {
   return (

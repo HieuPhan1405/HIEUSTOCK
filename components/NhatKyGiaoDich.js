@@ -2,20 +2,20 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ArrowUpCircle, ArrowDownCircle, Target, ShieldCheck, TrendingUp, Rewind } from "lucide-react";
-import { fmt, pct, chuoiGiuPhien } from "@/components/dungChung";
+import { fmt, pct, chuoiGiuPhien, nhe } from "@/components/dungChung";
 import { dungNhatKyLenh } from "@/lib/nhatKyLenh";
 import { ngayChuoi } from "@/lib/muaThemTinhToan";
 import { soVN } from "@/lib/soVN";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
-const XANH = "#22C55E";
-const DO = "#EF4444";
-const VANG = "#FBBF24";
-const NGOC = "#22D3EE";
-const TIM = "#A78BFA";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+const VANG = "var(--vang)";
+const NGOC = "var(--cyan)";
+const TIM = "var(--tim-nhat)";
 
 const ngayVN = (s) => (s ? String(s).slice(0, 10).split("-").reverse().join("/") : "—");
 // Von 100 don vi -> hien 1 chu so thap phan khi can (vd 33, 105.3).
@@ -57,8 +57,8 @@ function hienSuKien(s) {
 
 function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri, nhanLenh }) {
   return (
-    <div className="flex gap-3 py-3 border-b last:border-b-0" style={{ borderColor: "#1D1D26" }}>
-      <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: mau + "20" }}>
+    <div className="flex gap-3 py-3 border-b last:border-b-0" style={{ borderColor: "var(--vien-nhe)" }}>
+      <div className="shrink-0 w-8 h-8 rounded-full flex items-center justify-center" style={{ background: nhe(mau, 12) }}>
         <Icon size={15} color={mau} strokeWidth={2} aria-hidden="true" />
       </div>
       <div className="min-w-0 flex-1">
@@ -76,7 +76,7 @@ function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri, nhanLenh }) {
           </p>
         )}
         {nhanLenh && (
-          <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px]" style={{ background: "#1D1D26", color: "#A6A6B3", fontFamily: "'JetBrains Mono', monospace" }}>
+          <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px]" style={{ background: "var(--vien-nhe)", color: "var(--mo-2)", fontFamily: "'JetBrains Mono', monospace" }}>
             {nhanLenh}
           </span>
         )}
@@ -162,7 +162,7 @@ function ThanhChonNhatKy({ lenh, khoaChon, datKhoa }) {
 function TomTatLenh({ l }) {
   const kq = l.ketQuaPct;
   return (
-    <div className="rounded-xl border p-3 mb-1 flex flex-wrap items-center justify-between gap-2" style={{ borderColor: VIEN, background: "#0B0B10" }}>
+    <div className="rounded-xl border p-3 mb-1 flex flex-wrap items-center justify-between gap-2" style={{ borderColor: VIEN, background: "var(--nen)" }}>
       <div className="min-w-0">
         <p className="text-sm font-bold" style={{ color: TEXT, fontFamily: "'Inter', sans-serif" }}>
           Lệnh mua {ngayVN(l.ngayMua)} · giá {fmt(l.giaMua)}
@@ -242,7 +242,7 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], cacLenh = [] }) 
           <Dong key={i} {...hienSuKien(s)} nhanLenh={!dangXem && nhieuLenh ? nhanLenh[s.khoaLenh] : null} />
         ))}
       </div>
-      <p className="text-[10px] mt-2" style={{ color: "#6B6B78" }}>
+      <p className="text-[10px] mt-2" style={{ color: "var(--mo-3)" }}>
         Lệnh chốt từng phần ghi phần vốn của mỗi lần chốt (vd 30 → 33: 30 vốn đã chốt thành 33), cộng các phần lại ra kết quả cả lệnh; lệnh đang giữ tính phần còn lại theo giá hiện tại
         (tạm tính). Lệnh đóng trước khi có tính năng này chỉ ghi mốc Mua và mốc Đóng. Số liệu tham khảo, không phải khuyến nghị đầu tư.
       </p>

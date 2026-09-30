@@ -22,9 +22,9 @@ export default function TraCuuMa() {
         placeholder="Nhập mã cổ phiếu khác (ví dụ: MBB)"
         className="px-3 py-2 text-sm flex-1 outline-none"
         style={{
-          background: "#15151F",
-          border: "1px solid #26262F",
-          color: "#F5F5F7",
+          background: "var(--card)",
+          border: "1px solid var(--vien)",
+          color: "var(--chu)",
           fontFamily: "'JetBrains Mono', monospace",
         }}
       />

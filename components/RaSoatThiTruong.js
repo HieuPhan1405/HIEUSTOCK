@@ -2,19 +2,19 @@ import Link from "next/link";
 import { CalendarDays } from "lucide-react";
 import { tinhTongQuanThiTruong, nhanTamLy } from "@/lib/thiTruong";
 import { tenCongTy } from "@/lib/tenMa";
-import { fmt, pct, capNhatMoiNhat } from "@/components/dungChung";
+import { fmt, pct, capNhatMoiNhat, nhe } from "@/components/dungChung";
 
 // Khoi "Ra soat thi truong" dung o trang Dashboard: 3 the tong hop (xu huong, tam ly, muc giu lenh) va RA SOAT NHANH (do rong, top tang/giam, nganh, khoi ngoai...). Tinh tren cac ma he thong
 // dang theo doi, khong phai toan thi truong.
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
-const DO = "#EF4444";
-const VANG = "#FBBF24";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+const VANG = "var(--vang)";
 
 const mono = { fontFamily: "'JetBrains Mono', monospace" };
 const sans = { fontFamily: "'Inter', sans-serif" };
@@ -45,7 +45,7 @@ function DongHoTamLy({ diem }) {
     const a = Math.PI * (1 - phanTram / 100);
     return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
   };
-  const cacDoan = ["#EF4444", "#F97316", "#FBBF24", "#84CC16", "#22C55E"].map((mau, i) => {
+  const cacDoan = ["var(--do)", "var(--cam)", "var(--vang)", "var(--chanh)", "var(--xanh)"].map((mau, i) => {
     const [x1, y1] = diemTrenCung(i * 20 + 0.8);
     const [x2, y2] = diemTrenCung((i + 1) * 20 - 0.8);
     return <path key={mau} d={`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`} stroke={mau} strokeWidth="14" fill="none" strokeLinecap="butt" />;
@@ -54,9 +54,9 @@ function DongHoTamLy({ diem }) {
     <svg viewBox="0 0 200 118" className="w-full max-w-[230px] mx-auto" role="img" aria-label={`Thang tâm lý thị trường: ${diem ?? "chưa có"} trên 100`}>
       {cacDoan}
       <g transform={`rotate(${goc} ${cx} ${cy})`}>
-        <line x1={cx} y1={cy} x2={cx} y2={cy - 66} stroke="#F5F5F7" strokeWidth="3" strokeLinecap="round" />
+        <line x1={cx} y1={cy} x2={cx} y2={cy - 66} stroke="var(--chu)" strokeWidth="3" strokeLinecap="round" />
       </g>
-      <circle cx={cx} cy={cy} r="7" fill="#F5F5F7" />
+      <circle cx={cx} cy={cy} r="7" fill="var(--chu)" />
       <text x="16" y="116" fill={MUTED} fontSize="9" style={mono}>
         0
       </text>
@@ -79,7 +79,7 @@ function DanhSachMa({ ds, mau, hienThi, trong = "Không có mã nào" }) {
             href={`/ma/${r.ma}`}
             title={t?.ten}
             className="inline-flex items-baseline gap-1.5 px-2 py-1 rounded-md text-xs hover:brightness-125 transition"
-            style={{ background: mau + "1F", color: mau, border: `1px solid ${mau}33` }}
+            style={{ background: nhe(mau, 12), color: mau, border: `1px solid ${nhe(mau, 20)}` }}
           >
             <b style={{ ...mono, fontWeight: 700 }}>{r.ten_lenh ?? r.ma}</b>
             {hienThi && <span style={{ ...mono, opacity: 0.85, fontSize: 10 }}>{hienThi(r)}</span>}
@@ -94,7 +94,7 @@ function DanhSachNganh({ ds, mau }) {
   return (
     <div className="flex flex-wrap gap-1.5">
       {ds.map((n) => (
-        <span key={n.khoa} className="inline-flex items-baseline gap-1.5 px-2 py-1 rounded-md text-xs" style={{ background: mau + "1F", color: mau, border: `1px solid ${mau}33` }}>
+        <span key={n.khoa} className="inline-flex items-baseline gap-1.5 px-2 py-1 rounded-md text-xs" style={{ background: nhe(mau, 12), color: mau, border: `1px solid ${nhe(mau, 20)}` }}>
           <b style={{ ...sans, fontWeight: 600 }}>{n.nhan}</b>
           <span style={{ ...mono, opacity: 0.85, fontSize: 10 }}>{pct(n.tb, 2)}</span>
         </span>
@@ -106,9 +106,9 @@ function DanhSachNganh({ ds, mau }) {
 // nhan / nhan2: 2 nhan (xanh, do) ben trai; children / children2: noi dung tuong ung ben phai.
 function HangRaSoat({ so, nhan, mauNhan = XANH, nhan2, mauNhan2 = DO, children, children2 }) {
   return (
-    <div className="grid md:grid-cols-[250px_1fr] gap-x-6 gap-y-2 py-4 border-b last:border-b-0" style={{ borderColor: "#1D1D26" }}>
+    <div className="grid md:grid-cols-[250px_1fr] gap-x-6 gap-y-2 py-4 border-b last:border-b-0" style={{ borderColor: "var(--vien-nhe)" }}>
       <div className="flex gap-3">
-        <span className="shrink-0 w-6 h-6 rounded-md text-[11px] flex items-center justify-center" style={{ background: "rgba(108,92,231,0.2)", color: "#B7A4FF", fontWeight: 700, ...mono }}>
+        <span className="shrink-0 w-6 h-6 rounded-md text-[11px] flex items-center justify-center" style={{ background: "rgba(108,92,231,0.2)", color: "var(--tim-chu)", fontWeight: 700, ...mono }}>
           {so}
         </span>
         <div className="text-sm leading-snug" style={{ ...sans, fontWeight: 600 }}>
@@ -130,7 +130,7 @@ function HangRaSoat({ so, nhan, mauNhan = XANH, nhan2, mauNhan2 = DO, children, 
 
 function ThanhTyLe({ ty, mau }) {
   return (
-    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "#262631" }}>
+    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--vien)" }}>
       <div className="h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, ty))}%`, background: mau }} />
     </div>
   );
@@ -190,7 +190,7 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
         <The tieuDe="Xu hướng thị trường" phu="Theo điểm Trend của chính VN-Index (Ichimoku + đường cân bằng dài hạn).">
           {vnindex ? (
             <div className="text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full text-sm mb-3" style={{ background: tq.xuHuong.mau + "22", color: tq.xuHuong.mau, border: `1px solid ${tq.xuHuong.mau}55`, fontWeight: 700 }}>
+              <span className="inline-block px-4 py-1.5 rounded-full text-sm mb-3" style={{ background: nhe(tq.xuHuong.mau, 13), color: tq.xuHuong.mau, border: `1px solid ${nhe(tq.xuHuong.mau, 33)}`, fontWeight: 700 }}>
                 {tq.xuHuong.nhan}
               </span>
               <p className="text-3xl" style={{ ...mono, fontWeight: 700 }}>
@@ -253,12 +253,12 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
                 (tăng mạnh &gt;3%: {tq.doRong.tangManh} · tăng nhẹ: {tq.doRong.tangNhe} · giảm nhẹ: {tq.doRong.giamNhe} · giảm mạnh &lt;−3%: {tq.doRong.giamManh})
               </span>
             </p>
-            <div className="flex h-2.5 rounded-full overflow-hidden" style={{ background: "#262631" }} aria-hidden="true">
+            <div className="flex h-2.5 rounded-full overflow-hidden" style={{ background: "var(--vien)" }} aria-hidden="true">
               {[
-                [tq.doRong.tangManh, "#16A34A"],
-                [tq.doRong.tangNhe, "#4ADE80"],
+                [tq.doRong.tangManh, "var(--xanh-dam)"],
+                [tq.doRong.tangNhe, "var(--xanh-nhat)"],
                 [tq.doRong.dung, VANG],
-                [tq.doRong.giamNhe, "#F87171"],
+                [tq.doRong.giamNhe, "var(--do-nhat)"],
                 [tq.doRong.giamManh, "#B91C1C"],
               ].map(([n, mau]) => (
                 <div key={mau} style={{ width: `${(n / Math.max(tq.doRong.tong, 1)) * 100}%`, background: mau }} />
@@ -287,7 +287,7 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
 
           <HangRaSoat so="6" nhan="Thống kê mã so với đường trung bình của hệ thống">
             <DongTyLe nhan="Mã có giá trên Kijun (17 phiên)" ty={tq.tren.kijun} mau="#3B9EFF" />
-            <DongTyLe nhan="Mã có giá trên đường cân bằng dài hạn" ty={tq.tren.canBang} mau="#A78BFA" />
+            <DongTyLe nhan="Mã có giá trên đường cân bằng dài hạn" ty={tq.tren.canBang} mau="var(--tim-nhat)" />
             <DongTyLe nhan="Mã đạt điểm MUA (từ 1,25 điểm)" ty={tq.tren.datDiem} mau={XANH} />
           </HangRaSoat>
         </div>

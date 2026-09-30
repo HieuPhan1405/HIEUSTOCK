@@ -15,10 +15,10 @@ export default function SignalPill({ tin: tinHeThong, banTheoDoiTu = null, minhH
   const doiWebGiu = webGiu && tinHeThong !== "MUA" && tinHeThong !== "NAM GIU";
   const tin = doiWebGiu ? "NAM GIU" : tinHeThong;
   const map = {
-    MUA: { bg: "#123423", text: "#22C55E", label: "MUA" },
-    BAN: { bg: "#3A1620", text: "#EF4444", label: "BÁN" },
-    "NAM GIU": { bg: "#332413", text: "#FBBF24", label: "NẮM GIỮ" },
-    "TRUNG LAP": { bg: "#26262F", text: "#A6A6B3", label: "TRUNG LẬP" },
+    MUA: { bg: "var(--xanh-nen)", text: "var(--xanh)", label: "MUA" },
+    BAN: { bg: "var(--do-vien)", text: "var(--do)", label: "BÁN" },
+    "NAM GIU": { bg: "var(--vang-nen)", text: "var(--vang)", label: "NẮM GIỮ" },
+    "TRUNG LAP": { bg: "var(--vien)", text: "var(--mo-2)", label: "TRUNG LẬP" },
   };
   const trongKhung = useTrongKhungVaoLenh();
   const theoDoiMua = minhHoa === "theo-doi" ? tin === "MUA" : minhHoa !== "co-dinh" && !doiWebGiu && muaDangTheoDoi({ tin, muaTheoDoiTu, daChotMua, trongKhung });

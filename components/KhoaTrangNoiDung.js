@@ -1,11 +1,11 @@
 import { Lock, Clock } from "lucide-react";
 import TaiKhoanNut from "@/components/TaiKhoanNut";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
-const VANG = "#FBBF24";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
+const VANG = "var(--vang)";
 
 // Chan hien thi TOAN BO 1 trang - 2 truong hop:
 //  - CHUA dang ky/dang nhap (mac dinh): render truoc khi trang goi ham lay du lieu (khong fetch

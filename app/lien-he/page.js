@@ -8,17 +8,17 @@ export const metadata = {
   description: "Thông tin liên hệ và gửi tin nhắn tới CloudStock.",
 };
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
 
 function DongKenh({ Icon, nhan, giaTri, laLink }) {
   if (!giaTri) return null;
   return (
-    <div className="flex items-center gap-3 py-3 border-b" style={{ borderColor: "#1D1D26" }}>
-      <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#1D1D26" }}>
+    <div className="flex items-center gap-3 py-3 border-b" style={{ borderColor: "var(--vien-nhe)" }}>
+      <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "var(--vien-nhe)" }}>
         <Icon size={16} color={PRIMARY} strokeWidth={2} aria-hidden="true" />
       </div>
       <div className="min-w-0">
@@ -75,7 +75,7 @@ export default async function TrangLienHe() {
           <DongKenh Icon={Link2} nhan="Facebook" giaTri={tt.facebook} laLink />
           {tt.so_tk && (
             <div className="flex items-center gap-3 pt-3">
-              <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "#1D1D26" }}>
+              <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "var(--vien-nhe)" }}>
                 <Landmark size={16} color={PRIMARY} strokeWidth={2} aria-hidden="true" />
               </div>
               <div className="min-w-0">

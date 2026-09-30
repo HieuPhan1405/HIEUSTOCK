@@ -4,14 +4,14 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { cuaSoLuyKe, chiSoBatDauCuaSo } from "@/lib/tinhHieuQua";
 import { dangTrongPhienGiaoDich } from "@/lib/khungGioVaoLenh";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
-const DO = "#EF4444";
-const MAU_TSSL = "#E0A800"; // vang - Ty suat sinh loi cua he thong
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+const MAU_TSSL = "var(--vang-2)"; // vang - Ty suat sinh loi cua he thong
 const MAU_VN = "#5B6EF5"; // xanh duong - VN-Index
 const CHIEU_CAO = 300;
 const TABS = ["1M", "3M", "6M", "1Y", "YTD"];
@@ -169,7 +169,7 @@ export default function HieuQuaDauTu() {
         </span>
       </div>
 
-      <div className="grid grid-cols-5 gap-1 rounded-xl p-1 mb-3" style={{ background: "#0F0F16" }} role="tablist">
+      <div className="grid grid-cols-5 gap-1 rounded-xl p-1 mb-3" style={{ background: "var(--nen-phu)" }} role="tablist">
         {TABS.map((t) => (
           <button
             key={t}
@@ -203,7 +203,7 @@ export default function HieuQuaDauTu() {
           <g transform={`translate(${LE_TRAI},${LE_TREN})`}>
             {hinhHoc.moc.map((v) => (
               <g key={v}>
-                <line x1={0} x2={rongVe} y1={y(v)} y2={y(v)} stroke={v === 0 ? "#3A3A47" : VIEN} />
+                <line x1={0} x2={rongVe} y1={y(v)} y2={y(v)} stroke={v === 0 ? "var(--vien-dam)" : VIEN} />
                 <text x={-8} y={y(v) + 3} textAnchor="end" fontSize="10" fill={MUTED} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
                   {v.toLocaleString("vi-VN")} %
                 </text>

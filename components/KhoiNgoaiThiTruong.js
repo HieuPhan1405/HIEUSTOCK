@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { tenCongTy } from "@/lib/tenMa";
+import { nhe } from "@/components/dungChung";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const MUTED = "#8B8B99";
-const XANH = "#22C55E";
-const DO = "#EF4444";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const MUTED = "var(--mo)";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
 const mono = { fontFamily: "'JetBrains Mono', monospace" };
 
 const tyDong = (v) => `${v > 0 ? "+" : ""}${Math.round(v).toLocaleString("vi-VN")} tỷ`;
@@ -22,7 +23,7 @@ function DanhSachMa({ ds, mau }) {
             href={`/ma/${r.ma}`}
             title={t?.ten}
             className="inline-flex items-baseline gap-1.5 px-2 py-1 rounded-md text-xs hover:brightness-125 transition"
-            style={{ background: mau + "1F", color: mau, border: `1px solid ${mau}33` }}
+            style={{ background: nhe(mau, 12), color: mau, border: `1px solid ${nhe(mau, 20)}` }}
           >
             <b style={{ ...mono, fontWeight: 700 }}>{r.ma}</b>
             <span style={{ ...mono, opacity: 0.85, fontSize: 10 }}>{tyDong(r.tyDong)}</span>
@@ -64,7 +65,7 @@ export default function KhoiNgoaiThiTruong({ ngoai }) {
       </div>
 
       <div className="text-center mb-4">
-        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2" style={{ background: mauRong + "22", color: mauRong, border: `1px solid ${mauRong}55` }}>
+        <span className="inline-block px-3 py-1 rounded-full text-xs font-bold mb-2" style={{ background: nhe(mauRong, 13), color: mauRong, border: `1px solid ${nhe(mauRong, 33)}` }}>
           {nhanRong}
         </span>
         <p className="text-3xl" style={{ ...mono, fontWeight: 700, color: mauRong }}>
@@ -76,8 +77,8 @@ export default function KhoiNgoaiThiTruong({ ngoai }) {
       </div>
 
       {/* Thanh chia doi 0: trai = ban rong (do), phai = mua rong (xanh) */}
-      <div className="relative h-2.5 rounded-full mb-1" style={{ background: "#262631" }}>
-        <div className="absolute top-0 bottom-0 left-1/2 w-px" style={{ background: "#3A3A44" }} />
+      <div className="relative h-2.5 rounded-full mb-1" style={{ background: "var(--vien)" }}>
+        <div className="absolute top-0 bottom-0 left-1/2 w-px" style={{ background: "var(--vien-dam)" }} />
         {ngoai.rongHose >= 0 ? (
           <div className="absolute top-0 bottom-0 left-1/2 rounded-r-full" style={{ width: `${tyLeRong}%`, background: XANH }} />
         ) : (
@@ -90,8 +91,8 @@ export default function KhoiNgoaiThiTruong({ ngoai }) {
       </div>
 
       <p className="text-xs mb-4 leading-relaxed" style={{ color: MUTED }}>
-        <b style={{ color: "#D8D8E0" }}>Mua ròng</b>: khối ngoại mua vào NHIỀU HƠN bán ra trong phiên (chênh lệch giá trị mua − bán &gt; 0) → dòng tiền ngoại đang vào ròng.{" "}
-        <b style={{ color: "#D8D8E0" }}>Bán ròng</b>: ngược lại — bán ra nhiều hơn mua vào, dòng tiền ngoại đang rút ròng. Không phải tổng khối lượng mua hoặc bán riêng lẻ.
+        <b style={{ color: "var(--chu-2)" }}>Mua ròng</b>: khối ngoại mua vào NHIỀU HƠN bán ra trong phiên (chênh lệch giá trị mua − bán &gt; 0) → dòng tiền ngoại đang vào ròng.{" "}
+        <b style={{ color: "var(--chu-2)" }}>Bán ròng</b>: ngược lại — bán ra nhiều hơn mua vào, dòng tiền ngoại đang rút ròng. Không phải tổng khối lượng mua hoặc bán riêng lẻ.
       </p>
 
       <div className="grid sm:grid-cols-2 gap-4">

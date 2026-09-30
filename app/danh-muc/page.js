@@ -19,12 +19,12 @@ export const metadata = {
   description: "Danh mục các mã bạn đã tham gia: lệnh đang giữ, vùng mua, cắt lỗ, chốt lời, lãi/lỗ và các lệnh đã đóng.",
 };
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
-const DO = "#EF4444";
+const DO = "var(--do)";
 
 function TieuDeMuc({ children, phu }) {
   return (
@@ -125,7 +125,7 @@ export default async function TrangDanhMuc() {
       </p>
       <GiaiThichThem className="mb-3">
         Mỗi mã một dòng; mã đang có vị thế có mũi tên ở đầu dòng — bấm để xổ ra các vị thế (lệnh) của mã đó: mã có nhiều lệnh được đánh số (1), (2)... theo ngày mua, nhãn{" "}
-        <b style={{ color: "#22D3EE" }}>Mua mới</b> là đợt vào sau lệnh đầu. Bộ lọc &quot;Vị thế tốt nhất&quot; / &quot;Vị thế sau&quot; cho mỗi mã chỉ hiện 1 vị thế. Lệnh kết thúc sẽ tự chuyển
+        <b style={{ color: "var(--cyan)" }}>Mua mới</b> là đợt vào sau lệnh đầu. Bộ lọc &quot;Vị thế tốt nhất&quot; / &quot;Vị thế sau&quot; cho mỗi mã chỉ hiện 1 vị thế. Lệnh kết thúc sẽ tự chuyển
         sang &quot;Lệnh đã đóng của tôi&quot; ở cuối trang.
       </GiaiThichThem>
       <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />

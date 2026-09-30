@@ -13,10 +13,10 @@ export const metadata = {
   description: "Biểu đồ nến Nhật kèm Ichimoku, đường cân bằng dài hạn, MA và khối lượng cho cổ phiếu HOSE, HNX, UPCOM và VN-Index.",
 };
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
 const GOI_Y = ["VNINDEX", "VN30", "VCB", "FPT", "HPG", "SSI", "STB"];
 
@@ -71,7 +71,7 @@ export default async function TrangBieuDo({ searchParams }) {
           <Link
             key={g}
             href={`/bieu-do?ma=${g}`}
-            className="px-2 py-1 rounded-md border hover:text-white"
+            className="px-2 py-1 rounded-md border hover:text-[color:var(--chu)]"
             style={{ borderColor: g === ma ? PRIMARY : VIEN, color: g === ma ? TEXT : MUTED, fontFamily: "'JetBrains Mono', monospace" }}
           >
             {g}

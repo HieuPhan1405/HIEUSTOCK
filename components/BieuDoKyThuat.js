@@ -8,13 +8,32 @@ import { fmt } from "@/components/dungChung";
 import { dangTrongPhienGiaoDich } from "@/lib/khungGioVaoLenh";
 import { soVN, pctVN } from "@/lib/soVN";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+// Mau cho phan GIAO DIEN (React) dung bien CSS de doi sang/toi; rieng bieu do ve bang canvas khong doc duoc bien CSS nen lay gia tri that qua mauTheoGiaoDien().
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
-const DO = "#EF4444";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+
+function mauTheoGiaoDien() {
+  const cs = getComputedStyle(document.documentElement);
+  const l = (ten) => cs.getPropertyValue(`--${ten}`).trim();
+  return { nen: l("card"), mo: l("mo"), vien: l("vien"), luoi: l("vien-nhe"), xanh: l("xanh"), do: l("do"), ma200: l("chu-2") };
+}
+// Doi mau bieu do ngay khi nguoi dung doi che do sang/toi (khong can tai lai trang).
+function apDungMau(s) {
+  const m = mauTheoGiaoDien();
+  s.chart.applyOptions({
+    layout: { background: { type: "solid", color: m.nen }, textColor: m.mo },
+    grid: { vertLines: { color: m.luoi }, horzLines: { color: m.luoi } },
+    rightPriceScale: { borderColor: m.vien },
+    timeScale: { borderColor: m.vien },
+  });
+  s.candle.applyOptions({ upColor: m.xanh, downColor: m.do, wickUpColor: m.xanh, wickDownColor: m.do });
+  s.ma200.applyOptions({ color: m.ma200 });
+}
 
 const MAU = {
   tenkan: "#3B9EFF",
@@ -26,7 +45,7 @@ const MAU = {
   cb2: "#E879F9",
   ma20: "#F472B6",
   ma50: "#2DD4BF",
-  ma200: "#E5E7EB",
+  ma200: "#E5E7EB", // chi la gia tri du phong - mau that cua duong MA200 lay theo che do sang/toi (mauTheoGiaoDien().ma200)
 };
 
 const KHOANG = [
@@ -157,6 +176,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const [ketQua, setKetQua] = useState({ khoa: "", nen: null, loi: null });
   const [lanThu, setLanThu] = useState(0);
   const [chuThich, setChuThich] = useState(null);
+  const [kieuMau, setKieuMau] = useState(0); // tang moi khi doi che do sang/toi de ve lai cac phan tu co mau rieng (vd mui ten MUA)
 
   const khoa = `${ma}|${khungTG}`;
   const nen = ketQua.khoa === khoa ? ketQua.nen : null;
@@ -166,13 +186,14 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
 
   // 1. Tao bieu do 1 lan.
   useEffect(() => {
+    const m = mauTheoGiaoDien();
     const chart = createChart(khungRef.current, {
       autoSize: true,
-      layout: { background: { type: "solid", color: NEN_CARD }, textColor: MUTED, fontFamily: "'JetBrains Mono', monospace", fontSize: 11 },
-      grid: { vertLines: { color: "#1D1D26" }, horzLines: { color: "#1D1D26" } },
+      layout: { background: { type: "solid", color: m.nen }, textColor: m.mo, fontFamily: "'JetBrains Mono', monospace", fontSize: 11 },
+      grid: { vertLines: { color: m.luoi }, horzLines: { color: m.luoi } },
       crosshair: { mode: CrosshairMode.Normal },
-      rightPriceScale: { borderColor: VIEN, scaleMargins: { top: 0.06, bottom: 0.22 } },
-      timeScale: { borderColor: VIEN, rightOffset: 4, minBarSpacing: 2 },
+      rightPriceScale: { borderColor: m.vien, scaleMargins: { top: 0.06, bottom: 0.22 } },
+      timeScale: { borderColor: m.vien, rightOffset: 4, minBarSpacing: 2 },
       // Gia kieu Viet Nam tren truc gia / nhan gia (25,50 thay vi 25.50).
       localization: { locale: "vi-VN", priceFormatter: (p) => soVN(p, 2, true) },
     });
@@ -193,7 +214,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       cb2: dong(MAU.cb2, 1, { lineStyle: LineStyle.Dashed }),
       ma20: dong(MAU.ma20),
       ma50: dong(MAU.ma50),
-      ma200: dong(MAU.ma200),
+      ma200: dong(m.ma200),
       spanA: dong(MAU.spanA),
       spanB: dong(MAU.spanB),
       chikou: dong(MAU.chikou, 1, { lineStyle: LineStyle.Dotted }),
@@ -201,11 +222,11 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       kijun: dong(MAU.kijun, 2),
       vol: chart.addSeries(HistogramSeries, { priceFormat: { type: "volume" }, priceScaleId: "vol", lastValueVisible: false, priceLineVisible: false }),
       candle: chart.addSeries(CandlestickSeries, {
-        upColor: XANH,
-        downColor: DO,
+        upColor: m.xanh,
+        downColor: m.do,
         borderVisible: false,
-        wickUpColor: XANH,
-        wickDownColor: DO,
+        wickUpColor: m.xanh,
+        wickDownColor: m.do,
         priceFormat: dinhDang,
       }),
     };
@@ -223,7 +244,14 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       setChuThich(c ? { t: chuoiThoiGian(p.time), o: c.open, h: c.high, l: c.low, c: c.close, v: v?.value ?? 0 } : null);
     });
 
+    const theoDoiMau = new MutationObserver(() => {
+      apDungMau(s);
+      setKieuMau((x) => x + 1);
+    });
+    theoDoiMau.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
     return () => {
+      theoDoiMau.disconnect();
       veRef.current = null;
       chart.remove();
     };
@@ -288,8 +316,8 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.daiGia.datDuLieu(daiTuVung(vung), nen ? nen[nen.length - 1].c : null);
     const ngay = ngayMua ? new Date(ngayMua).toISOString().slice(0, 10) : null;
     const nenMua = nen && ngay ? timNenTruoc(nen, ngay) : null;
-    s.markers.setMarkers(nenMua ? [{ time: nenMua, position: "belowBar", color: XANH, shape: "arrowUp", text: "MUA" }] : []);
-  }, [vung, ngayMua, nen]);
+    s.markers.setMarkers(nenMua ? [{ time: nenMua, position: "belowBar", color: mauTheoGiaoDien().xanh, shape: "arrowUp", text: "MUA" }] : []);
+  }, [vung, ngayMua, nen, kieuMau]);
 
   // 5. Bat/tat chi bao.
   useEffect(() => {
@@ -346,7 +374,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
               key={k.nhan}
               type="button"
               onClick={() => datKhoang(k.nen)}
-              className="px-2 py-1 rounded text-xs cursor-pointer hover:text-white"
+              className="px-2 py-1 rounded text-xs cursor-pointer hover:text-[color:var(--chu)]"
               style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}
             >
               {k.nhan}
@@ -383,7 +411,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           </div>
         )}
         {(dangTai || loi) && (
-          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 text-sm" style={{ background: "rgba(21,21,31,0.85)", color: MUTED }}>
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 text-sm" style={{ background: "color-mix(in srgb, var(--card) 85%, transparent)", color: MUTED }}>
             {dangTai && <span>Đang tải biểu đồ…</span>}
             {loi && (
               <>

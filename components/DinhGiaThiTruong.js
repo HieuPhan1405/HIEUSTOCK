@@ -3,13 +3,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { thongKeMang } from "@/lib/tinhDinhGia";
 
-const VIEN = "#26262F";
-const MUTED = "#8B8B99";
-const TEXT = "#F5F5F7";
+const VIEN = "var(--vien)";
+const MUTED = "var(--mo)";
+const TEXT = "var(--chu)";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
-const DO = "#EF4444";
-const VANG = "#FBBF24";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+const VANG = "var(--vang)";
 const CHIEU_CAO = 250;
 
 const so = (v, dp = 1) => (v == null || !Number.isFinite(v) ? "—" : v.toLocaleString("vi-VN", { minimumFractionDigits: dp, maximumFractionDigits: dp }));
@@ -220,7 +220,7 @@ export default function DinhGiaThiTruong() {
         {hover != null && (
           <div
             className="absolute rounded-lg border px-2.5 py-1.5 text-xs"
-            style={{ left: Math.min(LE_TRAI + x(hover) + 10, rong - 130), top: 6, width: 120, pointerEvents: "none", borderColor: VIEN, background: "#0B0B10", fontFamily: "'JetBrains Mono', monospace" }}
+            style={{ left: Math.min(LE_TRAI + x(hover) + 10, rong - 130), top: 6, width: 120, pointerEvents: "none", borderColor: VIEN, background: "var(--nen)", fontFamily: "'JetBrains Mono', monospace" }}
           >
             <p style={{ color: MUTED }}>{diem[hover].hienTai ? `Hiện tại (${ngayVN(diem[hover].ngay)})` : thangNam(diem[hover].ngay)}</p>
             <p style={{ color: PRIMARY, fontWeight: 700 }}>
@@ -248,7 +248,7 @@ export default function DinhGiaThiTruong() {
               </thead>
               <tbody>
                 {du.theoNganh.map((n, i) => (
-                  <tr key={n.nganh} className={i > 0 ? "border-t" : ""} style={{ borderColor: "#1D1D26" }}>
+                  <tr key={n.nganh} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                     <td className="py-2 pr-3" style={{ fontFamily: "'Inter', sans-serif" }}>
                       {n.nhan}
                     </td>

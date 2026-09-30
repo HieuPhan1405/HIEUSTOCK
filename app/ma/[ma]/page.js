@@ -33,8 +33,8 @@ export default async function TrangChiTietMa({ params }) {
 
   if (loi) {
     return (
-      <div className="max-w-5xl mx-auto px-6 py-16" style={{ color: "#F5F5F7" }}>
-        <p style={{ color: "#EF4444" }}>Lỗi tải dữ liệu: {loi}</p>
+      <div className="max-w-5xl mx-auto px-6 py-16" style={{ color: "var(--chu)" }}>
+        <p style={{ color: "var(--do)" }}>Lỗi tải dữ liệu: {loi}</p>
       </div>
     );
   }
@@ -44,14 +44,14 @@ export default async function TrangChiTietMa({ params }) {
     const t = tenCongTy(ma);
     if (t) {
       return (
-        <div className="max-w-5xl mx-auto px-6 pt-8 pb-16" style={{ color: "#F5F5F7" }}>
+        <div className="max-w-5xl mx-auto px-6 pt-8 pb-16" style={{ color: "var(--chu)" }}>
           <h1 className="text-xl leading-snug mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
-            {ma.toUpperCase()} <span style={{ fontWeight: 400, color: "#A6A6B3" }}>— {t.ten}</span>
+            {ma.toUpperCase()} <span style={{ fontWeight: 400, color: "var(--mo-2)" }}>— {t.ten}</span>
           </h1>
-          <p className="text-xs mb-1" style={{ color: "#8B8B99" }}>
+          <p className="text-xs mb-1" style={{ color: "var(--mo)" }}>
             Sàn {t.san}
           </p>
-          <p className="text-sm mb-5" style={{ color: "#8B8B99" }}>
+          <p className="text-sm mb-5" style={{ color: "var(--mo)" }}>
             Mã này chưa nằm trong danh sách hệ thống quét tín hiệu nên chưa có điểm, vùng mua, cắt lỗ và chốt lời. Bạn vẫn xem được biểu đồ giá bên dưới.
           </p>
           <BieuDoKyThuat ma={ma.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12)} />
@@ -59,7 +59,7 @@ export default async function TrangChiTietMa({ params }) {
       );
     }
     return (
-      <div className="max-w-5xl mx-auto px-6 py-16" style={{ color: "#F5F5F7" }}>
+      <div className="max-w-5xl mx-auto px-6 py-16" style={{ color: "var(--chu)" }}>
         <p className="mb-4">
           Không tìm thấy mã <strong>{ma?.toUpperCase()}</strong> trong dữ liệu đã quét.
         </p>

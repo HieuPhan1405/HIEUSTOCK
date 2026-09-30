@@ -4,10 +4,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
 
 const CHI_SO = new Set(["VNINDEX", "VN30", "HNXINDEX", "UPCOMINDEX"]);
@@ -195,7 +195,7 @@ export default function TimMaToanCuc({ className = "" }) {
                   className="w-full flex items-center gap-3 px-3 py-2 text-left cursor-pointer"
                   style={{ background: i === chon ? "rgba(108,92,231,0.16)" : "transparent" }}
                 >
-                  <span className="shrink-0 w-[68px] text-sm" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: i === chon ? "#FFFFFF" : TEXT }}>
+                  <span className="shrink-0 w-[68px] text-sm" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: TEXT }}>
                     {x.ma}
                   </span>
                   <span className="min-w-0 flex-1 truncate text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>

@@ -7,11 +7,11 @@ import { MENU, mucDangMo } from "@/lib/menu";
 
 const ICON = { "/": LayoutGrid, "/bo-loc": ListFilter, "/bieu-do": CandlestickChart, "/lenh-mo": Briefcase, "/danh-muc": Wallet, "/bat-day": TrendingDown, "/huong-dan": BookOpen };
 
-const BG = "#08080B";
-const VIEN = "#26262F";
+const BG = "var(--nen-sau)";
+const VIEN = "var(--vien)";
 const PRIMARY = "#6C5CE7";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 
 // MENU GON (7 muc - xem lib/menu.js): cac trang cung nhom (Thi truong: Tong quan / Dashboard / Tin tuc; So lenh: Dang mo / Da dong) gop 1 muc, trong trang co thanh tab
 // (components/ThanhTabNhom.js). Lien he o cuoi thanh ben + chan trang.
@@ -35,7 +35,7 @@ export default function Sidebar() {
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors hover:bg-white/[0.04]"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors hover:bg-[color:var(--hover-nhe)]"
                 style={{
                   background: active ? "rgba(108,92,231,0.16)" : undefined,
                   color: active ? PRIMARY : MUTED,
@@ -51,7 +51,7 @@ export default function Sidebar() {
         </nav>
 
         <div className="px-6 py-4 text-[11px] flex flex-col gap-2" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace", borderTop: `1px solid ${VIEN}` }}>
-          <Link href="/lien-he" className="inline-flex items-center gap-1.5 hover:text-white" style={{ color: pathname === "/lien-he" ? PRIMARY : MUTED }}>
+          <Link href="/lien-he" className="inline-flex items-center gap-1.5 hover:text-[color:var(--chu)]" style={{ color: pathname === "/lien-he" ? PRIMARY : MUTED }}>
             <Mail size={13} /> Liên hệ
           </Link>
           <span>

@@ -3,22 +3,22 @@ import Image from "next/image";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import CoHoiHomNay from "@/components/CoHoiHomNay";
 import { layLenhCoSuKienNgay, ngayGiaoDichVN } from "@/lib/lenhDaDong";
-import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat } from "@/components/dungChung";
+import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhe } from "@/components/dungChung";
 import NhanCapNhat from "@/components/NhanCapNhat";
 import { soVN } from "@/lib/soVN";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const NEN_INSET = "#1D1D26";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const NEN_INSET = "var(--vien-nhe)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
-const VANG = "#FBBF24";
-const DO = "#EF4444";
+const XANH = "var(--xanh)";
+const VANG = "var(--vang)";
+const DO = "var(--do)";
 
 // Do rong rieng cho 1 nhom von hoa (VN30/Midcap/Smallcap) - dung field
 // von_hoa da co san trong tin_hieu (gan tu AFL: InVN30/InVNMidCap/InVNSmallCap).
@@ -114,7 +114,7 @@ function TheKPI({ nhan, giaTri, phu, mau, href, may }) {
 
   if (href) {
     return (
-      <Link href={href} className={`${className} hover:border-[#3A3A46] transition-colors`} style={style}>
+      <Link href={href} className={`${className} hover:border-[color:var(--vien-dam)] transition-colors`} style={style}>
         {noiDung}
       </Link>
     );
@@ -226,7 +226,7 @@ export default async function TrangTongQuan() {
           aria-hidden="true"
           className="absolute inset-0 pointer-events-none"
           style={{
-            backgroundImage: "linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)",
+            backgroundImage: "linear-gradient(var(--phu) 1px, transparent 1px), linear-gradient(90deg, var(--phu) 1px, transparent 1px)",
             backgroundSize: "44px 44px",
             maskImage: "linear-gradient(to bottom, black 20%, transparent 100%)",
             WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 100%)",
@@ -238,7 +238,15 @@ export default async function TrangTongQuan() {
           aria-hidden="true"
           width={260}
           height={176}
-          className="hidden md:block absolute right-10 top-6 w-[330px] h-auto opacity-[0.09] pointer-events-none select-none"
+          className="chi-toi hidden md:block absolute right-10 top-6 w-[330px] h-auto opacity-[0.09] pointer-events-none select-none"
+        />
+        <Image
+          src="/logo-bieu-tuong.png"
+          alt=""
+          aria-hidden="true"
+          width={260}
+          height={176}
+          className="chi-sang hidden md:block absolute right-10 top-6 w-[330px] h-auto opacity-[0.09] pointer-events-none select-none"
         />
         <div className="relative max-w-6xl mx-auto px-6 pt-14 pb-10">
           <p
@@ -252,7 +260,7 @@ export default async function TrangTongQuan() {
             style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
           >
             Tổng quan thị trường,<br />
-            <span style={{ background: "linear-gradient(90deg, #B7A4FF, #6C5CE7)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>
+            <span style={{ background: "linear-gradient(90deg, var(--tim-chu), #6C5CE7)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>
               đọc trong 5 giây.
             </span>
           </h1>
@@ -300,12 +308,12 @@ export default async function TrangTongQuan() {
               </span>
               <span
                 className="text-xs font-bold px-2 py-0.5 rounded-sm"
-                style={{ color: nhanDinh.mau, background: `${nhanDinh.mau}22`, fontFamily: "'JetBrains Mono', monospace" }}
+                style={{ color: nhanDinh.mau, background: nhe(nhanDinh.mau, 13), fontFamily: "'JetBrains Mono', monospace" }}
               >
                 {nhanDinh.sacThai}
               </span>
             </div>
-            <p className="text-sm leading-relaxed relative" style={{ fontFamily: "'Inter', sans-serif", color: "#D8D8E0" }}>
+            <p className="text-sm leading-relaxed relative" style={{ fontFamily: "'Inter', sans-serif", color: "var(--chu-2)" }}>
               {nhanDinh.doanVan}
             </p>
             <p className="text-[11px] mt-3 relative" style={{ color: MUTED }}>
@@ -337,7 +345,7 @@ export default async function TrangTongQuan() {
               {/* Chi so khong "nam giu" duoc - hien xu huong thay cho nhan lenh MUA / NAM GIU / BAN. */}
               <span
                 className="px-2 py-0.5 text-xs font-bold tracking-wide rounded-sm"
-                style={{ color: phanLoaiTrend(chiSoVNIndex.trend).mau, background: `${phanLoaiTrend(chiSoVNIndex.trend).mau}22`, fontFamily: "'JetBrains Mono', monospace" }}
+                style={{ color: phanLoaiTrend(chiSoVNIndex.trend).mau, background: nhe(phanLoaiTrend(chiSoVNIndex.trend).mau, 13), fontFamily: "'JetBrains Mono', monospace" }}
               >
                 XU HƯỚNG {phanLoaiTrend(chiSoVNIndex.trend).nhan.toUpperCase()}
               </span>
@@ -413,8 +421,8 @@ export default async function TrangTongQuan() {
           <TheKPI nhan="Xu hướng tăng" giaTri={`${pctXanh.toFixed(0)}%`} phu={`${soXanh} mã`} mau={XANH} href="/bo-loc?xuhuong=xanh" />
           <TheKPI nhan="Tín hiệu MUA" giaTri={soMua} phu="hôm nay" mau={PRIMARY} href="/bo-loc?tin=MUA" />
           <TheKPI may="mat-than" nhan="Cảnh báo Mắt Thần" giaTri={soMatThan} phu="rủi ro đảo chiều" mau={soMatThan > 0 ? DO : MUTED} href="/bo-loc?matthan=1" />
-          <TheKPI nhan="Cơ hội chốt lời" giaTri={soChotLoi} phu="đã chạm TP" mau={soChotLoi > 0 ? "#FBBF24" : MUTED} href="/bo-loc?chotloi=1" />
-          <TheKPI nhan="Cảnh báo bán bớt" giaTri={soBanBot} phu="điểm dưới ngưỡng" mau={soBanBot > 0 ? "#F97316" : MUTED} href="/bo-loc?banbot=1" />
+          <TheKPI nhan="Cơ hội chốt lời" giaTri={soChotLoi} phu="đã chạm TP" mau={soChotLoi > 0 ? "var(--vang)" : MUTED} href="/bo-loc?chotloi=1" />
+          <TheKPI nhan="Cảnh báo bán bớt" giaTri={soBanBot} phu="điểm dưới ngưỡng" mau={soBanBot > 0 ? "var(--cam)" : MUTED} href="/bo-loc?banbot=1" />
         </div>
 
         {/* KET LUAN + BIEU DO TRON  ·  DO RONG THEO VON HOA */}
@@ -442,7 +450,7 @@ export default async function TrangTongQuan() {
             </p>
             {doRongVonHoa.map(([nhan, { tong: tongNhom, xanh, pctXanh: pctXanhNhom }]) => (
               <div key={nhan} className="mb-3 last:mb-0">
-                <div className="flex justify-between text-xs mb-1" style={{ color: "#A6A6B3" }}>
+                <div className="flex justify-between text-xs mb-1" style={{ color: "var(--mo-2)" }}>
                   <span>{nhan}</span>
                   <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>
                     {tongNhom === 0 ? "chưa có dữ liệu" : `${xanh}/${tongNhom} mã xanh (${soVN(pctXanhNhom, 1, true)}%)`}

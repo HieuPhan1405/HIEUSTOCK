@@ -8,10 +8,10 @@ export const metadata = {
 };
 export const revalidate = 600;
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
 
 function thoiGianTuongDoi(ngayISO) {
@@ -29,8 +29,8 @@ function TheTin({ tin }) {
       href={tin.link}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex gap-3 py-4 border-b hover:bg-white/[0.03] transition-colors -mx-2 px-2 rounded-lg"
-      style={{ borderColor: "#1D1D26" }}
+      className="flex gap-3 py-4 border-b hover:bg-[color:var(--hover-nhe)] transition-colors -mx-2 px-2 rounded-lg"
+      style={{ borderColor: "var(--vien-nhe)" }}
     >
       {tin.anh && (
         // eslint-disable-next-line @next/next/no-img-element
@@ -38,7 +38,7 @@ function TheTin({ tin }) {
           src={tin.anh}
           alt=""
           className="w-24 h-16 object-cover rounded-lg shrink-0"
-          style={{ background: "#1D1D26" }}
+          style={{ background: "var(--vien-nhe)" }}
         />
       )}
       <div className="min-w-0">
@@ -50,7 +50,7 @@ function TheTin({ tin }) {
             {tin.moTa}
           </p>
         )}
-        <p className="text-[11px]" style={{ color: "#6B6B78", fontFamily: "'JetBrains Mono', monospace" }}>
+        <p className="text-[11px]" style={{ color: "var(--mo-3)", fontFamily: "'JetBrains Mono', monospace" }}>
           {thoiGianTuongDoi(tin.ngayISO)} · CafeF
         </p>
       </div>
@@ -100,7 +100,7 @@ export default async function TrangThiTruong() {
       </p>
 
       {loi && (
-        <p className="text-sm mb-6" style={{ color: "#EF4444" }}>
+        <p className="text-sm mb-6" style={{ color: "var(--do)" }}>
           Lỗi tải tin tức: {loi}
         </p>
       )}

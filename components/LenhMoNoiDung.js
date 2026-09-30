@@ -7,13 +7,13 @@ import HieuSuatVsVnindex from "@/components/HieuSuatVsVnindex";
 import HieuQuaDauTu from "@/components/HieuQuaDauTu";
 import { pct, chamTPCaoNhat, pctChotLoi } from "@/components/dungChung";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const MUTED = "#8B8B99";
-const DO = "#EF4444";
-const XANH = "#22C55E";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const MUTED = "var(--mo)";
+const DO = "var(--do)";
+const XANH = "var(--xanh)";
 const PRIMARY = "#6C5CE7";
-const TIM = "#A78BFA";
+const TIM = "var(--tim-nhat)";
 
 function The({ so, mau, nhan, phu, mauPhu }) {
   return (
@@ -101,7 +101,7 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
             {dem != null && (
               <span
                 className="text-[11px] px-1.5 rounded-full"
-                style={tab === k ? { background: "rgba(255,255,255,0.2)" } : { background: mauDem ? "rgba(167,139,250,0.15)" : "#1D1D26", color: mauDem ?? MUTED }}
+                style={tab === k ? { background: "rgba(255,255,255,0.2)" } : { background: mauDem ? "rgba(167,139,250,0.15)" : "var(--vien-nhe)", color: mauDem ?? MUTED }}
               >
                 {dem}
               </span>
@@ -128,7 +128,7 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
         <The so={pct(tk.laiLoTB, 2)} mau={tk.laiLoTB >= 0 ? XANH : DO} nhan="Lãi/lỗ trung bình" />
         <The
           so={`${tk.tyLeChotLoi.toFixed(0)}%`}
-          mau="#FBBF24"
+          mau="var(--vang)"
           nhan={`Tỷ lệ chốt lời (${tk.soDaChotLoi} lệnh)`}
           phu={tk.soDaChotLoi > 0 ? `TB ${pct(tk.chotLoiTB, 2)}/lệnh` : undefined}
           mauPhu={tk.chotLoiTB >= 0 ? XANH : DO}
@@ -138,8 +138,8 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
       <BangLenhMo duLieu={lenhGop} loc={loc} datLoc={datLoc} />
       {soMa < lenhGop.length && (
         <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-          Mã có nhiều lệnh đang mở được đánh số <b style={{ color: "#F5F5F7" }}>(1), (2)...</b> theo ngày mua. Mỗi lệnh có giá mua, cắt lỗ, chốt lời và lãi/lỗ tính riêng; lệnh có nhãn{" "}
-          <b style={{ color: "#22D3EE" }}>Mua mới</b> là lệnh vào đợt sau (khi bạn bỏ qua lệnh đầu, có thể đợi đợt sau). Bấm vào mã để xem từng lệnh.
+          Mã có nhiều lệnh đang mở được đánh số <b style={{ color: "var(--chu)" }}>(1), (2)...</b> theo ngày mua. Mỗi lệnh có giá mua, cắt lỗ, chốt lời và lãi/lỗ tính riêng; lệnh có nhãn{" "}
+          <b style={{ color: "var(--cyan)" }}>Mua mới</b> là lệnh vào đợt sau (khi bạn bỏ qua lệnh đầu, có thể đợi đợt sau). Bấm vào mã để xem từng lệnh.
         </p>
       )}
 

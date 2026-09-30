@@ -1,34 +1,116 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ---------- CHE DO SANG / TOI ----------
+   Mau cua ca web dung bien CSS (--nen, --card, --chu, --xanh ...) thay vi ma mau cung: doi thuoc tinh data-theme tren <html> la ca web doi mau
+   (nut o thanh dau trang: components/NutGiaoDien.js; tu nho lua chon o localStorage "cs-giao-dien"; script chay truoc khi ve trang o app/layout.js de khong bi nhay mau).
+   Mac dinh la TOI (giu nguyen dien mao cu). Bang mau dung chung nhung tu sinh ra tu 1 file (nguon: scratchpad/chuyen-mau.cjs). */
+/* SINH TU scratchpad/chuyen-mau.cjs */
+:root,
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --nen: #0B0B10;
+  --nen-sau: #08080B;
+  --nen-phu: #0F0F16;
+  --card: #15151F;
+  --vien-nhe: #1D1D26;
+  --vien: #26262F;
+  --vien-dam: #3A3A47;
+  --nen-hover: #2A2A36;
+  --mo-3: #6B6B78;
+  --mo: #8B8B99;
+  --mo-2: #A6A6B3;
+  --chu-3: #C4C4CF;
+  --chu-2: #D8D8E0;
+  --chu: #F5F5F7;
+  --panel-tim: #1B1830;
+  --tim-chu: #C9BEFF;
+  --tim-nhat: #A78BFA;
+  --xanh: #22C55E;
+  --xanh-nhat: #4ADE80;
+  --xanh-dam: #16A34A;
+  --xanh-nen: #123423;
+  --do: #EF4444;
+  --do-nhat: #F87171;
+  --do-nen: #2C1420;
+  --do-vien: #4A2230;
+  --do-chu: #F1A9A9;
+  --do-chu-2: #C08A8A;
+  --vang: #FBBF24;
+  --vang-2: #F59E0B;
+  --vang-nen: #241C10;
+  --vang-vien: #4A3218;
+  --cyan: #22D3EE;
+  --cam: #F97316;
+  --chanh: #84CC16;
+  --hover-nhe: rgba(255,255,255,0.04);
+  --hover-dam: rgba(255,255,255,0.10);
+  --phu: rgba(255,255,255,0.05);
+  --thanh-cuon: #2E2E3A;
+}
+html[data-theme="light"] {
+  color-scheme: light;
+  --nen: #F3F4F8;
+  --nen-sau: #ECEDF3;
+  --nen-phu: #F7F8FB;
+  --card: #FFFFFF;
+  --vien-nhe: #ECEDF3;
+  --vien: #DDDFE8;
+  --vien-dam: #C5C8D6;
+  --nen-hover: #E6E8F0;
+  --mo-3: #8E8EA2;
+  --mo: #5A5A6E;
+  --mo-2: #6B6B80;
+  --chu-3: #3A3A4C;
+  --chu-2: #2B2B3A;
+  --chu: #12121C;
+  --panel-tim: #F3EFFF;
+  --tim-chu: #5B45C9;
+  --tim-nhat: #7C3AED;
+  --xanh: #16A34A;
+  --xanh-nhat: #1FAF55;
+  --xanh-dam: #15803D;
+  --xanh-nen: #E6F7EC;
+  --do: #DC2626;
+  --do-nhat: #E5484D;
+  --do-nen: #FDECEF;
+  --do-vien: #F3B9C5;
+  --do-chu: #B4243A;
+  --do-chu-2: #9A4A56;
+  --vang: #D97706;
+  --vang-2: #B45309;
+  --vang-nen: #FFF6E3;
+  --vang-vien: #F0D7A6;
+  --cyan: #0891B2;
+  --cam: #EA580C;
+  --chanh: #65A30D;
+  --hover-nhe: rgba(20,20,40,0.05);
+  --hover-dam: rgba(20,20,40,0.09);
+  --phu: rgba(20,20,40,0.04);
+  --thanh-cuon: #C5C8D6;
 }
 
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--nen);
+  color: var(--chu);
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Thanh cuon toi (giao dien toi) - tranh thanh cuon trang mac dinh chói tren nen den. */
 html {
-  color-scheme: dark;
-  scrollbar-color: #2E2E3A #0B0B10;
+  scrollbar-color: var(--thanh-cuon) var(--nen);
+}
+
+/* Logo: ban "-toi" (chu sang) cho nen toi, ban thuong (chu tim dam) cho nen sang. */
+html[data-theme="light"] .chi-toi {
+  display: none !important;
+}
+html:not([data-theme="light"]) .chi-sang {
+  display: none !important;
 }
 
 /* ---------- "MÂY" - nhan vat huong dan (components/MayHuongDan.js) ---------- */
@@ -101,7 +183,7 @@ body.may-mo [data-may] {
   cursor: help;
 }
 body.may-mo [data-may].may-dang-xem {
-  outline: 2px solid #a78bfa;
+  outline: 2px solid var(--tim-nhat);
   background-color: rgba(167, 139, 250, 0.12);
 }
 @keyframes may-nhun {
@@ -159,7 +241,7 @@ body.may-mo [data-may].may-dang-xem {
   top: 16px;
   width: 12px;
   height: 12px;
-  background: #1b1830;
+  background: var(--panel-tim);
   border-top: 1px solid rgba(167, 139, 250, 0.55);
   border-right: 1px solid rgba(167, 139, 250, 0.55);
   transform: rotate(45deg);

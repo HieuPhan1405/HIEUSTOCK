@@ -28,7 +28,7 @@ export default function NutNoi({ zalo, facebook }) {
           onClick={lenDau}
           aria-label="Lên đầu trang"
           className={`${kieu} cursor-pointer border`}
-          style={{ background: "rgba(21,21,31,0.92)", borderColor: "#26262F", color: "#F5F5F7" }}
+          style={{ background: "color-mix(in srgb, var(--card) 92%, transparent)", borderColor: "var(--vien)", color: "var(--chu)" }}
         >
           <ArrowUp size={18} aria-hidden="true" />
         </button>
@@ -61,7 +61,7 @@ export default function NutNoi({ zalo, facebook }) {
           aria-expanded={xoe}
           aria-label={xoe ? "Đóng liên hệ" : "Liên hệ qua Zalo / Facebook"}
           className={`${kieu} md:hidden cursor-pointer`}
-          style={{ background: xoe ? "#26262F" : "#0068FF", color: "#FFFFFF" }}
+          style={{ background: xoe ? "var(--vien)" : "#0068FF", color: xoe ? "var(--chu)" : "#FFFFFF" }}
         >
           {xoe ? <X size={18} aria-hidden="true" /> : <MessageCircle size={19} aria-hidden="true" />}
         </button>

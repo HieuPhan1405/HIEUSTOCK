@@ -5,15 +5,15 @@ import Link from "next/link";
 import { dangTrongPhienGiaoDich } from "@/lib/khungGioVaoLenh";
 import DinhGiaThiTruong from "@/components/DinhGiaThiTruong";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
-const DO = "#EF4444";
-const VANG = "#FBBF24";
-const XAM = "#8B8B99";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+const VANG = "var(--vang)";
+const XAM = "var(--mo)";
 const CHIEU_CAO = 300;
 const PHUT_MO = 9 * 60; // 09:00
 const PHUT_DONG = 15 * 60; // 15:00
@@ -300,7 +300,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
                 {hoverPhut != null && (
                   <div
                     className="absolute rounded-lg border px-2.5 py-1.5 text-xs"
-                    style={{ left: Math.min(LE_TRAI + x(hoverPhut) + 10, rong - 150), top: 6, width: 140, pointerEvents: "none", borderColor: VIEN, background: "#0B0B10", fontFamily: "'JetBrains Mono', monospace" }}
+                    style={{ left: Math.min(LE_TRAI + x(hoverPhut) + 10, rong - 150), top: 6, width: 140, pointerEvents: "none", borderColor: VIEN, background: "var(--nen)", fontFamily: "'JetBrains Mono', monospace" }}
                   >
                     <p style={{ color: MUTED }}>{gioPhut(hoverPhut)}</p>
                     <p style={{ color: PRIMARY, fontWeight: 700 }}>
@@ -338,7 +338,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
               </p>
               <ul className="text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
                 {(du.top ?? []).map((t, i) => (
-                  <li key={t.ma} className={`flex items-center justify-between py-1.5 ${i > 0 ? "border-t" : ""}`} style={{ borderColor: "#1D1D26" }}>
+                  <li key={t.ma} className={`flex items-center justify-between py-1.5 ${i > 0 ? "border-t" : ""}`} style={{ borderColor: "var(--vien-nhe)" }}>
                     <Link href={`/ma/${t.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
                       {t.ma}
                     </Link>

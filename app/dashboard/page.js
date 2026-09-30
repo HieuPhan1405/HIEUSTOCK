@@ -13,8 +13,8 @@ export const metadata = {
   description: "Bản đồ nhiệt theo ngành, thanh khoản, ảnh hưởng tới VN-Index, định giá PE/PB và các chỉ số tổng quan thị trường.",
 };
 
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 
 export default async function TrangDashboard() {
   let tatCa = [];
@@ -39,7 +39,7 @@ export default async function TrangDashboard() {
       </p>
 
       {loi && (
-        <p className="text-sm mb-6" style={{ color: "#EF4444" }}>
+        <p className="text-sm mb-6" style={{ color: "var(--do)" }}>
           Lỗi tải dữ liệu: {loi}
         </p>
       )}

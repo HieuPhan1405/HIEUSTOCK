@@ -34,13 +34,13 @@ export function nhanGiaiNgan(row) {
     case "MOT PHAN":
       return {
         nhan: "Giải ngân 1 phần",
-        mau: "#FBBF24",
+        mau: "var(--vang)",
         moTa: "Sức mạnh so với thị trường còn yếu nên chỉ giải ngân khoảng 1/3–1/2 tỷ trọng dự kiến. Chờ các phiên sau: khi sức mạnh so với VN-Index chuyển dương, lệnh đang có lãi và điểm vẫn trong vùng mua thì bổ sung nốt phần còn lại.",
       };
     case "BO SUNG":
-      return { nhan: "Bổ sung", mau: "#22D3EE", moTa: "Đủ điều kiện giải ngân nốt phần còn lại của lệnh đã mua thăm dò." };
+      return { nhan: "Bổ sung", mau: "var(--cyan)", moTa: "Đủ điều kiện giải ngân nốt phần còn lại của lệnh đã mua thăm dò." };
     case "GIU 1 PHAN":
-      return { nhan: "Giữ 1 phần", mau: "#8B8B99", moTa: "Đã hết thời hạn chờ bổ sung — giữ nguyên tỷ trọng nhỏ, không mua thêm." };
+      return { nhan: "Giữ 1 phần", mau: "var(--mo)", moTa: "Đã hết thời hạn chờ bổ sung — giữ nguyên tỷ trọng nhỏ, không mua thêm." };
     default:
       return null;
   }
@@ -87,7 +87,7 @@ export function nhanLoaiVao(row) {
   if (row?.loai_vao !== "MUA LAI") return null;
   return {
     nhan: "Mua lại",
-    mau: "#22D3EE",
+    mau: "var(--cyan)",
     moTa: "Lệnh mua lại: giá hồi về hỗ trợ trong xu hướng tăng, sau khi lệnh trước đã đóng không lỗ. Có mức cắt lỗ riêng dưới hỗ trợ.",
   };
 }
@@ -224,11 +224,11 @@ export function tinhVungLenh(row) {
 // lib/tinHieu.js chuan hoa tin thanh TRUNG LAP va gan ket_thuc_tp3), 4 = thoat theo Kijun sau TP2, 3 = bao ve lai, 2 = cat lo (Stop-loss), 1 = diem so tut duoi nguong (tin hieu BAN
 // thuong). Tra null neu khong phai ma vua ket thuc lenh hoac chua co du lieu (CSV cu).
 const LY_DO_BAN = {
-  5: { nhan: "Chạm TP3 · kết thúc lệnh", mau: "#B7A4FF", moTa: `Giá chạm TP3: chốt nốt phần cuối, đủ ${CHUOI_TY_LE_CHOT_KET_THUC} (TP1/TP2/TP3) — không còn nắm vị thế, trạng thái về TRUNG LẬP.` },
-  4: { nhan: "Thoát theo Kijun (sau TP2)", mau: "#F97316", moTa: "Đã chốt TP1, TP2 rồi giá đóng cửa xuống dưới Kijun trước khi tới TP3 nên bán nốt phần còn lại." },
-  3: { nhan: "Bảo vệ lãi", mau: "#A78BFA", moTa: "Giá quay về mức cắt lỗ đã dời lên (hòa vốn) sau khi chạm mốc chốt lời nên bán ngay." },
-  2: { nhan: "Cắt lỗ", mau: "#EF4444", moTa: "Giá chạm mức cắt lỗ của lệnh." },
-  1: { nhan: "Điểm số tụt dưới ngưỡng bán", mau: "#EF4444", moTa: "Tín hiệu BÁN theo điểm hợp lưu (3 phiên xác nhận)." },
+  5: { nhan: "Chạm TP3 · kết thúc lệnh", mau: "var(--tim-chu)", moTa: `Giá chạm TP3: chốt nốt phần cuối, đủ ${CHUOI_TY_LE_CHOT_KET_THUC} (TP1/TP2/TP3) — không còn nắm vị thế, trạng thái về TRUNG LẬP.` },
+  4: { nhan: "Thoát theo Kijun (sau TP2)", mau: "var(--cam)", moTa: "Đã chốt TP1, TP2 rồi giá đóng cửa xuống dưới Kijun trước khi tới TP3 nên bán nốt phần còn lại." },
+  3: { nhan: "Bảo vệ lãi", mau: "var(--tim-nhat)", moTa: "Giá quay về mức cắt lỗ đã dời lên (hòa vốn) sau khi chạm mốc chốt lời nên bán ngay." },
+  2: { nhan: "Cắt lỗ", mau: "var(--do)", moTa: "Giá chạm mức cắt lỗ của lệnh." },
+  1: { nhan: "Điểm số tụt dưới ngưỡng bán", mau: "var(--do)", moTa: "Tín hiệu BÁN theo điểm hợp lưu (3 phiên xác nhận)." },
 };
 export function nhanLyDoBan(row) {
   if (row?.ket_thuc_tp3) return LY_DO_BAN[5];
@@ -244,7 +244,7 @@ export function nhanChoHoi(row) {
   if (!v || v.mua.trangThai !== "tren") return null;
   return {
     nhan: "Đã vượt vùng mua — chờ hồi",
-    mau: "#FBBF24",
+    mau: "var(--vang)",
     moTa: `Giá ${fmt(row.gia)} đã cao hơn vùng mua ${chuoiVung(v.mua.tu, v.mua.den)}. Mua cao hơn mốc quá 1% thì trung bình lỗ (backtest 11 năm) — chờ giá hồi về vùng mua, không đuổi giá.`,
   };
 }
@@ -254,7 +254,7 @@ export function nhanLenhWeb(row) {
   if (!row?.lenh_web || row.lenh_web !== true) return null;
   return {
     nhan: "Web giữ lệnh",
-    mau: "#FBBF24",
+    mau: "var(--vang)",
     moTa: "Đã mua trong khung giờ nhưng tín hiệu mất trong phiên (hệ thống không xác nhận). Web tự giữ lệnh: chốt 30% ở TP1, 30% ở TP2, cắt lỗ khi chạm mức cắt lỗ, bán khi điểm ≤ −1,5 đủ 3 phiên.",
   };
 }
@@ -269,7 +269,7 @@ export function nhanMuaMoi(row) {
   if (row?.dang_giu_giua !== true && row?.dang_giu_moi !== true) return null;
   return {
     nhan: "Có lệnh mua mới",
-    mau: "#22D3EE",
+    mau: "var(--cyan)",
     moTa: "Có lệnh Mua mới (đợt sau, khi giá hồi về hỗ trợ rồi bật lên) đang mở, có giá mua, mức cắt lỗ và chốt lời riêng, tính riêng với lệnh đầu.",
   };
 }
@@ -279,7 +279,7 @@ export function nhanBaoVeLai(row) {
   if (!row?.bao_ve_lai_kich_hoat) return null;
   return {
     nhan: "Bảo vệ lãi",
-    mau: "#A78BFA",
+    mau: "var(--tim-nhat)",
     moTa: `Đã từng chạm mốc chốt lời nên mức cắt lỗ được dời lên ${fmt(row.stop_loss)} (cao hơn mức cắt lỗ ban đầu) — chạm là bán ngay, không chờ điểm âm.`,
   };
 }
@@ -359,4 +359,9 @@ export function capNhatMoiNhat(ds) {
 // Du lieu "cu" = chua co du lieu cua phien giao dich gan nhat DA DONG CUA (tinh theo ngay lam viec: cuoi tuan / sang thu 2 van la du lieu thu 6) - xem lib/phienGiaoDich.js.
 export function duLieuDaCu(luc) {
   return kiemTraDuLieuCu(luc).cu;
+}
+
+// Mau `mau` (bat ky: hex hoac var(--...)) o do dac phan tram% - thay cho cach cu "hex + 22" (khong dung duoc voi bien mau CSS cua che do sang/toi).
+export function nhe(mau, phanTram) {
+  return `color-mix(in srgb, ${mau} ${phanTram}%, transparent)`;
 }

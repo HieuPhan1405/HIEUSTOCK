@@ -9,14 +9,14 @@ import { CAC_COT } from "@/components/cotChung";
 import { fmt, pct, chamTPCaoNhat } from "@/components/dungChung";
 import { ngayChuoi, chonViThe } from "@/lib/muaThemTinhToan";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const MUTED = "#8B8B99";
-const XANH = "#22C55E";
-const DO = "#EF4444";
-const VANG = "#FBBF24";
-const NGOC = "#22D3EE";
-const TIM = "#A78BFA";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const MUTED = "var(--mo)";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+const VANG = "var(--vang)";
+const NGOC = "var(--cyan)";
+const TIM = "var(--tim-nhat)";
 const PRIMARY = "#6C5CE7";
 const CHU_THAN = "'Inter', sans-serif";
 const CHU_SO = "'JetBrains Mono', monospace";
@@ -69,7 +69,7 @@ function BangViThe({ m, hien }) {
   const totNhat = nhieu ? chonViThe(m.lenh, "tot")[0] : null;
   const viTheSau = nhieu ? chonViThe(m.lenh, "sau")[0] : null;
   return (
-    <div className="px-3 pb-3 pt-1" style={{ background: "#0F0F16" }}>
+    <div className="px-3 pb-3 pt-1" style={{ background: "var(--nen-phu)" }}>
       <div className="overflow-x-auto">
         <table className="w-full text-xs" style={{ fontFamily: CHU_SO }}>
           <thead>
@@ -86,7 +86,7 @@ function BangViThe({ m, hien }) {
             {hien.map((l, i) => {
               const truocKhiTheoDoi = m.ngayThamGia && (ngayChuoi(l.ngay_mua) ?? "") < m.ngayThamGia;
               return (
-                <tr key={l.khoa_lenh} className={i > 0 ? "border-t" : ""} style={{ borderColor: "#1D1D26" }}>
+                <tr key={l.khoa_lenh} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                   <td className="py-2 px-2">
                     <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5" style={{ fontFamily: CHU_THAN }}>
                       <span className="font-bold text-sm" data-may={nhieu ? "danh-so" : undefined}>
@@ -190,8 +190,8 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                 className="text-xs px-3 py-1.5 rounded-lg border"
                 style={
                   dangChon
-                    ? { borderColor: PRIMARY, background: "rgba(108,92,231,0.15)", color: "#F5F5F7", fontFamily: CHU_THAN, fontWeight: 700 }
-                    : { borderColor: VIEN, color: "#A6A6B3", fontFamily: CHU_THAN }
+                    ? { borderColor: PRIMARY, background: "rgba(108,92,231,0.15)", color: "var(--chu)", fontFamily: CHU_THAN, fontWeight: 700 }
+                    : { borderColor: VIEN, color: "var(--mo-2)", fontFamily: CHU_THAN }
                 }
               >
                 {b.nhan}
@@ -223,7 +223,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
             type="button"
             onClick={() => setMoRong(moHet ? new Set() : new Set(maCoViThe))}
             className="text-xs px-3 py-1.5 rounded-lg border"
-            style={{ borderColor: VIEN, color: "#A6A6B3", fontFamily: CHU_THAN }}
+            style={{ borderColor: VIEN, color: "var(--mo-2)", fontFamily: CHU_THAN }}
           >
             {moHet ? "Thu gọn tất cả vị thế" : "Mở tất cả vị thế"}
           </button>
@@ -254,7 +254,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                 const biLoc = hien.length < m.lenh.length;
                 return (
                   <Fragment key={m.ma}>
-                    <tr className={i > 0 ? "border-t" : ""} style={{ borderColor: "#1D1D26" }}>
+                    <tr className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                       <td className="py-2.5 pl-3 pr-0 align-top">
                         {coViThe && (
                           <button
@@ -263,9 +263,9 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                             aria-expanded={mo}
                             aria-label={`${mo ? "Thu gọn" : "Xổ ra"} các vị thế của ${m.ma}`}
                             data-may="xo-vi-the"
-                            className="p-1 rounded hover:bg-white/10"
+                            className="p-1 rounded hover:bg-[color:var(--hover-dam)]"
                           >
-                            <ChevronRight size={16} color="#A6A6B3" style={{ transform: mo ? "rotate(90deg)" : "none", transition: "transform .15s" }} />
+                            <ChevronRight size={16} color="var(--mo-2)" style={{ transform: mo ? "rotate(90deg)" : "none", transition: "transform .15s" }} />
                           </button>
                         )}
                       </td>
@@ -343,7 +343,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                       </td>
                     </tr>
                     {mo && (
-                      <tr style={{ background: "#0F0F16" }}>
+                      <tr style={{ background: "var(--nen-phu)" }}>
                         <td colSpan={8} className="p-0">
                           <BangViThe m={m} hien={hien} />
                         </td>

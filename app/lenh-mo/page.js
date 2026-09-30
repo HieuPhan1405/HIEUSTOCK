@@ -16,9 +16,9 @@ export const metadata = {
   description: "Danh mục các mã đang MUA / NẮM GIỮ: vùng mua, cắt lỗ, chốt lời và lãi/lỗ hiện tại.",
 };
 
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
-const DO = "#EF4444";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
+const DO = "var(--do)";
 
 export default async function TrangLenhMo({ searchParams }) {
   const sp = (await searchParams) ?? {};

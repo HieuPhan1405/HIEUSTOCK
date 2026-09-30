@@ -1,8 +1,8 @@
 import { Clock3, TriangleAlert } from "lucide-react";
 import { kiemTraDuLieuCu } from "@/lib/phienGiaoDich";
 
-const MUTED = "#8B8B99";
-const VANG = "#FBBF24";
+const MUTED = "var(--mo)";
+const VANG = "var(--vang)";
 
 // Nhan "Du lieu cap nhat luc ..." - du lieu do chu web day len sau moi phien (khong real-time) nen
 // phai noi ro cho nguoi xem. Chua co du lieu cua phien gan nhat da dong cua (tinh theo ngay lam viec - cuoi tuan khong canh bao nham) thi canh bao.

@@ -17,12 +17,12 @@ export const metadata = {
   description: "CloudStock — hệ thống hỗ trợ đầu tư chứng khoán: điểm hợp lưu, tín hiệu MUA/BÁN, dashboard thị trường, checklist bắt đáy, kiểm chứng backtest 12 năm trên VN100.",
 };
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
+const XANH = "var(--xanh)";
 
 const TINH_NANG = [
   {

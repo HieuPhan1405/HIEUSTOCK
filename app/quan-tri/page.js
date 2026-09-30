@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useCallback } from "react";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
 
 const NHAN_LOAI = {
-  dong_luc: { nhan: "Động lực", mau: "#22C55E" },
-  theo_doi: { nhan: "Theo dõi", mau: "#FBBF24" },
-  rui_ro: { nhan: "Rủi ro", mau: "#EF4444" },
+  dong_luc: { nhan: "Động lực", mau: "var(--xanh)" },
+  theo_doi: { nhan: "Theo dõi", mau: "var(--vang)" },
+  rui_ro: { nhan: "Rủi ro", mau: "var(--do)" },
 };
 
 function locApiKey() {
@@ -331,16 +331,16 @@ export default function TrangQuanTri() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-10" style={{ color: "#F5F5F7" }}>
+    <div className="max-w-3xl mx-auto px-6 py-10" style={{ color: "var(--chu)" }}>
       <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
         Quản trị nội dung
       </h1>
-      <p className="text-sm mb-6" style={{ color: "#8B8B99" }}>
+      <p className="text-sm mb-6" style={{ color: "var(--mo)" }}>
         Nhập tay Định giá tham khảo và Câu chuyện kỳ vọng cho từng mã — AmiBroker không có nguồn dữ liệu này.
       </p>
 
       <div className="rounded-lg border p-4 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <label className="text-xs uppercase tracking-wide block mb-1" style={{ color: "#8B8B99" }}>
+        <label className="text-xs uppercase tracking-wide block mb-1" style={{ color: "var(--mo)" }}>
           Mật khẩu (API key)
         </label>
         <input
@@ -352,14 +352,14 @@ export default function TrangQuanTri() {
           }}
           placeholder="Trùng với UPLOAD_API_KEY trên Vercel"
           className="w-full px-3 py-2 text-sm outline-none"
-          style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+          style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
         />
       </div>
 
       {/* THONG TIN GIOI THIEU / KENH LIEN HE - hien cong khai o trang /lien-he */}
       {apiKey && (
         <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
+          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
             Thông tin liên hệ (hiện công khai ở /lien-he)
           </p>
           <form onSubmit={luuThongTinLienHe} className="grid sm:grid-cols-2 gap-2">
@@ -368,49 +368,49 @@ export default function TrangQuanTri() {
               onChange={(e) => setSdt(e.target.value)}
               placeholder="Số điện thoại"
               className="px-2 py-1.5 text-sm outline-none"
-              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+              style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
             />
             <input
               value={zalo}
               onChange={(e) => setZalo(e.target.value)}
               placeholder="Link nhóm Zalo"
               className="px-2 py-1.5 text-sm outline-none"
-              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+              style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
             />
             <input
               value={tiktok}
               onChange={(e) => setTiktok(e.target.value)}
               placeholder="Link TikTok"
               className="px-2 py-1.5 text-sm outline-none"
-              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+              style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
             />
             <input
               value={facebook}
               onChange={(e) => setFacebook(e.target.value)}
               placeholder="Link Facebook"
               className="px-2 py-1.5 text-sm outline-none"
-              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+              style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
             />
             <input
               value={nganHang}
               onChange={(e) => setNganHang(e.target.value)}
               placeholder="Tên ngân hàng (VD: Vietcombank)"
               className="px-2 py-1.5 text-sm outline-none"
-              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+              style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
             />
             <input
               value={soTk}
               onChange={(e) => setSoTk(e.target.value)}
               placeholder="Số tài khoản"
               className="px-2 py-1.5 text-sm outline-none"
-              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+              style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
             />
             <input
               value={chuTk}
               onChange={(e) => setChuTk(e.target.value)}
               placeholder="Tên chủ tài khoản"
               className="px-2 py-1.5 text-sm outline-none sm:col-span-2"
-              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+              style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
             />
             <button
               type="submit"
@@ -422,7 +422,7 @@ export default function TrangQuanTri() {
             </button>
           </form>
           {thongBaoTT && (
-            <p className="text-xs mt-2" style={{ color: thongBaoTT.startsWith("Lỗi") ? "#EF4444" : "#22C55E" }}>
+            <p className="text-xs mt-2" style={{ color: thongBaoTT.startsWith("Lỗi") ? "var(--do)" : "var(--xanh)" }}>
               {thongBaoTT}
             </p>
           )}
@@ -433,7 +433,7 @@ export default function TrangQuanTri() {
       {apiKey && (
         <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wide" style={{ color: "#8B8B99" }}>
+            <p className="text-xs uppercase tracking-wide" style={{ color: "var(--mo)" }}>
               Tin nhắn liên hệ ({dsLienHe.length})
             </p>
             <button onClick={() => taiLienHe(apiKey)} className="text-xs" style={{ color: "#6C5CE7" }}>
@@ -441,31 +441,31 @@ export default function TrangQuanTri() {
             </button>
           </div>
           {dsLienHe.length === 0 && !dangTaiLienHe && (
-            <p className="text-xs py-2" style={{ color: "#8B8B99" }}>
+            <p className="text-xs py-2" style={{ color: "var(--mo)" }}>
               Chưa có tin nhắn nào.
             </p>
           )}
           {dsLienHe.map((tn) => (
-            <div key={tn.id} className="py-3 border-b text-sm" style={{ borderColor: "#1D1D26", opacity: tn.da_doc ? 0.55 : 1 }}>
+            <div key={tn.id} className="py-3 border-b text-sm" style={{ borderColor: "var(--vien-nhe)", opacity: tn.da_doc ? 0.55 : 1 }}>
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <span style={{ fontWeight: 700 }}>{tn.ho_ten}</span>{" "}
-                  <span style={{ color: "#8B8B99" }}>
+                  <span style={{ color: "var(--mo)" }}>
                     ({tn.lien_lac}) — {new Date(tn.tao_luc).toLocaleString("vi-VN")}
                   </span>
                 </div>
                 <div className="flex gap-2 shrink-0">
                   {!tn.da_doc && (
-                    <button onClick={() => danhDauDaDoc(tn.id)} className="text-xs" style={{ color: "#22C55E" }}>
+                    <button onClick={() => danhDauDaDoc(tn.id)} className="text-xs" style={{ color: "var(--xanh)" }}>
                       Đánh dấu đã đọc
                     </button>
                   )}
-                  <button onClick={() => xoaLienHe(tn.id)} className="text-xs" style={{ color: "#EF4444" }}>
+                  <button onClick={() => xoaLienHe(tn.id)} className="text-xs" style={{ color: "var(--do)" }}>
                     Xoá
                   </button>
                 </div>
               </div>
-              <p className="mt-1" style={{ color: "#D8D8E0" }}>
+              <p className="mt-1" style={{ color: "var(--chu-2)" }}>
                 {tn.noi_dung}
               </p>
             </div>
@@ -477,10 +477,10 @@ export default function TrangQuanTri() {
       {apiKey && (
         <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wide" style={{ color: "#8B8B99" }}>
+            <p className="text-xs uppercase tracking-wide" style={{ color: "var(--mo)" }}>
               Số điện thoại đã đăng ký ({dsNguoiDung.length})
               {dsNguoiDung.some((nd) => !nd.da_duyet) && (
-                <span style={{ color: "#FBBF24" }}> · {dsNguoiDung.filter((nd) => !nd.da_duyet).length} chờ duyệt</span>
+                <span style={{ color: "var(--vang)" }}> · {dsNguoiDung.filter((nd) => !nd.da_duyet).length} chờ duyệt</span>
               )}
             </p>
             <button onClick={() => taiNguoiDung(apiKey)} className="text-xs" style={{ color: "#6C5CE7" }}>
@@ -488,20 +488,20 @@ export default function TrangQuanTri() {
             </button>
           </div>
           {dsNguoiDung.length === 0 && !dangTaiNguoiDung && (
-            <p className="text-xs py-2" style={{ color: "#8B8B99" }}>
+            <p className="text-xs py-2" style={{ color: "var(--mo)" }}>
               Chưa có ai đăng ký.
             </p>
           )}
           {dsNguoiDung.map((nd) => (
-            <div key={nd.id} className="flex items-center justify-between py-2 border-b text-sm gap-2" style={{ borderColor: "#1D1D26" }}>
+            <div key={nd.id} className="flex items-center justify-between py-2 border-b text-sm gap-2" style={{ borderColor: "var(--vien-nhe)" }}>
               <span>
                 <strong style={{ fontFamily: "'JetBrains Mono', monospace" }}>{nd.sdt}</strong>
-                {nd.ten && <span style={{ color: "#8B8B99" }}> — {nd.ten}</span>}
-                {nd.email && <span style={{ color: "#8B8B99", fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}> · {nd.email}</span>}
+                {nd.ten && <span style={{ color: "var(--mo)" }}> — {nd.ten}</span>}
+                {nd.email && <span style={{ color: "var(--mo)", fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}> · {nd.email}</span>}
                 {nd.la_admin && (
                   <span
                     className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded"
-                    style={{ background: "#22C55E", color: "#0B0B10" }}
+                    style={{ background: "var(--xanh)", color: "var(--nen)" }}
                   >
                     ADMIN
                   </span>
@@ -509,20 +509,20 @@ export default function TrangQuanTri() {
                 {!nd.da_duyet && (
                   <span
                     className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded"
-                    style={{ background: "#FBBF24", color: "#0B0B10" }}
+                    style={{ background: "var(--vang)", color: "var(--nen)" }}
                   >
                     CHỜ DUYỆT
                   </span>
                 )}
               </span>
               <div className="flex items-center gap-3 shrink-0">
-                <span className="text-xs" style={{ color: "#8B8B99" }}>
+                <span className="text-xs" style={{ color: "var(--mo)" }}>
                   {new Date(nd.tao_luc).toLocaleString("vi-VN")}
                 </span>
-                <button onClick={() => datDuyet(nd.id, !nd.da_duyet)} className="text-xs font-semibold" style={{ color: nd.da_duyet ? "#EF4444" : "#22C55E" }}>
+                <button onClick={() => datDuyet(nd.id, !nd.da_duyet)} className="text-xs font-semibold" style={{ color: nd.da_duyet ? "var(--do)" : "var(--xanh)" }}>
                   {nd.da_duyet ? "Bỏ duyệt" : "Duyệt"}
                 </button>
-                <button onClick={() => datAdmin(nd.id, !nd.la_admin)} className="text-xs" style={{ color: nd.la_admin ? "#EF4444" : "#6C5CE7" }}>
+                <button onClick={() => datAdmin(nd.id, !nd.la_admin)} className="text-xs" style={{ color: nd.la_admin ? "var(--do)" : "#6C5CE7" }}>
                   {nd.la_admin ? "Bỏ Admin" : "Đặt Admin"}
                 </button>
               </div>
@@ -534,19 +534,19 @@ export default function TrangQuanTri() {
       {/* BAO TIN HIEU MUA QUA ZALO OA */}
       {apiKey && (
         <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
+          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
             Báo tín hiệu MUA qua Zalo
           </p>
 
           {zaloTrangThai && (
             <div className="flex flex-wrap gap-3 mb-3 text-xs">
-              <span style={{ color: zaloTrangThai.daCoAppId ? "#22C55E" : "#8B8B99" }}>
+              <span style={{ color: zaloTrangThai.daCoAppId ? "var(--xanh)" : "var(--mo)" }}>
                 {zaloTrangThai.daCoAppId ? "✓" : "○"} Đã nhập App ID
               </span>
-              <span style={{ color: zaloTrangThai.daKetNoi ? "#22C55E" : "#8B8B99" }}>
+              <span style={{ color: zaloTrangThai.daKetNoi ? "var(--xanh)" : "var(--mo)" }}>
                 {zaloTrangThai.daKetNoi ? "✓" : "○"} Đã cấp quyền OAuth
               </span>
-              <span style={{ color: zaloTrangThai.daCoNguoiNhan ? "#22C55E" : "#8B8B99" }}>
+              <span style={{ color: zaloTrangThai.daCoNguoiNhan ? "var(--xanh)" : "var(--mo)" }}>
                 {zaloTrangThai.daCoNguoiNhan ? "✓" : "○"} Đã xác định người nhận
               </span>
             </div>
@@ -558,7 +558,7 @@ export default function TrangQuanTri() {
               onChange={(e) => setZaloAppId(e.target.value)}
               placeholder="App ID (từ developers.zalo.me)"
               className="px-2 py-1.5 text-sm outline-none"
-              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+              style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
             />
             <input
               value={zaloSecretKey}
@@ -566,7 +566,7 @@ export default function TrangQuanTri() {
               placeholder="Secret Key"
               type="password"
               className="px-2 py-1.5 text-sm outline-none"
-              style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+              style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
             />
             <button
               type="submit"
@@ -580,7 +580,7 @@ export default function TrangQuanTri() {
               type="button"
               onClick={() => taiTrangThaiZalo(apiKey)}
               className="px-3 py-1.5 text-sm font-medium"
-              style={{ border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+              style={{ border: `1px solid ${VIEN}`, color: "var(--chu)" }}
             >
               Tải lại trạng thái
             </button>
@@ -591,18 +591,18 @@ export default function TrangQuanTri() {
             onClick={guiThuZalo}
             disabled={dangXuLyZalo}
             className="px-3 py-1.5 text-sm font-medium"
-            style={{ border: `1px solid #22C55E`, color: "#22C55E", opacity: dangXuLyZalo ? 0.6 : 1 }}
+            style={{ border: `1px solid var(--xanh)`, color: "var(--xanh)", opacity: dangXuLyZalo ? 0.6 : 1 }}
           >
             Gửi tin nhắn test
           </button>
 
           {zaloThongBao && (
-            <p className="text-xs mt-3" style={{ color: zaloThongBao.startsWith("Lỗi") ? "#EF4444" : "#22C55E" }}>
+            <p className="text-xs mt-3" style={{ color: zaloThongBao.startsWith("Lỗi") ? "var(--do)" : "var(--xanh)" }}>
               {zaloThongBao}
             </p>
           )}
 
-          <p className="text-[11px] mt-3" style={{ color: "#8B8B99" }}>
+          <p className="text-[11px] mt-3" style={{ color: "var(--mo)" }}>
             Hướng dẫn: (1) Tạo Official Account miễn phí tại oa.zalo.me. (2) Tạo App tại developers.zalo.me, lấy App ID +
             Secret Key, dán vào đây. (3) Bấm &quot;Lưu & Kết nối Zalo&quot; — 1 tab mới mở ra để cấp quyền, bấm &quot;Cho phép&quot;. (4) Mở
             app Zalo, tìm đúng OA vừa tạo, tự nhắn 1 tin bất kỳ (vd &quot;hi&quot;) cho nó. (5) Quay lại đây bấm &quot;Tải lại trạng
@@ -617,7 +617,7 @@ export default function TrangQuanTri() {
           onChange={(e) => setMa(e.target.value)}
           placeholder="Nhập mã cổ phiếu (ví dụ: FPT)"
           className="px-3 py-2 text-sm flex-1 outline-none"
-          style={{ background: "#15151F", border: `1px solid ${VIEN}`, color: "#F5F5F7", fontFamily: "'JetBrains Mono', monospace" }}
+          style={{ background: "var(--card)", border: `1px solid ${VIEN}`, color: "var(--chu)", fontFamily: "'JetBrains Mono', monospace" }}
         />
         <button
           type="submit"
@@ -629,7 +629,7 @@ export default function TrangQuanTri() {
       </form>
 
       {thongBao && (
-        <p className="text-sm mb-4" style={{ color: "#EF4444" }}>
+        <p className="text-sm mb-4" style={{ color: "var(--do)" }}>
           {thongBao}
         </p>
       )}
@@ -638,23 +638,23 @@ export default function TrangQuanTri() {
         <>
           {/* DINH GIA */}
           <div className="rounded-lg border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-            <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
+            <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
               Khuyến nghị CTCK — {ma.trim().toUpperCase()}
             </p>
 
             {dinhGia.map((d) => (
-              <div key={d.id} className="flex items-center justify-between py-2 border-b text-sm" style={{ borderColor: "#1D1D26" }}>
+              <div key={d.id} className="flex items-center justify-between py-2 border-b text-sm" style={{ borderColor: "var(--vien-nhe)" }}>
                 <span>
                   {d.cong_ty_ck} — {d.ngay_dinh_gia ? new Date(d.ngay_dinh_gia).toLocaleDateString("vi-VN") : "—"}
                   {d.khuyen_nghi ? ` — ${d.khuyen_nghi}` : ""} — <strong>{d.gia_muc_tieu}</strong>
                 </span>
-                <button onClick={() => xoaDinhGia(d.id)} className="text-xs" style={{ color: "#EF4444" }}>
+                <button onClick={() => xoaDinhGia(d.id)} className="text-xs" style={{ color: "var(--do)" }}>
                   Xoá
                 </button>
               </div>
             ))}
             {dinhGia.length === 0 && !dangTai && (
-              <p className="text-xs py-2" style={{ color: "#8B8B99" }}>
+              <p className="text-xs py-2" style={{ color: "var(--mo)" }}>
                 Chưa có khuyến nghị nào cho mã này. Chỉ hiện báo cáo mới nhất của mỗi CTCK (nhập báo cáo mới cho cùng 1 CTCK sẽ thay báo cáo cũ trên trang chi tiết mã).
               </p>
             )}
@@ -665,21 +665,21 @@ export default function TrangQuanTri() {
                 onChange={(e) => setCongTyCK(e.target.value)}
                 placeholder="Công ty CK (VD: VCI)"
                 className="px-2 py-1.5 text-sm outline-none"
-                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+                style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
               />
               <input
                 type="date"
                 value={ngayDinhGia}
                 onChange={(e) => setNgayDinhGia(e.target.value)}
                 className="px-2 py-1.5 text-sm outline-none"
-                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+                style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
               />
               <input
                 value={khuyenNghi}
                 onChange={(e) => setKhuyenNghi(e.target.value)}
                 placeholder="Khuyến nghị (VD: Mua, Bán)"
                 className="px-2 py-1.5 text-sm outline-none"
-                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+                style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
               />
               <input
                 type="number"
@@ -688,7 +688,7 @@ export default function TrangQuanTri() {
                 onChange={(e) => setGiaMucTieu(e.target.value)}
                 placeholder="Giá mục tiêu"
                 className="px-2 py-1.5 text-sm outline-none"
-                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+                style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
               />
               <button type="submit" className="px-3 py-1.5 text-sm font-medium" style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}>
                 Thêm
@@ -698,26 +698,26 @@ export default function TrangQuanTri() {
 
           {/* CAU CHUYEN */}
           <div className="rounded-lg border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
-            <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "#8B8B99" }}>
+            <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
               Câu chuyện kỳ vọng — {ma.trim().toUpperCase()}
             </p>
 
             {cauChuyen.map((c) => (
-              <div key={c.id} className="flex items-start justify-between py-2 border-b text-sm gap-2" style={{ borderColor: "#1D1D26" }}>
+              <div key={c.id} className="flex items-start justify-between py-2 border-b text-sm gap-2" style={{ borderColor: "var(--vien-nhe)" }}>
                 <span>
-                  <span style={{ color: NHAN_LOAI[c.loai]?.mau || "#A6A6B3", fontWeight: 700 }}>
+                  <span style={{ color: NHAN_LOAI[c.loai]?.mau || "var(--mo-2)", fontWeight: 700 }}>
                     [{NHAN_LOAI[c.loai]?.nhan || c.loai}]
                   </span>{" "}
                   {c.noi_dung}{" "}
-                  {c.ngay && <span style={{ color: "#8B8B99" }}>({new Date(c.ngay).toLocaleDateString("vi-VN")})</span>}
+                  {c.ngay && <span style={{ color: "var(--mo)" }}>({new Date(c.ngay).toLocaleDateString("vi-VN")})</span>}
                 </span>
-                <button onClick={() => xoaCauChuyen(c.id)} className="text-xs shrink-0" style={{ color: "#EF4444" }}>
+                <button onClick={() => xoaCauChuyen(c.id)} className="text-xs shrink-0" style={{ color: "var(--do)" }}>
                   Xoá
                 </button>
               </div>
             ))}
             {cauChuyen.length === 0 && !dangTai && (
-              <p className="text-xs py-2" style={{ color: "#8B8B99" }}>
+              <p className="text-xs py-2" style={{ color: "var(--mo)" }}>
                 Chưa có câu chuyện nào cho mã này.
               </p>
             )}
@@ -727,7 +727,7 @@ export default function TrangQuanTri() {
                 value={loaiCauChuyen}
                 onChange={(e) => setLoaiCauChuyen(e.target.value)}
                 className="px-2 py-1.5 text-sm outline-none"
-                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+                style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
               >
                 <option value="dong_luc">Động lực</option>
                 <option value="theo_doi">Theo dõi</option>
@@ -738,14 +738,14 @@ export default function TrangQuanTri() {
                 onChange={(e) => setNoiDungCauChuyen(e.target.value)}
                 placeholder="Nội dung"
                 className="px-2 py-1.5 text-sm outline-none sm:col-span-2"
-                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+                style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
               />
               <input
                 type="date"
                 value={ngayCauChuyen}
                 onChange={(e) => setNgayCauChuyen(e.target.value)}
                 className="px-2 py-1.5 text-sm outline-none"
-                style={{ background: "#0B0B10", border: `1px solid ${VIEN}`, color: "#F5F5F7" }}
+                style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
               />
               <button
                 type="submit"

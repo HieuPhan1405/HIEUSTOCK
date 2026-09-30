@@ -4,12 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { dangTrongPhienGiaoDich } from "@/lib/khungGioVaoLenh";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
-const XANH = "#22C55E";
-const DO = "#EF4444";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
 
 const so = (v, dp = 2) => (v == null || !Number.isFinite(v) ? "—" : v.toLocaleString("vi-VN", { minimumFractionDigits: dp, maximumFractionDigits: dp }));
 const dau = (v, dp = 2) => (v == null || !Number.isFinite(v) ? "—" : `${v > 0 ? "+" : ""}${so(v, dp)}`);
@@ -36,7 +36,7 @@ function Dong({ ma, diem, pct, toiDa }) {
           </>
         )}
       </div>
-      <div className="w-px self-stretch" style={{ background: "#3A3A47" }} />
+      <div className="w-px self-stretch" style={{ background: "var(--vien-dam)" }} />
       <div className="flex-1 flex items-center gap-2 min-w-0">
         {tang ? (
           <>
@@ -125,7 +125,7 @@ export default function AnhHuongIndex() {
             {du.tang.map((d) => (
               <Dong key={d.ma} ma={d.ma} diem={d.diem} pct={d.pct} toiDa={toiDa} />
             ))}
-            <div className="my-1 border-t" style={{ borderColor: "#1D1D26" }} />
+            <div className="my-1 border-t" style={{ borderColor: "var(--vien-nhe)" }} />
             {giamTuItDenNhieu.map((d) => (
               <Dong key={d.ma} ma={d.ma} diem={d.diem} pct={d.pct} toiDa={toiDa} />
             ))}

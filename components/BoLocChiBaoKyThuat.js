@@ -5,14 +5,14 @@ import { Plus, X, SlidersHorizontal, ChevronDown } from "lucide-react";
 import { DS_CHI_BAO_LOC, CHI_BAO_LOC, NHOM_CHI_BAO_LOC, GOI_Y_NHANH, KHOANG, taoBoLocChiBao, khopChiBao, locTheoChiBao } from "@/lib/boLocChiBao";
 import { kiemTraDuLieuCu } from "@/lib/phienGiaoDich";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const NEN_O = "#0F0F17";
-const MUTED = "#8B8B99";
-const TEXT = "#F5F5F7";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const NEN_O = "var(--nen-phu)";
+const MUTED = "var(--mo)";
+const TEXT = "var(--chu)";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
-const VANG = "#FBBF24";
+const XANH = "var(--xanh)";
+const VANG = "var(--vang)";
 
 const kieuO = { background: NEN_O, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" };
 
@@ -46,7 +46,7 @@ export default function BoLocChiBaoKyThuat({ dsLoc, datDsLoc, duLieu, luc }) {
           <SlidersHorizontal size={15} color={PRIMARY} aria-hidden="true" />
           Bộ lọc chỉ báo kỹ thuật
           {dsLoc.length > 0 && (
-            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(108,92,231,0.18)", color: "#A79BFF" }}>
+            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(108,92,231,0.18)", color: "var(--tim-chu)" }}>
               {dsLoc.length} bộ lọc · {soKhopTatCa} mã
             </span>
           )}

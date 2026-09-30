@@ -25,10 +25,10 @@ import {
   NGUONG_DIEM_MUA,
 } from "@/components/dungChung";
 
-const MUTED = "#8B8B99";
-const XANH = "#22C55E";
-const DO = "#EF4444";
-const VANG = "#FBBF24";
+const MUTED = "var(--mo)";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+const VANG = "var(--vang)";
 
 export const NHOM_COT = ["Cơ bản", "Điểm & chỉ báo", "Chỉ báo kỹ thuật", "Thanh khoản & vốn hoá", "Vị thế đang giữ", "Giá mục tiêu & hỗ trợ"];
 
@@ -51,7 +51,7 @@ export function tinhChotLoi(row) {
   return { nhan: "Chưa chạm", mau: MUTED, hang: 0 };
 }
 
-const mauCap = (v) => (v >= 70 ? XANH : v >= 40 ? VANG : "#A6A6B3");
+const mauCap = (v) => (v >= 70 ? XANH : v >= 40 ? VANG : "var(--mo-2)");
 
 // Cot chi co nghia voi lenh dang giu: ma khac -> "—" va sap xep xuong cuoi.
 const chiKhiGiu = (khoa) => (r) => (laDangGiu(r) ? r[khoa] : null);

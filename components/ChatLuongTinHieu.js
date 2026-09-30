@@ -2,14 +2,14 @@ import { fmt, pct } from "@/components/dungChung";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import { thongKeXuatHien, chenhLech } from "@/lib/xuatHienTinHieu";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
-const XANH = "#22C55E";
-const DO = "#EF4444";
-const VANG = "#FBBF24";
-const NGOC = "#22D3EE";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+const VANG = "var(--vang)";
+const NGOC = "var(--cyan)";
 const CHU_SO = "'JetBrains Mono', monospace";
 
 const TEN_LOAI = { goc: "Mua", giua: "Mua mới", moi: "Mua mới (sau TP3)" };
@@ -20,7 +20,7 @@ const mauChenh = (v) => (v == null ? MUTED : v > 1 ? DO : v > 0.3 ? VANG : XANH)
 
 function O({ nhan, giaTri, phu, mau }) {
   return (
-    <div className="rounded-xl border p-3" style={{ borderColor: VIEN, background: "#0B0B10" }}>
+    <div className="rounded-xl border p-3" style={{ borderColor: VIEN, background: "var(--nen)" }}>
       <p className="text-[11px]" style={{ color: MUTED }}>
         {nhan}
       </p>
@@ -112,7 +112,7 @@ export default function ChatLuongTinHieu({ rows = [], ngayHomNay, loi }) {
                   const c2 = chenhLech(r.gia_cuoi_ngay, r.gia_moc);
                   const [tt, mauTT] = trangThai(r, ngayHomNay);
                   return (
-                    <tr key={`${r.ma}|${r.loai}|${r.ngay_mua}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "#1D1D26" }}>
+                    <tr key={`${r.ma}|${r.loai}|${r.ngay_mua}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                       <td className="py-2 px-3" style={{ fontFamily: "'Inter', sans-serif" }}>
                         <b>{r.ma}</b>
                         <span className="ml-1.5 text-[10px] font-bold" style={{ color: r.loai === "goc" ? MUTED : NGOC }}>

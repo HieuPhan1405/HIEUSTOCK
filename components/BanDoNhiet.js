@@ -5,11 +5,11 @@ import { hierarchy, treemap, treemapSquarify } from "d3-hierarchy";
 import { NGANH_NHAN } from "@/lib/nganh";
 import { soVN, pctVN } from "@/lib/soVN";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const NEN_SECTOR = "#1D1D26";
-const MUTED = "#8B8B99";
-const TEXT = "#F5F5F7";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const NEN_SECTOR = "var(--vien-nhe)";
+const MUTED = "var(--mo)";
+const TEXT = "var(--chu)";
 const CHIEU_CAO = 460;
 const GIA_TRI_TOI_THIEU = 0.1; // ma thanh khoan qua thap (gtgd_tb20 null/0) van co 1 o nho, khong bien mat hoan toan khoi ban do.
 
@@ -22,9 +22,9 @@ function tronMau(a, b, t) {
   const [r2, g2, b2] = hexSangRgb(b);
   return `rgb(${Math.round(r1 + (r2 - r1) * t)},${Math.round(g1 + (g2 - g1) * t)},${Math.round(b1 + (b2 - b1) * t)})`;
 }
-const TRUNG_TINH = "#3A3A44";
+const TRUNG_TINH = "var(--vien-dam)";
 const DO_DAM = "#7F1D1D";
-const XANH_DAM = "#16A34A";
+const XANH_DAM = "var(--xanh-dam)";
 // Mau theo % thay doi gia, noi tu trung tinh (0%) ra do/xanh dam - bao hoa o +-4% (giong da so cong cu
 // heatmap: bien dong manh hon 4% khong can toi mau dam hon nua, tranh ca bang do/xanh chot het o vai ma).
 function mauTheoDoi(doi) {
@@ -123,7 +123,7 @@ export default function BanDoNhiet({ tatCa }) {
                       <text x={la.x0 + w / 2} y={la.y0 + h / 2 - 3} textAnchor="middle" fontSize="11" fontWeight="700" fill={TEXT} style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
                         {la.data.ma}
                       </text>
-                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 11} textAnchor="middle" fontSize="10" fill="#E5E5EA" style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
+                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 11} textAnchor="middle" fontSize="10" fill="var(--chu-2)" style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
                         {la.data.doi >= 0 ? "+" : ""}
                         {soVN(la.data.doi, 1, true)}%
                       </text>

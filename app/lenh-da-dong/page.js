@@ -42,7 +42,7 @@ export default async function TrangLenhDaDong() {
   return (
     <>
       <LenhDaDongView ds={ds} loi={loi} />
-      <div className="max-w-6xl mx-auto px-6 pb-12" style={{ color: "#F5F5F7" }}>
+      <div className="max-w-6xl mx-auto px-6 pb-12" style={{ color: "var(--chu)" }}>
         <ChatLuongTinHieu rows={xuatHien} ngayHomNay={ngayGiaoDichVN()} loi={loiXuatHien} />
       </div>
     </>

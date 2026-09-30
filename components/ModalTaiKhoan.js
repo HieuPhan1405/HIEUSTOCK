@@ -5,14 +5,14 @@ import { createPortal } from "react-dom";
 import { X, Eye, EyeOff, Check, Mail, Phone, User, Lock, ShieldCheck } from "lucide-react";
 import { kiemTraTen, kiemTraEmail, kiemTraMatKhau, doManhMatKhau, MK_TOI_THIEU } from "@/lib/kiemTraDangKy";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const NEN_O = "#0B0B10";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const NEN_O = "var(--nen)";
 const PRIMARY = "#6C5CE7";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
-const DO = "#EF4444";
-const XANH = "#22C55E";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
+const DO = "var(--do)";
+const XANH = "var(--xanh)";
 
 function OTab({ active, onClick, children }) {
   return (
@@ -54,7 +54,7 @@ function Truong({ nhan, icon: Icon, loi, children, phu }) {
 
 const cssO = { background: "transparent", color: TEXT, fontFamily: "'Inter', sans-serif", minWidth: 0 };
 const NHAN_MANH = ["", "Yếu", "Trung bình", "Khá", "Mạnh"];
-const MAU_MANH = ["#26262F", DO, "#F59E0B", "#84CC16", XANH];
+const MAU_MANH = ["var(--vien)", DO, "var(--vang-2)", "var(--chanh)", XANH];
 
 // Dung chung cho moi noi can hoi "Dang ky/Dang nhap" (nut o Sidebar, cot Tin hieu bi khoa o Bo loc, cac trang khoa hoan toan...) - chi lo phan FORM,
 // noi goi quyet dinh KHI NAO mo/dong (open/onClose) va lam gi sau khi thanh cong (onThanhCong nhan ve {sdt, ten}).
@@ -166,7 +166,7 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
         </div>
 
         {tieuDeGoiY && (
-          <p className="text-xs my-3 px-3 py-2 rounded-lg" style={{ color: "#C9C2FF", background: "rgba(108,92,231,0.12)", fontFamily: "'Inter', sans-serif" }}>
+          <p className="text-xs my-3 px-3 py-2 rounded-lg" style={{ color: "var(--tim-chu)", background: "rgba(108,92,231,0.12)", fontFamily: "'Inter', sans-serif" }}>
             {tieuDeGoiY}
           </p>
         )}

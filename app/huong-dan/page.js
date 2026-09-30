@@ -9,13 +9,13 @@ export const metadata = {
   description: "Cách đọc tín hiệu, vùng mua, cắt lỗ, chốt lời và nguyên tắc quản trị vốn của hệ thống CloudStock.",
 };
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
-const NHAT = "#A6A6B3";
-const XANH = "#22C55E";
+const NHAT = "var(--mo-2)";
+const XANH = "var(--xanh)";
 
 // Phan "phuong phap" viet theo kieu NGUYEN TAC KY LUAT (quan tri von, rui ro,
 // chon co phieu, thoi diem dat lenh) - CO Y KHONG neu cong thuc cham diem,
@@ -98,7 +98,7 @@ function NguyenTac() {
     <>
       <Muc so={1} tieuDe="Mua thăm dò — giải ngân 1 phần">
         <p>
-          Khi hệ thống báo <b style={{ color: XANH }}>MUA</b> kèm nhãn <b style={{ color: "#FBBF24" }}>&quot;Giải ngân 1 phần&quot;</b>{" "}
+          Khi hệ thống báo <b style={{ color: XANH }}>MUA</b> kèm nhãn <b style={{ color: "var(--vang)" }}>&quot;Giải ngân 1 phần&quot;</b>{" "}
           (sức mạnh của mã so với thị trường còn yếu), chỉ mua khoảng <b style={{ color: XANH }}>1/3 – 1/2 tỷ trọng dự kiến</b> của mã đó.
           Ví dụ dự định dành 100 triệu cho một mã thì lần đầu chỉ giải ngân 30–50 triệu.
         </p>
@@ -107,7 +107,7 @@ function NguyenTac() {
 
       <Muc so={2} tieuDe="Bổ sung & mua đủ tỷ trọng">
         <p>
-          Chỉ <b style={{ color: XANH }}>bổ sung / mua đủ tỷ trọng</b> khi hệ thống báo nhãn <b style={{ color: "#22D3EE" }}>&quot;Bổ sung&quot;</b>{" "}
+          Chỉ <b style={{ color: XANH }}>bổ sung / mua đủ tỷ trọng</b> khi hệ thống báo nhãn <b style={{ color: "var(--cyan)" }}>&quot;Bổ sung&quot;</b>{" "}
           — tức là lệnh trước đã <b style={{ color: XANH }}>có lãi</b> và mã đã chứng tỏ sức mạnh (đúng thì nhồi). Chỉ có vài phiên đầu để bổ sung;
           hết thời hạn mà chưa đủ điều kiện thì giữ nguyên tỷ trọng nhỏ. <b style={{ color: XANH }}>Không tăng tỷ trọng khi đang lỗ.</b>
         </p>
@@ -132,7 +132,7 @@ function NguyenTac() {
       <Muc so={5} tieuDe="Tín hiệu BÁN và cảnh báo Bán bớt">
         <p>
           Hệ thống báo <b style={{ color: XANH }}>BÁN</b> thì bán dứt khoát, không giữ cầu may. Khi xuất hiện cảnh báo{" "}
-          <b style={{ color: "#F97316" }}>&quot;Bán bớt&quot;</b> thì giảm bớt vị thế trước, không đợi tới tín hiệu Bán toàn bộ. Nhớ quy tắc T+2,5:
+          <b style={{ color: "var(--cam)" }}>&quot;Bán bớt&quot;</b> thì giảm bớt vị thế trước, không đợi tới tín hiệu Bán toàn bộ. Nhớ quy tắc T+2,5:
           lệnh bán phải cách lệnh mua tối thiểu 2 phiên.
         </p>
       </Muc>
@@ -155,7 +155,7 @@ function NguyenTac() {
         <p className="mt-2">
           <b style={{ color: XANH }}>Bảo vệ lãi:</b> sau khi giá đã từng chạm TP2 trong lúc giữ lệnh, mức cắt lỗ của phần đang giữ tự động dời lên{" "}
           <b style={{ color: XANH }}>đúng bằng giá mua</b> (hòa vốn). Giá quay về đúng mức đó thì bán ngay, chạm là bán, không chờ điểm âm — khóa lại phần
-          lãi đã có, không để biến thành lỗ. Nhãn <b style={{ color: "#A78BFA" }}>&quot;🛡 Bảo vệ lãi&quot;</b>.
+          lãi đã có, không để biến thành lỗ. Nhãn <b style={{ color: "var(--tim-nhat)" }}>&quot;🛡 Bảo vệ lãi&quot;</b>.
         </p>
       </Muc>
 
@@ -199,14 +199,14 @@ function NguyenTac() {
           Các biểu tượng và nhãn nhỏ xuất hiện cạnh mã trong Bộ lọc, Sổ lệnh, Danh mục theo dõi và trang chi tiết mã:
         </p>
         <div className="grid sm:grid-cols-2 gap-x-6">
-          <KyHieu ky="⚠" mau="#EF4444" chu={<><b style={{ color: XANH }}>Mắt Thần</b> — cảnh báo rủi ro đảo chiều, cần xem lại ngay.</>} />
-          <KyHieu ky="⚠" mau="#F97316" chu={<><b style={{ color: XANH }}>Bán bớt</b> — nên giảm bớt vị thế trước khi có tín hiệu Bán toàn bộ.</>} />
-          <KyHieu ky="◐" mau="#FBBF24" chu={<><b style={{ color: XANH }}>Giải ngân 1 phần</b> — RS còn yếu nên chỉ mua một phần tỷ trọng.</>} />
-          <KyHieu ky="➕" mau="#22D3EE" chu={<><b style={{ color: XANH }}>Bổ sung</b> — đủ điều kiện mua nốt phần tỷ trọng còn lại.</>} />
+          <KyHieu ky="⚠" mau="var(--do)" chu={<><b style={{ color: XANH }}>Mắt Thần</b> — cảnh báo rủi ro đảo chiều, cần xem lại ngay.</>} />
+          <KyHieu ky="⚠" mau="var(--cam)" chu={<><b style={{ color: XANH }}>Bán bớt</b> — nên giảm bớt vị thế trước khi có tín hiệu Bán toàn bộ.</>} />
+          <KyHieu ky="◐" mau="var(--vang)" chu={<><b style={{ color: XANH }}>Giải ngân 1 phần</b> — RS còn yếu nên chỉ mua một phần tỷ trọng.</>} />
+          <KyHieu ky="➕" mau="var(--cyan)" chu={<><b style={{ color: XANH }}>Bổ sung</b> — đủ điều kiện mua nốt phần tỷ trọng còn lại.</>} />
           <KyHieu ky="↺" mau={XANH} chu={<><b style={{ color: XANH }}>Mua lại</b> — (đã tắt từ 27/09/2026) lệnh cũ mua lại sau khi bán không lỗ; có thể còn thấy ở lệnh mở trước ngày đó.</>} />
-          <KyHieu ky="➕" mau="#22D3EE" chu={<><b style={{ color: XANH }}>Mua mới</b> — lệnh vào đợt sau (giá hồi về hỗ trợ rồi bật lên) khi bạn bỏ qua lệnh đầu; là lệnh độc lập, chốt giống lệnh Mua (30% TP1, 30% TP2, 40% giữ đến BÁN), mã có nhiều lệnh được đánh số (1), (2).</>} />
-          <KyHieu ky="🛡" mau="#A78BFA" chu={<><b style={{ color: XANH }}>Bảo vệ lãi</b> — Mức cắt lỗ đã dời lên cao hơn (hòa vốn) sau khi chạm TP2.</>} />
-          <KyHieu ky="⏳" mau="#FBBF24" chu={<><b style={{ color: XANH }}>Đạt điểm, chờ phiên sau</b> — đủ điểm MUA nhưng phiên đầu chưa đủ khối lượng xác nhận.</>} />
+          <KyHieu ky="➕" mau="var(--cyan)" chu={<><b style={{ color: XANH }}>Mua mới</b> — lệnh vào đợt sau (giá hồi về hỗ trợ rồi bật lên) khi bạn bỏ qua lệnh đầu; là lệnh độc lập, chốt giống lệnh Mua (30% TP1, 30% TP2, 40% giữ đến BÁN), mã có nhiều lệnh được đánh số (1), (2).</>} />
+          <KyHieu ky="🛡" mau="var(--tim-nhat)" chu={<><b style={{ color: XANH }}>Bảo vệ lãi</b> — Mức cắt lỗ đã dời lên cao hơn (hòa vốn) sau khi chạm TP2.</>} />
+          <KyHieu ky="⏳" mau="var(--vang)" chu={<><b style={{ color: XANH }}>Đạt điểm, chờ phiên sau</b> — đủ điểm MUA nhưng phiên đầu chưa đủ khối lượng xác nhận.</>} />
           <KyHieu ky="✓" mau={XANH} chu={<><b style={{ color: XANH }}>Đã chạm</b> (TP1/TP2/TP3) — giá đã từng lên tới mốc đó, kể cả nếu sau đó tụt lại.</>} />
           <KyHieu ky="★" mau={XANH} chu={<>Đánh dấu phần kết luận hoặc nội dung chính của một thẻ thông tin.</>} />
         </div>

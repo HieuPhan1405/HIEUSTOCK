@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { UserPlus } from "lucide-react";
 
-const MUTED = "#8B8B99";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
 
 // Nut "Tham gia" 1 ma - dung chung cho Bo loc (cong khai, co the CHUA dang
@@ -46,7 +46,7 @@ export default function NutThamGia({ ma, soNguoiThamGia, daThamGia, coDangNhap =
       title={coDangNhap ? (daThamGia ? "Rời khỏi mã này" : "Tham gia theo dõi mã này") : "Đăng ký/Đăng nhập để tham gia"}
       className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold transition-colors"
       style={{
-        background: daThamGia ? "rgba(108,92,231,0.18)" : "rgba(255,255,255,0.06)",
+        background: daThamGia ? "rgba(108,92,231,0.18)" : "var(--phu)",
         color: daThamGia ? PRIMARY : MUTED,
         opacity: dangXuLy ? 0.6 : 1,
       }}

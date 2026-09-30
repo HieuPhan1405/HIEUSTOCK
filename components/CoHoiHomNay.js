@@ -5,16 +5,16 @@ import { tenCongTy } from "@/lib/tenMa";
 import { CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
 import NhanTheoDoi from "@/components/NhanTheoDoi";
 
-const VIEN = "#26262F";
-const NEN_CARD = "#15151F";
-const TEXT = "#F5F5F7";
-const MUTED = "#8B8B99";
+const VIEN = "var(--vien)";
+const NEN_CARD = "var(--card)";
+const TEXT = "var(--chu)";
+const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
-const XANH = "#22C55E";
-const DO = "#EF4444";
-const VANG = "#FBBF24";
-const NGOC = "#22D3EE";
-const CAM = "#F97316";
+const XANH = "var(--xanh)";
+const DO = "var(--do)";
+const VANG = "var(--vang)";
+const NGOC = "var(--cyan)";
+const CAM = "var(--cam)";
 const sans = { fontFamily: "'Inter', sans-serif" };
 const mono = { fontFamily: "'JetBrains Mono', monospace" };
 
@@ -31,7 +31,7 @@ const TRANG_THAI_VUNG = {
 function OLenh({ tieuDe, mau, moTa, ds, trong, hien, may }) {
   return (
     <div className="rounded-2xl border flex flex-col min-w-0" style={{ borderColor: VIEN, background: NEN_CARD, borderTop: `3px solid ${mau}` }}>
-      <div className="px-4 pt-4 pb-3 border-b" style={{ borderColor: "#1D1D26" }}>
+      <div className="px-4 pt-4 pb-3 border-b" style={{ borderColor: "var(--vien-nhe)" }}>
         <div className="flex items-baseline justify-between gap-2">
           <h3 className="text-base" style={{ ...sans, fontWeight: 700, color: mau }} data-may={may}>
             {tieuDe}
@@ -63,8 +63,8 @@ function Dong({ ma, ten, nhan, mauNhan, children, phai, the = null }) {
   return (
     <Link
       href={`/ma/${ma}`}
-      className="grid grid-cols-[76px_1fr_auto] items-start gap-3 px-2 py-2.5 border-b last:border-b-0 rounded-lg hover:bg-white/[0.04] transition-colors"
-      style={{ borderColor: "#1D1D26" }}
+      className="grid grid-cols-[76px_1fr_auto] items-start gap-3 px-2 py-2.5 border-b last:border-b-0 rounded-lg hover:bg-[color:var(--hover-nhe)] transition-colors"
+      style={{ borderColor: "var(--vien-nhe)" }}
     >
       <span className="min-w-0">
         <span className="block" style={{ ...sans, fontWeight: 700, fontSize: 15, color: TEXT }}>
@@ -210,7 +210,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
               ma={l.ma}
               ten={l.ten_lenh}
               nhan={l.lenh_web ? "Mua mới · web giữ" : "Mua mới"}
-              mauNhan={l.lenh_web ? "#FBBF24" : NGOC}
+              mauNhan={l.lenh_web ? "var(--vang)" : NGOC}
               the={l.lenh_web ? null : <NhanTheoDoi loai="mua" />}
               phai={
                 <>
