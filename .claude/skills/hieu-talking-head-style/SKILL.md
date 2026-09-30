@@ -130,6 +130,36 @@ Nguồn tham khảo: hướng dẫn safe zone 2026 (130 top / 484 bottom / 44 le
   luôn đối chiếu DNSE + tìm báo (WebSearch) trước khi đưa lên màn hình; dùng số đã kiểm chứng và báo lại cho Hiếu.
 - Caption **xanh/đỏ** trên áo sáng màu → thêm nền tối bo góc để đủ tương phản.
 
+## 10. Bài học từ video mẫu #4 ("3 mẹo ép khách coi hết video", kênh u40hoc.xay.kenh, 48s)
+
+**Nội dung 3 mẹo của video** (áp dụng khi dựng cho Hiếu):
+1. **Xoá sạch khoảng đứng yên** — khung hình phải luôn chuyển động; não người ghét chờ đợi, mắt vừa định hình thì hình đã đổi.
+2. **Cắt trên chuyển động (match cut on action)** — cuối chuyển động ở clip này = đầu chuyển động ở clip sau
+   (tay đưa lên → cắt ngay lúc tay đang đưa, clip sau bắt đầu giữa động tác). Não bị "đơ" nên không nhận ra đã chuyển cảnh.
+3. **Khung hình bận rộn** — vừa nói vừa làm gì đó (tay ra hiệu, cầm mic/sách/đồ vật, cầm cốc), hậu cảnh có vật chuyển động
+   / ánh sáng. Bản năng tò mò với thứ di chuyển giữ người xem lại.
+
+**Công thức hình ảnh quan sát được:**
+- **Hook 0–3s**: chữ KHỔNG LỒ xếp chồng từng từ, mỗi từ một màu (vàng "3 MẸO", đỏ "ÉP", xanh "COI HẾT", trắng "VIDEO"),
+  nằm *sau đầu* người nói (text-behind-subject) + punch-in mạnh theo từng từ. Đây là ngoại lệ hợp lý của quy tắc "1 màu nhấn":
+  hook được phép 3–4 màu, phần thân vẫn giữ 1 màu nhấn.
+- **Thẻ đồ hoạ kiểu tạp chí / báo in**: nền trắng ngà, chiếm **1/3 trên** màn hình, người nói vẫn thấy ở 2/3 dưới.
+  Gồm: tiêu đề đậm ("Kỹ thuật 1: Xoá sổ khoảng chết") + hình minh hoạ đen-trắng-đỏ (mắt phát tia đỏ, kéo cắt sóng âm,
+  sơ đồ vòng lặp, hình người đấm — *một hình = một ý*) + 1–2 câu chú thích nhỏ + con dấu đỏ tròn ở góc (logo series).
+  Thẻ trượt vào từ trên, đổi **mỗi ~3s**, và luôn là hình *giải thích đúng câu đang nói*, không trang trí.
+- **Caption karaoke**: nhỏ, ngang ngực (~60–66% chiều cao), tối đa 2 dòng, chữ thường sans trắng;
+  **từ đang nói nằm trong ô bo tròn màu xanh dương**, các từ còn lại mờ đi. Không dùng chữ to che cảnh.
+- **Nhiều "góc máy" từ một buổi quay**: mỗi lần cắt đổi cỡ cảnh (cận mặt choán khung ↔ trung cảnh thấy giá sách ↔ hơi nghiêng),
+  đổi hậu cảnh/tư thế. Người xem tưởng có nhiều máy quay.
+- **Đạo cụ + cử chỉ liên tục**: cầm mic lông, cầm sách, chỉ tay vào ống kính, nghiêng người; hậu cảnh có đèn, cây, mèo thần tài.
+- **Kết**: màn hình đen với thanh tìm kiếm TikTok + @tên-kênh (end card 2–3s), thay vì chữ CTA dài.
+
+**Áp dụng cho video chứng khoán của Hiếu:**
+- Khi quay: quay 2–3 cỡ cảnh/tư thế khác nhau trong cùng buổi; giữ tay cử động hoặc cầm đồ vật; đừng ngồi im giữa các câu.
+- Khi dựng: ưu tiên cắt ở giữa cử động tay; xen kẽ zoom 1.0 ↔ 1.25 (không chỉ 1.1); mỗi ~3s đổi một thứ (thẻ, zoom, B-roll).
+- Thẻ số liệu: thử kiểu thẻ trắng ngà 1/3 trên (tiêu đề + 1 hình + 1 câu) thay vì khối tối; biểu đồ CloudStock vẫn đưa vào cạnh đó.
+- Caption: chuyển sang karaoke nhỏ (từ đang nói được bo ô), chỉ để chữ to ở từ khoá/số liệu quan trọng.
+
 ## 9. Checklist trước khi xuất
 
 - [ ] Hook có tiêu đề lớn trong 3s đầu
