@@ -5,3 +5,5 @@
 */VPB_*.mp4
 */preview*.mp4
 */work-*/
+*/.output.hf-transaction-*/
+*/render.log

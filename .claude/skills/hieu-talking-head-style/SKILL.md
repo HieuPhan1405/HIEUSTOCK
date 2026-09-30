@@ -86,6 +86,23 @@ Phân tích từ 3 video mẫu (9:16, 576x1024, 25–84s). Khi dựng video mớ
 - SFX, nhạc nền, lọc giọng → `/media-use` + `/hyperframes-audio`.
 - Hiệu ứng có sẵn (glitch, light leak, biểu đồ) → tìm trong `/hyperframes-registry` trước.
 
+## 7b. VÙNG AN TOÀN TIKTOK (bắt buộc, khung 1080×1920)
+
+UI của TikTok che: thanh trên (tên/tìm kiếm), cột nút bên phải (tim/bình luận/chia sẻ),
+và khối mô tả + tên nhạc + nút ở đáy. Mọi chữ / thẻ / số liệu / logo **phải nằm trong**:
+
+| Cạnh | Chừa trống | Giới hạn nội dung |
+|---|---|---|
+| Trên | 130px (dùng 170px cho đẹp) | y ≥ 170 |
+| Dưới | 484px (dùng 490px) | y ≤ ~1430 |
+| Trái | 44–60px | x ≥ 60 |
+| Phải | 140px | x ≤ 940 |
+
+→ vùng dùng được ≈ 880 × 1260. Caption nằm trong y 1170–1430 (canh đáy 1430, không sát mép dưới);
+disclaimer / CTA cuối phải ở y ≤ 1430; **không** đặt PiP ở góc dưới phải (nơi UI đè).
+Nền / ảnh full màn hình thì được tràn ra ngoài, chỉ *nội dung đọc được* mới phải nằm trong vùng.
+Nguồn tham khảo: hướng dẫn safe zone 2026 (130 top / 484 bottom / 44 left / 140 right).
+
 ## 8. Quy trình đã chạy tốt (video 28/9/2026 — `videos/2026-09-28-nganh-nguoc-dong/build.py` làm mẫu)
 
 - **Nhận video >30 MB**: Hiếu gửi link Google Drive (chia sẻ "bất kỳ ai có link") → tải bằng
@@ -105,11 +122,18 @@ Phân tích từ 3 video mẫu (9:16, 576x1024, 25–84s). Khi dựng video mớ
 - **Logo CloudStock phải hiện rõ** trên mọi cảnh lấy từ web (badge logo + "CloudStock" +
   `cloudstock.id.vn`) và ở CTA cuối (icon 512px bo góc + domain). Logo gốc: `public/logo-bieu-tuong-toi.png`
   (260px, chỉ dùng cỡ nhỏ), `public/icon-512.png` (dùng cỡ lớn).
+- **Whisper: chạy từng khúc ~10s** cắt ở chỗ lặng (không chạy cả đoạn dài): đoạn dài làm timestamp từng từ
+  dồn cục hoặc lệch vài giây. Gióng kịch bản với whisper bằng `align.py` → `tokens.json`, rồi đặt mốc thẻ bằng
+  `T("cụm từ")` / `E("cụm từ")` trong `build.py` (video 30/9) — thẻ bám đúng lời nói, không phải canh tay.
+- **Chụp web bằng script có sẵn**: `videos/tools/capture_cloudstock.mjs` (tắt Vùng lệnh + chỉ báo, khung 3T, bỏ nhãn MUA/BÁN).
+- **Số liệu trong kịch bản của Hiếu có thể lệch** (video 30/9: kịch bản ghi TRC +5,68% nhưng DNSE/CloudStock là +3,93%):
+  luôn đối chiếu DNSE + tìm báo (WebSearch) trước khi đưa lên màn hình; dùng số đã kiểm chứng và báo lại cho Hiếu.
 - Caption **xanh/đỏ** trên áo sáng màu → thêm nền tối bo góc để đủ tương phản.
 
 ## 9. Checklist trước khi xuất
 
 - [ ] Hook có tiêu đề lớn trong 3s đầu
+- [ ] Mọi chữ/thẻ/logo nằm trong vùng an toàn TikTok (mục 7b)
 - [ ] Không caption nào quá 2 dòng, caption ở ngang vai
 - [ ] ≤ 3 font, ≤ 1 màu nhấn (+ xanh/đỏ cho số liệu)
 - [ ] Đổi hình mỗi 3–5s

@@ -1,0 +1,161 @@
+{
+  "schemaVersion": 3,
+  "composition": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 146.85,
+    "layout": "portrait",
+    "themeId": "noir",
+    "seed": 42
+  },
+  "videoTrack": {
+    "sourcePath": "input-video.mp4",
+    "startSec": 0,
+    "endSec": 146.85
+  },
+  "subtitles": {
+    "enabled": true,
+    "style": "kinetic 2 dòng, trong vùng an toàn TikTok"
+  },
+  "cards": [
+    {
+      "id": "c01-hook",
+      "startSec": 0.0,
+      "endSec": 2.31,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c02-mosaic",
+      "startSec": 2.31,
+      "endSec": 4.1,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c03-but",
+      "startSec": 4.1,
+      "endSec": 5.95,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c04-sgx",
+      "startSec": 6.0,
+      "endSec": 12.25,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c05-board",
+      "startSec": 11.55,
+      "endSec": 18.05,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c06-story",
+      "startSec": 17.65,
+      "endSec": 26.4,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c07-three",
+      "startSec": 26.05,
+      "endSec": 37.45,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c08-ch1",
+      "startSec": 37.15,
+      "endSec": 39.15,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c09-short",
+      "startSec": 39.42,
+      "endSec": 42.76,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c10-export",
+      "startSec": 42.78,
+      "endSec": 51.76,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c11-oil",
+      "startSec": 52.97,
+      "endSec": 65.4,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c12-ch2",
+      "startSec": 64.7,
+      "endSec": 66.7,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c13-dpr",
+      "startSec": 68.51,
+      "endSec": 79.1,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c14-gvr",
+      "startSec": 78.7,
+      "endSec": 85.65,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c15-fit",
+      "startSec": 85.25,
+      "endSec": 91.55,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c16-ch3",
+      "startSec": 91.25,
+      "endSec": 93.55,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c17-phr",
+      "startSec": 94.38,
+      "endSec": 100.35,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c18-58",
+      "startSec": 99.83,
+      "endSec": 106.57,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c19-treeland",
+      "startSec": 107.63,
+      "endSec": 112.79,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c20-risk",
+      "startSec": 112.23,
+      "endSec": 126.68,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c21-loop",
+      "startSec": 126.33,
+      "endSec": 135.68,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c22-final",
+      "startSec": 135.33,
+      "endSec": 142.88,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c23-cta",
+      "startSec": 142.33,
+      "endSec": 146.85,
+      "zone": "video-overlay"
+    }
+  ]
+}
