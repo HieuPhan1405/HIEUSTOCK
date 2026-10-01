@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 3,
+  "composition": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 26.0,
+    "layout": "portrait",
+    "themeId": "noir",
+    "seed": 7
+  },
+  "cards": [
+    {
+      "id": "sA",
+      "startSec": 0,
+      "endSec": 3.6,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "sB",
+      "startSec": 3.4,
+      "endSec": 7.6,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "sC",
+      "startSec": 7.4,
+      "endSec": 11.8,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "sD",
+      "startSec": 11.6,
+      "endSec": 15.8,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "sE",
+      "startSec": 15.6,
+      "endSec": 19.8,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "sF",
+      "startSec": 19.6,
+      "endSec": 23.0,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "sG",
+      "startSec": 22.8,
+      "endSec": 26.0,
+      "zone": "fullscreen"
+    }
+  ]
+}
