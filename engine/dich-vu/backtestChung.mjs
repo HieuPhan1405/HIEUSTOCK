@@ -44,7 +44,7 @@ export function thongKe(kqs) {
 // cache: { MA: [{t,o,h,l,c,v}] }; vni: [{t,c,h,l}] VNINDEX tang dan. Tra ve { lenh, lenhMuaMoi, soMa, thiTruong(ngay) }.
 // lenh: cac lan vao lenh GOC (loai 1 Mua thuong / 2 Mua lai / 3 Mua muon). lenhMuaMoi: cac lenh MUA MOI (dot sau, gia hoi ve Kijun roi bat len - muaGiua trong mayTrangThai):
 // gia vao = dong cua phien tin hieu, Stop-loss / TP rieng, jGoc = nen lenh dau dong (lenh mua moi dong CUNG luc - xem mayTrangThai).
-export function chayEngine({ cache, vni, soNenToiThieu = 300 }) {
+export function chayEngine({ cache, vni, soNenToiThieu = 300, thamSoThem = {} }) {
   const vniMap = new Map(vni.map((b) => [b.t, b.c]));
   const ketQuaBreadth = { theoNganh: new Map([...NGANH.keys()].map((k) => [k, 50])), trungBinh: 50 };
   const breadth50 = new Map(); // ngay -> { tren, tong } (ma co dong cua > SMA50)
@@ -67,7 +67,7 @@ export function chayEngine({ cache, vni, soNenToiThieu = 300 }) {
     });
     let hang;
     try {
-      hang = tinhTinHieuChoMa({ ma, nen, vniClose, san: "HOSE", ketQuaBreadth, thamSo: { traChuoi: true, ketThucTaiTP3: false, thoatKijunSauTP2: false } });
+      hang = tinhTinHieuChoMa({ ma, nen, vniClose, san: "HOSE", ketQuaBreadth, thamSo: { traChuoi: true, ketThucTaiTP3: false, thoatKijunSauTP2: false, ...thamSoThem } });
     } catch (e) {
       console.log("Loi", ma, String(e.message || e).slice(0, 80));
       continue;

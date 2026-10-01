@@ -19,6 +19,7 @@ export function tinhTinHieuTho(
     nguongDiemBreakout = 1.0,
     exitTh = 1.5,
     soPhienBanXacNhan = 3,
+    diemBoCongFVGPhienSau = null,
   } = {}
 ) {
   const n = totalScore.length;
@@ -39,6 +40,9 @@ export function tinhTinHieuTho(
     if (cheDoFVG === "Luon TAT") inFVGZoneOk[i] = true;
     else if (cheDoFVG === "Luon BAT") inFVGZoneOk[i] = inFVGZoneH3[i];
     else inFVGZoneOk[i] = (breakoutManh[i] && volumeGateNgayDau[i]) || inFVGZoneH3[i];
+    // THU NGHIEM (mac dinh TAT = null, chua co trong AFL): tu phien THU HAI cua dot tren nguong, diem >= nguong nay thi bo qua cong vung FVG / khoi luong (ma da vao vung mua nhung
+    // phien dau khong du khoi luong, sau do gia roi khoi vung FVG). Chi dung de backtest engine/dich-vu/backtestNoiCong.mjs.
+    if (diemBoCongFVGPhienSau != null && !vuaVaoVungMua[i] && totalScore[i] >= diemBoCongFVGPhienSau) inFVGZoneOk[i] = true;
   }
 
   // May trang thai: 1 "dot" tren nguong chi duoc bao MUA (TurnedGreen) DUNG 1 LAN, ke ca neu con

@@ -39,6 +39,7 @@ const MAC_DINH = {
   fvgLookback: 15,
   nguongDiemFVGMem: 0.6,
   soPhienBanXacNhan: 3,
+  diemBoCongFVGPhienSau: null, // thu nghiem, mac dinh TAT (xem tinHieuTho.js)
   volMinPctTB20: 50,
   volMinPctHomTruoc: 30,
   pocketPivotNhinLai: 10,
@@ -171,6 +172,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
       nguongDiemBreakout: p.nguongDiemBreakout,
       exitTh: p.exitTh,
       soPhienBanXacNhan: p.soPhienBanXacNhan,
+      diemBoCongFVGPhienSau: p.diemBoCongFVGPhienSau,
     }
   );
   const buyTho = new Array(n);
