@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 3,
+  "composition": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 110.97,
+    "layout": "portrait",
+    "themeId": "noir",
+    "seed": 42
+  },
+  "videoTrack": {
+    "sourcePath": "input-video.mp4",
+    "startSec": 0,
+    "endSec": 110.97
+  },
+  "subtitles": {
+    "enabled": true,
+    "style": "kinetic 2 dòng, trong vùng an toàn TikTok"
+  },
+  "cards": [
+    {
+      "id": "c01-hook",
+      "startSec": 0.0,
+      "endSec": 4.5,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c02-chart",
+      "startSec": 4.45,
+      "endSec": 14.94,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c03-why",
+      "startSec": 14.54,
+      "endSec": 18.07,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c04-vs",
+      "startSec": 17.75,
+      "endSec": 28.2,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c05-pyn",
+      "startSec": 28.03,
+      "endSec": 38.8,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c06-ch2",
+      "startSec": 38.51,
+      "endSec": 40.95,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c07-h1",
+      "startSec": 40.95,
+      "endSec": 51.8,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c08-ssi",
+      "startSec": 51.89,
+      "endSec": 60.75,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c09-gap",
+      "startSec": 60.64,
+      "endSec": 67.96,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c10-why",
+      "startSec": 67.91,
+      "endSec": 81.7,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c11-caveat",
+      "startSec": 81.48,
+      "endSec": 93.24,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c12-final",
+      "startSec": 92.79,
+      "endSec": 101.62,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c13-cta",
+      "startSec": 101.1,
+      "endSec": 110.97,
+      "zone": "video-overlay"
+    }
+  ]
+}
