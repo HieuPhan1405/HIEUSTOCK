@@ -32,6 +32,6 @@ for key, c in COVERS.items():
 .l2{{display:inline-block;font-size:{s2}px;color:{c['c2']};background:rgba(10,10,10,.82);padding:0 30px 8px;border-radius:24px;margin-top:6px}}
 .l3{{margin-top:26px;font:italic 700 {s3}px 'Playfair Display';color:#FAFAFA;text-shadow:0 4px 22px rgba(0,0,0,.8);line-height:1.1}}
 </style></head><body><div class="bg"></div><div class="ph"></div><div class="sh"></div>
-<div class="t"><div class="tag">CHỨNG KHOÁN CÙNG MÂY</div><div class="l1">{c['l1']}</div><div class="l2">{c['l2']}</div><div class="l3">{c['l3']}</div></div></body></html>"""
+<div class="t"><div class="tag">PHAN HIẾU STOCK</div><div class="l1">{c['l1']}</div><div class="l2">{c['l2']}</div><div class="l3">{c['l3']}</div></div></body></html>"""
         (R / f"cover_{key}_{name}.html").write_text(html)
 print("ok")
