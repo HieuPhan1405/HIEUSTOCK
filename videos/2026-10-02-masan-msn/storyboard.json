@@ -1,0 +1,143 @@
+{
+  "schemaVersion": 3,
+  "composition": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 159.4,
+    "layout": "portrait",
+    "themeId": "noir",
+    "seed": 42
+  },
+  "videoTrack": {
+    "sourcePath": "input-video.mp4",
+    "startSec": 0,
+    "endSec": 159.4
+  },
+  "subtitles": {
+    "enabled": true,
+    "style": "kinetic 2 dòng, trong vùng an toàn TikTok"
+  },
+  "cards": [
+    {
+      "id": "c01-hook",
+      "startSec": 0.0,
+      "endSec": 4.54,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c02-target",
+      "startSec": 4.49,
+      "endSec": 8.24,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c03-three",
+      "startSec": 7.95,
+      "endSec": 21.1,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c04-ch1",
+      "startSec": 20.65,
+      "endSec": 22.75,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c05-msr",
+      "startSec": 24.61,
+      "endSec": 34.55,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c06-w",
+      "startSec": 34.25,
+      "endSec": 39.34,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c07-fc",
+      "startSec": 38.74,
+      "endSec": 49.29,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c08-wcm",
+      "startSec": 48.79,
+      "endSec": 53.04,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c09-ch2",
+      "startSec": 52.6,
+      "endSec": 54.7,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c10-elmet",
+      "startSec": 55.15,
+      "endSec": 67.94,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c11-role",
+      "startSec": 67.49,
+      "endSec": 71.9,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c12-reg",
+      "startSec": 71.93,
+      "endSec": 81.4,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c13-ch3",
+      "startSec": 81.1,
+      "endSec": 83.2,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c14-diff",
+      "startSec": 84.04,
+      "endSec": 91.6,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c15-view",
+      "startSec": 91.34,
+      "endSec": 108.08,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c16-bsc",
+      "startSec": 113.87,
+      "endSec": 123.6,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c17-risk",
+      "startSec": 123.15,
+      "endSec": 134.99,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c18-why",
+      "startSec": 134.44,
+      "endSec": 147.25,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c19-ask",
+      "startSec": 147.7,
+      "endSec": 154.55,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c20-cta",
+      "startSec": 154.3,
+      "endSec": 159.4,
+      "zone": "video-overlay"
+    }
+  ]
+}
