@@ -24,6 +24,7 @@ import { taiLichSuToanBo, tinhTinHieuToanBo, capNhatNenMoiNhat, chiaNhoMang } fr
 import { xayDungCSV } from "../loi/csvDauRa.js";
 import { tinhChecklistBatDayToanBo, xayDungCsvBatDay } from "../loi/checklistBatDay.js";
 import { tinhChiBaoLocToanBo, xayDungCsvChiBao } from "../loi/chiBaoLoc.js";
+import { dangTrongPhienDinhKyMoCua } from "../../lib/khungGioVaoLenh.js";
 
 const apiKey = process.env.DNSE_API_KEY;
 const apiSecret = process.env.DNSE_API_SECRET;
@@ -155,8 +156,18 @@ async function main() {
   let dangTinh = false;
   let lanCuoiTinhBatDay = 0;
 
+  let daBaoChoMoCua = false;
   async function tinhLaiVaGhi() {
     if (!coThayDoi || dangTinh) return;
+    // TIN HIEU CHI TU 9H15: 9:00-9:15 la phien ATO (gia chua on dinh) - khong tinh/upload, giu co coThayDoi de tinh ngay khi het khoang nay (xem lib/khungGioVaoLenh.js).
+    if (dangTrongPhienDinhKyMoCua()) {
+      if (!daBaoChoMoCua) {
+        daBaoChoMoCua = true;
+        console.log(`[${new Date().toLocaleTimeString("vi-VN")}] Dang phien khop lenh dinh ky mo cua (09:00-09:15) - tam dung tinh/dang tin hieu, tiep tuc luc 09:15.`);
+      }
+      return;
+    }
+    daBaoChoMoCua = false;
     coThayDoi = false;
     dangTinh = true;
     try {

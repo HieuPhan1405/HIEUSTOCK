@@ -1,5 +1,5 @@
 // Test tay cho lib/khungGioVaoLenh.js (chot ban theo khung gio vao lenh). Chay: node engine/test/khungGioVaoLenh.test.mjs
-import { dangTrongKhungVaoLenh, batDauKhungKeTiep, daDenLucChot, nhanKhungKeTiep, canChoKhung, xuLyLenhTheoDoi, batDauKhungHienTai, catLoCanChoKhung, muaDangTheoDoi } from "../../lib/khungGioVaoLenh.js";
+import { dangTrongKhungVaoLenh, batDauKhungKeTiep, daDenLucChot, nhanKhungKeTiep, canChoKhung, xuLyLenhTheoDoi, batDauKhungHienTai, catLoCanChoKhung, muaDangTheoDoi, dangTrongPhienDinhKyMoCua } from "../../lib/khungGioVaoLenh.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -71,6 +71,18 @@ ok("ban theo tin hieu: khong ap dung", !catLoCanChoKhung({ lyDo: "BAN", gia: 80,
   ok("NAM GIU chua chot mua, sau khung (khong co cap nhat trong khung): coi nhu da chot", !muaDangTheoDoi({ tin: "NAM GIU", muaTheoDoiTu: tu, trongKhung: false, bayGio: vn("2026-09-28T15:30") }));
   ok("NAM GIU da chot mua (khong co moc theo doi): binh thuong", !muaDangTheoDoi({ tin: "NAM GIU", muaTheoDoiTu: null, trongKhung: false }));
   ok("MUA da chot mua luc 10:53, 13:00 van MUA: khong quay lai THEO DOI", !muaDangTheoDoi({ tin: "MUA", daChotMua: true, trongKhung: false }));
+}
+
+// Tin hieu chi tu 9h15: 9:00-9:15 (ATO) khong tinh/upload tin hieu
+{
+  ok("08:59 chua vao phien: khong chan (du lieu hom qua, khong doi)", !dangTrongPhienDinhKyMoCua(vn("2026-09-25T08:59")));
+  ok("09:00 thu Sau: chan", dangTrongPhienDinhKyMoCua(vn("2026-09-25T09:00")));
+  ok("09:14 thu Sau: chan", dangTrongPhienDinhKyMoCua(vn("2026-09-25T09:14")));
+  ok("09:15 thu Sau: bat dau tin hieu", !dangTrongPhienDinhKyMoCua(vn("2026-09-25T09:15")));
+  ok("10:45 trong khung: khong chan", !dangTrongPhienDinhKyMoCua(vn("2026-09-25T10:45")));
+  ok("buoi toi 20:00 (AmiBroker day len): khong chan", !dangTrongPhienDinhKyMoCua(vn("2026-09-25T20:00")));
+  ok("thu Bay 09:05: khong co phien, khong chan", !dangTrongPhienDinhKyMoCua(vn("2026-09-26T09:05")));
+  ok("chu nhat 09:05: khong chan", !dangTrongPhienDinhKyMoCua(vn("2026-09-27T09:05")));
 }
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);

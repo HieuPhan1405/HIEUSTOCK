@@ -19,7 +19,7 @@ import { xoaBoNhoTinHieu } from "@/lib/tinHieu";
 import { thongBaoPhien } from "@/lib/thongBaoDb";
 import { capNhatLenhMuaChot } from "@/lib/lenhMuaChotDb";
 import { themMucCatLo } from "@/lib/lenhMuaChot";
-import { dangTrongKhungVaoLenh, canChoKhung, nhanKhungKeTiep, KHUNG_VAO_LENH, catLoCanChoKhung } from "@/lib/khungGioVaoLenh";
+import { dangTrongKhungVaoLenh, dangTrongPhienDinhKyMoCua, canChoKhung, nhanKhungKeTiep, KHUNG_VAO_LENH, catLoCanChoKhung } from "@/lib/khungGioVaoLenh";
 import { TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
 import { phatHienXuatHien } from "@/lib/xuatHienTinHieu";
 import { ghiXuatHien } from "@/lib/xuatHienDb";
@@ -120,6 +120,12 @@ function dongVung(h) {
 export async function POST(request) {
   if (!kiemTraApiKey(request)) {
     return Response.json({ loi: "API key khong dung" }, { status: 401 });
+  }
+
+  // TIN HIEU CHI TU 9H15: 9:00-9:15 la phien khop lenh dinh ky mo cua (gia chua on dinh) - bo qua HOAN TOAN lan upload nay (khong ghi tin hieu, khong dong bang gia mua, khong dong lenh,
+  // khong bao Zalo/chuong) de tin hieu khong bao roi doi ngay luc vao phien lien tuc. Upload lai tu 9:15 (engine tu tinh lai, AmiBroker/script day lai) se duoc xu ly binh thuong.
+  if (dangTrongPhienDinhKyMoCua()) {
+    return Response.json({ trangThai: "bo_qua", lyDo: "Dang phien khop lenh dinh ky mo cua (09:00-09:15) - tin hieu chi cap nhat tu 09:15. Day lai sau 09:15." });
   }
 
   // Cho phep 1 lan upload GHI DU LIEU nhung KHONG gui Zalo - dung khi thu nghiem 1 nguon du lieu
