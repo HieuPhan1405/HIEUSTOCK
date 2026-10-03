@@ -35,6 +35,21 @@ export default async function TrangBieuDo({ searchParams }) {
   }
   const vung = nguoiDung?.da_duyet && row ? tinhVungLenh(row) : null;
   const ten = tenCongTy(ma);
+  // Bang 5 o tren goc bieu do (Diem, Trang thai, Gia mua, So phien, Lai/lo) - cung dieu kien voi vung lenh: chi nguoi da dang nhap va duoc duyet.
+  const thongTin =
+    nguoiDung?.da_duyet && row && ma !== "VNINDEX"
+      ? {
+          diem: row.diem,
+          tin: row.tin,
+          banTheoDoiTu: row.ban_theo_doi ? row.ban_theo_doi_tu : null,
+          webGiu: Array.isArray(row.lenh_web) && row.lenh_web.length > 0,
+          muaTheoDoiTu: row.mua_theo_doi_tu ?? null,
+          daChotMua: row.da_chot_mua === true,
+          giaMua: row.gia_mua,
+          soPhien: row.so_phien_giu,
+          laiLo: row.lai_lo_pct,
+        }
+      : null;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
@@ -93,7 +108,7 @@ export default async function TrangBieuDo({ searchParams }) {
         </div>
       )}
 
-      <BieuDoKyThuat ma={ma} vung={vung} ngayMua={vung ? row.ngay_mua : null} chieuCao={620} />
+      <BieuDoKyThuat ma={ma} vung={vung} ngayMua={vung ? row.ngay_mua : null} chieuCao={620} thongTin={thongTin} />
     </div>
   );
 }

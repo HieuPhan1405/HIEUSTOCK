@@ -5,6 +5,7 @@ import { createChart, createSeriesMarkers, CandlestickSeries, HistogramSeries, L
 import { tinhIchimoku, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { DaiMay, DaiGia } from "@/components/bieuDoPlugin";
 import { fmt } from "@/components/dungChung";
+import BangThongTinBieuDo from "@/components/BangThongTinBieuDo";
 import { dangTrongPhienGiaoDich } from "@/lib/khungGioVaoLenh";
 import { soVN, pctVN } from "@/lib/soVN";
 
@@ -168,7 +169,7 @@ function Chip({ bat, onClick, children, mau }) {
 // Bieu do ky thuat kieu FireAnt/TradingView: nen Nhat + khoi luong + Ichimoku (9-17-33, may) + duong can bang dai han (65/129) + MA,
 // ve them vung mua / cat lo / chot loi cua he thong (neu ma dang giu lenh). Cong thuc chi bao giong het AFL.
 // Gia = gia DA DIEU CHINH co tuc/thuong CP (giong du lieu AmiBroker) de chi bao khop tin hieu; nguon qua /api/gia-lich-su.
-export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCao = 540 }) {
+export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null }) {
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
@@ -383,8 +384,18 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         </div>
       </div>
 
+      {thongTin && (
+        <div className="min-[1340px]:hidden px-3 py-2 border-b" style={{ borderColor: VIEN }}>
+          <BangThongTinBieuDo tt={thongTin} />
+        </div>
+      )}
       <div className="relative" style={{ height: chieuCao }}>
         <div ref={khungRef} className="absolute inset-0" />
+        {thongTin && (
+          <div className="hidden min-[1340px]:block absolute right-[76px] top-2 z-10 pointer-events-none">
+            <BangThongTinBieuDo tt={thongTin} />
+          </div>
+        )}
         {hienTai && (
           <div
             className="absolute left-3 top-2 z-10 pointer-events-none text-[11px] leading-5 flex flex-wrap gap-x-3"
