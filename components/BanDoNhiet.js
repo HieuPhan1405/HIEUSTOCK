@@ -9,28 +9,18 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const NEN_SECTOR = "var(--vien-nhe)";
 const MUTED = "var(--mo)";
-const TEXT = "var(--chu)";
 const CHIEU_CAO = 460;
 const GIA_TRI_TOI_THIEU = 0.1; // ma thanh khoan qua thap (gtgd_tb20 null/0) van co 1 o nho, khong bien mat hoan toan khoi ban do.
 
-function hexSangRgb(hex) {
-  const n = parseInt(hex.slice(1), 16);
-  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-}
-function tronMau(a, b, t) {
-  const [r1, g1, b1] = hexSangRgb(a);
-  const [r2, g2, b2] = hexSangRgb(b);
-  return `rgb(${Math.round(r1 + (r2 - r1) * t)},${Math.round(g1 + (g2 - g1) * t)},${Math.round(b1 + (b2 - b1) * t)})`;
-}
-const TRUNG_TINH = "var(--vien-dam)";
-const DO_DAM = "#7F1D1D";
-const XANH_DAM = "var(--xanh-dam)";
-// Mau theo % thay doi gia, noi tu trung tinh (0%) ra do/xanh dam - bao hoa o +-4% (giong da so cong cu
-// heatmap: bien dong manh hon 4% khong can toi mau dam hon nua, tranh ca bang do/xanh chot het o vai ma).
+// Mau theo % thay doi gia: tu trung tinh (0%) toi xanh/do dam, bao hoa o +-4% (giong da so cong cu heatmap: bien dong manh hon 4% khong can dam hon nua,
+// tranh ca bang do/xanh chot het o vai ma). Dung color-mix voi bien CSS (--nhiet-*, doi theo che do sang/toi) - KHONG tu doc ma hex, vi bien CSS la chuoi "var(...)"
+// khong parse duoc (tung gay o tang bi den, o giam bi do dam sai).
+const TRUNG_TINH = "var(--nhiet-trung)";
 function mauTheoDoi(doi) {
   if (doi == null) return TRUNG_TINH;
   const m = Math.max(-4, Math.min(4, doi));
-  return m >= 0 ? tronMau(TRUNG_TINH, XANH_DAM, m / 4) : tronMau(TRUNG_TINH, DO_DAM, -m / 4);
+  const dam = m >= 0 ? "var(--nhiet-tang)" : "var(--nhiet-giam)";
+  return `color-mix(in srgb, ${dam} ${Math.round((Math.abs(m) / 4) * 100)}%, ${TRUNG_TINH})`;
 }
 
 // Ban do nhiet toan thi truong: 1 o = 1 ma, dien tich theo GTGD TB20 (thanh khoan), mau theo % thay
@@ -117,20 +107,20 @@ export default function BanDoNhiet({ tatCa }) {
               }`;
               return (
                 <a key={la.data.ma} href={`/ma/${la.data.ma}`} title={chuThich}>
-                  <rect x={la.x0} y={la.y0} width={w} height={h} fill={mauTheoDoi(la.data.doi)} style={{ cursor: "pointer" }} />
+                  <rect x={la.x0} y={la.y0} width={w} height={h} style={{ cursor: "pointer", fill: mauTheoDoi(la.data.doi) }} />
                   {hienCa2 && (
                     <>
-                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 - 3} textAnchor="middle" fontSize="11" fontWeight="700" fill={TEXT} style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
+                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 - 3} textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--nhiet-chu)" style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
                         {la.data.ma}
                       </text>
-                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 11} textAnchor="middle" fontSize="10" fill="var(--chu-2)" style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
+                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 11} textAnchor="middle" fontSize="10" fill="var(--nhiet-chu-2)" style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
                         {la.data.doi >= 0 ? "+" : ""}
                         {soVN(la.data.doi, 1, true)}%
                       </text>
                     </>
                   )}
                   {hienMa && (
-                    <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 4} textAnchor="middle" fontSize="10" fontWeight="700" fill={TEXT} style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
+                    <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 4} textAnchor="middle" fontSize="10" fontWeight="700" fill="var(--nhiet-chu)" style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
                       {la.data.ma}
                     </text>
                   )}

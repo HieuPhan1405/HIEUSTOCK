@@ -51,6 +51,11 @@ html[data-theme="dark"] {
   --hover-dam: rgba(255,255,255,0.10);
   --phu: rgba(255,255,255,0.05);
   --thanh-cuon: #2E2E3A;
+  --nhiet-trung: #3A3A47;
+  --nhiet-tang: #16A34A;
+  --nhiet-giam: #7F1D1D;
+  --nhiet-chu: #F5F5F7;
+  --nhiet-chu-2: #D8D8E0;
 }
 html[data-theme="light"] {
   color-scheme: light;
@@ -92,6 +97,11 @@ html[data-theme="light"] {
   --hover-dam: rgba(20,20,40,0.09);
   --phu: rgba(20,20,40,0.04);
   --thanh-cuon: #C5C8D6;
+  --nhiet-trung: #E4E6EE;
+  --nhiet-tang: #4ADE80;
+  --nhiet-giam: #F87171;
+  --nhiet-chu: #12121C;
+  --nhiet-chu-2: #2B2B3A;
 }
 
 
