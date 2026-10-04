@@ -49,7 +49,9 @@ for (const s of syms) {
       await tbl.scrollIntoViewIfNeeded();
       await page.mouse.move(2, 2);
       await page.waitForTimeout(800);
-      await tbl.screenshot({ path: `${out}/chart_${s}.png` });
+      // chụp theo toạ độ (clip) thay vì element.screenshot: tránh bảng bị nở ngang khi mã có lệnh mở
+      const bb = await tbl.evaluate(el => { const r = el.getBoundingClientRect(); return { x: r.left, y: r.top + scrollY, w: Math.min(r.width, 430 - r.left), h: r.height }; });
+      await page.screenshot({ path: `${out}/chart_${s}.png`, fullPage: true, clip: { x: bb.x, y: bb.y, width: bb.w, height: bb.h } });
       console.log(s, 'ok');
       ok = true;
     } catch (e) {
