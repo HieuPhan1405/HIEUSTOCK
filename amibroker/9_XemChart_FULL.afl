@@ -386,7 +386,7 @@ VNMidCapList = "ANV,BCM,BMP,BSI,BWE,CII,CMG,CTD,CTR,CTS,"+
     "PVT,REE,SBT,SCS,SIP,SJS,SZC,TCH,VCG,VCI,"+
     "VGC,VHC,VIX,VND,VPI,VSC,VTP,DGC,LPB,SHB,MSR,"+
     "TMS,MBS,SHS,BVS,PVS,OIL,VGI,FOX,ACV,VGT,"+
-    "NTP,QNS,LTG,HNG,MCH,PVI,TCX,VCK";
+    "NTP,QNS,LTG,HNG,MCH,PVI,TCX,VCK,VEA";
 InVNMidCap = StrFind( "," + VNMidCapList + ",", "," + Name() + "," ) > 0;
 
 VN100List = VN30List + "," + VNMidCapList;
