@@ -1,6 +1,6 @@
 ---
 name: hieu-talking-head-style
-description: Phong cách dựng video talking head dọc (9:16 TikTok/Reels) của Hiếu cho kênh "Chứng khoán cùng Mây" — rút ra từ 3 video mẫu. Dùng khi Hiếu gửi video talking head để edit, hoặc hỏi cách dựng cho "giống mấy video mẫu". Áp dụng cùng /talking-head-recut, /embedded-captions, /hyperframes-keyframes, /media-use.
+description: Phong cách dựng video talking head dọc (9:16 TikTok/Reels) của Hiếu cho kênh "Phan Hiếu Stock" — rút ra từ 3 video mẫu. Dùng khi Hiếu gửi video talking head để edit, hoặc hỏi cách dựng cho "giống mấy video mẫu". Áp dụng cùng /talking-head-recut, /embedded-captions, /hyperframes-keyframes, /media-use.
 ---
 
 # Phong cách talking head của Hiếu
