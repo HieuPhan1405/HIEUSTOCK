@@ -22,6 +22,17 @@ const uv = ungVienChotMua(tatCa);
 ok("ung vien: moi lenh he thong dang giu (GMD vua MUA, VPB + FPT NAM GIU, FPT mua moi)", uv.map((x) => `${x.ma}:${x.loai}`).join() === "GMD:goc,VPB:goc,FPT:goc,FPT:giua", JSON.stringify(uv));
 ok("gia / cat lo / TP dong bang", uv[0].gia_mua === 78.2 && uv[0].stop_loss === 73.5 && uv[0].tp1 === 82.11 && uv[0].ngay_mua === NGAY);
 
+// Loi GVR 07/10/2026: ma da co lenh WEB GIU (row.lenh_web la MANG) van phai chot duoc lenh moi cua he thong (Mua moi hom nay), khong coi dong sao chep tu row la "lenh web".
+{
+  const rowGVR = {
+    ma: "GVR", tin: "NAM GIU", gia: 33.6, gia_mua: 32.2, ngay_mua: "2026-09-17", stop_loss: 30.27, tp1: 34.95, tp2: 35.4, tp3: 46.5,
+    mua_giua: true, dang_giu_giua: true, gia_mua_giua: 33.55, ngay_mua_giua: "2026-10-07", stop_giua: 31.41, tp1_giua: 35.23, tp2_giua: 36.9, tp3_giua: 46.5,
+    lenh_web: [{ ma: "GVR", loai: "giua", ngay_mua: "2026-10-02", gia_mua: 32.9, stop_loss: 31.19, tp1: 34.9, tp2: 36.19, tp3: 46.5, tp_da_cham: null }],
+  };
+  const u = ungVienChotMua([rowGVR]).map((x) => `${x.loai}:${x.ngay_mua}`).join();
+  ok("ma co lenh web giu van chot duoc lenh Mua moi hom nay (giua 07/10) va lenh goc; khong lap lai lenh web (giua 02/10)", u === "goc:2026-09-17,giua:2026-10-07", u);
+}
+
 const lGMD = { ma: "GMD", loai: "goc", ngay_mua: NGAY, gia_mua: 78.2, stop_loss: 73.5, tp1: 82.11, tp2: 86.02, tp3: 89.93, so_phien_diem_thap: 0, ngay_diem: null, diem_cuoi: null, tp_da_cham: null };
 
 // He thong con giu dung lenh -> khong tu quan ly
