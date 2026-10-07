@@ -15,3 +15,9 @@ export function linkZalo(tt) {
   const so = String(tt?.sdt || "").replace(/\D/g, "");
   return so.length >= 9 ? `https://zalo.me/${so}` : null;
 }
+
+// TikTok: dung link chu web nhap o /quan-tri; chua nhap thi dung kenh mac dinh de nut TikTok luon hien.
+export const TIKTOK_MAC_DINH = "https://www.tiktok.com/@phanhieustock";
+export function linkTiktok(tt) {
+  return linkNgoai(tt?.tiktok) || TIKTOK_MAC_DINH;
+}

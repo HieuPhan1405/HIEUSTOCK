@@ -1,6 +1,7 @@
 import { Mail, Phone, MessageCircle, Music2, Link2, Landmark } from "lucide-react";
 import { layThongTinLienHe } from "@/lib/thongTinLienHe";
 import FormGuiTinNhan from "@/components/FormGuiTinNhan";
+import { linkTiktok } from "@/components/kenhLienHe";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -53,7 +54,8 @@ export default async function TrangLienHe() {
     tt = null;
   }
 
-  const coThongTinKenh = tt && (tt.sdt || tt.zalo || tt.tiktok || tt.facebook || tt.so_tk);
+  const tiktok = linkTiktok(tt);
+  const coThongTinKenh = true; // luon co TikTok mac dinh
 
   return (
     <div className="max-w-xl mx-auto px-6 py-10" style={{ color: TEXT }}>
@@ -69,11 +71,11 @@ export default async function TrangLienHe() {
 
       {coThongTinKenh ? (
         <div className="rounded-2xl border p-6 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <DongKenh Icon={Phone} nhan="Số điện thoại" giaTri={tt.sdt} />
-          <DongKenh Icon={MessageCircle} nhan="Nhóm Zalo" giaTri={tt.zalo} laLink />
-          <DongKenh Icon={Music2} nhan="TikTok" giaTri={tt.tiktok} laLink />
-          <DongKenh Icon={Link2} nhan="Facebook" giaTri={tt.facebook} laLink />
-          {tt.so_tk && (
+          <DongKenh Icon={Phone} nhan="Số điện thoại" giaTri={tt?.sdt} />
+          <DongKenh Icon={MessageCircle} nhan="Nhóm Zalo" giaTri={tt?.zalo} laLink />
+          <DongKenh Icon={Music2} nhan="TikTok" giaTri={tiktok} laLink />
+          <DongKenh Icon={Link2} nhan="Facebook" giaTri={tt?.facebook} laLink />
+          {tt?.so_tk && (
             <div className="flex items-center gap-3 pt-3">
               <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "var(--vien-nhe)" }}>
                 <Landmark size={16} color={PRIMARY} strokeWidth={2} aria-hidden="true" />

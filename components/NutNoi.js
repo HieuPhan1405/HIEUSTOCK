@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowUp, MessageCircle, X } from "lucide-react";
+import { ArrowUp, MessageCircle, Music2, X } from "lucide-react";
 
-// Cac nut noi goc duoi ben phai: len dau trang (chi hien khi da cuon xuong), Facebook, Zalo (2 nut sau chi hien neu chu web da nhap kenh).
-// Dien thoai: Facebook + Zalo gom vao 1 nut "Lien he" (bam moi xoe ra) va nut nho hon de khong de len chu; may tinh van hien du.
-export default function NutNoi({ zalo, facebook }) {
+// Cac nut noi goc duoi ben phai: len dau trang (chi hien khi da cuon xuong), Facebook, TikTok, Zalo (3 nut sau chi hien neu chu web da nhap kenh).
+// Dien thoai: Facebook + TikTok + Zalo gom vao 1 nut "Lien he" (bam moi xoe ra) va nut nho hon de khong de len chu; may tinh van hien du.
+export default function NutNoi({ zalo, facebook, tiktok }) {
   const [daCuon, setDaCuon] = useState(false);
   const [xoe, setXoe] = useState(false);
 
@@ -18,7 +18,7 @@ export default function NutNoi({ zalo, facebook }) {
 
   const lenDau = () => window.scrollTo({ top: 0, behavior: "smooth" });
   const kieu = "w-10 h-10 md:w-11 md:h-11 rounded-full flex items-center justify-center shadow-lg transition-transform hover:scale-105";
-  const coKenh = Boolean(zalo || facebook);
+  const coKenh = Boolean(zalo || facebook || tiktok);
 
   return (
     <div className="nut-noi fixed bottom-4 right-3 md:bottom-5 md:right-4 z-30 flex flex-col items-center gap-2 md:gap-2.5">
@@ -41,6 +41,11 @@ export default function NutNoi({ zalo, facebook }) {
             </svg>
           </a>
         )}
+        {tiktok && (
+          <a href={tiktok} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className={kieu} style={{ background: "#000000", color: "#FFFFFF", border: "1px solid #3A3A48" }}>
+            <Music2 size={20} aria-hidden="true" />
+          </a>
+        )}
         {zalo && (
           <a
             href={zalo}
@@ -59,7 +64,7 @@ export default function NutNoi({ zalo, facebook }) {
           type="button"
           onClick={() => setXoe((v) => !v)}
           aria-expanded={xoe}
-          aria-label={xoe ? "Đóng liên hệ" : "Liên hệ qua Zalo / Facebook"}
+          aria-label={xoe ? "Đóng liên hệ" : "Liên hệ qua Zalo / Facebook / TikTok"}
           className={`${kieu} md:hidden cursor-pointer`}
           style={{ background: xoe ? "var(--vien)" : "#0068FF", color: xoe ? "var(--chu)" : "#FFFFFF" }}
         >

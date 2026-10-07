@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Phone, MessageCircle, Music2, ShieldAlert } from "lucide-react";
 import { layThongTinLienHe } from "@/lib/thongTinLienHe";
 import NutNoi from "@/components/NutNoi";
-import { linkZalo, linkNgoai } from "@/components/kenhLienHe";
+import { linkZalo, linkNgoai, linkTiktok } from "@/components/kenhLienHe";
 
 const VIEN = "var(--vien)";
 const NEN = "var(--nen-sau)";
@@ -79,7 +79,7 @@ export default async function ChanTrang() {
   const hrefSdt = sdt ? `tel:${sdt.replace(/[^\d+]/g, "")}` : null;
   const hrefZalo = linkZalo(tt);
   const hrefFb = linkNgoai(tt?.facebook);
-  const hrefTiktok = linkNgoai(tt?.tiktok);
+  const hrefTiktok = linkTiktok(tt);
   const nam = new Date().getFullYear();
 
   return (
@@ -155,7 +155,7 @@ export default async function ChanTrang() {
         </div>
       </footer>
 
-      <NutNoi zalo={hrefZalo} facebook={hrefFb} />
+      <NutNoi zalo={hrefZalo} facebook={hrefFb} tiktok={hrefTiktok} />
     </>
   );
 }
