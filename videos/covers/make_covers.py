@@ -15,6 +15,7 @@ COVERS = {
     "gdp": dict(photo="img/gdp.jpg", l1="GDP +9,95%", c1="#F5C542", l2="VN-INDEX VẪN GIẢM", c2="#FF5A5A", l3="Vì sao số đẹp mà chỉ số không?"),
     "banle": dict(photo="img/banle.jpg", l1="CỔ PHIẾU BÁN LẺ", c1="#F5C542", l2="3 MỐC TIN", c2="#22C55E", l3="Mã nào hưởng lợi, mã nào né?"),
     "nvb": dict(photo="img/nvb.jpg", l1="NVB", c1="#F5C542", l2="TĂNG TRẦN", c2="#22C55E", l3="Tiền năm sau mới về, ai được gì?"),
+    "thue": dict(photo="img/thue.jpg", l1="THUẾ MỸ", c1="#F5C542", l2="CHỐT CHƯA?", c2="#22C55E", l3="Chốt đàm phán, chưa chốt mức thuế"),
     "msn": dict(photo="img/msn.jpg", l1="MSN", c1="#F5C542", l2="TRÊN 110.000đ", c2="#22C55E", l3="2 tổ chức bất đồng ở đâu?"),
 }
 # (rộng, cao, offset y của ảnh, cỡ chữ l1, l2, l3, top của khối chữ)
