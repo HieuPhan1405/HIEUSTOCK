@@ -163,8 +163,8 @@ BR=""
 t_disc = DUR - 3.6
 # Hook
 card("c01-hook", 0.15, T("Điều thứ nhất") - 0.1, """<div class="a" id="h1">THUẾ VIỆT – MỸ</div><div class="b" id="h2">chốt chưa?</div>""", """
-SEL .a{position:absolute;left:60px;width:880px;top:200px;text-align:center;font:800 96px 'Be Vietnam Pro';color:@GOLD@;line-height:1.1;text-shadow:0 6px 0 rgba(0,0,0,.5)}
-SEL .b{position:absolute;left:60px;width:880px;top:330px;text-align:center;font:italic 700 84px 'Playfair Display';color:@WHITE@;text-shadow:0 4px 22px rgba(0,0,0,.8)}""",
+SEL .a{position:absolute;left:100px;width:800px;top:200px;text-align:center;background:rgba(10,10,10,.82);border-radius:24px;padding:0 0 10px;font:800 84px 'Be Vietnam Pro';color:@GOLD@;line-height:1.2;text-shadow:0 6px 0 rgba(0,0,0,.5)}
+SEL .b{position:absolute;left:60px;width:880px;top:345px;text-align:center;font:italic 700 84px 'Playfair Display';color:@WHITE@;text-shadow:0 0 6px #000,0 4px 24px rgba(0,0,0,.95)}""",
      [pop("#h1", 0.2), rise("#h2", 0.55, 0.45, 30)])
 
 def tag(cid, n, title, s, e):
