@@ -1,0 +1,362 @@
+{
+	"systeminfo": "WHISPER : VITISAI = 0 | COREML = 0 | OPENVINO = 0 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX_VNNI = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | AVX512 = 1 | AVX512_VBMI = 1 | AVX512_VNNI = 1 | AVX512_BF16 = 1 | AMX_INT8 = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "medium",
+		"multilingual": true,
+		"vocab": 51865,
+		"audio": {
+			"ctx": 1500,
+			"state": 1024,
+			"head": 16,
+			"layer": 24
+		},
+		"text": {
+			"ctx": 448,
+			"state": 1024,
+			"head": 16,
+			"layer": 24
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/tmp/claude-0/ggml-medium.bin",
+		"language": "vi",
+		"translate": false
+	},
+	"result": {
+		"language": "vi"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,080"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 80
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,080",
+				"to": "00:00:00,190"
+			},
+			"offsets": {
+				"from": 80,
+				"to": 190
+			},
+			"text": " Cơ"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,190",
+				"to": "00:00:00,480"
+			},
+			"offsets": {
+				"from": 190,
+				"to": 480
+			},
+			"text": " bản"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,480",
+				"to": "00:00:00,720"
+			},
+			"offsets": {
+				"from": 480,
+				"to": 720
+			},
+			"text": " hoàn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,720",
+				"to": "00:00:01,240"
+			},
+			"offsets": {
+				"from": 720,
+				"to": 1240
+			},
+			"text": " tất"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,240",
+				"to": "00:00:01,410"
+			},
+			"offsets": {
+				"from": 1240,
+				"to": 1410
+			},
+			"text": " chưa"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,410",
+				"to": "00:00:01,820"
+			},
+			"offsets": {
+				"from": 1410,
+				"to": 1820
+			},
+			"text": " phải"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,820",
+				"to": "00:00:02,020"
+			},
+			"offsets": {
+				"from": 1820,
+				"to": 2020
+			},
+			"text": " đã"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,020",
+				"to": "00:00:02,400"
+			},
+			"offsets": {
+				"from": 2020,
+				"to": 2400
+			},
+			"text": " ký"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,400",
+				"to": "00:00:02,410"
+			},
+			"offsets": {
+				"from": 2400,
+				"to": 2410
+			},
+			"text": " và"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,410",
+				"to": "00:00:02,640"
+			},
+			"offsets": {
+				"from": 2410,
+				"to": 2640
+			},
+			"text": " còn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,640",
+				"to": "00:00:02,910"
+			},
+			"offsets": {
+				"from": 2640,
+				"to": 2910
+			},
+			"text": " hai"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,910",
+				"to": "00:00:03,280"
+			},
+			"offsets": {
+				"from": 2910,
+				"to": 3280
+			},
+			"text": " cục"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,280",
+				"to": "00:00:03,520"
+			},
+			"offsets": {
+				"from": 3280,
+				"to": 3520
+			},
+			"text": " đều"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,520",
+				"to": "00:00:04,050"
+			},
+			"offsets": {
+				"from": 3520,
+				"to": 4050
+			},
+			"text": " che,"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,050",
+				"to": "00:00:04,340"
+			},
+			"offsets": {
+				"from": 4050,
+				"to": 4340
+			},
+			"text": " bục"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,340",
+				"to": "00:00:05,150"
+			},
+			"offsets": {
+				"from": 4340,
+				"to": 5150
+			},
+			"text": " 301"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,150",
+				"to": "00:00:05,370"
+			},
+			"offsets": {
+				"from": 5150,
+				"to": 5370
+			},
+			"text": " khác"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,370",
+				"to": "00:00:05,630"
+			},
+			"offsets": {
+				"from": 5370,
+				"to": 5630
+			},
+			"text": " đang"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,630",
+				"to": "00:00:06,080"
+			},
+			"offsets": {
+				"from": 5630,
+				"to": 6080
+			},
+			"text": " chờ"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,080",
+				"to": "00:00:06,080"
+			},
+			"offsets": {
+				"from": 6080,
+				"to": 6080
+			},
+			"text": " về"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,080",
+				"to": "00:00:06,260"
+			},
+			"offsets": {
+				"from": 6080,
+				"to": 6260
+			},
+			"text": " dư"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,260",
+				"to": "00:00:06,690"
+			},
+			"offsets": {
+				"from": 6260,
+				"to": 6690
+			},
+			"text": " thừa"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,690",
+				"to": "00:00:06,890"
+			},
+			"offsets": {
+				"from": 6690,
+				"to": 6890
+			},
+			"text": " công"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,890",
+				"to": "00:00:07,130"
+			},
+			"offsets": {
+				"from": 6890,
+				"to": 7130
+			},
+			"text": " suất"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,130",
+				"to": "00:00:07,250"
+			},
+			"offsets": {
+				"from": 7130,
+				"to": 7250
+			},
+			"text": " và"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,250",
+				"to": "00:00:07,370"
+			},
+			"offsets": {
+				"from": 7250,
+				"to": 7370
+			},
+			"text": " sở"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,370",
+				"to": "00:00:07,550"
+			},
+			"offsets": {
+				"from": 7370,
+				"to": 7550
+			},
+			"text": " hữu"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,550",
+				"to": "00:00:07,730"
+			},
+			"offsets": {
+				"from": 7550,
+				"to": 7730
+			},
+			"text": " trí"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,730",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 7730,
+				"to": 8000
+			},
+			"text": " tuệ."
+		}
+	]
+}

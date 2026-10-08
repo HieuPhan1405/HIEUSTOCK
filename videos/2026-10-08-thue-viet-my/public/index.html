@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"/>
+<style>
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-ext-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-vietnamese-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-display:block;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-ext-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-display:block;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-vietnamese-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-display:block;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-800-normal.woff2') format('woff2');font-weight:800;font-style:normal;font-display:block;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-ext-800-normal.woff2') format('woff2');font-weight:800;font-style:normal;font-display:block;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-vietnamese-800-normal.woff2') format('woff2');font-weight:800;font-style:normal;font-display:block;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair-display-latin-700-italic.woff2') format('woff2');font-weight:700;font-style:italic;font-display:block;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair-display-latin-ext-700-italic.woff2') format('woff2');font-weight:700;font-style:italic;font-display:block;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair-display-vietnamese-700-italic.woff2') format('woff2');font-weight:700;font-style:italic;font-display:block;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Pacifico';src:url('fonts/pacifico-latin-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Pacifico';src:url('fonts/pacifico-latin-ext-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Pacifico';src:url('fonts/pacifico-vietnamese-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:'Be Vietnam Pro','Playfair Display','Pacifico',sans-serif}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#111111}
+.video-wrapper{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;transform-origin:0 0}
+#video-inner{position:absolute;inset:0;transform-origin:35% 34%}
+#video-inner video{width:100%;height:100%;object-fit:cover}
+.shade{position:absolute;left:0;right:0;bottom:0;height:980px;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,.4) 35%,rgba(0,0,0,.66) 100%);pointer-events:none}
+.card-host{position:absolute;pointer-events:none;overflow:hidden}
+.card-host .card{position:relative;width:100%;height:100%;overflow:hidden}
+.cap{position:absolute;z-index:10;left:60px;width:880px;top:1170px;height:260px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;text-shadow:0 4px 18px rgba(0,0,0,.7)}
+.cap .sm{font:700 46px 'Be Vietnam Pro';color:#FAFAFA;margin-bottom:2px}
+.cap .w{display:inline-block}
+.cap .kk{font-family:'Playfair Display';font-style:italic;font-weight:700;color:#F5C542;line-height:1.1}
+.cap .kb{font-family:'Be Vietnam Pro';font-weight:800;color:#FAFAFA;line-height:1.12}
+.cap .kg{display:inline-block;font-family:'Be Vietnam Pro';font-weight:800;color:#22C55E;line-height:1.1;background:rgba(10,10,10,.72);padding:2px 26px 8px;border-radius:20px}
+.cap .kr{display:inline-block;font-family:'Be Vietnam Pro';font-weight:800;color:#FF5A5A;line-height:1.1;background:rgba(10,10,10,.72);padding:2px 26px 8px;border-radius:20px}
+</style></head>
+<body>
+<div id="stage" data-composition-id="talking-head-recut" data-start="0" data-duration="70.3333" data-fps="30" data-width="1080" data-height="1920">
+<div class="video-wrapper" id="video-wrap"><div id="video-inner">
+<video id="bg-video" src="input-video.mp4" muted playsinline data-start="0" data-duration="70.3333" data-track-index="1"></video>
+</div><div class="shade"></div></div>
+<audio id="source-audio" src="input-video.mp4" data-start="0" data-duration="70.3333" data-track-index="10" data-volume="1"></audio>
+<audio id="sfx-0" src="sfx/pop.wav" data-start="0.1333" data-duration="0.3" data-track-index="11" data-volume="0.25"></audio>
+<audio id="sfx-1" src="sfx/pop.wav" data-start="5.7333" data-duration="0.3" data-track-index="12" data-volume="0.25"></audio>
+<audio id="sfx-2" src="sfx/pop.wav" data-start="22.3333" data-duration="0.3" data-track-index="13" data-volume="0.25"></audio>
+<audio id="sfx-3" src="sfx/pop.wav" data-start="52.1333" data-duration="0.3" data-track-index="14" data-volume="0.25"></audio>
+<audio id="sfx-4" src="sfx/pop.wav" data-start="64.8667" data-duration="0.3" data-track-index="11" data-volume="0.25"></audio>
+<div class="card-host clip" id="c01-hook" data-card-id="c01-hook" data-start="0.1333" data-duration="5.5667" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c01-hook"><style>.card[data-card-id="c01-hook"] .root{position:absolute;inset:0;}
+.card[data-card-id="c01-hook"] .a{position:absolute;left:60px;width:880px;top:200px;text-align:center;font:800 96px 'Be Vietnam Pro';color:#F5C542;line-height:1.1;text-shadow:0 6px 0 rgba(0,0,0,.5)}
+.card[data-card-id="c01-hook"] .b{position:absolute;left:60px;width:880px;top:330px;text-align:center;font:italic 700 84px 'Playfair Display';color:#FAFAFA;text-shadow:0 4px 22px rgba(0,0,0,.8)}</style><div class="root"><div class="a" id="h1">THUẾ VIỆT – MỸ</div><div class="b" id="h2">chốt chưa?</div></div></div></div>
+<div class="card-host clip" id="c02-d1" data-card-id="c02-d1" data-start="5.7333" data-duration="4.2667" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c02-d1"><style>.card[data-card-id="c02-d1"] .root{position:absolute;inset:0;}
+.card[data-card-id="c02-d1"] .t{position:absolute;left:60px;top:200px;display:flex;align-items:center;gap:18px;padding:14px 28px 14px 16px;background:rgba(17,17,17,.86);border-radius:28px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.card[data-card-id="c02-d1"] .n{font:800 34px 'Be Vietnam Pro';color:#111111;background:#F5C542;padding:6px 18px;border-radius:12px;letter-spacing:2px}
+.card[data-card-id="c02-d1"] .t b{font:800 44px 'Be Vietnam Pro';color:#fff}</style><div class="root"><div class="t" id="c02-d1-t"><span class="n">ĐIỀU 1</span><b>Cái gì đã chốt?</b></div></div></div></div>
+<div class="card-host clip" id="c03-d2" data-card-id="c03-d2" data-start="22.3333" data-duration="4.2667" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c03-d2"><style>.card[data-card-id="c03-d2"] .root{position:absolute;inset:0;}
+.card[data-card-id="c03-d2"] .t{position:absolute;left:60px;top:200px;display:flex;align-items:center;gap:18px;padding:14px 28px 14px 16px;background:rgba(17,17,17,.86);border-radius:28px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.card[data-card-id="c03-d2"] .n{font:800 34px 'Be Vietnam Pro';color:#111111;background:#F5C542;padding:6px 18px;border-radius:12px;letter-spacing:2px}
+.card[data-card-id="c03-d2"] .t b{font:800 44px 'Be Vietnam Pro';color:#fff}</style><div class="root"><div class="t" id="c03-d2-t"><span class="n">ĐIỀU 2</span><b>Ngành nào nhạy nhất?</b></div></div></div></div>
+<div class="card-host clip" id="c04-d3" data-card-id="c04-d3" data-start="52.1333" data-duration="4.2333" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c04-d3"><style>.card[data-card-id="c04-d3"] .root{position:absolute;inset:0;}
+.card[data-card-id="c04-d3"] .t{position:absolute;left:60px;top:200px;display:flex;align-items:center;gap:18px;padding:14px 28px 14px 16px;background:rgba(17,17,17,.86);border-radius:28px;box-shadow:0 18px 50px rgba(0,0,0,.35)}
+.card[data-card-id="c04-d3"] .n{font:800 34px 'Be Vietnam Pro';color:#111111;background:#F5C542;padding:6px 18px;border-radius:12px;letter-spacing:2px}
+.card[data-card-id="c04-d3"] .t b{font:800 44px 'Be Vietnam Pro';color:#fff}</style><div class="root"><div class="t" id="c04-d3-t"><span class="n">ĐIỀU 3</span><b>Chỗ nhiều người bỏ qua</b></div></div></div></div>
+<div class="card-host clip" id="c05-cta" data-card-id="c05-cta" data-start="64.8667" data-duration="5.4667" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c05-cta"><style>.card[data-card-id="c05-cta"] .root{position:absolute;inset:0;}
+.card[data-card-id="c05-cta"] .disc{position:absolute;left:60px;width:880px;top:1130px;padding:12px 16px;border-radius:16px;background:rgba(17,17,17,.78);text-align:center;font:400 26px 'Be Vietnam Pro';color:rgba(255,255,255,.95);line-height:1.4}</style><div class="root"><div class="disc" id="c05-d">Nội dung chỉ mang tính chia sẻ thông tin, không phải khuyến nghị mua/bán.<br>Ý kiến cá nhân, không đại diện công ty. Thông tin theo lời tác giả và báo chí, chưa kiểm chứng độc lập.</div></div></div></div>
+<div class="cap clip" id="cap-0" data-start="0.2000" data-duration="0.4333" data-track-index="5"><div class="sm">Việt Nam</div><div class="kk" style="font-size:92px"><span class="w">và</span> <span class="w">Mỹ</span> </div></div>
+<div class="cap clip" id="cap-1" data-start="0.6667" data-duration="0.6667" data-track-index="5"><div class="sm">cơ bản</div><div class="kb" style="font-size:80px"><span class="w">hoàn</span> <span class="w">tất</span> </div></div>
+<div class="cap clip" id="cap-2" data-start="1.3667" data-duration="1.3000" data-track-index="5"><div class="sm">đàm phán</div><div class="kb" style="font-size:80px"><span class="w">thương</span> <span class="w">mại</span> </div></div>
+<div class="cap clip" id="cap-3" data-start="2.7000" data-duration="0.8000" data-track-index="5"><div class="sm">nhưng bây</div><div class="kr" style="font-size:80px"><span class="w">giờ</span> <span class="w">chưa</span> </div></div>
+<div class="cap clip" id="cap-4" data-start="3.5000" data-duration="1.0000" data-track-index="5"><div class="sm">ai biết</div><div class="kk" style="font-size:92px"><span class="w">mức</span> <span class="w">thuế</span> </div></div>
+<div class="cap clip" id="cap-5" data-start="4.5000" data-duration="0.7667" data-track-index="5"><div class="sm">cuối cùng</div><div class="kb" style="font-size:80px"><span class="w">là</span> <span class="w">bao</span> </div></div>
+<div class="cap clip" id="cap-6" data-start="5.2667" data-duration="0.4667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">nhiêu</span> </div></div>
+<div class="cap clip" id="cap-7" data-start="5.7667" data-duration="1.0333" data-track-index="5"><div class="sm">Điều</div><div class="kb" style="font-size:80px"><span class="w">thứ</span> <span class="w">nhất</span> </div></div>
+<div class="cap clip" id="cap-8" data-start="6.8000" data-duration="1.0333" data-track-index="5"><div class="sm">cái gì</div><div class="kb" style="font-size:80px"><span class="w">đã</span> <span class="w">chốt</span> </div></div>
+<div class="cap clip" id="cap-9" data-start="7.8667" data-duration="0.9333" data-track-index="5"><div class="kk" style="font-size:92px"><span class="w">Ngày</span> <span class="w">7</span> </div></div>
+<div class="cap clip" id="cap-10" data-start="8.8000" data-duration="0.6667" data-track-index="5"><div class="kk" style="font-size:92px"><span class="w">tháng</span> <span class="w">10</span> </div></div>
+<div class="cap clip" id="cap-11" data-start="9.5000" data-duration="0.8667" data-track-index="5"><div class="sm">Bộ Công</div><div class="kb" style="font-size:80px"><span class="w">Thương</span> <span class="w">cho</span> </div></div>
+<div class="cap clip" id="cap-12" data-start="10.4000" data-duration="0.6667" data-track-index="5"><div class="sm">biết hai</div><div class="kb" style="font-size:80px"><span class="w">bên</span> <span class="w">cơ</span> </div></div>
+<div class="cap clip" id="cap-13" data-start="11.1000" data-duration="0.6333" data-track-index="5"><div class="sm">bản hoàn</div><div class="kb" style="font-size:80px"><span class="w">tất</span> <span class="w">nội</span> </div></div>
+<div class="cap clip" id="cap-14" data-start="11.7333" data-duration="1.0000" data-track-index="5"><div class="sm">dung</div><div class="kb" style="font-size:80px"><span class="w">hiệp</span> <span class="w">định</span> </div></div>
+<div class="cap clip" id="cap-15" data-start="12.7333" data-duration="0.5333" data-track-index="5"><div class="sm">chỉ còn</div><div class="kb" style="font-size:80px"><span class="w">một</span> <span class="w">vài</span> </div></div>
+<div class="cap clip" id="cap-16" data-start="13.3000" data-duration="1.0667" data-track-index="5"><div class="sm">vấn đề</div><div class="kk" style="font-size:92px"><span class="w">kỹ</span> <span class="w">thuật</span> </div></div>
+<div class="cap clip" id="cap-17" data-start="14.4000" data-duration="1.3667" data-track-index="5"><div class="sm">nhưng chưa</div><div class="kr" style="font-size:80px"><span class="w">có</span> <span class="w">ngày</span> </div></div>
+<div class="cap clip" id="cap-18" data-start="15.8000" data-duration="1.0333" data-track-index="5"><div class="sm">ký và</div><div class="kr" style="font-size:80px"><span class="w">chưa</span> <span class="w">công</span> </div></div>
+<div class="cap clip" id="cap-19" data-start="16.8333" data-duration="1.1333" data-track-index="5"><div class="sm">bố</div><div class="kk" style="font-size:92px"><span class="w">mức</span> <span class="w">thuế</span> </div></div>
+<div class="cap clip" id="cap-20" data-start="18.0000" data-duration="0.5000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">Hiện</span> <span class="w">nay</span> </div></div>
+<div class="cap clip" id="cap-21" data-start="18.5333" data-duration="0.8667" data-track-index="5"><div class="sm">hàng Việt</div><div class="kk" style="font-size:92px"><span class="w">vào</span> <span class="w">Mỹ</span> </div></div>
+<div class="cap clip" id="cap-22" data-start="19.4333" data-duration="1.7667" data-track-index="5"><div class="sm">vẫn chịu</div><div class="kk" style="font-size:92px"><span class="w">thuế</span> <span class="w">12,5%</span> </div></div>
+<div class="cap clip" id="cap-23" data-start="21.2000" data-duration="1.1333" data-track-index="5"><div class="sm">theo</div><div class="kk" style="font-size:92px"><span class="w">mục</span> <span class="w">301</span> </div></div>
+<div class="cap clip" id="cap-24" data-start="22.3667" data-duration="0.9333" data-track-index="5"><div class="sm">Điều</div><div class="kb" style="font-size:80px"><span class="w">thứ</span> <span class="w">hai</span> </div></div>
+<div class="cap clip" id="cap-25" data-start="23.3333" data-duration="0.9667" data-track-index="5"><div class="sm">ngành nào</div><div class="kb" style="font-size:80px"><span class="w">nhạy</span> <span class="w">nhất</span> </div></div>
+<div class="cap clip" id="cap-26" data-start="24.3333" data-duration="1.0667" data-track-index="5"><div class="sm">Mỹ là</div><div class="kk" style="font-size:92px"><span class="w">thị</span> <span class="w">trường</span> </div></div>
+<div class="cap clip" id="cap-27" data-start="25.4000" data-duration="0.7667" data-track-index="5"><div class="sm">xuất khẩu</div><div class="kb" style="font-size:80px"><span class="w">lớn</span> <span class="w">nhất</span> </div></div>
+<div class="cap clip" id="cap-28" data-start="26.2000" data-duration="0.3333" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">của</span> <span class="w">ta</span> </div></div>
+<div class="cap clip" id="cap-29" data-start="26.5667" data-duration="1.4000" data-track-index="5"><div class="sm">khoảng 1/3</div><div class="kk" style="font-size:92px"><span class="w">kim</span> <span class="w">ngạch</span> </div></div>
+<div class="cap clip" id="cap-30" data-start="28.0000" data-duration="1.0000" data-track-index="5"><div class="sm">Nhóm bị</div><div class="kb" style="font-size:80px"><span class="w">so</span> <span class="w">sánh</span> </div></div>
+<div class="cap clip" id="cap-31" data-start="29.0000" data-duration="1.5333" data-track-index="5"><div class="sm">trực tiếp</div><div class="kb" style="font-size:68px"><span class="w">với</span> <span class="w">Campuchia</span> </div></div>
+<div class="cap clip" id="cap-32" data-start="30.5333" data-duration="1.1667" data-track-index="5"><div class="sm">Indonesia và</div><div class="kb" style="font-size:80px"><span class="w">Malaysia</span> <span class="w">là</span> </div></div>
+<div class="cap clip" id="cap-33" data-start="31.7000" data-duration="0.9000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">dệt</span> <span class="w">may</span> </div></div>
+<div class="cap clip" id="cap-34" data-start="32.6333" data-duration="0.7000" data-track-index="5"><div class="sm">da giày</div><div class="kb" style="font-size:80px"><span class="w">và</span> <span class="w">hàng</span> </div></div>
+<div class="cap clip" id="cap-35" data-start="33.3333" data-duration="0.9000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">tiêu</span> <span class="w">dùng</span> </div></div>
+<div class="cap clip" id="cap-36" data-start="34.2667" data-duration="0.6667" data-track-index="5"><div class="sm">Chỉ cần</div><div class="kk" style="font-size:92px"><span class="w">chênh</span> <span class="w">thuế</span> </div></div>
+<div class="cap clip" id="cap-37" data-start="34.9667" data-duration="1.2000" data-track-index="5"><div class="sm">vài phần</div><div class="kb" style="font-size:80px"><span class="w">trăm</span> <span class="w">điểm</span> </div></div>
+<div class="cap clip" id="cap-38" data-start="36.2000" data-duration="0.6000" data-track-index="5"><div class="sm">đơn hàng</div><div class="kb" style="font-size:80px"><span class="w">có</span> <span class="w">thể</span> </div></div>
+<div class="cap clip" id="cap-39" data-start="36.8333" data-duration="1.1667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">dịch</span> <span class="w">chuyển</span> </div></div>
+<div class="cap clip" id="cap-40" data-start="38.0333" data-duration="1.3333" data-track-index="5"><div class="sm">Dệt may</div><div class="kb" style="font-size:80px"><span class="w">được</span> <span class="w">nhận</span> </div></div>
+<div class="cap clip" id="cap-41" data-start="39.3667" data-duration="0.4333" data-track-index="5"><div class="sm">định là</div><div class="kr" style="font-size:80px"><span class="w">rủi</span> <span class="w">ro</span> </div></div>
+<div class="cap clip" id="cap-42" data-start="39.8333" data-duration="0.3333" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">cao</span> <span class="w">nhất</span> </div></div>
+<div class="cap clip" id="cap-43" data-start="40.1667" data-duration="1.6667" data-track-index="5"><div class="sm">Nếu nhóm</div><div class="kb" style="font-size:80px"><span class="w">nước</span> <span class="w">đối</span> </div></div>
+<div class="cap clip" id="cap-44" data-start="41.8333" data-duration="0.9000" data-track-index="5"><div class="sm">thủ được</div><div class="kk" style="font-size:92px"><span class="w">thuế</span> <span class="w">thấp</span> </div></div>
+<div class="cap clip" id="cap-45" data-start="42.7333" data-duration="1.5333" data-track-index="5"><div class="sm">hơn ta</div><div class="kk" style="font-size:92px"><span class="w">trên</span> <span class="w">2,5%</span> </div></div>
+<div class="cap clip" id="cap-46" data-start="44.3000" data-duration="0.4000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">Ví</span> <span class="w">dụ</span> </div></div>
+<div class="cap clip" id="cap-47" data-start="44.7333" data-duration="1.5000" data-track-index="5"><div class="sm">khoảng 35%</div><div class="kk" style="font-size:92px"><span class="w">doanh</span> <span class="w">thu</span> </div></div>
+<div class="cap clip" id="cap-48" data-start="46.2667" data-duration="1.1000" data-track-index="5"><div class="sm">của Vinatex</div><div class="kk" style="font-size:92px"><span class="w">đến</span> <span class="w">từ</span> </div></div>
+<div class="cap clip" id="cap-49" data-start="47.4000" data-duration="0.7667" data-track-index="5"><div class="sm">Mỹ theo</div><div class="kk" style="font-size:92px"><span class="w">báo</span> <span class="w">cáo</span> </div></div>
+<div class="cap clip" id="cap-50" data-start="48.1667" data-duration="1.2000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">chứng</span> <span class="w">khoán</span> </div></div>
+<div class="cap clip" id="cap-51" data-start="49.3667" data-duration="0.8667" data-track-index="5"><div class="sm">còn doanh</div><div class="kb" style="font-size:80px"><span class="w">nghiệp</span> <span class="w">thuần</span> </div></div>
+<div class="cap clip" id="cap-52" data-start="50.2667" data-duration="0.5667" data-track-index="5"><div class="sm">nội địa</div><div class="kb" style="font-size:80px"><span class="w">thì</span> <span class="w">ít</span> </div></div>
+<div class="cap clip" id="cap-53" data-start="50.8667" data-duration="0.7000" data-track-index="5"><div class="sm">chịu tác</div><div class="kb" style="font-size:80px"><span class="w">động</span> <span class="w">trực</span> </div></div>
+<div class="cap clip" id="cap-54" data-start="51.5667" data-duration="0.5667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">tiếp</span> <span class="w">hơn</span> </div></div>
+<div class="cap clip" id="cap-55" data-start="52.1333" data-duration="0.8333" data-track-index="5"><div class="sm">Điều</div><div class="kk" style="font-size:92px"><span class="w">thứ</span> <span class="w">3</span> </div></div>
+<div class="cap clip" id="cap-56" data-start="53.0000" data-duration="0.9333" data-track-index="5"><div class="sm">chỗ mà</div><div class="kb" style="font-size:80px"><span class="w">nhiều</span> <span class="w">người</span> </div></div>
+<div class="cap clip" id="cap-57" data-start="53.9333" data-duration="0.4000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">bỏ</span> <span class="w">qua</span> </div></div>
+<div class="cap clip" id="cap-58" data-start="54.3333" data-duration="1.1333" data-track-index="5"><div class="sm">Cơ bản</div><div class="kb" style="font-size:80px"><span class="w">hoàn</span> <span class="w">tất</span> </div></div>
+<div class="cap clip" id="cap-59" data-start="55.5000" data-duration="1.1333" data-track-index="5"><div class="sm">chưa phải</div><div class="kr" style="font-size:80px"><span class="w">đã</span> <span class="w">ký</span> </div></div>
+<div class="cap clip" id="cap-60" data-start="56.6667" data-duration="0.8667" data-track-index="5"><div class="sm">và còn</div><div class="kb" style="font-size:80px"><span class="w">hai</span> <span class="w">cuộc</span> </div></div>
+<div class="cap clip" id="cap-61" data-start="57.5333" data-duration="1.8667" data-track-index="5"><div class="sm">điều tra</div><div class="kk" style="font-size:92px"><span class="w">mục</span> <span class="w">301</span> </div></div>
+<div class="cap clip" id="cap-62" data-start="59.4000" data-duration="0.9333" data-track-index="5"><div class="sm">khác</div><div class="kb" style="font-size:80px"><span class="w">đang</span> <span class="w">chờ</span> </div></div>
+<div class="cap clip" id="cap-63" data-start="60.3333" data-duration="0.8000" data-track-index="5"><div class="sm">về dư</div><div class="kb" style="font-size:80px"><span class="w">thừa</span> <span class="w">công</span> </div></div>
+<div class="cap clip" id="cap-64" data-start="61.1667" data-duration="0.6333" data-track-index="5"><div class="sm">suất và</div><div class="kb" style="font-size:80px"><span class="w">sở</span> <span class="w">hữu</span> </div></div>
+<div class="cap clip" id="cap-65" data-start="61.8000" data-duration="0.5667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">trí</span> <span class="w">tuệ</span> </div></div>
+<div class="cap clip" id="cap-66" data-start="62.4000" data-duration="0.8667" data-track-index="5"><div class="sm">Nghĩa là</div><div class="kb" style="font-size:80px"><span class="w">tin</span> <span class="w">tốt</span> </div></div>
+<div class="cap clip" id="cap-67" data-start="63.2667" data-duration="0.8000" data-track-index="5"><div class="sm">chưa chắc</div><div class="kr" style="font-size:80px"><span class="w">đã</span> <span class="w">là</span> </div></div>
+<div class="cap clip" id="cap-68" data-start="64.1000" data-duration="0.7667" data-track-index="5"><div class="sm">mức</div><div class="kk" style="font-size:92px"><span class="w">thuế</span> <span class="w">tốt</span> </div></div>
+<div class="cap clip" id="cap-69" data-start="64.9000" data-duration="1.0667" data-track-index="5"><div class="sm">Anh chị</div><div class="kb" style="font-size:80px"><span class="w">muốn</span> <span class="w">biết</span> </div></div>
+<div class="cap clip" id="cap-70" data-start="65.9667" data-duration="0.7667" data-track-index="5"><div class="sm">rõ thêm</div><div class="kb" style="font-size:80px"><span class="w">về</span> <span class="w">ngành</span> </div></div>
+<script src="vendor/gsap.min.js"></script>
+<script>
+(function(){
+const tl=window.gsap.timeline({paused:true});
+tl.set('.card-host[data-card-id="c01-hook"]',{visibility:'visible'},0.1333);
+tl.fromTo('.card-host[data-card-id="c01-hook"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},0.1333);
+tl.fromTo("#h1",{"opacity": 0, "scale": 0.6},{"opacity": 1, "scale": 1, "duration": 0.35, "ease": "back.out(1.8)"},0.2000);
+tl.fromTo("#h2",{"opacity": 0, "y": 30},{"opacity": 1, "y": 0, "duration": 0.45, "ease": "power3.out"},0.5333);
+tl.to('.card-host[data-card-id="c01-hook"]',{opacity:0,duration:0.25,ease:'power2.in'},5.4667);
+tl.set('.card-host[data-card-id="c01-hook"]',{visibility:'hidden'},5.7000);
+tl.set('.card-host[data-card-id="c02-d1"]',{visibility:'visible'},5.7333);
+tl.fromTo('.card-host[data-card-id="c02-d1"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},5.7333);
+tl.fromTo("#c02-d1-t",{"opacity": 0, "y": -30},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},5.8000);
+tl.to('.card-host[data-card-id="c02-d1"]',{opacity:0,duration:0.25,ease:'power2.in'},9.7333);
+tl.set('.card-host[data-card-id="c02-d1"]',{visibility:'hidden'},10.0000);
+tl.set('.card-host[data-card-id="c03-d2"]',{visibility:'visible'},22.3333);
+tl.fromTo('.card-host[data-card-id="c03-d2"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},22.3333);
+tl.fromTo("#c03-d2-t",{"opacity": 0, "y": -30},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},22.4000);
+tl.to('.card-host[data-card-id="c03-d2"]',{opacity:0,duration:0.25,ease:'power2.in'},26.3333);
+tl.set('.card-host[data-card-id="c03-d2"]',{visibility:'hidden'},26.6000);
+tl.set('.card-host[data-card-id="c04-d3"]',{visibility:'visible'},52.1333);
+tl.fromTo('.card-host[data-card-id="c04-d3"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},52.1333);
+tl.fromTo("#c04-d3-t",{"opacity": 0, "y": -30},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},52.1667);
+tl.to('.card-host[data-card-id="c04-d3"]',{opacity:0,duration:0.25,ease:'power2.in'},56.1333);
+tl.set('.card-host[data-card-id="c04-d3"]',{visibility:'hidden'},56.3667);
+tl.set('.card-host[data-card-id="c05-cta"]',{visibility:'visible'},64.8667);
+tl.fromTo('.card-host[data-card-id="c05-cta"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},64.8667);
+tl.fromTo("#c05-d",{"opacity": 0},{"opacity": 1, "duration": 0.4},66.8000);
+tl.fromTo('#cap-0 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},0.2000);
+tl.fromTo('#cap-0 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},0.2667);
+tl.to('#cap-0',{opacity:0,duration:.08,ease:'power1.in'},0.5333);
+tl.fromTo('#cap-1 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},0.6667);
+tl.fromTo('#cap-1 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},0.7333);
+tl.to('#cap-1',{opacity:0,duration:.08,ease:'power1.in'},1.2667);
+tl.fromTo('#cap-2 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},1.3667);
+tl.fromTo('#cap-2 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},1.4333);
+tl.to('#cap-2',{opacity:0,duration:.08,ease:'power1.in'},2.6000);
+tl.fromTo('#cap-3 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},2.7000);
+tl.fromTo('#cap-3 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},2.7667);
+tl.to('#cap-3',{opacity:0,duration:.08,ease:'power1.in'},3.4000);
+tl.fromTo('#cap-4 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},3.5000);
+tl.fromTo('#cap-4 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},3.5667);
+tl.to('#cap-4',{opacity:0,duration:.08,ease:'power1.in'},4.4000);
+tl.fromTo('#cap-5 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},4.5000);
+tl.fromTo('#cap-5 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},4.5667);
+tl.to('#cap-5',{opacity:0,duration:.08,ease:'power1.in'},5.1667);
+tl.fromTo('#cap-6 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},5.2667);
+tl.to('#cap-6',{opacity:0,duration:.08,ease:'power1.in'},5.6667);
+tl.fromTo('#cap-7 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},5.7667);
+tl.fromTo('#cap-7 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},5.8333);
+tl.to('#cap-7',{opacity:0,duration:.08,ease:'power1.in'},6.7000);
+tl.fromTo('#cap-8 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},6.8000);
+tl.fromTo('#cap-8 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},6.8667);
+tl.to('#cap-8',{opacity:0,duration:.08,ease:'power1.in'},7.7333);
+tl.fromTo('#cap-9 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},7.8667);
+tl.to('#cap-9',{opacity:0,duration:.08,ease:'power1.in'},8.7000);
+tl.fromTo('#cap-10 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},8.8000);
+tl.to('#cap-10',{opacity:0,duration:.08,ease:'power1.in'},9.4000);
+tl.fromTo('#cap-11 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},9.5000);
+tl.fromTo('#cap-11 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},9.5667);
+tl.to('#cap-11',{opacity:0,duration:.08,ease:'power1.in'},10.3000);
+tl.fromTo('#cap-12 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},10.4000);
+tl.fromTo('#cap-12 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},10.4667);
+tl.to('#cap-12',{opacity:0,duration:.08,ease:'power1.in'},11.0000);
+tl.fromTo('#cap-13 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},11.1000);
+tl.fromTo('#cap-13 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},11.1667);
+tl.to('#cap-13',{opacity:0,duration:.08,ease:'power1.in'},11.6333);
+tl.fromTo('#cap-14 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},11.7333);
+tl.fromTo('#cap-14 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},11.8000);
+tl.to('#cap-14',{opacity:0,duration:.08,ease:'power1.in'},12.6333);
+tl.fromTo('#cap-15 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},12.7333);
+tl.fromTo('#cap-15 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},12.8000);
+tl.to('#cap-15',{opacity:0,duration:.08,ease:'power1.in'},13.2000);
+tl.fromTo('#cap-16 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},13.3000);
+tl.fromTo('#cap-16 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},13.3667);
+tl.to('#cap-16',{opacity:0,duration:.08,ease:'power1.in'},14.3000);
+tl.fromTo('#cap-17 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},14.4000);
+tl.fromTo('#cap-17 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},14.4667);
+tl.to('#cap-17',{opacity:0,duration:.08,ease:'power1.in'},15.7000);
+tl.fromTo('#cap-18 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},15.8000);
+tl.fromTo('#cap-18 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},15.8667);
+tl.to('#cap-18',{opacity:0,duration:.08,ease:'power1.in'},16.7333);
+tl.fromTo('#cap-19 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},16.8333);
+tl.fromTo('#cap-19 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},16.9000);
+tl.to('#cap-19',{opacity:0,duration:.08,ease:'power1.in'},17.9000);
+tl.fromTo('#cap-20 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},18.0000);
+tl.to('#cap-20',{opacity:0,duration:.08,ease:'power1.in'},18.4333);
+tl.fromTo('#cap-21 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},18.5333);
+tl.fromTo('#cap-21 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},18.6000);
+tl.to('#cap-21',{opacity:0,duration:.08,ease:'power1.in'},19.3333);
+tl.fromTo('#cap-22 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},19.4333);
+tl.fromTo('#cap-22 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},19.5000);
+tl.to('#cap-22',{opacity:0,duration:.08,ease:'power1.in'},21.1000);
+tl.fromTo('#cap-23 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},21.2000);
+tl.fromTo('#cap-23 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},21.2667);
+tl.to('#cap-23',{opacity:0,duration:.08,ease:'power1.in'},22.2667);
+tl.fromTo('#cap-24 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},22.3667);
+tl.fromTo('#cap-24 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},22.4333);
+tl.to('#cap-24',{opacity:0,duration:.08,ease:'power1.in'},23.2333);
+tl.fromTo('#cap-25 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},23.3333);
+tl.fromTo('#cap-25 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},23.4000);
+tl.to('#cap-25',{opacity:0,duration:.08,ease:'power1.in'},24.2333);
+tl.fromTo('#cap-26 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},24.3333);
+tl.fromTo('#cap-26 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},24.4000);
+tl.to('#cap-26',{opacity:0,duration:.08,ease:'power1.in'},25.3000);
+tl.fromTo('#cap-27 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},25.4000);
+tl.fromTo('#cap-27 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},25.4667);
+tl.to('#cap-27',{opacity:0,duration:.08,ease:'power1.in'},26.1000);
+tl.fromTo('#cap-28 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},26.2000);
+tl.to('#cap-28',{opacity:0,duration:.08,ease:'power1.in'},26.4667);
+tl.fromTo('#cap-29 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},26.5667);
+tl.fromTo('#cap-29 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},26.6333);
+tl.to('#cap-29',{opacity:0,duration:.08,ease:'power1.in'},27.9000);
+tl.fromTo('#cap-30 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},28.0000);
+tl.fromTo('#cap-30 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},28.0667);
+tl.to('#cap-30',{opacity:0,duration:.08,ease:'power1.in'},28.9000);
+tl.fromTo('#cap-31 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},29.0000);
+tl.fromTo('#cap-31 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},29.0667);
+tl.to('#cap-31',{opacity:0,duration:.08,ease:'power1.in'},30.4333);
+tl.fromTo('#cap-32 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},30.5333);
+tl.fromTo('#cap-32 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},30.6000);
+tl.to('#cap-32',{opacity:0,duration:.08,ease:'power1.in'},31.6000);
+tl.fromTo('#cap-33 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},31.7000);
+tl.to('#cap-33',{opacity:0,duration:.08,ease:'power1.in'},32.5333);
+tl.fromTo('#cap-34 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},32.6333);
+tl.fromTo('#cap-34 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},32.7000);
+tl.to('#cap-34',{opacity:0,duration:.08,ease:'power1.in'},33.2333);
+tl.fromTo('#cap-35 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},33.3333);
+tl.to('#cap-35',{opacity:0,duration:.08,ease:'power1.in'},34.1667);
+tl.fromTo('#cap-36 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},34.2667);
+tl.fromTo('#cap-36 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},34.3333);
+tl.to('#cap-36',{opacity:0,duration:.08,ease:'power1.in'},34.8667);
+tl.fromTo('#cap-37 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},34.9667);
+tl.fromTo('#cap-37 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},35.0333);
+tl.to('#cap-37',{opacity:0,duration:.08,ease:'power1.in'},36.1000);
+tl.fromTo('#cap-38 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},36.2000);
+tl.fromTo('#cap-38 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},36.2667);
+tl.to('#cap-38',{opacity:0,duration:.08,ease:'power1.in'},36.7333);
+tl.fromTo('#cap-39 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},36.8333);
+tl.to('#cap-39',{opacity:0,duration:.08,ease:'power1.in'},37.9333);
+tl.fromTo('#cap-40 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},38.0333);
+tl.fromTo('#cap-40 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},38.1000);
+tl.to('#cap-40',{opacity:0,duration:.08,ease:'power1.in'},39.2667);
+tl.fromTo('#cap-41 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},39.3667);
+tl.fromTo('#cap-41 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},39.4333);
+tl.to('#cap-41',{opacity:0,duration:.08,ease:'power1.in'},39.7333);
+tl.fromTo('#cap-42 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},39.8333);
+tl.to('#cap-42',{opacity:0,duration:.08,ease:'power1.in'},40.1000);
+tl.fromTo('#cap-43 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},40.1667);
+tl.fromTo('#cap-43 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},40.2333);
+tl.to('#cap-43',{opacity:0,duration:.08,ease:'power1.in'},41.7333);
+tl.fromTo('#cap-44 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},41.8333);
+tl.fromTo('#cap-44 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},41.9333);
+tl.to('#cap-44',{opacity:0,duration:.08,ease:'power1.in'},42.6333);
+tl.fromTo('#cap-45 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},42.7333);
+tl.fromTo('#cap-45 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},42.8000);
+tl.to('#cap-45',{opacity:0,duration:.08,ease:'power1.in'},44.2000);
+tl.fromTo('#cap-46 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},44.3000);
+tl.to('#cap-46',{opacity:0,duration:.08,ease:'power1.in'},44.6333);
+tl.fromTo('#cap-47 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},44.7333);
+tl.fromTo('#cap-47 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},44.8000);
+tl.to('#cap-47',{opacity:0,duration:.08,ease:'power1.in'},46.1667);
+tl.fromTo('#cap-48 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},46.2667);
+tl.fromTo('#cap-48 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},46.3333);
+tl.to('#cap-48',{opacity:0,duration:.08,ease:'power1.in'},47.3000);
+tl.fromTo('#cap-49 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},47.4000);
+tl.fromTo('#cap-49 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},47.4667);
+tl.to('#cap-49',{opacity:0,duration:.08,ease:'power1.in'},48.0667);
+tl.fromTo('#cap-50 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},48.1667);
+tl.to('#cap-50',{opacity:0,duration:.08,ease:'power1.in'},49.2667);
+tl.fromTo('#cap-51 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},49.3667);
+tl.fromTo('#cap-51 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},49.4667);
+tl.to('#cap-51',{opacity:0,duration:.08,ease:'power1.in'},50.1667);
+tl.fromTo('#cap-52 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},50.2667);
+tl.fromTo('#cap-52 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},50.3333);
+tl.to('#cap-52',{opacity:0,duration:.08,ease:'power1.in'},50.7667);
+tl.fromTo('#cap-53 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},50.8667);
+tl.fromTo('#cap-53 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},50.9333);
+tl.to('#cap-53',{opacity:0,duration:.08,ease:'power1.in'},51.4667);
+tl.fromTo('#cap-54 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},51.5667);
+tl.to('#cap-54',{opacity:0,duration:.08,ease:'power1.in'},52.0333);
+tl.fromTo('#cap-55 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},52.1333);
+tl.fromTo('#cap-55 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},52.2000);
+tl.to('#cap-55',{opacity:0,duration:.08,ease:'power1.in'},52.9000);
+tl.fromTo('#cap-56 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},53.0000);
+tl.fromTo('#cap-56 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},53.0667);
+tl.to('#cap-56',{opacity:0,duration:.08,ease:'power1.in'},53.8333);
+tl.fromTo('#cap-57 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},53.9333);
+tl.to('#cap-57',{opacity:0,duration:.08,ease:'power1.in'},54.2333);
+tl.fromTo('#cap-58 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},54.3333);
+tl.fromTo('#cap-58 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},54.4000);
+tl.to('#cap-58',{opacity:0,duration:.08,ease:'power1.in'},55.4000);
+tl.fromTo('#cap-59 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},55.5000);
+tl.fromTo('#cap-59 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},55.5667);
+tl.to('#cap-59',{opacity:0,duration:.08,ease:'power1.in'},56.5667);
+tl.fromTo('#cap-60 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},56.6667);
+tl.fromTo('#cap-60 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},56.7333);
+tl.to('#cap-60',{opacity:0,duration:.08,ease:'power1.in'},57.4333);
+tl.fromTo('#cap-61 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},57.5333);
+tl.fromTo('#cap-61 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},57.6000);
+tl.to('#cap-61',{opacity:0,duration:.08,ease:'power1.in'},59.3000);
+tl.fromTo('#cap-62 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},59.4000);
+tl.fromTo('#cap-62 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},59.4667);
+tl.to('#cap-62',{opacity:0,duration:.08,ease:'power1.in'},60.2333);
+tl.fromTo('#cap-63 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},60.3333);
+tl.fromTo('#cap-63 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},60.4000);
+tl.to('#cap-63',{opacity:0,duration:.08,ease:'power1.in'},61.0667);
+tl.fromTo('#cap-64 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},61.1667);
+tl.fromTo('#cap-64 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},61.2333);
+tl.to('#cap-64',{opacity:0,duration:.08,ease:'power1.in'},61.7000);
+tl.fromTo('#cap-65 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},61.8000);
+tl.to('#cap-65',{opacity:0,duration:.08,ease:'power1.in'},62.3000);
+tl.fromTo('#cap-66 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},62.4000);
+tl.fromTo('#cap-66 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},62.4667);
+tl.to('#cap-66',{opacity:0,duration:.08,ease:'power1.in'},63.1667);
+tl.fromTo('#cap-67 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},63.2667);
+tl.fromTo('#cap-67 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},63.3333);
+tl.to('#cap-67',{opacity:0,duration:.08,ease:'power1.in'},64.0000);
+tl.fromTo('#cap-68 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},64.1000);
+tl.fromTo('#cap-68 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},64.1667);
+tl.to('#cap-68',{opacity:0,duration:.08,ease:'power1.in'},64.8000);
+tl.fromTo('#cap-69 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},64.9000);
+tl.fromTo('#cap-69 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},64.9667);
+tl.to('#cap-69',{opacity:0,duration:.08,ease:'power1.in'},65.8667);
+tl.fromTo('#cap-70 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},65.9667);
+tl.fromTo('#cap-70 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},66.0667);
+tl.to('#cap-70',{opacity:0,duration:.08,ease:'power1.in'},66.6667);
+tl.set('#video-inner',{scale:1},0);
+window.__timelines=window.__timelines||{};
+window.__timelines["talking-head-recut"]=tl;
+})();
+</script>
+</div></body></html>

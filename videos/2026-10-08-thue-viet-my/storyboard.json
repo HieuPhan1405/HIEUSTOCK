@@ -1,0 +1,53 @@
+{
+  "schemaVersion": 3,
+  "composition": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 70.35,
+    "layout": "portrait",
+    "themeId": "noir",
+    "seed": 42
+  },
+  "videoTrack": {
+    "sourcePath": "input-video.mp4",
+    "startSec": 0,
+    "endSec": 70.35
+  },
+  "subtitles": {
+    "enabled": true,
+    "style": "kinetic 2 dòng, trong vùng an toàn TikTok"
+  },
+  "cards": [
+    {
+      "id": "c01-hook",
+      "startSec": 0.15,
+      "endSec": 5.7,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c02-d1",
+      "startSec": 5.75,
+      "endSec": 10.0,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c03-d2",
+      "startSec": 22.35,
+      "endSec": 26.6,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c04-d3",
+      "startSec": 52.12,
+      "endSec": 56.37,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c05-cta",
+      "startSec": 64.88,
+      "endSec": 70.35,
+      "zone": "video-overlay"
+    }
+  ]
+}
