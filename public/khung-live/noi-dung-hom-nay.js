@@ -38,6 +38,9 @@ window.KHUNG_LIVE = {
     "Đầu tư có rủi ro, thông tin chỉ để tham khảo thôi nha!"
   ],
 
+  // Mã môi giới MBS (hiện ở KHUNG TỐI GIẢN: khung-toi-gian.html)
+  mbs: "7VZI",
+
   // Web và link room hiện ở 2 thẻ trong khung
   web: "cloudstock.id.vn",
   room: "zalo.me/g/8eniikqvdzc9degqps7g",

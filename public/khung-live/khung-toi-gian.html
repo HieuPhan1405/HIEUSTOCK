@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex, nofollow">
+<title>Phan Hiếu Stock – Khung LIVE tối giản</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
+<style>
+  /* KHUNG LIVE TOI GIAN (man hinh to nhat). Khong dong ho, khong May, khong chu chay, khong hieu ung chuyen dong.
+     Chi con: ten kenh + ma moi gioi MBS + web + dong "khong phai khuyen nghi dau tu" + 2 o TRONG SUOT (man hinh, camera mat).
+     ?kieu=doc (mac dinh, 1080x1920)  |  ?kieu=ngang (1920x1080)
+     ?png=1 = anh tinh nen trong suot de xuat PNG;  ?xem=1 = hien o gia de xem truoc;  ?c=<JSON> = doi kenh/mbs/web. */
+  :root { --nen: #0B0B10; --card: #15151F; --vien: #2E2E3C; --chu: #F5F5F7; --mo: #B9B9CC; --tim: #6C5CE7; --tim-sang: #A594FF; --vang: #FBBF24; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; background: transparent; overflow: hidden; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; font-family: 'Inter', 'Segoe UI', sans-serif; color: var(--chu); }
+  #kv { position: absolute; left: 0; top: 0; transform-origin: 0 0; overflow: hidden; }
+  #cv { position: absolute; inset: 0; background: var(--nen); }
+  #cv::before { content: ""; position: absolute; inset: 0; background: radial-gradient(900px 600px at 100% 0%, rgba(108,92,231,0.30), transparent 70%), radial-gradient(700px 500px at 0% 100%, rgba(108,92,231,0.16), transparent 70%); }
+  .mono { font-family: 'JetBrains Mono', 'Consolas', monospace; }
+  .abs { position: absolute; }
+  .vien { position: absolute; border: 3px solid var(--tim-sang); border-radius: 22px; box-shadow: 0 0 26px rgba(108,92,231,0.55); pointer-events: none; }
+  .ten { font-weight: 900; letter-spacing: -0.015em; line-height: 1.05; white-space: nowrap; }
+  .logo { height: 100%; width: auto; display: block; }
+  .chip { display: inline-flex; align-items: center; gap: 14px; background: var(--vang); color: #17130A; border-radius: 16px; font-weight: 800; white-space: nowrap; }
+  .chip small { font-size: 0.56em; font-weight: 800; letter-spacing: 0.06em; opacity: 0.8; }
+  .chip b { font-family: 'JetBrains Mono', 'Consolas', monospace; font-weight: 800; letter-spacing: 0.04em; }
+  .web { font-family: 'JetBrains Mono', 'Consolas', monospace; font-weight: 700; color: #fff; white-space: nowrap; }
+  .tt { color: var(--mo); font-weight: 500; white-space: nowrap; }
+  .gia { display: none; position: absolute; place-items: center; align-content: center; color: rgba(255,255,255,0.75); font-weight: 800; font-size: 30px; text-align: center; line-height: 1.5; background: repeating-linear-gradient(45deg, #34343F 0 14px, #3A3A46 14px 28px); }
+  .gia small { display: block; font-size: 20px; font-weight: 600; opacity: 0.8; }
+  body.xem .gia { display: grid; }
+</style>
+</head>
+<body>
+<div id="kv"><div id="cv"></div></div>
+
+<script src="noi-dung-hom-nay.js"></script>
+<script>
+(() => {
+  const P = new URLSearchParams(location.search);
+  const NGANG = P.get('kieu') === 'ngang';
+  document.body.classList.toggle('png', P.has('png'));
+  document.body.classList.toggle('xem', P.has('xem'));
+  const W = NGANG ? 1920 : 1080, H = NGANG ? 1080 : 1920;
+
+  // ---- noi dung (noi-dung-hom-nay.js, co the ghi de bang ?c=<JSON>) ----
+  const C = Object.assign({ kenh: 'Phan Hiếu Stock', mbs: '7VZI', web: 'cloudstock.id.vn' }, window.KHUNG_LIVE || {});
+  try { const c = JSON.parse(P.get('c') || '{}'); for (const k of ['kenh', 'mbs', 'web']) if (typeof c[k] === 'string' && c[k].trim()) C[k] = c[k].trim().slice(0, 40); } catch (e) {}
+  const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const KENH = esc(C.kenh), MBS = esc(C.mbs), WEB = esc(C.web);
+  const TT = 'Thông tin tham khảo, không phải khuyến nghị đầu tư';
+
+  // ---- 2 o trong suot: [x, y, rong, cao, ban kinh goc] ----
+  const O = NGANG
+    ? { man: [12, 68, 1656, 932, 18], mat: [1680, 68, 228, 228, 22] }
+    : { man: [20, 432, 1040, 820, 18], mat: [40, 232, 190, 190, 22] };
+  const rr = ([x, y, w, h, r]) => `M${x} ${y + r} A${r} ${r} 0 0 1 ${x + r} ${y} H${x + w - r} A${r} ${r} 0 0 1 ${x + w} ${y + r} V${y + h - r} A${r} ${r} 0 0 1 ${x + w - r} ${y + h} H${x + r} A${r} ${r} 0 0 1 ${x} ${y + h - r} Z`;
+  const cv = document.getElementById('cv'), kv = document.getElementById('kv');
+  kv.style.width = W + 'px'; kv.style.height = H + 'px';
+  cv.style.clipPath = `path(evenodd, "M0 0 H${W} V${H} H0 Z ${rr(O.man)} ${rr(O.mat)}")`;
+
+  const box = (id, a, extra) => `<div class="vien" style="left:${a[0] - 3}px;top:${a[1] - 3}px;width:${a[2] + 6}px;height:${a[3] + 6}px;border-radius:${a[4] + 3}px"></div>`;
+  const gia = (a, ten, kt) => `<div class="gia" style="left:${a[0]}px;top:${a[1]}px;width:${a[2]}px;height:${a[3]}px;border-radius:${a[4]}px">${ten}<small>${kt}</small></div>`;
+  let ui = '';
+  if (NGANG) {
+    // thanh tren mong: logo + ten kenh | web ; cot phai: camera mat + the ma moi gioi ; thanh duoi: web + dong tham khao
+    ui += `<div class="abs" style="left:14px;top:8px;height:50px;display:flex;align-items:center;gap:14px"><div style="height:46px"><img class="logo" src="logo-bieu-tuong-toi.png" alt=""></div><div class="ten" style="font-size:36px">${KENH}</div></div>`;
+    ui += `<div class="abs" style="left:1680px;top:316px;width:228px;height:190px;border-radius:20px;background:var(--vang);color:#17130A;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center"><div style="font-size:21px;font-weight:800;letter-spacing:0.05em;line-height:1.25">MÃ MÔI GIỚI<br>MBS</div><div class="mono" style="font-size:66px;font-weight:800;letter-spacing:0.04em;line-height:1.1;margin-top:6px">${MBS}</div></div>`;
+    ui += `<div class="abs" style="left:1680px;top:520px;width:228px;display:flex;align-items:center;justify-content:center;height:62px;border-radius:16px;border:2px solid var(--vien);background:var(--card)"><span class="web" style="font-size:21px">${WEB}</span></div>`;
+    ui += `<div class="abs tt" style="left:0;right:0;top:1018px;text-align:center;font-size:24px">${TT}</div>`;
+    ui += box('man', O.man) + box('mat', O.mat);
+    ui += gia(O.man, 'MÀN HÌNH / CAMERA', `${O.man[2]} × ${O.man[3]}`) + gia(O.mat, 'CAMERA MẶT', `${O.mat[2]} × ${O.mat[3]}`);
+  } else {
+    // hang tren: camera mat + ten kenh + ma moi gioi ; man hinh to ; thanh duoi: web + dong tham khao (vung an toan y 225..1330)
+    ui += `<div class="abs" style="left:262px;top:236px;height:62px;display:flex;align-items:center;gap:16px"><div style="height:56px"><img class="logo" src="logo-bieu-tuong-toi.png" alt=""></div><div class="ten" style="font-size:54px">${KENH}</div></div>`;
+    ui += `<div class="abs" style="left:262px;top:316px"><div class="chip" style="height:72px;padding:0 24px;font-size:36px"><small>MÃ MÔI GIỚI MBS</small><b>${MBS}</b></div></div>`;
+    ui += `<div class="abs web" style="left:30px;top:1272px;font-size:32px">${WEB}</div>`;
+    ui += `<div class="abs tt" style="right:30px;top:1280px;font-size:21px">${TT}</div>`;
+    ui += box('man', O.man) + box('mat', O.mat);
+    ui += gia(O.man, 'MÀN HÌNH / CAMERA', `${O.man[2]} × ${O.man[3]}`) + gia(O.mat, 'CAMERA MẶT', `${O.mat[2]} × ${O.mat[3]}`);
+  }
+  // phan tu giao dien nam TRONG #cv de bi cat bo o 2 o trong suot (cac khung vien/o gia dat ben ngoai #cv de khong bi cat)
+  const ngoai = ui.split('<div class="vien"');
+  cv.insertAdjacentHTML('beforeend', ngoai[0]);
+  if (ngoai.length > 1) kv.insertAdjacentHTML('beforeend', '<div class="vien"' + ngoai.slice(1).join('<div class="vien"'));
+
+  // co gian cho vua cua so (giu ti le, can giua); cua so gan dung W x H thi giu ti le 1
+  const vua = () => {
+    const w = innerWidth || W, h = innerHeight || H;
+    const gan = Math.abs(w - W) <= 2 && Math.abs(h - H) <= 2;
+    const t = gan ? 1 : Math.min(w / W, h / H);
+    kv.style.transform = t === 1 ? 'none' : 'scale(' + t + ')';
+    kv.style.left = (gan ? 0 : (w - W * t) / 2) + 'px';
+    kv.style.top = (gan ? 0 : (h - H * t) / 2) + 'px';
+  };
+  addEventListener('resize', vua); addEventListener('load', vua); vua();
+})();
+</script>
+</body>
+</html>
