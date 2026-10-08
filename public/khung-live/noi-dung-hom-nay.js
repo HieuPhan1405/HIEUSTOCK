@@ -14,8 +14,7 @@ window.KHUNG_LIVE = {
   // 3 dòng chữ nhỏ dưới tên kênh, luân phiên hiện lần lượt
   phuDe: [
     "Chứng khoán · CloudStock",
-    "Bấm THEO DÕI để không lỡ buổi live",
-    "Vào room Zalo cùng trao đổi"
+    "Bấm THEO DÕI để không lỡ buổi live"
   ],
 
   // Tiêu đề khu vực nội dung (cạnh con Mây)
@@ -34,22 +33,19 @@ window.KHUNG_LIVE = {
   mayNoi: [
     "Chào cả nhà! Cùng Phan Hiếu Stock xem thị trường nhé!",
     "Nhớ bấm theo dõi Phan Hiếu Stock để không lỡ buổi live sau nha!",
-    "Vào room Zalo CloudStock để trao đổi cùng mọi người nè!",
     "Đầu tư có rủi ro, thông tin chỉ để tham khảo thôi nha!"
   ],
 
   // Mã môi giới MBS (hiện ở KHUNG TỐI GIẢN: khung-toi-gian.html)
   mbs: "7VZI",
 
-  // Web và link room hiện ở 2 thẻ trong khung
+  // Web hiện ở thẻ trong khung
   web: "cloudstock.id.vn",
-  room: "zalo.me/g/8eniikqvdzc9degqps7g",
 
   // Dòng chữ chạy ở thanh dưới màn hình (chỉ có ở khung ngang)
   chay: [
     "Thông tin tham khảo, không phải khuyến nghị đầu tư",
     "Mọi quyết định mua bán do nhà đầu tư tự chịu trách nhiệm",
-    "Đăng ký miễn phí tại cloudstock.id.vn",
-    "Vào room Zalo CloudStock để cùng trao đổi"
+    "Dùng thử miễn phí tuần đầu tại cloudstock.id.vn"
   ]
 };

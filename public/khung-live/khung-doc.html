@@ -140,10 +140,10 @@
   .the { position: absolute; top: 1248px; height: 66px; border-radius: 20px; padding: 0 20px; display: flex; flex-direction: row; align-items: center; gap: 14px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); animation: troi-the 5s ease-in-out infinite alternate; }
   .the small { font-size: 17px; font-weight: 900; letter-spacing: 0.06em; flex: none; }
   .the strong { font-family: 'JetBrains Mono', monospace; font-weight: 700; line-height: 1.15; }
-  .the.web { left: 20px; width: 340px; background: linear-gradient(150deg, rgba(108,92,231,0.7), rgba(21,21,31,0.97) 78%); border: 2px solid rgba(190,175,255,0.85); }
-  .the.web small { color: #E4DFFF; } .the.web strong { font-size: 24px; }
-  .the.mbs { left: 372px; width: 260px; background: linear-gradient(150deg, #FBBF24, #F59E0B); border: 2px solid #FDE68A; color: #17130A; justify-content: center; gap: 12px; }
-  .the.mbs small { color: #3B2A00; font-size: 14px; line-height: 1.15; letter-spacing: 0.05em; } .the.mbs strong { font-size: 40px; letter-spacing: 0.04em; }
+  .the.web { left: 20px; width: 500px; background: linear-gradient(150deg, rgba(108,92,231,0.7), rgba(21,21,31,0.97) 78%); border: 2px solid rgba(190,175,255,0.85); }
+  .the.web small { color: #E4DFFF; } .the.web strong { font-size: 30px; }
+  .the.mbs { left: 532px; width: 528px; background: linear-gradient(150deg, #FBBF24, #F59E0B); border: 2px solid #FDE68A; color: #17130A; justify-content: center; gap: 12px; }
+  .the.mbs small { color: #3B2A00; font-size: 16px; line-height: 1.15; letter-spacing: 0.05em; } .the.mbs strong { font-size: 46px; letter-spacing: 0.04em; }
   .the.room { left: 644px; width: 416px; background: linear-gradient(150deg, rgba(0,104,255,0.72), rgba(12,22,48,0.97) 78%); border: 2px solid rgba(120,175,255,0.9); animation: troi-the 5s ease-in-out infinite alternate -2.5s, ping-room 4s ease-out infinite; }
   .the.room small { color: #DCE8FF; } .the.room strong { font-size: 16px; }
   .the::after { content: ""; position: absolute; top: 0; bottom: 0; width: 90px; left: -120px; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.18), transparent); animation: quet-the 5.5s ease-in-out infinite; }
@@ -237,7 +237,6 @@
     <div class="bong" id="bong"><span class="ten">MÂY</span><p id="bong-noi"></p></div>
     <div class="the web"><small>WEB</small><strong id="web">cloudstock.id.vn</strong><span class="mui">→</span></div>
     <div class="the mbs"><small>MÃ MÔI GIỚI<br>MBS</small><strong id="mbs">7VZI</strong></div>
-    <div class="the room"><small>ZALO</small><strong id="room">zalo.me/g/8eniikqvdzc9degqps7g</strong></div>
   </div>
 
   <!-- Camera mat: de len GOC TRAI DUOI cua man hinh (220 x 220 tai 32,986) -->
@@ -271,15 +270,13 @@
   const MAC_DINH = {
     kenh: 'Phan Hiếu Stock',
     avatar: 'avatar.png',
-    phuDe: ['Chứng khoán · CloudStock', 'Bấm THEO DÕI để không lỡ buổi live', 'Vào room Zalo cùng trao đổi'],
+    phuDe: ['Chứng khoán · CloudStock', 'Bấm THEO DÕI để không lỡ buổi live'],
     web: 'cloudstock.id.vn',
-    room: 'zalo.me/g/8eniikqvdzc9degqps7g',
     tieuDe: 'NỘI DUNG HÔM NAY',
     muc: ['Nhận định thị trường hôm nay', 'Tín hiệu Mua – Bán trong ngày', 'Cách dùng bộ lọc chỉ báo', 'Giải đáp câu hỏi mọi người'],
     mayNoi: [
       'Chào cả nhà! Cùng Phan Hiếu Stock xem thị trường nhé!',
       'Nhớ bấm theo dõi Phan Hiếu Stock để không lỡ buổi live sau nha!',
-      'Vào room Zalo CloudStock để trao đổi cùng mọi người nè!',
       'Đầu tư có rủi ro, thông tin chỉ để tham khảo thôi nha!'
     ]
   };
@@ -302,7 +299,6 @@
   avAnh.onerror = () => avEl.classList.remove('co-anh');
   if (C.avatar) avAnh.src = C.avatar;
   $('web').textContent = C.web;
-  $('room').textContent = C.room;
   $('mbs').textContent = (C.mbs || '7VZI');
   $('nd-tieu-de').textContent = C.tieuDe;
   $('phu-de').innerHTML = C.phuDe.slice(0, 3).map((t) => '<span>' + esc(t) + '</span>').join('');

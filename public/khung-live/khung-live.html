@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
   /* KHUNG LIVE TIKTOK NGANG 1920x1080 (ban 3: khong chat, man hinh to nhat) - kenh Phan Hieu Stock, phong cach CloudStock.
-     1 o TRONG SUOT: MAN HINH 1612x907 tai (12,72) (16:9); CAMERA MAT 250x250 de len goc trai duoi tai (28,717). Cot phai: May, noi dung, ma moi gioi MBS, web, Zalo.
+     1 o TRONG SUOT: MAN HINH 1612x907 tai (12,72) (16:9); CAMERA MAT 250x250 de len goc trai duoi tai (28,717). Cot phai: May, noi dung, ma moi gioi MBS, web.
      Binh luan cua nguoi xem la giao dien cua TikTok (chay o duoi) nen KHONG co o chat. May doc NOI DUNG HOM NAY (cac muc) roi cac loi nhan them.
      Che do: mac dinh = chuyen dong (Link source);  ?png=1 = anh tinh de xuat PNG;  ?xem=1 = them o gia de xem truoc. */
   @property --ang { syntax: "<angle>"; initial-value: 0deg; inherits: false; }
@@ -122,7 +122,7 @@
   @keyframes bong-mo { 0%, 100% { transform: scaleX(1); opacity: 0.9; } 50% { transform: scaleX(0.8); opacity: 0.45; } }
   .sao { position: absolute; color: var(--tim-sang); animation: lap-lanh 2.6s ease-in-out infinite; }
 
-  .bong { position: absolute; left: 1636px; top: 200px; width: 272px; height: 290px; padding: 22px 18px 14px; border-radius: 26px; background: var(--card); border: 2px solid rgba(190,175,255,0.8);
+  .bong { position: absolute; left: 1636px; top: 200px; width: 272px; height: 330px; padding: 22px 18px 14px; border-radius: 26px; background: var(--card); border: 2px solid rgba(190,175,255,0.8);
     display: flex; align-items: center; box-shadow: 0 18px 44px rgba(0,0,0,0.5), 0 0 30px rgba(108,92,231,0.25), inset 0 1px 0 rgba(255,255,255,0.07); }
   .bong.pop { animation: pop 0.45s cubic-bezier(.2,1.6,.4,1); }
   @keyframes pop { 0% { transform: scale(0.94); box-shadow: 0 0 0 rgba(165,148,255,0); } 40% { box-shadow: 0 0 44px rgba(165,148,255,0.7); } 100% { transform: scale(1); } }
@@ -136,10 +136,10 @@
   .the { position: absolute; left: 1636px; width: 272px; border-radius: 18px; padding: 0 16px; display: flex; flex-direction: row; align-items: center; gap: 12px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); animation: troi-the 5s ease-in-out infinite alternate; }
   .the small { font-size: 17px; font-weight: 900; letter-spacing: 0.06em; flex: none; }
   .the strong { font-family: 'JetBrains Mono', monospace; font-weight: 700; line-height: 1.15; word-break: break-all; }
-  .the.mbs { top: 504px; height: 172px; flex-direction: column; justify-content: center; gap: 4px; text-align: center; background: linear-gradient(150deg, #FBBF24, #F59E0B); border: 2px solid #FDE68A; color: #17130A; }
+  .the.mbs { top: 544px; height: 172px; flex-direction: column; justify-content: center; gap: 4px; text-align: center; background: linear-gradient(150deg, #FBBF24, #F59E0B); border: 2px solid #FDE68A; color: #17130A; }
   .the.mbs small { color: #3B2A00; font-size: 18px; line-height: 1.2; letter-spacing: 0.05em; } .the.mbs strong { font-size: 64px; letter-spacing: 0.05em; }
-  .luu { position: absolute; left: 1636px; top: 858px; width: 272px; height: 121px; border-radius: 18px; padding: 12px 16px; display: flex; align-items: center; font-size: 16px; font-weight: 700; line-height: 1.35; color: #B9B9CC; background: rgba(21,21,31,0.92); border: 2px solid #33333F; }
-  .the.web { top: 690px; height: 58px; background: linear-gradient(150deg, rgba(108,92,231,0.7), rgba(21,21,31,0.97) 78%); border: 2px solid rgba(190,175,255,0.85); }
+  .luu { position: absolute; left: 1636px; top: 802px; width: 272px; height: 177px; border-radius: 18px; padding: 14px 18px; display: flex; align-items: center; font-size: 18px; font-weight: 700; line-height: 1.35; color: #B9B9CC; background: rgba(21,21,31,0.92); border: 2px solid #33333F; }
+  .the.web { top: 730px; height: 58px; background: linear-gradient(150deg, rgba(108,92,231,0.7), rgba(21,21,31,0.97) 78%); border: 2px solid rgba(190,175,255,0.85); }
   .the.web small { color: #E4DFFF; } .the.web strong { font-size: 18px; }
   .the.room { top: 760px; height: 82px; background: linear-gradient(150deg, rgba(0,104,255,0.72), rgba(12,22,48,0.97) 78%); border: 2px solid rgba(120,175,255,0.9); animation: troi-the 5s ease-in-out infinite alternate -2.5s, ping-room 4s ease-out infinite; }
   .the.room small { color: #DCE8FF; } .the.room strong { font-size: 15px; line-height: 1.2; }
@@ -237,7 +237,6 @@
     <div class="bong" id="bong"><span class="ten">MÂY</span><p id="bong-noi"></p></div>
     <div class="the web"><small>WEB</small><strong id="web">cloudstock.id.vn</strong></div>
     <div class="the mbs"><small>MÃ MÔI GIỚI MBS</small><strong id="mbs">7VZI</strong></div>
-    <div class="the room"><small>ZALO</small><strong id="room">zalo.me/g/8eniikqvdzc9degqps7g</strong></div>
     <div class="luu">Thông tin tham khảo, không phải khuyến nghị đầu tư. Mọi quyết định mua bán do nhà đầu tư tự chịu trách nhiệm.</div>
 
     <!-- Chu chay -->
@@ -272,22 +271,19 @@
   addEventListener('resize', vua); addEventListener('load', vua); vua();
   const MAC_DINH = {
     kenh: 'Phan Hiếu Stock',
-    phuDe: ['Chứng khoán · CloudStock', 'Bấm THEO DÕI để không lỡ buổi live', 'Vào room Zalo cùng trao đổi'],
+    phuDe: ['Chứng khoán · CloudStock', 'Bấm THEO DÕI để không lỡ buổi live'],
     web: 'cloudstock.id.vn',
-    room: 'zalo.me/g/8eniikqvdzc9degqps7g',
     tieuDe: 'NỘI DUNG HÔM NAY',
     muc: ['Nhận định thị trường hôm nay', 'Tín hiệu Mua – Bán trong ngày', 'Cách dùng bộ lọc chỉ báo', 'Giải đáp câu hỏi mọi người'],
     mayNoi: [
       'Chào cả nhà! Cùng Phan Hiếu Stock xem thị trường nhé!',
       'Nhớ bấm theo dõi Phan Hiếu Stock để không lỡ buổi live sau nha!',
-      'Vào room Zalo CloudStock để trao đổi cùng mọi người nè!',
       'Đầu tư có rủi ro, thông tin chỉ để tham khảo thôi nha!'
     ],
     chay: [
       'Thông tin tham khảo, không phải khuyến nghị đầu tư',
       'Mọi quyết định mua bán do nhà đầu tư tự chịu trách nhiệm',
-      'Đăng ký miễn phí tại cloudstock.id.vn',
-      'Vào room Zalo CloudStock để cùng trao đổi'
+      'Dùng thử miễn phí tuần đầu tại cloudstock.id.vn'
     ]
   };
   // Noi dung co the truyen qua link: khung-live.html?c=<JSON da ma hoa> (trang chinh-noi-dung.html tao san link). Chi lay dung kieu du lieu.
@@ -301,7 +297,6 @@
   // Chu co dinh
   $('kenh').textContent = C.kenh;
   $('web').textContent = C.web;
-  $('room').textContent = C.room;
   $('mbs').textContent = (C.mbs || '7VZI');
   $('nd-tieu-de').textContent = C.tieuDe;
   $('phu-de').innerHTML = C.phuDe.slice(0, 3).map((t) => '<span>' + esc(t) + '</span>').join('');
