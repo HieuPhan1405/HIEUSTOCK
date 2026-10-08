@@ -6,8 +6,8 @@
 <title>Phan Hiếu Stock – Khung LIVE TikTok DỌC 1080x1920</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <style>
-  /* KHUNG LIVE TIKTOK DOC 1080x1920 (ban 3: khong bang noi dung, man hinh to nhat) - kenh Phan Hieu Stock, phong cach CloudStock.
-     2 o TRONG SUOT:  CAMERA MAT 250x250 tai (40,366)  ·  MAN HINH / CAMERA 1000x600 tai (40,632).
+  /* KHUNG LIVE TIKTOK DOC 1080x1920 (ban 5: man hinh to nhat 1040x734, camera de len goc trai duoi, co the Ma moi gioi MBS) - kenh Phan Hieu Stock, phong cach CloudStock.
+     1 o TRONG SUOT: MAN HINH 1040x734 tai (20,502); CAMERA MAT 220x220 de len goc trai duoi tai (32,986).
      May doc NOI DUNG HOM NAY (cac muc) roi cac loi nhan them; hang so 1 2 3 4 sang len theo muc dang doc.
      Vung tren cung (~225px) va vung duoi (tu ~1480) de trong: TikTok phu avatar/chip/so nguoi xem o tren, binh luan + o nhap + nut qua tang o duoi.
      Che do: mac dinh = chuyen dong (Link source);  ?png=1 = anh tinh de xuat PNG;  ?xem=1 = them o gia de xem truoc. */
@@ -21,7 +21,7 @@
 
   /* ---------- NEN (cat 2 lo trong suot bang clip-path; lop giao dien cung bi cat de anh sang khong tran vao camera) ---------- */
   .nen { position: absolute; inset: 0; background: var(--nen); }
-  .nen, #ui { clip-path: path(evenodd, "M0 0 H1080 V1920 H0 Z M40 390 A24 24 0 0 1 64 366 H266 A24 24 0 0 1 290 390 V592 A24 24 0 0 1 266 616 H64 A24 24 0 0 1 40 592 Z M40 656 A24 24 0 0 1 64 632 H1016 A24 24 0 0 1 1040 656 V1208 A24 24 0 0 1 1016 1232 H64 A24 24 0 0 1 40 1208 Z"); }
+  .nen, #ui { clip-path: path(evenodd, "M0 0 H1080 V1920 H0 Z M20 526 A24 24 0 0 1 44 502 H1036 A24 24 0 0 1 1060 526 V1212 A24 24 0 0 1 1036 1236 H44 A24 24 0 0 1 20 1212 Z"); }
   #ui { position: absolute; inset: 0; }
   .luoi { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.024) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.024) 1px, transparent 1px); background-size: 54px 54px; }
   .sang { position: absolute; border-radius: 50%; filter: blur(6px); }
@@ -99,15 +99,15 @@
   body.png .dong-ho { display: none; } body.png .ngay-chip { display: flex; }
 
   /* ---------- HANG 2: mat · May doc NOI DUNG HOM NAY ---------- */
-  .tieu-nd { position: absolute; left: 480px; top: 376px; width: 560px; }
-  .tieu-nd b { display: block; font-size: 30px; font-weight: 900; letter-spacing: 0.04em; line-height: 1.1; color: #fff; }
-  .buoc { display: flex; gap: 8px; margin-top: 10px; flex-wrap: nowrap; }
+  .tieu-nd { position: absolute; left: 188px; top: 368px; width: 872px; display: flex; align-items: center; gap: 18px; }
+  .tieu-nd b { display: block; flex: none; font-size: 25px; font-weight: 900; letter-spacing: 0.04em; line-height: 1.1; color: #fff; }
+  .buoc { display: flex; gap: 8px; margin-top: 0; flex-wrap: nowrap; }
   .buoc i { flex: none; width: var(--bk, 48px); height: var(--bk, 48px); border-radius: 50%; display: grid; place-items: center; font-style: normal; font-family: 'JetBrains Mono', monospace; font-weight: 700; font-size: calc(var(--bk, 48px) * 0.55); background: #2C2C3A; color: #D0D0DE; border: 2px solid #3A3A4A; transition: background 0.4s, color 0.4s, box-shadow 0.4s, border-color 0.4s; }
   .buoc i.on { background: var(--tim); color: #fff; border-color: #C9BFFF; box-shadow: 0 0 18px rgba(108,92,231,0.9); animation: so-nhip 1.4s ease-in-out infinite; }
   .buoc i.xong { background: rgba(108,92,231,0.35); color: #E4DFFF; border-color: rgba(165,148,255,0.6); }
   @keyframes so-nhip { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.14); } }
 
-  .may { position: absolute; left: 318px; top: 372px; width: 150px; }
+  .may { position: absolute; left: 36px; top: 370px; width: 132px; }
   .may svg.hinh { width: 100%; height: auto; display: block; overflow: visible; }
   .may .nhun { animation: nhun 3.2s ease-in-out infinite; transform-origin: center bottom; }
   .may .lac { transform-origin: center bottom; }
@@ -126,11 +126,11 @@
   @keyframes bong-mo { 0%, 100% { transform: scaleX(1); opacity: 0.9; } 50% { transform: scaleX(0.8); opacity: 0.45; } }
   .sao { position: absolute; color: var(--tim-sang); animation: lap-lanh 2.6s ease-in-out infinite; }
 
-  .bong { position: absolute; left: 310px; top: 496px; width: 730px; height: 120px; padding: 12px 26px; border-radius: 26px; background: var(--card); border: 2px solid rgba(190,175,255,0.8);
+  .bong { position: absolute; left: 188px; top: 412px; width: 872px; height: 84px; padding: 8px 26px; border-radius: 26px; background: var(--card); border: 2px solid rgba(190,175,255,0.8);
     display: flex; align-items: center; box-shadow: 0 18px 44px rgba(0,0,0,0.5), 0 0 30px rgba(108,92,231,0.25), inset 0 1px 0 rgba(255,255,255,0.07); }
   .bong.pop { animation: pop 0.45s cubic-bezier(.2,1.6,.4,1); }
   @keyframes pop { 0% { transform: scale(0.94); box-shadow: 0 0 0 rgba(165,148,255,0); } 40% { box-shadow: 0 0 44px rgba(165,148,255,0.7); } 100% { transform: scale(1); } }
-  .bong::before { content: ""; position: absolute; left: 62px; top: -15px; width: 26px; height: 26px; background: var(--card); border-left: 2px solid rgba(190,175,255,0.8); border-top: 2px solid rgba(190,175,255,0.8); transform: rotate(45deg); border-radius: 6px 0 0 0; }
+  .bong::before { content: ""; position: absolute; left: 30px; top: -15px; width: 26px; height: 26px; background: var(--card); border-left: 2px solid rgba(190,175,255,0.8); border-top: 2px solid rgba(190,175,255,0.8); transform: rotate(45deg); border-radius: 6px 0 0 0; }
   .bong .ten { position: absolute; right: 22px; top: -15px; padding: 2px 14px; border-radius: 999px; font-size: 18px; font-weight: 900; letter-spacing: 0.08em; color: #fff; background: linear-gradient(90deg, var(--tim), #8B7CF6); }
   .bong p { font-size: 29px; font-weight: 800; line-height: 1.22; color: #fff; width: 100%; }
   .bong p::after { content: "▍"; color: var(--tim-sang); margin-left: 2px; animation: con-tro 0.9s steps(1) infinite; }
@@ -140,16 +140,18 @@
   .the { position: absolute; top: 1248px; height: 66px; border-radius: 20px; padding: 0 20px; display: flex; flex-direction: row; align-items: center; gap: 14px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); animation: troi-the 5s ease-in-out infinite alternate; }
   .the small { font-size: 17px; font-weight: 900; letter-spacing: 0.06em; flex: none; }
   .the strong { font-family: 'JetBrains Mono', monospace; font-weight: 700; line-height: 1.15; }
-  .the.web { left: 40px; width: 488px; background: linear-gradient(150deg, rgba(108,92,231,0.7), rgba(21,21,31,0.97) 78%); border: 2px solid rgba(190,175,255,0.85); }
-  .the.web small { color: #E4DFFF; } .the.web strong { font-size: 30px; }
-  .the.room { left: 552px; width: 488px; background: linear-gradient(150deg, rgba(0,104,255,0.72), rgba(12,22,48,0.97) 78%); border: 2px solid rgba(120,175,255,0.9); animation: troi-the 5s ease-in-out infinite alternate -2.5s, ping-room 4s ease-out infinite; }
-  .the.room small { color: #DCE8FF; } .the.room strong { font-size: 19px; }
+  .the.web { left: 20px; width: 340px; background: linear-gradient(150deg, rgba(108,92,231,0.7), rgba(21,21,31,0.97) 78%); border: 2px solid rgba(190,175,255,0.85); }
+  .the.web small { color: #E4DFFF; } .the.web strong { font-size: 24px; }
+  .the.mbs { left: 372px; width: 260px; background: linear-gradient(150deg, #FBBF24, #F59E0B); border: 2px solid #FDE68A; color: #17130A; justify-content: center; gap: 12px; }
+  .the.mbs small { color: #3B2A00; font-size: 14px; line-height: 1.15; letter-spacing: 0.05em; } .the.mbs strong { font-size: 40px; letter-spacing: 0.04em; }
+  .the.room { left: 644px; width: 416px; background: linear-gradient(150deg, rgba(0,104,255,0.72), rgba(12,22,48,0.97) 78%); border: 2px solid rgba(120,175,255,0.9); animation: troi-the 5s ease-in-out infinite alternate -2.5s, ping-room 4s ease-out infinite; }
+  .the.room small { color: #DCE8FF; } .the.room strong { font-size: 16px; }
   .the::after { content: ""; position: absolute; top: 0; bottom: 0; width: 90px; left: -120px; background: linear-gradient(100deg, transparent, rgba(255,255,255,0.18), transparent); animation: quet-the 5.5s ease-in-out infinite; }
   .the.room::after { animation-delay: 1.6s; }
   @keyframes quet-the { 0% { left: -120px; } 40%, 100% { left: 560px; } }
   @keyframes troi-the { from { transform: translateY(0); } to { transform: translateY(-3px); } }
   @keyframes ping-room { 0% { box-shadow: 0 0 0 0 rgba(0,104,255,0.6), inset 0 1px 0 rgba(255,255,255,0.1); } 55%, 100% { box-shadow: 0 0 0 22px rgba(0,104,255,0), inset 0 1px 0 rgba(255,255,255,0.1); } }
-  .the .mui { position: absolute; right: 18px; top: 14px; font-size: 32px; font-weight: 900; color: #fff; animation: mui 1.2s ease-in-out infinite; }
+  .the .mui { display: none; position: absolute; right: 18px; top: 14px; font-size: 32px; font-weight: 900; color: #fff; animation: mui 1.2s ease-in-out infinite; }
   @keyframes mui { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(6px); } }
   .tim { position: absolute; top: 1300px; width: 26px; height: 26px; color: #FE2C55; pointer-events: none; filter: drop-shadow(0 0 6px rgba(254,44,85,0.7)); animation: tim-bay 3s ease-out forwards; }
   @keyframes tim-bay { 0% { opacity: 0; transform: translate(0, 0) scale(0.4); } 15% { opacity: 1; } 100% { opacity: 0; transform: translate(var(--dx, 20px), -190px) scale(1.15) rotate(var(--rot, 12deg)); } }
@@ -189,10 +191,9 @@
 
   <div id="ui">
     <!-- Vien sang: man hinh chinh, camera mat -->
-    <div class="vien" style="left:37px;top:629px;width:1006px;height:606px"></div>
-    <div class="vien nho" style="left:37px;top:363px;width:256px;height:256px"></div>
-    <div class="goc tl" style="left:22px;top:614px"></div><div class="goc tr" style="left:1008px;top:614px"></div>
-    <div class="goc bl" style="left:22px;top:1200px"></div><div class="goc br" style="left:1008px;top:1200px"></div>
+    <div class="vien" style="left:17px;top:499px;width:1046px;height:740px"></div>
+    <div class="goc tl" style="left:2px;top:484px"></div><div class="goc tr" style="left:1028px;top:484px"></div>
+    <div class="goc bl" style="left:2px;top:1204px"></div><div class="goc br" style="left:1028px;top:1204px"></div>
 
     <!-- O avatar -->
     <div class="vien nho" style="left:37px;top:225px;width:90px;height:90px;border-radius:50%"></div>
@@ -235,12 +236,15 @@
     </div>
     <div class="bong" id="bong"><span class="ten">MÂY</span><p id="bong-noi"></p></div>
     <div class="the web"><small>WEB</small><strong id="web">cloudstock.id.vn</strong><span class="mui">→</span></div>
+    <div class="the mbs"><small>MÃ MÔI GIỚI<br>MBS</small><strong id="mbs">7VZI</strong></div>
     <div class="the room"><small>ZALO</small><strong id="room">zalo.me/g/8eniikqvdzc9degqps7g</strong></div>
   </div>
 
+  <!-- Camera mat: de len GOC TRAI DUOI cua man hinh (220 x 220 tai 32,986) -->
+  <div class="vien nho" style="left:29px;top:983px;width:226px;height:226px;border-radius:24px"></div>
   <!-- O gia xem truoc -->
-  <div class="gia" style="left:40px;top:632px;width:1000px;height:600px">MÀN HÌNH / CAMERA<small>1000 × 600 · lớp dưới khung</small></div>
-  <div class="gia" style="left:40px;top:366px;width:250px;height:250px;font-size:26px">CAMERA<br>MẶT<small>250 × 250</small></div>
+  <div class="gia" style="left:20px;top:502px;width:1040px;height:734px">MÀN HÌNH / CAMERA<small>1040 × 734 · lớp dưới khung</small></div>
+  <div class="gia" style="left:32px;top:986px;width:220px;height:220px;font-size:24px">CAMERA<br>MẶT<small>220 × 220</small></div>
   <div class="vung-tiktok tren"><span>TikTok phủ: avatar, số người xem, chip, nút đóng</span></div>
   <div class="vung-tiktok duoi"><span>TikTok phủ: bình luận, ô nhập, nút quà tặng<br>(đừng đặt nội dung quan trọng ở đây)</span></div>
 </div>
@@ -299,6 +303,7 @@
   if (C.avatar) avAnh.src = C.avatar;
   $('web').textContent = C.web;
   $('room').textContent = C.room;
+  $('mbs').textContent = (C.mbs || '7VZI');
   $('nd-tieu-de').textContent = C.tieuDe;
   $('phu-de').innerHTML = C.phuDe.slice(0, 3).map((t) => '<span>' + esc(t) + '</span>').join('');
   const homNay = new Date();
@@ -309,7 +314,7 @@
   // O so buoc (1 2 3 4...): thu nho neu nhieu muc
   const muc = C.muc.slice(0, 6);
   const buocEl = $('buoc');
-  buocEl.style.setProperty('--bk', (muc.length > 4 ? 42 : 48) + 'px');
+  buocEl.style.setProperty('--bk', (muc.length > 4 ? 32 : 36) + 'px');
   muc.forEach((_, i) => { const e = document.createElement('i'); e.textContent = String(i + 1); buocEl.appendChild(e); });
   const oBuoc = [...buocEl.children];
   const dat = (b) => oBuoc.forEach((e, i) => { e.classList.toggle('on', i === b); e.classList.toggle('xong', b >= 0 && i < b); });
@@ -322,7 +327,7 @@
   C.mayNoi.slice(1).forEach((t) => chuoi.push({ t, b: -1 }));
   const bongNoi = $('bong-noi'), may = $('may'), bong = $('bong');
   // Cau dai thi chu nho lai cho vua bong noi.
-  const coBong = (t) => { bongNoi.style.fontSize = (t.length <= 60 ? 30 : t.length <= 90 ? 26 : t.length <= 125 ? 23 : 20) + 'px'; };
+  const coBong = (t) => { bongNoi.style.fontSize = (t.length <= 50 ? 27 : t.length <= 90 ? 24 : t.length <= 125 ? 21 : 19) + 'px'; };
   if (PNG) { coBong(chuoi[0].t); bongNoi.textContent = chuoi[0].t; dat(-1); } else {
     const chay = (i) => {
       const cau = chuoi[i % chuoi.length]; const t = cau.t; let k = 0; bongNoi.textContent = ''; coBong(t); dat(cau.b); may.classList.add('noi');
