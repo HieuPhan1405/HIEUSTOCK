@@ -1,5 +1,5 @@
 // Test tay cho lib/lenhMuaChot.js (lenh mua da chot trong khung gio, web tu giu khi tin hieu mat). Chay: node engine/test/lenhMuaChot.test.mjs
-import { ungVienChotMua, danhGiaLenhMuaChot, heThongDangGiu, themMucCatLo } from "../../lib/lenhMuaChot.js";
+import { ungVienChotMua, danhGiaLenhMuaChot, heThongDangGiu, themMucCatLo, xacNhanUngVien, soPhienGiaoDich, SO_PHUT_XAC_NHAN_MUA } from "../../lib/lenhMuaChot.js";
 import { lenhDangMo } from "../../lib/muaThemTinhToan.js";
 
 let loi = 0;
@@ -97,5 +97,70 @@ ok("he thong da ghi dong (vong 1) -> ket thuc", danhGiaLenhMuaChot({ l: lGMD, ro
   ok("lenh web giu hien trong lenh dang mo", ds.length === 1 && ds[0].lenh_web === true && ds[0].tin === "NAM GIU" && ds[0].gia_mua === 78.2 && gan(ds[0].lai_lo_pct, (77.8 / 78.2 - 1) * 100));
 }
 
+
+// ===== 2026-10-09: xac nhan 10 phut truoc khi chot + thoat som lenh web giu =====
+{
+  ok("soPhienGiaoDich: T6 09/10 -> T3 13/10 = 2 phien (bo T7, CN)", soPhienGiaoDich("2026-10-09", "2026-10-13") === 2);
+  ok("soPhienGiaoDich: cung ngay = 0, ngay truoc = 0", soPhienGiaoDich("2026-10-09", "2026-10-09") === 0 && soPhienGiaoDich("2026-10-13", "2026-10-09") === 0);
+  ok("soPhienGiaoDich: T2 -> T3 = 1", soPhienGiaoDich("2026-10-12", "2026-10-13") === 1);
+
+  const HOM_NAY = "2026-10-09";
+  const t0 = Date.parse("2026-10-09T03:30:00Z");
+  const phut = (n) => t0 + n * 60e3;
+  const moi = { ma: "ANV", loai: "goc", ngay_mua: HOM_NAY, gia_mua: 19.05 };
+  const cu = { ma: "VPB", loai: "goc", ngay_mua: "2026-09-21", gia_mua: 20 };
+  ok("hang so: xac nhan 10 phut", SO_PHUT_XAC_NHAN_MUA === 10);
+
+  // Lan dau thay: chua chot (cho 10 phut); ung vien cua phien truoc chot ngay.
+  let kq = xacNhanUngVien({ ungVien: [moi, cu], ngay: HOM_NAY, bayGioMs: phut(0) });
+  ok("lan dau thay tin hieu hom nay: chua chot; lenh phien truoc: chot ngay", kq.duocChot.map((x) => x.ma).join() === "VPB" && kq.theoDoiMoi.size === 1);
+  let tdoi = new Map([...kq.theoDoiMoi].map(([k, v]) => [k, { thay_dau: v.thay_dau, thay_cuoi: v.thay_cuoi }]));
+  // 9 phut sau, cap nhat deu dan: chua du
+  for (let m = 1; m <= 9; m++) {
+    kq = xacNhanUngVien({ ungVien: [moi], daTheoDoi: tdoi, ngay: HOM_NAY, bayGioMs: phut(m) });
+    tdoi = new Map([...kq.theoDoiMoi].map(([k, v]) => [k, { thay_dau: v.thay_dau, thay_cuoi: v.thay_cuoi }]));
+  }
+  ok("9 phut: chua du", kq.duocChot.length === 0);
+  kq = xacNhanUngVien({ ungVien: [moi], daTheoDoi: tdoi, ngay: HOM_NAY, bayGioMs: phut(10) });
+  ok("du 10 phut lien tuc: chot", kq.duocChot.length === 1 && kq.duocChot[0].ma === "ANV");
+
+  // Tin hieu mat o 1 lan cap nhat -> dem lai tu dau
+  const sauMat = xacNhanUngVien({ ungVien: [], daTheoDoi: tdoi, ngay: HOM_NAY, bayGioMs: phut(6) });
+  ok("tin hieu mat: bang theo doi bi xoa", sauMat.theoDoiMoi.size === 0);
+  const hienLai = xacNhanUngVien({ ungVien: [moi], daTheoDoi: sauMat.theoDoiMoi, ngay: HOM_NAY, bayGioMs: phut(7) });
+  const tdHienLai = new Map([...hienLai.theoDoiMoi].map(([k, v]) => [k, { thay_dau: v.thay_dau, thay_cuoi: v.thay_cuoi }]));
+  let tdLoop = tdHienLai;
+  let chotLoop = null;
+  const dem = {};
+  for (let m = 8; m <= 17; m++) {
+    const r = xacNhanUngVien({ ungVien: [moi], daTheoDoi: tdLoop, ngay: HOM_NAY, bayGioMs: phut(m) });
+    tdLoop = new Map([...r.theoDoiMoi].map(([k, v]) => [k, { thay_dau: v.thay_dau, thay_cuoi: v.thay_cuoi }]));
+    dem[m] = r.duocChot.length;
+  }
+  ok("hien lai o phut 7: den phut 16 chua chot (9 phut), phut 17 chot (du 10 phut ke tu luc hien lai)", dem[16] === 0 && dem[17] === 1, JSON.stringify(dem));
+
+  // Cach nhau qua 5 phut giua 2 lan cap nhat (nghi trua, engine tat) coi la dut
+  const tdCu = new Map([["ANV|goc|" + HOM_NAY, { thay_dau: phut(0), thay_cuoi: phut(2) }]]);
+  const dut = xacNhanUngVien({ ungVien: [moi], daTheoDoi: tdCu, ngay: HOM_NAY, bayGioMs: phut(20) });
+  ok("cach 18 phut khong cap nhat: dem lai tu dau", dut.duocChot.length === 0 && dut.theoDoiMoi.get("ANV|goc|" + HOM_NAY).thay_dau === phut(20));
+
+  // THOAT SOM lenh web giu
+  const lWeb = { ma: "VIC", loai: "giua", ngay_mua: "2026-10-06", gia_mua: 232.5, stop_loss: 222.63, tp1: 255.75, tp2: 270, tp3: 300, so_phien_diem_thap: 0, ngay_diem: null, diem_cuoi: null, tp_da_cham: null, web_giu: true, web_giu_tu: "2026-10-09" };
+  const rowVic = { ma: "VIC", tin: "NAM GIU", gia: 225.5, diem: -0.35, ngay_mua: "2026-09-01", dang_giu_giua: false };
+  let k = danhGiaLenhMuaChot({ l: lWeb, row: rowVic, ngay: "2026-10-12" });
+  ok("web giu 1 phien, gia duoi gia mua: chua thoat", k.dongMoi.length === 0 && k.capNhat.web_giu_tu === "2026-10-09");
+  k = danhGiaLenhMuaChot({ l: lWeb, row: rowVic, ngay: "2026-10-13" });
+  ok("web giu 2 phien, chua cham TP1, gia duoi gia mua: THOAT_SOM", k.dongMoi.length === 1 && k.dongMoi[0].ly_do === "THOAT_SOM" && k.dongMoi[0].phan_chot_pct === 100 && k.dongMoi[0].vong === 4 && k.capNhat.trang_thai === "dong", JSON.stringify(k.dongMoi));
+  k = danhGiaLenhMuaChot({ l: lWeb, row: { ...rowVic, gia: 233 }, ngay: "2026-10-13" });
+  ok("web giu 2 phien nhung gia tren gia mua: giu tiep", k.dongMoi.length === 0 && k.capNhat.web_giu === true);
+  k = danhGiaLenhMuaChot({ l: { ...lWeb, tp_da_cham: "TP1" }, row: rowVic, ngay: "2026-10-13" });
+  ok("da cham TP1: khong thoat som (de cat lo / hoa von xu ly)", !k.dongMoi.some((d) => d.ly_do === "THOAT_SOM"));
+  k = danhGiaLenhMuaChot({ l: { ...lWeb, web_giu_tu: null }, row: rowVic, ngay: "2026-10-13" });
+  ok("lenh web giu cu chua co web_giu_tu: bat dau dem tu hom nay", k.dongMoi.length === 0 && k.capNhat.web_giu_tu === "2026-10-13");
+  k = danhGiaLenhMuaChot({ l: lWeb, row: { ...rowVic, dang_giu_giua: true, ngay_mua_giua: "2026-10-06" }, ngay: "2026-10-13" });
+  ok("he thong giu lai dung lenh: web_giu false, xoa web_giu_tu", k.capNhat.web_giu === false && k.capNhat.web_giu_tu === null);
+  k = danhGiaLenhMuaChot({ l: lWeb, row: { ...rowVic, gia: 222 }, ngay: "2026-10-13", trongKhung: true });
+  ok("cat lo van uu tien hon thoat som", k.dongMoi[0].ly_do === "CAT_LO");
+}
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

@@ -59,6 +59,7 @@ function nhanKetThucGoc(x) {
   } else if (x.ly_do === "THOAT_KIJUN") chinh = "Thoát theo Kijun (đóng cửa dưới Kijun sau TP2)";
   else if (x.ly_do === "CAT_LO") chinh = "Cắt lỗ";
   else if (x.ly_do === "BAO_VE_LAI") chinh = "Bảo vệ lãi (mức cắt lỗ đã dời lên cao hơn)";
+  else if (x.ly_do === "THOAT_SOM") chinh = "Thoát sớm (tín hiệu đã mất, giá dưới giá mua sau 2 phiên)";
   else if (x.ly_do === "BAN") chinh = "Tín hiệu BÁN";
   else chinh = "Đã thoát";
   const laDongTP = /^(CHOT_)?TP[123]$/.test(x.ly_do ?? "");
