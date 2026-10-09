@@ -64,6 +64,7 @@ function OKichBan({ r, k }) {
   );
 }
 
+const COT_GIA_MUA = { khoa: "gia_mua", nhan: "Giá mua", canPhai: true, lay: (r) => r.gia_mua };
 const COT = [
   { khoa: "ma", nhan: "Mã", canPhai: false, lay: (r) => r.ma },
   { khoa: "gia", nhan: "Giá", canPhai: true, lay: (r) => r.gia },
@@ -72,7 +73,13 @@ const COT = [
   ...KICH_BAN.map((k) => ({ khoa: k.khoa, nhan: k.nhan, phu: k.phu, canPhai: false, lay: (r) => r[`${k.khoa}_phien`] ?? 99 })),
 ];
 
-export default function BangKichBanMua({ duLieu }) {
+export default function BangKichBanMua({ duLieu: tatCa }) {
+  // nhom: MUA = ma chua co lenh | GIUA = ma dang giu lenh goc, kich ban "Mua them giua chung" (hang cu chua co cot loai = MUA)
+  const [nhom, setNhom] = useState("MUA");
+  const soMua = useMemo(() => tatCa.filter((r) => (r.loai ?? "MUA") === "MUA").length, [tatCa]);
+  const duLieu = useMemo(() => tatCa.filter((r) => (r.loai ?? "MUA") === nhom), [tatCa, nhom]);
+  const laGiua = nhom === "GIUA";
+  const cacCot = laGiua ? [COT[0], COT[1], COT_GIA_MUA, ...COT.slice(2)] : COT;
   const [timKiem, setTimKiem] = useState("");
   const [loc, setLoc] = useState("co"); // co = chi ma co kich ban | homnay | ba | tat
   const [sapXep, setSapXep] = useState({ khoa: "sn", chieu: "asc" });
@@ -83,14 +90,14 @@ export default function BangKichBanMua({ duLieu }) {
     if (loc === "co") ds = ds.filter((r) => somNhat(r) < 99);
     else if (loc === "homnay") ds = ds.filter((r) => r.mua_tu != null);
     else if (loc === "ba") ds = ds.filter((r) => somNhat(r) <= 3);
-    const cot = sapXep.khoa === "sn" ? { lay: somNhat } : COT.find((c) => c.khoa === sapXep.khoa);
+    const cot = sapXep.khoa === "sn" ? { lay: somNhat } : cacCot.find((c) => c.khoa === sapXep.khoa) ?? { lay: somNhat };
     return [...ds].sort((a, b) => {
       const va = cot.lay(a);
       const vb = cot.lay(b);
       const so = typeof va === "string" || typeof vb === "string" ? String(va ?? "").localeCompare(String(vb ?? "")) : (va ?? -Infinity) - (vb ?? -Infinity);
       return (sapXep.chieu === "asc" ? so : -so) || a.ma.localeCompare(b.ma);
     });
-  }, [duLieu, timKiem, loc, sapXep]);
+  }, [duLieu, timKiem, loc, sapXep, cacCot]);
 
   function doiSapXep(khoa) {
     setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: khoa === "ma" ? "asc" : khoa === "diem" || khoa === "gia" ? "desc" : "asc" }));
@@ -105,6 +112,29 @@ export default function BangKichBanMua({ duLieu }) {
 
   return (
     <div>
+      <div className="flex flex-wrap gap-2 mb-4">
+        {[
+          { khoa: "MUA", nhan: `Mua mới · mã chưa có lệnh (${soMua})` },
+          { khoa: "GIUA", nhan: `Mua thêm giữa chừng · mã đang giữ (${tatCa.length - soMua})` },
+        ].map((g) => (
+          <button
+            key={g.khoa}
+            type="button"
+            onClick={() => setNhom(g.khoa)}
+            className="px-4 py-2 text-sm rounded-lg border"
+            style={{
+              borderColor: nhom === g.khoa ? PRIMARY : VIEN,
+              background: nhom === g.khoa ? nhe(PRIMARY, 18) : NEN_CARD,
+              color: nhom === g.khoa ? TEXT : MUTED,
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: nhom === g.khoa ? 700 : 500,
+            }}
+          >
+            {g.nhan}
+          </button>
+        ))}
+      </div>
+
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="relative max-w-sm flex-1 min-w-[180px]">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" color={MUTED} />
@@ -138,7 +168,7 @@ export default function BangKichBanMua({ duLieu }) {
       </div>
 
       <p className="text-xs mb-2" style={{ color: MUTED }}>
-        Hiển thị {daLoc.length} / {duLieu.length} mã chưa có lệnh.
+        Hiển thị {daLoc.length} / {duLieu.length} mã {laGiua ? "đang giữ lệnh, chưa chạm TP3, chưa mua thêm giữa chừng" : "chưa có lệnh"}.
       </p>
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
@@ -146,7 +176,7 @@ export default function BangKichBanMua({ duLieu }) {
           <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
             <thead>
               <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-                {COT.map((c) => (
+                {cacCot.map((c) => (
                   <th key={c.khoa} className={`py-3 px-3 font-normal cursor-pointer select-none whitespace-nowrap ${c.canPhai ? "text-right" : "text-left"}`} onClick={() => doiSapXep(c.khoa)}>
                     <span className="inline-flex items-center gap-1">
                       {c.nhan}
@@ -174,6 +204,17 @@ export default function BangKichBanMua({ duLieu }) {
                     </Link>
                   </td>
                   <td className="py-2.5 px-3 text-right">{fmt(r.gia)}</td>
+                  {laGiua && (
+                    <td className="py-2.5 px-3 text-right">
+                      {fmt(r.gia_mua)}
+                      {r.gia_mua > 0 && r.gia > 0 && (
+                        <div className="text-[10px]" style={{ color: r.gia >= r.gia_mua ? XANH : DO, fontFamily: "'Inter', sans-serif" }}>
+                          {r.gia >= r.gia_mua ? "+" : ""}
+                          {soVN((r.gia / r.gia_mua - 1) * 100, 1)}%
+                        </div>
+                      )}
+                    </td>
+                  )}
                   <td className="py-2.5 px-3 text-right">
                     <span style={{ color: r.diem >= 1.25 ? XANH : TEXT }}>{soVN(r.diem, 2, true)}</span>
                     <div className="text-[10px]" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
@@ -199,7 +240,7 @@ export default function BangKichBanMua({ duLieu }) {
               ))}
               {daLoc.length === 0 && (
                 <tr>
-                  <td colSpan={COT.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                  <td colSpan={cacCot.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
                     Chưa có dữ liệu phù hợp.
                   </td>
                 </tr>
@@ -214,6 +255,12 @@ export default function BangKichBanMua({ duLieu }) {
           <b style={{ color: VANG }}>Cách đọc:</b> &quot;Hôm nay&quot; là khoảng giá đóng cửa của phiên hôm nay (trong biên độ ±7%) mà hệ thống sẽ ra tín hiệu MUA. Ba cột kịch bản cho biết nếu giá giữ nguyên /
           tăng đều 1% / giảm đều 1% mỗi phiên thì sau bao nhiêu phiên mã đủ điều kiện MUA (tối đa 10 phiên), kèm điểm lúc đó và thành phần nào thay đổi (XH = xu hướng, ĐL = động lượng, DT = dòng tiền).
         </p>
+        {laGiua && (
+          <p>
+            <b style={{ color: VANG }}>Mua thêm giữa chừng</b> chỉ áp dụng cho mã đang giữ lệnh gốc, chưa chạm TP3 và chưa mua thêm giữa chừng lần nào: giá hồi về vùng hỗ trợ rồi bật lên trong khi điểm vẫn tốt. &quot;Hôm nay&quot; là
+            khoảng giá đóng cửa sẽ kích hoạt tín hiệu mua thêm; các cột kịch bản cho biết sau bao nhiêu phiên tín hiệu này xuất hiện. Mã nào không có ô nào ra tín hiệu trong 10 phiên sẽ không hiện ở bộ lọc &quot;Có kịch bản mua&quot;.
+          </p>
+        )}
         <p>
           Đây là mô phỏng với giả định khối lượng mỗi phiên bằng trung bình 20 phiên và chưa tính độ rộng ngành, nên có thể lệch nhẹ so với tín hiệu thật. Giá chạy khác kịch bản thì thời điểm sẽ khác.
           Thông tin tham khảo, không phải khuyến nghị đầu tư.

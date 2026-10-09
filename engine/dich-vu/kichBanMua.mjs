@@ -15,7 +15,8 @@ export const KICH_BAN = { giu: 0, tang: 0.01, giam: -0.01 };
 
 const tick = (g) => (g < 10 ? 0.01 : g < 50 ? 0.05 : 0.1);
 const lam = (g) => Number((Math.round(g / tick(g)) * tick(g)).toFixed(2));
-const nhan = (r) => (r.tin === "MUA" ? "MUA" : r.tin === "TRUNG LAP" && r.cho_phien_sau ? "DOI PHIEN SAU" : r.tin);
+// loai "MUA": ma CHUA co lenh - hit khi tin hieu MUA. loai "GIUA": ma DANG giu lenh goc chua cham TP3 - hit khi co su kien "Mua them giua chung" (r.mua_giua) o nen cuoi.
+const nhanTheoLoai = (loai) => (r) => (loai === "GIUA" ? (r.mua_giua === true ? "MUA" : "-") : r.tin === "MUA" ? "MUA" : r.tin === "TRUNG LAP" && r.cho_phien_sau ? "DOI PHIEN SAU" : r.tin);
 
 function phienKeTiep(ngay) {
   const d = new Date(ngay + "T00:00:00Z");
@@ -25,7 +26,8 @@ function phienKeTiep(ngay) {
 }
 
 // nenFull: [{t,o,h,l,c,v}] tu cu den moi (nen cuoi la nen hom nay, co the dang chay). vni: Map(ngay -> dong cua VN-Index).
-export function tinhKichBanMotMa(ma, nenFull, vni, { soPhien = 10, kl: heSoKl = 1.0 } = {}) {
+export function tinhKichBanMotMa(ma, nenFull, vni, { soPhien = 10, kl: heSoKl = 1.0, loai = "MUA" } = {}) {
+  const nhan = nhanTheoLoai(loai);
   const vniCuoi = [...vni.values()].at(-1);
   const tinhVoi = (nen) =>
     tinhTinHieuChoMa({ ma, nen, vniClose: nen.map((b) => vni.get(b.t) ?? vniCuoi), san: "HOSE", ketQuaBreadth: { theoNganh: new Map(), trungBinh: 50 } });
@@ -37,6 +39,8 @@ export function tinhKichBanMotMa(ma, nenFull, vni, { soPhien = 10, kl: heSoKl = 
   const hienTai = tinhVoi(nen);
   const out = {
     ma,
+    loai,
+    gia_mua: loai === "GIUA" && hienTai.gia_mua > 0 ? hienTai.gia_mua : null,
     ngay_nen: cuoi.t,
     gia: cuoi.c,
     tin: hienTai.tin,
@@ -97,6 +101,7 @@ export async function layVni() {
 }
 
 // dsMa: ma can tinh; tra ve { kq: [...], loi: [...] }. Tai nen song song HANG luong (VNDirect cho phep, ~1 phut cho ~340 ma).
+// dsMa: ["ANV", ...] hoac [{ ma, loai }]. loai mac dinh "MUA".
 export async function tinhKichBanToanBo(dsMa, tuyChon = {}) {
   const vni = await layVni();
   const kq = [];
@@ -104,11 +109,13 @@ export async function tinhKichBanToanBo(dsMa, tuyChon = {}) {
   let i = 0;
   async function tho() {
     while (i < dsMa.length) {
-      const ma = dsMa[i++];
+      const muc = dsMa[i++];
+      const ma = typeof muc === "string" ? muc : muc.ma;
+      const loai = typeof muc === "string" ? "MUA" : muc.loai;
       try {
         const nen = await layNenDieuChinh(ma, SO_NEN + 30).catch(() => layNenDieuChinh(ma, SO_NEN + 30));
         if (nen.length < 300) throw new Error("it nen");
-        kq.push(tinhKichBanMotMa(ma, nen, vni, tuyChon));
+        kq.push(tinhKichBanMotMa(ma, nen, vni, { ...tuyChon, loai }));
       } catch (e) {
         loi.push(`${ma}: ${e.message}`);
       }
@@ -129,8 +136,15 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const goc = process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn";
   const chiMa = opt("ma", "") ? opt("ma", "").toUpperCase().split(",") : null;
   const ds = (await (await fetch(`${goc}/api/signals`, { signal: AbortSignal.timeout(30000) })).json()).tinHieu;
-  const dsMa = ds.filter((r) => (chiMa ? chiMa.includes(r.ma) : r.tin === "TRUNG LAP" || r.tin === "BAN")).map((r) => r.ma);
-  console.log(`${dsMa.length} ma can tinh (chua co lenh)...`);
+  // Nhom MUA: ma chua co lenh. Nhom GIUA: ma dang giu lenh goc, chua cham TP3, chua giu lenh giua chung -> kich ban "Mua them giua chung".
+  const dsMa = ds
+    .filter((r) => (chiMa ? chiMa.includes(r.ma) : true))
+    .flatMap((r) => {
+      if (r.tin === "TRUNG LAP" || r.tin === "BAN") return [{ ma: r.ma, loai: "MUA" }];
+      if ((r.tin === "NAM GIU" || r.tin === "MUA") && r.tp_da_cham !== "TP3" && !r.dang_giu_giua) return [{ ma: r.ma, loai: "GIUA" }];
+      return [];
+    });
+  console.log(`${dsMa.length} ma can tinh (${dsMa.filter((m) => m.loai === "MUA").length} chua co lenh, ${dsMa.filter((m) => m.loai === "GIUA").length} dang giu - mua them giua chung)...`);
   const { kq, loi } = await tinhKichBanToanBo(dsMa, { soPhien: Number(opt("phien", 10)), kl: Number(opt("kl", 1.0)) });
   console.log(`Xong ${kq.length} ma (${loi.length} loi).`);
   if (loi.length) console.log(loi.slice(0, 10).join("\n"));

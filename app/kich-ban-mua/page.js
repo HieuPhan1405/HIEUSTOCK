@@ -46,7 +46,7 @@ export default async function TrangKichBanMua() {
         Kịch bản mua
       </h1>
       <p className="text-sm mb-2" style={{ color: MUTED }}>
-        Với các mã chưa có lệnh: giá đóng cửa hôm nay ở khoảng nào thì ra tín hiệu MUA, và nếu giá giữ nguyên, tăng đều hoặc giảm đều thì sau bao nhiêu phiên mã đủ điều kiện MUA.
+        Mã chưa có lệnh: giá đóng cửa hôm nay ở khoảng nào thì ra tín hiệu MUA, và nếu giá giữ nguyên, tăng đều hoặc giảm đều thì sau bao nhiêu phiên mã đủ điều kiện MUA. Mã đang giữ lệnh: khi nào có thể xuất hiện tín hiệu mua thêm giữa chừng.
       </p>
       {chuoiLuc && (
         <p className="text-[11px] mb-6" style={{ color: MUTED }}>
