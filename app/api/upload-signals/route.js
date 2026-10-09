@@ -238,6 +238,7 @@ export async function POST(request) {
   const giuaTp1 = [];
   const giuaTp2 = [];
   const giuaTp3 = [];
+  const homNay = ngayGiaoDichVN();
   for (const h of hangDL) {
     const cu = banGhiCuTheoMa[h.ma];
     const moi = tinhGiaMuaThemWeb({
@@ -245,6 +246,7 @@ export async function POST(request) {
       ngayMuaMoi: soNgayVN(h.ngay_mua_moi),
       giaTriMoi: { gia: duong(h.gia_mua_moi), stop: duong(h.stop_moi), tp1: duong(h.tp1_moi), tp2: duong(h.tp2_moi), tp3: duong(h.tp3_moi) },
       cu: cu && { dangGiu: cu.dang_giu_moi, gia: cu.gia_mua_moi, stop: cu.stop_moi, tp1: cu.tp1_moi, tp2: cu.tp2_moi, tp3: cu.tp3_moi, ngayMuaTxt: cu.ngay_mua_moi_txt },
+      homNay,
     });
     moiGia.push(moi.gia);
     moiStop.push(moi.stop);
@@ -257,6 +259,7 @@ export async function POST(request) {
       ngayMuaMoi: soNgayVN(h.ngay_mua_giua),
       giaTriMoi: { gia: duong(h.gia_mua_giua), stop: duong(h.stop_giua), tp1: duong(h.tp1_giua), tp2: duong(h.tp2_giua), tp3: duong(h.tp3_giua) },
       cu: cu && { dangGiu: cu.dang_giu_giua, gia: cu.gia_mua_giua, stop: cu.stop_giua, tp1: cu.tp1_giua, tp2: cu.tp2_giua, tp3: cu.tp3_giua, ngayMuaTxt: cu.ngay_mua_giua_txt },
+      homNay,
     });
     giuaGia.push(giua.gia);
     giuaStop.push(giua.stop);
