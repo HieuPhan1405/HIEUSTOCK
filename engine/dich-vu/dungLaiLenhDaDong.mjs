@@ -26,7 +26,7 @@ const ngayVN = (giay) => new Date(giay * 1000 + 7 * 3600e3).toISOString().slice(
 const dv = await (await fetch(`https://dchart-api.vndirect.com.vn/dchart/history?resolution=D&symbol=VNINDEX&from=${den - 6 * 365 * 86400}&to=${den}`)).json();
 const vni = new Map(dv.t.map((t, i) => [ngayVN(t), dv.c[i]]));
 const vniCuoi = [...vni.values()].at(-1);
-const dsMa = (await (await fetch(`${GOC}/api/signals`)).json()).tinHieu.map((r) => r.ma).filter((m) => m !== "VNINDEX");
+const dsMa = (await (await fetch(`${GOC}/api/signals`, { headers: { "x-api-key": process.env.CS_UPLOAD_API_KEY || "" } })).json()).tinHieu.map((r) => r.ma).filter((m) => m !== "VNINDEX");
 console.log(`${dsMa.length} ma, tu ${TU}`);
 
 const LY_DO = { 1: "BAN", 2: "CAT_LO", 3: "BAO_VE_LAI", 4: "THOAT_KIJUN", 5: "CHOT_TP3" };

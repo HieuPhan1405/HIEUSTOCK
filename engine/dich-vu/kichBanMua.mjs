@@ -135,7 +135,10 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   };
   const goc = process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn";
   const chiMa = opt("ma", "") ? opt("ma", "").toUpperCase().split(",") : null;
-  const ds = (await (await fetch(`${goc}/api/signals`, { signal: AbortSignal.timeout(30000) })).json()).tinHieu;
+  const khoaApi = process.env.CS_UPLOAD_API_KEY;
+  if (!khoaApi) throw new Error("Can CS_UPLOAD_API_KEY: /api/signals chi tra tin hieu day du cho khoa quan tri (khoa 09/10/2026).");
+  const ds = (await (await fetch(`${goc}/api/signals`, { headers: { "x-api-key": khoaApi }, signal: AbortSignal.timeout(30000) })).json()).tinHieu;
+  if (!ds?.[0] || !("tin" in ds[0])) throw new Error("/api/signals khong tra truong tin (sai khoa API?).");
   // Nhom MUA: ma chua co lenh. Nhom GIUA: ma dang giu lenh goc, chua cham TP3, chua giu lenh giua chung -> kich ban "Mua them giua chung".
   const dsMa = ds
     .filter((r) => (chiMa ? chiMa.includes(r.ma) : true))

@@ -6,6 +6,8 @@ import BangBoLoc from "@/components/BangBoLoc";
 import NhanCapNhat from "@/components/NhanCapNhat";
 import { capNhatMoiNhat } from "@/components/dungChung";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import { layNguoiDungHienTai } from "@/lib/nguoiDung";
+import { lamSachChoKhach } from "@/lib/lamSachChoKhach";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -21,6 +23,12 @@ export default async function TrangBoLoc() {
     tatCa = await layTatCaTinHieu();
   } catch (e) {
     loi = thongBaoLoi(e);
+  }
+  // KHOA THONG TIN QUAN TRONG (2026-10-09): khach chua dang nhap / chua duoc duyet khong nhan tin hieu va thong tin vi the trong du lieu trang (truoc day chi bi lam mo o giao dien,
+  // van doc duoc trong ma nguon trang). Cot Tin hieu cua khach da la chu mau mo co dinh nen dung gia tri gia dinh TRUNG LAP.
+  if (!loi) {
+    const nguoiDung = await layNguoiDungHienTai().catch(() => null);
+    if (!nguoiDung?.da_duyet) tatCa = lamSachChoKhach(tatCa, { tinGiaDinh: "AN" });
   }
   // Chi bao ky thuat (RSI, MACD, MA...) gop vao tung ma - loi o day khong duoc lam mat bang chinh, chi mat bo loc chi bao.
   if (!loi) {
