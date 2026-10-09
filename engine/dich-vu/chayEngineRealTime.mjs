@@ -18,6 +18,7 @@
 // Dung Ctrl+C de dung. De chay lien tuc trong 1 cua so terminal rieng trong gio giao dich (9h-15h).
 import { mkdirSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { spawn } from "node:child_process";
 import { taoOpenApiClient } from "../dnse/openApiClient.js";
 import { ketNoiWebSocketDNSE } from "../dnse/wsClient.js";
 import { taiLichSuToanBo, tinhTinHieuToanBo, capNhatNenMoiNhat, chiaNhoMang } from "../loi/quetToanBo.js";
@@ -41,6 +42,7 @@ const CHU_KY_BAT_DAY_MS = 15 * 60 * 1000;
 // Chi bao ky thuat cho bo loc (RSI, MACD, MA...): tinh ~0,3 giay cho ca 389 ma nhung ghi DB 389 dong, nen gui moi 1 phut NEU co nen moi (khong can moi 10 giay nhu tin hieu).
 // Chay bang bo hen RIENG, loi o day khong bao gio duoc anh huong toi luong tin hieu chinh.
 const CHU_KY_CHI_BAO_MS = 60 * 1000;
+const CHU_KY_KICH_BAN_MS = 15 * 60 * 1000; // kich ban mua (trang /kich-ban-mua): ~340 ma x ~60 lan tinh -> chay TIEN TRINH CON rieng de khong chan engine
 
 const ngayIsoTuGiay = (giay) => new Date(giay * 1000).toISOString().slice(0, 10);
 function chuyenDoiNenTuWS(doi) {
@@ -153,6 +155,23 @@ async function main() {
       dangTinhChiBao = false;
     }
   }
+  // KICH BAN MUA: chay engine/dich-vu/kichBanMua.mjs --upload o tien trinh con (tu tai nen VNDirect, ~1-2 phut/lan), moi 15 phut. Tien trinh con ke thua CS_UPLOAD_API_KEY.
+  let dangChayKichBan = false;
+  function chayKichBanMua() {
+    if (!uploadDuocPhep || dangChayKichBan) return;
+    dangChayKichBan = true;
+    const con = spawn(process.execPath, [fileURLToPath(new URL("./kichBanMua.mjs", import.meta.url)), "--upload"], { stdio: ["ignore", "pipe", "pipe"] });
+    let cuoi = "";
+    const nho = (b) => (cuoi = (cuoi + b.toString()).split(String.fromCharCode(10)).filter(Boolean).slice(-3).join(" | "));
+    con.stdout.on("data", nho);
+    con.stderr.on("data", nho);
+    con.on("error", (loi) => console.log(`[kich ban mua] LOI: ${loi.message}`));
+    con.on("close", (ma) => {
+      dangChayKichBan = false;
+      console.log(`[${new Date().toLocaleTimeString("vi-VN")}] Kich ban mua (tien trinh con) xong, ma thoat ${ma}: ${cuoi.slice(0, 200)}`);
+    });
+  }
+
   let dangTinh = false;
   let lanCuoiTinhBatDay = 0;
 
@@ -234,11 +253,14 @@ async function main() {
   const henGio = setInterval(tinhLaiVaGhi, CHU_KY_TINH_LAI_MS);
   await tinhVaGuiChiBao();
   const henGioChiBao = setInterval(tinhVaGuiChiBao, CHU_KY_CHI_BAO_MS);
+  chayKichBanMua();
+  const henGioKichBan = setInterval(chayKichBanMua, CHU_KY_KICH_BAN_MS);
 
   process.on("SIGINT", () => {
     console.log("\nDang dung dich vu...");
     clearInterval(henGio);
     clearInterval(henGioChiBao);
+    clearInterval(henGioKichBan);
     dsKetNoi.forEach((k) => k.dong());
     process.exit(0);
   });
