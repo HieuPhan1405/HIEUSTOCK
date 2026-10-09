@@ -4,8 +4,7 @@
 //
 // CHUA LAM (ro rang la display-only, KHONG anh huong tin hieu MUA/BAN - xem plan de biet ly do):
 //   - ngay_bien_doi (Time Theory / Kihon Suchi - can toan bo pivot A/B/C rieng)
-//   - moc_gia/moc_loai/moc_cach_pct/diem_neu_vuot ("Ma theo doi" - moc CAN vuot, khac moc DA vuot)
-// Ca 2 duoc dat null/false o day, KHONG doan mo hinh.
+// ngay_bien_doi duoc dat false o day, KHONG doan mo hinh. (moc_gia/... "Ma theo doi" da port tu AFL - xem tinhMocTiepTheo.)
 import { tinhIchimoku, tinhDuongCanBangDaiHan } from "./loi/ichimoku.js";
 import { atr as tinhATR, adxHeThong, rsi as tinhRSI, mfi as tinhMFI } from "./loi/taChiBao.js";
 import { tinhSanyaku } from "./loi/sanyaku.js";
@@ -19,6 +18,7 @@ import { chayMayTrangThai } from "./loi/mayTrangThai.js";
 import { tinhChiTrongNamGanNhat, tinhThanhKhoanOk, tinhGiaToiThieuOk, tinhRSGateOk, tinhRSVoiVNIndex } from "./loi/cong.js";
 import { tinhDiemRank, tinhDiemConfidence } from "./loi/diemRank.js";
 import { breadthCuaMa } from "./loi/breadth.js";
+import { tinhMocTiepTheo } from "./loi/mocTiepTheo.js";
 import { phanLoaiVonHoa } from "./danh-sach/vonHoa.js";
 import { nganhCuaMa } from "./danh-sach/nganh.js";
 import { hhv, sma, ref, valueWhen, barsSince, highestSince } from "./loi/mang.js";
@@ -369,6 +369,8 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   const ngayMuaGiuaVT = nen[kq.muaGiuaVi[cuoi]]?.t ?? null;
   const laiLoTaiMuaCuoi = giaMuaTaiMua[cuoi] > 0 ? (close[cuoi] / giaMuaTaiMua[cuoi] - 1) * 100 : 0;
 
+  const mocTiep = tinhMocTiepTheo({ gia: close[cuoi], cloudTop: cloudTop[cuoi], cloudBot: cloudBot[cuoi], cbTop: cbTop[cuoi], cbBot: cbBot[cuoi], totalScore: totalScore[cuoi] });
+
   const hangCuoi = {
     ma,
     tin,
@@ -410,10 +412,10 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     giai_ngan: giaiNganCuoi,
     gia_kich_hoat: giaKichHoatTaiMua[cuoi] ?? null,
     moc_kich_hoat: loaiMocTaiMua[cuoi] === 3 ? "MAY+CAN BANG" : loaiMocTaiMua[cuoi] === 1 ? "MAY" : loaiMocTaiMua[cuoi] === 2 ? "CAN BANG" : "GIA",
-    moc_gia: null, // TODO (display-only "Ma theo doi", xem chu thich dau file)
-    moc_loai: null, // TODO
-    moc_cach_pct: null, // TODO
-    diem_neu_vuot: null, // TODO
+    moc_gia: mocTiep.gia,
+    moc_loai: mocTiep.loai,
+    moc_cach_pct: mocTiep.cachPct,
+    diem_neu_vuot: mocTiep.diemNeuVuot,
     che_do_vao: p.cheDoMoc ? "MOI" : "CU",
     loai_vao: loaiVaoTaiMua[cuoi] === 2 ? "MUA LAI" : loaiVaoTaiMua[cuoi] === 3 ? "MUA MUON" : "",
     cho_phien_sau: choPhienSauCuoi,
