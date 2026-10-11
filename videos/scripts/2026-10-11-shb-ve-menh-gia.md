@@ -100,7 +100,7 @@ Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. S�
 - BVPS: SHB nêu **16.360 đ** (30/6/2026) còn DNSE ghi **13.214 đ**. Bỏ, vì nói "cao hơn thị giá" dễ thành ngầm khuyến nghị.
 - Nợ xấu: SHB nêu **1,76%** (30/6/2026, theo quy định NHNN) vs DNSE **2,18%** (định nghĩa khác?). Bỏ.
 - "Gần 5 tháng" (Markettimes) vs tự tính 4/5 → 8/10 ≈ 5 tháng 4 ngày: lời nói dùng "khoảng năm tháng".
-- "Vốn hóa 53.437 tỷ" trong DNSE thực chất là **vốn điều lệ**, không phải vốn hóa thị trường.
+- "Vốn hóa 53.437 tỷ" của DNSE **trùng với vốn điều lệ vì giá SHB đóng cửa đúng bằng mệnh giá 10.000** (số cổ phiếu × 10.000), không phải DNSE gắn nhầm nhãn. Bản trước mình ghi "thực chất là vốn điều lệ" là sai; không dùng số này làm vốn hóa trong video khi chưa rõ số cổ phiếu DNSE đã tính có gồm 434 triệu cổ phiếu chưa niêm yết hay không **[CẦN XÁC MINH]**.
 
 **Trước khi quay, Hiếu nên xem lại:** giá/khối lượng phiên 12/10; có thông báo mới của SHB/NHNN không (đặc biệt về ngày niêm yết bổ sung); báo cáo kết quả chào bán gốc của SHB (số cổ đông 63.712 và 434,3 triệu cp); lịch công bố BCTC quý 3 của SHB **[CẦN XÁC MINH]**.
 Chưa đưa khuyến nghị/giá mục tiêu của CTCK vào video: mình không tìm được báo cáo SHB nào cập nhật sau biến động 8–9/10 (các báo cáo cũ sẽ lỗi thời).
