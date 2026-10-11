@@ -104,8 +104,8 @@ Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. D�
 - [Hòa Phát lãi 15.480 tỷ đồng sau 6 tháng, tăng 103% – CafeF 29/7](https://cafef.vn/hoa-phat-lai-15480-ty-dong-sau-6-thang-tang-103-so-voi-cung-ky-188260729112659325.chn)
 - [Hai trợ lực đang giúp Hòa Phát được dự báo lãi 5.600 tỷ đồng quý III/2026 (MBS) – Người Quan Sát 19/9](https://nguoiquansat.vn/hai-tro-luc-dang-giup-hoa-phat-hpg-an-nen-lam-ra-duoc-du-bao-lai-5-600-ty-dong-trong-quy-iii-2026-317224.html)
 - [Bất chấp giá thép hạ nhiệt, lợi nhuận quý 3/2026 của Hòa Phát dự kiến tăng 34% (Rồng Việt) – Doanh nhân & Pháp luật](https://doanhnhan.baophapluat.vn/bat-chap-gia-thep-ha-nhiet-loi-nhuan-quy-3-2026-cua-tap-doan-hoa-phat-hpg-du-kien-tang-34-nho-luc-keo-tu-dung-quat-2.html)
-- [Cổ phiếu thép trước chu kỳ tăng trưởng mới – Nhadautu 8/10](dnse tin 35288007) · [MBS: Ngành thép khởi sắc, ngành xây dựng gặp áp lực trong quý 3/2026 – Mekong ASEAN 4/10](dnse tin 35287797)
-- [Hòa Phát góp gần 10.000 tỷ đồng vào Tập đoàn Tương lai Sông Hồng – Mekong ASEAN 1/10](dnse tin 35287673) · [Con trai ông Trần Đình Long dự chi hơn 1.000 tỷ đồng mua cổ phiếu HPG – Mekong ASEAN 2/10](dnse tin 35287741)
+- Cổ phiếu thép trước chu kỳ tăng trưởng mới – Nhadautu 8/10 (tin DNSE số 35288007, chưa có link bài gốc) · MBS: Ngành thép khởi sắc, ngành xây dựng gặp áp lực trong quý 3/2026 – Mekong ASEAN 4/10 (tin DNSE số 35287797, chưa có link bài gốc)
+- Hòa Phát góp gần 10.000 tỷ đồng vào Tập đoàn Tương lai Sông Hồng – Mekong ASEAN 1/10 (tin DNSE số 35287673, chưa có link bài gốc) · Con trai ông Trần Đình Long dự chi hơn 1.000 tỷ đồng mua cổ phiếu HPG – Mekong ASEAN 2/10 (tin DNSE số 35287741, chưa có link bài gốc)
 - [Lợi nhuận Hòa Phát tăng 171%, mỗi ngày trả 15 tỷ đồng tiền lãi vay – DNSE](https://www.dnse.com.vn/senses/tin-tuc/loi-nhuan-hoa-phat-tang-171-moi-ngay-tra-15-ty-dong-tien-lai-vay-35224385)
 - [CTCK nói về thuế CBPG 285,5 USD/tấn với Hòa Phát (VBSE) – CafeF 10/9](https://cafef.vn/ctck-noi-ve-thue-cbpg-2855-usd-tan-voi-hoa-phat-xuat-khau-thep-viet-nam-sang-mexico-la-hat-cat-voi-dn-ty-do-rui-ro-nam-o-cho-khac-188260910141614694.chn)
 
