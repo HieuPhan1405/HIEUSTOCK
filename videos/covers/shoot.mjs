@@ -7,7 +7,7 @@ const require = createRequire((process.env.PW_DIR || '/tmp/claude-0/shot') + '/'
 const { chromium } = require('playwright-core');
 const dir = dirname(fileURLToPath(import.meta.url));
 const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome', args: ['--no-sandbox', '--allow-file-access-from-files'] });
-for (const f of readdirSync(dir).filter(f => /^cover_.*\.html$/.test(f))) {
+for (const f of readdirSync(dir).filter(f => new RegExp('^'+(process.env.PREFIX||'cover')+'_.*\\.html$').test(f))) {
   const m = f.match(/_(\d+)x(\d+)\.html$/);
   const page = await browser.newPage({ viewport: { width: +m[1], height: +m[2] } });
   await page.goto('file://' + resolve(dir, f));
