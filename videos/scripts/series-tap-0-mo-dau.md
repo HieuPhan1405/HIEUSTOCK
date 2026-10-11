@@ -1,4 +1,4 @@
-# TẬP 0 (bản 3c – rút gọn nhịp + viết lại cho giống lời nói) – Video mở đầu series "CHỬI CHO ĐÚNG": môi giới "lùa gà", ngân hàng "tiếp khách", kế toán "vào tù" – nghề có ích thật mà nhìn vào lại thấy xấu (11/10/2026)
+# TẬP 0 (bản 3d – rà "văn máy", giọng Hiếu) – Video mở đầu series "CHỬI CHO ĐÚNG": môi giới "lùa gà", ngân hàng "tiếp khách", kế toán "vào tù" – nghề có ích thật mà nhìn vào lại thấy xấu (11/10/2026)
 
 Bản 3 bám đúng 3 hình ảnh Hiếu nêu: **môi giới lùa gà/lừa gạt · ngân hàng tiếp khách · kế toán vào tù**. Mỗi nghề đi theo 1 khuôn: **câu người ta nói → PHẦN CÓ THẬT (có vụ/có nguồn) → cơ chế vì sao nhìn ra như vậy → cái nghề đó thật sự làm**.
 Tên series: **"CHỬI CHO ĐÚNG"**. Chữ cố định đỉnh màn hình: **LÙA GÀ · TIẾP KHÁCH · VÀO TÙ – CHỬI CHO ĐÚNG** (vùng an toàn x 60–940, y 170–1430).
@@ -6,47 +6,49 @@ Ký hiệu: [ĐÃ XÁC MINH] đọc được nguồn 11/10/2026 · [TỰ TÍNH] 
 **Giả định cần Hiếu xác nhận:** "ngân hàng tiếp khách" mình hiểu là hình ảnh "dân ngân hàng suốt ngày nhậu, đi tiếp khách, quan hệ để kiếm tiền gửi/khoản vay". Nếu ý Hiếu là "ngân hàng ép mở thẻ/bán bảo hiểm cho khách" thì đổi đoạn 2 (xem cuối file).
 
 ## 4 phương án hook (bản dưới dùng số 1)
-1. **Liệt kê 3 câu quen tai + hẹn chấm điểm** *(đề xuất)*: "Môi giới thì lùa gà. Ngân hàng thì suốt ngày đi tiếp khách. Kế toán thì ngồi chờ vào tù. [DỪNG] Nghe quen không? Làm tài chính kiểu gì cũng bị nghe mấy câu này. Mà thật ra, có câu đúng, có câu oan. Tí nữa mình chấm điểm từng câu."
+1. **Liệt kê 3 câu quen tai + hẹn chấm điểm** *(đề xuất)*: "Môi giới thì lùa gà. Ngân hàng thì suốt ngày đi tiếp khách. Kế toán thì ngồi chờ vào tù. [DỪNG] Làm tài chính kiểu gì cũng bị nghe mấy câu này. Nhưng trong ba câu, có câu đúng, có câu oan. Cuối video mình chấm điểm từng câu."
 2. **Chuyện cá nhân** *(chỉ dùng nếu ĐÚNG sự thật của Hiếu)*: "Hôm mình nói với [người thân] là mình theo nghề chứng khoán, câu đầu tiên họ hỏi: 'Thế con có đi lùa gà không?' [HIẾU ĐIỀN: người, tình huống thật]. Mình không giận. Vì có một phần câu đó là thật."
 3. **Đối chiếu**: "Làm môi giới thì bị gọi là lùa gà. Làm ngân hàng thì bị gọi là đi tiếp khách. Làm kế toán thì bị nói là sắp vào tù. Ba nghề này có chung một điểm: làm đúng thì không ai khen, làm sai thì cả nước chửi."
 4. **Thách người xem**: "Mình thách anh chị kể ra một nghề tài chính mà anh chị chưa từng nghe câu 'nó toàn lừa đảo'. Ngân hàng, môi giới, kế toán… nghe hết rồi đúng không? Vậy hôm nay mình đi tìm xem câu nào có thật."
 
 ---
 
-[0:00–0:13] HOOK  (3 câu đầu nhanh, mỗi câu 1 nhịp SFX "đập"; im 0,6s; câu sau nói chậm, giọng như hỏi bạn)
+[0:00–0:12] HOOK  (3 câu đầu nhanh, mỗi câu 1 nhịp SFX "đập"; im 0,6s; câu sau nói chậm, giọng như nói với bạn)
 "Môi giới thì lùa gà. Ngân hàng thì suốt ngày đi tiếp khách. Kế toán thì ngồi chờ vào tù. [DỪNG 0,6s]
-Nghe quen không? Làm tài chính kiểu gì cũng bị nghe mấy câu này. Mà thật ra, có câu đúng, có câu oan. Tí nữa mình chấm điểm từng câu."
+Làm tài chính kiểu gì cũng bị nghe mấy câu này. Nhưng trong ba câu, có câu đúng, có câu oan. Cuối video mình chấm điểm từng câu."
 [HÌNH: màn đen, 3 câu hiện chữ to từng câu (mỗi câu 1 màu: trắng/vàng/đỏ nhạt – ngoại lệ hook), mặt hiện ở "[DỪNG]"; punch-in 1,15 ở "có câu đúng, có câu oan"; SFX riser ngắn]
 
-[0:13–0:44] 1 — "MÔI GIỚI LÙA GÀ, LỪA GẠT"
-"Câu một, môi giới lùa gà. Câu này mình không cãi hết được. Ngày 28 tháng 8, một môi giới bị phạt 1,5 tỷ đồng và bị tước quyền sử dụng chứng chỉ 21 tháng, vì dùng hai tài khoản để thao túng cổ phiếu.
-Nhưng mấy vụ lùa gà lớn mình đọc trên báo, người bị xét xử là chủ tịch của chính doanh nghiệp. Thao túng là tội luật cấm tất cả mọi người, đâu phải riêng môi giới.
-Cái khác là: môi giới có chứng chỉ, sai là bị tước chứng chỉ, và công ty chứng khoán phải chịu trách nhiệm. Còn người tự xưng chuyên gia trên mạng, hô mã rồi hứa lãi, thì chẳng có công ty nào đứng sau."
+[0:12–0:44] 1 — "MÔI GIỚI LÙA GÀ, LỪA GẠT"
+"Câu một, môi giới lùa gà. Có vụ thật hẳn hoi: ngày 28 tháng 8, một môi giới bị phạt 1,5 tỷ đồng và bị tước quyền sử dụng chứng chỉ 21 tháng, vì dùng hai tài khoản để thao túng cổ phiếu.
+Nhưng mấy vụ lùa gà lớn mình đọc trên báo, người bị xét xử là chủ tịch của chính doanh nghiệp. Thao túng là tội luật cấm với tất cả mọi người, đâu phải riêng môi giới.
+Chỗ khác nhau là chứng chỉ. Môi giới sai thì bị tước chứng chỉ, và công ty chứng khoán phải chịu trách nhiệm về họ. Còn người tự xưng chuyên gia trên mạng, hô mã rồi hứa lãi, thì chẳng có công ty nào đứng sau."
 [THẺ 1: tiêu đề bài báo VietNamNet 28/8/2026 (che tên người, chỉ hiện "1,5 tỷ · tước chứng chỉ 21 tháng") + dòng "Nguồn:"; ảnh Luật Chứng khoán Điều 97 khoản 3 điểm b + Điều 98 khoản 4 tô vàng]
 [CHỮ: "CÓ THẬT" (đỏ) → "NHƯNG AI LÙA?" (vàng)]
 
-[0:44–1:15] 2 — "NGÂN HÀNG ĐI TIẾP KHÁCH"
-"Câu hai, ngân hàng đi tiếp khách. Câu này cũng có phần thật. Báo VnExpress ngày 25 tháng 9 kể có nhân viên bị giao chỉ tiêu huy động tăng từ 15 tỷ lên 20 tỷ, phải livestream suốt bốn tháng để kéo từng món gửi 5 đến 10 triệu. Cũng có cán bộ ngân hàng bị bắt vì bị cáo buộc nhận hối lộ.
-Nhưng mình nghĩ chuyện đi tiếp khách là do chỉ tiêu ép ra. Chỉ tiêu ngân hàng đặt, người đứng quầy là người gánh.
-Mà phía sau cái quầy đó, năm 2024 NAPAS xử lý trung bình khoảng 26 triệu giao dịch mỗi ngày, và từ 13 tháng 7, tiền gửi được bảo hiểm đến 350 triệu đồng."
+[0:44–1:13] 2 — "NGÂN HÀNG ĐI TIẾP KHÁCH"
+"Câu hai, ngân hàng đi tiếp khách. Báo VnExpress ngày 25 tháng 9 kể có nhân viên bị giao chỉ tiêu huy động tăng từ 15 tỷ lên 20 tỷ, phải livestream suốt bốn tháng để kéo từng món gửi 5 đến 10 triệu. Cũng có cán bộ ngân hàng bị bắt vì bị cáo buộc nhận hối lộ.
+Mình nghĩ chuyện đi tiếp khách là do chỉ tiêu ép ra. Ngân hàng đặt chỉ tiêu, người đứng quầy gánh.
+Còn phía sau cái quầy đó: năm 2024, NAPAS xử lý trung bình khoảng 26 triệu giao dịch mỗi ngày. Từ 13 tháng 7, tiền gửi được bảo hiểm đến 350 triệu đồng."
 [THẺ 2: ảnh tiêu đề bài VnExpress 25/9/2026 (che tên) tô vàng "15 tỷ → 20 tỷ"; thẻ số "9,56 TỶ GIAO DỊCH/2024 (NAPAS) ≈ 26 TRIỆU/NGÀY" + "BẢO HIỂM TIỀN GỬI 350 TRIỆU"; nguồn dòng nhỏ]
 [CHỮ: "CÓ THẬT" → "TIẾP KHÁCH = CHỈ TIÊU ÉP RA" (SUY LUẬN – hiện dưới dạng "MÌNH NGHĨ")]
 
-[1:15–1:51] 3 — "KẾ TOÁN NGỒI CHỜ VÀO TÙ"
-"Câu ba, kế toán ngồi chờ vào tù. Câu này cũng có phần thật: có vụ giám đốc bị khởi tố thì kế toán trưởng bị kéo theo. Một luật sư nói với báo Dân Việt ngày 7 tháng 10 rằng luật cho kế toán quyền bảo lưu ý kiến, cảnh báo, từ chối, nhưng chưa có gì bảo vệ họ khi họ dám dùng quyền đó. Tức là người ký tên thì chịu trách nhiệm, còn người quyết định thì thường là người khác.
-Nhưng không phải kế toán nào vào tù cũng oan. Còn nếu anh chị nghĩ kế toán chỉ ngồi làm sổ sách: báo cáo tài chính cho anh chị biết một công ty lãi hay lỗ là do họ lập, và công ty chào bán chứng khoán ra công chúng thì bắt buộc phải kiểm toán nó."
+[1:13–1:45] 3 — "KẾ TOÁN NGỒI CHỜ VÀO TÙ"
+"Câu ba, kế toán ngồi chờ vào tù. Có vụ giám đốc bị khởi tố thì kế toán trưởng cũng bị kéo theo. Một luật sư nói với báo Dân Việt ngày 7 tháng 10 rằng luật cho kế toán quyền bảo lưu ý kiến, cảnh báo, từ chối, nhưng chưa có gì bảo vệ họ khi dám dùng quyền đó. Nghĩa là người ký tên thì chịu, còn người quyết định thường là người khác.
+Không phải kế toán nào vào tù cũng oan. Nhưng anh chị cứ nhớ: báo cáo tài chính cho anh chị biết một công ty lãi hay lỗ là do kế toán lập, và công ty chào bán chứng khoán ra công chúng thì bắt buộc phải kiểm toán nó."
 [THẺ 3: tiêu đề bài Dân Việt 7/10/2026 tô vàng "quyền bảo lưu, cảnh báo, từ chối – chưa có cơ chế bảo vệ"; ảnh Luật Chứng khoán Điều 20 khoản 3 tô vàng; nguồn]
 [CHỮ: "CÓ THẬT" → "AI KÝ, AI CHỊU" → "KHÔNG PHẢI AI CŨNG OAN"]
 
-[1:51–2:35] CHẤM ĐIỂM + LUẬN ĐIỂM GÂY TRANH CÃI + THÁCH NGƯỜI XEM
-"Vậy ba câu đó đúng bao nhiêu? Mình chấm thế này. Câu một: đúng một phần, sai ở chỗ gom cả nghề. Câu hai: có áp lực chỉ tiêu thật, nhưng sai ở chỗ đổ hết cho nhân viên. Câu ba: có rủi ro thật, nhưng sai ở chỗ coi kế toán như người sắp vào tù.
-[DỪNG 0,5s] Giờ tới câu khó nghe nhất. Chửi cả nghề thì người lừa thật được yên, vì mình không còn cách nào tách người làm sai ra khỏi người làm đúng. Mà bênh cả nghề thì người làm sai cũng được yên. Nên chửi thì chửi cho đúng người.
-Series này để làm việc đó: mỗi tập một câu hay bị chửi, mình đem điều luật hoặc số liệu có nguồn ra bẻ. Không hô mã, không hứa lãi. Anh chị thấy nghề nào bị oan nhất? Comment 1, 2 hoặc 3, nhiều phiếu nhất mình làm trước.
+[1:45–2:25] CHẤM ĐIỂM + Ý GÂY TRANH CÃI + THÁCH NGƯỜI XEM
+"Vậy ba câu đó đúng bao nhiêu? Mình chấm: câu một đúng một phần, vì không thể gom cả nghề vào một chữ. Câu hai đúng ở áp lực chỉ tiêu, nhưng người gánh không phải người đặt ra. Câu ba đúng ở rủi ro, còn chuyện sắp vào tù thì không.
+[DỪNG 0,5s] Mình nghĩ chửi cả nghề thì người lừa thật được yên, vì không còn ai phân biệt được ai làm sai, ai làm đúng. Bênh cả nghề cũng vậy, người làm sai cũng được che. Series này tên là Chửi cho đúng: mỗi tập mình lấy một câu hay bị chửi, đem điều luật hoặc số liệu có nguồn ra bẻ. Mình không hô mã, không hứa lãi.
+Anh chị thấy nghề nào bị oan nhất? Comment 1, 2 hoặc 3, nhiều phiếu nhất mình làm trước.
 Video này để giải thích, không phải khuyến nghị đầu tư. Đầu tư luôn có rủi ro mất vốn."
 [HÌNH: bảng chấm "1 · ĐÚNG MỘT PHẦN / 2 · ĐÚNG Ở CHỈ TIÊU / 3 · ĐÚNG Ở RỦI RO"; 2 ô "CHỬI CẢ NGHỀ" | "BÊNH CẢ NGHỀ" cùng đóng dấu "KẺ SAI ĐƯỢC YÊN"; CHỮ lớn: "BÌNH CHỌN: 1 · 2 · 3"; CHỮ: ĐẦU TƯ LUÔN CÓ RỦI RO MẤT VỐN]
 [3,6s cuối: "Nội dung giải thích, không phải khuyến nghị đầu tư. Ý kiến cá nhân, không đại diện công ty."]
 
-**Đo nhịp (bản 3c, giọng nói tự nhiên):** 613 tiếng ≈ 2.6 phút ở ~240 tiếng/phút (hook 50 · đoạn 1 125 · đoạn 2 123 · đoạn 3 142 · đoạn cuối 173). Mốc thời gian chỉ là ước tính – đọc thật rồi chỉnh. Muốn bản ngắn ~90 s: giữ hook + đoạn 1 + đoạn chấm điểm, bỏ đoạn 2–3 (để dành làm Tập 2, 3).
+**Đo nhịp (bản 3d, giọng Hiếu):** 571 tiếng ≈ 2.4 phút ở ~240 tiếng/phút (hook 48 · đoạn 1 126 · đoạn 2 113 · đoạn 3 126 · đoạn cuối 158). Mốc thời gian chỉ là ước tính – đọc thật rồi chỉnh. Muốn bản ngắn ~90 s: giữ hook + đoạn 1 + đoạn chấm điểm, bỏ đoạn 2–3 (để dành làm Tập 2, 3).
+
+**Đã rà bằng bộ dấu hiệu "văn máy" (học từ blader/humanizer, xem skill mục 15):** bỏ "Mình sẽ nói thẳng…" và "câu đang che mất một điều anh chị cần biết" (dạo đầu dàn dựng + câu nghe sâu); bỏ "Giờ tới câu khó nghe nhất" (dạo đầu dàn dựng); bỏ câu chốt "Nên chửi thì chửi cho đúng người" (câu chốt lặp ý, tên series đã nói rồi); đoạn 1–3 không còn mở lặp "Câu này cũng có phần thật" ×3 mà vào thẳng sự việc; "Câu này mình không cãi hết được" (cãi với người không có mặt) đổi thành "Có vụ thật hẳn hoi:"; đoạn chấm điểm không nhắc lại nguyên văn các đoạn trước, chỉ giữ phán quyết. Giữ nguyên: số liệu, tên nguồn, câu "mình nghĩ" (ý kiến), disclaimer rủi ro.
 
 ---
 ## Nguồn và mức xác minh (11/10/2026) – mỗi "phần có thật" đều phải mở bài gốc đọc lại trước khi quay

@@ -268,6 +268,32 @@ C "A và B khác nhau ở đâu" (35–45s, dùng được linh vật Mây) · D
 **Chỉ số tự đo:** (lưu + chia sẻ) ÷ lượt xem – trung vị các kênh VN trong mẫu 0,09–0,80% → ≥0,5% tốt, ≥1% rất tốt; video "nổi" = ≥3× trung vị 20 video gần nhất của kênh.
 Retention: không có ngưỡng công khai đáng tin → so với trung vị 10 video gần nhất của chính kênh.
 
+## 15. Viết lời nói tự nhiên, bớt "văn máy" (học từ github.com/blader/humanizer, MIT, v3.1.0)
+
+Repo đó là bộ 26 dấu hiệu "văn AI" (dựa trên trang Wikipedia "Signs of AI writing"), viết cho văn bản tiếng Anh. Tác giả nói công thức cấu trúc "xuất hiện ở mọi ngôn ngữ", nên các mục dưới đây là bản mình chuyển sang **lời nói tiếng Việt**; danh sách từ/cụm tiếng Việt là do mình tự thêm, không phải của repo.
+
+**Hai nguyên tắc lõi của repo**
+- Mỗi câu giữ lại phải thêm một thông tin người xem chưa có. Câu chỉ để "làm nặng" ý hoặc nhắc lại ý trước thì bỏ.
+- Nếu có mẫu giọng thật của người viết thì mẫu đó **thắng** mọi quy tắc. Mẫu giọng của Hiếu: script các video trong `videos/*/script.txt`. Đặc điểm: câu ngắn xen câu dài; vào thẳng sự việc kèm số/ngày/tên ("Ngày 30/9, STB giảm 2,37%…"); tự hỏi rồi trả lời ("Vì sao?"); "nói nôm na", "tức là", "nghĩa là"; nhắc người xem phân biệt chắc/chưa chắc ("anh chị nhớ phân biệt giúp mình"); chốt bằng một ý có thông tin, không chốt bằng câu triết lý.
+
+**Dấu hiệu cần bắt trong lời đọc (đánh dấu từ mạnh nhất; thấy 1 lần đã nên sửa ở 1–5)**
+1. *Không phải X mà là Y*: "đây không chỉ là… mà còn", "điều này không có nghĩa là A, nó có nghĩa là B", đuôi cụt kiểu "…, không đoán mò". Chỉ giữ khi vế phủ định sửa một niềm tin có thật của người xem (như 3 câu "lùa gà/tiếp khách/vào tù" của Tập 0) hoặc cả hai vế đều có thông tin.
+2. *Câu chốt một dòng / câu cụt kịch tính*: "Đó mới là điều quan trọng.", "Hãy suy ngẫm.", "Không A. Không B. Không C." Gộp thành 1 câu có ý cụ thể.
+3. *Câu nghe sâu*: "cốt lõi của vấn đề", "điều thực sự quan trọng", "bản chất là", "X là tấm gương của Y". Thay bằng chính ý cụ thể.
+4. *Dạo đầu dàn dựng*: "Mình sẽ nói thẳng", "Sự thật là", "Điều khó nghe nhất", "Hãy cùng khám phá", "Có một điều ít ai nói". Bỏ phần dạo, nói luôn ý. (Giữ dòng lộ trình "Mình sẽ đi qua 3 điều" của khung cũ vì nó là kỹ thuật giữ người xem.)
+5. *Cãi với người không có mặt*: "Mình không nói là…", "Đừng hiểu lầm", "Nhiều người sẽ nói… nhưng". Chỉ giữ khi câu bị cãi thật sự là câu người xem hay nói.
+6. *Bộ ba gượng*: ba ví dụ/ba tính từ cho đủ nhịp. Giữ khi nội dung đúng là có 3 phần.
+7. *Mở câu lặp theo khuôn*: "Câu này cũng có phần thật." lặp ở mỗi đoạn. Đổi cách vào hoặc vào thẳng sự việc.
+9. *Rào đón chồng chất*: "có thể", "phần nào", "dường như" chồng nhau. Giữ rào đón có nguồn, **giữ nguyên** câu rủi ro và disclaimer.
+12–13, 16. *Từ khuếch đại*: "đóng vai trò then chốt", "bức tranh toàn cảnh", "không thể phủ nhận", "bước ngoặt", "tương lai đầy hứa hẹn", "đáng chú ý" nói ở mọi câu. Bỏ phần tô vẽ, giữ sự việc.
+17. *Nguồn không tên*: "các chuyên gia cho rằng…" → nêu tên nguồn và ngày, hoặc bỏ (quy tắc "Nguồn:" đã có).
+22. *Dấu vết chatbot*: "Tuyệt vời!", "Hy vọng hữu ích", "Bạn muốn mình…?".
+Hình thức: lời đọc không có dấu gạch ngang, ngoặc đơn, in đậm; số đọc thành chữ dễ đọc (ví dụ "ngày 28 tháng 8").
+
+**Quy trình 4 bước** (của repo): đánh dấu → viết lại (giữ mọi số liệu, tên, nguồn, không bịa thêm) → **đọc to** và hỏi "chỗ nào nghe như đọc bài?" → tìm lại các dấu hiệu hay sót (1, 2, 3, 4, 6, 7) rồi mới chốt.
+
+**Đừng sửa quá tay:** giữ ý kiến có đánh dấu "mình nghĩ", chi tiết cụ thể, câu hỏi tự nhiên; không bịa chuyện cá nhân hay chi tiết để cho "giống người"; không bỏ câu tuân thủ (không hô mã, không hứa lãi, rủi ro, không phải khuyến nghị).
+
 ## 9. Checklist trước khi xuất
 
 - [ ] Âm lượng file xuất: mean ≈ −13…−15 dB, đỉnh ≤ −0.3 dB (file < −18 dB thì điện thoại nghe rất nhỏ): sau khi nén chạy `-af volume=4.5dB,alimiter=limit=0.9` hoặc loudnorm + gain
@@ -280,3 +306,4 @@ Retention: không có ngưỡng công khai đáng tin → so với trung vị 10
 - [ ] Mọi keyframe có easing mượt (không linear)
 - [ ] Số liệu tài chính đã kiểm chứng từ ≥ 2 nguồn; có dòng "không phải khuyến nghị đầu tư"
 - [ ] CTA ở cuối
+- [ ] Lời đọc đã rà "văn máy" (mục 15) và đọc to thử một lượt: không còn dạo đầu dàn dựng, câu chốt lặp ý, câu nghe sâu
