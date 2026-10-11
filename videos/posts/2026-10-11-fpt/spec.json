@@ -1,0 +1,169 @@
+{
+ "ticker": "FPT",
+ "stamp": "FPT · HẾT PHIÊN 9/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Giá đến hết phiên 9/10/2026.",
+ "slide1": {
+  "pre": "LÃI TRƯỚC THUẾ BÌNH QUÂN, 8 THÁNG ĐẦU NĂM",
+  "l1": "HƠN 31 TỶ MỖI NGÀY",
+  "l2": "GIẢM 11 PHIÊN LIỀN",
+  "l2_tone": "red",
+  "l3": "Báo chí nói gì, và con số nào đáng để so sánh?",
+  "chart": {
+   "caption": "Giá đóng cửa, quy về 100 tại ngày 22/9",
+   "series": [
+    {
+     "name": "FPT",
+     "color": "gold",
+     "values": [
+      66.6,
+      66.1,
+      65.3,
+      64.7,
+      63.7,
+      63.2,
+      63.0,
+      62.7,
+      62.1,
+      61.9,
+      60.4,
+      59.7,
+      59.7,
+      57.9
+     ]
+    },
+    {
+     "name": "VN-Index",
+     "color": "blue",
+     "values": [
+      1816.93,
+      1801.65,
+      1775.09,
+      1785.11,
+      1780.68,
+      1777.73,
+      1768.62,
+      1749.3,
+      1737.71,
+      1753.2,
+      1759.08,
+      1753.39,
+      1738.97,
+      1735.09
+     ]
+    }
+   ],
+   "xticks": [
+    [
+     0,
+     "22/9"
+    ],
+    [
+     8,
+     "2/10"
+    ],
+    [
+     13,
+     "9/10"
+    ]
+   ],
+   "band": {
+    "from": 0,
+    "to": 11,
+    "label": "▼ 11 phiên giảm liên tiếp (23/9–7/10)"
+   },
+   "takeaway": "FPT giảm nhanh hơn thị trường chung khoảng 2,9 lần."
+  },
+  "sources": "DNSE (giá, VN-Index); lãi trước thuế 8 tháng ÷ 243 ngày (CafeF 21/9)."
+ },
+ "slide2": {
+  "kicker": "HAI SỨC ÉP THEO BÁO CHÍ",
+  "title": [
+   "Vì sao giá giảm?",
+   "Mỗi báo nói một vế."
+  ],
+  "cards": [
+   {
+    "label": "KHỐI NGOẠI",
+    "big": "~14.700",
+    "unit": "tỷ",
+    "text": "bán ròng cổ phiếu FPT từ đầu năm (~180 triệu cp).",
+    "chips": [
+     "CafeF · 8/10"
+    ]
+   },
+   {
+    "label": "ÁP LỰC TỪ AI",
+    "big": "Làn sóng AI",
+    "big_size": 74,
+    "text": "được nêu là thách thức lớn với tập đoàn kiếm tiền chủ yếu từ công nghệ. Mặt còn lại: 2 cụm AI Factory (Việt Nam, Nhật Bản) có lãi từ quý 2.",
+    "chips": [
+     "Vietnamnet · 9/10",
+     "Vietstock · 17/7"
+    ]
+   }
+  ],
+  "note": "Đây là nhận định của báo. Chưa ai đo được từng yếu tố góp bao nhiêu vào cú giảm.",
+  "sources": "CafeF 8/10; Vietnamnet 9/10; Vietstock 17/7."
+ },
+ "slide3": {
+  "kicker": "CON SỐ DỄ ĐỌC NHẦM",
+  "title": [
+   "Một bảng ghi −17%.",
+   "FPT công bố +12,6%."
+  ],
+  "tiles": [
+   {
+    "label": "Doanh thu quý 2/2026 trên bảng số liệu",
+    "value": "−17,1%",
+    "arrow": "▼",
+    "tone": "red",
+    "sub": "Nguồn dữ liệu: DNSE"
+   },
+   {
+    "label": "Doanh thu 6 tháng đầu năm FPT công bố",
+    "value": "+12,6%",
+    "arrow": "▲",
+    "tone": "green",
+    "sub": "Đã tính lại số năm trước để so cùng cơ sở"
+   }
+  ],
+  "why_bold": "Vì sao lệch?",
+  "why": "Từ 2026 FPT chỉ ghi phần lãi của FPT Telecom theo tỷ lệ sở hữu, không cộng toàn bộ doanh thu nữa. Nhiều khả năng bảng nào chưa tính lại kỳ cũ sẽ thấy doanh thu “giảm”.",
+  "bars": {
+   "title": "Lợi nhuận sau thuế công ty mẹ, tăng so cùng kỳ (%)",
+   "subtitle": "Con số không bị đổi cách ghi làm lệch · chậm lại còn ~14%",
+   "labels": [
+    "Q3/24",
+    "Q4/24",
+    "Q1/25",
+    "Q2/25",
+    "Q3/25",
+    "Q4/25",
+    "Q1/26",
+    "Q2/26"
+   ],
+   "values": [
+    20.1,
+    21.6,
+    20.9,
+    20.4,
+    16.6,
+    19.8,
+    14.4,
+    13.7
+   ],
+   "highlight_last": 2,
+   "label_idx": [
+    3,
+    6,
+    7
+   ],
+   "ymax": 25,
+   "yticks": [
+    10,
+    20
+   ]
+  },
+  "sources": "DNSE (KQKD theo quý); Vietstock 17/7; Vietnamnet 16/7. Nguyên nhân chênh là suy luận, cần đối chiếu BCTC."
+ }
+}

@@ -1,7 +1,7 @@
 # BÀI FACEBOOK FPT – carousel 3 ảnh (soạn 11/10/2026, giá đến hết phiên 9/10)
 
-Cùng nội dung với video FPT (`2026-10-11-fpt-lai-deu-nhung-giam-11-phien.md`) nhưng viết riêng cho Facebook: đọc được mà không cần xem video, đã rà "văn máy", không có giá mục tiêu/khuyến nghị, một CTA duy nhất.
-Ảnh: `videos/covers/post_fpt_1_1080x1350.png`, `post_fpt_2_…`, `post_fpt_3_…` (4:5, đăng theo thứ tự 1 → 2 → 3). Tạo lại bằng `python3 make_posts.py && PREFIX=post node shoot.mjs` trong `videos/covers/`.
+Cùng nội dung với video FPT (`videos/scripts/2026-10-11-fpt-lai-deu-nhung-giam-11-phien.md`) nhưng viết riêng cho Facebook: đọc được mà không cần xem video, đã rà "văn máy", không có giá mục tiêu/khuyến nghị, một CTA duy nhất.
+Ảnh: `post_1.png`, `post_2.png`, `post_3.png` cùng thư mục này (1080×1350, 4:5, đăng theo thứ tự 1 → 2 → 3). Tạo lại từ `spec.json` bằng `python3 videos/covers/make_post.py videos/posts/2026-10-11-fpt/spec.json`.
 
 ## 1. Nội dung đăng (copy nguyên khối)
 
@@ -37,6 +37,6 @@ Nguồn: DNSE; CafeF 21/9, 8/10; Vietnamnet 16/7, 9/10; Vietstock 17/7.
 
 ## 4. Trước khi đăng
 1. Công ty duyệt bài (có nêu tên báo và dự báo của bên thứ ba; không có khuyến nghị mua/bán, không giá mục tiêu).
-2. Cập nhật nếu có phiên 12/10: giá, chuỗi giảm, số khối ngoại; sửa dòng "đến hết phiên 9/10" trong bài và cả 3 ảnh (sửa trong `make_posts.py` rồi chạy lại).
+2. Cập nhật nếu có phiên 12/10: giá, chuỗi giảm, số khối ngoại; sửa dòng "đến hết phiên 9/10" trong bài và cả 3 ảnh (sửa `spec.json` rồi chạy lại `make_post.py`).
 3. Không thêm lời mời nhóm/phòng trả phí, không hứa lợi nhuận, không "chuyên gia".
 4. Đăng carousel 3 ảnh theo thứ tự 1 → 2 → 3, bình luận đầu tiên có thể ghim: danh sách nguồn (dạng liên kết) ở file video FPT, mục 7.
