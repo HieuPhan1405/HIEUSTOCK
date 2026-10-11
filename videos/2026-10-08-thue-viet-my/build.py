@@ -184,6 +184,10 @@ SEL .disc{position:absolute;left:60px;width:880px;top:1130px;padding:12px 16px;b
 
 # ───────────────────────── ZOOM & SFX ─────────────────────────
 CUTS = []
+_last = -9
+for o in OFFS[1:]:
+    if o[1] - _last > 1.0 and o[1] > 1.0 and o[1] < DUR - 4:
+        CUTS.append(round(o[1], 3)); _last = o[1]
 PUSH = []
 
 SFX = []
@@ -191,6 +195,15 @@ for cid, c in CARDS.items():
     SFX.append((c["s"], "whoosh" if c["full"] else "pop", 0.3 if c["full"] else 0.25))
     if c["full"] and c["e"] < DUR - 0.1:
         SFX.append((c["e"] - 0.15, "whoosh", 0.22))
+for t in CUTS:
+    SFX.append((t - 0.05, "whoosh", 0.16))
+SFX.append((0.2, "whoosh", 0.3)); SFX.append((0.6, "ding", 0.18))
+for ph in ["12,5%", "35%", "1/3", "2,5%"]:
+    try:
+        SFX.append((T(ph) - 0.02, "click", 0.3))
+    except KeyError:
+        pass
+SFX.append((t_disc + 0.05, "ding", 0.2))
 SFX.sort()
 
 # ───────────────────────── CAPTION TỰ ĐỘNG TỪ TOKENS ─────────────────────────
@@ -314,7 +327,7 @@ def main():
     events = sorted([(t, None) for t in CUTS] + [(t, v) for t, v in PUSH])
     for t, v in events:
         if v is None:
-            lvl = 1.1 if lvl < 1.05 else 1.0
+            lvl = 1.12 if lvl < 1.05 else 1.0
             js.append(f"tl.set('#video-inner',{{scale:{lvl}}},{q(t)});")
         else:
             js.append(f"tl.to('#video-inner',{{scale:{lvl + v:.2f},duration:.45,ease:'power3.inOut'}},{q(t)});")
