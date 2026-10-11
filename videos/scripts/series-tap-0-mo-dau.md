@@ -1,76 +1,81 @@
-# TẬP 0 (bản 2) – Video mở đầu series "CHỬI CHO ĐÚNG": nghề tài chính có ích thật, sao nhìn vào lại thấy xấu? (11/10/2026)
+# TẬP 0 (bản 3b – đã rút gọn nhịp) – Video mở đầu series "CHỬI CHO ĐÚNG": môi giới "lùa gà", ngân hàng "tiếp khách", kế toán "vào tù" – nghề có ích thật mà nhìn vào lại thấy xấu (11/10/2026)
 
-Bản 1 (kiểu thuyết minh, hook yếu) đã bỏ (còn trong lịch sử git). Độ dài ~2:20; muốn bản 75–80s thì giữ: hook (0–11s) + đố 3 câu (11–27s) + lý do ①③ + câu thách; bỏ phần bằng chứng 3 nghề xuống 1 nghề. Bản 2 đổi 3 thứ: **(1) hook khiêu khích + hứa hẹn kép, (2) một "thử thách" đố người xem ngay giây 10, (3) một luận điểm gây tranh cãi cho cả hai phe ("ghét hết" và "bênh hết" đều lười)**.
-Tên series đề xuất: **"CHỬI CHO ĐÚNG"** (thay cho "Bẻ nhận định"; phương án khác: "Bẻ nhận định", "Môi giới bị hiểu lầm").
-Chữ cố định đỉnh màn hình: **CHỬI NGHỀ TÀI CHÍNH – NHƯNG CHỬI CHO ĐÚNG** (vùng an toàn x 60–940, y 170–1430).
-Ký hiệu: [ĐÃ XÁC MINH] có nguồn đọc được 11/10/2026 · [TỰ TÍNH] · [SUY LUẬN] ý kiến người nói · [HIẾU ĐIỀN].
+Bản 3 bám đúng 3 hình ảnh Hiếu nêu: **môi giới lùa gà/lừa gạt · ngân hàng tiếp khách · kế toán vào tù**. Mỗi nghề đi theo 1 khuôn: **câu người ta nói → PHẦN CÓ THẬT (có vụ/có nguồn) → cơ chế vì sao nhìn ra như vậy → cái nghề đó thật sự làm**.
+Tên series: **"CHỬI CHO ĐÚNG"**. Chữ cố định đỉnh màn hình: **LÙA GÀ · TIẾP KHÁCH · VÀO TÙ – CHỬI CHO ĐÚNG** (vùng an toàn x 60–940, y 170–1430).
+Ký hiệu: [ĐÃ XÁC MINH] đọc được nguồn 11/10/2026 · [TỰ TÍNH] · [SUY LUẬN] ý kiến người nói · [HIẾU ĐIỀN].
+**Giả định cần Hiếu xác nhận:** "ngân hàng tiếp khách" mình hiểu là hình ảnh "dân ngân hàng suốt ngày nhậu, đi tiếp khách, quan hệ để kiếm tiền gửi/khoản vay". Nếu ý Hiếu là "ngân hàng ép mở thẻ/bán bảo hiểm cho khách" thì đổi đoạn 2 (xem cuối file).
 
-## 5 phương án hook (chọn 1; bản dưới dùng số 1)
-1. **Khiêu khích + hứa kép** *(đề xuất)*: "Anh chị cứ chửi nghề tài chính. Mình không cản. [DỪNG] Mình chỉ xin anh chị chửi cho đúng. Vì có những điều anh chị chửi là chuẩn, không cãi được. Và có những điều anh chị chửi đang làm anh chị dễ bị lừa hơn." → người xem phải ở lại để biết "điều nào đúng, điều nào sai" và "vì sao dễ bị lừa hơn".
-2. **Đố 3 câu**: "Ba câu hỏi. Trả lời được hết thì mới được chửi tiếp nghề tài chính. Một: lương về tài khoản qua ai? Hai: ai kiểm sổ sách công ty anh chị mua cổ phiếu? Ba: ai đưa lệnh của anh chị tới sàn?" (đã nằm ở giây 10–24 của bản dưới; có thể đưa lên làm hook nếu muốn "đố" ngay).
-3. **Nghịch lý**: "Nghề tài chính làm đúng thì không ai biết, làm sai thì cả nước biết. Nghĩa là anh chị chỉ từng nhìn thấy phiên bản tệ nhất của nó."
-4. **Chia phe**: "Người chửi cả nghề tài chính và người bênh cả nghề tài chính. Mình nghĩ cả hai đều đang lười."
-5. **Con số**: "26 triệu. Mỗi ngày có chừng đó giao dịch chạy qua hệ thống NAPAS. Anh chị nhớ được đúng mấy vụ? Và vì sao chỉ nhớ mấy vụ đó?"
-
----
-
-[0:00–0:11] HOOK  (nhìn thẳng máy; câu 1–2 nhanh, im 0,5s trước "Mình chỉ xin…", câu cuối chậm)
-"Anh chị cứ chửi nghề tài chính. Mình không cản. [DỪNG 0,5s]
-Mình chỉ xin anh chị chửi cho đúng.
-Vì có những điều anh chị chửi là chuẩn, không cãi được. Và có những điều anh chị chửi, đang làm anh chị dễ bị lừa hơn."
-[HÌNH: 0–1s màn đen, chữ "CHỬI" đập vào màn hình + SFX; mặt hiện ở "Mình không cản"; chữ "CHO ĐÚNG" hiện vàng ở "chửi cho đúng"; punch-in 1,15 ở "dễ bị lừa hơn" + SFX riser ngắn]
-
-[0:11–0:27] THỬ THÁCH — ĐỐ 3 CÂU
-"Mình thách anh chị trả lời ba câu. Một: tiền lương về tài khoản của anh chị đi qua ai? Hai: ai kiểm tra sổ sách của công ty mà anh chị mua cổ phiếu? Ba: ai đưa lệnh mua bán của anh chị tới sàn?
-Ngân hàng. Kiểm toán. Môi giới. Ba nghề anh chị chửi nhiều nhất, cũng là ba nghề anh chị đang dùng mà không để ý."
-[HÌNH: 3 câu hỏi hiện lần lượt, mỗi câu 1 số vàng; im 1s sau câu 3 rồi 3 biểu tượng nghề "bật" lên kèm SFX pop]
-
-[0:27–0:55] BẰNG CHỨNG — HỌ LÀM GÌ MÀ NGƯỜI NGOÀI ÍT THẤY  (mỗi nghề ~9s, 1 hình bằng chứng)
-"Ngân hàng: riêng năm 2024, hệ thống NAPAS xử lý 9,56 tỷ giao dịch, khoảng 26 triệu mỗi ngày. Và từ 13 tháng 7 năm 2026, tiền gửi được bảo hiểm đến 350 triệu đồng.
-Kiểm toán: luật quy định báo cáo tài chính năm của doanh nghiệp chào bán chứng khoán ra công chúng phải được kiểm toán. Anh chị không tự kiểm sổ sách của họ được.
-Môi giới: là trung gian đưa lệnh mua bán tới sàn. Và tiền, chứng khoán trong tài khoản là tài sản của khách, không phải của công ty chứng khoán."
-[THẺ NGÂN HÀNG: "9,56 TỶ GIAO DỊCH / 2024" + "≈ 26 TRIỆU / NGÀY" + "BẢO HIỂM TIỀN GỬI 350 TRIỆU (từ 13/7/2026)", nguồn dòng nhỏ] [THẺ KIỂM TOÁN: ảnh Luật Chứng khoán Điều 20 khoản 3 tô vàng] [THẺ MÔI GIỚI: ảnh Điều 88 khoản 1 tô vàng]
-
-[0:55–1:30] VÌ SAO BỊ GHÉT — 3 LÝ DO  (lý do 3 là phần "mình không cãi", nói chậm nhất)
-"Vậy sao vẫn bị ghét?
-Một: lỗi thì lên báo, chạy đúng thì không. Hai mươi sáu triệu giao dịch bình thường không thành tin, một vụ sai thì thành tít. Nên anh chị chỉ từng thấy phiên bản tệ nhất của cả nghề.
-Hai: đây là chuyện tiền. Lỗ, hay bị từ chối vay, là cần người để trách, và nghề đứng gần tiền nhất bị trách đầu tiên.
-Ba, phần mình không cãi: có người làm sai. Có người mượn danh xưng của nghề để làm điều nghề không cho phép. Nhiều chỗ tính thu nhập theo số sản phẩm bán, nên có lúc lợi ích lệch với khách. Chính Ủy ban Chứng khoán đã có công văn ngày 7 tháng 5 năm 2026 để siết chuyện mượn chức danh mà khuyến nghị trên mạng."
-[CHỮ: ① LỖI LÊN BÁO, CHẠY ĐÚNG THÌ KHÔNG · ② ĐỨNG GẦN TIỀN NHẤT · ③ PHẦN CÓ THẬT – KHÔNG CÃI] (hiện đúng lúc nói, số vàng, ≥2s)
-[HÌNH ①: cột xám cao "26.000.000 giao dịch/ngày" cạnh chấm đỏ nhỏ "1 vụ lên báo"] [HÌNH ③: ảnh tiêu đề bài báo về Công văn 3760/UBCK-QLKD kèm "Nguồn:"] [AUDIO: im 0,3s trước "Ba, phần mình không cãi" rồi SFX click]
-
-[1:30–1:55] LUẬN ĐIỂM GÂY TRANH CÃI — CẢ HAI PHE ĐỀU LƯỜI
-"Và đây là điều mình nghĩ sẽ làm nhiều người khó chịu.
-Phe 'nghề tài chính toàn lừa đảo' và phe 'toàn người tốt, đừng nói xấu', mình thấy cả hai đều đang lười.
-Ghét cả nghề thì anh chị không còn tiêu chí để phân biệt ai đáng tin, nên dễ nghe theo ai nói đúng điều mình muốn nghe, kể cả người tự xưng chuyên gia trên mạng. Bênh cả nghề thì bỏ qua phần có thật ở trên.
-Chửi cho đúng là tách được ba thứ: cái sai của người, cái sai của cách trả tiền, và cái hiểu lầm."
-[HÌNH: 2 ô đối nhau "GHÉT HẾT" | "BÊNH HẾT", cả hai bị đóng dấu "LƯỜI"; rồi 3 ô "SAI CỦA NGƯỜI · SAI CỦA CÁCH TRẢ TIỀN · HIỂU LẦM" hiện lần lượt] [AUDIO: im 0,5s trước "Phe nghề tài chính toàn lừa đảo"]
-
-[1:55–2:20] LUẬT CHƠI + THÁCH NGƯỜI XEM + RỦI RO
-"Series này làm đúng việc đó. Mỗi tập, mình lấy một nhận định, nhận phần đúng trước, rồi bẻ phần sai bằng điều luật hoặc số liệu có nguồn. Không hô mã, không hứa lãi.
-Mình thách anh chị: comment nhận định về nghề tài chính mà anh chị tin chắc nhất. Cái nào nhiều người đồng ý nhất, mình bẻ ngay tập sau. Bẻ không nổi, mình nhận.
-Anh chị phe nào: ghét hết, hay bênh hết?
-Video này giải thích cách các nghề vận hành, không phải khuyến nghị đầu tư. Đầu tư luôn có rủi ro mất vốn."
-[THẺ "LUẬT CHƠI": ① NHẬN PHẦN ĐÚNG ② BẺ BẰNG LUẬT/SỐ LIỆU CÓ NGUỒN ③ KHÔNG HÔ MÃ – KHÔNG HỨA LÃI] [CHỮ lớn ở câu hỏi cuối: "PHE NÀO? GHÉT HẾT hay BÊNH HẾT?"] [CHỮ: ĐẦU TƯ LUÔN CÓ RỦI RO MẤT VỐN]
-[3,6s cuối: "Nội dung giải thích cách nghề vận hành, không phải khuyến nghị đầu tư. Ý kiến cá nhân, không đại diện công ty."]
+## 4 phương án hook (bản dưới dùng số 1)
+1. **Liệt kê 3 câu quen tai + hứa thẳng** *(đề xuất)*: "Môi giới thì lùa gà. Ngân hàng thì suốt ngày đi tiếp khách. Kế toán thì ngồi chờ vào tù. [DỪNG] Ba câu anh chị nghe quen nhất về nghề tài chính. Mình sẽ nói thẳng: câu nào có thật, câu nào oan, và câu nào đang che mất một điều anh chị cần biết."
+2. **Chuyện cá nhân** *(chỉ dùng nếu ĐÚNG sự thật của Hiếu)*: "Hôm mình nói với [người thân] là mình theo nghề chứng khoán, câu đầu tiên họ hỏi: 'Thế con có đi lùa gà không?' [HIẾU ĐIỀN: người, tình huống thật]. Mình không giận. Vì có một phần câu đó là thật."
+3. **Đối chiếu**: "Làm môi giới thì bị gọi là lùa gà. Làm ngân hàng thì bị gọi là đi tiếp khách. Làm kế toán thì bị nói là sắp vào tù. Ba nghề này có chung một điểm: làm đúng thì không ai khen, làm sai thì cả nước chửi."
+4. **Thách người xem**: "Mình thách anh chị kể ra một nghề tài chính mà anh chị chưa từng nghe câu 'nó toàn lừa đảo'. Ngân hàng, môi giới, kế toán… nghe hết rồi đúng không? Vậy hôm nay mình đi tìm xem câu nào có thật."
 
 ---
-## Nguồn và mức xác minh (ngày 11/10/2026)
-- NAPAS xử lý **9,56 tỷ giao dịch, giá trị 61 triệu tỷ đồng trong năm 2024** [ĐÃ XÁC MINH] – https://tapchinganhang.gov.vn/napas-gia-tang-trai-nghiem-khach-hang-da-dang-hoa-he-sinh-thai-thanh-toan-khong-dung-tien-mat-15231.html ; "26 triệu/ngày" = 9,56 tỷ ÷ 366 ngày [TỰ TÍNH]. Đây là giao dịch qua **hệ thống NAPAS**, không phải tổng mọi giao dịch ngân hàng → giữ nguyên chữ "hệ thống NAPAS".
-- **Hạn mức bảo hiểm tiền gửi 350 triệu đồng từ 13/7/2026** (từ 125 triệu) [ĐÃ XÁC MINH] – https://vov2.vov.vn/phap-luat/nhung-dieu-nguoi-gui-tien-can-biet-ve-han-muc-bao-hiem-tien-gui-60925.vov2 (cũng có Thời báo Ngân hàng). Nhiều bài cũ vẫn ghi 125 triệu.
-- Luật Chứng khoán 54/2019/QH14 [ĐÃ XÁC MINH] – https://thuvienphapluat.vn/van-ban/Chung-khoan/Luat-Chung-khoan-nam-2019-399763.aspx · **Điều 20 khoản 3**: báo cáo tài chính năm phải được kiểm toán (điều kiện hồ sơ chào bán ra công chúng → chỉ nói "doanh nghiệp chào bán chứng khoán ra công chúng", đừng nói "mọi doanh nghiệp") · **Điều 88 khoản 1**: tài sản khách hàng thuộc sở hữu khách hàng, không phải của công ty chứng khoán · **Điều 3 khoản 29**: môi giới = làm trung gian thực hiện mua, bán chứng khoán cho khách hàng.
-- **Công văn 3760/UBCK-QLKD ngày 7/5/2026**: yêu cầu công ty chứng khoán rà soát, kiểm soát người hành nghề đăng nội dung nhận định/khuyến nghị trên mạng; lưu ý các trường hợp dùng nơi công tác, chức vụ, kinh nghiệm làm việc tại công ty chứng khoán để khuyến nghị [ĐÃ XÁC MINH qua báo] – https://theleader.vn/ubck-yeu-cau-cong-ty-chung-khoan-kiem-soat-moi-gioi-khuyen-nghi-tren-mang-xa-hoi-d45893.html · https://dantri.com.vn/kinh-doanh/siet-quan-ly-nhan-vien-chung-khoan-ho-hao-mua-ban-co-phieu-tren-mang-xa-hoi-20260513074102201.htm
-- **[SUY LUẬN] — phải nói là "mình nghĩ"/"mình thấy", không nói như sự thật:** lý do ① "tin xấu nổi hơn", lý do ② "nghề đứng gần tiền bị trách đầu tiên", luận điểm "ghét cả nghề → không có tiêu chí → dễ nghe theo người nói điều mình muốn nghe", và mệnh đề "ba nghề nền kinh tế khó chạy nếu thiếu" (luận đề, chống đỡ bằng 3 chức năng ở trên). Bối cảnh về người nghe theo "chuyên gia mạng": https://www.tinnhanhchungkhoan.vn/gen-z-dau-tu-tu-tiktok-den-bang-dien-post371240.html (bài báo mô tả hiện tượng; **không** chứng minh quan hệ nhân quả "ghét nghề → dễ bị lừa").
-- Câu hỏi 1 ("lương về tài khoản") là câu đố dẫn dắt: đúng với đa số người nhận lương qua tài khoản, đừng khẳng định "mọi người".
 
-## Điểm gây tranh luận đã cài (để comment sôi)
-1. "Chửi cho đúng" – nhận có phần đúng, nên cả người chửi lẫn người bênh đều có thể phản ứng.
-2. "Ghét hết" và "bênh hết" đều bị gọi là lười → người xem tự xếp mình vào phe và cãi nhau trong comment.
-3. Thách người xem nêu nhận định tin chắc nhất → tạo nội dung cho tập sau; câu "bẻ không nổi, mình nhận" là cam kết thật, chỉ dùng khi Hiếu sẵn sàng giữ.
-Cẩn thận: khi trả lời comment, **không** cãi tay đôi với người đang bực, không nêu tên công ty/cá nhân, không hứa kết quả đầu tư.
+[0:00–0:14] HOOK  (3 câu đầu nhanh, mỗi câu 1 nhịp SFX "đập"; im 0,6s; câu sau chậm)
+"Môi giới thì lùa gà. Ngân hàng thì suốt ngày đi tiếp khách. Kế toán thì ngồi chờ vào tù. [DỪNG 0,6s]
+Ba câu anh chị nghe quen nhất về nghề tài chính. Mình sẽ nói thẳng: câu nào có thật, câu nào oan, và câu nào đang che mất một điều anh chị cần biết."
+[HÌNH: màn đen, 3 câu hiện chữ to từng câu (mỗi câu 1 màu: trắng/vàng/đỏ nhạt – ngoại lệ hook), mặt hiện ở "[DỪNG]"; punch-in 1,15 ở "câu nào có thật"; SFX riser ngắn]
+
+[0:14–0:46] 1 — "MÔI GIỚI LÙA GÀ, LỪA GẠT"
+"Một, môi giới lùa gà. Phần có thật, mình không cãi: ngày 28 tháng 8 năm 2026, một môi giới bị phạt 1,5 tỷ đồng và bị tước quyền sử dụng chứng chỉ 21 tháng vì dùng hai tài khoản thao túng cổ phiếu.
+Nhưng ở những vụ lùa gà lớn mà báo chí nhắc, người bị xét xử là chủ tịch của chính doanh nghiệp. Thao túng là tội luật cấm với tất cả mọi người, không riêng môi giới.
+Khác biệt là môi giới có chứng chỉ, sai thì bị tước chứng chỉ, và công ty chứng khoán phải chịu trách nhiệm. Còn người tự xưng chuyên gia trên mạng, hô mã kèm lời hứa lãi, thì không có công ty nào đứng sau."
+[THẺ 1: tiêu đề bài báo VietNamNet 28/8/2026 (che tên người, chỉ hiện "1,5 tỷ · tước chứng chỉ 21 tháng") + dòng "Nguồn:"; ảnh Luật Chứng khoán Điều 97 khoản 3 điểm b + Điều 98 khoản 4 tô vàng]
+[CHỮ: "CÓ THẬT" (đỏ) → "NHƯNG AI LÙA?" (vàng)]
+
+[0:46–1:16] 2 — "NGÂN HÀNG ĐI TIẾP KHÁCH"
+"Hai, ngân hàng đi tiếp khách. Phần có thật: dân ngân hàng phải chăm khách rất nhiều. Báo VnExpress ngày 25 tháng 9 kể có nhân viên bị tăng chỉ tiêu huy động từ 15 tỷ lên 20 tỷ, phải livestream bốn tháng để kéo từng món gửi 5 đến 10 triệu. Và cũng có cán bộ ngân hàng bị bắt vì bị cáo buộc nhận hối lộ.
+Nhưng mình nghĩ cái tiếp khách anh chị thấy là hệ quả của chỉ tiêu, và người đứng quầy là người gánh.
+Còn phía sau quầy đó: NAPAS xử lý khoảng 26 triệu giao dịch mỗi ngày, và từ 13 tháng 7, tiền gửi được bảo hiểm đến 350 triệu đồng."
+[THẺ 2: ảnh tiêu đề bài VnExpress 25/9/2026 (che tên) tô vàng "15 tỷ → 20 tỷ"; thẻ số "9,56 TỶ GIAO DỊCH/2024 (NAPAS) ≈ 26 TRIỆU/NGÀY" + "BẢO HIỂM TIỀN GỬI 350 TRIỆU"; nguồn dòng nhỏ]
+[CHỮ: "CÓ THẬT" → "TIẾP KHÁCH = HỆ QUẢ CỦA CHỈ TIÊU" (SUY LUẬN – hiện dưới dạng "MÌNH NGHĨ")]
+
+[1:16–1:47] 3 — "KẾ TOÁN NGỒI CHỜ VÀO TÙ"
+"Ba, kế toán chờ vào tù. Phần có thật: có vụ giám đốc bị khởi tố thì kế toán trưởng cũng bị kéo theo. Một luật sư nói với báo Dân Việt ngày 7 tháng 10: luật cho kế toán quyền bảo lưu ý kiến, cảnh báo, từ chối, nhưng chưa có cơ chế bảo vệ khi họ dám dùng quyền đó. Nghĩa là người ký tên chịu trách nhiệm, còn người quyết định thường là người khác.
+Không phải kế toán nào vào tù cũng oan. Nhưng báo cáo tài chính cho anh chị biết một công ty lãi hay lỗ là do họ lập, và công ty chào bán chứng khoán ra công chúng phải kiểm toán nó."
+[THẺ 3: tiêu đề bài Dân Việt 7/10/2026 tô vàng "quyền bảo lưu, cảnh báo, từ chối – chưa có cơ chế bảo vệ"; ảnh Luật Chứng khoán Điều 20 khoản 3 tô vàng; nguồn]
+[CHỮ: "CÓ THẬT" → "AI KÝ, AI CHỊU" → "KHÔNG PHẢI AI CŨNG OAN"]
+
+[1:47–2:26] CHẤM ĐIỂM + LUẬN ĐIỂM GÂY TRANH CÃI + THÁCH NGƯỜI XEM
+"Vậy ba câu đó đúng bao nhiêu? Câu một: đúng một phần, sai ở chỗ gom cả nghề. Câu hai: đúng ở áp lực chỉ tiêu, sai ở chỗ chỉ đổ cho con người. Câu ba: đúng ở rủi ro, sai ở chỗ coi kế toán như người sắp vào tù.
+[DỪNG 0,5s] Và đây là điều khó nghe nhất. Chửi cả nghề thì kẻ lừa thật được yên, vì không còn tiêu chí nào để tách người sai ra khỏi người đúng. Bênh cả nghề thì người làm sai cũng được yên. Chửi cho đúng là chửi đúng người, đúng cơ chế.
+Series này làm việc đó, mỗi tập một nhận định, bằng điều luật hoặc số liệu có nguồn. Không hô mã, không hứa lãi. Nghề nào oan nhất? Comment 1, 2 hay 3, nhiều phiếu nhất mình bẻ trước.
+Video giải thích, không phải khuyến nghị đầu tư. Đầu tư luôn có rủi ro mất vốn."
+[HÌNH: bảng chấm "1 · ĐÚNG MỘT PHẦN / 2 · ĐÚNG Ở CHỈ TIÊU / 3 · ĐÚNG Ở RỦI RO"; 2 ô "CHỬI CẢ NGHỀ" | "BÊNH CẢ NGHỀ" cùng đóng dấu "KẺ SAI ĐƯỢC YÊN"; CHỮ lớn: "BÌNH CHỌN: 1 · 2 · 3"; CHỮ: ĐẦU TƯ LUÔN CÓ RỦI RO MẤT VỐN]
+[3,6s cuối: "Nội dung giải thích, không phải khuyến nghị đầu tư. Ý kiến cá nhân, không đại diện công ty."]
+
+**Đo nhịp (bản 3b):** 576 tiếng ≈ 2:26 ở ~240 tiếng/phút (hook 54 · đoạn 1 126 · đoạn 2 119 · đoạn 3 120 · đoạn cuối 157). Mốc thời gian chỉ là ước tính – đọc thật rồi chỉnh. Muốn bản ngắn ~90 s: giữ hook + đoạn 1 + đoạn chấm điểm, bỏ đoạn 2–3 (để dành làm Tập 2, 3).
+
+---
+## Nguồn và mức xác minh (11/10/2026) – mỗi "phần có thật" đều phải mở bài gốc đọc lại trước khi quay
+- **[1] Môi giới bị phạt:** VietNamNet 28/08/2026 – "Thao túng cổ phiếu, nữ môi giới bị phạt 1,5 tỷ đồng, tước chứng chỉ hành nghề": dùng 2 tài khoản thao túng cổ phiếu; phạt 1,5 tỷ; tước quyền sử dụng chứng chỉ hành nghề 21 tháng [ĐÃ XÁC MINH qua đọc trang] – https://vietnamnet.vn/thao-tung-co-phieu-nu-moi-gioi-bi-phat-1-5-ty-dong-tuoc-chung-chi-hanh-nghe-2550008.html
+  **Không nêu tên người bị phạt** trong lời và trên hình.
+- **[1] "Lùa gà" lớn do chủ tịch doanh nghiệp bị xét xử:** VnExpress – chủ tịch một tập đoàn bị tuyên 5 năm 6 tháng tù (sơ thẩm), phúc thẩm giảm 18 tháng, vì thao túng thị trường chứng khoán, trong bài có chữ "lùa gà" [ĐÃ XÁC MINH qua đoạn trích] – https://vnexpress.net/chu-tich-louis-holdings-do-thanh-nhan-duoc-giam-18-thang-tu-4698999.html · Thanh Niên (trang chủ đề FLC): "Bộ Công an hé lộ cách thức [chủ tịch FLC] 'lùa gà', thao túng chứng khoán" [ĐÃ XÁC MINH qua đoạn trích] – https://thanhtra.com.vn không dùng; dùng https://thanhnien.vn/flc-tags489889.html
+  **Câu "người bị xét xử là chủ tịch doanh nghiệp" chỉ nói cho "những vụ lớn mình đọc" (2 vụ trên), đừng nói "mọi vụ lùa gà đều do chủ doanh nghiệp".** Mình chưa có thống kê toàn bộ.
+- **[1] Luật:** Luật Chứng khoán 54/2019/QH14 – Điều 12 khoản 3 (cấm thao túng); Điều 97 khoản 3 điểm b + khoản 4 (vi phạm Điều 12 bị thu hồi chứng chỉ, không được cấp lại); Điều 98 khoản 4 (công ty chịu trách nhiệm về hoạt động nghiệp vụ của người hành nghề) [ĐÃ XÁC MINH] – https://thuvienphapluat.vn/van-ban/Chung-khoan/Luat-Chung-khoan-nam-2019-399763.aspx
+  Lưu ý: vụ ở [1] bị "tước quyền sử dụng chứng chỉ 21 tháng" (biện pháp xử phạt bổ sung), khác với "thu hồi chứng chỉ" theo Điều 97 – lời nói dùng đúng "tước quyền sử dụng chứng chỉ 21 tháng", đừng nói "thu hồi" cho vụ này.
+- **[2] Chỉ tiêu ngân hàng:** VnExpress 25/09/2026 "Áp lực chỉ tiêu, nhân viên ngân hàng 'tung chiêu' kéo tiền gửi": KPI từ 15 tỷ lên 20 tỷ (tăng 30%), livestream 4 tháng, lôi kéo món gửi 5–10 triệu, còn có quà tặng và "hỗ trợ từ tiền túi" [ĐÃ XÁC MINH qua đọc trang tự động; mở lại đọc nguyên văn] – https://vnexpress.net/ap-luc-chi-tieu-nhan-vien-ngan-hang-tung-chieu-keo-tien-gui-5124473.html
+- **[2] Hối lộ:** Báo Gia Lai 25/01/2025 – 2 cựu cán bộ Saigonbank chi nhánh Thốt Nốt bị bắt vì bị cáo buộc nhận hối lộ để lập hồ sơ vay vốn sai quy định [ĐÃ XÁC MINH] – https://baogialai.com.vn/2-cuu-can-bo-ngan-hang-bi-bat-vi-nhan-hoi-lo-post309233.html · Đây là **cáo buộc**, chưa nói đã kết án; lời nói giữ "bị bắt vì bị cáo buộc". Bài từ 01/2025: kiểm tra có bản án chưa trước khi quay.
+- **[2] NAPAS & bảo hiểm tiền gửi:** NAPAS xử lý 9,56 tỷ giao dịch năm 2024 (26 triệu/ngày = 9,56 tỷ ÷ 366 [TỰ TÍNH]) – https://tapchinganhang.gov.vn/napas-gia-tang-trai-nghiem-khach-hang-da-dang-hoa-he-sinh-thai-thanh-toan-khong-dung-tien-mat-15231.html · Hạn mức bảo hiểm tiền gửi 350 triệu từ 13/7/2026 – https://vov2.vov.vn/phap-luat/nhung-dieu-nguoi-gui-tien-can-biet-ve-han-muc-bao-hiem-tien-gui-60925.vov2 [ĐÃ XÁC MINH]
+- **[3] Kế toán:** Dân Việt 07/10/2026 – "Nghề kế toán và bẫy trách nhiệm: Khoảng trống pháp lý khiến giám đốc đi, kế toán trưởng cũng theo": luật sư chỉ ra luật trao cho kế toán quyền bảo lưu, cảnh báo, từ chối nhưng chưa có cơ chế bảo vệ họ khi dám dùng quyền đó [ĐÃ XÁC MINH qua tiêu đề + mô tả bài; **đây là ý kiến của một luật sư, không phải số liệu** → lời nói dùng "một luật sư nói với báo…"] – https://danviet.vn/nghe-ke-toan-va-bay-trach-nhiem-khoang-trong-phap-ly-khiengiam-doc-di-ke-toan-truong-cung-theo-bai-3-d1463808.html
+- **[3] Kiểm toán báo cáo tài chính:** Luật Chứng khoán Điều 20 khoản 3 (báo cáo tài chính năm của doanh nghiệp chào bán chứng khoán ra công chúng phải được kiểm toán) [ĐÃ XÁC MINH]. "Báo cáo tài chính do kế toán lập" là kiến thức nghề (Luật Kế toán 2015) – **[CẦN XÁC MINH điều khoản]** nếu muốn đưa ảnh luật lên hình.
+- **[SUY LUẬN] (nói "mình nghĩ/mình thấy"):** "tiếp khách là hệ quả của chỉ tiêu", "người đứng quầy là người gánh", phần chấm điểm 3 câu, và luận điểm "chửi cả nghề thì kẻ lừa thật được yên / bênh cả nghề thì người làm sai cũng được yên".
+- **Chưa có số liệu "bao nhiêu % người làm nghề đi tù/bị phạt":** đừng nói tỷ lệ. Nếu ai hỏi "vậy bao nhiêu phần trăm?", trả lời thẳng "mình không có con số, và đừng tin ai đưa tỷ lệ mà không nói nguồn".
+
+## Cẩn thận pháp lý & tuân thủ
+- Không nêu tên người, tên công ty trong lời; trên hình che tên trong tiêu đề bài báo.
+- Chỉ nêu "bị cáo buộc/bị bắt" với vụ chưa có bản án; không khẳng định ai có tội.
+- Công văn 3760/UBCK-QLKD (7/5/2026): đừng dùng tên công ty hay chức danh làm "bằng cấp"; Hiếu xưng "mình", không xưng môi giới của công ty X.
+- Một "phần có thật" ở [1] là chính một môi giới bị phạt → nội dung nhắc thẳng vào ngành của công ty Hiếu: **cần công ty duyệt**.
+- Khi trả lời comment: không cãi tay đôi, không nêu tên, không hứa kết quả đầu tư.
+
+## Nếu "ngân hàng tiếp khách" = "ngân hàng ép mở thẻ/bán bảo hiểm"
+Đoạn 2 đổi: phần có thật = có nơi giao chỉ tiêu bán thẻ/bảo hiểm cho nhân viên (cần 1 bài báo cụ thể làm nguồn – mình chưa tìm; **[CẦN XÁC MINH]**); cơ chế = chỉ tiêu; cái nghề thực sự làm = NAPAS + bảo hiểm tiền gửi như trên.
 
 ## Việc Hiếu cần xác nhận
-1. Chọn hook (1–5) và tên series ("Chửi cho đúng" hay giữ "Bẻ nhận định").
-2. Công ty duyệt series? Video nhắc Công văn 3760 và nói về nghề của chính công ty.
-3. Câu "Bẻ không nổi, mình nhận" – có giữ không?
-4. Chứng chỉ hành nghề hiện tại (lời dùng "mình", không xưng "môi giới của công ty X").
+1. Hook 1–4 (hook 2 chỉ dùng khi có chuyện thật).
+2. "Tiếp khách" hiểu đúng chưa?
+3. Công ty duyệt chưa? (có nhắc môi giới bị phạt)
+4. Tên series "Chửi cho đúng"?
