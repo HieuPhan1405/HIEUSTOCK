@@ -202,6 +202,7 @@ tàu) mỗi ~6–8s, caption vẫn chạy trên cutaway. Nền đen để tập 
 
 ## 9. Checklist trước khi xuất
 
+- [ ] Âm lượng file xuất: mean ≈ −13…−15 dB, đỉnh ≤ −0.3 dB (file < −18 dB thì điện thoại nghe rất nhỏ): sau khi nén chạy `-af volume=4.5dB,alimiter=limit=0.9` hoặc loudnorm + gain
 - [ ] Hook có tiêu đề lớn trong 3s đầu
 - [ ] Mọi chữ/thẻ/logo nằm trong vùng an toàn TikTok (mục 7b)
 - [ ] Không caption nào quá 2 dòng, caption ở ngang vai
