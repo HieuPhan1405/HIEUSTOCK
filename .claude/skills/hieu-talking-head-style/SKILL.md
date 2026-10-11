@@ -14,7 +14,7 @@ Phân tích từ 3 video mẫu (9:16, 576x1024, 25–84s). Khi dựng video mớ
   Ví dụ mẫu: "talking head **VIDEO**" (chữ nằm *sau đầu* người nói), "**NEVER** post…",
   "ĐỪNG LÀM **3 ĐIỀU NÀY** — Video talking head *cao cấp hơn!*".
 - Có nhãn series nhỏ ("ep.1") nếu là loạt bài.
-- **Đổi hình ảnh mỗi 3–5 giây**: cắt cảnh, cutaway full màn hình, PiP, hoặc punch-in.
+- **Đổi hình ảnh mỗi 3–5 giây**: cắt cảnh, cutaway full màn hình, PiP, hoặc punch-in. *(Khảo sát mục 14: không bắt buộc nếu trong khung có chuyển động – quy tắc chính là "ý mới = hình mới".)*
   Video mẫu mạnh nhất có ~20 lần đổi cảnh trong 72s.
 - Kết bằng CTA chữ lớn: "follow mình", "hẹn gặp lại".
 
@@ -244,6 +244,30 @@ tàu) mỗi ~6–8s, caption vẫn chạy trên cutaway. Nền đen để tập 
 
 Lưu ý: chỉ số "hoàn thành >100% nhờ loop" là cách nói của bài viết, không phải số liệu đã kiểm chứng.
 
+## 14. Khảo sát 14 video tài chính nổi bật trên TikTok (11/10/2026) – ưu tiên các quy tắc ở đây khi mâu thuẫn với mục 10–13
+
+Báo cáo đầy đủ (link từng video, phân tích 8 mục, số liệu): `videos/research/2026-10-11-khao-sat-buoc-2-3.md`; bảng 39 ứng viên: `…-buoc-1.md`.
+Cách khảo sát: số liệu công khai TikTok (yt-dlp + curl_cffi), phụ đề tự động `vie-VN.vtt`, khung hình 1s/khung, ebur128. Bình luận và retention không lấy được.
+
+**Đã kiểm thực tế (khác lý thuyết ở mục 12–13):**
+- "Đổi hình mỗi 2–4s" KHÔNG bắt buộc: 4/14 video gần như một khung (bản tin VTV, bảng Excel, webcam + bảng giá, quay trong xe) vẫn ×12 đến ×106 lượt xem trung vị kênh.
+  Quy tắc thay thế: **mỗi ý mới phải có hình mới; trong khung luôn có thứ đang chuyển động** (con trỏ, tay, phụ đề); không để khung đứng yên hoàn toàn >5s.
+- Vòng lặp "câu cuối nối câu đầu": 0/14 video dùng → không bắt buộc.
+- Độ to âm thanh không liên quan lượt xem (−13,7 đến −29,7 LUFS đều có video nổi); vẫn giữ đỉnh ≤ −1 dBTP để khỏi rè.
+- Tốc độ nói video nổi tiếng Việt: 218–352 tiếng/phút (trung vị ~258). Video của Hiếu: 165–223 → khi viết kịch bản nhắm 220–260 (gọn câu, bớt từ đệm).
+
+**Lặp lại nhiều (dùng mặc định):** tiêu đề/hook lớn cố định trên màn hình (12/14) · hook là câu người xem tự hỏi hoặc gọi đúng đối tượng (7/14) ·
+con số trong 5s đầu (6/14) · nêu nguồn trên màn hình (6/14) · ẩn dụ đời thường cho khái niệm (5/14) · ví dụ số tròn/phép tính (5/14) · liệt kê 3 ý (4/14) · series đánh số (4/14).
+
+**5 khung kịch bản đã chuẩn hoá** (mốc giây trong báo cáo, mục 3.3): A "Một con số – ba tác động" (60s, vĩ mô) · B "Bảng tính bằng chứng" (45–60s, tài chính cá nhân) ·
+C "A và B khác nhau ở đâu" (35–45s, dùng được linh vật Mây) · D "Chính sách → 3 nhóm" (2–3 phút, ngành) · E "Câu chuyện cảnh báo" (2–2,5 phút, rủi ro).
+
+**Đừng bắt chước:** dự báo không nguồn + "chắc chắn"; nêu mã kèm "upside lớn"/xếp hạng mã/"5 cổ phiếu nên…"; khoe lợi nhuận cá nhân; nút subscribe nhấp nháy; làm mờ số liệu;
+"nhắn Bio" về nhóm; livestream gõ M/B; tiêu đề "vỡ…", "ALL IN", "tăng X lần".
+
+**Chỉ số tự đo:** (lưu + chia sẻ) ÷ lượt xem – trung vị các kênh VN trong mẫu 0,09–0,80% → ≥0,5% tốt, ≥1% rất tốt; video "nổi" = ≥3× trung vị 20 video gần nhất của kênh.
+Retention: không có ngưỡng công khai đáng tin → so với trung vị 10 video gần nhất của chính kênh.
+
 ## 9. Checklist trước khi xuất
 
 - [ ] Âm lượng file xuất: mean ≈ −13…−15 dB, đỉnh ≤ −0.3 dB (file < −18 dB thì điện thoại nghe rất nhỏ): sau khi nén chạy `-af volume=4.5dB,alimiter=limit=0.9` hoặc loudnorm + gain
@@ -251,7 +275,7 @@ Lưu ý: chỉ số "hoàn thành >100% nhờ loop" là cách nói của bài vi
 - [ ] Mọi chữ/thẻ/logo nằm trong vùng an toàn TikTok (mục 7b)
 - [ ] Không caption nào quá 2 dòng, caption ở ngang vai
 - [ ] ≤ 3 font, ≤ 1 màu nhấn (+ xanh/đỏ cho số liệu)
-- [ ] Đổi hình mỗi 3–5s
+- [ ] Ý mới = hình mới; không khung nào đứng yên hoàn toàn >5s (mục 14)
 - [ ] Mỗi animation có SFX đi kèm, SFX có reverb
 - [ ] Mọi keyframe có easing mượt (không linear)
 - [ ] Số liệu tài chính đã kiểm chứng từ ≥ 2 nguồn; có dòng "không phải khuyến nghị đầu tư"
