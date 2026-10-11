@@ -233,6 +233,17 @@ tàu) mỗi ~6–8s, caption vẫn chạy trên cutaway. Nền đen để tập 
 5. Kết bằng câu điều kiện hoặc câu hỏi mở (comment mã) + disclaimer; cân nhắc câu cuối nối với câu đầu để tạo vòng lặp.
 6. Dựng: interrupt 2–4s, punch-in 1.15, im lặng 0.2–0.3s trước con số quan trọng rồi SFX click.
 
+## 13. 4 chỉ số thuật toán & cách tối ưu (tóm tắt Hiếu gửi; chưa kiểm chứng nguồn)
+
+| Chỉ số | Việc cần làm trong video chứng khoán |
+|---|---|
+| Dừng lướt (1–3s đầu) | Hook ngược ý / kết quả lên trước / chừa khoảng trống tò mò — đã có ở mục 12 |
+| Giữ chân | Đổi thị giác/âm thanh mỗi 2–4s (punch-in 115–120%, caption từng từ, SFX, im lặng trước con số) |
+| Xem lại | Câu cuối nối ngữ pháp vào câu hook (VD cuối: "…và đó là lý do" → đầu: "GDP tăng gần 10% mà chỉ số vẫn giảm") |
+| Chia sẻ / Lưu | **Mật độ giá trị cao** (danh sách 3 ý, checklist, mốc ngày cần theo dõi → người xem bấm Lưu); **đồng điệu bản sắc** (chạm đúng nỗi đau của nhà đầu tư F0: "mua đúng tin mà vẫn lỗ" → bấm Chia sẻ) |
+
+Lưu ý: chỉ số "hoàn thành >100% nhờ loop" là cách nói của bài viết, không phải số liệu đã kiểm chứng.
+
 ## 9. Checklist trước khi xuất
 
 - [ ] Âm lượng file xuất: mean ≈ −13…−15 dB, đỉnh ≤ −0.3 dB (file < −18 dB thì điện thoại nghe rất nhỏ): sau khi nén chạy `-af volume=4.5dB,alimiter=limit=0.9` hoặc loudnorm + gain
