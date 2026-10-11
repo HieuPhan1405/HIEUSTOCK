@@ -200,6 +200,39 @@ tàu) mỗi ~6–8s, caption vẫn chạy trên cutaway. Nền đen để tập 
 - Thẻ hook vàng chữ đen 2 dòng ở đỉnh 3s đầu là một lựa chọn gọn, nhanh (phù hợp yêu cầu "edit nhanh và đơn giản").
 - Zoom nhảy 1.0 ↔ 1.15 tại mỗi jump cut; cắt cả khoảng thở giữa câu.
 
+## 12. Lời nói/kịch bản của 5 video mẫu #5–#9 + tóm tắt bài nghiên cứu video ngắn
+
+*(Phiên âm bằng whisper medium nên có lỗi chính tả; chỉ dùng để học cấu trúc, không trích nguyên văn.)*
+
+**Cấu trúc lời nói quan sát được:**
+- **#8 (trader/môi giới, 2 phút — gần chủ đề của Hiếu nhất):** Hook = *mệnh đề ngược tư duy* ("Trader giỏi không bao giờ đi làm môi giới") →
+  ngay sau đó **tự hỏi thay người xem** ("Hả? Ý là…") → giải thích bằng **ví dụ số đơn giản từng bậc** (10.000$, lãi 5%/tháng = 500$;
+  muốn 10.000$/tháng cần ~200.000$ vốn) → **bằng chứng bằng người thật có tên** → **chốt công thức một câu** ("Đơn giản!") →
+  kết bằng câu **điều kiện** ("Nếu mục tiêu của bạn là… thì ok; còn nếu…"). Không có CTA ép buộc.
+- **#7 (info business, 80s):** mở bằng *dự báo ngược* ("sẽ không hiệu quả nữa") → **định nghĩa thuật ngữ ngay trong câu** ("gọi là info business, có nghĩa là bạn kinh doanh thông tin") →
+  **chuỗi nguyên nhân** (mô hình cũ → vì sao hỏng) → nhượng bộ ("tạm dùng vẫn được, nhưng sau này") → **hướng đi mới** (2–3 phương án) → điều kiện để thắng.
+- **#5 (rawjamintran, nói về nghiện):** cảm xúc, dùng **điệp cấu trúc** "Các em có thể là… / Các em có thể là…" 4–5 lần rồi **đảo chiều** ("Nhớ sau này…") — câu ngắn, lặp, tăng dần.
+- **#6/#9 (phỏng vấn):** dạng hỏi–đáp: một câu hỏi ngắn → trả lời bằng "Có nghĩa là…", kể trải nghiệm ngôi thứ nhất, kết bằng nguyên tắc sống.
+
+**Thói quen câu chữ chung:** tiếng Việt nói chuyện, xưng hô trực tiếp (anh em/các bạn), **câu hỏi láy "đúng không?"** sau mỗi ý chính,
+**"Có nghĩa là…"** để dịch jargon, ví dụ con số tròn dễ nhẩm, người thật làm chứng, kết bằng câu điều kiện thay vì "hãy mua/theo tôi".
+
+**Từ bài nghiên cứu (người dùng gửi; nguồn chưa kiểm chứng — các con số như "40% xem tắt tiếng", "âm thanh chiếm 50%" chỉ tham khảo):**
+- Khung kịch bản 4 tầng: **Hook 0–3s** (khẳng định ngược / kết quả lên trước) → **Khoảng trống tò mò 4–12s** (vì sao cách thông thường thất bại) → **Giá trị + bằng chứng 13–22s** → **CTA + vòng lặp 23–30s+** (câu cuối nối ngữ pháp với câu mở để người xem tua lại).
+- 3 kiểu hook: *thông tin chưa đủ* (nêu sai lầm chết người, chưa nói cách sửa) · *thách thức niềm tin* · *bằng chứng trực tiếp* (đưa kết quả lên trước).
+- **Pattern interrupt mỗi 2–4s:** punch-in 115–120% tại từ khoá, cắt góc máy thứ hai/B-roll flash, caption từng từ đổi màu ở từ trọng tâm,
+  **ngắt nhạc nền ngay trước thông tin cốt lõi** (im lặng rồi mới nói), SFX whoosh/pop/riser trùng điểm cắt, đổi bối cảnh bằng đồ hoạ/meme ngắn.
+- Quay: 4K/30fps cho thoại, khoá cân bằng trắng + khoá nét, ánh sáng 3 điểm, đèn RGB lệch góc lên tường sau để có dải màu tương phản.
+- Vòng lặp phản hồi: xem biểu đồ giữ chân của từng video, tìm giây tụt người xem để sửa hook/nhịp ở video sau.
+
+**Áp dụng khi Hiếu gửi kịch bản/viết kịch bản mới:**
+1. Hook = câu ngược ý hoặc mâu thuẫn số liệu (VD "GDP +9,95% mà VN-Index vẫn giảm"), 1 câu, trước giây thứ 3.
+2. Câu 2 tự hỏi thay người xem ("Vì sao?"/"Nghĩa là sao?").
+3. Mỗi khái niệm khó: "…có nghĩa là…" + 1 ví dụ số tròn.
+4. 3 ý chính, mỗi ý ≤ 25s, kết bằng công thức/nguyên tắc một câu.
+5. Kết bằng câu điều kiện hoặc câu hỏi mở (comment mã) + disclaimer; cân nhắc câu cuối nối với câu đầu để tạo vòng lặp.
+6. Dựng: interrupt 2–4s, punch-in 1.15, im lặng 0.2–0.3s trước con số quan trọng rồi SFX click.
+
 ## 9. Checklist trước khi xuất
 
 - [ ] Âm lượng file xuất: mean ≈ −13…−15 dB, đỉnh ≤ −0.3 dB (file < −18 dB thì điện thoại nghe rất nhỏ): sau khi nén chạy `-af volume=4.5dB,alimiter=limit=0.9` hoặc loudnorm + gain
