@@ -160,6 +160,46 @@ Nguồn tham khảo: hướng dẫn safe zone 2026 (130 top / 484 bottom / 44 le
 - Thẻ số liệu: thử kiểu thẻ trắng ngà 1/3 trên (tiêu đề + 1 hình + 1 câu) thay vì khối tối; biểu đồ CloudStock vẫn đưa vào cạnh đó.
 - Caption: chuyển sang karaoke nhỏ (từ đang nói được bo ô), chỉ để chữ to ở từ khoá/số liệu quan trọng.
 
+## 11. Bài học từ 5 video mẫu #5–#9 (kênh rawjamintran, hoangnghetuban, hoangnghekinhdoanh — talking head + B-roll điện ảnh)
+
+Quan sát từ contact sheet 1 khung/3s của 5 video (55–120s). Chia làm **3 kiểu**, chọn kiểu theo nội dung:
+
+**Kiểu A — "Phim hoá" (rawjamintran, 66–107s):** cứ ≤3s đổi một hình. Người nói chỉ chiếm ~25% thời lượng,
+còn lại là **cảnh phim/clip minh hoạ đúng ý câu** (Joker, Wolf of Wall Street, The Social Network…). Clip nằm trong
+**khung 16:9 bo góc giữa canvas dọc nền tối có lưới mờ**, không full-screen. Chữ là **kinetic typography chồng lên cảnh**:
+- Từ khoá cỡ KHỔNG LỒ, chữ in hoa đỏ/vàng, mờ xuyên (opacity ~.7) nằm *sau/trên* nhân vật ("NGHIỆN", "HÌNH THÀNH", "CHÍNH XÁC");
+- Từ phụ nhỏ trắng ghim quanh từ khoá ("vẫn đang", "có thể là"), có font script mảnh (Creator *economy*);
+- Mỗi cụm 1–3 từ, đổi theo nhịp nói, KHÔNG dùng câu dài. Ghép màu: trắng thường, đỏ/vàng cho từ cảm xúc.
+- Mở bằng người nói (2 cụm) → vào cảnh phim ngay ở câu thứ 2; kết bằng end card đen + logo + link.
+
+**Kiểu B — Karaoke vàng (hoangnghetuban, 25–66s):** người nói trong khung 16:9 bo góc giữa nền đen; **caption chữ vàng
+đậm, nghiêng nhẹ, viền tối, nằm sát đáy khung video**, 2–4 từ; xen **cutaway phim 1–2s** (cảnh liên quan: kho tiền, nhà hàng,
+tàu) mỗi ~6–8s, caption vẫn chạy trên cutaway. Nền đen để tập trung vào mặt.
+
+**Kiểu C — Cận mặt tốc độ (hoangnghekinhdoanh, 55–120s):** full-frame dọc, người nói sát camera, tay ra hiệu liên tục.
+- Caption **1–2 từ, in thường đậm trắng, ngang ngực**, đổi từng từ (≈0.3–0.5s/từ) — nhịp nhanh nên không bao giờ "đứng chữ".
+- Mỗi **8–15s chèn 1 B-roll 2–4s**: infographic nền lưới đen (icon người 10.000$ > ông Buffett, mũi tên, số xanh/vàng/đỏ),
+  ảnh chụp màn hình nguồn tin, clip YouTube của người được nhắc tên (kèm ảnh+tên nhỏ ở góc), ảnh chụp chứng từ/sao kê.
+- Tiêu đề hook = **thẻ vàng chữ đen 2 dòng ở đỉnh** (3s đầu) rồi biến mất.
+- Có **zoom nhảy (jump punch-in ~1.1→1.2) ở mỗi chỗ cắt** để che jump cut; cắt cả hơi thở.
+- Kết: màn hình đen thanh tìm kiếm TikTok + @kênh (đã có ở mục 10).
+
+**Những thứ chung của cả 5 video (nên áp dụng cho Hiếu):**
+1. **Âm thanh to và đều**: mean −11…−14 dB (video mẫu #1 −16, #2 −21 là yếu nhất). Mục tiêu loudness ≈ −14 LUFS, đỉnh ≤ −1 dB. Hiếu có video mic nhỏ (thuế Việt–Mỹ) → nên nén + normalize giọng trước khi dựng.
+2. **Nhịp thay đổi hình ≤3s** với kiểu A/B, ≤4s với kiểu C. Cảnh đứng yên >4s là mất người xem.
+3. **B-roll luôn "giải thích đúng câu đang nói"** (nhắc người → ảnh/clip người đó; nhắc con số → infographic; nhắc nguồn → ảnh chụp bài báo). Không để clip trang trí.
+4. **Chữ ít, to, đổi theo từng từ** — không đưa câu dài lên màn hình; số liệu to, đơn vị nhỏ.
+5. **Nền tối + lưới mờ + khung bo góc** cho cảnh infographic tạo cảm giác "tài liệu", dễ đọc, hợp chủ đề tài chính.
+6. **Hook mở bằng câu gây tò mò hoặc mâu thuẫn** trước khi giải thích (VD "GDP +9,95% mà VN-Index vẫn giảm").
+
+**Áp dụng cho video chứng khoán của Hiếu (đề xuất, giữ quy tắc an toàn/bản quyền):**
+- Mặc định dùng **kiểu C** (nhanh, rẻ, hợp video số liệu): caption 1–2 từ + infographic nền lưới đen (cột GDP, CPI, giá cổ phiếu) mỗi 8–12s + ảnh chụp CloudStock/nguồn tin có logo.
+- **Kiểu A/B chỉ dùng khi có clip phim**: clip phim thương mại thường dính bản quyền và có thể bị gỡ/chặn tiếng trên TikTok; chỉ dùng
+  cảnh ngắn có lời giải thích, hoặc thay bằng B-roll tự quay / stock miễn phí (Pexels, Pixabay) / ảnh chụp tin tức. Hỏi Hiếu trước khi dùng clip phim.
+- Thêm bước **chuẩn hoá âm thanh** (`loudnorm=I=-14:TP=-1`, hoặc `acompressor` + `loudnorm`) vào pipeline trước khi render.
+- Thẻ hook vàng chữ đen 2 dòng ở đỉnh 3s đầu là một lựa chọn gọn, nhanh (phù hợp yêu cầu "edit nhanh và đơn giản").
+- Zoom nhảy 1.0 ↔ 1.15 tại mỗi jump cut; cắt cả khoảng thở giữa câu.
+
 ## 9. Checklist trước khi xuất
 
 - [ ] Hook có tiêu đề lớn trong 3s đầu
