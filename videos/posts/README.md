@@ -39,3 +39,24 @@ Bài: dòng đầu là nghịch lý + một con số; "3 điều" (điều 3 là
 ## 5. Giao
 - `git add videos/posts/<thư mục>`; commit "Bài Facebook <mã> <ngày>: …"; `git push -u origin claude/exciting-bardeen-toacbf` (lỗi mạng thì thử lại tối đa 4 lần, chờ 2s/4s/8s/16s).
 - Tin nhắn cuối (tiếng Việt, ngắn): đề tài + hook; 3 ý; **các chỗ Hiếu phải kiểm trước khi đăng** (nhãn [SUY LUẬN]/[LỆCH NGUỒN]/[CẦN XÁC MINH]); đường dẫn file. Có thể gửi file bằng SendUserFile.
+
+## Cài đặt lịch chạy tự động (làm một lần, trên claude.ai)
+Công cụ đặt lịch trong phiên Claude Code **không gắn được DNSE và Firecrawl vào lịch**, nên phải tạo Routine trên giao diện claude.ai (mục Routines / lịch chạy) để chọn kết nối:
+1. Tạo Routine mới; nguồn code: repo `HieuPhan1405/HIEUSTOCK`; môi trường cloud đang dùng.
+2. Bật kết nối (connectors) **DNSE** và **Firecrawl** cho Routine (hai kết nối này phải đang ở trạng thái đã kết nối trong claude.ai → Customize → Connectors).
+3. Lịch: 17:15 các ngày thứ 2–6, múi giờ Asia/Ho_Chi_Minh (cron `15 17 * * 1-5`). Phiên mới mỗi lần chạy; bật thông báo đẩy khi xong.
+4. Dán prompt dưới đây.
+
+```
+Bạn đang làm việc cho Hiếu (kênh "Phan Hiếu Stock", thực tập tư vấn đầu tư ở một công ty chứng khoán). Nhiệm vụ mỗi ngày: soạn MỘT bản nháp bài Facebook (nội dung + carousel 3 ảnh) về một mã/sự kiện của phiên giao dịch hôm nay, bằng tiếng Việt.
+
+Làm việc trong repo HieuPhan1405/HIEUSTOCK, nhánh `claude/exciting-bardeen-toacbf`. Việc đầu tiên: git fetch origin claude/exciting-bardeen-toacbf && git checkout claude/exciting-bardeen-toacbf && git pull origin claude/exciting-bardeen-toacbf (nếu phiên này được gán nhánh khác, vẫn làm việc và push lên đúng nhánh claude/exciting-bardeen-toacbf; không tạo PR).
+
+Sau đó đọc videos/posts/README.md trong nhánh đó và làm đúng từng bước trong đó (chọn đề tài, nghiên cứu và kiểm chứng bằng DNSE + Firecrawl, viết bai-facebook.md, tạo spec.json, chạy python3 videos/covers/make_post.py, mở xem từng ảnh để kiểm tra, commit và push). Mẫu chuẩn là videos/posts/2026-10-11-fpt/.
+
+Quy tắc không thương lượng: đây chỉ là BẢN NHÁP, không đăng đi đâu cả; công ty phải duyệt trước khi đăng. Không "phím hàng" (không mua/bán, điểm vào/cắt lỗ/giá mục tiêu, không dùng khuyến nghị hay giá mục tiêu của công ty chứng khoán khác), không nói rẻ/đắt, không dự đoán giá, không hứa lợi nhuận, không tự xưng chuyên gia, không mời nhóm trả phí, không gây FOMO. Số liệu phải kiểm ≥2 nguồn; số lệch nguồn thì nêu rõ và không đưa vào bài; không giải thích nguyên nhân giá biến động nếu không có nguồn (chỉ nêu khi gắn tên báo, kèm "chưa ai đo được"). Có phần rủi ro + miễn trừ, chỉ một CTA. Nếu hôm nay thị trường không có phiên hoặc không có đề tài đủ nguồn, dừng và báo ngắn lý do, không viết bài cho có.
+
+Nếu không gọi được công cụ DNSE hoặc Firecrawl, DỪNG ngay và báo rõ "thiếu công cụ DNSE/Firecrawl", không tự bịa số liệu và không viết bài từ trí nhớ.
+
+Tin nhắn cuối gửi Hiếu (tiếng Việt, ngắn): đề tài và câu mở bài; 3 ý; các chỗ Hiếu PHẢI kiểm trước khi đăng (nhãn SUY LUẬN / LỆCH NGUỒN / CẦN XÁC MINH); đường dẫn thư mục videos/posts/<ngày>-<mã>/.
+```
