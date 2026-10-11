@@ -294,6 +294,14 @@ Hình thức: lời đọc không có dấu gạch ngang, ngoặc đơn, in đ�
 
 **Đừng sửa quá tay:** giữ ý kiến có đánh dấu "mình nghĩ", chi tiết cụ thể, câu hỏi tự nhiên; không bịa chuyện cá nhân hay chi tiết để cho "giống người"; không bỏ câu tuân thủ (không hô mã, không hứa lãi, rủi ro, không phải khuyến nghị).
 
+## 16. Khung "một luận điểm – một phép tính" (học từ clip @hoangnghekinhdoanh, Hiếu yêu cầu 11/10/2026)
+
+Hiếu chê bản kịch bản kiểu "bản tin nhiều nguồn". Clip mẫu thuyết phục vì **chỉ có một ý, đi hết đường**:
+1. Tuyên bố ngược 1 câu (0–5 s) → 2. "Hả? Ý là…" + so sánh nhanh (5–15 s) → 3. "Tại sao thế? Bởi vì…" + **một cơ chế bằng một phép tính người xem tự nhẩm được** ("Giả sử…", 15–45 s) → 4. bằng chứng người thật (1 ví dụ) → 5. "Điều đó không có nghĩa là…" chặn hiểu lầm + nhận phần xấu → 6. công thức một câu → 7. "Nếu… thì ok. Đừng tin lời mình, hãy xem…" + câu cuối nối về câu đầu.
+Số đo: ~250 tiếng/phút, câu trung vị 11–12 tiếng, ~6 câu hỏi tự đặt/2 phút, ~11 con số, đổi cảnh ~1 lần/4 s, hầu như không nghỉ.
+**Áp dụng cho Hiếu:** mỗi tập chỉ 1 luận điểm + 1 phép tính (đánh dấu "VÍ DỤ GIẢ ĐỊNH" trên hình) + ≤2 nguồn thật; điều luật dùng làm bằng chứng cho đúng 1 ý, không rải 7 điều. Hook dùng "không cần/hiếm khi" thay "không bao giờ" khi có ngoại lệ đã biết. Giữ nguyên rào tuân thủ (không hô mã, không hứa lãi, rủi ro, disclaimer).
+Kịch bản mẫu: `videos/scripts/series-lot-tran-nghe-moi-gioi-tap-1-lua-ga.md` (bản 2).
+
 ## 9. Checklist trước khi xuất
 
 - [ ] Âm lượng file xuất: mean ≈ −13…−15 dB, đỉnh ≤ −0.3 dB (file < −18 dB thì điện thoại nghe rất nhỏ): sau khi nén chạy `-af volume=4.5dB,alimiter=limit=0.9` hoặc loudnorm + gain
@@ -306,4 +314,5 @@ Hình thức: lời đọc không có dấu gạch ngang, ngoặc đơn, in đ�
 - [ ] Mọi keyframe có easing mượt (không linear)
 - [ ] Số liệu tài chính đã kiểm chứng từ ≥ 2 nguồn; có dòng "không phải khuyến nghị đầu tư"
 - [ ] CTA ở cuối
+- [ ] Kịch bản chỉ có MỘT luận điểm + MỘT phép tính tự nhẩm được; có "Hả? Ý là…", "Tại sao thế?", chặn hiểu lầm, công thức 1 câu, kết có điều kiện nối về câu đầu (mục 16)
 - [ ] Lời đọc đã rà "văn máy" (mục 15) và đọc to thử một lượt: không còn dạo đầu dàn dựng, câu chốt lặp ý, câu nghe sâu

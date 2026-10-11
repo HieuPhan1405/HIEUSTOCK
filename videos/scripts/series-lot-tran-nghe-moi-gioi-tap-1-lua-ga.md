@@ -1,86 +1,88 @@
-# SERIES "LỘT TRẦN NGHỀ MÔI GIỚI" – Tập 1: "Môi giới lùa gà?" (11/10/2026, bản 1)
+# SERIES "LỘT TRẦN NGHỀ MÔI GIỚI" – Tập 1: "Người lùa gà thật sự không cần đi làm môi giới" (bản 2, 11/10/2026)
 
-Đổi hướng theo yêu cầu của Hiếu: bỏ khung 3 nghề (môi giới / ngân hàng / kế toán), làm series riêng về nghề môi giới với kiểu **bóc mẽ, lột trần nhưng thực chất là bảo vệ và bẻ luận điểm**. Tập 0 cũ (`series-tap-0-mo-dau.md`) để dành, có thể dùng lại làm tập tổng hợp sau này.
-Ký hiệu: [ĐÃ XÁC MINH] đọc được nguồn 11/10/2026 · [TỰ TÍNH] · [SUY LUẬN] ý kiến người nói · [CẦN XÁC MINH] chưa kiểm được · [HIẾU QUYẾT ĐỊNH].
+Bản 1 (nặng tin tức, 5 đoạn, nhiều điều luật) bị Hiếu chê "chưa ưng". Bản 2 viết lại theo **lời nói và cách triển khai của clip mẫu** (@hoangnghekinhdoanh, "Trader giỏi không bao giờ đi làm môi giới", 120 s). Bản 1 vẫn nằm trong lịch sử git nếu cần lấy lại nguồn.
+Ký hiệu: [ĐÃ XÁC MINH] đọc được nguồn 11/10/2026 · [TỰ TÍNH] · [GIẢ ĐỊNH] ví dụ tính, không phải số liệu thật · [SUY LUẬN] ý kiến người nói · [CẦN XÁC MINH] · [HIẾU QUYẾT ĐỊNH].
 
-## 1. Khung series
-- **Tên đề xuất:** LỘT TRẦN NGHỀ MÔI GIỚI (dòng phụ: "Bóc cho đúng chỗ"). Phương án khác: BÓC MẼ NGHỀ MÔI GIỚI · CHỬI CHO ĐÚNG.
-- **"Lột trần" nghĩa là gì (phải đúng với lời hứa):** đưa ra ánh sáng *luật chơi bên trong* của nghề và *cả phần xấu*, rồi mới bẻ phần oan. Không lộ bí mật công ty, không lộ thông tin khách.
-- **Luật của series:** mỗi tập có 1 đoạn **"PHẦN XẤU MÌNH KHÔNG GIẤU"** (bắt buộc). Thiếu đoạn này, series thành quảng cáo nghề và người xem sẽ nhận ra ngay.
-- **Khuôn mỗi tập (BẺ 6 bước):** nhận định → phần đúng/phần xấu → cơ chế → bằng chứng kiểm chứng được ("Nguồn:") → câu hỏi tự kiểm tra → ranh giới (không hô mã, không hứa lãi, rủi ro, 1 CTA, disclaimer).
-- **Thứ tự tập đề xuất:** 1 Lùa gà · 2 Khách lỗ thì môi giới ăn phí (xung đột lợi ích, có hẹn từ cuối tập 1) · 3 Tin nội bộ · 4 Gửi tiền cho môi giới là mất tiền · 5 Môi giới giỏi sao không tự giàu · 6 Ai cũng làm được · 7 Tư vấn sai thì vô can. Chi tiết 9 nhận định: `series-be-lai-nhan-dinh-ve-nghe-moi-gioi.md`.
+## 1. Clip mẫu nói và triển khai như thế nào (đo và nghe lại 11/10/2026)
 
-## 2. Hook (4 phương án; bản dưới dùng số 1)
-1. **Lật định kiến + minh bạch** *(đề xuất)*: "Lùa gà là có thật. [DỪNG] Nhưng người lùa anh chị chưa chắc là môi giới." Câu đầu thừa nhận, câu hai gây phản ứng ("sao lại không phải?"), câu sau kéo xem tiếp.
-2. **Kinh nghiệm của người xem**: "Anh chị từng mua một mã vì có người nhắn 'sắp chạy', rồi giá quay đầu chưa? Hôm nay mình lột trần xem ai thật sự lùa anh chị."
-3. **Con số kéo tò mò**: "Riêng 11 tháng năm 2025, có 63 cá nhân bị áp dụng biện pháp chỉ vì cho người khác mượn tài khoản chứng khoán. Mượn để làm gì? Câu trả lời nằm ở hai chữ lùa gà."
-4. **Thách**: "Anh chị thử nói đúng 3 bước của một vụ lùa gà xem. Không nói được thì video này dành cho anh chị."
+**Lời nói** (phiên âm bằng whisper nên có chỗ nhiễu; số đo là ước lượng):
+- ~480–500 tiếng trong 120 s ≈ **250 tiếng/phút**, gần như không nghỉ (chỉ 1 khoảng lặng >0,35 s).
+- Câu **ngắn**: trung vị ~11–12 tiếng/câu; 6 câu hỏi tự đặt ("Hả? Ý là…", "Tại sao thế?", "…đúng không?"); chỉ ~11 con số.
+- Giọng nói chuyện, xưng "bạn/mình", **không rào đón**, không "theo quy định", không trích điều luật nào. Cụm lặp lại: "Hả? Ý là…", "Tại sao thế? Bởi vì…", "Giả sử…", "Đây chính là vấn đề", "Nếu bạn không tin, hãy nhìn vào…", "Điều đó không có nghĩa là…", "Công thức rất đơn giản", "Nếu… thì ok. Đừng tin lời mình".
+- Hình: đổi cảnh ~28 lần/120 s (khoảng 1 lần mỗi 4 s).
 
----
+**Cách triển khai = MỘT lập luận, MỘT cơ chế, MỘT phép tính:**
 
-## 3. Lời thoại Tập 1
+| Giây | Bước | Clip mẫu làm | Bản 2 làm |
+|---|---|---|---|
+| 0–5 | Tuyên bố ngược | "Trader giỏi không bao giờ đi làm môi giới." | "Người lùa gà thật sự thì không cần đi làm môi giới." |
+| 5–15 | Tự hỏi thay người xem + so sánh | "Hả? Ý là…" rồi tìm trader kiếm đều >10.000$/tháng thì khó, tìm người làm nghề thì đầy | "Hả? Ý là sao?" rồi 2 vụ lùa gà báo nhắc tới đều do chủ tịch tập đoàn bị khởi tố |
+| 15–45 | Cơ chế bằng phép tính | Vốn × % lãi: muốn 10.000$/tháng cần ~200.000$ vốn | Lãi = vốn × % giá tăng: lời 5 tỷ ở mức tăng 20% cần cầm 25 tỷ cổ phiếu, so với phí môi giới vài chục triệu |
+| 45–60 | Bằng chứng người thật | Nhà vô địch trading vẫn bán khoá học | Vụ 28/8: môi giới thao túng, mất giấy phép, chưa xác định được lợi bất chính |
+| 60–75 | Chặn hiểu lầm | "Điều đó không có nghĩa là họ không trade" | "Điều đó không có nghĩa là môi giới sạch hết" + nhận phần xấu |
+| 75–90 | Công thức một câu | "Muốn trading nhiều tiền cần vốn lớn" | "Lùa gà ăn từ chênh lệch giá, nên người lùa phải cầm hàng. Môi giới ăn từ phí." |
+| 90–120 | Kết có điều kiện + giao quyền kiểm chứng + vòng lặp | "Đừng tin lời mình, hãy xem top đầu làm gì. Và đó cũng là lý do…" | Giống hệt khung, câu cuối nối về câu đầu |
 
-[0:00–0:16] HOOK  (câu 1 nói nhanh + SFX "đập"; im 0,6s; phần sau giọng chậm, nói với bạn)
-"Lùa gà là có thật. [DỪNG 0,6s] Nhưng người lùa anh chị chưa chắc là môi giới.
-Hôm nay mình lột trần cả phần xấu lẫn phần oan của nghề này. Mình đang thực tập ở một công ty chứng khoán, nên anh chị có quyền nghi mình bênh nghề. Vì vậy mình chỉ đưa điều luật với bài báo, anh chị tự kiểm."
-[HÌNH: màn đen, chữ to "LÙA GÀ LÀ CÓ THẬT." (trắng) → "NHƯNG AI LÙA?" (vàng); mặt hiện ở "[DỪNG]"; punch-in 1,15 ở "chưa chắc là môi giới"; SFX riser ngắn]
-[CHỮ ĐỈNH CỐ ĐỊNH: LỘT TRẦN NGHỀ MÔI GIỚI · TẬP 1]
-[HIẾU QUYẾT ĐỊNH: câu "Mình đang thực tập ở một công ty chứng khoán" – cần công ty đồng ý; nếu không, thay bằng "Mình làm trong ngành này, nên anh chị có quyền nghi mình bênh nghề."]
+**Vì sao bản 1 chưa ưng (tự đánh giá):** bản 1 là bản tin có 5 đoạn, 7+ trích dẫn luật/nguồn và 3 câu kiểm tra; mở bằng thừa nhận ("lùa gà là có thật") thay vì tuyên bố ngược; không có phép tính nào người xem tự nhẩm được; kết bằng bình chọn chứ không kết bằng điều kiện + vòng lặp. Clip mẫu thuyết phục nhờ chỉ có một ý, đi hết đường.
 
-[0:16–0:43] 1 — LÙA GÀ LÀ GÌ
-"Báo VnExpress mô tả vòng lùa gà như thế này. Người ta chọn một cổ phiếu giá rẻ, ít ai theo dõi, mua bán qua lại và đặt lệnh mua giá trần để tạo cầu ảo, rồi tung tin tốt. Người ngoài thấy giá chạy thì mua theo, và lúc đó họ bán ra. Người mua theo chính là con gà.
-Luật gọi đây là thao túng thị trường. Điều 211 Bộ luật Hình sự: khi thu lợi hay gây thiệt hại đủ lớn, người phạm tội bị phạt tù từ 6 tháng đến 7 năm, và có thể bị cấm hành nghề từ 1 đến 5 năm."
-[HÌNH: sơ đồ 5 bước hiện từng bước theo lời: CỔ PHIẾU RẺ → MUA BÁN QUA LẠI + LỆNH TRẦN → TUNG TIN TỐT → NGƯỜI NGOÀI MUA THEO → XẢ HÀNG; SFX mỗi bước; thẻ luật: Điều 211 BLHS tô vàng "6 THÁNG – 7 NĂM" và "CẤM HÀNH NGHỀ 1–5 NĂM"; dòng nhỏ: Nguồn: VnExpress "Đội lái chứng khoán là ai?"; BLHS (VBHN 135/2025)]
+## 2. Lời thoại bản 2 (483 tiếng ≈ 1:59 ở ~245 tiếng/phút, gần bằng clip mẫu)
 
-[0:43–1:13] 2 — AI LÙA? (có PHẦN XẤU MÌNH KHÔNG GIẤU)
-"Vậy ai làm chuyện đó? Phần xấu mình không giấu. Cũng bài báo đó viết rằng đội lái thường liên kết với môi giới và công ty niêm yết. Ngày 28 tháng 8, một môi giới bị phạt 1,5 tỷ đồng và bị tước quyền sử dụng chứng chỉ 21 tháng, vì dùng hai tài khoản để thao túng cổ phiếu.
-Nhưng hai vụ lớn mà bài nhắc là FLC và Louis Holdings. Người đứng đầu cả hai hệ thống đều bị khởi tố tội thao túng, và chức danh của họ là chủ tịch tập đoàn.
-Nên lùa gà là một hành vi. Luật phạt người làm hành vi đó, chứ không phạt cái tên nghề."
-[HÌNH: thẻ 1 tô vàng câu "thường liên kết với các nhà môi giới, công ty niêm yết"; thẻ 2 tiêu đề VietNamNet 28/8/2026 (che tên người) "1,5 TỶ · TƯỚC CHỨNG CHỈ 21 THÁNG"; thẻ 3 hai tiêu đề FLC / Louis "bị khởi tố – thao túng"; CHỮ: "PHẦN XẤU" (đỏ) → "HÀNH VI, KHÔNG PHẢI TÊN NGHỀ" (vàng)]
+[0:00–0:03] TUYÊN BỐ NGƯỢC  (nói chắc, nhanh, rồi không nghỉ)
+"Người lùa gà thật sự thì không cần đi làm môi giới."
+[HÌNH: chữ to giữa màn "NGƯỜI LÙA GÀ THẬT SỰ" / "KHÔNG CẦN LÀM MÔI GIỚI" (hai dòng, dòng 2 màu vàng); SFX đập; CHỮ ĐỈNH: LỘT TRẦN NGHỀ MÔI GIỚI · TẬP 1]
 
-[1:13–1:43] 3 — LUẬT CHƠI CỦA NGƯỜI CÓ GIẤY PHÉP (đoạn "lột trần")
-"Giờ tới luật chơi của người có giấy phép. Luật cấm dùng tài khoản của anh chị khi anh chị chưa ủy thác. Môi giới chỉ được làm cho một công ty chứng khoán, công ty phải chịu trách nhiệm về họ và giữ tiền của anh chị tách khỏi tiền công ty. Vi phạm thao túng thì bị thu hồi chứng chỉ, không được cấp lại.
-Còn tài khoản mạng hô mua hô bán thì khác. Ngày 17 tháng 4, Ủy ban Chứng khoán thông báo nhiều tài khoản đăng khuyến nghị mua bán cổ phiếu mà không phải công ty chứng khoán, không được cấp phép tư vấn, và đã xử phạt một công ty vì chuyện đó."
-[HÌNH: 2 cột "CÓ GIẤY PHÉP" | "TÀI KHOẢN MẠNG KHÔNG PHÉP"; ảnh Luật Chứng khoán tô vàng Điều 12 (khoản dùng tài khoản khách khi chưa ủy thác), Điều 89 khoản 3, Điều 97 khoản 3 điểm b + khoản 4, Điều 98; thẻ báo Chính phủ 17/4/2026 "UBCKNN cảnh báo tư vấn chứng khoán trái phép trên mạng"; nguồn dòng nhỏ]
+[0:03–0:16] "HẢ? Ý LÀ SAO?"
+"Hả? Ý là sao? Ý là hai vụ lùa gà báo VnExpress nhắc tới, FLC với Louis, người bị khởi tố là chủ tịch tập đoàn. Chủ tịch thì đâu cần đi làm môi giới. Luật gọi chuyện này là thao túng, Điều 211 Bộ luật Hình sự, tù tới 7 năm."
+[HÌNH: "HẢ?" zoom-in 1,15 trên mặt; thẻ 2 tiêu đề VnExpress "Đội lái chứng khoán là ai?" tô vàng "FLC", "Louis"; chữ "BỊ KHỞI TỐ: CHỦ TỊCH TẬP ĐOÀN"; thẻ BLHS Điều 211 tô vàng "TÙ 6 THÁNG – 7 NĂM"; nguồn dòng nhỏ]
 
-[1:43–2:13] 4 — TỰ KIỂM TRA: 3 CÂU HỎI
-"Vậy gặp người hô mã, anh chị hỏi ba câu. Một, tra được chứng chỉ hành nghề của họ không? Từ 1 tháng 7 năm nay, Ủy ban Chứng khoán có hệ thống quản lý người hành nghề, và Thông tư 135 cho phép tra trạng thái hành nghề ở đó. Hai, họ có hứa chắc lãi hay hối anh chị mua ngay không? Ba, họ có đòi chuyển tiền vào tài khoản cá nhân, mượn tài khoản của anh chị, hay mời vào nhóm kín thu phí không? Một câu đáng ngờ là dừng. Riêng 11 tháng năm 2025, có 63 cá nhân bị áp dụng biện pháp vì cho mượn tài khoản giao dịch."
-[HÌNH: 3 thẻ lớn lần lượt "1 · TRA ĐƯỢC CHỨNG CHỈ?" "2 · HỨA CHẮC LÃI / HỐI MUA NGAY?" "3 · CHUYỂN TIỀN CÁ NHÂN / MƯỢN TÀI KHOẢN / NHÓM KÍN THU PHÍ?"; quay màn hình hệ thống tra cứu nếu tra được [HIẾU TỰ THỬ]; số "63" to, dòng "11 tháng 2025 · cho mượn tài khoản · bị áp dụng biện pháp"]
+[0:16–0:47] CƠ CHẾ + PHÉP TÍNH  (đoạn dài nhất; hiện từng con số theo từng nhịp nói)
+"Tại sao thế? Bởi vì lùa gà là kiếm tiền từ chênh lệch giá. Giả sử anh chị muốn lời 5 tỷ, mà giá chỉ kéo lên được 20%. Vậy anh chị phải đang cầm khoảng 25 tỷ đồng cổ phiếu. Năm tỷ chia 0,2 ra 25. Đây chính là vấn đề, đúng không? Lùa gà cần rất nhiều vốn.
+Còn môi giới sống bằng phí. Phí giao dịch ở các công ty chứng khoán khoảng 0,1 đến 0,35% giá trị mỗi lệnh. Cho dù đám gà mua đúng 25 tỷ đó, tổng phí chỉ khoảng 25 đến 90 triệu, và khoản này trả cho công ty chứng khoán, môi giới chỉ hưởng một phần. Năm tỷ với vài chục triệu. Ai có lý do để lùa gà hơn?"
+[HÌNH: nhãn "VÍ DỤ GIẢ ĐỊNH" góc trên suốt đoạn; số lớn vàng hiện tuần tự "LỜI 5 TỶ" → "GIÁ TĂNG 20%" → "5 ÷ 0,2 = 25 TỶ"; chữ "LÙA GÀ = CẦN RẤT NHIỀU VỐN"; rồi thẻ "PHÍ 0,1–0,35% / LỆNH" → "25 TỶ × 0,1–0,35% = 25–90 TRIỆU"; 2 cột đối chiếu "5 TỶ" vs "~25–90 TRIỆU" (dòng nhỏ [TỰ TÍNH]: gấp ~57–200 lần); SFX mỗi con số]
 
-[2:13–2:44] 5 — Ý GÂY TRANH CÃI + RỦI RO + BÌNH CHỌN
-"Mình nghĩ chữ "môi giới lùa gà" đang giúp kẻ lùa thật. Một chữ chứa cả người có giấy phép lẫn người nhắn tin riêng hô mã thì anh chị không còn cách tách ra, và người thiệt là anh chị.
-Còn câu "môi giới ăn phí nên xúi khách giao dịch nhiều" thì có một phần đúng, mình để tập sau.
-Có giấy phép cũng không bảo đảm lãi, đầu tư vẫn có thể lỗ. Anh chị từng bị hô mã qua đâu? Một, môi giới công ty. Hai, nhóm Zalo hoặc Telegram. Ba, video mạng xã hội. Comment 1, 2 hoặc 3.
+[0:47–1:02] BẰNG CHỨNG NGƯỜI THẬT
+"Nếu anh chị không tin, hãy nhìn vụ có thật ngày 28 tháng 8. Một môi giới dùng hai tài khoản mua bán một cổ phiếu suốt gần hai năm. Kết quả: phạt 1,5 tỷ, cấm giao dịch ba năm, tước quyền dùng chứng chỉ 21 tháng. Còn khoản lợi bất chính, Ủy ban Chứng khoán chưa xác định được."
+[HÌNH: tiêu đề VietNamNet 28/8/2026 (che tên người, không nêu mã cổ phiếu) tô vàng "1,5 TỶ", "TƯỚC CHỨNG CHỈ 21 THÁNG", "CẤM GIAO DỊCH 3 NĂM", "CHƯA XÁC ĐỊNH ĐƯỢC KHOẢN THU TRÁI PHÁP LUẬT"; dòng "31/10/2022 → 31/5/2024 · 2 tài khoản"; nguồn]
+
+[1:02–1:20] CHẶN HIỂU LẦM + PHẦN XẤU MÌNH KHÔNG GIẤU
+"Điều đó không có nghĩa là môi giới sạch hết. Cũng bài báo VnExpress đó viết đội lái thường liên kết với môi giới và công ty niêm yết. Có người làm thật, và bị phạt thật. Còn một chỗ đáng soi hơn: phí tính theo giá trị giao dịch, nên lợi ích của môi giới và của anh chị không phải lúc nào cũng trùng nhau. Chuyện đó mình để tập sau."
+[HÌNH: chữ "KHÔNG CÓ NGHĨA LÀ MÔI GIỚI SẠCH HẾT" (đỏ nhạt); tô vàng câu "thường liên kết với các nhà môi giới, công ty niêm yết" trên thẻ VnExpress; chữ "TẬP 2: PHÍ TÍNH THEO GIAO DỊCH – LỢI ÍCH CÓ TRÙNG KHÔNG?"]
+
+[1:20–1:30] CÔNG THỨC MỘT CÂU
+"Công thức rất đơn giản. Lùa gà ăn từ chênh lệch giá, nên người lùa phải là người cầm hàng. Môi giới ăn từ phí, nên mình thấy có giấy phép mà đi lùa gà thì lời ít, mất nhiều."
+[HÌNH: hai dòng lớn "LÙA GÀ ← CHÊNH LỆCH GIÁ ← PHẢI CẦM HÀNG" và "MÔI GIỚI ← PHÍ ← THEO KHỐI LƯỢNG"; nhãn nhỏ "MÌNH THẤY" ở vế sau; SFX]
+
+[1:30–1:59] TỰ KIỂM TRA + KẾT CÓ ĐIỀU KIỆN + VÒNG LẶP + RỦI RO
+"Nên gặp người hô mã, anh chị hỏi một câu thôi: người này đang cầm mã đó không, và ai trả tiền cho họ? Nếu anh chị chỉ muốn biết nghề nào bị oan, đọc đến đây là đủ. Còn nếu muốn khỏi làm gà, đừng tin lời mình. Mở bài báo, mở điều luật, tra chứng chỉ hành nghề của người đó ở Ủy ban Chứng khoán. Và đó cũng là lý do người lùa gà thật sự không cần đi làm môi giới.
+Anh chị còn nghe câu nào về nghề môi giới? Comment, mình bẻ tiếp.
 Video này giải thích, không phải khuyến nghị đầu tư. Đầu tư luôn có rủi ro mất vốn."
-[HÌNH: dấu đóng "CHỮ LÙA GÀ ĐANG BẢO KÊ KẺ LÙA THẬT?" kèm nhãn nhỏ "MÌNH NGHĨ"; hẹn tập sau: "TẬP 2: KHÁCH LỖ, MÔI GIỚI ĂN PHÍ?"; thẻ bình chọn "1 · MÔI GIỚI CÔNG TY / 2 · NHÓM ZALO, TELEGRAM / 3 · VIDEO MẠNG XÃ HỘI"; CHỮ: ĐẦU TƯ LUÔN CÓ RỦI RO MẤT VỐN]
+[HÌNH: câu hỏi lớn "ĐANG CẦM MÃ ĐÓ KHÔNG? AI TRẢ TIỀN CHO HỌ?"; rồi 3 icon "BÀI BÁO · ĐIỀU LUẬT · TRA CHỨNG CHỈ"; câu cuối hiện lại chữ "KHÔNG CẦN LÀM MÔI GIỚI" như đầu video (vòng lặp); CHỮ: ĐẦU TƯ LUÔN CÓ RỦI RO MẤT VỐN]
 [3,6s cuối: "Nội dung giải thích, không phải khuyến nghị đầu tư. Ý kiến cá nhân, không đại diện công ty."]
 
-**Đo nhịp:** 645 tiếng ≈ 2.7 phút ở ~240 tiếng/phút (hook 62 · đoạn 1 108 · đoạn 2 117 · đoạn 3 120 · đoạn 4 116 · đoạn 5 122). Mốc giây chỉ là ước tính, đọc thật rồi chỉnh.
-**Bản rút ~75 s:** hook + đoạn 1 + đoạn 2 + câu 3 hỏi (bỏ đoạn 3) + bình chọn.
-**Đã rà "văn máy" (skill mục 15):** hook không còn "mình sẽ nói thẳng…"; không có câu chốt triết lý; câu gây tranh cãi có nhãn "mình nghĩ"; đoạn nào cũng vào thẳng sự việc kèm ngày/số/tên nguồn. Giữ nguyên số liệu, nguồn, câu rủi ro.
+**Bản rút ~75 s:** claim + "Hả?" + cơ chế/phép tính + công thức + câu kết + disclaimer (bỏ bằng chứng người thật và đoạn chặn hiểu lầm).
+**Đã rà "văn máy":** vào thẳng sự việc; mọi câu "Hả/Tại sao thế/Giả sử/Đúng không" là lời hỏi người xem thật sự sẽ hỏi; ý kiến có nhãn "mình thấy"; giữ nguyên số liệu, nguồn, câu rủi ro.
 
 ---
-## 4. Nguồn và mức xác minh (11/10/2026) – mở lại bài gốc đọc kỹ trước khi quay
-- **Cơ chế lùa gà + "đội lái thường liên kết với môi giới, công ty niêm yết" + FLC/Louis:** VnExpress, "Đội lái chứng khoán là ai?" (6/3/2023): các bước chọn cổ phiếu giá rẻ, tạo thanh khoản ảo, lệnh mua giá trần tạo cầu ảo, tung tin tích cực, xả hàng; người đứng đầu hai hệ sinh thái FLC và Louis đều bị khởi tố tội thao túng [ĐÃ XÁC MINH qua đọc trang; bài 2023, mô tả cơ chế "theo một công ty chứng khoán"] – https://vnexpress.net/doi-lai-chung-khoan-la-ai-4569794.html
-  Lời nói **chỉ nói "bị khởi tố"** với FLC/Louis (bài 2023). Nếu muốn nêu án: bản án Louis (5 năm 6 tháng sơ thẩm, phúc thẩm giảm 18 tháng) đã đọc ở VnExpress trước đó; án FLC **[CẦN XÁC MINH]**.
-- **Điều 211 BLHS:** khoản 1 phạt tiền 500 triệu–2 tỷ hoặc tù 6 tháng–3 năm (khi thu lợi bất chính 500 triệu–dưới 1,5 tỷ hoặc gây thiệt hại 1–dưới 3 tỷ); khoản 2 phạt tiền 2–4 tỷ hoặc tù 2–7 năm (có tổ chức, thu lợi ≥1,5 tỷ, thiệt hại ≥3 tỷ, tái phạm nguy hiểm); khoản 3 cấm hành nghề 1–5 năm [ĐÃ XÁC MINH qua Văn bản hợp nhất 135/VBHN-VPQH 2025, sau khi Luật 86/2025/QH15 có hiệu lực 1/7/2025, đọc ở trích đoạn kết quả tìm kiếm; mở văn bản gốc chụp màn hình] – https://thuvienphapluat.vn/van-ban/Trach-nhiem-hinh-su/Van-ban-hop-nhat-135-VBHN-VPQH-2025-Bo-luat-Hinh-su-672275.aspx
-- **Môi giới bị phạt 28/8/2026:** VietNamNet – dùng hai tài khoản thao túng, phạt 1,5 tỷ, tước quyền sử dụng chứng chỉ 21 tháng [ĐÃ XÁC MINH trước đó] – https://vietnamnet.vn/thao-tung-co-phieu-nu-moi-gioi-bi-phat-1-5-ty-dong-tuoc-chung-chi-hanh-nghe-2550008.html · **Không nêu tên.** Đây là xử phạt hành chính, không phải án hình sự.
-- **Luật Chứng khoán 54/2019/QH14:** Điều 12 khoản 3 (thao túng), khoản 4 (kinh doanh khi chưa được cấp phép), khoản dùng tài khoản/tài sản khách khi không được ủy thác (bản đọc ngày 11/10 mất số khoản; theo thứ tự là **khoản 5**, [CẦN XÁC MINH số khoản]), khoản 6 (cho mượn tài khoản dẫn đến thao túng) [ĐÃ XÁC MINH]. Điều 89 khoản 3 (tách biệt tài sản), Điều 97 khoản 3 điểm b + khoản 4 (thu hồi chứng chỉ, không cấp lại), Điều 98 (chỉ đại diện 1 công ty; công ty chịu trách nhiệm) [ĐÃ XÁC MINH ở lần đọc trước; đọc lại số khoản trước khi chụp hình] – https://thuvienphapluat.vn/van-ban/Chung-khoan/Luat-Chung-khoan-nam-2019-399763.aspx
-- **UBCKNN cảnh báo 17/4/2026:** nhiều tài khoản mạng xã hội đăng phân tích, khuyến nghị mua bán, nắm giữ cổ phiếu nhưng không phải công ty chứng khoán/công ty quản lý quỹ, không được cấp phép tư vấn đầu tư; Điều 12 khoản 4; đã xử phạt CTCP Đầu tư ITP và cấm một số hoạt động; khuyến cáo kiểm chứng nguồn, tránh bị lôi kéo từ hội nhóm [ĐÃ XÁC MINH qua đọc trang] – https://baochinhphu.vn/ubcknn-canh-bao-tu-van-chung-khoan-trai-phep-tren-mang-102260417181257955.htm · Số tiền phạt (225 triệu) và "cấm 2 năm" chỉ thấy ở đoạn trích Tạp chí Kinh tế – Tài chính, **không nói số trong lời**.
-- **Tra cứu người hành nghề:** Thông tư 135/2025/TT-BTC (hiệu lực 9/2/2026) Điều 7: cá nhân, tổ chức có thể tra cứu trạng thái hành nghề trên hệ thống của UBCKNN [ĐÃ XÁC MINH qua bản tóm tắt + toàn văn trên luatvietnam]; hệ thống triển khai từ 1/7/2026 tại qlnhnck.ssc.gov.vn [ĐÃ XÁC MINH qua trang hướng dẫn của SRTC]. **[CẦN XÁC MINH]** người không đăng nhập có tra được không: máy mình không mở được trang; Hiếu tự thử, quay màn hình. Nếu không tra công khai được, đổi câu 1 thành "Họ có nói rõ đang làm ở công ty chứng khoán nào, và công ty đó xác nhận không?"
-- **63 cá nhân cho mượn tài khoản:** UBCKNN 11 tháng 2025 (đến 30/11/2025): 488 quyết định xử phạt, 59,7 tỷ; thao túng: 1 tổ chức và 5 cá nhân trong 3 vụ, phạt 10,5 tỷ; áp dụng biện pháp với 5 cá nhân + 1 tổ chức thao túng và **63 cá nhân cho mượn tài khoản giao dịch** [ĐÃ XÁC MINH qua trích tự động từ Tạp chí Kinh tế – Tài chính 24/12/2025, nguồn thứ cấp; tìm thông cáo gốc của UBCK nếu có] – https://tapchikinhtetaichinh.vn/uy-ban-chung-khoan-nha-nuoc-xu-phat-gan-60-ty-dong-trong-11-thang-nam-2025-134473.html · Đừng dùng 488/59,7 tỷ để nói "ngành sạch/bẩn": số xử phạt không đo được mức độ vi phạm thật.
-- **[SUY LUẬN] (nói "mình nghĩ"):** "chữ môi giới lùa gà đang giúp kẻ lùa thật"; "một chữ chứa cả người có giấy phép lẫn người hô mã thì không tách ra được". **"Môi giới ăn phí nên xúi khách giao dịch nhiều… có một phần đúng"** là nhận định của Hiếu, chưa có nguồn: tập 2 sẽ làm kỹ, nhớ kiểm biểu phí và cách tính thu nhập môi giới ở công ty (**[CẦN XÁC MINH]**).
-- **Chưa có số liệu "bao nhiêu % môi giới vi phạm":** đừng nói tỷ lệ. Ai hỏi thì: "mình không có con số, và đừng tin ai đưa tỷ lệ mà không nói nguồn."
+## 3. Nguồn và mức xác minh (11/10/2026) – mở bài gốc đọc kỹ trước khi quay
+- **Phép tính 25 tỷ và phí 25–90 triệu:** là **[GIẢ ĐỊNH] + [TỰ TÍNH]**: 5 tỷ ÷ 20% = 25 tỷ; 25 tỷ × 0,1% = 25 triệu, × 0,35% = 87,5 triệu. Phải hiện nhãn "VÍ DỤ GIẢ ĐỊNH" trên hình. Giới hạn của phép tính: bỏ qua việc người nắm cổ phiếu sẵn (cổ đông lớn), vay margin, và không bán được ở giá đỉnh; vì vậy lời nói dùng "đang cầm khoảng 25 tỷ đồng cổ phiếu", không nói "bỏ ra 25 tỷ tiền mặt".
+- **Mức phí 0,1–0,35% giá trị giao dịch:** VnExpress, "Phí giao dịch tại các công ty chứng khoán lớn" (bài cũ; các công ty hiện áp 0,15–0,35% tuỳ gói, ví dụ VCBS gói chủ động 0,15%, gói có tư vấn 0,18% ở bậc cao nhất) [ĐÃ XÁC MINH qua trích đoạn kết quả tìm kiếm; mở biểu phí công ty của Hiếu để lấy mức đúng] – https://vnexpress.net/phi-giao-dich-tai-cac-cong-ty-chung-khoan-lon-4304921.html · https://www.vcbs.com.vn/bieu-phi/bieu-phi-co-so
+  **"Môi giới chỉ hưởng một phần":** đúng về logic (phí thu vào công ty chứng khoán), nhưng **tỷ lệ chia với môi giới tuỳ công ty [CẦN XÁC MINH]**; không nói con số.
+- **FLC, Louis, "đội lái thường liên kết với môi giới và công ty niêm yết", cơ chế lùa gà:** VnExpress, "Đội lái chứng khoán là ai?" (6/3/2023): người đứng đầu hai hệ thống đều bị khởi tố tội thao túng, thổi giá cổ phiếu [ĐÃ XÁC MINH qua đọc trang; bài 2023 nên chỉ nói "bị khởi tố"] – https://vnexpress.net/doi-lai-chung-khoan-la-ai-4569794.html · Câu "người bị khởi tố là chủ tịch tập đoàn" chỉ đúng với **hai vụ này**, đừng nói "mọi vụ lùa gà".
+- **Điều 211 BLHS:** tù 6 tháng–3 năm (khoản 1), 2–7 năm (khoản 2), khi thu lợi bất chính hoặc gây thiệt hại đạt mức luật quy định; cấm hành nghề 1–5 năm (khoản 3) [ĐÃ XÁC MINH qua Văn bản hợp nhất 135/VBHN-VPQH 2025, đọc ở trích đoạn kết quả tìm kiếm; mở văn bản gốc chụp màn hình] – https://thuvienphapluat.vn/van-ban/Trach-nhiem-hinh-su/Van-ban-hop-nhat-135-VBHN-VPQH-2025-Bo-luat-Hinh-su-672275.aspx · Lời nói ghi "tù tới 7 năm" vì khung cao nhất; nếu muốn chính xác hơn, thêm "tuỳ mức lợi và thiệt hại".
+- **Vụ 28/8/2026:** VietNamNet 28/8/2026 – từ 31/10/2022 đến 31/5/2024 dùng 2 tài khoản mua bán một cổ phiếu để tạo cung cầu giả tạo; phạt 1,5 tỷ; tước quyền sử dụng chứng chỉ hành nghề 21 tháng; cấm giao dịch chứng khoán 3 năm kể từ 28/8/2026 và cấm đảm nhiệm chức vụ tại công ty chứng khoán 3 năm; **"chưa xác định được khoản thu trái pháp luật"** [ĐÃ XÁC MINH qua đọc trang] – https://vietnamnet.vn/thao-tung-co-phieu-nu-moi-gioi-bi-phat-1-5-ty-dong-tuoc-chung-chi-hanh-nghe-2550008.html · **Không nêu tên người, không nêu mã cổ phiếu** (bài có nêu cả hai). "Suốt gần hai năm" = 19 tháng [TỰ TÍNH]. Đây là xử phạt hành chính, không phải án hình sự.
+- **Tra chứng chỉ hành nghề:** Thông tư 135/2025/TT-BTC Điều 7 (cá nhân, tổ chức có thể tra trạng thái hành nghề trên hệ thống của UBCKNN; hiệu lực 9/2/2026); hệ thống quản lý người hành nghề triển khai từ 1/7/2026 tại qlnhnck.ssc.gov.vn [ĐÃ XÁC MINH qua bài hướng dẫn SRTC + luatvietnam]. **[CẦN XÁC MINH]** người không đăng nhập có tra được không (máy mình không mở được trang): Hiếu tự thử trước khi quay; nếu không được, đổi vế cuối thành "hỏi người đó làm ở công ty chứng khoán nào, rồi gọi công ty xác nhận".
+- **[SUY LUẬN] (nói "mình thấy"):** "có giấy phép mà đi lùa gà thì lời ít, mất nhiều"; "lợi ích của môi giới và của anh chị không phải lúc nào cũng trùng nhau". Cả hai là lập luận về động cơ, chưa phải số liệu về tỷ lệ môi giới vi phạm. Đừng nói tỷ lệ; ai hỏi: "mình không có con số, và đừng tin ai đưa tỷ lệ mà không nói nguồn."
 
-## 5. Cẩn thận pháp lý & tuân thủ
-- Công văn 3760/UBCK-QLKD (7/5/2026): không hô mã, không điểm mua/bán/cắt lỗ/mục tiêu, không hứa lãi, không xưng "chuyên gia", không mời vào nhóm/phòng trả phí, không tạo FOMO. Video này chỉ **dạy cách nhận diện** và không gọi tên mã nào.
-- Không nêu tên người bị phạt/bị khởi tố; chỉ nêu tên doanh nghiệp FLC, Louis Holdings như trong bài báo.
-- Mặc định **cần công ty duyệt** vì video nhắc thẳng vào ngành của công ty, và có câu "mình đang thực tập ở công ty chứng khoán".
-- Khi trả lời comment: không cãi tay đôi, không đòi "bóc" ai bằng tên, không hứa kết quả đầu tư.
+## 4. Tuân thủ
+- Công văn 3760/UBCK-QLKD (7/5/2026): không hô mã, không điểm mua/bán, không hứa lãi, không xưng "chuyên gia", không mời vào nhóm/phòng trả phí, không tạo FOMO. Bản này không nêu mã nào, không có con số lãi thật (5 tỷ/20% là ví dụ tính, đã gắn nhãn giả định).
+- Câu hook là tuyên bố có tính khiêu khích: "không cần" (không phải "không bao giờ") để khỏi mâu thuẫn với vụ 28/8, vì vụ đó chính là môi giới có làm.
+- **Cần công ty duyệt**: video bàn trực tiếp về động cơ thu phí của môi giới và nhắc một môi giới bị phạt.
+- Không nêu tên người bị phạt/bị khởi tố; chỉ nêu tên doanh nghiệp FLC, Louis như báo.
+- Khi trả lời comment: không cãi tay đôi, không bảo người xem "ngu", không hứa kết quả đầu tư.
 
-## 6. Hiếu cần chọn/xác nhận
-1. Tên series: LỘT TRẦN NGHỀ MÔI GIỚI (đề xuất) / BÓC MẼ NGHỀ MÔI GIỚI / CHỬI CHO ĐÚNG?
-2. Hook 1–4?
-3. Có nói "đang thực tập ở một công ty chứng khoán" không (công ty cho phép chưa)?
-4. Tự thử tra cứu người hành nghề tại qlnhnck.ssc.gov.vn và báo mình kết quả.
-5. Công ty duyệt chưa?
+## 5. Hiếu cần chọn/xác nhận
+1. Hook "Người lùa gà thật sự thì không cần đi làm môi giới." dùng được không? (bắt chước đúng nhịp clip mẫu; nếu thấy chướng, phương án: "Muốn lùa gà, trước hết bạn phải cầm cả chục tỷ. Mà lương môi giới thì không phải thế.")
+2. Phép tính 5 tỷ / 20% / 25 tỷ có ổn không, hay muốn số khác cho dễ nhẩm?
+3. Xưng "anh chị" (như các video cũ của anh) hay "bạn" (như clip mẫu)?
+4. Tên series: LỘT TRẦN NGHỀ MÔI GIỚI / BÓC MẼ NGHỀ MÔI GIỚI / CHỬI CHO ĐÚNG?
+5. Công ty duyệt chưa? Và anh thử giúp mình tra cứu người hành nghề ở qlnhnck.ssc.gov.vn.
