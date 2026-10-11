@@ -1,0 +1,38 @@
+{
+ "type": "card",
+ "stamp": "LỘT TRẦN NGHỀ MÔI GIỚI",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Đầu tư luôn có rủi ro mất vốn.",
+ "kicker": "LỘT TRẦN NGHỀ MÔI GIỚI",
+ "title": [
+  "“Lùa gà” là gì?"
+ ],
+ "title_size": 64,
+ "blocks": [
+  {
+   "type": "claim",
+   "text": "Lùa người thiếu kiến thức vào chỗ thua tiền, rồi biến mất."
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Không có tên thật",
+     "text": "Chỉ có tên nhóm, tên ảnh đại diện."
+    },
+    {
+     "head": "Không có công ty đứng sau",
+     "text": "Không ai chịu trách nhiệm khi anh chị lỗ."
+    },
+    {
+     "head": "Biến mất đúng lúc anh chị cần",
+     "text": "Nhắn lại thì bị chặn."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Một môi giới thật có tên thật, chứng chỉ hành nghề và công ty chịu trách nhiệm. Câu hỏi nên hỏi: nếu lỗ, mình tìm người này ở đâu?"
+  }
+ ],
+ "sources": "Phan Hiếu Stock (bản mẫu, cần công ty duyệt)."
+}

@@ -1,62 +1,64 @@
-# Quy trình bài Facebook hằng ngày (chạy tự động lúc 17:15 các ngày thứ 2–6, giờ Việt Nam)
+# Quy trình nội dung hằng ngày của kênh "Phan Hiếu Stock"
 
-Mục tiêu: mỗi ngày giao cho Hiếu **một bản nháp** bài Facebook (nội dung + carousel 3 ảnh) về một mã/sự kiện của phiên hôm đó. **Chỉ là bản nháp**: không tự đăng ở đâu cả, công ty phải duyệt trước khi đăng. Mẫu chuẩn: `videos/posts/2026-10-11-fpt/` (bai-facebook.md, spec.json, post_1–3.png).
+Hai lịch chạy tự động (giờ Việt Nam), đều ra **bản nháp** cho Hiếu duyệt, **không tự đăng ở đâu cả**, công ty phải duyệt trước khi đăng:
+- **A. 07:00 mỗi ngày: 5 bài Facebook** (nội dung + ảnh cho từng bài).
+- **B. 17:00 mỗi ngày: 2 kịch bản quay video** (talking head 2–3 phút).
 
-## 0. Chuẩn bị
-1. Làm việc trên nhánh `claude/exciting-bardeen-toacbf`: `git fetch origin claude/exciting-bardeen-toacbf && git checkout claude/exciting-bardeen-toacbf && git pull origin claude/exciting-bardeen-toacbf`. Commit và push về đúng nhánh này, **không tạo PR**. Trailer commit: `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` và `Claude-Session: <đường dẫn phiên hiện tại>` nếu có.
-2. Đọc `.claude/skills/hieu-talking-head-style/SKILL.md` mục 15–16 (viết lời nói tự nhiên, "một luận điểm – một phép tính"), và `videos/posts/2026-10-11-fpt/bai-facebook.md` + `spec.json` làm mẫu.
-3. Ngày hôm nay (giờ VN): `TZ=Asia/Ho_Chi_Minh date`. Nếu hôm nay không có phiên giao dịch (lễ, thị trường nghỉ — kiểm bằng dữ liệu phiên của DNSE), **dừng**, không tạo file, báo ngắn "hôm nay nghỉ".
+Hai lịch chạy ngay trong phiên Claude Code của Hiếu (đã có sẵn DNSE và Firecrawl). Nếu không gọi được DNSE hoặc Firecrawl thì **dừng và báo "thiếu công cụ"**, không bịa số liệu, không viết từ trí nhớ.
 
-## 1. Chọn đề tài (một đề tài/ngày)
-- DNSE: gọi `get_workflow_guide(market_analysis)` **trước tiên**, rồi `market_get_overview`, `market_get_stock_influences`, `sector_get_overview` để thấy phiên hôm nay. Lập danh sách vài mã/sự kiện nổi bật (ưu tiên VN30, mã biến động mạnh hoặc có tin lớn trong ngày).
-- Xem `videos/posts/` và `videos/scripts/`: **không lặp mã** đã làm trong 7 ngày gần nhất.
-- Ưu tiên đề tài có **nghịch lý hoặc hai mặt** người xem dễ hỏi "sao lại thế" (ví dụ lãi tăng mà giá giảm, tin tốt mà giá giảm, hai tổ chức dự báo khác nhau, con số dễ đọc nhầm), và có thể kiểm bằng **≥2 nguồn độc lập** (DNSE + ít nhất một bài báo/công bố qua Firecrawl).
-- Nếu hôm đó thị trường chung có biến động đặc biệt (VN-Index đổi ≥2% trong phiên, tin vĩ mô lớn), được phép làm bài tổng kết thị trường với cùng 3 loại ảnh.
-- Không kiểm chứng được số cốt lõi → đổi đề tài; nếu không có đề tài nào đủ nguồn thì **không viết bài**, báo "hôm nay không đủ nguồn" và nêu lý do.
+## 0. Chuẩn bị (cả A và B)
+1. Nhánh làm việc: `claude/exciting-bardeen-toacbf` (đang đứng sẵn trong phiên; nếu không, `git fetch origin claude/exciting-bardeen-toacbf && git checkout claude/exciting-bardeen-toacbf && git pull`). Commit rồi push về đúng nhánh này, **không tạo PR**. Trailer commit: `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` và `Claude-Session: https://claude.ai/code/session_014GxSeC1NwqDQnvs7PVNM85`.
+2. Ngày hôm nay (giờ VN): `TZ=Asia/Ho_Chi_Minh date`. Thứ 2–6: có phiên giao dịch (trừ lễ; kiểm bằng dữ liệu phiên DNSE). Thứ 7, Chủ nhật, ngày lễ: **không có phiên mới**, làm theo mục "Ngày nghỉ" của A và B.
+3. Văn phong: đọc `.claude/skills/hieu-talking-head-style/SKILL.md` mục 15–16 (viết lời nói tự nhiên, "một luận điểm – một phép tính"). Xưng "mình" và "anh chị", câu ngắn, có tình huống người đọc gặp, không "văn máy", không "Mình sẽ nói thẳng…".
+4. Xem `videos/posts/` và `videos/scripts/`: **không lặp mã** đã làm trong 7 ngày gần nhất; không lặp luận điểm đã làm.
 
-## 2. Nghiên cứu và kiểm chứng
-- DNSE: `price_get_history` (giá trả về nghìn đồng, chuỗi đã điều chỉnh cổ tức cổ phiếu; đổi mốc thời gian +7 giờ để ra ngày VN), `financial_get_business_result`, `company_get_company_events`, `company_get_profile_with_news`. Kết quả `company_get_profile_with_news` rất lớn: lưu ra file rồi đọc bằng python, không dán cả vào hội thoại.
-- Firecrawl: `firecrawl_search` rồi `firecrawl_scrape` với `formats:["query"]` và `queryOptions.prompt` để lấy câu trả lời gọn (tốn ~5 credit/trang, chỉ scrape trang cần).
-- Mọi con số gắn nhãn: [ĐÃ XÁC MINH] ≥2 nguồn · [1 NGUỒN] · [TỰ TÍNH] (ghi công thức) · [SUY LUẬN] · [LỆCH NGUỒN] (nêu cả hai số) · [CẦN XÁC MINH]. Chỗ nào lệch nguồn thì **không** đưa số đó vào bài.
-- Không giải thích "vì sao giá giảm/tăng" bằng lý do không có nguồn. Nguyên nhân chỉ nêu khi gắn tên báo/công bố, kèm "đây là nhận định của …, chưa ai đo được".
-
-## 3. Viết `bai-facebook.md` trong `videos/posts/<YYYY-MM-DD>-<mã>/`
-Cấu trúc như mẫu FPT: (1) nội dung đăng (copy nguyên khối), (2) alt text 3 ảnh, (3) kiểm chứng (số nào, nguồn nào, nhãn gì, chỗ cần Hiếu kiểm), (4) trước khi đăng.
-Bài: dòng đầu là nghịch lý + một con số; "3 điều" (điều 3 là chỗ cần để ý/twist); câu "mình không dự đoán giá"; **một** CTA ("Lưu bài để đối chiếu khi …"); dòng rủi ro + miễn trừ + "giá đến hết phiên dd/mm/yyyy"; nguồn; 5–6 hashtag có #PhanHieuStock. Tối đa ~8 con số nói ra trong bài; ưu tiên một tình huống người xem gặp. Văn nói tự nhiên (không "văn máy", không "Mình sẽ nói thẳng…").
-
-**Quy định bắt buộc (Công văn 3760/UBCK-QLKD, 7/5/2026) — vi phạm là bỏ bài:**
-- Không "phím hàng": không mua/bán, điểm vào/cắt lỗ/chốt lời, giá mục tiêu của chính mình; không dùng khuyến nghị MUA/BÁN hay giá mục tiêu của công ty chứng khoán khác; không nói "rẻ/đắt", không dự đoán giá.
-- Không hứa lợi nhuận, không tự xưng "chuyên gia", không mời vào nhóm/phòng trả phí, không gây FOMO/áp lực.
-- Dự báo/nhận định bên thứ ba chỉ nêu khi có tên nguồn và có câu "có thể sai".
+## 1. Quy định bắt buộc (Công văn 3760/UBCK-QLKD, 7/5/2026): vi phạm là bỏ bài
+- Không "phím hàng": không mua/bán, điểm vào/cắt lỗ/chốt lời, giá mục tiêu của chính mình; **không dùng khuyến nghị MUA/BÁN hay giá mục tiêu của công ty chứng khoán khác**; không nói "rẻ/đắt"; không dự đoán giá hay "mai tăng/giảm".
+- Không hứa lợi nhuận, không tự xưng "chuyên gia", không mời vào nhóm/phòng trả phí, không gây FOMO hay áp lực.
+- Dự báo/nhận định bên thứ ba chỉ nêu khi có **tên nguồn** và có câu "có thể sai".
 - Không lặp lại tin đồn chưa kiểm chứng về ngân hàng/doanh nghiệp.
-- Có phần rủi ro + miễn trừ; chỉ **một** CTA. Bản nháp phải ghi "công ty duyệt trước khi đăng".
+- Có phần rủi ro + miễn trừ; chỉ **một** CTA (thường là "Lưu bài/video để đối chiếu khi …"). Ghi "công ty duyệt trước khi đăng".
+- Nhắc đến pháp luật chỉ khi đã kiểm điều khoản; điều khoản chưa chắc thì ghi [CẦN XÁC MINH] và không đưa số điều vào bài.
 
-## 4. Dựng ảnh
-1. Tạo `spec.json` (sao chép từ mẫu FPT rồi đổi nội dung): slide1 = tiêu đề + biểu đồ đường (≥2 chuỗi, tự quy về 100), slide2 = các thẻ lớn + ghi chú, slide3 = hai ô số + giải thích + biểu đồ cột. Mã chính dùng màu `gold`, đường tham chiếu `blue`. Ô số: giảm dùng `red` + ▼ + dấu −, tăng dùng `green` + ▲ + dấu +.
-2. Chạy `python3 videos/covers/make_post.py videos/posts/<thư mục>/spec.json` (dùng Chromium có sẵn, không cần cài thêm).
-3. **Mở xem từng ảnh** (Read): chữ không tràn/đè, biểu đồ khớp số liệu, dòng nguồn + miễn trừ còn đọc được. Lỗi tràn thì rút ngắn chữ trong spec rồi chạy lại (không sửa make_post.py nếu không cần).
+## 2. Nghiên cứu và kiểm chứng (dùng chung)
+- DNSE: gọi `get_workflow_guide(market_analysis)` hoặc `get_workflow_guide(stock_analysis)` **trước tiên**; rồi `market_get_overview`, `market_get_stock_influences`, `sector_get_overview`, `price_get_history` (giá nghìn đồng, chuỗi đã điều chỉnh thưởng cổ phiếu/cổ tức; đổi mốc thời gian +7 giờ để ra ngày VN), `financial_get_business_result`, `company_get_company_events`, `company_get_profile_with_news`. Kết quả `company_get_profile_with_news` rất lớn: lưu ra file rồi đọc bằng python, không dán cả vào hội thoại.
+- Firecrawl: `firecrawl_search` rồi `firecrawl_scrape` với `formats:["query"]` và `queryOptions.prompt` để lấy câu trả lời gọn (~5 credit/trang; chỉ scrape trang cần).
+- Mọi con số gắn nhãn: [ĐÃ XÁC MINH] ≥2 nguồn · [1 NGUỒN] · [TỰ TÍNH] (ghi công thức) · [SUY LUẬN] · [LỆCH NGUỒN] (nêu cả hai số) · [CẦN XÁC MINH]. **Số lệch nguồn thì không đưa vào bài/kịch bản.**
+- Không giải thích "vì sao giá giảm/tăng" bằng lý do không có nguồn. Nguyên nhân chỉ nêu khi gắn tên báo/công bố, kèm "đây là nhận định của …, chưa ai đo được từng yếu tố".
+- Đề tài tốt = có **nghịch lý hoặc hai mặt** người xem dễ hỏi "sao lại thế" (lãi tăng mà giá giảm, tin tốt mà giá giảm, hai tổ chức dự báo khác nhau, con số dễ đọc nhầm) và kiểm được bằng ≥2 nguồn độc lập. Không kiểm được số cốt lõi thì đổi đề tài; không có đề tài đủ nguồn thì **không viết cho có**, ghi rõ lý do trong tin nhắn cuối.
 
-## 5. Giao
-- `git add videos/posts/<thư mục>`; commit "Bài Facebook <mã> <ngày>: …"; `git push -u origin claude/exciting-bardeen-toacbf` (lỗi mạng thì thử lại tối đa 4 lần, chờ 2s/4s/8s/16s).
-- Tin nhắn cuối (tiếng Việt, ngắn): đề tài + hook; 3 ý; **các chỗ Hiếu phải kiểm trước khi đăng** (nhãn [SUY LUẬN]/[LỆCH NGUỒN]/[CẦN XÁC MINH]); đường dẫn file. Có thể gửi file bằng SendUserFile.
+---
 
-## Cài đặt lịch chạy tự động (làm một lần, trên claude.ai)
-Công cụ đặt lịch trong phiên Claude Code **không gắn được DNSE và Firecrawl vào lịch**, nên phải tạo Routine trên giao diện claude.ai (mục Routines / lịch chạy) để chọn kết nối:
-1. Tạo Routine mới; nguồn code: repo `HieuPhan1405/HIEUSTOCK`; môi trường cloud đang dùng.
-2. Bật kết nối (connectors) **DNSE** và **Firecrawl** cho Routine (hai kết nối này phải đang ở trạng thái đã kết nối trong claude.ai → Customize → Connectors).
-3. Lịch: 17:15 các ngày thứ 2–6, múi giờ Asia/Ho_Chi_Minh (cron `15 17 * * 1-5`). Phiên mới mỗi lần chạy; bật thông báo đẩy khi xong.
-4. Dán prompt dưới đây.
+## A. 07:00: 5 bài Facebook (nội dung + ảnh)
 
-```
-Bạn đang làm việc cho Hiếu (kênh "Phan Hiếu Stock", thực tập tư vấn đầu tư ở một công ty chứng khoán). Nhiệm vụ mỗi ngày: soạn MỘT bản nháp bài Facebook (nội dung + carousel 3 ảnh) về một mã/sự kiện của phiên giao dịch hôm nay, bằng tiếng Việt.
+Thư mục: `videos/posts/<YYYY-MM-DD>/` gồm `README.md` (bảng mục lục 5 bài: STT, loại, tiêu đề, câu mở bài, các chỗ Hiếu phải kiểm) và 5 thư mục con `bai-1-<slug>/` … `bai-5-<slug>/`, mỗi thư mục có `bai.md`, `spec.json` và ảnh (`post.png` hoặc `post_1..3.png`).
 
-Làm việc trong repo HieuPhan1405/HIEUSTOCK, nhánh `claude/exciting-bardeen-toacbf`. Việc đầu tiên: git fetch origin claude/exciting-bardeen-toacbf && git checkout claude/exciting-bardeen-toacbf && git pull origin claude/exciting-bardeen-toacbf (nếu phiên này được gán nhánh khác, vẫn làm việc và push lên đúng nhánh claude/exciting-bardeen-toacbf; không tạo PR).
+**Cơ cấu 5 bài (ngày có phiên; dữ liệu là phiên gần nhất):**
+1. **Tổng kết phiên hôm qua** (ảnh đơn): VN-Index đóng cửa và % thay đổi, thanh khoản, nhóm ngành mạnh/yếu, khối ngoại mua/bán ròng; thêm "lịch sự kiện cần theo dõi hôm nay" nếu có (ngày không hưởng quyền, đại hội, công bố kết quả kinh doanh). **Chỉ ghi số đã xảy ra, không dự đoán phiên tới.**
+2. **Bài mã/ngành nghịch lý** (carousel 3 ảnh, như bài FPT): đã kiểm chứng đầy đủ.
+3. **Bài mã/ngành thứ hai** (ảnh đơn hoặc carousel nếu đủ chất): mã khác ngành với bài 2.
+4. **Kiến thức đầu tư gắn với một tin thật trong tuần** (ảnh đơn dạng "kiến thức 60 giây": 3 ý + ví dụ số + một ví dụ thật có nguồn).
+5. **"Lột trần nghề môi giới"** (ảnh đơn): luân phiên giữa một luận điểm của series (xem `videos/scripts/series-*.md`, chủ đề đã có sẵn lập luận) và một câu hỏi người mới hay gặp (phí giao dịch, margin, nhóm đóng phí, tin nội bộ…). Dùng định nghĩa của Hiếu: "Lùa gà là lùa những người thiếu kiến thức làm người ta thua tiền."
 
-Sau đó đọc videos/posts/README.md trong nhánh đó và làm đúng từng bước trong đó (chọn đề tài, nghiên cứu và kiểm chứng bằng DNSE + Firecrawl, viết bai-facebook.md, tạo spec.json, chạy python3 videos/covers/make_post.py, mở xem từng ảnh để kiểm tra, commit và push). Mẫu chuẩn là videos/posts/2026-10-11-fpt/.
+**Ngày nghỉ (thứ 7, Chủ nhật, lễ):** 1 = tổng kết tuần + lịch sự kiện tuần tới; 2–3 = hai mã/ngành nổi bật của tuần; 4 = kiến thức; 5 = series. Ngày lễ giữa tuần: bài 1 ghi "thị trường nghỉ" và nêu lịch mở cửa lại.
 
-Quy tắc không thương lượng: đây chỉ là BẢN NHÁP, không đăng đi đâu cả; công ty phải duyệt trước khi đăng. Không "phím hàng" (không mua/bán, điểm vào/cắt lỗ/giá mục tiêu, không dùng khuyến nghị hay giá mục tiêu của công ty chứng khoán khác), không nói rẻ/đắt, không dự đoán giá, không hứa lợi nhuận, không tự xưng chuyên gia, không mời nhóm trả phí, không gây FOMO. Số liệu phải kiểm ≥2 nguồn; số lệch nguồn thì nêu rõ và không đưa vào bài; không giải thích nguyên nhân giá biến động nếu không có nguồn (chỉ nêu khi gắn tên báo, kèm "chưa ai đo được"). Có phần rủi ro + miễn trừ, chỉ một CTA. Nếu hôm nay thị trường không có phiên hoặc không có đề tài đủ nguồn, dừng và báo ngắn lý do, không viết bài cho có.
+**Mỗi `bai.md`:** (1) nội dung đăng (copy nguyên khối), (2) alt text ảnh, (3) kiểm chứng (số nào, nguồn nào, nhãn gì, chỗ Hiếu phải kiểm), (4) trước khi đăng. Mẫu: `videos/posts/2026-10-11-fpt/bai-facebook.md`.
+**Bài đăng:** dòng đầu là nghịch lý hoặc câu hỏi + một con số; tối đa ~8 con số; "mình không dự đoán giá" ở bài mã/ngành; **một** CTA; dòng rủi ro + miễn trừ + "giá đến hết phiên dd/mm/yyyy"; nguồn; 5–6 hashtag có #PhanHieuStock. Độ dài ~150–260 chữ.
 
-Nếu không gọi được công cụ DNSE hoặc Firecrawl, DỪNG ngay và báo rõ "thiếu công cụ DNSE/Firecrawl", không tự bịa số liệu và không viết bài từ trí nhớ.
+**Dựng ảnh:** `python3 videos/covers/make_post.py <thư mục>/spec.json` (dùng Chromium có sẵn, không cần cài thêm). Mẫu thông số:
+- carousel 3 ảnh (mặc định): `videos/posts/2026-10-11-fpt/spec.json` (slide1 tiêu đề + biểu đồ đường quy về 100, slide2 các thẻ lớn + ghi chú, slide3 hai ô số + giải thích + biểu đồ cột). Mã chính màu `gold`, đường tham chiếu `blue`.
+- ảnh đơn `"type":"card"` với các khối `stats` / `list` / `table` / `claim` / `bars` / `note`: mẫu trong `videos/posts/_mau/` (`tong-ket-tuan`, `kien-thuc`, `lot-tran-moi-gioi`). Giảm dùng `red` + ▼ + dấu −; tăng dùng `green` + ▲ + dấu +.
+- Sau khi chạy **mở xem từng ảnh** (Read): chữ không tràn/đè, số khớp bài, dòng nguồn + miễn trừ còn đọc được. Tràn thì rút ngắn chữ trong spec rồi chạy lại (không sửa `make_post.py` nếu không cần).
 
-Tin nhắn cuối gửi Hiếu (tiếng Việt, ngắn): đề tài và câu mở bài; 3 ý; các chỗ Hiếu PHẢI kiểm trước khi đăng (nhãn SUY LUẬN / LỆCH NGUỒN / CẦN XÁC MINH); đường dẫn thư mục videos/posts/<ngày>-<mã>/.
-```
+**Giao:** `git add videos/posts/<ngày>`; commit "Bài Facebook <ngày>: 5 bài (<mã/chủ đề>)"; `git push -u origin claude/exciting-bardeen-toacbf` (lỗi mạng thì thử lại tối đa 4 lần, chờ 2s/4s/8s/16s). Tin nhắn cuối (tiếng Việt, gọn): bảng 5 bài (loại, câu mở bài), **các chỗ phải kiểm trước khi đăng**, đường dẫn. Gửi 5 ảnh chính (ảnh bìa mỗi bài) bằng SendUserFile.
+
+---
+
+## B. 17:00: 2 kịch bản quay video
+
+Hai file `videos/scripts/<YYYY-MM-DD>-<slug>.md`. Dùng kỹ năng `talking-head-chung-khoan` nếu có; khung bắt buộc như `videos/scripts/2026-10-11-hpg-du-bao-lai-q3.md` và `videos/scripts/2026-10-11-fpt-lai-deu-nhung-giam-11-phien.md`:
+1) 3 tiêu đề/caption mở đầu; 2) 3 phương án hook (câu nói + chữ màn hình); 3) kịch bản có mốc thời gian và cue (giọng / [CHỮ] / [B-ROLL] / [CẮT] / [DỪNG] / [SFX]), 2–3 phút (~450–600 tiếng nói), khung "3 điều, điều 3 là chỗ cần để ý", twist ở ý 3, đóng vòng lặp ở cuối, đúng **một** CTA, câu rủi ro + disclaimer ở 3,6 giây cuối, bản rút ~90 giây; 4) danh sách B-roll; 5) caption + hashtag; 6) bảng kiểm chứng (số, giá trị, nguồn, nhãn) + số/ý để dành không đưa vào lời; 7) nguồn có liên kết (tin chỉ có mã DNSE thì ghi chữ thường, không dựng liên kết giả); 8) "Hiếu cần chọn/xác nhận".
+- **Kịch bản 1:** mã/ngành/sự kiện nổi bật của phiên (ngày nghỉ: nổi bật của tuần). Ưu tiên khác mã với bài 2–3 buổi sáng, nếu trùng phải khác góc.
+- **Kịch bản 2:** luân phiên giữa (a) tập tiếp theo của series "Lột trần nghề môi giới" (đọc `videos/scripts/series-be-lai-nhan-dinh-ve-nghe-moi-gioi.md` để lấy tập chưa làm: phí tính theo giao dịch, tiền không nằm trong túi môi giới, margin, tin nội bộ, nhóm đóng phí, học lại hàng năm, một ngày làm môi giới; kiểm điều luật trước khi nêu) và (b) một chủ đề vĩ mô/kiến thức gắn tin thật trong tuần. Tập series phải theo mẫu "một luận điểm, một phép tính hoặc tình huống", ≤5 con số nói ra, có "gây sốc" ngay câu đầu.
+- Mọi lời nói đã đọc lại như người xem ("người xem có muốn xem tiếp không?"), không "văn máy".
+- Giao: commit "Kịch bản <ngày>: <2 chủ đề>" và push như trên; tin nhắn cuối: 2 hook A, 3 ý mỗi kịch bản, chỗ Hiếu phải kiểm, đường dẫn; gửi 2 file bằng SendUserFile.

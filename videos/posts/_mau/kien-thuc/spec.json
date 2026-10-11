@@ -1,0 +1,36 @@
+{
+ "type": "card",
+ "stamp": "KIẾN THỨC 60 GIÂY",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Ví dụ minh họa, không phải số của một mã cụ thể.",
+ "kicker": "KIẾN THỨC 60 GIÂY",
+ "title": [
+  "Thưởng cổ phiếu 10:1:",
+  "giá điều chỉnh,",
+  "tài sản không đổi"
+ ],
+ "title_size": 58,
+ "blocks": [
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Bạn nhận thêm cổ phiếu",
+     "text": "Cứ 10 cổ phiếu đang giữ, nhận thêm 1 cổ phiếu mới: từ 10 thành 11."
+    },
+    {
+     "head": "Giá tham chiếu bị điều chỉnh",
+     "text": "Ngày giao dịch không hưởng quyền, giá tham chiếu = giá cũ ÷ 1,1. Ví dụ 110.000 đồng thành 100.000 đồng."
+    },
+    {
+     "head": "Giá trị tài sản không đổi",
+     "text": "Trước: 10 × 110.000 = 1.100.000. Sau: 11 × 100.000 = 1.100.000."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Vì thế so sánh giá qua ngày không hưởng quyền phải dùng giá đã điều chỉnh. Ví dụ thật: FPT thưởng 10:1, ngày không hưởng quyền 21/9/2026."
+  }
+ ],
+ "sources": "Quy ước thưởng cổ phiếu; DNSE (sự kiện doanh nghiệp FPT)."
+}

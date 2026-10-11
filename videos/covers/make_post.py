@@ -2,7 +2,7 @@
 """Dựng carousel Facebook (3 ảnh 1080x1350, 4:5) từ một file thông số JSON, hoàn toàn từ số liệu.
 
 Chạy:  python3 videos/covers/make_post.py videos/posts/<ngày>-<mã>/spec.json
-Ra:    post_1.png, post_2.png, post_3.png (cùng thư mục với spec.json)
+Ra:    type "carousel" (mặc định): post_1.png, post_2.png, post_3.png; type "card": post.png (ảnh đơn nhiều khối) — cùng thư mục với spec.json
 Không cần cài thêm gì: dùng headless_shell của Chromium có sẵn trong /opt/pw-browsers.
 Ví dụ thông số đầy đủ: videos/posts/2026-10-11-fpt/spec.json.
 
@@ -44,7 +44,10 @@ body{{background:radial-gradient(1200px 700px at 80% -10%,#1A2233 0%,{BG} 60%);f
 
 
 def e(x):
-    return html.escape(str(x), quote=False)
+    t = html.escape(str(x), quote=False)
+    for sym in ("÷", "×", "=", "→", "+"):
+        t = t.replace(f" {sym} ", f"\u00a0{sym}\u00a0")
+    return t
 
 
 def vi(x, d=1):
@@ -156,19 +159,10 @@ def slide2(spec):
     return page(body, css)
 
 
-# ---------------- slide 3: hai ô số + giải thích + biểu đồ cột ----------------
-def slide3(spec):
-    s = spec["slide3"]
-    tiles = ""
-    for k, t in enumerate(s["tiles"]):
-        tone = COLORS[t["tone"]]
-        bord = "rgba(255,90,90,.45)" if t["tone"] == "red" else "rgba(34,197,94,.45)"
-        tiles += (f'<div class="card tile" style="left:{60 if k == 0 else 558}px;border-color:{bord}"><div class="lab2">{e(t["label"])}</div>'
-                  f'<div class="v"><i style="color:{tone}">{e(t["arrow"])}</i>{e(t["value"])}</div><div class="s">{e(t["sub"])}</div></div>')
-    b = s["bars"]
+def bars_svg(b, H=262):
     labels, vals = b["labels"], b["values"]
     n = len(vals)
-    W, H, ml, mt, mb = 900, 262, 56, 36, 44
+    W, ml, mt, mb = 900, 56, 36, 44
     pw, ph = W - ml - 10, H - mt - mb
     mx = float(b["ymax"])
     bw = 62
@@ -187,6 +181,20 @@ def slide3(spec):
     dash = 'stroke-dasharray="4 6"'
     grid = "".join(f'<line x1="{ml}" x2="{W-10}" y1="{mt+ph-g/mx*ph:.1f}" y2="{mt+ph-g/mx*ph:.1f}" stroke="#2A3345" stroke-width="1" {dash}/><text x="{ml-12}" y="{mt+ph-g/mx*ph+7:.1f}" text-anchor="end" font-size="22" fill="{MUTED}">{g}</text>' for g in b["yticks"])
     svg = f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" style="font-family:\'Be Vietnam Pro\'">{grid}<line x1="{ml}" x2="{W-10}" y1="{mt+ph}" y2="{mt+ph}" stroke="{MUTED}" stroke-width="2"/>{bars}{lbl}</svg>'
+    return svg
+
+
+# ---------------- slide 3: hai ô số + giải thích + biểu đồ cột ----------------
+def slide3(spec):
+    s = spec["slide3"]
+    tiles = ""
+    for k, t in enumerate(s["tiles"]):
+        tone = COLORS[t["tone"]]
+        bord = "rgba(255,90,90,.45)" if t["tone"] == "red" else "rgba(34,197,94,.45)"
+        tiles += (f'<div class="card tile" style="left:{60 if k == 0 else 558}px;border-color:{bord}"><div class="lab2">{e(t["label"])}</div>'
+                  f'<div class="v"><i style="color:{tone}">{e(t["arrow"])}</i>{e(t["value"])}</div><div class="s">{e(t["sub"])}</div></div>')
+    b = s["bars"]
+    svg = bars_svg(b)
     title = "<br>".join(e(x) for x in s["title"])
     css = f"""
 .h{{position:absolute;left:60px;top:124px;width:960px;font-weight:800;line-height:1.05}}
@@ -210,6 +218,78 @@ def slide3(spec):
     return page(body, css)
 
 
+# ---------------- ảnh đơn: tiêu đề + các khối (stats / list / table / claim / bars / note) ----------------
+def card(spec):
+    parts = ""
+    for blk in spec["blocks"]:
+        t = blk["type"]
+        if t == "stats":
+            items = blk["items"]
+            big = 88 if len(items) == 2 else 50
+            tiles = ""
+            for it in items:
+                tone = it.get("tone", "plain")
+                bord = {"red": "rgba(255,90,90,.45)", "green": "rgba(34,197,94,.45)", "gold": "rgba(245,197,66,.45)"}.get(tone, "rgba(255,255,255,.09)")
+                arrow = f'<i style="color:{COLORS[tone]}">{e(it["arrow"])}</i>' if it.get("arrow") and tone in COLORS else ""
+                sub = f'<div class="s">{e(it["sub"])}</div>' if it.get("sub") else ""
+                tiles += f'<div class="tl" style="border-color:{bord}"><div class="lab2">{e(it["label"])}</div><div class="v" style="font-size:{big}px">{arrow}{e(it["value"])}</div>{sub}</div>'
+            parts += f'<div class="row">{tiles}</div>'
+        elif t == "list":
+            li = "".join(f'<div class="li"><div class="n">{k}</div><div><div class="hd">{e(x["head"])}</div><div class="tx">{e(x["text"])}</div></div></div>' for k, x in enumerate(blk["items"], 1))
+            parts += f'<div class="lst">{li}</div>'
+        elif t == "table":
+            ac = blk.get("arrow_col", 1)
+            th = "".join(f"<th>{e(x)}</th>" for x in blk["head"])
+            tr = ""
+            for r_ in blk["rows"]:
+                tr += "<tr>"
+                for ci, cv in enumerate(r_["cells"]):
+                    ar = f'<i style="color:{COLORS[r_["tone"]]}">{e(r_["arrow"])}</i> ' if ci == ac and r_.get("arrow") and r_.get("tone") in COLORS else ""
+                    cls = "c0" if ci == 0 else "c1" if ci == ac or ci == 1 else "c2"
+                    tr += f"<td class='{cls}'>{ar}{e(cv)}</td>"
+                tr += "</tr>"
+            parts += f'<table class="tb"><tr>{th}</tr>{tr}</table>'
+        elif t == "claim":
+            parts += f'<div class="claim">{e(blk["text"])}</div>'
+        elif t == "bars":
+            parts += f'<div class="card bx"><div class="ct">{e(blk["title"])}<span>{e(blk["subtitle"])}</span></div><div style="margin-top:14px">{bars_svg(blk, 230)}</div></div>'
+        elif t == "note":
+            parts += f'<div class="note">{e(blk["text"])}</div>'
+        else:
+            sys.exit(f"Khối không hỗ trợ: {t}")
+    title = "<br>".join(e(x) for x in spec["title"])
+    css = f"""
+.wrap{{position:absolute;left:60px;top:122px;width:960px;display:flex;flex-direction:column;gap:22px}}
+.h small{{display:block;font:800 30px 'Be Vietnam Pro';letter-spacing:4px;color:{GOLD};margin-bottom:12px}}
+.h div{{font:800 {spec.get("title_size", 60)}px/1.05 'Be Vietnam Pro'}}
+.row{{display:flex;gap:20px}}
+.tl{{flex:1;min-width:0;background:rgba(255,255,255,.045);border:2px solid rgba(255,255,255,.09);border-radius:28px;padding:24px 26px}}
+.lab2{{font:700 25px/1.25 'Be Vietnam Pro';color:{INK}}}
+.tl .lab2{{font-size:{25 if len(spec["blocks"][0].get("items", [])) == 2 else 22}px}}
+.tl .v{{font-weight:800;line-height:1;margin-top:14px;color:{INK};white-space:nowrap}}
+.tl .v i{{font-style:normal;font-size:.5em;vertical-align:.18em;margin-right:8px}}
+.tl .s{{font:400 23px/1.3 'Be Vietnam Pro';color:{MUTED};margin-top:10px}}
+.lst{{display:flex;flex-direction:column;gap:18px}}
+.li{{display:flex;gap:22px;align-items:flex-start;background:rgba(255,255,255,.045);border:2px solid rgba(255,255,255,.09);border-radius:24px;padding:22px 26px}}
+.n{{flex:none;width:54px;height:54px;border-radius:50%;background:{GOLD};color:#111;font:800 30px/54px 'Be Vietnam Pro';text-align:center}}
+.hd{{font:800 33px/1.2 'Be Vietnam Pro';color:{INK}}}
+.tx{{font:400 28px/1.35 'Be Vietnam Pro';color:{INK};margin-top:6px}}
+.tb{{width:100%;border-collapse:separate;border-spacing:0;background:rgba(255,255,255,.045);border:2px solid rgba(255,255,255,.09);border-radius:24px;overflow:hidden;font:400 28px 'Be Vietnam Pro'}}
+.tb th{{text-align:left;font:700 22px 'Be Vietnam Pro';letter-spacing:2px;color:{MUTED};padding:16px 24px;border-bottom:2px solid rgba(255,255,255,.09)}}
+.tb td{{padding:14px 24px;border-bottom:1px solid rgba(255,255,255,.06);color:{INK}}}
+.tb tr:last-child td{{border-bottom:none}}
+.tb .c0{{font-weight:800;white-space:nowrap}}.tb .c1{{font-weight:700;white-space:nowrap}}.tb .c2{{color:{MUTED};font-size:25px}}
+.tb i{{font-style:normal;font-size:.8em}}
+.claim{{font:italic 700 {spec.get("claim_size", 50)}px/1.2 'Playfair Display';color:{INK};padding:6px 4px}}
+.bx{{position:static;padding:22px 26px;height:auto}}
+.ct{{font:700 27px/1.3 'Be Vietnam Pro';color:{INK}}}.ct span{{display:block;font:400 22px 'Be Vietnam Pro';color:{MUTED}}}
+.note{{border:3px solid {GOLD};border-radius:22px;padding:20px 28px;font:700 30px/1.3 'Be Vietnam Pro';color:{INK};background:rgba(245,197,66,.08)}}
+"""
+    body = (f'<div class="tag">PHAN HIẾU STOCK</div><div class="stamp">{e(spec["stamp"])}</div>'
+            f'<div class="wrap"><div class="h"><small>{e(spec["kicker"])}</small><div>{title}</div></div>{parts}</div>' + foot(spec, spec["sources"]))
+    return page(body, css)
+
+
 def shell():
     for p in sorted(glob.glob("/opt/pw-browsers/chromium_headless_shell-*/chrome-linux/headless_shell")):
         return p
@@ -221,14 +301,16 @@ def main(spec_path):
     spec = json.loads(sp.read_text(encoding="utf-8"))
     out = sp.parent
     tmp = Path(tempfile.mkdtemp(prefix="post_"))
-    for i, fn in enumerate((slide1, slide2, slide3), 1):
+    kind = spec.get("type", "carousel")
+    jobs = [(slide1, "post_1.png"), (slide2, "post_2.png"), (slide3, "post_3.png")] if kind == "carousel" else [(card, spec.get("out", "post.png"))]
+    for i, (fn, name) in enumerate(jobs, 1):
         h = tmp / f"post_{i}.html"
         h.write_text(fn(spec), encoding="utf-8")
-        png = out / f"post_{i}.png"
+        png = out / name
         r = subprocess.run([shell(), "--no-sandbox", "--disable-gpu", "--hide-scrollbars", "--allow-file-access-from-files", "--virtual-time-budget=4000",
                             "--window-size=1080,1350", f"--screenshot={png}", h.as_uri()], capture_output=True, text=True, timeout=120)
         if not png.exists():
-            sys.exit(f"Chụp ảnh {i} lỗi: {r.stderr[-400:]}")
+            sys.exit(f"Chụp ảnh {name} lỗi: {r.stderr[-400:]}")
         print(png)
 
 

@@ -1,0 +1,98 @@
+{
+ "type": "card",
+ "stamp": "TỔNG KẾT TUẦN 5–9/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026.",
+ "kicker": "TỔNG KẾT TUẦN",
+ "title": [
+  "VN-Index tuần 5–9/10:",
+  "lên rồi quay đầu"
+ ],
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Cả tuần",
+     "value": "−0,15%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "1.737,71 → 1.735,09"
+    },
+    {
+     "label": "Đóng cửa cao nhất tuần",
+     "value": "1.759,08",
+     "tone": "gold",
+     "sub": "phiên 6/10"
+    },
+    {
+     "label": "Từ đỉnh đến cuối tuần",
+     "value": "−1,36%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "6/10 → 9/10"
+    }
+   ]
+  },
+  {
+   "type": "table",
+   "head": [
+    "PHIÊN",
+    "ĐÓNG CỬA",
+    "THAY ĐỔI SO PHIÊN TRƯỚC"
+   ],
+   "rows": [
+    {
+     "cells": [
+      "5/10",
+      "1.753,20",
+      "+0,89%"
+     ],
+     "arrow": "▲",
+     "tone": "green"
+    },
+    {
+     "cells": [
+      "6/10",
+      "1.759,08",
+      "+0,34%"
+     ],
+     "arrow": "▲",
+     "tone": "green"
+    },
+    {
+     "cells": [
+      "7/10",
+      "1.753,39",
+      "−0,32%"
+     ],
+     "arrow": "▼",
+     "tone": "red"
+    },
+    {
+     "cells": [
+      "8/10",
+      "1.738,97",
+      "−0,82%"
+     ],
+     "arrow": "▼",
+     "tone": "red"
+    },
+    {
+     "cells": [
+      "9/10",
+      "1.735,09",
+      "−0,22%"
+     ],
+     "arrow": "▼",
+     "tone": "red"
+    }
+   ],
+   "arrow_col": 2
+  },
+  {
+   "type": "note",
+   "text": "Chỉ ghi lại số liệu đã xảy ra. Không dự đoán phiên tới."
+  }
+ ],
+ "sources": "DNSE (chỉ số VN-Index, giá đóng cửa)."
+}
