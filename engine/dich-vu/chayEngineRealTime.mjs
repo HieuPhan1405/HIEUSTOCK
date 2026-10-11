@@ -256,6 +256,44 @@ async function main() {
   chayKichBanMua();
   const henGioKichBan = setInterval(chayKichBanMua, CHU_KY_KICH_BAN_MS);
 
+  // TU DUNG 15h30 (2026-10-12): engine khoi dong TRUOC 15h30 vao ngay lam viec (T2-T6, gio VN) thi tinh + day lan cuoi luc 15h30 roi tu thoat voi ma 3 -
+  // CHAY_REALTIME_UPLOAD.bat thay ma 3 thi KHONG khoi dong lai. Khoi dong sau 15h30 (chay tay buoi toi / cuoi tuan) thi chay den khi dong cua so.
+  // Doi gio: tham so --dung-luc=HH:MM (mac dinh 15:30); --khong-tu-dung de tat han.
+  const phutVN = (d = new Date()) => {
+    const v = new Date(d.getTime() + 7 * 3600e3);
+    return { thu: v.getUTCDay(), phut: v.getUTCHours() * 60 + v.getUTCMinutes() };
+  };
+  const thamSoDung = process.argv.find((x) => x.startsWith("--dung-luc="))?.slice(11) ?? "15:30";
+  const [gDung, pDung] = thamSoDung.split(":").map(Number);
+  const phutDung = (Number.isFinite(gDung) ? gDung : 15) * 60 + (Number.isFinite(pDung) ? pDung : 30);
+  const luc0 = phutVN();
+  const tuDungHomNay = !process.argv.includes("--khong-tu-dung") && luc0.thu >= 1 && luc0.thu <= 5 && luc0.phut < phutDung;
+  let henGioDung = null;
+  if (tuDungHomNay) {
+    console.log(`[tu dung] Engine se tinh + day lan cuoi roi TU DUNG luc ${thamSoDung} (gio VN).`);
+    henGioDung = setInterval(async () => {
+      if (phutVN().phut < phutDung) return;
+      clearInterval(henGioDung);
+      console.log(`[${new Date().toLocaleTimeString("vi-VN")}] [tu dung] Den ${thamSoDung}: tinh + day lan cuoi roi thoat.`);
+      try {
+        coThayDoi = true;
+        chiBaoCu = true;
+        await tinhLaiVaGhi();
+        await tinhVaGuiChiBao();
+      } catch (loi) {
+        console.log(`[tu dung] LOI lan cuoi: ${loi.message}`);
+      }
+      // Kich ban mua theo trang thai CUOI NGAY (tien trinh con ~1-2 phut): doi xong roi moi thoat de tien trinh con khong bi dut giua chung.
+      chayKichBanMua();
+      for (let i = 0; i < 240 && dangChayKichBan; i++) await new Promise((r) => setTimeout(r, 1000));
+      clearInterval(henGio);
+      clearInterval(henGioChiBao);
+      clearInterval(henGioKichBan);
+      dsKetNoi.forEach((k) => k.dong());
+      process.exit(3);
+    }, 20_000);
+  }
+
   process.on("SIGINT", () => {
     console.log("\nDang dung dich vu...");
     clearInterval(henGio);
