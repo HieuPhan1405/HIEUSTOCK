@@ -59,7 +59,7 @@ Thư mục: `videos/posts/<YYYY-MM-DD>/` gồm `README.md` (bảng mục lục: 
 - ảnh đơn `"type":"card"` với các khối `stats` / `list` / `table` / `claim` / `bars` / `note`: mẫu trong `videos/posts/_mau/` (`tong-ket-tuan`, `kien-thuc`, `lot-tran-moi-gioi`). Giảm dùng `red` + ▼ + dấu −; tăng dùng `green` + ▲ + dấu +.
 - Lệnh in "cách chân trang: Npx" cho từng ảnh; **N < 10 hoặc có cảnh báo ⚠ là chữ đang đè chân trang**: rút ngắn chữ rồi chạy lại. Sau khi chạy vẫn **mở xem từng ảnh** (Read): chữ không tràn/đè, số khớp bài, dòng nguồn + miễn trừ còn đọc được. Tràn thì rút ngắn chữ trong spec rồi chạy lại (không sửa `make_post.py` nếu không cần).
 
-**Giao:** `git add videos/posts/<ngày>`; commit "Bài Facebook <ngày>: 8 bài (<mã/chủ đề>)"; `git push -u origin claude/exciting-bardeen-toacbf` (lỗi mạng thì thử lại tối đa 4 lần, chờ 2s/4s/8s/16s). Tin nhắn cuối (tiếng Việt, gọn): bảng 8 bài (loại, câu mở bài), **các chỗ phải kiểm trước khi đăng**, đường dẫn. Gửi ảnh chính của mỗi bài bằng SendUserFile.
+**Giao:** `git add videos/posts/<ngày>`; commit "Bài Facebook <ngày>: 8 bài (<mã/chủ đề>)"; `git push -u origin claude/exciting-bardeen-toacbf` (lỗi mạng thì thử lại tối đa 4 lần, chờ 2s/4s/8s/16s). Tin nhắn cuối (tiếng Việt, gọn): bảng 8 bài (loại, câu mở bài), **các chỗ phải kiểm trước khi đăng**, đường dẫn. **Lời đăng phải tới tay Hiếu cùng ảnh:** chạy `python3 videos/posts/combine_captions.py videos/posts/<ngày>` (tạo `noi-dung-dang.md` gom lời đăng của mọi bài) rồi gửi file đó **và** ảnh chính của mỗi bài bằng SendUserFile; trong tin nhắn cuối dán luôn lời đăng của 1–2 bài đầu để Hiếu thấy ngay chữ.
 
 ---
 
