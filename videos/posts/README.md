@@ -11,6 +11,7 @@ Hai lịch chạy ngay trong phiên Claude Code của Hiếu (đã có sẵn DNS
 2. Ngày hôm nay (giờ VN): `TZ=Asia/Ho_Chi_Minh date`. Thứ 2–6: có phiên giao dịch (trừ lễ; kiểm bằng dữ liệu phiên DNSE). Thứ 7, Chủ nhật, ngày lễ: **không có phiên mới**, làm theo mục "Ngày nghỉ" của A và B.
 3. Văn phong: đọc `.claude/skills/hieu-talking-head-style/SKILL.md` mục 15–16 (viết lời nói tự nhiên, "một luận điểm – một phép tính"). Xưng "mình" và "anh chị", câu ngắn, có tình huống người đọc gặp, không "văn máy", không "Mình sẽ nói thẳng…".
 4. Xem `videos/posts/` và `videos/scripts/`: **không lặp mã** đã làm trong 7 ngày gần nhất; không lặp luận điểm đã làm.
+5. Đọc `videos/posts/dem-tap.md` (bộ đếm chuyên mục: TỔNG KẾT TUẦN, KIẾN THỨC 60 GIÂY #n, LỘT TRẦN NGHỀ MÔI GIỚI #n) và mục "Học từ nền tảng" bên dưới. Chạy xong nhớ cập nhật bộ đếm trong cùng commit.
 
 ## 1. Quy định bắt buộc (Công văn 3760/UBCK-QLKD, 7/5/2026): vi phạm là bỏ bài
 - Không "phím hàng": không mua/bán, điểm vào/cắt lỗ/chốt lời, giá mục tiêu của chính mình; **không dùng khuyến nghị MUA/BÁN hay giá mục tiêu của công ty chứng khoán khác**; không nói "rẻ/đắt"; không dự đoán giá hay "mai tăng/giảm".
@@ -39,6 +40,7 @@ Thư mục: `videos/posts/<YYYY-MM-DD>/` gồm `README.md` (bảng mục lục: 
 3. **Ngành** (ảnh đơn): cả ngành đi một hướng nhưng từng mã đi nhiều hướng, hoặc ngược lại.
 4. **Kiến thức đầu tư gắn với một tin thật** trong tuần (ảnh đơn dạng "kiến thức 60 giây": 3 ý + ví dụ số + một ví dụ thật có nguồn).
 5. **"Lột trần nghề môi giới"** (ảnh đơn): luân phiên giữa một luận điểm của series (xem `videos/scripts/series-*.md`) và một câu hỏi người mới hay gặp (phí giao dịch, margin, nhóm đóng phí, tin nội bộ…). Dùng định nghĩa của Hiếu: "Lùa gà là lùa những người thiếu kiến thức làm người ta thua tiền."
+   Ba dạng luân phiên (xem `HOC-TU-NEN-TANG.md`): (a) luận điểm của series; (b) **"Nếu là bạn thì sao?"**: một tình huống người xem thật sự gặp (nhận tin nhắn "mã này sắp tăng", bị mời vào nhóm…) rồi đi từng bước cái gì kiểm được; (c) **trả lời câu hỏi thật** do Hiếu gửi (ẩn danh); không có câu hỏi thì không làm dạng này. Bài 4 có thể thay bằng "sai lầm phổ biến" gắn một tin thật của tuần.
 
 **3 bài mã cụ thể (bài 6–8; ảnh đơn `type:"card"` hoặc carousel 3 ảnh nếu đủ chất):**
 - Mỗi bài một mã (hoặc một cặp mã cùng câu chuyện), **ưu tiên có nghịch lý/hai mặt kiểm được ≥2 nguồn**: giá ngược với tin, giá ngược với dòng tiền ngoại, hai mã cùng hệ đi hai hướng, tin công bố đặt cạnh diễn biến giá, ngày không hưởng quyền gây hiểu nhầm giá.
@@ -60,6 +62,15 @@ Thư mục: `videos/posts/<YYYY-MM-DD>/` gồm `README.md` (bảng mục lục: 
 - Kết: "mình không dự đoán giá / không nói mã nào nên mua hay bán" + **một** CTA ("Lưu bài để…") + dòng rủi ro, miễn trừ, "số liệu đến hết phiên dd/mm/yyyy" + nguồn + 5–6 hashtag có #PhanHieuStock.
 - Văn nói tự nhiên, xưng "mình" và "bạn"; câu ngắn; mỗi đoạn một ý; không "văn máy".
 - Ngoài bản dài, thêm **mục "1b. Bản rút gọn" (~100–150 chữ)** để đăng nhanh khi cần.
+
+**Học từ nền tảng (rút từ `HOC-TU-NEN-TANG.md`, áp cho mọi bài):**
+- **Ảnh tự đứng được:** người lướt không mở lời đăng vẫn hiểu nghịch lý. Tiêu đề ảnh = nghịch lý + đúng một con số, không dùng cả đoạn chữ.
+- **Hook nằm ở hai dòng đầu của lời đăng** (Facebook cắt chữ ở đó): nghịch lý hoặc câu hỏi + một con số. Cấm mở bằng "Hôm nay mình…", "Chào mọi người…", "Mình xin chia sẻ…".
+- **Chuyên mục đánh số** theo `dem-tap.md`: nhãn ngắn đặt đầu tiêu đề ảnh và dòng đầu ("KIẾN THỨC 60 GIÂY #2 | …"); bài tổng kết tuần ghi "TỔNG KẾT TUẦN <số tuần ISO>".
+- **Tiêu đề là một căng thẳng giữa hai thứ** hoặc một sự kiện đo được ("VIC và VHM: cùng hệ, hai hướng"), không phải lời đoán.
+- **Câu người xem đang hỏi** ("đã có đáy chưa", "mai lên không", "tin tốt sao giá vẫn giảm") là đề tài tốt, nhưng trả lời bằng "đo được gì, không đo được gì", **không bằng dự đoán**.
+- **Không bắt chước:** tiêu đề đoán đáy/đỉnh, "top cổ phiếu sắp nổ", khuyến mại mở tài khoản, IN HOA hàng loạt, từ cam kết lợi nhuận, và **"bình luận TÔI để được tư vấn"** (chỉ dùng khi công ty duyệt riêng cho từng bài). Không chép lời của trang khác.
+- **A/B bản dài và rút gọn** (13–24/10, bảng ghi ở cuối `HOC-TU-NEN-TANG.md`): tuần 1 đăng mục 1, tuần 2 đăng mục 1b; Hiếu ghi lại số lưu/chia sẻ/bình luận trên reach. Trong lúc đó vẫn viết đủ cả hai bản như hiện nay.
 
 **Dựng ảnh:** `python3 videos/covers/make_post.py <thư mục>/spec.json` (dùng Chromium có sẵn, không cần cài thêm). Mẫu thông số:
 - carousel 3 ảnh (mặc định): `videos/posts/2026-10-11-fpt/spec.json` (slide1 tiêu đề + biểu đồ đường quy về 100, slide2 các thẻ lớn + ghi chú, slide3 hai ô số + giải thích + biểu đồ cột). Mã chính màu `gold`, đường tham chiếu `blue`.

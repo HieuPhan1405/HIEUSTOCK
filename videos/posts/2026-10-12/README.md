@@ -4,7 +4,7 @@ Chưa có phiên mới nên bài 1 làm tổng kết **tuần** 5–9/10 và l�
 
 | # | Loại | Tiêu đề (ảnh) | Câu mở bài | Chỗ Hiếu cần kiểm trước khi đăng |
 |---|---|---|---|---|
-| 1 | Tổng kết tuần | VN-Index tuần 5–9/10: giảm nhẹ, tuần giảm thứ ba liền | "Tuần 5–9/10: VN-Index giảm 0,15% còn 1.735,09 điểm…" | "Thứ ba liền": VnEconomy ghi thứ tư, DNSE + 2 báo ghi thứ ba. Ngoại ròng từng phiên chỉ 1 nguồn (tổng khớp) |
+| 1 | Tổng kết tuần | VN-Index tuần 5–9/10: giảm nhẹ, tuần giảm thứ ba liền | "Tuần 5–9/10: VN-Index giảm 0,15% còn 1.735,09 điểm…" | "Thứ ba liền": VnEconomy ghi thứ tư, DNSE + 4 nguồn (Vietstock, CafeF, Báo Mới, Mie Dương) ghi thứ ba. Ngoại ròng từng phiên chỉ 1 nguồn (tổng khớp) |
 | 2 | Nghịch lý khối ngoại | Ngoại bán ròng ~14.000 tỷ: gần 70% là một giao dịch | "Khối ngoại bán ròng gần 14.000 tỷ đồng… Nghe như bán tháo. Nhưng gần 70%…" | 9.594 vs 9.641,2 (hai thước đo); 1.270 tỷ khớp lệnh chỉ 1 nguồn; không nêu lý do giao dịch |
 | 3 | Ngành ngân hàng | Cùng là ngân hàng, mỗi mã một hướng | "Cả ngành ngân hàng tuần qua giảm 0,68%… VPB +3,93%, ACB −4,50%" | % tự tính từ DNSE; Báo Mới ghi % riêng phiên 9/10 (không dùng); SHB cố ý bỏ; công ty có đồng ý nêu tên từng ngân hàng |
 | 4 | Kiến thức | Chia cổ phiếu 30%: giá tham chiếu giảm, tài sản không đổi | "Thấy một cổ phiếu 'giảm 20%'… đừng vội hoảng" | Cách HoSE điều chỉnh khi hai quyền cùng ngày [CẦN XÁC MINH]; không nêu số −20% cho HDB (lệch nguồn) |

@@ -10,7 +10,7 @@ Bản nháp, công ty duyệt trước khi đăng. Chỗ cần kiểm trước k
 Tuần 5–9/10: VN-Index giảm 0,15% xuống 1.735,09 điểm. Con số nhỏ, nhưng bên trong tuần này có khá nhiều thứ đáng đọc kỹ.
 
 📌 Tuần giảm thứ ba liền, nhưng giảm rất nhẹ
-VN-Index đóng cửa thứ Sáu 2/10 ở 1.737,71 điểm và thứ Sáu 9/10 ở 1.735,09 điểm, giảm 2,62 điểm. Tính theo giá đóng cửa thứ Sáu thì đây là tuần giảm thứ ba liên tiếp (Báo Mới và Mie Dương đếm là thứ ba, VnEconomy đếm là thứ tư). Nhưng chỉ nhìn con số của cả tuần sẽ bỏ sót những gì xảy ra trong tuần.
+VN-Index đóng cửa thứ Sáu 2/10 ở 1.737,71 điểm và thứ Sáu 9/10 ở 1.735,09 điểm, giảm 2,62 điểm. Tính theo giá đóng cửa thứ Sáu thì đây là tuần giảm thứ ba liên tiếp (Vietstock, CafeF, Báo Mới và Mie Dương đếm là thứ ba; VnEconomy đếm là thứ tư). Nhưng chỉ nhìn con số của cả tuần sẽ bỏ sót những gì xảy ra trong tuần.
 
 📌 Điều 1: Lên rồi quay đầu, và phiên 8/10 là phiên nặng nhất
 Hai phiên đầu tuần chỉ số tăng: +0,89% ngày 5/10 và +0,34% ngày 6/10, chạm 1.759,08 điểm. Sau đó là ba phiên giảm liền. Phiên 7/10 có lúc chỉ số mất hơn 17 điểm rồi hồi lại, đóng cửa giảm 5,69 điểm. Phiên 8/10 giảm 14,42 điểm, và theo VietnamPlus, riêng VIC và VHM đã góp hơn 7 điểm trong mức giảm đó. Phiên 9/10 giảm thêm 3,88 điểm.
@@ -28,7 +28,7 @@ Mình không dự đoán phiên tới. Những gì ghi ở đây là số đã x
 👉 Lưu bài này để đối chiếu vào cuối tuần.
 
 Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026. Đầu tư luôn có rủi ro mất vốn.
-Nguồn: DNSE; VnEconomy, Báo Mới, VietnamPlus 8–11/10; Mie Dương 11/10; Vietstock 11/10.
+Nguồn: DNSE; VnEconomy, Báo Mới, VietnamPlus 8–11/10; Mie Dương, Vietstock, CafeF 11/10.
 
 #vnindex #chungkhoan #tongketphien #PhanHieuStock #tintucchungkhoan
 
