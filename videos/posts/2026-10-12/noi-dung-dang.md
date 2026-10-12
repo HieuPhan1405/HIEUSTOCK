@@ -493,3 +493,52 @@ Mình không dự đoán giá cổ phiếu.
 👉 Lưu bài để đối chiếu khi báo cáo quý 3 công bố.
 
 Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. #vondieule #nganhang #PhanHieuStock
+
+---
+
+## Bài 11 – HPG: Hòa Phát vừa công bố sản lượng quý 3, bán 3,8 triệu tấn (+54%), dòng nào kéo? (ảnh đơn `post.png`)
+
+Ảnh: `bai-11-hpg-san-luong-quy-3/post.png`
+
+**⚠ Lưu ý:** HPG đã có video 11/10 (`videos/scripts/2026-10-11-hpg-du-bao-lai-q3.md`); bài này cùng mã nhưng là **tin mới sáng 12/10** (sản lượng quý 3), khác góc. Công ty duyệt. Giá trong bài đến hết phiên 9/10: cập nhật sau khi phiên 12/10 đóng cửa nếu muốn đăng chiều/tối.
+
+Hòa Phát vừa công bố bán 3,8 triệu tấn thép trong quý 3/2026, tăng 54% so với cùng kỳ. Nhưng con số ấy không đến đều từ mọi dòng sản phẩm.
+
+📌 Điều 1: Con số vừa công bố (12/10)
+Quý 3/2026, Hòa Phát sản xuất 3,7 triệu tấn thép thô, tăng 3% so với quý 2. Sản lượng bán hàng (thép xây dựng, thép cuộn chất lượng cao, thép cuộn cán nóng HRC và phôi thép) đạt 3,8 triệu tấn, tăng 8% so với quý 2 và tăng 54% so với quý 3/2025. Lũy kế 9 tháng: sản xuất thép thô 10,7 triệu tấn (tăng 35%), bán hàng 10,3 triệu tấn (tăng 39%) (Hòa Phát công bố, CafeF, Công Luận).
+
+📌 Điều 2: Dòng nào kéo
+HRC đạt trên 2 triệu tấn trong quý, tăng 64% so với cùng kỳ; 9 tháng đạt 5,47 triệu tấn, tăng 59%. Thép xây dựng và thép cuộn chất lượng cao đạt hơn 1,3 triệu tấn, tăng 26% so với cùng kỳ; 9 tháng tăng 15%. Phôi thép quý 3 đạt 383.000 tấn, tăng 42% so với quý 2. Phép tính của mình: HRC chiếm khoảng 53% sản lượng bán hàng 9 tháng (5,47 trên 10,3 triệu tấn). Xuất khẩu chiếm 24,6% sản lượng HRC quý 3, tới 26 quốc gia và vùng lãnh thổ.
+
+📌 Điều 3: Sản lượng chưa phải lợi nhuận
+Lợi nhuận phụ thuộc vào giá bán trừ chi phí, không chỉ số tấn bán ra. Báo cáo quý 3 của Hòa Phát chưa công bố. Quý 2 (công bố 29/7) lãi sau thuế 6.424 tỷ đồng, tăng 51%.
+Trước đó hai công ty chứng khoán đã dự báo lợi nhuận quý 3, đều dựa nhiều vào HRC: MBS khoảng 5.600 tỷ đồng (HRC 2,1 triệu tấn, tăng 68%), Rồng Việt khoảng 5.400 tỷ đồng (2,15 triệu tấn, tăng 70%). HRC thực tế tăng 64%, thấp hơn một chút so với hai mức này (so sánh của mình, vì công bố chỉ ghi "trên 2 triệu tấn"). Đây là dự báo của hai công ty chứng khoán, có thể sai.
+Cùng lúc, HPG đóng cửa phiên 9/10 ở 20.100 đồng, thấp hơn khoảng 22% so với 12 tháng trước (DNSE, giá đã điều chỉnh); mức đóng cửa thấp nhất 12 tháng là 20.050 đồng (1/10 và 2/10). Mình không giải thích vì sao, vì chưa nguồn nào đo được từng yếu tố.
+
+📌 Điều mình chưa biết
+Giá bán bình quân và chi phí quý 3 của Hòa Phát; con số HRC chính xác ("trên 2 triệu tấn"); và lợi nhuận quý 3, tức sản lượng cao chuyển thành lãi đến đâu. Bán hàng quý 3 (3,8 triệu tấn) nhỉnh hơn sản xuất thép thô (3,7 triệu tấn), công bố không nói phần chênh đến từ đâu.
+
+📌 Nên theo dõi
+Báo cáo kết quả kinh doanh quý 3 của Hòa Phát khi được công bố, đặt cạnh hai dự báo trên.
+
+Mình không dự đoán giá cổ phiếu và không nói nên mua hay bán.
+👉 Lưu bài này để đối chiếu khi Hòa Phát công bố báo cáo quý 3.
+
+Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Sản lượng do Hòa Phát công bố 12/10/2026; giá đến hết phiên 9/10/2026. Đầu tư luôn có rủi ro mất vốn.
+Nguồn: Hòa Phát, CafeF, Công Luận 12/10; CafeF, Vietstock 29/7; Người Quan Sát 19/9 (MBS); Doanh nhân & Pháp luật (Rồng Việt); DNSE.
+
+#HPG #HoaPhat #thep #chungkhoan #PhanHieuStock
+
+## 1b. Bản rút gọn (đăng nhanh, ~100–150 chữ)
+
+Hòa Phát vừa công bố bán 3,8 triệu tấn thép quý 3/2026, tăng 54% so với cùng kỳ.
+
+Ba điều mình ghi lại:
+1️⃣ 9 tháng: sản xuất thép thô 10,7 triệu tấn (+35%), bán hàng 10,3 triệu tấn (+39%).
+2️⃣ HRC kéo mạnh nhất: quý 3 trên 2 triệu tấn (+64%), còn thép xây dựng và cuộn chất lượng cao hơn 1,3 triệu tấn (+26%). HRC chiếm khoảng 53% bán hàng 9 tháng (phép tính của mình).
+3️⃣ Sản lượng chưa phải lợi nhuận: giá bán, chi phí và báo cáo quý 3 chưa công bố.
+
+Mình không dự đoán giá cổ phiếu.
+👉 Lưu bài để đối chiếu khi báo cáo quý 3 công bố.
+
+Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. #HPG #HoaPhat #PhanHieuStock

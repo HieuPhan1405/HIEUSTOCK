@@ -1,4 +1,4 @@
-# Bài Facebook ngày 12/10/2026 (8 bài của lịch 07:00 + 2 bài làm thêm theo yêu cầu của Hiếu; bản nháp; số liệu đến hết phiên 9/10)
+# Bài Facebook ngày 12/10/2026 (8 bài của lịch 07:00 + 3 bài làm thêm theo yêu cầu của Hiếu; bản nháp; số liệu đến hết phiên 9/10)
 
 Chưa có phiên mới nên bài 1 làm tổng kết **tuần** 5–9/10 và lịch tuần 12–16/10. Mỗi thư mục gồm `bai.md` (nội dung đăng, alt text, kiểm chứng, lưu ý), `spec.json` và ảnh `post.png`.
 
@@ -14,6 +14,7 @@ Chưa có phiên mới nên bài 1 làm tổng kết **tuần** 5–9/10 và l�
 | 8 | Mã cụ thể: MCH | MCH: lô 64 triệu cổ phiếu và 73 triệu cổ phiếu đăng ký mua | "MCH tuần qua có hai con số lớn đặt cạnh nhau…" | Chưa có xác nhận bên mua lô 9/10: không viết Lepus là bên mua; "liên quan" là lời của một báo |
 | 9 | Thêm theo yêu cầu: thị phần môi giới | Thị phần môi giới HoSE quý 3/2026: hạng nhất vẫn nhất, nhưng nhỏ đi | "VPS vẫn đứng đầu thị phần môi giới trên HoSE quý 3/2026 với 11,54%. Nhưng cùng kỳ năm ngoái con số này là 17,05%…" | **Công ty duyệt kỹ** (nêu tên và thứ hạng nhiều công ty chứng khoán, có thể gồm công ty của Hiếu). Mở trang HoSE đối chiếu số; "9 tháng đầu năm −13,1%" chỉ 1 nguồn; cách HoSE tính (một/hai chiều) chưa kiểm |
 | 10 | Thêm theo yêu cầu: vốn điều lệ ngân hàng | MB và VPBank cùng đạt 100.000 tỷ vốn điều lệ: hai con đường khác nhau | "MB và VPBank vừa cùng cán mốc 100.000 tỷ đồng vốn điều lệ… Nhưng hai đường này khác nhau ở một điểm đáng đọc kỹ: có bao nhiêu tiền mới thật sự góp vào." | Phép tính MB (vốn trước đó ≈ 80.550 tỷ → 8.055 tỷ tiền cổ đông + 12.083 tỷ cổ tức cổ phiếu) là suy ngược từ DNSE, đối chiếu thông báo của MB; chưa có vốn chủ sở hữu; MB, VPB cũng có trong bài 3: đăng cách nhau |
+| 11 | Thêm theo yêu cầu: tin mới HPG | HPG: Hòa Phát bán 3,8 triệu tấn thép quý 3 (+54%), dòng nào kéo? | "Hòa Phát vừa công bố bán 3,8 triệu tấn thép trong quý 3/2026, tăng 54% so với cùng kỳ. Nhưng con số ấy không đến đều từ mọi dòng sản phẩm." | HPG trùng video 11/10 (khác góc: tin sản lượng sáng 12/10). Nêu tên MBS, Rồng Việt (dự báo, 1 nguồn mỗi bên, ngày báo cáo Rồng Việt chưa rõ): hỏi công ty. Giá đến hết phiên 9/10: cập nhật sau phiên 12/10 |
 
 **Nên đăng thế nào:** bài 1 sáng 12/10 (trước giờ mở cửa); bài 2, 3 buổi trưa; bài 6, 7 buổi chiều; bài 8, 4, 5 buổi tối hoặc ngày kế tiếp (dàn đều, tránh đăng liền nhau). Mỗi bài đã có một CTA ("Lưu bài…"), dòng rủi ro + miễn trừ và nguồn.
 **Cờ chung:** công ty phải duyệt cả 8 bài (bài 6 PNJ duyệt kỹ nhất); không bài nào có khuyến nghị mua/bán, giá mục tiêu, hay dự đoán phiên tới.

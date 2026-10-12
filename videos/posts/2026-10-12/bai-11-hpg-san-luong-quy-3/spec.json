@@ -1,0 +1,71 @@
+{
+ "type": "card",
+ "stamp": "HPG · SẢN LƯỢNG QUÝ 3/2026",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Sản lượng do Hòa Phát công bố ngày 12/10/2026.",
+ "kicker": "HÒA PHÁT VỪA CÔNG BỐ",
+ "title": [
+  "Hòa Phát bán 3,8 triệu tấn",
+  "thép quý 3: dòng nào kéo?"
+ ],
+ "title_size": 56,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Bán hàng quý 3",
+     "value": "3,8",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "triệu tấn, +54% cùng kỳ"
+    },
+    {
+     "label": "Lũy kế 9 tháng",
+     "value": "10,3",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "triệu tấn, +39% cùng kỳ"
+    },
+    {
+     "label": "HRC trong 9 tháng",
+     "value": "≈ 53%",
+     "tone": "gold",
+     "sub": "5,47 trên 10,3 triệu tấn (tự tính)"
+    }
+   ]
+  },
+  {
+   "type": "bars",
+   "title": "Quý 3/2026 so với cùng kỳ (%)",
+   "subtitle": "Bán hàng theo dòng. XD+CLC: thép xây dựng và cuộn chất lượng cao",
+   "labels": [
+    "Tổng",
+    "HRC",
+    "XD+CLC"
+   ],
+   "values": [
+    54,
+    64,
+    26
+   ],
+   "ymax": 80,
+   "yticks": [
+    20,
+    40,
+    60
+   ],
+   "highlight_last": 0,
+   "label_idx": [
+    0,
+    1,
+    2
+   ],
+   "int": true
+  },
+  {
+   "type": "note",
+   "text": "Sản lượng chưa phải lợi nhuận. Giá bán, chi phí và báo cáo quý 3 của Hòa Phát chưa công bố."
+  }
+ ],
+ "sources": "Hòa Phát (công bố 12/10); CafeF 12/10; Công Luận (vietnam.vn) 12/10."
+}
