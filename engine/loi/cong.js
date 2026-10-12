@@ -29,13 +29,14 @@ export function tinhRSGateOk(rsvniOk, { choPhepMuaKhiRSAm = true } = {}) {
 }
 
 // RS_SoVoiVNI - AFL dong 39-42: RS 20 phien cua ma SO VOI VNINDEX cung ky.
-export function tinhRSVoiVNIndex(close, vniClose) {
+// chuKy mac dinh 20 (RS 20 phien nhu AFL); 60 dung cho cot rs_vni_60 (xep hang RS nganh tren web, khong tham gia tin hieu).
+export function tinhRSVoiVNIndex(close, vniClose, chuKy = 20) {
   const n = close.length;
   const ketQua = new Array(n).fill(null);
-  for (let i = 20; i < n; i++) {
-    if (!(close[i - 20] > 0) || !(vniClose[i - 20] > 0)) continue;
-    const doiMa = close[i] / close[i - 20] - 1;
-    const doiVNI = vniClose[i] / vniClose[i - 20] - 1;
+  for (let i = chuKy; i < n; i++) {
+    if (!(close[i - chuKy] > 0) || !(vniClose[i - chuKy] > 0)) continue;
+    const doiMa = close[i] / close[i - chuKy] - 1;
+    const doiVNI = vniClose[i] / vniClose[i - chuKy] - 1;
     ketQua[i] = (doiMa - doiVNI) * 100;
   }
   return ketQua;

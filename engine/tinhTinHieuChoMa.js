@@ -151,6 +151,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
 
   // ---- Cong + RS so voi VNINDEX ----
   const rsVsVni = tinhRSVoiVNIndex(close, vniClose);
+  const rsVsVni60 = tinhRSVoiVNIndex(close, vniClose, 60); // chi de hien thi (xep hang RS nganh), khong tham gia tin hieu
   const rsvniOk = rsVsVni.map((v) => v != null && v > 0);
   const chiTrongNamGanNhat = tinhChiTrongNamGanNhat(n, { soNamGanNhat: p.soNamGanNhat });
   const thanhKhoanOk = tinhThanhKhoanOk(volume, { nguongKLTB20ToiThieu: p.nguongKLTB20ToiThieu });
@@ -382,6 +383,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     gia: close[cuoi],
     doi: phanTramDoiCuoi,
     rs_vni: rsVsVni[cuoi],
+    rs_vni_60: rsVsVni60[cuoi],
     breadth_nganh: breadthNganhMa,
     kijun: kijun[cuoi],
     gg_top: cbTop[cuoi],

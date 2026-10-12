@@ -290,7 +290,7 @@ export async function POST(request) {
          gia_vao_web, thoi_diem_vao_web, vao_stop_loss, vao_tp1, vao_tp2, vao_tp3, che_do_vao, loai_vao, cho_phien_sau,
          mua_moi, dang_giu_moi, cat_moi, gia_mua_moi, stop_moi, tp1_moi, tp2_moi, tp3_moi, ngay_mua_moi,
          ly_do_ban, dang_bao_ve_lai, stop_bao_ve,
-         mua_giua, dang_giu_giua, cat_giua, gia_mua_giua, stop_giua, tp1_giua, tp2_giua, tp3_giua, ngay_mua_giua, tp_da_cham_giua)
+         mua_giua, dang_giu_giua, cat_giua, gia_mua_giua, stop_giua, tp1_giua, tp2_giua, tp3_giua, ngay_mua_giua, tp_da_cham_giua, rs_vni_60)
        SELECT * FROM unnest(
          $1::text[], $2::text[], $3::float8[], $4::float8[], $5::float8[],
          $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -305,7 +305,7 @@ export async function POST(request) {
          $51::text[], $52::text[], $53::boolean[],
          $54::boolean[], $55::boolean[], $56::float8[], $57::float8[], $58::float8[], $59::float8[], $60::float8[], $61::float8[], $62::date[],
          $63::int2[], $64::boolean[], $65::float8[],
-         $66::boolean[], $67::boolean[], $68::float8[], $69::float8[], $70::float8[], $71::float8[], $72::float8[], $73::float8[], $74::date[], $75::text[]
+         $66::boolean[], $67::boolean[], $68::float8[], $69::float8[], $70::float8[], $71::float8[], $72::float8[], $73::float8[], $74::date[], $75::text[], $76::float8[]
        )
        ON CONFLICT (ma) DO UPDATE SET
          tin = EXCLUDED.tin,
@@ -382,6 +382,7 @@ export async function POST(request) {
          tp3_giua = EXCLUDED.tp3_giua,
          ngay_mua_giua = EXCLUDED.ngay_mua_giua,
          tp_da_cham_giua = EXCLUDED.tp_da_cham_giua,
+         rs_vni_60 = EXCLUDED.rs_vni_60,
          cap_nhat_luc = now()`,
       [
         cot("ma", (v) => v),
@@ -467,6 +468,8 @@ export async function POST(request) {
         cot("ngay_mua_giua", soNgayVN),
         // Lenh mua moi da cham TP nao (TP1/TP2/TP3) - CSV cu chua co cot -> null.
         cot("tp_da_cham_giua", soText),
+        // RS 60 phien so voi VN-Index - CSV cu chua co cot -> null.
+        cot("rs_vni_60", soFloat),
       ]
     );
 

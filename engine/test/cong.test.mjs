@@ -38,5 +38,16 @@ ok("Tat ChoPhepMuaKhiRSAm -> tra ve dung RSVNI_OK", tinhRSGateOk([false, true], 
   ok("RS so voi VNI = (10% - 3%)*100 = 7.0 (diem phan tram)", gan(rs[20], 7.0), rs[20]);
 }
 
+{
+  const close = new Array(61).fill(100);
+  close[60] = 130; // tang 30% trong 60 phien
+  const vni = new Array(61).fill(1000);
+  vni[60] = 1050; // VNIndex tang 5%
+  const rs60 = tinhRSVoiVNIndex(close, vni, 60);
+  ok("RS 60 phien = (30% - 5%)*100 = 25.0", gan(rs60[60], 25.0), rs60[60]);
+  ok("RS 60 phien: chua du 60 phien truoc -> null", rs60[59] === null);
+  ok("chuKy mac dinh van la 20 (khong doi ket qua cu)", tinhRSVoiVNIndex(close, vni)[20] !== null && tinhRSVoiVNIndex(close, vni)[19] === null);
+}
+
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

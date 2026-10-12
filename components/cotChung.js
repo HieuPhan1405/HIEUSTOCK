@@ -187,6 +187,7 @@ export const CAC_COT = {
   mom: { nhan: "Động lượng", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.mom, hien: (r) => soAn(r.mom, 1) },
   adx: { nhan: "ADX", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.adx, hien: (r) => so1So(r.adx) },
   rs_vni: { nhan: "RS/VNI", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.rs_vni, hien: (r) => pct(r.rs_vni, 1) },
+  rs_vni_60: { nhan: "RS/VNI 60 phiên", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.rs_vni_60, hien: (r) => pct(r.rs_vni_60, 1) },
   sanyaku: {
     nhan: "Độ tin cậy",
     nhom: "Điểm & chỉ báo",
