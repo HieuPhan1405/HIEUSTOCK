@@ -1,39 +1,32 @@
-// Copy Y NGUYEN tu amibroker/7_Export_LenWeb.afl dong 365-379 - GIU STATIC (khong doi sang API)
-// vi day la co so tinh breadth_nganh/diem_rank: neu lech gan mot ma sang nganh khac se lam
-// breadth_nganh khac AmiBroker, khong doi chieu duoc trong giai doan kiem chung song song.
-// API (VNDirect industry_classification) CHI dung lam DU PHONG cho ma KHONG nam trong ca 15
-// danh sach nay (xem engine/loi/nganhDuPhong.js) - khong thay the danh sach da co.
-//
-// THU TU trong mang NGANH ben duoi la THU TU UU TIEN khi 1 ma nam trong nhieu danh sach (vd
-// BDS/KCN) - dung KHOP y het thu tu IIf long nhau trong AFL (NganhHienTai/BreadthPctNganh).
-// Sua danh sach nao thi sua dong bo ca AFL.
-//
-// TEN NGANH (khoa cua map) PHAI la chuoi KHONG DAU giong HET AmiBroker xuat (xem AFL dong
-// 455-469, WriteIf(TrongNH,"Ngan hang",...)) - day la gia tri THAT ghi vao cot `nganh` cua CSV/DB
-// (KHONG phai ten hien thi). Web da co san lib/nganh.js (NGANH_NHAN) doi khong dau -> co dau luc
-// HIEN THI - phat hien qua doi chieu CSV thuc te 2026-09-22: dung nham ten co dau se lam sai cot
-// `nganh` va vo hieu bo loc "Nganh" tren web (so sanh chuoi khac byte voi du lieu cu).
+// PHAN LOAI NGANH (rà soát lại 2026-10-12): dựa trên ICB (VNDirect industry_classification, cấp 4) + ghi đè thủ công cho các mã mà ICB không hợp thực tế thị trường VN
+// (thuỷ sản tách khỏi nông nghiệp, khu công nghiệp tách khỏi BĐS nhà ở, cao su gom cùng hoá chất, dầu khí tách khỏi điện-nước...). Sinh bằng engine/dich-vu/chiaLaiNganh.mjs.
+// CHỈ liệt kê mã CÓ dữ liệu giá trong engine (389 mã): mẫu số breadth là số mã thật, không bị kéo xuống bởi mã đã hết niêm yết.
+// Mã mới chưa có trong danh sách => nhóm "Khac" (breadth = trung bình các ngành). Thêm mã mới: chạy lại chiaLaiNganh.mjs hoặc thêm tay vào nhóm phù hợp.
+// LƯU Ý: nganh chỉ ảnh hưởng nhãn ngành + diem_rank (breadth ngành); KHÔNG ảnh hưởng tín hiệu MUA/BÁN. Không còn khớp danh sách ngành trong AFL (AFL giữ nguyên danh sách cũ).
+// TÊN NGÀNH (khoá của map) là chuỗi KHÔNG DẤU; web đổi sang có dấu ở lib/nganh.js (NGANH_NHAN).
 const raw = {
-  "Ngan hang": "ACB,BID,BVB,CTG,EIB,HDB,KLB,LPB,MBB,MSB,NAB,OCB,SHB,SSB,STB,TCB,TPB,VAB,VBB,VCB,VIB,VPB,NVB,ABB,BAB",
-  "Bat dong san":
-    "AGG,ASM,CCL,CII,CKG,CRE,DIG,DXG,DXS,EVG,FDC,FIR,HAR,HDC,HDG,HPX,HQC,HTN,ITC,KDH,KHG,KOS,LDG,LGL,NBB,NHA,NLG,NTL,NVL,PDR,PTL,QCG,SCR,SGR,SJS,TCH,TDC,TDH,THG,TNT,VHM,VIC,VPH,VPI,VRC,VRE,BCM,D2D,GVR,KBC,LHG,NTC,PHR,SIP,SZC,SZL,TIP,TIX,VGC,IJC,CEO,L18,HLD,HUT,IDC,IDV",
-  "Chung khoan": "AGR,APG,BSI,CTS,DSC,DSE,EVF,FTS,HCM,ORS,SSI,TVB,TVS,VCI,VDS,VIX,VND,TCI,BVS,EVS,APS,SHS,MBS,TVC,PSI,BMS,SBS,WSS,AAS,TCX,VCK",
-  "Bao hiem": "BIC,BMI,BVH,MIG,PGI,ABI,VNR,PVI,PRE,PTI",
-  "Xay dung":
-    "ACC,BCE,C47,CDC,CIG,CTD,CTI,DC4,DPG,DLG,FCM,FCN,HHV,HID,HTI,L10,LCG,LGC,LM8,PHC,PTC,SC5,SRF,VCG,VSI,BMP,C32,CCC,CRC,CVT,DHA,DXV,HCD,HT1,KSB,LBM,MDG,NNC,TCR,TLD,HUB,NO1,NTP,HBC",
-  "Thep - Khoang san": "DTL,HMC,HPG,HSG,NKG,SMC,TLH,VCA,BMC,DHM,PLP,VPG,YBM,TVN,VGS,POM,GDA,KSV,HGM",
-  "Dau khi - Dien - Nuoc":
-    "ASP,BSR,CNG,COM,GAS,PGC,PGD,PLX,PVD,SFC,BTP,BWE,CHP,CLW,DRL,GEG,GHC,HNA,KHP,NT2,PC1,PGV,POW,PPC,REE,S4A,SBA,SHP,SJD,TBC,TDM,TDW,TMP,TTA,TV2,VPD,VSH,TDG,PIT,PVC,OIL,PVS,PLC,PVB,TV1,QTP,HND,PVG",
-  "Hoa chat - Cao su": "BFC,CSV,DCM,DGC,DPM,HII,SFG,VFG,BRC,CSM,DPR,DRC,HRC,SRC,TNC,TRC,AAA,APH,TDP,TPC,NAV,NHH,VPS,NET,LAS,DRI",
-  "Thuc pham - Nong san":
-    "BBC,BHN,CLC,KDC,LSS,MCH,MSN,NAF,SAB,SBT,VCF,VNM,AAN,ABS,ANT,BAF,DBC,HAG,HSL,NSC,PAN,SSC,TSC,AAM,ABT,ACL,ANV,CMX,FMC,IDI,VHC,LAF,LIX,MCM,SMB,QNS,SLS,LTG,TAR,HNG",
-  "Ban le - O to": "ADP,CMV,DGW,FRT,MWG,PET,PNJ,ST8,CTF,HAX,HHS,HTL,SVC,TMT,TLG,PTB,PSD",
-  "Det may - Go": "AAT,ADS,EVE,GIL,HTG,KMR,MSH,STK,SVD,TCM,TVT,ACG,BKG,GDT,GTA,SAV,TTF,DHC,HHP,MCP,SVI,VID,TNG,VGT",
-  "Logistics - Van tai":
-    "CLL,DVP,GMD,HAH,HTV,ILB,NCT,PDN,QNP,SCS,SFI,SGN,STG,TCL,TCO,TMS,VSC,VTP,GSP,HVN,PJT,PVP,PVT,SKG,VJC,VNL,VNS,VOS,VTO,MHC,VIP,DXP,PHP",
-  "Cong nghe - Vien thong": "ADG,CMG,ELC,FPT,ICT,ITD,SVT,CTR,HAS,TSA,VTB,ABR,PNC,YEG,VGI,FOX,FOC",
-  "Y te - Duoc": "DBD,DBT,DCL,DHG,DMC,IMP,JVC,OPC,SPM,TNH,TRA,VDP,VMD,LDP,DHT",
-  "Thiet bi dien - Du lich": "CAV,DQC,GEE,GEL,GEX,PAC,RAL,SHA,SHI,TYA,AST,DAH,DSN,NVT,OGC,TCT,VNG,VPL,RIC,ACV,SAS",
+  "Ngan hang": "ABB,ACB,BAB,BID,BVB,CTG,EIB,HDB,KLB,LPB,MBB,MSB,NAB,NVB,OCB,SHB,SSB,STB,TCB,TPB,VAB,VCB,VIB,VPB",
+  "Chung khoan": "AAS,AGR,APG,APS,BMS,BSI,BVS,CTS,DSC,DSE,EVF,EVS,FTS,HCM,MBS,ORS,PSI,SBS,SHS,SSI,TCI,TCX,TVB,TVC,TVS,VCI,VCK,VDS,VIX,VND,WSS",
+  "Bao hiem": "ABI,BIC,BMI,BVH,MIG,PGI,PRE,PTI,PVI,VNR",
+  "Bat dong san": "AGG,ASM,CCL,CEO,CII,CKG,CRE,DIG,DXG,DXS,EVG,FIR,FIT,HAR,HDC,HDG,HLD,HPX,HQC,IDV,ITC,KDH,KHG,KOS,LGL,NBB,NHA,NLG,NTL,NVL,OGC,PDR,PTL,QCG,SCR,SGR,SJS,TCH,TDC,TDH,THG,TN1,TNT,VHM,VIC,VPH,VPI,VRC,VRE",
+  "BDS Khu cong nghiep": "BCM,D2D,IDC,IJC,KBC,LHG,NTC,SIP,SZC,SZL,TIP,VGC",
+  "Xay dung - Ha tang": "BCE,CCC,CDC,CIG,CTD,CTI,DC4,DPG,DTA,FCN,HBC,HHV,HID,HTI,HTN,HUB,HUT,L18,LCG,NO1,PHC,PTC,SBG,TV1,TV2,UIC,VCG,VSI",
+  "Vat lieu xay dung": "ACC,ADP,BMP,C32,C47,DHA,DXV,HCD,HT1,LBM,NAV,NNC,NTP,PTB,RYG,TLD",
+  "Thep": "GDA,HMC,HPG,HSG,NKG,POM,SMC,TLH,TVN,VCA,VGS",
+  "Khoang san": "BMC,DHM,FCM,HGM,HII,KSB,KSV,MSR,TNI,VPG",
+  "Dau khi": "ASP,BSR,CNG,GAS,OIL,PGC,PIT,PLC,PLX,PVB,PVC,PVD,PVG,PVS,SFC,TDG",
+  "Dien - Nuoc": "BTP,BWE,CHP,DRL,GEG,HND,KHP,NT2,PC1,POW,PPC,QTP,REE,SJD,TEG,TTA,VSH",
+  "Hoa chat - Cao su": "AAA,ADS,APH,BFC,BRC,CSM,CSV,DCM,DGC,DHC,DPM,DPR,DRC,DRI,GVR,HAP,HHP,LAS,LIX,MCP,NET,NHH,PHR,PLP,TDP,TRC,VFG,VPS,YBM",
+  "Thuc pham - Do uong": "KDC,LSS,MCH,MCM,MSN,NAF,PAN,QNS,SAB,SBT,SLS,SMB,VCF,VNM",
+  "Thuy san": "AAM,ABT,ACL,ANV,CMX,FMC,IDI,VHC",
+  "Nong nghiep - Chan nuoi": "ABS,BAF,DBC,HAG,HNG,HSL,LAF,LTG,NSC,TAR,TSC",
+  "Ban le - O to": "CRC,CTF,DGW,FRT,HAX,HHS,MWG,PET,PNJ,PSD,ST8,SVC,TLG,TMT",
+  "Det may - Go": "BKG,DLG,GDT,GIL,HTG,KMR,MSH,SAV,STK,SVD,TCM,TNG,TTF,TVT,VGT",
+  "Logistics - Van tai": "ACV,CLL,DVP,DXP,GMD,GSP,HAH,HTV,HVN,ILB,MHC,NCT,PHP,PVP,PVT,SAS,SCS,SFI,SGN,SKG,STG,TCL,TCO,TMS,VIP,VJC,VNA,VNL,VOS,VSC,VTO,VTP",
+  "Cong nghe - Vien thong": "CMG,CTR,ELC,FOX,FPT,HVH,ICT,ITD,SAM,SGT,VGI,VTB",
+  "Y te - Duoc": "DBD,DCL,DHG,DHT,DMC,IMP,JVC,LDP,SPM,TNH,TRA",
+  "Thiet bi dien - Co khi": "CAV,DQC,EVE,GEE,GEX,PAC,RAL,SHA,SHI",
+  "Du lich - Giai tri - Truyen thong": "ADG,AST,DAH,DSN,FOC,RIC,SVT,TCT,VPL,YEG",
 };
 
 // Mang co thu tu (Map giu dung thu tu khai bao) - dung khi 1 ma nam trong > 1 danh sach.

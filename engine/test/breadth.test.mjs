@@ -1,5 +1,5 @@
 // Test tay cho engine/loi/breadth.js - dung dung 10 ma that cua nhom "Bao hiem" (nho nhat trong
-// 15 nhom, de kiem soat toan bo), cac nhom khac khong co du lieu (breadth = 0% moi nhom).
+// cac nhom, de kiem soat toan bo), cac nhom khac khong co du lieu (breadth = 0% moi nhom).
 import { tinhTatCaBreadth, breadthCuaMa } from "../loi/breadth.js";
 
 let loi = 0;
@@ -21,11 +21,12 @@ function layDuLieu(ma) {
 
 const ketQua = tinhTatCaBreadth(layDuLieu);
 ok("Breadth nhom Bao hiem = 3/10*100 = 30%", gan(ketQua.theoNganh.get("Bao hiem"), 30), ketQua.theoNganh.get("Bao hiem"));
-ok("14 nhom con lai khong co du lieu -> 0% moi nhom", [...ketQua.theoNganh].filter(([t]) => t !== "Bao hiem").every(([, v]) => v === 0));
-ok("Trung binh 15 nhom = (30 + 0*14)/15 = 2.0", gan(ketQua.trungBinh, 2.0), ketQua.trungBinh);
+ok("Cac nhom con lai khong co du lieu -> 0% moi nhom", [...ketQua.theoNganh].filter(([t]) => t !== "Bao hiem").every(([, v]) => v === 0));
+const soNhom = ketQua.theoNganh.size;
+ok(`Trung binh ${soNhom} nhom = 30/${soNhom}`, gan(ketQua.trungBinh, 30 / soNhom), ketQua.trungBinh);
 
 ok("breadthCuaMa('BIC') = breadth nhom Bao hiem = 30", gan(breadthCuaMa("BIC", ketQua), 30));
-ok("breadthCuaMa('ZZZZ' - khong thuoc nganh nao) = trung binh = 2.0", gan(breadthCuaMa("ZZZZ", ketQua), 2.0));
+ok("breadthCuaMa('ZZZZ' - khong thuoc nganh nao) = trung binh cac nhom", gan(breadthCuaMa("ZZZZ", ketQua), 30 / soNhom));
 
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

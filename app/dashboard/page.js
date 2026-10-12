@@ -2,6 +2,8 @@ import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import { layDongTienNuocNgoai } from "@/lib/thiTruong";
 import { TongQuanThiTruong } from "@/components/RaSoatThiTruong";
 import BanDoNhiet from "@/components/BanDoNhiet";
+import BangRSNganh from "@/components/BangRSNganh";
+import { tinhRSNganh } from "@/lib/rsNganh";
 import ThanhKhoanThiTruong from "@/components/ThanhKhoanThiTruong";
 import AnhHuongIndex from "@/components/AnhHuongIndex";
 import KhoiNgoaiThiTruong from "@/components/KhoiNgoaiThiTruong";
@@ -45,6 +47,7 @@ export default async function TrangDashboard() {
       )}
 
       <TongQuanThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} />
+      <BangRSNganh hang={tinhRSNganh(tatCa)} />
       <BanDoNhiet tatCa={tatCa} />
       <ThanhKhoanThiTruong ma="VNINDEX" />
       <AnhHuongIndex />
