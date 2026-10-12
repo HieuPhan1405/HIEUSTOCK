@@ -1,6 +1,32 @@
 # Bài 8 – MCH: lô 64 triệu cổ phiếu và 73 triệu cổ phiếu đăng ký mua (ảnh đơn `post.png`)
 
 ## 1. Nội dung đăng
+
+MCH tuần qua có hai con số rất lớn đặt cạnh nhau: lô hơn 64 triệu cổ phiếu khối ngoại chuyển nhượng, và 73 triệu cổ phiếu mà một công ty trong hệ sinh thái Masan đăng ký mua. Hai việc này có liên quan với nhau hay không, tới giờ mình chưa thấy ai xác nhận.
+
+📌 Điều 1: Lô thỏa thuận ngày 9/10
+Khối ngoại chuyển nhượng hơn 64,2 triệu cổ phiếu MCH, giá trị hơn 9.600 tỷ đồng, chủ yếu qua giao dịch thỏa thuận (Mekong ASEAN; Nhân Dân ghi ngoại ròng MCH 9.593,66 tỷ). Báo Mới và VnEconomy ghi giá trị giao dịch thỏa thuận là 9.641,2 tỷ đồng, do khối ngoại bán cho nhà đầu tư trong nước. Lô này chiếm gần 70% con số khối ngoại bán ròng cả tuần, còn thỏa thuận ngày 9/10 chiếm 44,4% giá trị giao dịch toàn thị trường. Chia nhanh 9.641,2 tỷ cho khoảng 64,2 triệu cổ phiếu ra xấp xỉ 150.000 đồng mỗi cổ phiếu, cao hơn giá đóng cửa 143.000 đồng khoảng 5%. Đây là phép tính của mình và chỉ xấp xỉ, vì cả hai số trong báo đều ghi "hơn".
+
+📌 Điều 2: Đăng ký mua của Lepus
+Ngày 6/10, CTCP Đầu tư Lepus, công ty thuộc hệ sinh thái Masan, thông báo đăng ký mua 73 triệu cổ phiếu MCH, tương đương 5,584% vốn điều lệ. Trước giao dịch Lepus chưa sở hữu cổ phiếu MCH. Theo thị giá 143.000 đồng, giá trị đăng ký mua hơn 10.000 tỷ đồng (Vietnambiz, Báo Mới). Nếu hoàn tất, Masan dự kiến nắm khoảng 74,98% vốn MCH (Mekong ASEAN).
+
+📌 Điều 3: Hai việc có liên quan hay không?
+Mekong ASEAN viết việc Lepus đăng ký mua là "liên quan đến giao dịch cổ phiếu MCH". Nhưng mình chưa thấy công bố nào xác nhận ai là bên mua lô ngày 9/10, và hai con số cũng không trùng nhau: 73 triệu cổ phiếu đăng ký so với hơn 64,2 triệu cổ phiếu được chuyển nhượng. Vì vậy mình không kết luận Lepus là bên mua lô này.
+
+📌 Giá cổ phiếu
+MCH tăng 2,73% cả tuần, từ 139.200 lên 143.000 đồng (DNSE), đóng cửa 9/10 đúng 143.000 đồng.
+
+📌 Nên theo dõi
+Thông báo kết quả giao dịch của Lepus hoặc Masan khi được công bố, để đối chiếu với lô thỏa thuận ngày 9/10. Mình chỉ ghi lại thông tin đã công bố, không suy đoán thêm và không dự đoán giá.
+👉 Lưu bài để đối chiếu khi có thông báo mới.
+
+Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026. Đầu tư luôn có rủi ro mất vốn.
+Nguồn: DNSE (giá); Mekong ASEAN 9/10; Vietnambiz, Doanh Nhân VN 6–9/10; Nhân Dân 9/10; VnEconomy, Báo Mới 11/10.
+
+#MCH #Masan #chungkhoan #PhanHieuStock #tintucchungkhoan #docsolieu
+
+## 1b. Bản rút gọn (đăng nhanh, ~100–150 chữ)
+
 MCH tuần qua có hai con số lớn đặt cạnh nhau: lô hơn 64 triệu cổ phiếu khối ngoại chuyển nhượng (hơn 9.600 tỷ đồng), và 73 triệu cổ phiếu mà Lepus đăng ký mua.
 
 Mình tách 3 điều:

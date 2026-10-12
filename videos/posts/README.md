@@ -52,7 +52,14 @@ Thư mục: `videos/posts/<YYYY-MM-DD>/` gồm `README.md` (bảng mục lục: 
 **Ngày nghỉ (thứ 7, Chủ nhật, lễ):** bài 1 = tổng kết tuần + lịch sự kiện tuần tới; bài 6–8 = ba mã nổi bật của tuần; bài 2–3 = dòng tiền/ngành của tuần; 4 = kiến thức; 5 = series. Ngày lễ giữa tuần: bài 1 ghi "thị trường nghỉ" và nêu lịch mở cửa lại.
 
 **Mỗi `bai.md`:** (1) nội dung đăng (copy nguyên khối), (2) alt text ảnh, (3) kiểm chứng (số nào, nguồn nào, nhãn gì, chỗ Hiếu phải kiểm), (4) trước khi đăng. Mẫu: `videos/posts/2026-10-11-fpt/bai-facebook.md`.
-**Bài đăng:** dòng đầu là nghịch lý hoặc câu hỏi + một con số; tối đa ~8 con số; "mình không dự đoán giá" ở bài mã/ngành; **một** CTA; dòng rủi ro + miễn trừ + "giá đến hết phiên dd/mm/yyyy"; nguồn; 5–6 hashtag có #PhanHieuStock. Độ dài ~150–260 chữ.
+**Bài đăng (mục 1 trong `bai.md`) viết như một bài phân tích ngắn, 400–550 chữ** (mẫu: `videos/posts/2026-10-12/bai-2-khoi-ngoai-mch/bai.md`):
+- Câu mở bài: nghịch lý hoặc câu hỏi + một con số, 1–2 câu.
+- Thân bài: 3–5 mục có biểu tượng 📌 và tiêu đề ngắn (Điều 1/2/3 hoặc "Bối cảnh", "Phép tính cho thấy điều gì", "Cách đọc số này"), mỗi mục một đoạn 3–5 câu **giải thích số liệu nghĩa là gì và đọc thế nào**, không chỉ liệt kê số. Mỗi con số quan trọng ghi tên nguồn trong ngoặc; phép tính của mình ghi rõ "phép tính của mình" và chỉ rõ chỗ xấp xỉ.
+- Một mục **"Điều mình chưa biết"** (hoặc "chưa kiểm chứng được"): nêu số lệch nguồn, chỗ chưa có xác nhận, không đoán nguyên nhân.
+- Một mục **"Nên theo dõi"** nếu có sự kiện/số liệu sắp công bố (không phải dự đoán giá).
+- Kết: "mình không dự đoán giá / không nói mã nào nên mua hay bán" + **một** CTA ("Lưu bài để…") + dòng rủi ro, miễn trừ, "số liệu đến hết phiên dd/mm/yyyy" + nguồn + 5–6 hashtag có #PhanHieuStock.
+- Văn nói tự nhiên, xưng "mình" và "bạn"; câu ngắn; mỗi đoạn một ý; không "văn máy".
+- Ngoài bản dài, thêm **mục "1b. Bản rút gọn" (~100–150 chữ)** để đăng nhanh khi cần.
 
 **Dựng ảnh:** `python3 videos/covers/make_post.py <thư mục>/spec.json` (dùng Chromium có sẵn, không cần cài thêm). Mẫu thông số:
 - carousel 3 ảnh (mặc định): `videos/posts/2026-10-11-fpt/spec.json` (slide1 tiêu đề + biểu đồ đường quy về 100, slide2 các thẻ lớn + ghi chú, slide3 hai ô số + giải thích + biểu đồ cột). Mã chính màu `gold`, đường tham chiếu `blue`.

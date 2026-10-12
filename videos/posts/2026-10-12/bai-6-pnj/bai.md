@@ -3,6 +3,31 @@
 **⚠ Mã đang có biến cố (lo ngại về chất lượng kim cương, theo các báo): công ty duyệt kỹ. Bài chỉ nêu giá và thông tin do doanh nghiệp công bố, có tên nguồn; không suy đoán nguyên nhân hay trách nhiệm.**
 
 ## 1. Nội dung đăng
+
+PNJ tăng trần phiên 9/10, chấm dứt chuỗi 13 phiên giảm liên tiếp. Nhưng để đọc đúng phiên tăng trần này, cần nhìn lại mức giá mà cổ phiếu đã đi qua.
+
+Mình chỉ ghi lại số liệu giá và thông tin do chính doanh nghiệp công bố, không suy đoán nguyên nhân hay trách nhiệm.
+
+📌 Điều 1: Giá đã giảm một nửa trong 13 phiên
+Từ 36.900 đồng (đóng cửa 21/9) xuống 18.250 đồng (8/10), PNJ giảm 50,5%. Cùng giai đoạn VN-Index giảm khoảng 3,4% (1.799,67 → 1.738,97, mình tự tính). Trong chuỗi này có 5 phiên giảm sàn liên tiếp (28/9–2/10). Ngày 6/10 PNJ lại giảm sàn 6,93% xuống 20.150 đồng, khớp gần 16,3 triệu cổ phiếu và còn hơn 14,7 triệu cổ phiếu dư bán giá sàn lúc đóng cửa (CafeF). Cũng ngày 6/10, khối ngoại bán ròng PNJ khoảng 101,6 tỷ đồng (CafeF).
+
+📌 Điều 2: Phiên 9/10, tăng trần từ lúc mở cửa
+PNJ tăng 6,85% lên 19.500 đồng, khớp hơn 7 triệu cổ phiếu và còn dư mua giá trần hơn 4,2 triệu cổ phiếu (Mekong ASEAN, Bnews). Dư bán sàn ngày 6/10 (14,7 triệu) gấp khoảng 3,5 lần dư mua trần ngày 9/10 (4,2 triệu). Hai con số thuộc hai ngày khác nhau nên chỉ để hình dung quy mô, không rút thêm kết luận.
+
+📌 Điều 3: Tin cùng ngày là thông tin do doanh nghiệp công bố
+PNJ công bố kết quả kiểm định độc lập các mẫu kim cương đang kinh doanh: mẫu do Vinacontrol bốc ngẫu nhiên, niêm phong rồi gửi cho các chuyên gia ngọc học của AIGS phân tích. Theo thông tin từ doanh nghiệp, 100% mẫu là kim cương thiên nhiên và phù hợp thông số 4C mà PNJ công bố. Mekong ASEAN mô tả đây là một trong các biện pháp PNJ triển khai "sau những biến động liên quan đến vấn đề chất lượng và niềm tin của khách hàng". Trong các nguồn đã đọc, mình chưa thấy xác nhận độc lập nào khác ngoài thông tin này.
+
+📌 Cách đọc một phiên tăng trần sau chuỗi giảm sâu
+Một phiên chưa phải xu hướng. Thanh khoản lớn và dư mua trần cho thấy hôm đó có lực cầu, nhưng không cho biết phiên sau sẽ ra sao. Điều có thể theo dõi là các thông tin tiếp theo do PNJ và cơ quan chức năng công bố, cùng thanh khoản các phiên kế tiếp. Mình không dự đoán giá.
+👉 Lưu bài để đối chiếu với các thông tin tiếp theo của PNJ.
+
+Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026. Đầu tư luôn có rủi ro mất vốn.
+Nguồn: DNSE (giá); CafeF 6/10; Mekong ASEAN, Bnews, SGGP 9/10.
+
+#PNJ #chungkhoan #PhanHieuStock #docsolieu #tintucchungkhoan
+
+## 1b. Bản rút gọn (đăng nhanh, ~100–150 chữ)
+
 PNJ tăng trần phiên 9/10, chấm dứt chuỗi 13 phiên giảm liên tiếp. Nhưng trước đó giá đã giảm một nửa.
 
 Mình chỉ ghi lại số liệu và thông tin do các bên công bố:

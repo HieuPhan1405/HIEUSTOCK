@@ -1,6 +1,35 @@
 # Bài 2 – Khối ngoại "bán ròng gần 14.000 tỷ": gần 70% là một giao dịch (ảnh đơn `post.png`)
 
 ## 1. Nội dung đăng
+
+Khối ngoại bán ròng gần 14.000 tỷ đồng trong một tuần. Nghe như một đợt bán tháo. Nhưng khi tách số liệu ra, gần 70% con số đó là một giao dịch duy nhất.
+
+📌 Con số thứ nhất: khoảng 14.000 tỷ
+Tuần 5–9/10, khối ngoại bán ròng khoảng 13.989 tỷ đồng trên HoSE (Báo Mới, Mie Dương). Các nguồn khác ghi lệch nhỏ vì phạm vi thống kê khác nhau: 13.983,66 tỷ (Tạp chí Kinh tế Tài chính), 13.987 tỷ (Nhân Dân), 13.921 tỷ (VnEconomy). Theo VietnamPlus, đến phiên 8/10 khối ngoại đã bán ròng 12 phiên liên tiếp.
+
+📌 Con số thứ hai: gần 9.600 tỷ trong một phiên
+Phiên 9/10, khối ngoại bán ròng hơn 9.700 tỷ đồng. Riêng MCH (Masan Consumer) chiếm 9.593,66 tỷ (Nhân Dân), với hơn 64,2 triệu cổ phiếu được khối ngoại chuyển nhượng, chủ yếu qua giao dịch thỏa thuận (Mekong ASEAN). Báo Mới và VnEconomy ghi giá trị giao dịch thỏa thuận này là 9.641,2 tỷ đồng, do nhà đầu tư nước ngoài bán cho nhà đầu tư trong nước. Hai con số 9.594 và 9.641 là hai thước đo khác nhau của cùng một lô (ngoại ròng và giá trị giao dịch).
+
+📌 Phép tính cho thấy điều gì
+13.989 − 9.594 ≈ 4.395 tỷ. Nghĩa là nếu bỏ riêng lô MCH, khối ngoại bán ròng cả tuần còn khoảng 4.400 tỷ, và lô này chiếm khoảng 69% tổng số. Ngoài ra, riêng phiên 6/10 HDB bị bán ròng 1.957,65 tỷ đồng (Báo Mới, CafeF). Hai con số đơn lẻ này cộng lại đã bằng khoảng 83% bán ròng cả tuần (phép tính của mình, chưa tính phần mua bán ròng HDB ở các phiên khác).
+
+📌 "Thỏa thuận" nghĩa là gì và vì sao nó quan trọng khi đọc số
+Giao dịch thỏa thuận là hai bên tự thỏa thuận giá và khối lượng, không đi qua lệnh khớp trên sàn. VnEconomy ghi riêng phần khớp lệnh, khối ngoại chỉ bán ròng khoảng 1.270 tỷ đồng (trong bài đó tổng bán ròng là 13.921 tỷ). Ngày 9/10 thỏa thuận đạt 12.976,5 tỷ đồng, chiếm 44,4% tổng giá trị giao dịch hơn 29.000 tỷ của toàn thị trường. Vì vậy một con số "bán ròng" lớn chưa chắc phản ánh áp lực bán thật sự trên sàn.
+
+📌 Cùng phiên đó, khối ngoại không chỉ bán
+Nhân Dân ghi ngày 9/10 khối ngoại mua ròng VHM 161,66 tỷ, SHB 122,75 tỷ, NVL 77,91 tỷ, TCB 65,02 tỷ, CTG 47,98 tỷ; bên cạnh đó bán ròng HDB 226,81 tỷ, FPT 120,64 tỷ, ACB 69,78 tỷ.
+
+📌 Điều mình không biết
+Mình không giải thích lý do của giao dịch MCH vì chưa thấy nguồn nào nêu. Bài sau về MCH ghi lại những gì đã được công bố.
+👉 Lưu bài để lần sau thấy con số "bán ròng" lớn thì tách khớp lệnh và thỏa thuận ra trước khi đọc.
+
+Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026. Đầu tư luôn có rủi ro mất vốn.
+Nguồn: Báo Mới 11/10; Nhân Dân 9/10; Mie Dương 11/10; VnEconomy 11/10; VietnamPlus 8/10; CafeF 6/10.
+
+#khoingoai #MCH #chungkhoan #PhanHieuStock #docsolieu
+
+## 1b. Bản rút gọn (đăng nhanh, ~100–150 chữ)
+
 Khối ngoại bán ròng gần 14.000 tỷ đồng trong một tuần. Nghe như bán tháo. Nhưng gần 70% con số đó là một giao dịch.
 
 Mình tách 3 điều:
