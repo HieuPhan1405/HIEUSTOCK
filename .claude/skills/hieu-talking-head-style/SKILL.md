@@ -313,7 +313,7 @@ Thư mục video: `videos/<ngày>-<slug>/` (mẫu: `2026-10-12-lot-tran-mai-co-l
 5. `build.py` dùng `th_lib.Builder` (`B.card`, `B.chapter`, `B.T/E`, `B.push`, `B.sfx`, `B.auto_sfx`, `B.write`) → `public/index.html`, `public/cards/*.html`, `storyboard.json`.
 6. **Kiểm trước khi render**: `node videos/tools/th_measure.mjs <thư mục>` (hộp chữ từng thẻ ở trạng thái cuối: ra ngoài vùng an toàn, thẻ che mặt, chạm vùng caption) và `npx hyperframes snapshot public --at t1,t2,… --no-end -o <thư mục tạm>` rồi xem `contact-sheet-*.jpg`.
 7. **Render**: `npx hyperframes render public --skill=talking-head-recut -o output.mp4 --fps 30`, chạy bằng Bash `run_in_background` (cách `nohup … &` bị huỷ khi shell kết thúc: "render_cancelled_parent_exited"); ~12–15 phút cho video 1:45 trên 4 lõi (chậm hơn nếu đang chạy whisper/ffmpeg song song).
-8. `python3 videos/tools/th_preview.py output.mp4 preview_<tên>.mp4` → loudnorm 2 lượt −14 LUFS (đỉnh ≤ −1 dBTP) + h264 CRF21 để gửi/đăng.
+8. `python3 videos/tools/th_preview.py output.mp4 preview_<tên>.mp4` → loudnorm 2 lượt −14 LUFS (đỉnh ≤ −1 dBFS, có limiter vì AAC vượt đỉnh) + h264 CRF21 để đăng (~40 MB cho 1:45). **Gửi qua chat giới hạn 30 MiB**: thêm tham số `28mb` (`th_preview.py output.mp4 preview_<tên>_chat.mp4 28mb`, ~26 MB) và nói rõ bản chất lượng cao nằm trong thư mục video.
 
 **Bài học dựng (rút từ hai video này):**
 - Mỗi dòng hiện dần là **một khối riêng** (`PILL`), không dùng khung chung: khung chung để lộ khoảng tối trống khi dòng chưa hiện.

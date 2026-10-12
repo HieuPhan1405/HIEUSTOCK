@@ -25,3 +25,10 @@ Thứ tự thời gian đúng: 5 phiên giảm (28/9–2/10) nằm **trước** 
 1. Câu "hãy nói chắc một câu hỏi" (thiếu "hỏi người") và "bán cho anh chị được sự cảm giác yên tâm": nghe hơi vấp, muốn quay lại hai câu này không?
 2. "Mình làm trong ngành chứng khoán" (không nói thực tập, không nêu công ty): đúng theo kịch bản, **công ty cần duyệt** (nhắc công văn của Ủy ban và nói thẳng "vẫn có người nói chắc").
 3. Công ty duyệt chưa; chưa có câu rủi ro bằng lời (đã có chữ cuối video).
+
+## Caption đăng kèm (nháp, công ty duyệt trước khi đăng)
+Mình làm trong ngành chứng khoán, và mình không biết ngày mai mã nào sẽ lên.
+Hỏi mình một mã kinh doanh ra sao, rủi ro nằm ở đâu, đặt lệnh kiểu nào, mình trả lời được. Chỉ có đúng một câu mình không trả lời được. Và nếu có ai trả lời chắc chắn câu đó, anh chị nên lo, chứ đừng mừng.
+Anh chị còn câu hỏi nào mà môi giới hay ngại trả lời? Comment cho mình biết nhé.
+Nội dung giải thích, không phải khuyến nghị đầu tư. Ý kiến cá nhân, không đại diện công ty. Đầu tư luôn có rủi ro mất vốn.
+#LotTranNgheMoiGioi #moigioichungkhoan #chungkhoan #PhanHieuStock #nguoimoichungkhoan
