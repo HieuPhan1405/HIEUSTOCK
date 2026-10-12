@@ -1,0 +1,39 @@
+{
+ "type": "card",
+ "stamp": "LỘT TRẦN NGHỀ MÔI GIỚI",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Đầu tư luôn có rủi ro mất vốn.",
+ "kicker": "LỘT TRẦN NGHỀ MÔI GIỚI",
+ "title": [
+  "“Mã này mai có lên không?”"
+ ],
+ "title_size": 58,
+ "blocks": [
+  {
+   "type": "claim",
+   "text": "Người biết chắc mai tăng thì đã mua hết rồi. Họ đâu rảnh nhắn cho bạn.",
+   "claim_size": 46
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Tuần vừa rồi: hai hướng trong ba ngày",
+     "text": "VN-Index +15,49 điểm ngày 5/10, rồi −14,42 điểm ngày 8/10."
+    },
+    {
+     "head": "Hỏi ngược một câu",
+     "text": "“Nếu anh chắc vậy, sao anh không tự mua hết?”"
+    },
+    {
+     "head": "Câu hỏi tốt hơn",
+     "text": "Nếu mai giảm mạnh, mình lỗ bao nhiêu và sẽ làm gì?"
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Không ai biết trước ngày mai. Người đáng tin nói thẳng điều đó, rồi chỉ ra rủi ro."
+  }
+ ],
+ "sources": "DNSE (VN-Index đóng cửa). Ý kiến cá nhân của Phan Hiếu Stock."
+}

@@ -162,7 +162,8 @@ def slide2(spec):
 def bars_svg(b, H=262):
     labels, vals = b["labels"], b["values"]
     n = len(vals)
-    W, ml, mt, mb = 900, 56, 36, 44
+    W, mt, mb = 900, 36, 44
+    ml = 100 if max(b["yticks"]) >= 1000 else 56
     pw, ph = W - ml - 10, H - mt - mb
     mx = float(b["ymax"])
     bw = 62
@@ -176,10 +177,10 @@ def bars_svg(b, H=262):
         col = GOLD if i >= k0 else BAR
         bars += f'<path d="M{x:.1f},{mt+ph} V{y+4:.1f} a4,4 0 0 1 4,-4 h{bw-8} a4,4 0 0 1 4,4 V{mt+ph} Z" fill="{col}"/>'
         if i in b.get("label_idx", []):
-            bars += f'<text x="{x+bw/2:.1f}" y="{y-10:.1f}" text-anchor="middle" font-size="26" font-weight="800" fill="{INK}">{vi(v)}</text>'
+            bars += f'<text x="{x+bw/2:.1f}" y="{y-10:.1f}" text-anchor="middle" font-size="26" font-weight="800" fill="{INK}">{(f"{v:,.0f}".replace(",", ".") if b.get("int") else vi(v))}</text>'
         lbl += f'<text x="{x+bw/2:.1f}" y="{H-14}" text-anchor="middle" font-size="21" fill="{MUTED}">{e(a)}</text>'
     dash = 'stroke-dasharray="4 6"'
-    grid = "".join(f'<line x1="{ml}" x2="{W-10}" y1="{mt+ph-g/mx*ph:.1f}" y2="{mt+ph-g/mx*ph:.1f}" stroke="#2A3345" stroke-width="1" {dash}/><text x="{ml-12}" y="{mt+ph-g/mx*ph+7:.1f}" text-anchor="end" font-size="22" fill="{MUTED}">{g}</text>' for g in b["yticks"])
+    grid = "".join(f'<line x1="{ml}" x2="{W-10}" y1="{mt+ph-g/mx*ph:.1f}" y2="{mt+ph-g/mx*ph:.1f}" stroke="#2A3345" stroke-width="1" {dash}/><text x="{ml-12}" y="{mt+ph-g/mx*ph+7:.1f}" text-anchor="end" font-size="22" fill="{MUTED}">{f"{g:,}".replace(",", ".")}</text>' for g in b["yticks"])
     svg = f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" style="font-family:\'Be Vietnam Pro\'">{grid}<line x1="{ml}" x2="{W-10}" y1="{mt+ph}" y2="{mt+ph}" stroke="{MUTED}" stroke-width="2"/>{bars}{lbl}</svg>'
     return svg
 
@@ -218,7 +219,35 @@ def slide3(spec):
     return page(body, css)
 
 
-# ---------------- ảnh đơn: tiêu đề + các khối (stats / list / table / claim / bars / note) ----------------
+def hbars_svg(blk):
+    items = blk["items"]
+    dec = blk.get("decimals", 2)
+    row, bh = 46, 26
+    W, lab_w, val_w = 900, 96, 190
+    plot_x0, plot_w = lab_w + 10, 900 - lab_w - 10 - val_w
+    pos = max([0] + [x["value"] for x in items])
+    neg = max([0] + [-x["value"] for x in items])
+    scale = plot_w / (pos + neg)
+    x0 = plot_x0 + neg * scale
+    H = row * len(items) + 12
+    out = ""
+    for i, it in enumerate(items):
+        v = it["value"]
+        y = 6 + i * row
+        w = abs(v) * scale
+        x = x0 if v >= 0 else x0 - w
+        col = GREEN if v >= 0 else RED
+        arrow = "▲" if v > 0 else "▼" if v < 0 else "■"
+        txt = f"{'+' if v > 0 else '−' if v < 0 else ''}{vi(abs(v), dec)}%"
+        out += (f'<text x="0" y="{y+bh-6}" font-size="26" font-weight="800" fill="{INK}">{e(it["label"])}</text>'
+                f'<rect x="{x:.1f}" y="{y}" width="{max(w, 3):.1f}" height="{bh}" rx="5" fill="{col}"/>'
+                f'<text x="{W-60}" y="{y+bh-6}" text-anchor="end" font-size="26" font-weight="800" fill="{INK}">{txt}</text>'
+                f'<text x="{W-34}" y="{y+bh-6}" text-anchor="middle" font-size="22" fill="{col}">{arrow}</text>')
+    out += f'<line x1="{x0:.1f}" x2="{x0:.1f}" y1="0" y2="{H}" stroke="{MUTED}" stroke-width="2"/>'
+    return f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" style="font-family:\'Be Vietnam Pro\'">{out}</svg>'
+
+
+# ---------------- ảnh đơn: tiêu đề + các khối (stats / list / table / claim / bars / hbars / note) ----------------
 def card(spec):
     parts = ""
     for blk in spec["blocks"]:
@@ -249,6 +278,8 @@ def card(spec):
                     tr += f"<td class='{cls}'>{ar}{e(cv)}</td>"
                 tr += "</tr>"
             parts += f'<table class="tb"><tr>{th}</tr>{tr}</table>'
+        elif t == "hbars":
+            parts += f'<div class="card bx"><div class="ct">{e(blk["title"])}<span>{e(blk["subtitle"])}</span></div><div style="margin-top:14px">{hbars_svg(blk)}</div></div>'
         elif t == "claim":
             parts += f'<div class="claim">{e(blk["text"])}</div>'
         elif t == "bars":

@@ -1,0 +1,88 @@
+{
+ "type": "card",
+ "stamp": "NGÂN HÀNG TUẦN 5–9/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026.",
+ "kicker": "NGÂN HÀNG TUẦN QUA",
+ "title": [
+  "Cùng là ngân hàng,",
+  "mỗi mã đi một hướng"
+ ],
+ "title_size": 58,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Cả ngành ngân hàng",
+     "value": "−0,68%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "7 ngày, DNSE"
+    },
+    {
+     "label": "Tăng nhiều nhất*",
+     "value": "+3,93%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "VPB"
+    },
+    {
+     "label": "Giảm nhiều nhất*",
+     "value": "−4,50%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "ACB"
+    }
+   ]
+  },
+  {
+   "type": "hbars",
+   "title": "Biến động giá 2/10 → 9/10",
+   "subtitle": "9 ngân hàng lớn, giá đã điều chỉnh cổ tức cổ phiếu",
+   "items": [
+    {
+     "label": "VPB",
+     "value": 3.93
+    },
+    {
+     "label": "HDB",
+     "value": 2.38
+    },
+    {
+     "label": "TCB",
+     "value": 0.31
+    },
+    {
+     "label": "MBB",
+     "value": -0.26
+    },
+    {
+     "label": "VCB",
+     "value": -0.7
+    },
+    {
+     "label": "CTG",
+     "value": -0.84
+    },
+    {
+     "label": "STB",
+     "value": -1.61
+    },
+    {
+     "label": "BID",
+     "value": -2.59
+    },
+    {
+     "label": "ACB",
+     "value": -4.5
+    }
+   ],
+   "decimals": 2
+  },
+  {
+   "type": "note",
+   "text": "VnEconomy: VPB +2,7 điểm, ACB −2,6 điểm đóng góp vào VN-Index tuần qua. Chỉ ghi lại số đã xảy ra."
+  }
+ ],
+ "sources": "DNSE (giá, biến động ngành); VnEconomy 11/10. *Trong 9 mã ở biểu đồ."
+}

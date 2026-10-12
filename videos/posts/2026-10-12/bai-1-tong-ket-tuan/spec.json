@@ -1,0 +1,106 @@
+{
+ "type": "card",
+ "stamp": "TỔNG KẾT TUẦN 5–9/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026.",
+ "kicker": "TỔNG KẾT TUẦN",
+ "title": [
+  "VN-Index tuần 5–9/10:",
+  "giảm nhẹ, nhưng là tuần",
+  "giảm thứ ba liền"
+ ],
+ "title_size": 54,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Cả tuần",
+     "value": "−0,15%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "1.737,71 → 1.735,09"
+    },
+    {
+     "label": "Giảm liên tiếp",
+     "value": "3 tuần",
+     "tone": "gold",
+     "sub": "theo đóng cửa thứ Sáu"
+    },
+    {
+     "label": "Khớp lệnh bình quân/phiên (HoSE)",
+     "value": "12.900",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "tỷ đồng, +7,8% so tuần trước"
+    }
+   ]
+  },
+  {
+   "type": "table",
+   "head": [
+    "PHIÊN",
+    "VN-INDEX",
+    "THAY ĐỔI",
+    "NGOẠI RÒNG (TỶ)"
+   ],
+   "arrow_col": 2,
+   "rows": [
+    {
+     "cells": [
+      "5/10",
+      "1.753,20",
+      "+0,89%",
+      "−282,6"
+     ],
+     "arrow": "▲",
+     "tone": "green"
+    },
+    {
+     "cells": [
+      "6/10",
+      "1.759,08",
+      "+0,34%",
+      "−2.614,5"
+     ],
+     "arrow": "▲",
+     "tone": "green"
+    },
+    {
+     "cells": [
+      "7/10",
+      "1.753,39",
+      "−0,32%",
+      "−910,3"
+     ],
+     "arrow": "▼",
+     "tone": "red"
+    },
+    {
+     "cells": [
+      "8/10",
+      "1.738,97",
+      "−0,82%",
+      "−446,4"
+     ],
+     "arrow": "▼",
+     "tone": "red"
+    },
+    {
+     "cells": [
+      "9/10",
+      "1.735,09",
+      "−0,22%",
+      "−9.735,1"
+     ],
+     "arrow": "▼",
+     "tone": "red"
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Tuần 12–16/10: 9 doanh nghiệp chốt quyền cổ tức tiền mặt, cao nhất 15% (MGG, NTH ngày 12/10; DRL ngày 14/10). HDB: ngày đăng ký cuối cùng nhận 30% cổ phiếu là 12/10."
+  }
+ ],
+ "sources": "DNSE (VN-Index); VnEconomy, Báo Mới 10–11/10 (khớp lệnh); Mie Dương 11/10 (ngoại ròng từng phiên); Vietstock 11/10 (cổ tức)."
+}

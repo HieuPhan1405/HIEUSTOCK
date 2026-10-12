@@ -1,0 +1,75 @@
+{
+ "type": "card",
+ "stamp": "KHỐI NGOẠI TUẦN 5–9/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026.",
+ "kicker": "KHỐI NGOẠI TUẦN QUA",
+ "title": [
+  "Ngoại bán ròng ~14.000 tỷ:",
+  "gần 70% là một giao dịch"
+ ],
+ "title_size": 56,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Ngoại bán ròng cả tuần (HoSE)",
+     "value": "13.989",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "tỷ đồng"
+    },
+    {
+     "label": "Riêng lô MCH, phiên 9/10",
+     "value": "9.594",
+     "tone": "gold",
+     "sub": "tỷ đồng, thỏa thuận"
+    },
+    {
+     "label": "Phần còn lại",
+     "value": "≈ 4.395",
+     "tone": "plain",
+     "sub": "tỷ đồng (tự tính)"
+    }
+   ]
+  },
+  {
+   "type": "bars",
+   "title": "Ngoại bán ròng theo phiên (tỷ đồng, HoSE)",
+   "subtitle": "Phiên 9/10: gần 9.600 tỷ là lô MCH",
+   "labels": [
+    "5/10",
+    "6/10",
+    "7/10",
+    "8/10",
+    "9/10"
+   ],
+   "values": [
+    282.6,
+    2614.5,
+    910.3,
+    446.4,
+    9735.1
+   ],
+   "ymax": 10000,
+   "yticks": [
+    5000,
+    10000
+   ],
+   "highlight_last": 1,
+   "label_idx": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "int": true
+  },
+  {
+   "type": "note",
+   "text": "Giao dịch thỏa thuận không đi qua khớp lệnh. Theo Báo Mới, lô MCH do khối ngoại bán cho nhà đầu tư trong nước. Riêng khớp lệnh, ngoại bán ròng khoảng 1.270 tỷ (VnEconomy)."
+  }
+ ],
+ "sources": "Báo Mới 11/10; Nhân Dân 9/10; Mie Dương 11/10; VnEconomy 11/10."
+}
