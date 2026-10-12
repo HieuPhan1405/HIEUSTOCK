@@ -1,6 +1,7 @@
 // PHAN LOAI NGANH (rà soát lại 2026-10-12): dựa trên ICB (VNDirect industry_classification, cấp 4) + ghi đè thủ công cho các mã mà ICB không hợp thực tế thị trường VN
 // (thuỷ sản tách khỏi nông nghiệp, khu công nghiệp tách khỏi BĐS nhà ở, cao su gom cùng hoá chất, dầu khí tách khỏi điện-nước...). Sinh bằng engine/dich-vu/chiaLaiNganh.mjs.
 // CHỈ liệt kê mã CÓ dữ liệu giá trong engine (389 mã): mẫu số breadth là số mã thật, không bị kéo xuống bởi mã đã hết niêm yết.
+// VEA (VEAM, ICB Ôtô) thêm tay vì chưa có dữ liệu giá trong nen_dai.json nhưng engine quét 390 mã có mã này.
 // Mã mới chưa có trong danh sách => nhóm "Khac" (breadth = trung bình các ngành). Thêm mã mới: chạy lại chiaLaiNganh.mjs hoặc thêm tay vào nhóm phù hợp.
 // LƯU Ý: nganh chỉ ảnh hưởng nhãn ngành + diem_rank (breadth ngành); KHÔNG ảnh hưởng tín hiệu MUA/BÁN. Không còn khớp danh sách ngành trong AFL (AFL giữ nguyên danh sách cũ).
 // TÊN NGÀNH (khoá của map) là chuỗi KHÔNG DẤU; web đổi sang có dấu ở lib/nganh.js (NGANH_NHAN).
@@ -20,7 +21,7 @@ const raw = {
   "Thuc pham - Do uong": "KDC,LSS,MCH,MCM,MSN,NAF,PAN,QNS,SAB,SBT,SLS,SMB,VCF,VNM",
   "Thuy san": "AAM,ABT,ACL,ANV,CMX,FMC,IDI,VHC",
   "Nong nghiep - Chan nuoi": "ABS,BAF,DBC,HAG,HNG,HSL,LAF,LTG,NSC,TAR,TSC",
-  "Ban le - O to": "CRC,CTF,DGW,FRT,HAX,HHS,MWG,PET,PNJ,PSD,ST8,SVC,TLG,TMT",
+  "Ban le - O to": "CRC,CTF,DGW,FRT,HAX,HHS,MWG,PET,PNJ,PSD,ST8,SVC,TLG,TMT,VEA",
   "Det may - Go": "BKG,DLG,GDT,GIL,HTG,KMR,MSH,SAV,STK,SVD,TCM,TNG,TTF,TVT,VGT",
   "Logistics - Van tai": "ACV,CLL,DVP,DXP,GMD,GSP,HAH,HTV,HVN,ILB,MHC,NCT,PHP,PVP,PVT,SAS,SCS,SFI,SGN,SKG,STG,TCL,TCO,TMS,VIP,VJC,VNA,VNL,VOS,VSC,VTO,VTP",
   "Cong nghe - Vien thong": "CMG,CTR,ELC,FOX,FPT,HVH,ICT,ITD,SAM,SGT,VGI,VTB",

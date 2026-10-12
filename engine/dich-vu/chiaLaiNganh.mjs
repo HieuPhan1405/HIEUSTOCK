@@ -45,6 +45,7 @@ const HT = new Map(); for (const [t, ds] of NGANH) for (const m of ds) if (!HT.h
 const nhom = (m) => GHI_DE[m] || (() => { const o = maICB.get(m) || {}; return THEO_L4[o.l4] || THEO_L2[o.l2] || null; })();
 
 const tatCa = new Set([...HT.keys(), ...Object.keys(cache)]);
+// Ma engine quet nhung chua co trong nen_dai.json (them tay vao nganh.js sau khi sinh): VEA -> Ban le - O to
 const moi = new Map(); const chuaXep = [];
 for (const m of tatCa) { const g = nhom(m); if (g) moi.set(m, g); else chuaXep.push(m); }
 const dem = {}; for (const [m, g] of moi) { (dem[g] ||= { co: [], khong: [] })[cache[m] ? "co" : "khong"].push(m); }
