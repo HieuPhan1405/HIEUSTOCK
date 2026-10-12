@@ -14,6 +14,7 @@ import glob
 import html
 import json
 import math
+import re
 import subprocess
 import sys
 import tempfile
@@ -58,35 +59,56 @@ def sgn(x, d=1):
     return ("+" if x > 0 else "−" if x < 0 else "") + vi(abs(x), d)
 
 
+CHECK_JS = """<script>window.addEventListener('load',function(){var m=0;for(var el of document.body.children){if(el.classList.contains('foot')||el.tagName==='SCRIPT'||el.classList.contains('sw'))continue;m=Math.max(m,el.getBoundingClientRect().bottom);}var f=document.querySelector('.foot');var gap=f?Math.round(f.getBoundingClientRect().top-m):999;document.body.setAttribute('data-gap',String(gap));});</script>"""
+
+
 def page(body, extra_css=""):
-    return f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}{extra_css}</style></head><body>{body}</body></html>"
+    return f"<!doctype html><html><head><meta charset='utf-8'><style>{CSS}{extra_css}</style></head><body>{body}{CHECK_JS}</body></html>"
 
 
 def foot(spec, sources):
     return f'<div class="foot"><b>Nguồn:</b> {e(sources)} {e(spec["disclaimer"])}</div>'
 
 
-# ---------------- slide 1: tiêu đề + biểu đồ đường quy về 100 ----------------
-def slide1(spec):
-    s = spec["slide1"]
-    ch = s["chart"]
+def nice_ticks(lo, hi, target=4):
+    raw = (hi - lo) / target
+    mag = 10 ** math.floor(math.log10(raw))
+    step = next(m * mag for m in (1, 2, 2.5, 5, 10) if raw <= m * mag)
+    t_lo, t_hi = math.floor(lo / step) * step, math.ceil(hi / step) * step
+    return [t_lo + i * step for i in range(int(round((t_hi - t_lo) / step)) + 1)], step
+
+
+def lines_svg(ch, H=480):
+    """Biểu đồ đường. ch: series[{name,color,values}], xticks[[i,nhãn]], band{from,to,label}, normalize (mặc định true: quy về 100 tại điểm đầu),
+    decimals (số lẻ nhãn khi normalize=false). Trả về (svg, legend_html)."""
     series = ch["series"]
     n = len(series[0]["values"])
-    norm = [[v / se["values"][0] * 100 for v in se["values"]] for se in series]
-    allv = [v for sr in norm for v in sr]
-    t_lo, t_hi = 5 * math.floor(min(allv) / 5), 5 * math.ceil(max(allv) / 5)
-    t_lo, t_hi = min(t_lo, 95), max(t_hi, 100)
-    lo, hi = t_lo - 1, t_hi + 1
-    W, H, ml, mr, mt, mb = 900, 480, 56, 190, 24, 46
+    raw = ch.get("normalize", True) is False
+    dec = ch.get("decimals", 1)
+    vals = [list(se["values"]) if raw else [v / se["values"][0] * 100 for v in se["values"]] for se in series]
+    allv = [v for sr in vals for v in sr]
+    if raw:
+        ticks, step = nice_ticks(min(allv), max(allv))
+        t_lo, t_hi = ticks[0], ticks[-1]
+        lo, hi = t_lo - step * 0.1, t_hi + step * 0.1
+    else:
+        t_lo, t_hi = 5 * math.floor(min(allv) / 5), 5 * math.ceil(max(allv) / 5)
+        t_lo, t_hi = min(t_lo, 95), max(t_hi, 100)
+        ticks = list(range(int(t_lo), int(t_hi) + 1, 5))
+        lo, hi = t_lo - 1, t_hi + 1
+    W, mt, mb, ml, mr = 900, 24, 46, 56, 190
+    if raw:
+        ml = 70
     pw, ph = W - ml - mr, H - mt - mb
     X = lambda i: ml + i / (n - 1) * pw
     Y = lambda v: mt + (hi - v) / (hi - lo) * ph
     dash = 'stroke-dasharray="4 6"'
     grid = ""
-    for g in range(t_lo, t_hi + 1, 5):
-        base = g == 100
+    for g in ticks:
+        base = (not raw) and g == 100
+        lab = vi(g, 0 if step >= 1 else dec) if raw else str(int(g))
         grid += (f'<line x1="{ml}" x2="{ml+pw}" y1="{Y(g):.1f}" y2="{Y(g):.1f}" stroke="{MUTED if base else "#2A3345"}" stroke-width="{2 if base else 1}" {"" if base else dash}/>'
-                 f'<text x="{ml-12}" y="{Y(g)+7:.1f}" text-anchor="end" font-size="22" fill="{MUTED}">{g}</text>')
+                 f'<text x="{ml-12}" y="{Y(g)+7:.1f}" text-anchor="end" font-size="22" fill="{MUTED}">{lab}</text>')
     xt = ""
     for i, t in ch["xticks"]:
         a = "start" if i == 0 else "end" if i == n - 1 else "middle"
@@ -95,22 +117,32 @@ def slide1(spec):
     if ch.get("band"):
         b = ch["band"]
         band = (f'<rect x="{X(b["from"]):.1f}" y="{mt}" width="{X(b["to"])-X(b["from"]):.1f}" height="{ph}" fill="{RED}" fill-opacity=".09"/>'
-                f'<text x="{(X(b["from"])+X(b["to"]))/2:.1f}" y="{Y(t_lo)-14:.1f}" text-anchor="middle" font-size="22" font-weight="700" fill="{INK}">{e(b["label"])}</text>')
+                f'<text x="{(X(b["from"])+X(b["to"]))/2:.1f}" y="{Y(ticks[0])-14:.1f}" text-anchor="middle" font-size="22" font-weight="700" fill="{INK}">{e(b["label"])}</text>')
     lines, ends, legend = "", "", ""
     order = sorted(range(len(series)), key=lambda k: series[k]["color"] == "gold")  # vàng vẽ sau cùng (nằm trên)
     for k in order:
         col = COLORS[series[k]["color"]]
-        pts = " ".join(f"{X(i):.1f},{Y(v):.1f}" for i, v in enumerate(norm[k]))
+        pts = " ".join(f"{X(i):.1f},{Y(v):.1f}" for i, v in enumerate(vals[k]))
         w = 6 if series[k]["color"] == "gold" else 5
         lines += f'<polyline points="{pts}" fill="none" stroke="{col}" stroke-width="{w}" stroke-linejoin="round" stroke-linecap="round"/>'
     for k in range(len(series)):
         col = COLORS[series[k]["color"]]
-        x, y, last = X(n - 1), Y(norm[k][-1]), norm[k][-1]
+        x, y, last = X(n - 1), Y(vals[k][-1]), vals[k][-1]
+        chg = (last / vals[k][0] - 1) * 100 if raw else last - 100
+        shown = vi(last, dec) if raw else vi(last)
         ends += (f'<circle cx="{x:.1f}" cy="{y:.1f}" r="9" fill="{col}" stroke="{BG}" stroke-width="3"/>'
-                 f'<text x="{x+22:.1f}" y="{y-4:.1f}" font-size="28" font-weight="800" fill="{INK}">{vi(last)}</text>'
-                 f'<text x="{x+22:.1f}" y="{y+26:.1f}" font-size="24" font-weight="700" fill="{INK}">{sgn(last-100)}%</text>')
+                 f'<text x="{x+22:.1f}" y="{y-4:.1f}" font-size="28" font-weight="800" fill="{INK}">{shown}</text>'
+                 f'<text x="{x+22:.1f}" y="{y+26:.1f}" font-size="24" font-weight="700" fill="{INK}">{sgn(chg)}%</text>')
         legend += f'<span><i style="background:{col}"></i>{e(series[k]["name"])}</span>'
     svg = f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" style="font-family:\'Be Vietnam Pro\'">{band}{grid}{lines}{ends}{xt}</svg>'
+    return svg, legend
+
+
+# ---------------- slide 1: tiêu đề + biểu đồ đường quy về 100 ----------------
+def slide1(spec):
+    s = spec["slide1"]
+    ch = s["chart"]
+    svg, legend = lines_svg(ch, 480)
     tone = COLORS.get(s.get("l2_tone", "red"), RED)
     pill_border = {"red": "rgba(255,90,90,.35)", "green": "rgba(34,197,94,.35)", "gold": "rgba(245,197,66,.35)"}.get(s.get("l2_tone", "red"))
     css = f"""
@@ -247,7 +279,7 @@ def hbars_svg(blk):
     return f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" style="font-family:\'Be Vietnam Pro\'">{out}</svg>'
 
 
-# ---------------- ảnh đơn: tiêu đề + các khối (stats / list / table / claim / bars / hbars / note) ----------------
+# ---------------- ảnh đơn: tiêu đề + các khối (stats / list / table / claim / bars / hbars / lines / note) ----------------
 def card(spec):
     parts = ""
     for blk in spec["blocks"]:
@@ -278,6 +310,10 @@ def card(spec):
                     tr += f"<td class='{cls}'>{ar}{e(cv)}</td>"
                 tr += "</tr>"
             parts += f'<table class="tb"><tr>{th}</tr>{tr}</table>'
+        elif t == "lines":
+            sv, lg = lines_svg(blk["chart"], blk.get("height", 380))
+            lgd = f'<div class="lg">{lg}</div>' if len(blk["chart"]["series"]) > 1 else ""
+            parts += f'<div class="card bx"><div class="ct">{e(blk["title"])}<span>{e(blk["subtitle"])}</span></div>{lgd}<div style="margin-top:10px">{sv}</div></div>'
         elif t == "hbars":
             parts += f'<div class="card bx"><div class="ct">{e(blk["title"])}<span>{e(blk["subtitle"])}</span></div><div style="margin-top:14px">{hbars_svg(blk)}</div></div>'
         elif t == "claim":
@@ -313,6 +349,8 @@ def card(spec):
 .tb i{{font-style:normal;font-size:.8em}}
 .claim{{font:italic 700 {spec.get("claim_size", 50)}px/1.2 'Playfair Display';color:{INK};padding:6px 4px}}
 .bx{{position:static;padding:22px 26px;height:auto}}
+.lg{{display:flex;gap:34px;font:700 24px 'Be Vietnam Pro';margin-top:10px}}
+.lg i{{display:inline-block;width:38px;height:6px;border-radius:3px;margin-right:12px;vertical-align:middle}}
 .ct{{font:700 27px/1.3 'Be Vietnam Pro';color:{INK}}}.ct span{{display:block;font:400 22px 'Be Vietnam Pro';color:{MUTED}}}
 .note{{border:3px solid {GOLD};border-radius:22px;padding:20px 28px;font:700 30px/1.3 'Be Vietnam Pro';color:{INK};background:rgba(245,197,66,.08)}}
 """
@@ -342,7 +380,12 @@ def main(spec_path):
                             "--window-size=1080,1350", f"--screenshot={png}", h.as_uri()], capture_output=True, text=True, timeout=120)
         if not png.exists():
             sys.exit(f"Chụp ảnh {name} lỗi: {r.stderr[-400:]}")
-        print(png)
+        d = subprocess.run([shell(), "--no-sandbox", "--disable-gpu", "--allow-file-access-from-files", "--virtual-time-budget=4000",
+                            "--window-size=1080,1350", "--dump-dom", h.as_uri()], capture_output=True, text=True, timeout=120)
+        m = re.search(r'data-gap="(-?\d+)"', d.stdout)
+        gap = int(m.group(1)) if m else None
+        warn = "" if gap is None or gap >= 10 else f"  ⚠ NỘI DUNG ĐÈ/SÁT CHÂN TRANG ({gap}px): rút ngắn chữ trong spec rồi chạy lại"
+        print(f"{png} (cách chân trang: {gap}px){warn}")
 
 
 if __name__ == "__main__":

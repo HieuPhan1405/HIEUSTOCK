@@ -1,0 +1,96 @@
+{
+ "type": "card",
+ "stamp": "PNJ · HẾT PHIÊN 9/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026.",
+ "kicker": "PNJ TUẦN QUA",
+ "title": [
+  "PNJ tăng trần sau 13 phiên giảm:",
+  "giá đã giảm một nửa trước đó"
+ ],
+ "title_size": 52,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Chuỗi giảm liên tiếp",
+     "value": "13 phiên",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "22/9 → 8/10"
+    },
+    {
+     "label": "Giá 21/9 → 8/10",
+     "value": "−50,5%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "36.900 → 18.250 đồng"
+    },
+    {
+     "label": "Phiên 9/10",
+     "value": "+6,85%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "tăng trần, 19.500 đồng"
+    }
+   ]
+  },
+  {
+   "type": "lines",
+   "title": "Giá đóng cửa PNJ (nghìn đồng)",
+   "subtitle": "21/9 → 9/10 · nhãn bên phải: thay đổi so với 21/9",
+   "height": 300,
+   "chart": {
+    "normalize": false,
+    "decimals": 2,
+    "series": [
+     {
+      "name": "PNJ",
+      "color": "gold",
+      "values": [
+       36.9,
+       35.8,
+       35.3,
+       33.3,
+       33.0,
+       30.7,
+       28.6,
+       26.6,
+       24.75,
+       23.05,
+       21.65,
+       20.15,
+       18.9,
+       18.25,
+       19.5
+      ]
+     }
+    ],
+    "xticks": [
+     [
+      0,
+      "21/9"
+     ],
+     [
+      7,
+      "30/9"
+     ],
+     [
+      14,
+      "9/10"
+     ]
+    ],
+    "band": {
+     "from": 1,
+     "to": 13,
+     "label": "▼ 13 phiên giảm liên tiếp"
+    }
+   }
+  },
+  {
+   "type": "note",
+   "text": "9/10: PNJ công bố kết quả kiểm định độc lập: 100% mẫu kim cương là kim cương thiên nhiên, đúng thông số 4C đã công bố (thông tin từ doanh nghiệp)."
+  }
+ ],
+ "sources": "DNSE (giá); CafeF 6/10; Mekong ASEAN, Bnews, SGGP 9/10."
+}

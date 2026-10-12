@@ -1,7 +1,7 @@
 # Quy trình nội dung hằng ngày của kênh "Phan Hiếu Stock"
 
 Hai lịch chạy tự động (giờ Việt Nam), đều ra **bản nháp** cho Hiếu duyệt, **không tự đăng ở đâu cả**, công ty phải duyệt trước khi đăng:
-- **A. 07:00 mỗi ngày: 5 bài Facebook** (nội dung + ảnh cho từng bài).
+- **A. 07:00 mỗi ngày: 8 bài Facebook** (5 bài nền + 3 bài mã cụ thể; nội dung + ảnh cho từng bài).
 - **B. 17:00 mỗi ngày: 2 kịch bản quay video** (talking head 2–3 phút).
 
 Hai lịch chạy ngay trong phiên Claude Code của Hiếu (đã có sẵn DNSE và Firecrawl). Nếu không gọi được DNSE hoặc Firecrawl thì **dừng và báo "thiếu công cụ"**, không bịa số liệu, không viết từ trí nhớ.
@@ -29,18 +29,27 @@ Hai lịch chạy ngay trong phiên Claude Code của Hiếu (đã có sẵn DNS
 
 ---
 
-## A. 07:00: 5 bài Facebook (nội dung + ảnh)
+## A. 07:00: 8 bài Facebook (5 bài nền + 3 bài mã cụ thể; nội dung + ảnh)
 
-Thư mục: `videos/posts/<YYYY-MM-DD>/` gồm `README.md` (bảng mục lục 5 bài: STT, loại, tiêu đề, câu mở bài, các chỗ Hiếu phải kiểm) và 5 thư mục con `bai-1-<slug>/` … `bai-5-<slug>/`, mỗi thư mục có `bai.md`, `spec.json` và ảnh (`post.png` hoặc `post_1..3.png`).
+Thư mục: `videos/posts/<YYYY-MM-DD>/` gồm `README.md` (bảng mục lục: STT, loại, tiêu đề, câu mở bài, các chỗ Hiếu phải kiểm) và các thư mục con `bai-1-<slug>/` … `bai-8-<slug>/`, mỗi thư mục có `bai.md`, `spec.json` và ảnh (`post.png` hoặc `post_1..3.png`). Mẫu ngày 12/10: `videos/posts/2026-10-12/`.
 
-**Cơ cấu 5 bài (ngày có phiên; dữ liệu là phiên gần nhất):**
+**5 bài nền (ngày có phiên; dữ liệu là phiên gần nhất):**
 1. **Tổng kết phiên hôm qua** (ảnh đơn): VN-Index đóng cửa và % thay đổi, thanh khoản, nhóm ngành mạnh/yếu, khối ngoại mua/bán ròng; thêm "lịch sự kiện cần theo dõi hôm nay" nếu có (ngày không hưởng quyền, đại hội, công bố kết quả kinh doanh). **Chỉ ghi số đã xảy ra, không dự đoán phiên tới.**
-2. **Bài mã/ngành nghịch lý** (carousel 3 ảnh, như bài FPT): đã kiểm chứng đầy đủ.
-3. **Bài mã/ngành thứ hai** (ảnh đơn hoặc carousel nếu đủ chất): mã khác ngành với bài 2.
-4. **Kiến thức đầu tư gắn với một tin thật trong tuần** (ảnh đơn dạng "kiến thức 60 giây": 3 ý + ví dụ số + một ví dụ thật có nguồn).
-5. **"Lột trần nghề môi giới"** (ảnh đơn): luân phiên giữa một luận điểm của series (xem `videos/scripts/series-*.md`, chủ đề đã có sẵn lập luận) và một câu hỏi người mới hay gặp (phí giao dịch, margin, nhóm đóng phí, tin nội bộ…). Dùng định nghĩa của Hiếu: "Lùa gà là lùa những người thiếu kiến thức làm người ta thua tiền."
+2. **Dòng tiền / khối ngoại / tự doanh** (ảnh đơn): một nghịch lý ở cấp thị trường có ≥2 nguồn (ví dụ "ngoại bán ròng lớn nhưng phần lớn là một lô thỏa thuận").
+3. **Ngành** (ảnh đơn): cả ngành đi một hướng nhưng từng mã đi nhiều hướng, hoặc ngược lại.
+4. **Kiến thức đầu tư gắn với một tin thật** trong tuần (ảnh đơn dạng "kiến thức 60 giây": 3 ý + ví dụ số + một ví dụ thật có nguồn).
+5. **"Lột trần nghề môi giới"** (ảnh đơn): luân phiên giữa một luận điểm của series (xem `videos/scripts/series-*.md`) và một câu hỏi người mới hay gặp (phí giao dịch, margin, nhóm đóng phí, tin nội bộ…). Dùng định nghĩa của Hiếu: "Lùa gà là lùa những người thiếu kiến thức làm người ta thua tiền."
 
-**Ngày nghỉ (thứ 7, Chủ nhật, lễ):** 1 = tổng kết tuần + lịch sự kiện tuần tới; 2–3 = hai mã/ngành nổi bật của tuần; 4 = kiến thức; 5 = series. Ngày lễ giữa tuần: bài 1 ghi "thị trường nghỉ" và nêu lịch mở cửa lại.
+**3 bài mã cụ thể (bài 6–8; ảnh đơn `type:"card"` hoặc carousel 3 ảnh nếu đủ chất):**
+- Mỗi bài một mã (hoặc một cặp mã cùng câu chuyện), **ưu tiên có nghịch lý/hai mặt kiểm được ≥2 nguồn**: giá ngược với tin, giá ngược với dòng tiền ngoại, hai mã cùng hệ đi hai hướng, tin công bố đặt cạnh diễn biến giá, ngày không hưởng quyền gây hiểu nhầm giá.
+- Chọn mã từ: top giá trị/khối lượng giao dịch, tăng/giảm mạnh nhất VN30 và mã vốn hóa lớn, top mua/bán ròng khối ngoại và tự doanh, mã có tin công bố trong tuần (đăng ký mua/bán, cổ tức, kết quả kinh doanh, thay đổi sở hữu).
+- Khác mã với bài nền cùng ngày và **không lặp mã trong 7 ngày** (tính cả video/kịch bản). Ba mã nên thuộc ba ngành khác nhau.
+- **Khung 3 điều:** (1) giá/diễn biến so với chỉ số hoặc mã cùng nhóm, (2) tin hoặc dòng tiền (nêu tên nguồn), (3) chỗ dễ đọc nhầm hoặc điều chưa kiểm chứng được. Kết: "mình không dự đoán giá" + một CTA.
+- Ảnh: dùng khối `stats` (3 ô số), `lines` (giá thật, hoặc nhiều mã quy về 100), `list`, `hbars`, `note`. Mẫu: `videos/posts/2026-10-12/bai-6-pnj`, `bai-7-vic-vhm`, `bai-8-mch` (card) và `videos/posts/2026-10-11-fpt` (carousel 3 ảnh).
+- **Mã đang có biến cố** (điều tra, kiện tụng, bê bối, lo ngại chất lượng sản phẩm, tin đồn): chỉ nêu giá và thông tin do **doanh nghiệp hoặc cơ quan chức năng công bố**, có tên nguồn; không suy đoán nguyên nhân hay trách nhiệm; không dùng số liệu từ bài đăng mạng xã hội; ghi "công ty duyệt kỹ" ở đầu `bai.md`.
+- Giao dịch của người nội bộ/bên liên quan: chỉ nêu đúng như công bố; không viết "bên mua là…" nếu chưa có xác nhận.
+
+**Ngày nghỉ (thứ 7, Chủ nhật, lễ):** bài 1 = tổng kết tuần + lịch sự kiện tuần tới; bài 6–8 = ba mã nổi bật của tuần; bài 2–3 = dòng tiền/ngành của tuần; 4 = kiến thức; 5 = series. Ngày lễ giữa tuần: bài 1 ghi "thị trường nghỉ" và nêu lịch mở cửa lại.
 
 **Mỗi `bai.md`:** (1) nội dung đăng (copy nguyên khối), (2) alt text ảnh, (3) kiểm chứng (số nào, nguồn nào, nhãn gì, chỗ Hiếu phải kiểm), (4) trước khi đăng. Mẫu: `videos/posts/2026-10-11-fpt/bai-facebook.md`.
 **Bài đăng:** dòng đầu là nghịch lý hoặc câu hỏi + một con số; tối đa ~8 con số; "mình không dự đoán giá" ở bài mã/ngành; **một** CTA; dòng rủi ro + miễn trừ + "giá đến hết phiên dd/mm/yyyy"; nguồn; 5–6 hashtag có #PhanHieuStock. Độ dài ~150–260 chữ.
@@ -48,9 +57,9 @@ Thư mục: `videos/posts/<YYYY-MM-DD>/` gồm `README.md` (bảng mục lục 5
 **Dựng ảnh:** `python3 videos/covers/make_post.py <thư mục>/spec.json` (dùng Chromium có sẵn, không cần cài thêm). Mẫu thông số:
 - carousel 3 ảnh (mặc định): `videos/posts/2026-10-11-fpt/spec.json` (slide1 tiêu đề + biểu đồ đường quy về 100, slide2 các thẻ lớn + ghi chú, slide3 hai ô số + giải thích + biểu đồ cột). Mã chính màu `gold`, đường tham chiếu `blue`.
 - ảnh đơn `"type":"card"` với các khối `stats` / `list` / `table` / `claim` / `bars` / `note`: mẫu trong `videos/posts/_mau/` (`tong-ket-tuan`, `kien-thuc`, `lot-tran-moi-gioi`). Giảm dùng `red` + ▼ + dấu −; tăng dùng `green` + ▲ + dấu +.
-- Sau khi chạy **mở xem từng ảnh** (Read): chữ không tràn/đè, số khớp bài, dòng nguồn + miễn trừ còn đọc được. Tràn thì rút ngắn chữ trong spec rồi chạy lại (không sửa `make_post.py` nếu không cần).
+- Lệnh in "cách chân trang: Npx" cho từng ảnh; **N < 10 hoặc có cảnh báo ⚠ là chữ đang đè chân trang**: rút ngắn chữ rồi chạy lại. Sau khi chạy vẫn **mở xem từng ảnh** (Read): chữ không tràn/đè, số khớp bài, dòng nguồn + miễn trừ còn đọc được. Tràn thì rút ngắn chữ trong spec rồi chạy lại (không sửa `make_post.py` nếu không cần).
 
-**Giao:** `git add videos/posts/<ngày>`; commit "Bài Facebook <ngày>: 5 bài (<mã/chủ đề>)"; `git push -u origin claude/exciting-bardeen-toacbf` (lỗi mạng thì thử lại tối đa 4 lần, chờ 2s/4s/8s/16s). Tin nhắn cuối (tiếng Việt, gọn): bảng 5 bài (loại, câu mở bài), **các chỗ phải kiểm trước khi đăng**, đường dẫn. Gửi 5 ảnh chính (ảnh bìa mỗi bài) bằng SendUserFile.
+**Giao:** `git add videos/posts/<ngày>`; commit "Bài Facebook <ngày>: 8 bài (<mã/chủ đề>)"; `git push -u origin claude/exciting-bardeen-toacbf` (lỗi mạng thì thử lại tối đa 4 lần, chờ 2s/4s/8s/16s). Tin nhắn cuối (tiếng Việt, gọn): bảng 8 bài (loại, câu mở bài), **các chỗ phải kiểm trước khi đăng**, đường dẫn. Gửi ảnh chính của mỗi bài bằng SendUserFile.
 
 ---
 

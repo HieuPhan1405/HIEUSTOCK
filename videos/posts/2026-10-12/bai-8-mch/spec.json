@@ -1,0 +1,59 @@
+{
+ "type": "card",
+ "stamp": "MCH · HẾT PHIÊN 9/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026.",
+ "kicker": "MCH TUẦN QUA",
+ "title": [
+  "MCH: lô 64 triệu cổ phiếu",
+  "và 73 triệu cổ phiếu đăng ký mua"
+ ],
+ "title_size": 50,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Khối ngoại chuyển nhượng 9/10",
+     "value": "9.600",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "tỷ đồng, hơn 64,2 triệu cp"
+    },
+    {
+     "label": "Lepus đăng ký mua (6/10)",
+     "value": "73 triệu",
+     "tone": "gold",
+     "sub": "cp, 5,584% vốn điều lệ"
+    },
+    {
+     "label": "Masan dự kiến nắm",
+     "value": "74,98%",
+     "tone": "gold",
+     "sub": "sau giao dịch, từ ~69,4%"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Hai việc được báo đặt cạnh nhau",
+     "text": "Mekong ASEAN nêu việc Lepus đăng ký mua ngày 6/10 là liên quan tới giao dịch MCH, cùng bài với lô thỏa thuận 9/10."
+    },
+    {
+     "head": "Chưa thấy xác nhận bên mua lô 9/10",
+     "text": "Lepus đăng ký 73 triệu cổ phiếu, lô chuyển nhượng là hơn 64,2 triệu: hai số không trùng nhau."
+    },
+    {
+     "head": "Giá cả tuần",
+     "text": "MCH +2,73% (139.200 → 143.000 đồng)."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Lepus thuộc hệ sinh thái Masan. Mình chỉ ghi lại thông tin đã công bố."
+  }
+ ],
+ "sources": "DNSE (giá); Mekong ASEAN 9/10; Vietnambiz, Doanh Nhân 6–9/10; Nhân Dân 9/10."
+}

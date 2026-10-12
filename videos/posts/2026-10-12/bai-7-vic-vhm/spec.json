@@ -1,0 +1,91 @@
+{
+ "type": "card",
+ "stamp": "VIC · VHM · HẾT PHIÊN 9/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026.",
+ "kicker": "VINGROUP TUẦN QUA",
+ "title": [
+  "VIC và VHM:",
+  "cùng hệ, hai hướng khác nhau"
+ ],
+ "title_size": 56,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "VIC cả tuần",
+     "value": "+0,67%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "224.000 → 225.500"
+    },
+    {
+     "label": "VHM cả tuần",
+     "value": "−2,80%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "67.900 → 66.000"
+    },
+    {
+     "label": "Phiên 8/10: hai mã góp",
+     "value": "hơn 7",
+     "tone": "gold",
+     "sub": "điểm, trên mức giảm 14,42"
+    }
+   ]
+  },
+  {
+   "type": "lines",
+   "title": "Giá đóng cửa, quy về 100 tại 2/10",
+   "subtitle": "VIC và VHM, 5 phiên 5–9/10",
+   "height": 270,
+   "chart": {
+    "series": [
+     {
+      "name": "VIC",
+      "color": "gold",
+      "values": [
+       224,
+       232,
+       232,
+       230,
+       228,
+       225.5
+      ]
+     },
+     {
+      "name": "VHM",
+      "color": "blue",
+      "values": [
+       67.9,
+       68.3,
+       69,
+       68,
+       65.7,
+       66
+      ]
+     }
+    ],
+    "xticks": [
+     [
+      0,
+      "2/10"
+     ],
+     [
+      3,
+      "7/10"
+     ],
+     [
+      5,
+      "9/10"
+     ]
+    ]
+   }
+  },
+  {
+   "type": "note",
+   "text": "Vietstock: cả tuần VIC +2,8 điểm, VHM −3,1 điểm vào VN-Index (VnEconomy: +1,9 và −2,6). Khối ngoại mua ròng VHM 162 tỷ ngày 9/10."
+  }
+ ],
+ "sources": "DNSE (giá); Vietstock 10/10; VnEconomy 11/10; Báo Mới, VietnamPlus 8/10; Mekong ASEAN 9/10."
+}
