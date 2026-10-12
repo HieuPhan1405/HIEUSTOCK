@@ -395,3 +395,101 @@ Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. S�
 Nguồn: DNSE (giá); Mekong ASEAN 9/10; Vietnambiz, Doanh Nhân 6–9/10; Nhân Dân 9/10.
 
 #MCH #Masan #chungkhoan #PhanHieuStock #tintucchungkhoan #docsolieu
+
+---
+
+## Bài 9 – Thị phần môi giới HoSE quý 3/2026: hạng nhất vẫn nhất, nhưng phần của hạng nhất nhỏ đi (ảnh đơn `post.png`)
+
+Ảnh: `bai-9-thi-phan-moi-gioi/post.png`
+
+**⚠ Công ty duyệt kỹ:** bài nêu tên và thứ hạng nhiều công ty chứng khoán, trong đó có thể có công ty của Hiếu. Xem mục 4.
+
+VPS vẫn đứng đầu thị phần môi giới trên HoSE quý 3/2026 với 11,54%. Nhưng cùng kỳ năm ngoái con số này là 17,05%. Hạng nhất vẫn là hạng nhất, còn phần của hạng nhất đã nhỏ đi khoảng một phần ba.
+
+📌 Điều 1: Bảng xếp hạng quý 3/2026
+HoSE công bố giá trị giao dịch môi giới của 10 công ty chứng khoán có thị phần lớn nhất. Sáu công ty đầu bảng: VPS 11,54%, SSI 11,09%, TCBS 10,03%, Vietcap 7,80%, HSC 6,10%, MBS 4,84%. Bốn công ty còn lại trong top 10 là VNDirect, KIS Việt Nam, Mirae Asset (Việt Nam) và VPBankS (VnEconomy, Vietstock). Khoảng cách giữa hạng 1 và hạng 2 chỉ 0,45 điểm phần trăm (phép tính của mình).
+
+📌 Điều 2: Miếng bánh đang chia đều hơn
+Tổng thị phần của 10 công ty đứng đầu là 64,86%, so với 65,24% quý trước và 69,05% cùng kỳ năm 2025 (Vietstock, Thương gia). Nói cách khác, các công ty ngoài top 10 từ khoảng 31% lên khoảng 35% (phép tính của mình). Trong nhóm đầu, VPS giảm từ 17,05% xuống 11,54%, còn TCBS tăng từ 7,75% lên 10,03%. Vietstock nhận xét thị phần đang "phân tán hơn". Mình không đoán nguyên nhân, vì các bài đã đọc chưa có số đo cho từng yếu tố.
+
+📌 Điều 3: Thị phần cho biết gì, và không cho biết gì
+Thị phần là phần của một công ty trong tổng giá trị giao dịch môi giới trên sàn. Nó không cho biết công ty có bao nhiêu khách hàng, lãi bao nhiêu, mức phí ra sao hay dịch vụ tốt đến đâu. Nó cũng chỉ là một tỷ lệ: khi cả thị trường giao dịch ít đi, một công ty giữ nguyên 10% vẫn là 10% của một cái bánh nhỏ hơn. Theo VnEconomy, 9 tháng đầu năm giá trị giao dịch bình quân của ba sàn giảm 13,1% so với cùng kỳ (tính theo USD).
+
+Nếu bạn đang chọn công ty chứng khoán, thị phần chỉ là một dòng trong bảng. Câu hỏi hữu ích hơn: các loại phí là bao nhiêu, margin có điều kiện và lãi suất ra sao, ứng dụng có ổn định lúc thị trường sôi động không.
+
+📌 Điều mình chưa biết
+Các bài báo chưa nêu tổng giá trị môi giới trên HoSE quý 3, nên mình chưa đổi được phần trăm ra số đồng, và chưa kiểm được HoSE tính theo một chiều hay cả hai chiều mua bán. Số quý 2 của SSI, Vietcap, HSC chỉ có ở một nguồn nên mình không đưa vào.
+
+📌 Nên theo dõi
+Báo cáo kết quả kinh doanh quý 3 của các công ty chứng khoán khi được công bố: nơi nhìn thấy doanh thu và lợi nhuận thật.
+
+Mình không đánh giá công ty nào tốt hay chưa tốt, và không nói bạn nên mở tài khoản ở đâu.
+👉 Lưu bài này để đối chiếu khi báo cáo quý 3 được công bố.
+
+Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu theo công bố của HoSE đến hết quý 3/2026. Đầu tư luôn có rủi ro mất vốn.
+Nguồn: HoSE (qua VnEconomy 5/10, Vietstock 5/10, Thương gia 9/10); VnEconomy 7/10.
+
+#thiphanmoigioi #chungkhoan #congtychungkhoan #HOSE #PhanHieuStock
+
+## 1b. Bản rút gọn (đăng nhanh, ~100–150 chữ)
+
+VPS vẫn đứng đầu thị phần môi giới HoSE quý 3/2026 với 11,54%, nhưng cùng kỳ năm ngoái là 17,05%.
+
+Ba điều mình ghi lại:
+1️⃣ Sáu công ty đầu bảng: VPS 11,54%, SSI 11,09%, TCBS 10,03%, Vietcap 7,80%, HSC 6,10%, MBS 4,84% (HoSE công bố).
+2️⃣ Tổng top 10 là 64,86%, giảm từ 69,05% cùng kỳ: thị phần đang chia đều hơn.
+3️⃣ Thị phần không cho biết số khách, lợi nhuận, mức phí hay chất lượng dịch vụ.
+
+Mình không đánh giá công ty nào, và không nói bạn nên mở tài khoản ở đâu.
+👉 Lưu bài để đối chiếu khi báo cáo quý 3 công bố.
+
+Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. #thiphanmoigioi #chungkhoan #PhanHieuStock
+
+---
+
+## Bài 10 – MB và VPBank cùng đạt 100.000 tỷ vốn điều lệ: hai con đường khác nhau (ảnh đơn `post.png`)
+
+Ảnh: `bai-10-von-100000-ty/post.png`
+
+**⚠ Công ty duyệt:** bài nêu tên hai ngân hàng, chỉ dùng thông tin đã công bố và dữ liệu DNSE. MB và VPB cũng có mặt trong bài 3 (ngân hàng) cùng ngày: nên đăng cách nhau.
+
+MB và VPBank vừa cùng cán mốc 100.000 tỷ đồng vốn điều lệ. Nghe như hai ngân hàng đi chung một đường. Nhưng hai đường này khác nhau ở một điểm đáng đọc kỹ: có bao nhiêu tiền mới thật sự góp vào.
+
+📌 Điều 1: Hai con số
+MB có vốn điều lệ 100.687,5 tỷ đồng, sau khi hoàn tất chào bán hơn 805 triệu cổ phiếu cho cổ đông hiện hữu ngày 23/9/2026. VPBank đạt đúng 100.000 tỷ đồng sau khi phát hành hơn 2,06 tỷ cổ phiếu để trả cổ tức, nâng vốn thêm hơn 20.660 tỷ đồng (VietnamPlus, Thời báo Tài chính Việt Nam). Dữ liệu DNSE khớp: vốn hóa chia giá chốt phiên 9/10 ra khoảng 10 tỷ cổ phiếu của VPB và 10,07 tỷ của MBB, tương ứng hai mức vốn điều lệ trên.
+
+📌 Điều 2: Hai con đường
+VPBank trả cổ tức bằng cổ phiếu tỷ lệ 26,04% (DNSE: 100:26,041), lấy từ lợi nhuận sau thuế chưa phân phối. Cổ đông không bỏ tiền, ngân hàng cũng không nhận tiền mới: lợi nhuận giữ lại được chuyển thành vốn cổ phần. Ai giữ 1.000 cổ phiếu sẽ nhận thêm khoảng 260 cổ phiếu (phép tính của mình).
+MB đi hai bước cùng lúc. Theo DNSE: quyền mua cổ phiếu phát hành thêm tỷ lệ 10:1 giá 10.000 đồng mỗi cổ phiếu, và cổ tức bằng cổ phiếu tỷ lệ 15%. Tính ngược từ 100.687,5 tỷ, vốn trước đó khoảng 80.550 tỷ: khoảng 8.055 tỷ do cổ đông bỏ tiền mua, khoảng 12.083 tỷ từ cổ tức cổ phiếu (phép tính của mình).
+Hai ngân hàng cùng tăng khoảng 20.000 tỷ vốn điều lệ, nhưng lượng tiền mới góp vào lại khác nhau rất nhiều.
+
+📌 Điều 3: Vốn điều lệ không phải "kích cỡ" của ngân hàng
+Vốn điều lệ là số cổ phiếu nhân mệnh giá, đứng yên cho tới khi phát hành thêm. Vốn hóa là số cổ phiếu nhân giá thị trường, đổi theo từng phiên. Chốt phiên 9/10 (DNSE): VPB khoảng 238.000 tỷ đồng (giá 23.800 đồng), MBB khoảng 191.810 tỷ đồng (giá 19.050 đồng). MB có vốn điều lệ cao hơn nhưng vốn hóa thấp hơn VPBank: hai con số đo hai thứ khác nhau. Thước đo thứ ba là vốn chủ sở hữu trong báo cáo tài chính, bài này chưa có số.
+
+📌 Điều mình chưa biết
+Vốn chủ sở hữu của hai ngân hàng. Hai báo nói VPBank "chính thức" đạt 100.000 tỷ, nhưng mình chưa thấy văn bản đăng ký thay đổi vốn điều lệ. Giá 10.000 đồng của đợt MB lấy từ DNSE, mình chưa đối chiếu với thông báo của MB.
+
+📌 Nên theo dõi
+Theo Thời báo Tài chính Việt Nam: VPBank dự kiến chuyển giao cổ phiếu cổ tức trong tháng 10–11 và có kế hoạch chào bán riêng lẻ hơn 624 triệu cổ phiếu cho một nhà đầu tư nước ngoài (chưa hoàn tất). Techcombank hiện có vốn điều lệ 70.862,4 tỷ đồng, phương án tăng lên khoảng 106.593 tỷ.
+
+Mình không dự đoán giá cổ phiếu và không nói mã nào nên mua hay bán.
+👉 Lưu bài này để đối chiếu khi báo cáo quý 3 của các ngân hàng được công bố.
+
+Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 9/10/2026. Đầu tư luôn có rủi ro mất vốn.
+Nguồn: VietnamPlus 9/10; Thời báo Tài chính Việt Nam 8/10; DNSE.
+
+#vondieule #nganhang #MBB #VPB #PhanHieuStock
+
+## 1b. Bản rút gọn (đăng nhanh, ~100–150 chữ)
+
+MB và VPBank cùng cán mốc 100.000 tỷ đồng vốn điều lệ, nhưng đi bằng hai đường khác nhau.
+
+Ba điều mình ghi lại:
+1️⃣ MB: 100.687,5 tỷ đồng. VPBank: 100.000 tỷ đồng, sau khi phát hành hơn 2,06 tỷ cổ phiếu trả cổ tức (nâng thêm hơn 20.660 tỷ).
+2️⃣ VPBank tăng vốn bằng cổ tức cổ phiếu 26,04%, lấy từ lợi nhuận giữ lại, không có tiền mới. MB vừa trả cổ tức cổ phiếu 15% vừa bán cổ phiếu cho cổ đông (khoảng 8.055 tỷ, phép tính của mình).
+3️⃣ Vốn điều lệ khác vốn hóa: chốt phiên 9/10, VPB khoảng 238.000 tỷ, MBB khoảng 191.810 tỷ (DNSE).
+
+Mình không dự đoán giá cổ phiếu.
+👉 Lưu bài để đối chiếu khi báo cáo quý 3 công bố.
+
+Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. #vondieule #nganhang #PhanHieuStock

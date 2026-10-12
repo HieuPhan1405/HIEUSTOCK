@@ -209,7 +209,7 @@ def bars_svg(b, H=262):
         col = GOLD if i >= k0 else BAR
         bars += f'<path d="M{x:.1f},{mt+ph} V{y+4:.1f} a4,4 0 0 1 4,-4 h{bw-8} a4,4 0 0 1 4,4 V{mt+ph} Z" fill="{col}"/>'
         if i in b.get("label_idx", []):
-            bars += f'<text x="{x+bw/2:.1f}" y="{y-10:.1f}" text-anchor="middle" font-size="26" font-weight="800" fill="{INK}">{(f"{v:,.0f}".replace(",", ".") if b.get("int") else vi(v))}</text>'
+            bars += f'<text x="{x+bw/2:.1f}" y="{y-10:.1f}" text-anchor="middle" font-size="26" font-weight="800" fill="{INK}">{(f"{v:,.0f}".replace(",", ".") if b.get("int") else vi(v, b["decimals"]) if "decimals" in b else vi(v))}</text>'
         lbl += f'<text x="{x+bw/2:.1f}" y="{H-14}" text-anchor="middle" font-size="21" fill="{MUTED}">{e(a)}</text>'
     dash = 'stroke-dasharray="4 6"'
     grid = "".join(f'<line x1="{ml}" x2="{W-10}" y1="{mt+ph-g/mx*ph:.1f}" y2="{mt+ph-g/mx*ph:.1f}" stroke="#2A3345" stroke-width="1" {dash}/><text x="{ml-12}" y="{mt+ph-g/mx*ph+7:.1f}" text-anchor="end" font-size="22" fill="{MUTED}">{f"{g:,}".replace(",", ".")}</text>' for g in b["yticks"])
@@ -286,7 +286,7 @@ def card(spec):
         t = blk["type"]
         if t == "stats":
             items = blk["items"]
-            big = 88 if len(items) == 2 else 50
+            big = blk.get("size", 88 if len(items) == 2 else 50)
             tiles = ""
             for it in items:
                 tone = it.get("tone", "plain")

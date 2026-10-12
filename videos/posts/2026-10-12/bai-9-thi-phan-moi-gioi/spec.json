@@ -1,0 +1,81 @@
+{
+ "type": "card",
+ "stamp": "THỊ PHẦN MÔI GIỚI HOSE · QUÝ 3/2026",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu theo công bố của HoSE đến hết quý 3/2026.",
+ "kicker": "THỊ PHẦN MÔI GIỚI QUÝ 3",
+ "title": [
+  "Hạng nhất vẫn là hạng nhất,",
+  "nhưng phần của hạng nhất nhỏ đi"
+ ],
+ "title_size": 52,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "VPS (hạng 1)",
+     "value": "11,54%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "cùng kỳ 2025: 17,05%"
+    },
+    {
+     "label": "TCBS (hạng 3)",
+     "value": "10,03%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "cùng kỳ 2025: 7,75%"
+    },
+    {
+     "label": "Tổng top 10",
+     "value": "64,86%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "cùng kỳ 2025: 69,05%"
+    }
+   ]
+  },
+  {
+   "type": "bars",
+   "title": "Thị phần môi giới HoSE quý 3/2026 (%)",
+   "subtitle": "6 công ty đầu bảng",
+   "labels": [
+    "VPS",
+    "SSI",
+    "TCBS",
+    "Vietcap",
+    "HSC",
+    "MBS"
+   ],
+   "values": [
+    11.54,
+    11.09,
+    10.03,
+    7.8,
+    6.1,
+    4.84
+   ],
+   "ymax": 14,
+   "yticks": [
+    5,
+    10
+   ],
+   "highlight_last": 0,
+   "label_idx": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "int": false,
+   "decimals": 2
+  },
+  {
+   "type": "note",
+   "text": "Thị phần là phần trăm giá trị giao dịch môi giới. Nó không cho biết số khách, lợi nhuận, mức phí hay chất lượng dịch vụ."
+  }
+ ],
+ "sources": "HoSE qua VnEconomy 5/10, Vietstock 5/10, Thương gia 9/10."
+}

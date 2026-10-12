@@ -8,7 +8,7 @@ from pathlib import Path
 d = Path(sys.argv[1])
 out = [f"# Nội dung đăng Facebook ngày {d.name} (sao chép nguyên khối; ảnh nằm trong thư mục từng bài)\n",
        "Bản nháp, công ty duyệt trước khi đăng. Chỗ cần kiểm trước khi đăng ghi trong `bai.md` của từng bài và `README.md` của ngày.\n"]
-for f in sorted(d.glob("bai-*/bai.md")):
+for f in sorted(d.glob("bai-*/bai.md"), key=lambda f: int(re.match(r"bai-(\d+)", f.parent.name).group(1))):
     t = f.read_text(encoding="utf-8")
     title = re.search(r"^# (.+)$", t, re.M).group(1)
     warn = "\n".join(l for l in t.splitlines() if l.startswith("**⚠"))
