@@ -18,7 +18,7 @@ r = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", src, "-vn",
 m = json.loads(r.stderr[r.stderr.rfind("{"):r.stderr.rfind("}") + 1])
 af = (f"loudnorm=I={I}:TP={TP}:LRA={LRA}:measured_I={m['input_i']}:measured_TP={m['input_tp']}:"
       f"measured_LRA={m['input_lra']}:measured_thresh={m['input_thresh']}:offset={m['target_offset']}:linear=true,"
-      "alimiter=limit=0.89:attack=3:release=40:level=disabled")   # AAC có thể vượt đỉnh sau mã hoá → chặn ở ≈ -1 dBFS
+      "alimiter=limit=0.8:attack=3:release=40:level=disabled")   # AAC có thể vượt đỉnh sau mã hoá → chặn ở ≈ -2 dBFS, chừa chỗ cho AAC
 if maxmb:
     dur = float(subprocess.check_output(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", src]).decode())
     vb = int((maxmb * 1024 * 1024 * 8 / dur - 128_000) * 0.93)          # bit/s cho hình, chừa 7% cho khung mp4
