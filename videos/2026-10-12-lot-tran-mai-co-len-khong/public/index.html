@@ -1,0 +1,869 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"/>
+<style>
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-ext-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-vietnamese-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-display:block;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-ext-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-display:block;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-vietnamese-700-normal.woff2') format('woff2');font-weight:700;font-style:normal;font-display:block;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-800-normal.woff2') format('woff2');font-weight:800;font-style:normal;font-display:block;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-latin-ext-800-normal.woff2') format('woff2');font-weight:800;font-style:normal;font-display:block;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Be Vietnam Pro';src:url('fonts/be-vietnam-pro-vietnamese-800-normal.woff2') format('woff2');font-weight:800;font-style:normal;font-display:block;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair-display-latin-700-italic.woff2') format('woff2');font-weight:700;font-style:italic;font-display:block;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair-display-latin-ext-700-italic.woff2') format('woff2');font-weight:700;font-style:italic;font-display:block;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Playfair Display';src:url('fonts/playfair-display-vietnamese-700-italic.woff2') format('woff2');font-weight:700;font-style:italic;font-display:block;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Pacifico';src:url('fonts/pacifico-latin-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Pacifico';src:url('fonts/pacifico-latin-ext-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Pacifico';src:url('fonts/pacifico-vietnamese-400-normal.woff2') format('woff2');font-weight:400;font-style:normal;font-display:block;unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:'Be Vietnam Pro','Playfair Display','Pacifico',sans-serif}
+#stage{position:relative;width:1080px;height:1920px;overflow:hidden;background:#111111}
+.video-wrapper{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;transform-origin:0 0}
+#video-inner{position:absolute;inset:0;transform-origin:48% 36%}
+#video-inner video{width:100%;height:100%;object-fit:cover}
+.shade{position:absolute;left:0;right:0;bottom:0;height:980px;background:linear-gradient(to bottom,rgba(0,0,0,0) 0%,rgba(0,0,0,.4) 35%,rgba(0,0,0,.66) 100%);pointer-events:none}
+.card-host{position:absolute;pointer-events:none;overflow:hidden}
+.card-host .card{position:relative;width:100%;height:100%;overflow:hidden}
+.cap{position:absolute;z-index:10;left:60px;width:880px;top:1170px;height:260px;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;text-shadow:0 4px 18px rgba(0,0,0,.7)}
+.cap .sm{font:700 46px 'Be Vietnam Pro';color:#FAFAFA;margin-bottom:2px}
+.cap .w{display:inline-block}
+.cap .kk{font-family:'Playfair Display';font-style:italic;font-weight:700;color:#F5C542;line-height:1.1}
+.cap .kb{font-family:'Be Vietnam Pro';font-weight:800;color:#FAFAFA;line-height:1.12}
+.cap .kg{display:inline-block;font-family:'Be Vietnam Pro';font-weight:800;color:#22C55E;line-height:1.1;background:rgba(10,10,10,.72);padding:2px 26px 8px;border-radius:20px}
+.cap .kr{display:inline-block;font-family:'Be Vietnam Pro';font-weight:800;color:#FF5A5A;line-height:1.1;background:rgba(10,10,10,.72);padding:2px 26px 8px;border-radius:20px}
+</style></head>
+<body>
+<div id="stage" data-composition-id="talking-head-recut" data-start="0" data-duration="105.8000" data-fps="30" data-width="1080" data-height="1920">
+<div class="video-wrapper" id="video-wrap"><div id="video-inner">
+<video id="bg-video" src="input-video.mp4" muted playsinline data-start="0" data-duration="105.8000" data-track-index="1"></video>
+</div><div class="shade"></div></div>
+<audio id="source-audio" src="input-video.mp4" data-start="0" data-duration="105.8000" data-track-index="10" data-volume="1"></audio>
+<audio id="sfx-0" src="sfx/pop.wav" data-start="0.0000" data-duration="0.3" data-track-index="11" data-volume="0.25"></audio>
+<audio id="sfx-1" src="sfx/thump.wav" data-start="1.7667" data-duration="0.7" data-track-index="12" data-volume="0.5"></audio>
+<audio id="sfx-2" src="sfx/thump.wav" data-start="2.4333" data-duration="0.7" data-track-index="13" data-volume="0.5"></audio>
+<audio id="sfx-3" src="sfx/pop.wav" data-start="4.2000" data-duration="0.3" data-track-index="14" data-volume="0.25"></audio>
+<audio id="sfx-4" src="sfx/pop.wav" data-start="7.0000" data-duration="0.3" data-track-index="11" data-volume="0.25"></audio>
+<audio id="sfx-5" src="sfx/click.wav" data-start="7.6000" data-duration="0.3" data-track-index="12" data-volume="0.28"></audio>
+<audio id="sfx-6" src="sfx/click.wav" data-start="8.4667" data-duration="0.3" data-track-index="13" data-volume="0.28"></audio>
+<audio id="sfx-7" src="sfx/ding.wav" data-start="8.5000" data-duration="1.0" data-track-index="14" data-volume="0.2"></audio>
+<audio id="sfx-8" src="sfx/click.wav" data-start="9.4000" data-duration="0.3" data-track-index="11" data-volume="0.28"></audio>
+<audio id="sfx-9" src="sfx/ding.wav" data-start="9.4333" data-duration="1.0" data-track-index="12" data-volume="0.2"></audio>
+<audio id="sfx-10" src="sfx/ding.wav" data-start="10.6333" data-duration="1.0" data-track-index="13" data-volume="0.2"></audio>
+<audio id="sfx-11" src="sfx/thump.wav" data-start="14.2667" data-duration="0.7" data-track-index="14" data-volume="0.5"></audio>
+<audio id="sfx-12" src="sfx/pop.wav" data-start="16.0333" data-duration="0.3" data-track-index="11" data-volume="0.25"></audio>
+<audio id="sfx-13" src="sfx/click.wav" data-start="18.4667" data-duration="0.3" data-track-index="12" data-volume="0.28"></audio>
+<audio id="sfx-14" src="sfx/whoosh.wav" data-start="20.5000" data-duration="1.0" data-track-index="13" data-volume="0.3"></audio>
+<audio id="sfx-15" src="sfx/whoosh.wav" data-start="22.4667" data-duration="1.0" data-track-index="14" data-volume="0.22"></audio>
+<audio id="sfx-16" src="sfx/pop.wav" data-start="22.6667" data-duration="0.3" data-track-index="11" data-volume="0.25"></audio>
+<audio id="sfx-17" src="sfx/ding.wav" data-start="23.8667" data-duration="1.0" data-track-index="12" data-volume="0.2"></audio>
+<audio id="sfx-18" src="sfx/whoosh.wav" data-start="26.2667" data-duration="1.0" data-track-index="13" data-volume="0.3"></audio>
+<audio id="sfx-19" src="sfx/ding.wav" data-start="27.5000" data-duration="1.0" data-track-index="14" data-volume="0.2"></audio>
+<audio id="sfx-20" src="sfx/pop.wav" data-start="32.0667" data-duration="0.3" data-track-index="11" data-volume="0.2"></audio>
+<audio id="sfx-21" src="sfx/pop.wav" data-start="32.2667" data-duration="0.3" data-track-index="12" data-volume="0.2"></audio>
+<audio id="sfx-22" src="sfx/pop.wav" data-start="32.4667" data-duration="0.3" data-track-index="13" data-volume="0.2"></audio>
+<audio id="sfx-23" src="sfx/pop.wav" data-start="32.6667" data-duration="0.3" data-track-index="14" data-volume="0.2"></audio>
+<audio id="sfx-24" src="sfx/pop.wav" data-start="32.8667" data-duration="0.3" data-track-index="11" data-volume="0.2"></audio>
+<audio id="sfx-25" src="sfx/ding.wav" data-start="32.8667" data-duration="1.0" data-track-index="12" data-volume="0.2"></audio>
+<audio id="sfx-26" src="sfx/whoosh.wav" data-start="35.8000" data-duration="1.0" data-track-index="13" data-volume="0.22"></audio>
+<audio id="sfx-27" src="sfx/pop.wav" data-start="35.9000" data-duration="0.3" data-track-index="14" data-volume="0.25"></audio>
+<audio id="sfx-28" src="sfx/click.wav" data-start="40.7000" data-duration="0.3" data-track-index="11" data-volume="0.28"></audio>
+<audio id="sfx-29" src="sfx/pop.wav" data-start="44.1000" data-duration="0.3" data-track-index="12" data-volume="0.25"></audio>
+<audio id="sfx-30" src="sfx/whoosh.wav" data-start="51.3000" data-duration="1.0" data-track-index="13" data-volume="0.3"></audio>
+<audio id="sfx-31" src="sfx/whoosh.wav" data-start="61.0667" data-duration="1.0" data-track-index="14" data-volume="0.22"></audio>
+<audio id="sfx-32" src="sfx/whoosh.wav" data-start="61.2667" data-duration="1.0" data-track-index="11" data-volume="0.3"></audio>
+<audio id="sfx-33" src="sfx/whoosh.wav" data-start="63.2333" data-duration="1.0" data-track-index="12" data-volume="0.22"></audio>
+<audio id="sfx-34" src="sfx/pop.wav" data-start="64.1667" data-duration="0.3" data-track-index="13" data-volume="0.25"></audio>
+<audio id="sfx-35" src="sfx/whoosh.wav" data-start="71.5000" data-duration="1.0" data-track-index="14" data-volume="0.3"></audio>
+<audio id="sfx-36" src="sfx/whoosh.wav" data-start="83.3667" data-duration="1.0" data-track-index="11" data-volume="0.22"></audio>
+<audio id="sfx-37" src="sfx/pop.wav" data-start="83.6000" data-duration="0.3" data-track-index="12" data-volume="0.25"></audio>
+<audio id="sfx-38" src="sfx/pop.wav" data-start="90.7667" data-duration="0.3" data-track-index="13" data-volume="0.25"></audio>
+<audio id="sfx-39" src="sfx/thump.wav" data-start="94.4667" data-duration="0.7" data-track-index="14" data-volume="0.5"></audio>
+<audio id="sfx-40" src="sfx/pop.wav" data-start="95.7000" data-duration="0.3" data-track-index="11" data-volume="0.25"></audio>
+<audio id="sfx-41" src="sfx/pop.wav" data-start="101.4667" data-duration="0.3" data-track-index="12" data-volume="0.25"></audio>
+<div class="card-host clip" id="c01-hook" data-card-id="c01-hook" data-start="0.0000" data-duration="4.0000" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c01-hook"><style>.card[data-card-id="c01-hook"] .root{position:absolute;inset:0;}
+.card[data-card-id="c01-hook"] .s{position:absolute;left:60px;width:880px;top:178px;text-align:center;line-height:1}
+.card[data-card-id="c01-hook"] .s div{font-family:'Be Vietnam Pro';font-weight:800;opacity:0;text-shadow:0 5px 0 rgba(0,0,0,.55),0 12px 34px rgba(0,0,0,.65)}
+.card[data-card-id="c01-hook"] #tag{display:inline-block;font-size:27px;letter-spacing:6px;color:#111111;background:#F5C542;padding:8px 22px;border-radius:12px;text-shadow:none;margin-bottom:16px}
+.card[data-card-id="c01-hook"] #a{font-size:37px;color:#fff;letter-spacing:1px}
+.card[data-card-id="c01-hook"] #b{display:inline-block;white-space:nowrap;font-size:112px;color:#FF5A5A;margin:12px 0 8px;padding:0 30px 8px;background:rgba(10,10,10,.82);border-radius:24px;text-shadow:none}
+.card[data-card-id="c01-hook"] #c{font-size:96px;color:#F5C542;white-space:nowrap}</style><div class="root"><div class="s">
+<div id="tag">LỘT TRẦN NGHỀ MÔI GIỚI</div>
+<div id="a">MÌNH LÀM TRONG NGÀNH CHỨNG KHOÁN</div>
+<div id="b">KHÔNG BIẾT</div>
+<div id="c">MAI MÃ NÀO LÊN</div></div></div></div></div>
+<div class="card-host clip" id="c02-ha" data-card-id="c02-ha" data-start="4.2000" data-duration="1.5333" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c02-ha"><style>.card[data-card-id="c02-ha"] .root{position:absolute;inset:0;}
+.card[data-card-id="c02-ha"] .q{position:absolute;left:60px;width:880px;top:215px;text-align:center;font:800 250px 'Be Vietnam Pro';color:#F5C542;line-height:1;text-shadow:0 5px 0 rgba(0,0,0,.55),0 12px 34px rgba(0,0,0,.65);opacity:0}</style><div class="root"><div class="q" id="c02-q">HẢ?</div></div></div></div>
+<div class="card-host clip" id="c03-ticks" data-card-id="c03-ticks" data-start="7.0000" data-duration="9.0000" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c03-ticks"><style>.card[data-card-id="c03-ticks"] .root{position:absolute;inset:0;}
+.card[data-card-id="c03-ticks"] .w{position:absolute;left:60px;width:880px;top:186px;display:flex;flex-direction:column;gap:10px}
+.card[data-card-id="c03-ticks"] .k{align-self:flex-start;background:rgba(20,20,22,.93);border:2px solid #2f2f35;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.4);padding:8px 20px;font:800 26px 'Be Vietnam Pro';color:#a8a8a8;letter-spacing:4px}
+.card[data-card-id="c03-ticks"] .r{display:flex;justify-content:space-between;align-items:center;height:96px;padding:0 24px;border-radius:22px;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.card[data-card-id="c03-ticks"] .r span{font:800 48px 'Be Vietnam Pro';color:#fff}
+.card[data-card-id="c03-ticks"] .r b{display:flex;align-items:center;justify-content:center;width:62px;height:62px;border-radius:50%}
+.card[data-card-id="c03-ticks"] .ok{background:color-mix(in srgb,#22C55E 16%,#151517);border:2px solid rgba(34,197,94,.6)} .card[data-card-id="c03-ticks"] .ok b{background:#22C55E}
+.card[data-card-id="c03-ticks"] .no{background:color-mix(in srgb,#EF4444 24%,#151517);border:3px solid #EF4444} .card[data-card-id="c03-ticks"] .no span{color:#FF8A8A} .card[data-card-id="c03-ticks"] .no b{background:#EF4444}</style><div class="root"><div class="w"><div class="k" id="c03-k">HỎI MÌNH VỀ MỘT MÃ…</div>
+<div class="r ok" id="c03-r1"><span>Kinh doanh ra sao</span><b><svg viewBox="0 0 24 24" width="38" height="38"><path d="M5 12.5l4.6 4.6L19 7" fill="none" stroke="#111" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/></svg></b></div>
+<div class="r ok" id="c03-r2"><span>Rủi ro nằm ở đâu</span><b><svg viewBox="0 0 24 24" width="38" height="38"><path d="M5 12.5l4.6 4.6L19 7" fill="none" stroke="#111" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/></svg></b></div>
+<div class="r ok" id="c03-r3"><span>Đặt lệnh kiểu nào</span><b><svg viewBox="0 0 24 24" width="38" height="38"><path d="M5 12.5l4.6 4.6L19 7" fill="none" stroke="#111" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/></svg></b></div>
+<div class="r no" id="c03-r4"><span>Mai mã nào sẽ lên?</span><b><svg viewBox="0 0 24 24" width="38" height="38"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="#fff" stroke-width="3.8" stroke-linecap="round"/></svg></b></div></div></div></div></div>
+<div class="card-host clip" id="c04-lo" data-card-id="c04-lo" data-start="16.0333" data-duration="4.4333" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c04-lo"><style>.card[data-card-id="c04-lo"] .root{position:absolute;inset:0;}
+.card[data-card-id="c04-lo"] .w{position:absolute;left:60px;width:880px;top:186px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:8px}
+.card[data-card-id="c04-lo"] .k{background:rgba(20,20,22,.93);border:2px solid #2f2f35;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.4);padding:10px 22px;font:800 28px 'Be Vietnam Pro';color:#bdbdbd;letter-spacing:3px}
+.card[data-card-id="c04-lo"] .big{font:800 150px/1.05 'Be Vietnam Pro';color:#FF5A5A;padding:0 34px 8px;background:rgba(10,10,10,.82);border-radius:26px}
+.card[data-card-id="c04-lo"] .sub{font:700 58px 'Be Vietnam Pro';color:#fff;text-shadow:0 5px 0 rgba(0,0,0,.55),0 12px 34px rgba(0,0,0,.65)} .card[data-card-id="c04-lo"] .sub i{font:italic 700 74px 'Playfair Display';color:#F5C542}</style><div class="root"><div class="w"><div class="k" id="c04-k">AI TRẢ LỜI CHẮC CHẮN CÂU ĐÓ…</div>
+<div class="big" id="c04-b">NÊN LO</div><div class="sub" id="c04-s">chứ <i>đừng mừng</i></div></div></div></div></div>
+<div class="card-host clip" id="c05-ch1" data-card-id="c05-ch1" data-start="20.5000" data-duration="2.1000" data-track-index="4" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c05-ch1"><style>.card[data-card-id="c05-ch1"] .root{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 45%,#FFFBF1 0%,#F3EBDA 100%);}
+.card[data-card-id="c05-ch1"] .bT{position:absolute;left:150px;top:0;width:130px;height:520px;background:#3a3a3a;border-radius:0 0 8px 8px}
+.card[data-card-id="c05-ch1"] .bB{position:absolute;right:150px;bottom:0;width:130px;height:560px;background:#3a3a3a;border-radius:8px 8px 0 0}
+.card[data-card-id="c05-ch1"] .lbl{position:absolute;left:500px;top:50%;transform:translate(-50%,-50%);padding:30px 50px;border:3px dashed rgba(17,17,17,.45);border-radius:14px;background:rgba(255,255,255,.35);text-align:center;box-shadow:0 18px 40px rgba(0,0,0,.12);white-space:nowrap;max-width:840px}
+.card[data-card-id="c05-ch1"] .n{font:800 40px 'Be Vietnam Pro';color:#111111;background:#F5C542;display:inline-block;padding:4px 20px;border-radius:12px}
+.card[data-card-id="c05-ch1"] .tt{font:italic 700 92px 'Playfair Display';color:#111111;line-height:1.2}
+.card[data-card-id="c05-ch1"] .sb{font:400 40px 'Pacifico';color:#555}</style><div class="root"><div class="bT" id="c05-ch1-bt"></div><div class="bB" id="c05-ch1-bb"></div>
+<div class="lbl" id="c05-ch1-l"><div class="n">LÝ DO</div><div class="tt" id="c05-ch1-tt">Tại sao thế?</div><div class="sb">giá ngày mai do ai quyết định</div></div></div></div></div>
+<div class="card-host clip" id="c06-crowd" data-card-id="c06-crowd" data-start="22.6667" data-duration="3.5667" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c06-crowd"><style>.card[data-card-id="c06-crowd"] .root{position:absolute;inset:0;}
+.card[data-card-id="c06-crowd"] .p{position:absolute;left:60px;width:880px;top:190px;height:430px;padding:26px 26px;background:rgba(17,17,17,.86);border-radius:28px;box-shadow:0 18px 50px rgba(0,0,0,.35);display:flex;gap:22px}
+.card[data-card-id="c06-crowd"] .col{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;text-align:center}
+.card[data-card-id="c06-crowd"] #c06-l{width:250px} .card[data-card-id="c06-crowd"] .big{flex:1}
+.card[data-card-id="c06-crowd"] .ic{position:relative;width:170px;height:200px;margin-bottom:16px;opacity:.95}
+.card[data-card-id="c06-crowd"] .hd{position:absolute;left:55px;top:0;width:60px;height:60px;border-radius:50%;background:#e8e8e8}
+.card[data-card-id="c06-crowd"] .bd{position:absolute;left:25px;top:72px;width:120px;height:120px;border-radius:60px 60px 18px 18px;background:#e8e8e8}
+.card[data-card-id="c06-crowd"] u{position:absolute;right:-8px;top:-10px;width:70px;height:70px;border-radius:50%;background:#EF4444;display:flex;align-items:center;justify-content:center;text-decoration:none}
+.card[data-card-id="c06-crowd"] .col b{font:800 36px 'Be Vietnam Pro';color:#fff} .card[data-card-id="c06-crowd"] .big b{color:#F5C542;font-size:44px}
+.card[data-card-id="c06-crowd"] .col span{font:700 28px 'Be Vietnam Pro';color:#aaa}
+.card[data-card-id="c06-crowd"] .grid{display:grid;grid-template-columns:repeat(9,1fr);gap:12px;width:100%;margin:0 0 20px}
+.card[data-card-id="c06-crowd"] .grid i{display:block;aspect-ratio:1;border-radius:50%;background:#d9d9d9} .card[data-card-id="c06-crowd"] .grid i.d1{background:#F5C542}</style><div class="root"><div class="p" id="c06-p">
+<div class="col" id="c06-l"><div class="ic"><div class="hd"></div><div class="bd"></div><u id="c06-x"><svg viewBox="0 0 24 24" width="38" height="38"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="#fff" stroke-width="3.8" stroke-linecap="round"/></svg></u></div><b>MỘT NGƯỜI</b><span>quyết định?</span></div>
+<div class="col big" id="c06-rr"><div class="grid"><i class="d1" id="c06-d0"></i><i class="d0" id="c06-d1"></i><i class="d0" id="c06-d2"></i><i class="d1" id="c06-d3"></i><i class="d0" id="c06-d4"></i><i class="d0" id="c06-d5"></i><i class="d1" id="c06-d6"></i><i class="d0" id="c06-d7"></i><i class="d0" id="c06-d8"></i><i class="d1" id="c06-d9"></i><i class="d0" id="c06-d10"></i><i class="d0" id="c06-d11"></i><i class="d1" id="c06-d12"></i><i class="d0" id="c06-d13"></i><i class="d0" id="c06-d14"></i><i class="d1" id="c06-d15"></i><i class="d0" id="c06-d16"></i><i class="d0" id="c06-d17"></i><i class="d1" id="c06-d18"></i><i class="d0" id="c06-d19"></i><i class="d0" id="c06-d20"></i><i class="d1" id="c06-d21"></i><i class="d0" id="c06-d22"></i><i class="d0" id="c06-d23"></i><i class="d1" id="c06-d24"></i><i class="d0" id="c06-d25"></i><i class="d0" id="c06-d26"></i><i class="d1" id="c06-d27"></i><i class="d0" id="c06-d28"></i><i class="d0" id="c06-d29"></i><i class="d1" id="c06-d30"></i><i class="d0" id="c06-d31"></i><i class="d0" id="c06-d32"></i><i class="d1" id="c06-d33"></i><i class="d0" id="c06-d34"></i><i class="d0" id="c06-d35"></i></div><b>HÀNG TRIỆU NGƯỜI</b><span>cùng đặt lệnh một lúc</span></div></div></div></div></div>
+<div class="card-host clip" id="c07-vni" data-card-id="c07-vni" data-start="26.2667" data-duration="9.6667" data-track-index="4" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c07-vni"><style>.card[data-card-id="c07-vni"] .root{position:absolute;inset:0;background:radial-gradient(110% 70% at 50% 30%,#1d1d1f 0%,#111111 70%);}
+.card[data-card-id="c07-vni"] .brand{position:absolute;left:60px;top:190px;display:flex;align-items:center;gap:18px;padding:10px 26px 10px 16px;border-radius:22px;background:rgba(167,139,250,.12);border:2px solid rgba(167,139,250,.45)}
+.card[data-card-id="c07-vni"] .brand img{height:84px;width:auto}
+.card[data-card-id="c07-vni"] .brand b{display:block;font:800 46px 'Be Vietnam Pro';color:#fff;line-height:1.05}
+.card[data-card-id="c07-vni"] .brand span{display:block;font:700 28px 'Be Vietnam Pro';color:#C4B5FD;letter-spacing:1px}
+.card[data-card-id="c07-vni"] .g{position:absolute;left:60px;width:880px;top:306px;display:flex;align-items:baseline;gap:22px;flex-wrap:wrap}
+.card[data-card-id="c07-vni"] .g .l{font:800 36px 'Be Vietnam Pro';color:#9a9a9a;letter-spacing:4px}
+.card[data-card-id="c07-vni"] .g .v{font:800 150px 'Be Vietnam Pro';color:#22C55E;line-height:1} .card[data-card-id="c07-vni"] .g .v small{font:700 60px 'Be Vietnam Pro';color:#bbb}
+.card[data-card-id="c07-vni"] .g .s{flex-basis:100%;font:700 27px 'Be Vietnam Pro';color:#8b8bff;margin-top:-4px}
+.card[data-card-id="c07-vni"] .m{position:absolute;left:60px;width:880px;top:506px;text-align:center;font:italic 700 54px 'Playfair Display';color:#F5C542}
+.card[data-card-id="c07-vni"] .vn{position:absolute;left:60px;width:880px;top:578px;padding:20px 26px 14px;border-radius:28px;background:#171719;border:2px solid #2d2d31}
+.card[data-card-id="c07-vni"] .vn .h{display:flex;justify-content:space-between;align-items:baseline}
+.card[data-card-id="c07-vni"] .vn .h span{font:800 28px 'Be Vietnam Pro';color:#bdbdbd;letter-spacing:3px} .card[data-card-id="c07-vni"] .vn .h b{font:800 54px 'Be Vietnam Pro';color:#FF5A5A}
+.card[data-card-id="c07-vni"] .bars{display:flex;gap:16px;align-items:flex-start;margin-top:10px}
+.card[data-card-id="c07-vni"] .c{flex:1;display:flex;flex-direction:column;align-items:center}
+.card[data-card-id="c07-vni"] .c .v{font:800 34px 'Be Vietnam Pro';color:#FF7A7A;margin-bottom:6px} .card[data-card-id="c07-vni"] .c .dt{font:700 28px 'Be Vietnam Pro';color:#cfcfcf;margin-top:8px}
+.card[data-card-id="c07-vni"] .bw{height:250px;width:100%;display:flex;align-items:flex-start;justify-content:center}
+.card[data-card-id="c07-vni"] .b{width:100%;max-width:120px;border-radius:12px;background:linear-gradient(to bottom,#FF6B6B,#C42B2B);transform-origin:50% 0}
+.card[data-card-id="c07-vni"] .ft{font:700 25px 'Be Vietnam Pro';color:#8b8bff;margin-top:6px;text-align:center}
+.card[data-card-id="c07-vni"] .st{position:absolute;left:60px;width:880px;top:1066px;text-align:center;font:800 44px 'Be Vietnam Pro';color:#fff}
+.card[data-card-id="c07-vni"] .st b{color:#22C55E} .card[data-card-id="c07-vni"] .st i{font:italic 700 52px 'Playfair Display';color:#FF5A5A}</style><div class="root"><div style="position:absolute;inset:0;transform:translateY(-20px)"><div class="brand" id="c07-br"><img src="img/logo.png"/><div><b>CloudStock</b><span>cloudstock.id.vn</span></div></div>
+<div class="g" id="c07-g"><div class="l">GDP QUÝ 3</div><div class="v">+<span id="c07-n">0</span><small>%</small></div><div class="s">so với cùng kỳ · Cục Thống kê (số ước tính)</div></div>
+<div class="m" id="c07-m">vậy mà…</div>
+<div class="vn" id="c07-vn"><div class="h"><span>VN-INDEX · 28/9 → 2/10</span><b id="c07-tot">−47,4 điểm</b></div>
+<div class="bars"><div class="c" id="c07-c0"><span class="v">−4,43</span><div class="bw"><div class="b" style="height:55px"></div></div><span class="dt">28/9</span></div><div class="c" id="c07-c1"><span class="v">−2,95</span><div class="bw"><div class="b" style="height:36px"></div></div><span class="dt">29/9</span></div><div class="c" id="c07-c2"><span class="v">−9,11</span><div class="bw"><div class="b" style="height:113px"></div></div><span class="dt">30/9</span></div><div class="c" id="c07-c3"><span class="v">−19,32</span><div class="bw"><div class="b" style="height:240px"></div></div><span class="dt">1/10</span></div><div class="c" id="c07-c4"><span class="v">−11,59</span><div class="bw"><div class="b" style="height:143px"></div></div><span class="dt">2/10</span></div></div><div class="ft">5 phiên liền giảm · dữ liệu DNSE, đóng cửa</div></div>
+<div class="st" id="c07-st"><b>Kinh tế tốt</b> · chỉ số <i>vẫn đi ngược</i></div></div></div></div></div>
+<div class="card-host clip" id="c08-biet" data-card-id="c08-biet" data-start="35.9000" data-duration="7.8333" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c08-biet"><style>.card[data-card-id="c08-biet"] .root{position:absolute;inset:0;}
+.card[data-card-id="c08-biet"] .w{position:absolute;left:60px;width:880px;top:186px;text-align:center;display:flex;flex-direction:column;gap:4px}
+.card[data-card-id="c08-biet"] .st{display:block;border-radius:22px;padding:12px 18px;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.card[data-card-id="c08-biet"] .a{font:700 44px 'Be Vietnam Pro';color:#fff;background:color-mix(in srgb,#F5C542 16%,#151517);border:2px solid rgba(245,197,66,.6)} .card[data-card-id="c08-biet"] .a b{color:#F5C542;font-weight:800}
+.card[data-card-id="c08-biet"] .b{font:800 96px/1.1 'Be Vietnam Pro';color:#22C55E;background:color-mix(in srgb,#22C55E 16%,#151517);border:3px solid #22C55E}
+.card[data-card-id="c08-biet"] .c{font:700 46px 'Be Vietnam Pro';color:#e8e8e8;background:#1a1a1c;border:2px dashed #8a8a8a} .card[data-card-id="c08-biet"] .c i{font:italic 700 56px 'Playfair Display';color:#FF7A7A}
+.card[data-card-id="c08-biet"] .ar{font:800 40px 'Be Vietnam Pro';color:#e0e0e0;height:40px;line-height:40px;text-shadow:0 5px 0 rgba(0,0,0,.55),0 12px 34px rgba(0,0,0,.65)}</style><div class="root"><div class="w">
+<div class="st a" id="c08-a">Người <b>nghĩ chắc</b> mai mã nào lên</div>
+<div class="ar" id="c08-r1">↓</div>
+<div class="st b" id="c08-b">MUA HẾT</div>
+<div class="ar" id="c08-r2">↓</div>
+<div class="st c" id="c08-c">đâu rảnh <i>nói cho ai</i></div></div></div></div></div>
+<div class="card-host clip" id="c09-hoi" data-card-id="c09-hoi" data-start="44.1000" data-duration="7.0333" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c09-hoi"><style>.card[data-card-id="c09-hoi"] .root{position:absolute;inset:0;}
+.card[data-card-id="c09-hoi"] .w{position:absolute;left:60px;width:880px;top:186px;display:flex;flex-direction:column;gap:12px}
+.card[data-card-id="c09-hoi"] .k{align-self:flex-start;background:rgba(20,20,22,.93);border:2px solid #2f2f35;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.4);padding:10px 24px;font:800 30px 'Be Vietnam Pro';color:#bdbdbd;letter-spacing:5px} .card[data-card-id="c09-hoi"] .k i{font:italic 700 48px 'Playfair Display';color:#F5C542;letter-spacing:0}
+.card[data-card-id="c09-hoi"] .bub{background:#FAFAFA;border-radius:36px 36px 36px 10px;padding:22px 30px;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.card[data-card-id="c09-hoi"] .bub span{display:block;font:800 52px/1.22 'Be Vietnam Pro';color:#111111}
+.card[data-card-id="c09-hoi"] .who{font:700 28px 'Be Vietnam Pro';color:#f0f0f0;text-align:right;text-shadow:0 5px 0 rgba(0,0,0,.55),0 12px 34px rgba(0,0,0,.65)}</style><div class="root"><div class="w"><div class="k" id="c09-k">HỎI NGƯỢC <i>một câu</i></div>
+<div class="bub" id="c09-b"><span id="c09-t">Nếu anh chắc như vậy, sao anh không tự mua hết đi?</span></div>
+<div class="who" id="c09-w">bạn hỏi người nói chắc ↑</div></div></div></div></div>
+<div class="card-host clip" id="c10-cv" data-card-id="c10-cv" data-start="51.3000" data-duration="9.9333" data-track-index="4" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c10-cv"><style>.card[data-card-id="c10-cv"] .root{position:absolute;inset:0;background:radial-gradient(110% 70% at 50% 30%,#1d1d1f 0%,#111111 70%);}
+.card[data-card-id="c10-cv"] .src{position:absolute;left:60px;top:200px;font:800 28px 'Be Vietnam Pro';color:#8b8bff;letter-spacing:4px;padding:8px 18px;border:2px solid rgba(139,139,255,.5);border-radius:12px}
+.card[data-card-id="c10-cv"] .ttl{position:absolute;left:60px;width:880px;top:290px} .card[data-card-id="c10-cv"] .ttl b{display:block;white-space:nowrap;font:800 55px 'Be Vietnam Pro';color:#fff;line-height:1.15} .card[data-card-id="c10-cv"] .ttl span{font:700 32px 'Be Vietnam Pro';color:#F5C542}
+.card[data-card-id="c10-cv"] .qq{position:absolute;left:60px;width:880px;padding:18px 26px 18px 34px;border-left:8px solid #F5C542;background:rgba(255,255,255,.06);border-radius:0 22px 22px 0;font:700 40px/1.3 'Be Vietnam Pro';color:#f2f2f2}
+.card[data-card-id="c10-cv"] #c10-q1{top:470px} .card[data-card-id="c10-cv"] #c10-q2{top:700px}
+.card[data-card-id="c10-cv"] .qq i{font:italic 700 80px 'Playfair Display';color:#F5C542;line-height:0;vertical-align:-24px;margin-right:6px}
+.card[data-card-id="c10-cv"] mark{background:linear-gradient(#F5C542,#F5C542) no-repeat 0 100%/0% 100%;color:#111111;padding:0 6px;border-radius:6px;font-weight:800}
+.card[data-card-id="c10-cv"] u{text-decoration:none;border-bottom:3px solid rgba(245,197,66,.55)}
+.card[data-card-id="c10-cv"] .nt{position:absolute;left:60px;width:880px;top:1020px;font:700 26px 'Be Vietnam Pro';color:#8b8bff}</style><div class="root"><div style="position:absolute;inset:0;transform:translateY(-20px)"><div class="src" id="c10-src">DÂN TRÍ · 13/05/2026</div>
+<div class="ttl" id="c10-t"><b>Công văn 3760/UBCK-QLKD</b><span>Ủy ban Chứng khoán Nhà nước · ngày 7/5/2026</span></div>
+<div class="qq" id="c10-q1"><i>“</i>UBCKNN <mark id="c10-m1">đề nghị</mark> các công ty chứng khoán <u>rà soát hoạt động của người hành nghề và nhân viên</u>…</div>
+<div class="qq" id="c10-q2"><i>“</i>…có trường hợp cá nhân <mark id="c10-m2">giới thiệu nơi làm việc, chức danh</mark> hoặc quá trình công tác tại công ty chứng khoán <u>khi thực hiện các nội dung nhận định và khuyến nghị đầu tư</u></div>
+<div class="nt" id="c10-nt">Trích theo báo Dân trí</div></div></div></div></div>
+<div class="card-host clip" id="c11-ch2" data-card-id="c11-ch2" data-start="61.2667" data-duration="2.1000" data-track-index="4" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c11-ch2"><style>.card[data-card-id="c11-ch2"] .root{position:absolute;inset:0;background:radial-gradient(120% 80% at 50% 45%,#FFFBF1 0%,#F3EBDA 100%);}
+.card[data-card-id="c11-ch2"] .bT{position:absolute;left:150px;top:0;width:130px;height:520px;background:#3a3a3a;border-radius:0 0 8px 8px}
+.card[data-card-id="c11-ch2"] .bB{position:absolute;right:150px;bottom:0;width:130px;height:560px;background:#3a3a3a;border-radius:8px 8px 0 0}
+.card[data-card-id="c11-ch2"] .lbl{position:absolute;left:500px;top:50%;transform:translate(-50%,-50%);padding:30px 50px;border:3px dashed rgba(17,17,17,.45);border-radius:14px;background:rgba(255,255,255,.35);text-align:center;box-shadow:0 18px 40px rgba(0,0,0,.12);white-space:nowrap;max-width:840px}
+.card[data-card-id="c11-ch2"] .n{font:800 40px 'Be Vietnam Pro';color:#111111;background:#F5C542;display:inline-block;padding:4px 20px;border-radius:12px}
+.card[data-card-id="c11-ch2"] .tt{font:italic 700 92px 'Playfair Display';color:#111111;line-height:1.2}
+.card[data-card-id="c11-ch2"] .sb{font:400 40px 'Pacifico';color:#555}</style><div class="root"><div class="bT" id="c11-ch2-bt"></div><div class="bB" id="c11-ch2-bb"></div>
+<div class="lbl" id="c11-ch2-l"><div class="n">LƯU Ý</div><div class="tt" id="c11-ch2-tt">Không có nghĩa là</div><div class="sb">môi giới chỉ biết nói “không biết”</div></div></div></div></div>
+<div class="card-host clip" id="c12-three" data-card-id="c12-three" data-start="64.1667" data-duration="7.3000" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c12-three"><style>.card[data-card-id="c12-three"] .root{position:absolute;inset:0;}
+.card[data-card-id="c12-three"] .w{position:absolute;left:60px;width:880px;top:186px;display:flex;flex-direction:column;gap:10px}
+.card[data-card-id="c12-three"] .k{align-self:flex-start;background:rgba(20,20,22,.93);border:2px solid #2f2f35;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.4);padding:8px 20px;font:800 26px 'Be Vietnam Pro';color:#a8a8a8;letter-spacing:5px}
+.card[data-card-id="c12-three"] .it{display:flex;align-items:center;gap:20px;background:rgba(20,20,22,.93);border:2px solid #2f2f35;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.4);padding:12px 24px}
+.card[data-card-id="c12-three"] .it b{font:800 36px 'Be Vietnam Pro';color:#111111;background:#F5C542;border-radius:12px;padding:2px 16px}
+.card[data-card-id="c12-three"] .it span{font:800 50px 'Be Vietnam Pro';color:#fff}</style><div class="root"><div class="w"><div class="k" id="c12-k">MÔI GIỚI NÓI ĐƯỢC</div>
+<div class="it" id="c12-i1"><b>1</b><span>Mã này đang làm gì</span></div>
+<div class="it" id="c12-i2"><b>2</b><span>Rủi ro nằm ở đâu</span></div>
+<div class="it" id="c12-i3"><b>3</b><span>Giá đi ngược thì sao?</span></div></div></div></div></div>
+<div class="card-host clip" id="c13-ct" data-card-id="c13-ct" data-start="71.5000" data-duration="12.0333" data-track-index="4" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c13-ct"><style>.card[data-card-id="c13-ct"] .root{position:absolute;inset:0;background:radial-gradient(110% 70% at 50% 30%,#1d1d1f 0%,#111111 70%);}
+.card[data-card-id="c13-ct"] .k{position:absolute;left:60px;top:215px;font:800 32px 'Be Vietnam Pro';color:#111111;background:#F5C542;padding:8px 22px;border-radius:12px;letter-spacing:5px}
+.card[data-card-id="c13-ct"] .w{position:absolute;left:60px;width:880px;top:296px;display:flex;flex-direction:column;gap:10px}
+.card[data-card-id="c13-ct"] .p{padding:20px 26px 22px;border-radius:26px;text-align:center;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.card[data-card-id="c13-ct"] .g1,.card[data-card-id="c13-ct"] .g2{border:3px solid #22C55E} .card[data-card-id="c13-ct"] .r1,.card[data-card-id="c13-ct"] .r2{border:3px solid #EF4444}
+.card[data-card-id="c13-ct"] .g1{background:#131315;font:800 58px 'Be Vietnam Pro';color:#fff} .card[data-card-id="c13-ct"] .g2{background:color-mix(in srgb,#22C55E 14%,#131315);font:700 48px/1.25 'Be Vietnam Pro';color:#e8e8e8}
+.card[data-card-id="c13-ct"] .r1{background:#131315;font:800 58px 'Be Vietnam Pro';color:#fff} .card[data-card-id="c13-ct"] .r2{background:color-mix(in srgb,#EF4444 14%,#131315);font:700 52px/1.25 'Be Vietnam Pro';color:#e8e8e8}
+.card[data-card-id="c13-ct"] .g2 b{color:#22C55E;font-weight:800} .card[data-card-id="c13-ct"] .r2 b{color:#FF6B6B;font-weight:800}
+.card[data-card-id="c13-ct"] .ar{font:800 48px 'Be Vietnam Pro';color:#9a9a9a;text-align:center;line-height:1}
+.card[data-card-id="c13-ct"] .gap{height:30px}</style><div class="root"><div style="position:absolute;inset:0;transform:translateY(-20px)"><div class="k" id="c13-k">CÔNG THỨC MỘT CÂU</div>
+<div class="w">
+<div class="p g1" id="c13-a1">Ngày mai không ai biết</div>
+<div class="ar" id="c13-ar1">↓</div>
+<div class="p g2" id="c13-a2">Người đáng tin <b>nói thẳng họ không biết</b> và chỉ ra rủi ro</div>
+<div class="gap"></div>
+<div class="p r1" id="c13-b1">Người nói chắc</div>
+<div class="ar" id="c13-ar2">↓</div>
+<div class="p r2" id="c13-b2">đang bán <b>cảm giác yên tâm</b></div></div></div></div></div></div>
+<div class="card-host clip" id="c14-hoi" data-card-id="c14-hoi" data-start="83.6000" data-duration="7.0000" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c14-hoi"><style>.card[data-card-id="c14-hoi"] .root{position:absolute;inset:0;}
+.card[data-card-id="c14-hoi"] .w{position:absolute;left:60px;width:880px;top:186px;display:flex;flex-direction:column;gap:12px}
+.card[data-card-id="c14-hoi"] .blk{padding:14px 24px 18px;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.card[data-card-id="c14-hoi"] .n{background:color-mix(in srgb,#EF4444 20%,#151517);border:3px solid #EF4444} .card[data-card-id="c14-hoi"] .y{background:color-mix(in srgb,#22C55E 16%,#151517);border:3px solid #22C55E}
+.card[data-card-id="c14-hoi"] .l{font:800 26px 'Be Vietnam Pro';letter-spacing:6px;margin-bottom:6px} .card[data-card-id="c14-hoi"] .n .l{color:#FF7A7A} .card[data-card-id="c14-hoi"] .y .l{color:#22C55E}
+.card[data-card-id="c14-hoi"] .t{position:relative;display:inline-block;font:800 54px/1.2 'Be Vietnam Pro';color:#fff} .card[data-card-id="c14-hoi"] .y .t{font-size:48px;display:block} .card[data-card-id="c14-hoi"] .y b{color:#22C55E}
+.card[data-card-id="c14-hoi"] .t i{position:absolute;left:-6px;top:54%;height:7px;width:0;background:#EF4444;border-radius:4px}</style><div class="root"><div class="w"><div class="blk n" id="c14-n"><div class="l">ĐỪNG HỎI</div><div class="t" id="c14-nt">Mã này mai có lên không?<i id="c14-st"></i></div></div>
+<div class="blk y" id="c14-y"><div class="l">HÃY HỎI</div><div class="t">Nếu nó giảm mạnh thì mình <b>lỗ bao nhiêu</b>, và mình <b>sẽ làm gì?</b></div></div></div></div></div></div>
+<div class="card-host clip" id="c15-ai" data-card-id="c15-ai" data-start="90.7667" data-duration="4.9000" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c15-ai"><style>.card[data-card-id="c15-ai"] .root{position:absolute;inset:0;}
+.card[data-card-id="c15-ai"] .s{position:absolute;left:60px;width:880px;top:190px;text-align:center;line-height:1}
+.card[data-card-id="c15-ai"] .s div{font-family:'Be Vietnam Pro';font-weight:800;opacity:0;text-shadow:0 5px 0 rgba(0,0,0,.55),0 12px 34px rgba(0,0,0,.65)}
+.card[data-card-id="c15-ai"] .q{display:inline-block;background:rgba(20,20,22,.93);border:2px solid #2f2f35;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.4);padding:8px 24px 12px;font-size:48px;color:#fff;margin-bottom:12px;text-shadow:none}
+.card[data-card-id="c15-ai"] .big{display:inline-block;font-size:170px;color:#FF5A5A;padding:0 30px 10px;background:rgba(10,10,10,.82);border-radius:26px;text-shadow:none}
+.card[data-card-id="c15-ai"] .n{display:inline-block;background:rgba(20,20,22,.93);border:2px solid #2f2f35;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.4);padding:6px 24px 10px;font:italic 700 54px 'Playfair Display';color:#F5C542;margin-top:14px;text-shadow:none}</style><div class="root"><div class="s"><div class="q" id="c15-q">Có ai biết ngày mai?</div><div class="big" id="c15-b">KHÔNG AI</div><div class="n" id="c15-n">đọc đến đây là đủ</div></div></div></div></div>
+<div class="card-host clip" id="c16-lua" data-card-id="c16-lua" data-start="95.7000" data-duration="5.2333" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c16-lua"><style>.card[data-card-id="c16-lua"] .root{position:absolute;inset:0;}
+.card[data-card-id="c16-lua"] .w{position:absolute;left:60px;width:880px;top:186px;display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.card[data-card-id="c16-lua"] .a{background:rgba(20,20,22,.93);border:2px solid #2f2f35;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.4);padding:10px 26px;font:700 46px 'Be Vietnam Pro';color:#fff} .card[data-card-id="c16-lua"] .a i{font:italic 700 64px 'Playfair Display';color:#F5C542}
+.card[data-card-id="c16-lua"] .b{background:rgba(20,20,22,.93);border:2px solid #2f2f35;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.4);border-color:rgba(245,197,66,.7);padding:6px 26px 10px;font:800 66px 'Be Vietnam Pro';color:#FAFAFA}
+.card[data-card-id="c16-lua"] .k{font:700 30px 'Be Vietnam Pro';color:#f0f0f0;letter-spacing:2px;text-shadow:0 5px 0 rgba(0,0,0,.55),0 12px 34px rgba(0,0,0,.65);margin-top:4px}
+.card[data-card-id="c16-lua"] .bub{font:800 40px/1.25 'Be Vietnam Pro';color:#111111;background:#FAFAFA;padding:14px 26px;border-radius:30px 30px 30px 8px;box-shadow:0 14px 34px rgba(0,0,0,.4)}</style><div class="root"><div class="w"><div class="a" id="c16-a">Muốn khỏi bị <i>lùa?</i></div>
+<div class="b" id="c16-b">ĐỪNG TIN LỜI MÌNH</div>
+<div class="k" id="c16-k">cứ hỏi người nói chắc:</div>
+<div class="bub" id="c16-u">Nếu anh chắc, sao anh không tự mua hết đi?</div></div></div></div></div>
+<div class="card-host clip" id="c17-cta" data-card-id="c17-cta" data-start="101.4667" data-duration="4.3333" data-track-index="3" style="left:0;top:0;width:1080px;height:1920px;visibility:hidden;opacity:0;"><div class="card" data-card-id="c17-cta"><style>.card[data-card-id="c17-cta"] .root{position:absolute;inset:0;}
+.card[data-card-id="c17-cta"] .w{position:absolute;left:60px;width:880px;top:186px;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.card[data-card-id="c17-cta"] .q{background:rgba(20,20,22,.93);border:2px solid #2f2f35;border-radius:24px;box-shadow:0 14px 34px rgba(0,0,0,.4);padding:14px 28px;font:800 50px/1.2 'Be Vietnam Pro';color:#fff} .card[data-card-id="c17-cta"] .q i{font:italic 700 58px 'Playfair Display';color:#F5C542}
+.card[data-card-id="c17-cta"] .bub{font:800 34px 'Be Vietnam Pro';color:#111111;background:#FAFAFA;padding:10px 24px;border-radius:40px 40px 40px 8px;box-shadow:0 14px 34px rgba(0,0,0,.4)}
+.card[data-card-id="c17-cta"] .lock{position:absolute;left:60px;width:880px;top:1090px;display:flex;align-items:center;gap:22px;padding:12px 22px;border-radius:26px;background:rgba(17,17,17,.88);border:2px solid rgba(167,139,250,.55)}
+.card[data-card-id="c17-cta"] .lock img{width:100px;height:100px;border-radius:22px}
+.card[data-card-id="c17-cta"] .lock span{display:block;font:700 28px 'Be Vietnam Pro';color:#cfcfcf} .card[data-card-id="c17-cta"] .lock b{display:block;font:800 50px 'Be Vietnam Pro';color:#C4B5FD}
+.card[data-card-id="c17-cta"] .disc{position:absolute;left:60px;width:880px;top:1250px;padding:12px 16px;border-radius:16px;background:rgba(17,17,17,.78);text-align:center;font:400 26px 'Be Vietnam Pro';color:rgba(255,255,255,.95);line-height:1.4}</style><div class="root"><div class="w"><div class="q" id="c17-q">Câu hỏi nào <i>môi giới hay ngại trả lời?</i></div>
+<div class="bub" id="c17-b">Comment cho mình biết ↓</div></div>
+<div class="lock" id="c17-l"><img src="img/icon.png"/><div><span>Biểu đồ &amp; dữ liệu tại</span><b>cloudstock.id.vn</b></div></div>
+<div class="disc" id="c17-d">Nội dung giải thích, không phải khuyến nghị đầu tư. Ý kiến cá nhân, không đại diện công ty.<br>Đầu tư luôn có rủi ro mất vốn. Dữ liệu: DNSE (đóng cửa), Cục Thống kê (GDP ước tính), Dân trí 13/5/2026.</div></div></div></div>
+<div class="cap clip" id="cap-0" data-start="0.1333" data-duration="0.6667" data-track-index="5"><div class="sm">Mình làm</div><div class="kb" style="font-size:80px"><span class="w">trong</span> <span class="w">ngành</span> </div></div>
+<div class="cap clip" id="cap-1" data-start="0.8000" data-duration="0.6000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">chứng</span> <span class="w">khoán</span> </div></div>
+<div class="cap clip" id="cap-2" data-start="1.4333" data-duration="0.8000" data-track-index="5"><div class="sm">và mình</div><div class="kb" style="font-size:80px"><span class="w">không</span> <span class="w">biết</span> </div></div>
+<div class="cap clip" id="cap-3" data-start="2.2667" data-duration="0.8000" data-track-index="5"><div class="sm">ngày mai</div><div class="kb" style="font-size:80px"><span class="w">mã</span> <span class="w">nào</span> </div></div>
+<div class="cap clip" id="cap-4" data-start="3.1000" data-duration="0.5667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">sẽ</span> <span class="w">lên</span> </div></div>
+<div class="cap clip" id="cap-5" data-start="4.2333" data-duration="0.3333" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">Hả</span> </div></div>
+<div class="cap clip" id="cap-6" data-start="4.4333" data-duration="1.1667" data-track-index="5"><div class="sm">Ý</div><div class="kb" style="font-size:80px"><span class="w">là</span> <span class="w">sao</span> </div></div>
+<div class="cap clip" id="cap-7" data-start="6.2000" data-duration="0.9000" data-track-index="5"><div class="sm">Ý là</div><div class="kb" style="font-size:80px"><span class="w">thế</span> <span class="w">này</span> </div></div>
+<div class="cap clip" id="cap-8" data-start="7.1000" data-duration="0.5000" data-track-index="5"><div class="sm">Hỏi mình</div><div class="kb" style="font-size:80px"><span class="w">mã</span> <span class="w">này</span> </div></div>
+<div class="cap clip" id="cap-9" data-start="7.6333" data-duration="0.8333" data-track-index="5"><div class="sm">kinh doanh</div><div class="kb" style="font-size:80px"><span class="w">ra</span> <span class="w">sao</span> </div></div>
+<div class="cap clip" id="cap-10" data-start="8.4667" data-duration="0.5667" data-track-index="5"><div class="sm">rủi ro</div><div class="kb" style="font-size:80px"><span class="w">nằm</span> <span class="w">ở</span> </div></div>
+<div class="cap clip" id="cap-11" data-start="9.0333" data-duration="0.3667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">đâu</span> </div></div>
+<div class="cap clip" id="cap-12" data-start="9.4000" data-duration="1.2000" data-track-index="5"><div class="sm">đặt lệnh</div><div class="kb" style="font-size:80px"><span class="w">kiểu</span> <span class="w">nào</span> </div></div>
+<div class="cap clip" id="cap-13" data-start="10.6000" data-duration="0.5667" data-track-index="5"><div class="sm">mình sẽ</div><div class="kb" style="font-size:80px"><span class="w">trả</span> <span class="w">lời</span> </div></div>
+<div class="cap clip" id="cap-14" data-start="11.2000" data-duration="0.4000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">được</span> <span class="w">hết</span> </div></div>
+<div class="cap clip" id="cap-15" data-start="11.6333" data-duration="0.5000" data-track-index="5"><div class="sm">Chỉ</div><div class="kb" style="font-size:80px"><span class="w">có</span> <span class="w">một</span> </div></div>
+<div class="cap clip" id="cap-16" data-start="12.1333" data-duration="0.8333" data-track-index="5"><div class="sm">đúng một</div><div class="kb" style="font-size:80px"><span class="w">câu</span> <span class="w">hỏi</span> </div></div>
+<div class="cap clip" id="cap-17" data-start="12.9667" data-duration="1.0667" data-track-index="5"><div class="sm">mình không</div><div class="kb" style="font-size:80px"><span class="w">trả</span> <span class="w">lời</span> </div></div>
+<div class="cap clip" id="cap-18" data-start="14.0667" data-duration="0.3333" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">được</span> </div></div>
+<div class="cap clip" id="cap-19" data-start="14.3667" data-duration="0.6000" data-track-index="5"><div class="sm">mai mã</div><div class="kb" style="font-size:80px"><span class="w">nào</span> <span class="w">sẽ</span> </div></div>
+<div class="cap clip" id="cap-20" data-start="15.0000" data-duration="0.5333" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">lên</span> </div></div>
+<div class="cap clip" id="cap-21" data-start="16.0667" data-duration="0.5667" data-track-index="5"><div class="sm">Và nếu</div><div class="kb" style="font-size:80px"><span class="w">có</span> <span class="w">ai</span> </div></div>
+<div class="cap clip" id="cap-22" data-start="16.6333" data-duration="0.9333" data-track-index="5"><div class="sm">trả lời</div><div class="kb" style="font-size:80px"><span class="w">chắc</span> <span class="w">chắn</span> </div></div>
+<div class="cap clip" id="cap-23" data-start="17.5667" data-duration="0.5000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">câu</span> <span class="w">đó</span> </div></div>
+<div class="cap clip" id="cap-24" data-start="18.0667" data-duration="0.9667" data-track-index="5"><div class="sm">anh chị</div><div class="kr" style="font-size:80px"><span class="w">nên</span> <span class="w">lo</span> </div></div>
+<div class="cap clip" id="cap-25" data-start="19.0667" data-duration="1.0000" data-track-index="5"><div class="sm">chứ</div><div class="kb" style="font-size:80px"><span class="w">đừng</span> <span class="w">mừng</span> </div></div>
+<div class="cap clip" id="cap-29" data-start="22.9667" data-duration="0.9667" data-track-index="5"><div class="sm">một người</div><div class="kb" style="font-size:80px"><span class="w">quyết</span> <span class="w">định</span> </div></div>
+<div class="cap clip" id="cap-30" data-start="23.9667" data-duration="0.4667" data-track-index="5"><div class="sm">mà là</div><div class="kb" style="font-size:80px"><span class="w">do</span> <span class="w">hàng</span> </div></div>
+<div class="cap clip" id="cap-31" data-start="24.4333" data-duration="0.9333" data-track-index="5"><div class="sm">triệu người</div><div class="kb" style="font-size:80px"><span class="w">cùng</span> <span class="w">đặt</span> </div></div>
+<div class="cap clip" id="cap-32" data-start="25.4000" data-duration="0.9333" data-track-index="5"><div class="sm">lệnh</div><div class="kb" style="font-size:80px"><span class="w">một</span> <span class="w">lúc</span> </div></div>
+<div class="cap clip" id="cap-33" data-start="26.3333" data-duration="0.7667" data-track-index="5"><div class="sm">Quý 3</div><div class="kk" style="font-size:92px"><span class="w">vừa</span> <span class="w">rồi</span> </div></div>
+<div class="cap clip" id="cap-34" data-start="27.1333" data-duration="0.7667" data-track-index="5"><div class="sm">kinh tế</div><div class="kg" style="font-size:80px"><span class="w">tăng</span> <span class="w">gần</span> </div></div>
+<div class="cap clip" id="cap-35" data-start="27.9333" data-duration="0.8333" data-track-index="5"><div class="kk" style="font-size:92px"><span class="w">10%</span> </div></div>
+<div class="cap clip" id="cap-36" data-start="28.7667" data-duration="0.9000" data-track-index="5"><div class="sm">vậy mà</div><div class="kb" style="font-size:80px"><span class="w">ngay</span> <span class="w">tuần</span> </div></div>
+<div class="cap clip" id="cap-37" data-start="29.7000" data-duration="0.4000" data-track-index="5"><div class="sm">trước khi</div><div class="kb" style="font-size:80px"><span class="w">con</span> <span class="w">số</span> </div></div>
+<div class="cap clip" id="cap-38" data-start="30.1000" data-duration="1.1000" data-track-index="5"><div class="sm">đó được</div><div class="kb" style="font-size:80px"><span class="w">công</span> <span class="w">bố</span> </div></div>
+<div class="cap clip" id="cap-39" data-start="31.2333" data-duration="1.8000" data-track-index="5"><div class="sm">VN-Index giảm</div><div class="kr" style="font-size:80px"><span class="w">5</span> <span class="w">phiên</span> </div></div>
+<div class="cap clip" id="cap-40" data-start="33.0333" data-duration="0.7667" data-track-index="5"><div class="sm">Kinh</div><div class="kb" style="font-size:80px"><span class="w">tế</span> <span class="w">tốt</span> </div></div>
+<div class="cap clip" id="cap-41" data-start="33.8333" data-duration="0.8333" data-track-index="5"><div class="sm">chỉ số</div><div class="kb" style="font-size:80px"><span class="w">này</span> <span class="w">vẫn</span> </div></div>
+<div class="cap clip" id="cap-42" data-start="34.7000" data-duration="0.6667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">đi</span> <span class="w">ngược</span> </div></div>
+<div class="cap clip" id="cap-43" data-start="35.9333" data-duration="0.6000" data-track-index="5"><div class="sm">Và nghĩ</div><div class="kb" style="font-size:80px"><span class="w">thêm</span> <span class="w">một</span> </div></div>
+<div class="cap clip" id="cap-44" data-start="36.5667" data-duration="0.3667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">chút</span> </div></div>
+<div class="cap clip" id="cap-45" data-start="36.8000" data-duration="0.5000" data-track-index="5"><div class="sm">nếu thực</div><div class="kb" style="font-size:80px"><span class="w">sự</span> <span class="w">có</span> </div></div>
+<div class="cap clip" id="cap-46" data-start="37.3333" data-duration="1.1667" data-track-index="5"><div class="sm">người nghĩ</div><div class="kb" style="font-size:80px"><span class="w">chắc</span> <span class="w">mai</span> </div></div>
+<div class="cap clip" id="cap-47" data-start="38.5333" data-duration="1.0667" data-track-index="5"><div class="sm">mã nào</div><div class="kb" style="font-size:80px"><span class="w">sẽ</span> <span class="w">lên</span> </div></div>
+<div class="cap clip" id="cap-48" data-start="39.6333" data-duration="0.7000" data-track-index="5"><div class="sm">họ sẽ</div><div class="kb" style="font-size:80px"><span class="w">làm</span> <span class="w">gì</span> </div></div>
+<div class="cap clip" id="cap-49" data-start="40.7667" data-duration="0.4667" data-track-index="5"><div class="sm">Họ sẽ</div><div class="kb" style="font-size:80px"><span class="w">mua</span> <span class="w">hết</span> </div></div>
+<div class="cap clip" id="cap-50" data-start="41.2333" data-duration="0.8667" data-track-index="5"><div class="sm">họ đâu</div><div class="kb" style="font-size:80px"><span class="w">rảnh</span> <span class="w">để</span> </div></div>
+<div class="cap clip" id="cap-51" data-start="42.1333" data-duration="1.2333" data-track-index="5"><div class="sm">nói cho</div><div class="kb" style="font-size:80px"><span class="w">anh</span> <span class="w">chị</span> </div></div>
+<div class="cap clip" id="cap-52" data-start="44.1333" data-duration="0.7667" data-track-index="5"><div class="sm">Nếu anh</div><div class="kb" style="font-size:80px"><span class="w">chị</span> <span class="w">không</span> </div></div>
+<div class="cap clip" id="cap-53" data-start="44.9000" data-duration="0.3667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">tin</span> </div></div>
+<div class="cap clip" id="cap-54" data-start="45.2667" data-duration="1.3000" data-track-index="5"><div class="sm">hãy nói</div><div class="kb" style="font-size:80px"><span class="w">chắc</span> <span class="w">một</span> </div></div>
+<div class="cap clip" id="cap-55" data-start="46.5667" data-duration="1.1333" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">câu</span> <span class="w">hỏi</span> </div></div>
+<div class="cap clip" id="cap-56" data-start="47.7333" data-duration="0.8000" data-track-index="5"><div class="sm">Nếu anh</div><div class="kb" style="font-size:80px"><span class="w">chị</span> <span class="w">chắc</span> </div></div>
+<div class="cap clip" id="cap-57" data-start="48.5333" data-duration="0.5000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">như</span> <span class="w">vậy</span> </div></div>
+<div class="cap clip" id="cap-58" data-start="49.0667" data-duration="0.8000" data-track-index="5"><div class="sm">sao anh</div><div class="kb" style="font-size:80px"><span class="w">không</span> <span class="w">tự</span> </div></div>
+<div class="cap clip" id="cap-59" data-start="49.9000" data-duration="0.9333" data-track-index="5"><div class="sm">mua</div><div class="kb" style="font-size:80px"><span class="w">hết</span> <span class="w">đi</span> </div></div>
+<div class="cap clip" id="cap-60" data-start="51.3333" data-duration="0.3667" data-track-index="5"><div class="kk" style="font-size:92px"><span class="w">Tháng</span> <span class="w">5</span> </div></div>
+<div class="cap clip" id="cap-61" data-start="51.7333" data-duration="0.8000" data-track-index="5"><div class="sm">Ủy ban</div><div class="kb" style="font-size:80px"><span class="w">Chứng</span> <span class="w">khoán</span> </div></div>
+<div class="cap clip" id="cap-62" data-start="52.5333" data-duration="0.7667" data-track-index="5"><div class="sm">còn phải</div><div class="kb" style="font-size:80px"><span class="w">gửi</span> <span class="w">công</span> </div></div>
+<div class="cap clip" id="cap-63" data-start="53.3333" data-duration="0.6000" data-track-index="5"><div class="sm">văn đề</div><div class="kb" style="font-size:80px"><span class="w">nghị</span> <span class="w">các</span> </div></div>
+<div class="cap clip" id="cap-64" data-start="53.9333" data-duration="0.6667" data-track-index="5"><div class="sm">công ty</div><div class="kb" style="font-size:80px"><span class="w">chứng</span> <span class="w">khoán</span> </div></div>
+<div class="cap clip" id="cap-65" data-start="54.6333" data-duration="1.4000" data-track-index="5"><div class="sm">rà soát</div><div class="kb" style="font-size:80px"><span class="w">chính</span> <span class="w">nhân</span> </div></div>
+<div class="cap clip" id="cap-66" data-start="56.0667" data-duration="0.5667" data-track-index="5"><div class="sm">viên</div><div class="kb" style="font-size:80px"><span class="w">của</span> <span class="w">mình</span> </div></div>
+<div class="cap clip" id="cap-67" data-start="56.6667" data-duration="0.7000" data-track-index="5"><div class="sm">vì có</div><div class="kb" style="font-size:80px"><span class="w">người</span> <span class="w">giới</span> </div></div>
+<div class="cap clip" id="cap-68" data-start="57.4000" data-duration="0.7333" data-track-index="5"><div class="sm">thiệu mình</div><div class="kb" style="font-size:80px"><span class="w">làm</span> <span class="w">ở</span> </div></div>
+<div class="cap clip" id="cap-69" data-start="58.1333" data-duration="0.9000" data-track-index="5"><div class="sm">công ty</div><div class="kb" style="font-size:80px"><span class="w">chứng</span> <span class="w">khoán</span> </div></div>
+<div class="cap clip" id="cap-70" data-start="59.0667" data-duration="0.7667" data-track-index="5"><div class="sm">rồi khuyến</div><div class="kb" style="font-size:80px"><span class="w">nghị</span> <span class="w">mua</span> </div></div>
+<div class="cap clip" id="cap-71" data-start="59.8667" data-duration="0.9333" data-track-index="5"><div class="sm">bán</div><div class="kb" style="font-size:80px"><span class="w">trên</span> <span class="w">mạng</span> </div></div>
+<div class="cap clip" id="cap-75" data-start="63.8667" data-duration="0.3667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">biết</span> </div></div>
+<div class="cap clip" id="cap-76" data-start="64.2333" data-duration="1.3000" data-track-index="5"><div class="sm">Họ nói</div><div class="kb" style="font-size:80px"><span class="w">được</span> <span class="w">mã</span> </div></div>
+<div class="cap clip" id="cap-77" data-start="65.5333" data-duration="1.3000" data-track-index="5"><div class="sm">này đang</div><div class="kb" style="font-size:80px"><span class="w">làm</span> <span class="w">gì</span> </div></div>
+<div class="cap clip" id="cap-78" data-start="66.8667" data-duration="1.1000" data-track-index="5"><div class="sm">rủi ro</div><div class="kb" style="font-size:80px"><span class="w">nằm</span> <span class="w">ở</span> </div></div>
+<div class="cap clip" id="cap-79" data-start="68.0000" data-duration="0.3333" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">đâu</span> </div></div>
+<div class="cap clip" id="cap-80" data-start="68.2333" data-duration="0.8000" data-track-index="5"><div class="sm">và nếu</div><div class="kb" style="font-size:80px"><span class="w">giá</span> <span class="w">đi</span> </div></div>
+<div class="cap clip" id="cap-81" data-start="69.0333" data-duration="0.8000" data-track-index="5"><div class="sm">ngược thì</div><div class="kb" style="font-size:80px"><span class="w">anh</span> <span class="w">chị</span> </div></div>
+<div class="cap clip" id="cap-82" data-start="69.8667" data-duration="1.3667" data-track-index="5"><div class="sm">đã tính</div><div class="kr" style="font-size:80px"><span class="w">trước</span> <span class="w">chưa</span> </div></div>
+<div class="cap clip" id="cap-83" data-start="71.5333" data-duration="0.7667" data-track-index="5"><div class="sm">Công thức</div><div class="kb" style="font-size:80px"><span class="w">rất</span> <span class="w">đơn</span> </div></div>
+<div class="cap clip" id="cap-84" data-start="72.3333" data-duration="0.3667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">giản</span> </div></div>
+<div class="cap clip" id="cap-85" data-start="72.7333" data-duration="0.9000" data-track-index="5"><div class="sm">ngày mai</div><div class="kb" style="font-size:80px"><span class="w">không</span> <span class="w">ai</span> </div></div>
+<div class="cap clip" id="cap-86" data-start="73.6667" data-duration="0.4667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">biết</span> </div></div>
+<div class="cap clip" id="cap-87" data-start="74.1333" data-duration="0.7667" data-track-index="5"><div class="sm">nên người</div><div class="kb" style="font-size:80px"><span class="w">đáng</span> <span class="w">tin</span> </div></div>
+<div class="cap clip" id="cap-88" data-start="74.9333" data-duration="0.9000" data-track-index="5"><div class="sm">chính là</div><div class="kb" style="font-size:80px"><span class="w">người</span> <span class="w">nói</span> </div></div>
+<div class="cap clip" id="cap-89" data-start="75.8667" data-duration="1.3000" data-track-index="5"><div class="sm">thẳng họ</div><div class="kb" style="font-size:80px"><span class="w">không</span> <span class="w">biết</span> </div></div>
+<div class="cap clip" id="cap-90" data-start="77.2000" data-duration="0.8000" data-track-index="5"><div class="sm">và chỉ</div><div class="kb" style="font-size:80px"><span class="w">cho</span> <span class="w">anh</span> </div></div>
+<div class="cap clip" id="cap-91" data-start="78.0333" data-duration="1.3333" data-track-index="5"><div class="sm">chị thấy</div><div class="kb" style="font-size:80px"><span class="w">được</span> <span class="w">rủi</span> </div></div>
+<div class="cap clip" id="cap-92" data-start="79.4000" data-duration="0.5000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">ro</span> </div></div>
+<div class="cap clip" id="cap-93" data-start="80.1667" data-duration="0.9000" data-track-index="5"><div class="sm">Người nói</div><div class="kb" style="font-size:80px"><span class="w">chắc</span> <span class="w">đang</span> </div></div>
+<div class="cap clip" id="cap-94" data-start="81.1000" data-duration="0.6667" data-track-index="5"><div class="sm">bán cho</div><div class="kb" style="font-size:80px"><span class="w">anh</span> <span class="w">chị</span> </div></div>
+<div class="cap clip" id="cap-95" data-start="81.7667" data-duration="0.7333" data-track-index="5"><div class="sm">được sự</div><div class="kb" style="font-size:80px"><span class="w">cảm</span> <span class="w">giác</span> </div></div>
+<div class="cap clip" id="cap-96" data-start="82.5000" data-duration="0.5667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">yên</span> <span class="w">tâm</span> </div></div>
+<div class="cap clip" id="cap-97" data-start="83.6000" data-duration="1.0667" data-track-index="5"><div class="sm">Nên lần</div><div class="kr" style="font-size:80px"><span class="w">sau</span> <span class="w">đừng</span> </div></div>
+<div class="cap clip" id="cap-98" data-start="84.7000" data-duration="0.3333" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">hỏi</span> </div></div>
+<div class="cap clip" id="cap-99" data-start="84.9667" data-duration="0.7000" data-track-index="5"><div class="sm">mã này</div><div class="kb" style="font-size:80px"><span class="w">mai</span> <span class="w">có</span> </div></div>
+<div class="cap clip" id="cap-100" data-start="85.6667" data-duration="0.3667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">lên</span> <span class="w">không</span> </div></div>
+<div class="cap clip" id="cap-101" data-start="85.9667" data-duration="0.9333" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">Hỏi</span> </div></div>
+<div class="cap clip" id="cap-102" data-start="86.9333" data-duration="0.8000" data-track-index="5"><div class="sm">nếu nó</div><div class="kr" style="font-size:80px"><span class="w">giảm</span> <span class="w">mạnh</span> </div></div>
+<div class="cap clip" id="cap-103" data-start="87.7333" data-duration="1.0000" data-track-index="5"><div class="sm">thì mình</div><div class="kr" style="font-size:80px"><span class="w">lỗ</span> <span class="w">bao</span> </div></div>
+<div class="cap clip" id="cap-104" data-start="88.7333" data-duration="0.7000" data-track-index="5"><div class="sm">nhiêu và</div><div class="kb" style="font-size:80px"><span class="w">mình</span> <span class="w">sẽ</span> </div></div>
+<div class="cap clip" id="cap-105" data-start="89.4333" data-duration="0.6667" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">làm</span> <span class="w">gì</span> </div></div>
+<div class="cap clip" id="cap-106" data-start="90.8000" data-duration="0.7333" data-track-index="5"><div class="sm">Nếu anh</div><div class="kb" style="font-size:80px"><span class="w">chị</span> <span class="w">chỉ</span> </div></div>
+<div class="cap clip" id="cap-107" data-start="91.5667" data-duration="0.9333" data-track-index="5"><div class="sm">muốn biết</div><div class="kb" style="font-size:80px"><span class="w">có</span> <span class="w">ai</span> </div></div>
+<div class="cap clip" id="cap-108" data-start="92.5000" data-duration="0.7000" data-track-index="5"><div class="sm">biết ngày</div><div class="kb" style="font-size:80px"><span class="w">mai</span> <span class="w">không</span> </div></div>
+<div class="cap clip" id="cap-109" data-start="93.2333" data-duration="0.9667" data-track-index="5"><div class="sm">đọc đến</div><div class="kb" style="font-size:80px"><span class="w">đây</span> <span class="w">là</span> </div></div>
+<div class="cap clip" id="cap-110" data-start="94.2333" data-duration="1.1333" data-track-index="5"><div class="sm">đủ không</div><div class="kb" style="font-size:80px"><span class="w">có</span> <span class="w">ai</span> </div></div>
+<div class="cap clip" id="cap-111" data-start="95.7333" data-duration="1.1000" data-track-index="5"><div class="sm">Còn muốn</div><div class="kb" style="font-size:80px"><span class="w">khỏi</span> <span class="w">bị</span> </div></div>
+<div class="cap clip" id="cap-112" data-start="96.8667" data-duration="0.5000" data-track-index="5"><div class="kb" style="font-size:80px"><span class="w">lùa</span> </div></div>
+<div class="cap clip" id="cap-113" data-start="97.3667" data-duration="1.1667" data-track-index="5"><div class="sm">đừng tin</div><div class="kb" style="font-size:80px"><span class="w">lời</span> <span class="w">mình</span> </div></div>
+<div class="cap clip" id="cap-114" data-start="98.5667" data-duration="0.8000" data-track-index="5"><div class="sm">cứ hỏi</div><div class="kb" style="font-size:80px"><span class="w">người</span> <span class="w">nói</span> </div></div>
+<div class="cap clip" id="cap-115" data-start="99.3667" data-duration="1.2000" data-track-index="5"><div class="sm">chắc chắn</div><div class="kb" style="font-size:80px"><span class="w">câu</span> <span class="w">kia</span> </div></div>
+<div class="cap clip" id="cap-116" data-start="101.5000" data-duration="0.4667" data-track-index="5"><div class="sm">Anh chị</div><div class="kb" style="font-size:80px"><span class="w">còn</span> <span class="w">câu</span> </div></div>
+<div class="cap clip" id="cap-117" data-start="102.0000" data-duration="0.2000" data-track-index="5"><div class="sm">hỏi nào</div><div class="kb" style="font-size:80px"><span class="w">về</span> <span class="w">nghề</span> </div></div>
+<script src="vendor/gsap.min.js"></script>
+<script>
+(function(){
+const tl=window.gsap.timeline({paused:true});
+tl.set('.card-host[data-card-id="c01-hook"]',{visibility:'visible'},0.0000);
+tl.fromTo('.card-host[data-card-id="c01-hook"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},0.0000);
+tl.fromTo("#c01-hook #tag",{"opacity": 0, "y": -20},{"opacity": 1, "y": 0, "duration": 0.35, "ease": "power2.out"},0.0667);
+tl.fromTo("#c01-hook #a",{"opacity": 0, "y": 20},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},0.0667);
+tl.fromTo("#c01-hook #b",{"opacity": 0, "scale": 1.7, "y": -30},{"opacity": 1, "scale": 1, "y": 0, "duration": 0.36, "ease": "back.out(2)"},1.7667);
+tl.fromTo("#c01-hook #c",{"opacity": 0, "scale": 1.5, "y": -30},{"opacity": 1, "scale": 1, "y": 0, "duration": 0.36, "ease": "back.out(2)"},2.4333);
+tl.to('.card-host[data-card-id="c01-hook"]',{opacity:0,duration:0.25,ease:'power2.in'},3.7333);
+tl.set('.card-host[data-card-id="c01-hook"]',{visibility:'hidden'},4.0000);
+tl.set('.card-host[data-card-id="c02-ha"]',{visibility:'visible'},4.2000);
+tl.fromTo('.card-host[data-card-id="c02-ha"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},4.2000);
+tl.fromTo("#c02-q",{"opacity": 0, "scale": 0.4, "rotate": -8},{"opacity": 1, "scale": 1, "rotate": 0, "duration": 0.45, "ease": "back.out(2.4)"},4.2333);
+tl.to('.card-host[data-card-id="c02-ha"]',{opacity:0,duration:0.25,ease:'power2.in'},5.5000);
+tl.set('.card-host[data-card-id="c02-ha"]',{visibility:'hidden'},5.7333);
+tl.set('.card-host[data-card-id="c03-ticks"]',{visibility:'visible'},7.0000);
+tl.fromTo('.card-host[data-card-id="c03-ticks"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},7.0000);
+tl.fromTo("#c03-k",{"opacity": 0, "y": -20},{"opacity": 1, "y": 0, "duration": 0.35, "ease": "power3.out"},7.0000);
+tl.fromTo("#c03-r1",{"opacity": 0, "x": -60},{"opacity": 1, "x": 0, "duration": 0.4, "ease": "power3.out"},7.5000);
+tl.fromTo("#c03-r1 b",{"opacity": 0, "scale": 0.6},{"opacity": 1, "scale": 1, "duration": 0.3, "ease": "back.out(1.8)"},8.4667);
+tl.fromTo("#c03-r2",{"opacity": 0, "x": -60},{"opacity": 1, "x": 0, "duration": 0.4, "ease": "power3.out"},8.3667);
+tl.fromTo("#c03-r2 b",{"opacity": 0, "scale": 0.6},{"opacity": 1, "scale": 1, "duration": 0.3, "ease": "back.out(1.8)"},9.4000);
+tl.fromTo("#c03-r3",{"opacity": 0, "x": -60},{"opacity": 1, "x": 0, "duration": 0.4, "ease": "power3.out"},9.3000);
+tl.fromTo("#c03-r3 b",{"opacity": 0, "scale": 0.6},{"opacity": 1, "scale": 1, "duration": 0.3, "ease": "back.out(1.8)"},10.6000);
+tl.fromTo("#c03-r4",{"opacity": 0, "scale": 1.25, "y": 0},{"opacity": 1, "scale": 1, "y": 0, "duration": 0.4, "ease": "back.out(2)"},14.2667);
+tl.to('.card-host[data-card-id="c03-ticks"]',{opacity:0,duration:0.25,ease:'power2.in'},15.7667);
+tl.set('.card-host[data-card-id="c03-ticks"]',{visibility:'hidden'},16.0000);
+tl.set('.card-host[data-card-id="c04-lo"]',{visibility:'visible'},16.0333);
+tl.fromTo('.card-host[data-card-id="c04-lo"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},16.0333);
+tl.fromTo("#c04-k",{"opacity": 0, "y": -20},{"opacity": 1, "y": 0, "duration": 0.35, "ease": "power3.out"},16.0667);
+tl.fromTo("#c04-b",{"opacity": 0, "scale": 1.5, "y": 0},{"opacity": 1, "scale": 1, "y": 0, "duration": 0.4, "ease": "back.out(2)"},18.4667);
+tl.fromTo("#c04-s",{"opacity": 0, "y": 20},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},19.0000);
+tl.to('.card-host[data-card-id="c04-lo"]',{opacity:0,duration:0.25,ease:'power2.in'},20.2000);
+tl.set('.card-host[data-card-id="c04-lo"]',{visibility:'hidden'},20.4667);
+tl.set('.card-host[data-card-id="c05-ch1"]',{visibility:'visible'},20.5000);
+tl.fromTo('.card-host[data-card-id="c05-ch1"]',{opacity:0},{opacity:1,duration:0.12,ease:'power2.out'},20.5000);
+tl.fromTo("#c05-ch1-bt",{"y": -560},{"y": 0, "duration": 0.3, "ease": "power3.out"},20.5000);
+tl.fromTo("#c05-ch1-bb",{"y": 600},{"y": 0, "duration": 0.3, "ease": "power3.out"},20.5000);
+tl.fromTo("#c05-ch1-l",{"opacity": 0, "scale": 0.85},{"opacity": 1, "scale": 1, "duration": 0.3, "ease": "power3.out"},20.6000);
+tl.fromTo("#c05-ch1-tt",{"clipPath": "inset(0 100% 0 0)"},{"clipPath": "inset(0 0% 0 0)", "duration": 0.4, "ease": "power2.inOut"},20.6000);
+tl.to('#c05-ch1-l',{scale:1.05,duration:1.60,ease:'power1.inOut'},20.9000);
+tl.to('.card-host[data-card-id="c05-ch1"]',{opacity:0,duration:0.12,ease:'power2.in'},22.5000);
+tl.set('.card-host[data-card-id="c05-ch1"]',{visibility:'hidden'},22.6000);
+tl.set('.card-host[data-card-id="c06-crowd"]',{visibility:'visible'},22.6667);
+tl.fromTo('.card-host[data-card-id="c06-crowd"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},22.6667);
+tl.fromTo("#c06-p",{"opacity": 0, "y": -30},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},22.6667);
+tl.fromTo("#c06-l",{"opacity": 0, "x": -60},{"opacity": 1, "x": 0, "duration": 0.4, "ease": "power3.out"},22.8000);
+tl.fromTo("#c06-x",{"opacity": 0, "scale": 0.6},{"opacity": 1, "scale": 1, "duration": 0.35, "ease": "back.out(1.8)"},23.8667);
+tl.fromTo("#c06-rr b",{"opacity": 0, "y": 20},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},24.1333);
+tl.fromTo("#c06-rr span",{"opacity": 0, "y": 20},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},24.9333);
+tl.fromTo("#c06-rr .grid i",{"opacity": 0, "scale": 0.2},{"opacity": 1, "scale": 1, "duration": 0.3, "ease": "back.out(2)", "stagger": 0.022},24.2000);
+tl.to('.card-host[data-card-id="c06-crowd"]',{opacity:0,duration:0.25,ease:'power2.in'},25.9667);
+tl.set('.card-host[data-card-id="c06-crowd"]',{visibility:'hidden'},26.2333);
+tl.set('.card-host[data-card-id="c07-vni"]',{visibility:'visible'},26.2667);
+tl.fromTo('.card-host[data-card-id="c07-vni"]',{opacity:0},{opacity:1,duration:0.12,ease:'power2.out'},26.2667);
+tl.fromTo("#c07-br",{"opacity": 0, "scale": 0.6},{"opacity": 1, "scale": 1, "duration": 0.4, "ease": "back.out(1.8)"},26.3333);
+tl.fromTo("#c07-g",{"opacity": 0, "y": 30},{"opacity": 1, "y": 0, "duration": 0.45, "ease": "power3.out"},27.3667);
+(function(){const o={v:0};tl.to(o,{v:9.95,duration:1.0,ease:'power2.out',onUpdate:function(){const el=document.querySelector("#c07-n");if(el)el.textContent=(function(v){const p=v.toFixed(2).split('.');p[0]=p[0].replace(/\B(?=(\d{3})+(?!\d))/g,'.');return p.join(',');})(o.v)+"";}},27.5000);})();
+tl.fromTo("#c07-m",{"opacity": 0, "y": 20},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},28.7000);
+tl.fromTo("#c07-vn",{"opacity": 0, "y": 60},{"opacity": 1, "y": 0, "duration": 0.5, "ease": "power3.out"},31.1000);
+tl.fromTo("#c07-c0 .b",{"scaleY": 0},{"scaleY": 1, "duration": 0.28, "ease": "power3.out"},31.9667);
+tl.fromTo("#c07-c1 .b",{"scaleY": 0},{"scaleY": 1, "duration": 0.28, "ease": "power3.out"},32.1667);
+tl.fromTo("#c07-c2 .b",{"scaleY": 0},{"scaleY": 1, "duration": 0.28, "ease": "power3.out"},32.3667);
+tl.fromTo("#c07-c3 .b",{"scaleY": 0},{"scaleY": 1, "duration": 0.28, "ease": "power3.out"},32.5667);
+tl.fromTo("#c07-c4 .b",{"scaleY": 0},{"scaleY": 1, "duration": 0.28, "ease": "power3.out"},32.7667);
+tl.fromTo("#c07-c0 .v,#c07-c0 .dt",{"opacity": 0},{"opacity": 1, "duration": 0.2},32.0667);
+tl.fromTo("#c07-c1 .v,#c07-c1 .dt",{"opacity": 0},{"opacity": 1, "duration": 0.2},32.2667);
+tl.fromTo("#c07-c2 .v,#c07-c2 .dt",{"opacity": 0},{"opacity": 1, "duration": 0.2},32.4667);
+tl.fromTo("#c07-c3 .v,#c07-c3 .dt",{"opacity": 0},{"opacity": 1, "duration": 0.2},32.6667);
+tl.fromTo("#c07-c4 .v,#c07-c4 .dt",{"opacity": 0},{"opacity": 1, "duration": 0.2},32.8667);
+tl.fromTo("#c07-tot",{"opacity": 0, "scale": 0.6},{"opacity": 1, "scale": 1, "duration": 0.4, "ease": "back.out(1.8)"},32.8667);
+tl.fromTo("#c07-st",{"opacity": 0, "y": 20},{"opacity": 1, "y": 0, "duration": 0.45, "ease": "power3.out"},32.9667);
+tl.to('.card-host[data-card-id="c07-vni"]',{opacity:0,duration:0.12,ease:'power2.in'},35.8333);
+tl.set('.card-host[data-card-id="c07-vni"]',{visibility:'hidden'},35.9333);
+tl.set('.card-host[data-card-id="c08-biet"]',{visibility:'visible'},35.9000);
+tl.fromTo('.card-host[data-card-id="c08-biet"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},35.9000);
+tl.fromTo("#c08-a",{"opacity": 0, "x": -60},{"opacity": 1, "x": 0, "duration": 0.4, "ease": "power3.out"},37.3667);
+tl.fromTo("#c08-r1",{"opacity": 0, "y": -10},{"opacity": 1, "y": 0, "duration": 0.25, "ease": "power3.out"},39.8667);
+tl.fromTo("#c08-b",{"opacity": 0, "scale": 1.3, "y": 0},{"opacity": 1, "scale": 1, "y": 0, "duration": 0.36, "ease": "back.out(2)"},40.7000);
+tl.fromTo("#c08-r2",{"opacity": 0, "y": -10},{"opacity": 1, "y": 0, "duration": 0.25, "ease": "power3.out"},41.2667);
+tl.fromTo("#c08-c",{"opacity": 0, "x": 60},{"opacity": 1, "x": 0, "duration": 0.4, "ease": "power3.out"},41.3000);
+tl.to('.card-host[data-card-id="c08-biet"]',{opacity:0,duration:0.25,ease:'power2.in'},43.5000);
+tl.set('.card-host[data-card-id="c08-biet"]',{visibility:'hidden'},43.7333);
+tl.set('.card-host[data-card-id="c09-hoi"]',{visibility:'visible'},44.1000);
+tl.fromTo('.card-host[data-card-id="c09-hoi"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},44.1000);
+tl.fromTo("#c09-k",{"opacity": 0, "y": -20},{"opacity": 1, "y": 0, "duration": 0.35, "ease": "power3.out"},44.1333);
+tl.fromTo("#c09-b",{"opacity": 0, "scale": 0.85, "y": 20},{"opacity": 1, "scale": 1, "y": 0, "duration": 0.35, "ease": "back.out(1.6)"},47.6667);
+tl.fromTo("#c09-t",{"clipPath": "inset(0 100% 0 0)"},{"clipPath": "inset(0 0% 0 0)", "duration": 2.7799999999999967, "ease": "power1.inOut"},47.7333);
+tl.fromTo("#c09-w",{"opacity": 0, "y": 10},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},50.4333);
+tl.to('.card-host[data-card-id="c09-hoi"]',{opacity:0,duration:0.25,ease:'power2.in'},50.9000);
+tl.set('.card-host[data-card-id="c09-hoi"]',{visibility:'hidden'},51.1333);
+tl.set('.card-host[data-card-id="c10-cv"]',{visibility:'visible'},51.3000);
+tl.fromTo('.card-host[data-card-id="c10-cv"]',{opacity:0},{opacity:1,duration:0.12,ease:'power2.out'},51.3000);
+tl.fromTo("#c10-src",{"opacity": 0, "y": 10},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},51.3333);
+tl.fromTo("#c10-t",{"opacity": 0, "y": 30},{"opacity": 1, "y": 0, "duration": 0.5, "ease": "power3.out"},51.5000);
+tl.fromTo("#c10-q1",{"opacity": 0, "y": 40},{"opacity": 1, "y": 0, "duration": 0.5, "ease": "power3.out"},53.3333);
+tl.fromTo("#c10-m1",{"backgroundSize": "0% 100%"},{"backgroundSize": "100% 100%", "duration": 0.4, "ease": "power2.out"},53.6333);
+tl.fromTo("#c10-q2",{"opacity": 0, "y": 40},{"opacity": 1, "y": 0, "duration": 0.5, "ease": "power3.out"},56.5000);
+tl.fromTo("#c10-m2",{"backgroundSize": "0% 100%"},{"backgroundSize": "100% 100%", "duration": 0.5, "ease": "power2.out"},57.1333);
+tl.fromTo("#c10-nt",{"opacity": 0, "y": 10},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},59.0000);
+tl.to('.card-host[data-card-id="c10-cv"]',{opacity:0,duration:0.12,ease:'power2.in'},61.1000);
+tl.set('.card-host[data-card-id="c10-cv"]',{visibility:'hidden'},61.2333);
+tl.set('.card-host[data-card-id="c11-ch2"]',{visibility:'visible'},61.2667);
+tl.fromTo('.card-host[data-card-id="c11-ch2"]',{opacity:0},{opacity:1,duration:0.12,ease:'power2.out'},61.2667);
+tl.fromTo("#c11-ch2-bt",{"y": -560},{"y": 0, "duration": 0.3, "ease": "power3.out"},61.2667);
+tl.fromTo("#c11-ch2-bb",{"y": 600},{"y": 0, "duration": 0.3, "ease": "power3.out"},61.2667);
+tl.fromTo("#c11-ch2-l",{"opacity": 0, "scale": 0.85},{"opacity": 1, "scale": 1, "duration": 0.3, "ease": "power3.out"},61.3667);
+tl.fromTo("#c11-ch2-tt",{"clipPath": "inset(0 100% 0 0)"},{"clipPath": "inset(0 0% 0 0)", "duration": 0.4, "ease": "power2.inOut"},61.3667);
+tl.to('#c11-ch2-l',{scale:1.05,duration:1.60,ease:'power1.inOut'},61.6667);
+tl.to('.card-host[data-card-id="c11-ch2"]',{opacity:0,duration:0.12,ease:'power2.in'},63.2667);
+tl.set('.card-host[data-card-id="c11-ch2"]',{visibility:'hidden'},63.3667);
+tl.set('.card-host[data-card-id="c12-three"]',{visibility:'visible'},64.1667);
+tl.fromTo('.card-host[data-card-id="c12-three"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},64.1667);
+tl.fromTo("#c12-k",{"opacity": 0, "y": -20},{"opacity": 1, "y": 0, "duration": 0.35, "ease": "power3.out"},64.1667);
+tl.fromTo("#c12-i1",{"opacity": 0, "x": -60},{"opacity": 1, "x": 0, "duration": 0.4, "ease": "power3.out"},65.2333);
+tl.fromTo("#c12-i2",{"opacity": 0, "x": -60},{"opacity": 1, "x": 0, "duration": 0.4, "ease": "power3.out"},66.8000);
+tl.fromTo("#c12-i3",{"opacity": 0, "x": -60},{"opacity": 1, "x": 0, "duration": 0.4, "ease": "power3.out"},68.3000);
+tl.to('.card-host[data-card-id="c12-three"]',{opacity:0,duration:0.25,ease:'power2.in'},71.2000);
+tl.set('.card-host[data-card-id="c12-three"]',{visibility:'hidden'},71.4667);
+tl.set('.card-host[data-card-id="c13-ct"]',{visibility:'visible'},71.5000);
+tl.fromTo('.card-host[data-card-id="c13-ct"]',{opacity:0},{opacity:1,duration:0.12,ease:'power2.out'},71.5000);
+tl.fromTo("#c13-k",{"opacity": 0, "y": 10},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},71.5333);
+tl.fromTo("#c13-a1",{"opacity": 0, "x": -80},{"opacity": 1, "x": 0, "duration": 0.45, "ease": "power3.out"},72.6000);
+tl.fromTo("#c13-ar1",{"opacity": 0, "y": -10},{"opacity": 1, "y": 0, "duration": 0.25, "ease": "power3.out"},74.0667);
+tl.fromTo("#c13-a2",{"opacity": 0, "x": -80},{"opacity": 1, "x": 0, "duration": 0.45, "ease": "power3.out"},74.0667);
+tl.fromTo("#c13-b1",{"opacity": 0, "x": 80},{"opacity": 1, "x": 0, "duration": 0.45, "ease": "power3.out"},80.0333);
+tl.fromTo("#c13-ar2",{"opacity": 0, "y": -10},{"opacity": 1, "y": 0, "duration": 0.25, "ease": "power3.out"},80.5333);
+tl.fromTo("#c13-b2",{"opacity": 0, "x": 80},{"opacity": 1, "x": 0, "duration": 0.45, "ease": "power3.out"},81.0000);
+tl.to('.card-host[data-card-id="c13-ct"]',{opacity:0,duration:0.12,ease:'power2.in'},83.4000);
+tl.set('.card-host[data-card-id="c13-ct"]',{visibility:'hidden'},83.5333);
+tl.set('.card-host[data-card-id="c14-hoi"]',{visibility:'visible'},83.6000);
+tl.fromTo('.card-host[data-card-id="c14-hoi"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},83.6000);
+tl.fromTo("#c14-n",{"opacity": 0, "x": -80},{"opacity": 1, "x": 0, "duration": 0.45, "ease": "power3.out"},84.7000);
+tl.fromTo("#c14-st",{"width": 0},{"width": "calc(100% + 12px)", "duration": 0.35, "ease": "power2.out"},85.9333);
+tl.fromTo("#c14-y",{"opacity": 0, "x": 80},{"opacity": 1, "x": 0, "duration": 0.45, "ease": "power3.out"},85.9000);
+tl.to('.card-host[data-card-id="c14-hoi"]',{opacity:0,duration:0.25,ease:'power2.in'},90.3333);
+tl.set('.card-host[data-card-id="c14-hoi"]',{visibility:'hidden'},90.6000);
+tl.set('.card-host[data-card-id="c15-ai"]',{visibility:'visible'},90.7667);
+tl.fromTo('.card-host[data-card-id="c15-ai"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},90.7667);
+tl.fromTo("#c15-q",{"opacity": 0, "y": 20},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},90.8333);
+tl.fromTo("#c15-b",{"opacity": 0, "scale": 1.6, "y": -30},{"opacity": 1, "scale": 1, "y": 0, "duration": 0.4, "ease": "back.out(2)"},94.4667);
+tl.fromTo("#c15-n",{"opacity": 0, "y": 20},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},93.1333);
+tl.to('.card-host[data-card-id="c15-ai"]',{opacity:0,duration:0.25,ease:'power2.in'},95.4333);
+tl.set('.card-host[data-card-id="c15-ai"]',{visibility:'hidden'},95.6667);
+tl.set('.card-host[data-card-id="c16-lua"]',{visibility:'visible'},95.7000);
+tl.fromTo('.card-host[data-card-id="c16-lua"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},95.7000);
+tl.fromTo("#c16-a",{"opacity": 0, "y": 14},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},95.7333);
+tl.fromTo("#c16-b",{"opacity": 0, "y": 20},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},97.3000);
+tl.fromTo("#c16-k",{"opacity": 0, "y": 14},{"opacity": 1, "y": 0, "duration": 0.35, "ease": "power3.out"},98.5000);
+tl.fromTo("#c16-u",{"opacity": 0, "scale": 0.6},{"opacity": 1, "scale": 1, "duration": 0.4, "ease": "back.out(1.8)"},98.8667);
+tl.to('.card-host[data-card-id="c16-lua"]',{opacity:0,duration:0.25,ease:'power2.in'},100.6667);
+tl.set('.card-host[data-card-id="c16-lua"]',{visibility:'hidden'},100.9333);
+tl.set('.card-host[data-card-id="c17-cta"]',{visibility:'visible'},101.4667);
+tl.fromTo('.card-host[data-card-id="c17-cta"]',{opacity:0},{opacity:1,duration:0.25,ease:'power2.out'},101.4667);
+tl.fromTo("#c17-q",{"opacity": 0, "y": -30},{"opacity": 1, "y": 0, "duration": 0.4, "ease": "power3.out"},101.5000);
+tl.fromTo("#c17-b",{"opacity": 0, "scale": 0.6},{"opacity": 1, "scale": 1, "duration": 0.4, "ease": "back.out(1.8)"},104.0333);
+tl.fromTo("#c17-l",{"opacity": 0, "y": 40},{"opacity": 1, "y": 0, "duration": 0.5, "ease": "power3.out"},102.0000);
+tl.fromTo("#c17-d",{"opacity": 0},{"opacity": 1, "duration": 0.4},102.2667);
+tl.fromTo('#cap-0 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},0.1333);
+tl.fromTo('#cap-0 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},0.2000);
+tl.to('#cap-0',{opacity:0,duration:.08,ease:'power1.in'},0.7000);
+tl.fromTo('#cap-1 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},0.8000);
+tl.to('#cap-1',{opacity:0,duration:.08,ease:'power1.in'},1.3333);
+tl.fromTo('#cap-2 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},1.4333);
+tl.fromTo('#cap-2 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},1.5000);
+tl.to('#cap-2',{opacity:0,duration:.08,ease:'power1.in'},2.1667);
+tl.fromTo('#cap-3 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},2.2667);
+tl.fromTo('#cap-3 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},2.3333);
+tl.to('#cap-3',{opacity:0,duration:.08,ease:'power1.in'},3.0000);
+tl.fromTo('#cap-4 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},3.1000);
+tl.to('#cap-4',{opacity:0,duration:.08,ease:'power1.in'},3.6000);
+tl.fromTo('#cap-5 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},4.2333);
+tl.to('#cap-5',{opacity:0,duration:.08,ease:'power1.in'},4.5000);
+tl.fromTo('#cap-6 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},4.4333);
+tl.fromTo('#cap-6 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},4.5000);
+tl.to('#cap-6',{opacity:0,duration:.08,ease:'power1.in'},5.5333);
+tl.fromTo('#cap-7 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},6.2000);
+tl.fromTo('#cap-7 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},6.2667);
+tl.to('#cap-7',{opacity:0,duration:.08,ease:'power1.in'},7.0000);
+tl.fromTo('#cap-8 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},7.1000);
+tl.fromTo('#cap-8 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},7.1667);
+tl.to('#cap-8',{opacity:0,duration:.08,ease:'power1.in'},7.5333);
+tl.fromTo('#cap-9 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},7.6333);
+tl.fromTo('#cap-9 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},7.7000);
+tl.to('#cap-9',{opacity:0,duration:.08,ease:'power1.in'},8.3667);
+tl.fromTo('#cap-10 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},8.4667);
+tl.fromTo('#cap-10 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},8.5333);
+tl.to('#cap-10',{opacity:0,duration:.08,ease:'power1.in'},8.9333);
+tl.fromTo('#cap-11 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},9.0333);
+tl.to('#cap-11',{opacity:0,duration:.08,ease:'power1.in'},9.3000);
+tl.fromTo('#cap-12 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},9.4000);
+tl.fromTo('#cap-12 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},9.4667);
+tl.to('#cap-12',{opacity:0,duration:.08,ease:'power1.in'},10.5000);
+tl.fromTo('#cap-13 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},10.6000);
+tl.fromTo('#cap-13 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},10.6667);
+tl.to('#cap-13',{opacity:0,duration:.08,ease:'power1.in'},11.1000);
+tl.fromTo('#cap-14 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},11.2000);
+tl.to('#cap-14',{opacity:0,duration:.08,ease:'power1.in'},11.5333);
+tl.fromTo('#cap-15 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},11.6333);
+tl.fromTo('#cap-15 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},11.7000);
+tl.to('#cap-15',{opacity:0,duration:.08,ease:'power1.in'},12.0333);
+tl.fromTo('#cap-16 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},12.1333);
+tl.fromTo('#cap-16 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},12.2000);
+tl.to('#cap-16',{opacity:0,duration:.08,ease:'power1.in'},12.8667);
+tl.fromTo('#cap-17 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},12.9667);
+tl.fromTo('#cap-17 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},13.0667);
+tl.to('#cap-17',{opacity:0,duration:.08,ease:'power1.in'},13.9667);
+tl.fromTo('#cap-18 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},14.0667);
+tl.to('#cap-18',{opacity:0,duration:.08,ease:'power1.in'},14.3333);
+tl.fromTo('#cap-19 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},14.3667);
+tl.fromTo('#cap-19 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},14.4333);
+tl.to('#cap-19',{opacity:0,duration:.08,ease:'power1.in'},14.9000);
+tl.fromTo('#cap-20 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},15.0000);
+tl.to('#cap-20',{opacity:0,duration:.08,ease:'power1.in'},15.4667);
+tl.fromTo('#cap-21 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},16.0667);
+tl.fromTo('#cap-21 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},16.1333);
+tl.to('#cap-21',{opacity:0,duration:.08,ease:'power1.in'},16.5333);
+tl.fromTo('#cap-22 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},16.6333);
+tl.fromTo('#cap-22 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},16.7000);
+tl.to('#cap-22',{opacity:0,duration:.08,ease:'power1.in'},17.4667);
+tl.fromTo('#cap-23 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},17.5667);
+tl.to('#cap-23',{opacity:0,duration:.08,ease:'power1.in'},17.9667);
+tl.fromTo('#cap-24 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},18.0667);
+tl.fromTo('#cap-24 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},18.1333);
+tl.to('#cap-24',{opacity:0,duration:.08,ease:'power1.in'},18.9667);
+tl.fromTo('#cap-25 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},19.0667);
+tl.fromTo('#cap-25 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},19.1333);
+tl.to('#cap-25',{opacity:0,duration:.08,ease:'power1.in'},20.0000);
+tl.fromTo('#cap-29 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},22.9667);
+tl.fromTo('#cap-29 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},23.0333);
+tl.to('#cap-29',{opacity:0,duration:.08,ease:'power1.in'},23.8667);
+tl.fromTo('#cap-30 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},23.9667);
+tl.fromTo('#cap-30 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},24.0333);
+tl.to('#cap-30',{opacity:0,duration:.08,ease:'power1.in'},24.3333);
+tl.fromTo('#cap-31 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},24.4333);
+tl.fromTo('#cap-31 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},24.5000);
+tl.to('#cap-31',{opacity:0,duration:.08,ease:'power1.in'},25.3000);
+tl.fromTo('#cap-32 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},25.4000);
+tl.fromTo('#cap-32 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},25.4667);
+tl.to('#cap-32',{opacity:0,duration:.08,ease:'power1.in'},26.2667);
+tl.fromTo('#cap-33 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},26.3333);
+tl.fromTo('#cap-33 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},26.4333);
+tl.to('#cap-33',{opacity:0,duration:.08,ease:'power1.in'},27.0333);
+tl.fromTo('#cap-34 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},27.1333);
+tl.fromTo('#cap-34 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},27.2000);
+tl.to('#cap-34',{opacity:0,duration:.08,ease:'power1.in'},27.8333);
+tl.fromTo('#cap-35 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},27.9333);
+tl.to('#cap-35',{opacity:0,duration:.08,ease:'power1.in'},28.6667);
+tl.fromTo('#cap-36 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},28.7667);
+tl.fromTo('#cap-36 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},28.8333);
+tl.to('#cap-36',{opacity:0,duration:.08,ease:'power1.in'},29.6000);
+tl.fromTo('#cap-37 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},29.7000);
+tl.fromTo('#cap-37 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},29.7667);
+tl.to('#cap-37',{opacity:0,duration:.08,ease:'power1.in'},30.0000);
+tl.fromTo('#cap-38 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},30.1000);
+tl.fromTo('#cap-38 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},30.1667);
+tl.to('#cap-38',{opacity:0,duration:.08,ease:'power1.in'},31.1333);
+tl.fromTo('#cap-39 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},31.2333);
+tl.fromTo('#cap-39 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},31.3000);
+tl.to('#cap-39',{opacity:0,duration:.08,ease:'power1.in'},32.9333);
+tl.fromTo('#cap-40 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},33.0333);
+tl.fromTo('#cap-40 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},33.1333);
+tl.to('#cap-40',{opacity:0,duration:.08,ease:'power1.in'},33.7333);
+tl.fromTo('#cap-41 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},33.8333);
+tl.fromTo('#cap-41 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},33.9000);
+tl.to('#cap-41',{opacity:0,duration:.08,ease:'power1.in'},34.6000);
+tl.fromTo('#cap-42 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},34.7000);
+tl.to('#cap-42',{opacity:0,duration:.08,ease:'power1.in'},35.3000);
+tl.fromTo('#cap-43 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},35.9333);
+tl.fromTo('#cap-43 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},36.0000);
+tl.to('#cap-43',{opacity:0,duration:.08,ease:'power1.in'},36.4667);
+tl.fromTo('#cap-44 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},36.5667);
+tl.to('#cap-44',{opacity:0,duration:.08,ease:'power1.in'},36.8333);
+tl.fromTo('#cap-45 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},36.8000);
+tl.fromTo('#cap-45 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},36.8667);
+tl.to('#cap-45',{opacity:0,duration:.08,ease:'power1.in'},37.2333);
+tl.fromTo('#cap-46 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},37.3333);
+tl.fromTo('#cap-46 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},37.4000);
+tl.to('#cap-46',{opacity:0,duration:.08,ease:'power1.in'},38.4333);
+tl.fromTo('#cap-47 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},38.5333);
+tl.fromTo('#cap-47 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},38.6000);
+tl.to('#cap-47',{opacity:0,duration:.08,ease:'power1.in'},39.5333);
+tl.fromTo('#cap-48 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},39.6333);
+tl.fromTo('#cap-48 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},39.7000);
+tl.to('#cap-48',{opacity:0,duration:.08,ease:'power1.in'},40.2667);
+tl.fromTo('#cap-49 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},40.7667);
+tl.fromTo('#cap-49 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},40.8667);
+tl.to('#cap-49',{opacity:0,duration:.08,ease:'power1.in'},41.1333);
+tl.fromTo('#cap-50 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},41.2333);
+tl.fromTo('#cap-50 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},41.3000);
+tl.to('#cap-50',{opacity:0,duration:.08,ease:'power1.in'},42.0333);
+tl.fromTo('#cap-51 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},42.1333);
+tl.fromTo('#cap-51 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},42.2000);
+tl.to('#cap-51',{opacity:0,duration:.08,ease:'power1.in'},43.3000);
+tl.fromTo('#cap-52 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},44.1333);
+tl.fromTo('#cap-52 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},44.2000);
+tl.to('#cap-52',{opacity:0,duration:.08,ease:'power1.in'},44.8000);
+tl.fromTo('#cap-53 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},44.9000);
+tl.to('#cap-53',{opacity:0,duration:.08,ease:'power1.in'},45.1667);
+tl.fromTo('#cap-54 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},45.2667);
+tl.fromTo('#cap-54 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},45.3333);
+tl.to('#cap-54',{opacity:0,duration:.08,ease:'power1.in'},46.4667);
+tl.fromTo('#cap-55 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},46.5667);
+tl.to('#cap-55',{opacity:0,duration:.08,ease:'power1.in'},47.6333);
+tl.fromTo('#cap-56 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},47.7333);
+tl.fromTo('#cap-56 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},47.8000);
+tl.to('#cap-56',{opacity:0,duration:.08,ease:'power1.in'},48.4333);
+tl.fromTo('#cap-57 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},48.5333);
+tl.to('#cap-57',{opacity:0,duration:.08,ease:'power1.in'},48.9667);
+tl.fromTo('#cap-58 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},49.0667);
+tl.fromTo('#cap-58 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},49.1333);
+tl.to('#cap-58',{opacity:0,duration:.08,ease:'power1.in'},49.8000);
+tl.fromTo('#cap-59 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},49.9000);
+tl.fromTo('#cap-59 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},49.9667);
+tl.to('#cap-59',{opacity:0,duration:.08,ease:'power1.in'},50.7667);
+tl.fromTo('#cap-60 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},51.3333);
+tl.to('#cap-60',{opacity:0,duration:.08,ease:'power1.in'},51.6333);
+tl.fromTo('#cap-61 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},51.7333);
+tl.fromTo('#cap-61 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},51.8000);
+tl.to('#cap-61',{opacity:0,duration:.08,ease:'power1.in'},52.4333);
+tl.fromTo('#cap-62 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},52.5333);
+tl.fromTo('#cap-62 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},52.6333);
+tl.to('#cap-62',{opacity:0,duration:.08,ease:'power1.in'},53.2333);
+tl.fromTo('#cap-63 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},53.3333);
+tl.fromTo('#cap-63 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},53.4000);
+tl.to('#cap-63',{opacity:0,duration:.08,ease:'power1.in'},53.8333);
+tl.fromTo('#cap-64 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},53.9333);
+tl.fromTo('#cap-64 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},54.0000);
+tl.to('#cap-64',{opacity:0,duration:.08,ease:'power1.in'},54.5333);
+tl.fromTo('#cap-65 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},54.6333);
+tl.fromTo('#cap-65 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},54.7000);
+tl.to('#cap-65',{opacity:0,duration:.08,ease:'power1.in'},55.9333);
+tl.fromTo('#cap-66 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},56.0667);
+tl.fromTo('#cap-66 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},56.1333);
+tl.to('#cap-66',{opacity:0,duration:.08,ease:'power1.in'},56.5667);
+tl.fromTo('#cap-67 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},56.6667);
+tl.fromTo('#cap-67 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},56.7333);
+tl.to('#cap-67',{opacity:0,duration:.08,ease:'power1.in'},57.3000);
+tl.fromTo('#cap-68 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},57.4000);
+tl.fromTo('#cap-68 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},57.4667);
+tl.to('#cap-68',{opacity:0,duration:.08,ease:'power1.in'},58.0667);
+tl.fromTo('#cap-69 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},58.1333);
+tl.fromTo('#cap-69 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},58.2333);
+tl.to('#cap-69',{opacity:0,duration:.08,ease:'power1.in'},58.9667);
+tl.fromTo('#cap-70 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},59.0667);
+tl.fromTo('#cap-70 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},59.1333);
+tl.to('#cap-70',{opacity:0,duration:.08,ease:'power1.in'},59.7667);
+tl.fromTo('#cap-71 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},59.8667);
+tl.fromTo('#cap-71 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},59.9333);
+tl.to('#cap-71',{opacity:0,duration:.08,ease:'power1.in'},60.7333);
+tl.fromTo('#cap-75 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},63.8667);
+tl.to('#cap-75',{opacity:0,duration:.08,ease:'power1.in'},64.1333);
+tl.fromTo('#cap-76 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},64.2333);
+tl.fromTo('#cap-76 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},64.3000);
+tl.to('#cap-76',{opacity:0,duration:.08,ease:'power1.in'},65.4333);
+tl.fromTo('#cap-77 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},65.5333);
+tl.fromTo('#cap-77 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},65.6000);
+tl.to('#cap-77',{opacity:0,duration:.08,ease:'power1.in'},66.7667);
+tl.fromTo('#cap-78 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},66.8667);
+tl.fromTo('#cap-78 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},66.9333);
+tl.to('#cap-78',{opacity:0,duration:.08,ease:'power1.in'},67.9000);
+tl.fromTo('#cap-79 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},68.0000);
+tl.to('#cap-79',{opacity:0,duration:.08,ease:'power1.in'},68.2667);
+tl.fromTo('#cap-80 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},68.2333);
+tl.fromTo('#cap-80 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},68.3000);
+tl.to('#cap-80',{opacity:0,duration:.08,ease:'power1.in'},68.9333);
+tl.fromTo('#cap-81 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},69.0333);
+tl.fromTo('#cap-81 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},69.1000);
+tl.to('#cap-81',{opacity:0,duration:.08,ease:'power1.in'},69.7667);
+tl.fromTo('#cap-82 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},69.8667);
+tl.fromTo('#cap-82 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},69.9333);
+tl.to('#cap-82',{opacity:0,duration:.08,ease:'power1.in'},71.1333);
+tl.fromTo('#cap-83 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},71.5333);
+tl.fromTo('#cap-83 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},71.6000);
+tl.to('#cap-83',{opacity:0,duration:.08,ease:'power1.in'},72.2333);
+tl.fromTo('#cap-84 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},72.3333);
+tl.to('#cap-84',{opacity:0,duration:.08,ease:'power1.in'},72.6333);
+tl.fromTo('#cap-85 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},72.7333);
+tl.fromTo('#cap-85 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},72.8000);
+tl.to('#cap-85',{opacity:0,duration:.08,ease:'power1.in'},73.5667);
+tl.fromTo('#cap-86 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},73.6667);
+tl.to('#cap-86',{opacity:0,duration:.08,ease:'power1.in'},74.0667);
+tl.fromTo('#cap-87 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},74.1333);
+tl.fromTo('#cap-87 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},74.2333);
+tl.to('#cap-87',{opacity:0,duration:.08,ease:'power1.in'},74.8333);
+tl.fromTo('#cap-88 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},74.9333);
+tl.fromTo('#cap-88 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},75.0000);
+tl.to('#cap-88',{opacity:0,duration:.08,ease:'power1.in'},75.7333);
+tl.fromTo('#cap-89 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},75.8667);
+tl.fromTo('#cap-89 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},75.9333);
+tl.to('#cap-89',{opacity:0,duration:.08,ease:'power1.in'},77.1000);
+tl.fromTo('#cap-90 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},77.2000);
+tl.fromTo('#cap-90 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},77.2667);
+tl.to('#cap-90',{opacity:0,duration:.08,ease:'power1.in'},77.9333);
+tl.fromTo('#cap-91 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},78.0333);
+tl.fromTo('#cap-91 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},78.1000);
+tl.to('#cap-91',{opacity:0,duration:.08,ease:'power1.in'},79.3000);
+tl.fromTo('#cap-92 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},79.4000);
+tl.to('#cap-92',{opacity:0,duration:.08,ease:'power1.in'},79.8333);
+tl.fromTo('#cap-93 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},80.1667);
+tl.fromTo('#cap-93 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},80.2333);
+tl.to('#cap-93',{opacity:0,duration:.08,ease:'power1.in'},81.0000);
+tl.fromTo('#cap-94 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},81.1000);
+tl.fromTo('#cap-94 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},81.1667);
+tl.to('#cap-94',{opacity:0,duration:.08,ease:'power1.in'},81.6667);
+tl.fromTo('#cap-95 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},81.7667);
+tl.fromTo('#cap-95 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},81.8667);
+tl.to('#cap-95',{opacity:0,duration:.08,ease:'power1.in'},82.4000);
+tl.fromTo('#cap-96 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},82.5000);
+tl.to('#cap-96',{opacity:0,duration:.08,ease:'power1.in'},82.9667);
+tl.fromTo('#cap-97 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},83.6000);
+tl.fromTo('#cap-97 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},83.6667);
+tl.to('#cap-97',{opacity:0,duration:.08,ease:'power1.in'},84.6000);
+tl.fromTo('#cap-98 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},84.7000);
+tl.to('#cap-98',{opacity:0,duration:.08,ease:'power1.in'},84.9667);
+tl.fromTo('#cap-99 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},84.9667);
+tl.fromTo('#cap-99 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},85.0333);
+tl.to('#cap-99',{opacity:0,duration:.08,ease:'power1.in'},85.5667);
+tl.fromTo('#cap-100 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},85.6667);
+tl.to('#cap-100',{opacity:0,duration:.08,ease:'power1.in'},85.9333);
+tl.fromTo('#cap-101 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},85.9667);
+tl.to('#cap-101',{opacity:0,duration:.08,ease:'power1.in'},86.8333);
+tl.fromTo('#cap-102 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},86.9333);
+tl.fromTo('#cap-102 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},87.0000);
+tl.to('#cap-102',{opacity:0,duration:.08,ease:'power1.in'},87.6667);
+tl.fromTo('#cap-103 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},87.7333);
+tl.fromTo('#cap-103 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},87.8333);
+tl.to('#cap-103',{opacity:0,duration:.08,ease:'power1.in'},88.6333);
+tl.fromTo('#cap-104 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},88.7333);
+tl.fromTo('#cap-104 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},88.8000);
+tl.to('#cap-104',{opacity:0,duration:.08,ease:'power1.in'},89.3333);
+tl.fromTo('#cap-105 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},89.4333);
+tl.to('#cap-105',{opacity:0,duration:.08,ease:'power1.in'},90.0333);
+tl.fromTo('#cap-106 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},90.8000);
+tl.fromTo('#cap-106 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},90.8667);
+tl.to('#cap-106',{opacity:0,duration:.08,ease:'power1.in'},91.4667);
+tl.fromTo('#cap-107 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},91.5667);
+tl.fromTo('#cap-107 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},91.6333);
+tl.to('#cap-107',{opacity:0,duration:.08,ease:'power1.in'},92.4000);
+tl.fromTo('#cap-108 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},92.5000);
+tl.fromTo('#cap-108 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},92.5667);
+tl.to('#cap-108',{opacity:0,duration:.08,ease:'power1.in'},93.1333);
+tl.fromTo('#cap-109 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},93.2333);
+tl.fromTo('#cap-109 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},93.3000);
+tl.to('#cap-109',{opacity:0,duration:.08,ease:'power1.in'},94.1333);
+tl.fromTo('#cap-110 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},94.2333);
+tl.fromTo('#cap-110 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},94.3000);
+tl.to('#cap-110',{opacity:0,duration:.08,ease:'power1.in'},95.3000);
+tl.fromTo('#cap-111 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},95.7333);
+tl.fromTo('#cap-111 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},95.8000);
+tl.to('#cap-111',{opacity:0,duration:.08,ease:'power1.in'},96.7667);
+tl.fromTo('#cap-112 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},96.8667);
+tl.to('#cap-112',{opacity:0,duration:.08,ease:'power1.in'},97.2667);
+tl.fromTo('#cap-113 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},97.3667);
+tl.fromTo('#cap-113 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},97.4333);
+tl.to('#cap-113',{opacity:0,duration:.08,ease:'power1.in'},98.4667);
+tl.fromTo('#cap-114 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},98.5667);
+tl.fromTo('#cap-114 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},98.6333);
+tl.to('#cap-114',{opacity:0,duration:.08,ease:'power1.in'},99.2667);
+tl.fromTo('#cap-115 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},99.3667);
+tl.fromTo('#cap-115 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},99.4333);
+tl.to('#cap-115',{opacity:0,duration:.08,ease:'power1.in'},100.4667);
+tl.fromTo('#cap-116 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},101.5000);
+tl.fromTo('#cap-116 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},101.5667);
+tl.to('#cap-116',{opacity:0,duration:.08,ease:'power1.in'},101.9000);
+tl.fromTo('#cap-117 .sm',{opacity:0,y:16},{opacity:1,y:0,duration:.2,ease:'power2.out'},102.0000);
+tl.fromTo('#cap-117 .w',{opacity:0,y:20,scale:.85},{opacity:1,y:0,scale:1,duration:.26,ease:'back.out(1.7)',stagger:.06},102.0667);
+tl.to('#cap-117',{opacity:0,duration:.08,ease:'power1.in'},102.1333);
+tl.set('#video-inner',{scale:1},0);
+tl.to('#video-inner',{scale:1.06,duration:.45,ease:'power3.inOut'},4.2667);
+tl.set('#video-inner',{scale:1.1},5.9000);
+tl.to('#video-inner',{scale:1.15,duration:.45,ease:'power3.inOut'},11.6667);
+tl.set('#video-inner',{scale:1.0},15.8000);
+tl.set('#video-inner',{scale:1.1},20.3000);
+tl.to('#video-inner',{scale:1.15,duration:.45,ease:'power3.inOut'},20.5667);
+tl.set('#video-inner',{scale:1.0},35.7000);
+tl.set('#video-inner',{scale:1.1},44.0000);
+tl.set('#video-inner',{scale:1.0},51.1000);
+tl.set('#video-inner',{scale:1.1},61.1000);
+tl.set('#video-inner',{scale:1.0},71.4000);
+tl.to('#video-inner',{scale:1.05,duration:.45,ease:'power3.inOut'},71.5333);
+tl.set('#video-inner',{scale:1.1},79.9000);
+tl.set('#video-inner',{scale:1.0},90.6000);
+tl.to('#video-inner',{scale:1.06,duration:.45,ease:'power3.inOut'},94.5667);
+tl.set('#video-inner',{scale:1.1},101.2000);
+tl.to('#video-inner',{scale:1.15,duration:.45,ease:'power3.inOut'},101.5333);
+window.__timelines=window.__timelines||{};
+window.__timelines["talking-head-recut"]=tl;
+})();
+</script>
+</div></body></html>

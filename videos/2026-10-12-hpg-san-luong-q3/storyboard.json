@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 3,
+  "composition": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 109.76,
+    "layout": "portrait",
+    "themeId": "noir",
+    "seed": 42
+  },
+  "videoTrack": {
+    "sourcePath": "input-video.mp4",
+    "startSec": 0,
+    "endSec": 109.76
+  },
+  "subtitles": {
+    "enabled": true,
+    "style": "kinetic 2 dòng, trong vùng an toàn TikTok"
+  },
+  "cards": [
+    {
+      "id": "c01-hook",
+      "startSec": 0.0,
+      "endSec": 7.27,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c02-lotrinh",
+      "startSec": 7.56,
+      "endSec": 16.28,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c03-ch1",
+      "startSec": 16.56,
+      "endSec": 18.66,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c04a-q3",
+      "startSec": 18.71,
+      "endSec": 27.71,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c04-so",
+      "startSec": 28.01,
+      "endSec": 37.91,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c05-ch2",
+      "startSec": 38.06,
+      "endSec": 40.16,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c06-bars",
+      "startSec": 40.24,
+      "endSec": 52.27,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c07-half",
+      "startSec": 52.3,
+      "endSec": 62.91,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c08-ch3",
+      "startSec": 62.91,
+      "endSec": 65.01,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c09-nghi",
+      "startSec": 65.06,
+      "endSec": 69.65,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c09b-ct",
+      "startSec": 69.68,
+      "endSec": 73.75,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c10-cuahang",
+      "startSec": 73.8,
+      "endSec": 83.31,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c11-status",
+      "startSec": 83.36,
+      "endSec": 92.27,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c12-hpg",
+      "startSec": 92.31,
+      "endSec": 98.96,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c13-end",
+      "startSec": 98.8,
+      "endSec": 109.76,
+      "zone": "video-overlay"
+    }
+  ]
+}

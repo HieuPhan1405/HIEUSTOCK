@@ -1,0 +1,117 @@
+{
+ "src": "/tmp/claude-0/v8B/src.bin",
+ "work": "/tmp/claude-0/v8B",
+ "pre": 0.15,
+ "post": 0.3,
+ "merge_gap": 0.2,
+ "gain_target": -19.0,
+ "pieces": [
+  {
+   "sw": 0,
+   "text": "Quý 3, Hòa Phát bán 3,8 triệu tấn thép, tăng",
+   "range": [
+    2.2,
+    4.78
+   ]
+  },
+  {
+   "sw": 3,
+   "text": "54%",
+   "range": [
+    32.9,
+    33.44
+   ]
+  },
+  {
+   "sw": 0,
+   "text": "so với cùng kỳ, nhưng hơn một nửa mức tăng đó đến từ cùng một loại thép.",
+   "range": [
+    5.76,
+    10.1
+   ],
+   "force": [
+    [
+     0,
+     5.8,
+     5.94
+    ],
+    [
+     1,
+     5.95,
+     6.09
+    ],
+    [
+     2,
+     6.11,
+     6.38
+    ],
+    [
+     3,
+     6.41,
+     6.62
+    ],
+    [
+     4,
+     7.01,
+     7.19
+    ]
+   ]
+  },
+  {
+   "sw": 1,
+   "text": "Mình sẽ đi qua 3 điều, con số Hòa Phát vừa công bố, loại thép nào đang được kéo và vì sao, bán nhiều chưa chắc lãi nhiều. Điều thứ 3 chắc chắn cần để ý."
+  },
+  {
+   "sw": 2,
+   "text": "Điều thứ nhất, con số."
+  },
+  {
+   "sw": 3,
+   "text": "Sáng nay, Hòa Phát công bố sản lượng quý 3 và 9 tháng. Quý 3, sản lượng bán hàng đạt 3,8 triệu tấn, tăng 54% so với cùng kỳ năm ngoái."
+  },
+  {
+   "sw": 4,
+   "text": "Bán hàng ở đây gồm thép xây dựng, thép cuộn chất lượng cao, thép cuộn cán nóng, gọi tắt là HRC và phôi thép. Cộng cả 9 tháng thì tăng gần 40%."
+  },
+  {
+   "sw": 5,
+   "text": "Điều thứ hai, loại thép nào kéo. HRC đạt trên 2 triệu tấn, tăng 64% so với cùng kỳ. Thép xây dựng và thép cuộn chất lượng cao"
+  },
+  {
+   "sw": 6,
+   "text": "tăng 26%, nghĩa là HRC tăng nhanh hơn gấp 2 lần."
+  },
+  {
+   "sw": 7,
+   "text": "Theo phép tính của mình, HRC chiếm hơn một nửa sản lượng bán hàng và cũng đóng góp hơn một nửa mức tăng."
+  },
+  {
+   "sw": 8,
+   "text": "Hòa Phát cho biết, khoảng 1/4 HRC quý này được xuất khẩu."
+  },
+  {
+   "sw": 9,
+   "text": "Điều thứ 3, chỗ dễ đọc nhầm. Thấy bán hơn 54%, anh chị sẽ nghĩ lãi cũng tăng cỡ đó. Nhưng lãi là giá bán trừ chi phí, rồi mới nhân với số tấn."
+  },
+  {
+   "sw": 10,
+   "text": "Giả sử một cửa hàng bán gấp rưỡi số hàng, nhưng mỗi món hàng giảm giá hoặc tiền nhập hàng tăng. Doanh số sẽ rất đẹp, nhưng tiền lãi chưa chắc sẽ lên theo."
+  },
+  {
+   "sw": 11,
+   "text": "Hòa Phát cũng vậy, bản công bố hôm nay chưa nói giá bán hay chi phí. Báo cáo quý 3 chưa có, còn quý 2 thì Hòa Phát đã công bố ngày 29/7."
+  },
+  {
+   "sw": 12,
+   "text": "Cũng trong hôm nay, cổ phiếu HPG tăng gần 3%."
+  },
+  {
+   "sw": 13,
+   "text": "Mình không nói hai việc liên quan."
+  },
+  {
+   "sw": 15,
+   "text": "Quay lại câu đầu, bán nhiều hơn 54% mà hơn một nửa mức tăng đến từ một loại thép. Còn lãi bao nhiêu thì phải chờ báo cáo quý 3. Lưu video này để đối chiếu khi Hòa Phát công bố báo cáo."
+  }
+ ]
+}

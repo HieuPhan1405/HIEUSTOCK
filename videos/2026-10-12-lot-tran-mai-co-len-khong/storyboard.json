@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 3,
+  "composition": {
+    "fps": 30,
+    "width": 1080,
+    "height": 1920,
+    "durationSeconds": 105.8,
+    "layout": "portrait",
+    "themeId": "noir",
+    "seed": 42
+  },
+  "videoTrack": {
+    "sourcePath": "input-video.mp4",
+    "startSec": 0,
+    "endSec": 105.8
+  },
+  "subtitles": {
+    "enabled": true,
+    "style": "kinetic 2 dòng, trong vùng an toàn TikTok"
+  },
+  "cards": [
+    {
+      "id": "c01-hook",
+      "startSec": 0.0,
+      "endSec": 4.0,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c02-ha",
+      "startSec": 4.2,
+      "endSec": 5.74,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c03-ticks",
+      "startSec": 6.99,
+      "endSec": 16.01,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c04-lo",
+      "startSec": 16.04,
+      "endSec": 20.45,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c05-ch1",
+      "startSec": 20.51,
+      "endSec": 22.61,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c06-crowd",
+      "startSec": 22.66,
+      "endSec": 26.23,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c07-vni",
+      "startSec": 26.28,
+      "endSec": 35.95,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c08-biet",
+      "startSec": 35.9,
+      "endSec": 43.75,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c09-hoi",
+      "startSec": 44.1,
+      "endSec": 51.15,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c10-cv",
+      "startSec": 51.3,
+      "endSec": 61.23,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c11-ch2",
+      "startSec": 61.28,
+      "endSec": 63.38,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c12-three",
+      "startSec": 64.15,
+      "endSec": 71.45,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c13-ct",
+      "startSec": 71.5,
+      "endSec": 83.53,
+      "zone": "fullscreen"
+    },
+    {
+      "id": "c14-hoi",
+      "startSec": 83.59,
+      "endSec": 90.59,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c15-ai",
+      "startSec": 90.77,
+      "endSec": 95.67,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c16-lua",
+      "startSec": 95.7,
+      "endSec": 100.93,
+      "zone": "video-overlay"
+    },
+    {
+      "id": "c17-cta",
+      "startSec": 101.47,
+      "endSec": 105.8,
+      "zone": "video-overlay"
+    }
+  ]
+}

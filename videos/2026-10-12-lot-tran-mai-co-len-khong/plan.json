@@ -1,0 +1,78 @@
+{
+ "src": "/tmp/claude-0/v8A/src.bin",
+ "work": "/tmp/claude-0/v8A",
+ "pre": 0.15,
+ "post": 0.3,
+ "merge_gap": 0.2,
+ "gain_target": -19.0,
+ "pieces": [
+  {
+   "sw": 0,
+   "text": "Mình làm trong ngành chứng khoán, và mình không biết ngày mai mã nào sẽ lên."
+  },
+  {
+   "sw": 1,
+   "text": "Hả? Ý là sao?"
+  },
+  {
+   "sw": 2,
+   "text": "Ý là thế này. Hỏi mình mã này kinh doanh ra sao, rủi ro nằm ở đâu, đặt lệnh kiểu nào, mình sẽ trả lời được hết. Chỉ có một, đúng một câu hỏi mình không trả lời được: mai mã nào sẽ lên."
+  },
+  {
+   "sw": 3,
+   "text": "Và nếu có ai trả lời chắc chắn câu đó, anh chị nên lo, chứ đừng mừng."
+  },
+  {
+   "sw": 4,
+   "text": "Tại sao thế? Bởi vì giá ngày mai không có do một người quyết định mà là do hàng triệu người cùng đặt lệnh một lúc."
+  },
+  {
+   "sw": 5,
+   "text": "Quý 3 vừa rồi, kinh tế tăng gần 10%, vậy mà ngay tuần trước khi con số đó được công bố, VN-Index giảm 5 phiên. Kinh tế tốt, chỉ số này vẫn đi ngược."
+  },
+  {
+   "sw": 6,
+   "text": "Và nghĩ thêm một chút, nếu thực sự có người nghĩ chắc mai mã nào sẽ lên, họ sẽ làm gì? Họ sẽ mua hết, họ đâu rảnh để nói cho anh chị."
+  },
+  {
+   "sw": 7,
+   "text": "Nếu anh chị không tin, hãy nói chắc một câu hỏi."
+  },
+  {
+   "sw": 8,
+   "text": "Nếu anh chị chắc như vậy, sao anh không tự mua hết đi?"
+  },
+  {
+   "sw": 9,
+   "text": "Tháng 5, Ủy ban Chứng khoán còn phải gửi công văn đề nghị các công ty chứng khoán rà soát chính nhân viên của mình, vì có người giới thiệu mình làm ở công ty chứng khoán rồi khuyến nghị mua bán trên mạng."
+  },
+  {
+   "sw": 10,
+   "text": "Điều đó không có nghĩa là môi giới chỉ biết nói không biết. Họ nói được mã này đang làm gì, rủi ro nằm ở đâu, và nếu giá đi ngược thì anh chị đã tính trước chưa?"
+  },
+  {
+   "sw": 11,
+   "text": "Công thức rất đơn giản, ngày mai không ai biết, nên người đáng tin chính là người nói thẳng họ không biết và chỉ cho anh chị thấy được rủi ro."
+  },
+  {
+   "sw": 12,
+   "text": "Người nói chắc đang bán cho anh chị được sự cảm giác yên tâm."
+  },
+  {
+   "sw": 13,
+   "text": "Nên lần sau đừng hỏi: mã này mai có lên không? Hỏi: nếu nó giảm mạnh thì mình lỗ bao nhiêu và mình sẽ làm gì?"
+  },
+  {
+   "sw": 14,
+   "text": "Nếu anh chị chỉ muốn biết có ai biết ngày mai không, đọc đến đây là đủ, không có ai."
+  },
+  {
+   "sw": 15,
+   "text": "Còn muốn khỏi bị lùa, đừng tin lời mình, cứ hỏi người nói chắc chắn câu kia."
+  },
+  {
+   "sw": 16,
+   "text": "Anh chị còn câu hỏi nào về nghề môi giới hay ngại trả lời, comment để mình biết nhé."
+  }
+ ]
+}

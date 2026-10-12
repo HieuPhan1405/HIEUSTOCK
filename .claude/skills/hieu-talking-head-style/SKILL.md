@@ -303,6 +303,26 @@ Số đo: ~250 tiếng/phút, câu trung vị 11–12 tiếng, ~6 câu hỏi t�
 **Bài học sau khi Hiếu chê bản 3 ("cần ít con số hơn"):** nói ra ≤5 con số; nếu cơ chế không cần phép tính thì thay bằng **một tình huống người xem tự hình dung** (ví dụ: mua theo lời khuyên, lỗ, nhắn lại thì bị chặn); ≤2 nguồn đặt tên trong lời; một câu hỏi tự kiểm duy nhất. **Trước khi gửi, đọc lại bằng mắt người xem:** 3 giây đầu có liên quan đến tiền/nỗi sợ của họ không? Có chỗ nào nghe như bản tin/báo cáo không?
 Kịch bản mẫu: `videos/scripts/series-lot-tran-nghe-moi-gioi-tap-1-lua-ga.md` (bản 4).
 
+## 17. Bộ công cụ dựng `videos/tools/th_*` (dựng hai video ngày 12/10/2026; thay các script rời trong /tmp)
+
+Thư mục video: `videos/<ngày>-<slug>/` (mẫu: `2026-10-12-lot-tran-mai-co-len-khong/`, `2026-10-12-hpg-san-luong-q3/`).
+1. **Tách lời**: tải video gốc (Drive, mục 8) vào thư mục riêng → `a.wav` 16 kHz → đo dB mỗi 100 ms (ngưỡng theo nền ồn: file có noise gate −58 dB, phòng ồn −45 dB) → các đoạn nói `subs.json` = [[chỉ số, bắt đầu, kết thúc], …] → whisper medium từng đoạn (`sw??.json`, `-ml 1 -sow`). Đoạn nghi ngờ chạy thêm large-v3-q5_0 (`ggml-large-v3-q5_0.bin`, tải từ huggingface.co/ggerganov/whisper.cpp; `lw??.json`). Với `-ojf` xem xác suất từng từ: **mô hình nghe ra một con số khác kịch bản với xác suất > 0,9 ⇒ người nói đã nói nhầm** (video HPG: hook nói "tăng 25%", đúng là 54%) → vá bằng đoạn đúng từ câu khác (xem 2) và báo lại cho Hiếu.
+2. **`plan.json`**: các đoạn GIỮ + lời thật sự nói (bỏ đoạn nói hỏng/nói lại; sửa chữ whisper nghe sai theo kịch bản nhưng đừng thêm chữ người nói không nói). Đoạn có `range` cắt đúng khoảng đó (không đệm) để vá chữ nói nhầm: chọn điểm cắt ở chỗ lặng (dB < −45 quanh điểm cắt).
+3. `python3 videos/tools/th_cut.py <thư mục>` → `public/input-video.mp4` (1080×1920 lanczos, 30 fps, h264 CRF17, GOP 30) + `offs.json`; giọng được chuẩn hoá −19 LUFS (đỉnh ≤ −1,5 dB) để SFX (0,2–0,3) giữ đúng tỉ lệ như các video trước (nguồn thường chỉ −25…−27 LUFS).
+4. `python3 videos/tools/th_align.py <thư mục>` → `tokens.json` + `script.txt`; gióng từng đoạn riêng, tự chọn bản medium/large khớp hơn.
+5. `build.py` dùng `th_lib.Builder` (`B.card`, `B.chapter`, `B.T/E`, `B.push`, `B.sfx`, `B.auto_sfx`, `B.write`) → `public/index.html`, `public/cards/*.html`, `storyboard.json`.
+6. **Kiểm trước khi render**: `node videos/tools/th_measure.mjs <thư mục>` (hộp chữ từng thẻ ở trạng thái cuối: ra ngoài vùng an toàn, thẻ che mặt, chạm vùng caption) và `npx hyperframes snapshot public --at t1,t2,… --no-end -o <thư mục tạm>` rồi xem `contact-sheet-*.jpg`.
+7. **Render**: `npx hyperframes render public --skill=talking-head-recut -o output.mp4 --fps 30`, chạy bằng Bash `run_in_background` (cách `nohup … &` bị huỷ khi shell kết thúc: "render_cancelled_parent_exited"); ~12–15 phút cho video 1:45 trên 4 lõi (chậm hơn nếu đang chạy whisper/ffmpeg song song).
+8. `python3 videos/tools/th_preview.py output.mp4 preview_<tên>.mp4` → loudnorm 2 lượt −14 LUFS (đỉnh ≤ −1 dBTP) + h264 CRF21 để gửi/đăng.
+
+**Bài học dựng (rút từ hai video này):**
+- Mỗi dòng hiện dần là **một khối riêng** (`PILL`), không dùng khung chung: khung chung để lộ khoảng tối trống khi dòng chưa hiện.
+- Thẻ trên đầu (không full) kết thúc ở y ≲ 700–760 để còn thấy mắt/miệng người nói (khung của Hiếu: mắt ở y ≈ 770–900); chữ trắng nhỏ trên nền kệ sáng phải có khối tối phía sau.
+- Ký tự không có trong Be Vietnam Pro/Playfair (≠ ≈ → … ✓ ✗) rơi sang font dự phòng và hiện sai: dùng SVG cho ✓ ✗, "..." thay "…", "~" thay "≈", "↓" thay "→" (↑ ↓ × ÷ − có sẵn).
+- Tên dài trên một dòng (Công văn 3760/UBCK-QLKD) phải kiểm không xuống dòng (`white-space:nowrap`, cỡ ≤ 55 px); chữ khổng lồ ("KHÔNG BIẾT" ở 150 px) cũng xuống dòng: đo bằng `th_measure.mjs`.
+- Khi Hiếu bỏ câu trong kịch bản lúc quay, thẻ chỉ hiện những gì anh đã nói (đừng dựng thẻ cho câu không có trong lời).
+- Âm "bụp" trầm (`sfx/thump.wav`, hệ số 0,5) cho chữ hook đập vào và dấu ✗; `click` cho từng dòng, `ding` cho con số/dấu ✓, `pop` cho thẻ.
+
 ## 9. Checklist trước khi xuất
 
 - [ ] Âm lượng file xuất: mean ≈ −13…−15 dB, đỉnh ≤ −0.3 dB (file < −18 dB thì điện thoại nghe rất nhỏ): sau khi nén chạy `-af volume=4.5dB,alimiter=limit=0.9` hoặc loudnorm + gain
