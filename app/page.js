@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Lock } from "lucide-react";
 import Image from "next/image";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import CoHoiHomNay from "@/components/CoHoiHomNay";
@@ -91,7 +92,7 @@ function phanLoaiTrend(trend) {
 // (mo phong hieu ung "glow" cua dashboard fintech hien dai).
 // href tuy chon - neu co, ca the tro thanh 1 link bam duoc dan sang Bo loc
 // co phieu voi dung bo loc tuong ung (vd Xu huong tang -> ?xuhuong=xanh).
-function TheKPI({ nhan, giaTri, phu, mau, href, may }) {
+function TheKPI({ nhan, giaTri, phu, mau, href, may, mo = false }) {
   const noiDung = (
     <>
       <div
@@ -102,9 +103,10 @@ function TheKPI({ nhan, giaTri, phu, mau, href, may }) {
       <p className="text-xs uppercase tracking-wide mb-2 relative" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }} data-may={may}>
         {nhan}
       </p>
-      <p className="text-3xl relative" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mau || TEXT }}>
+      <p className="text-3xl relative" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mau || TEXT, ...(mo ? { filter: "blur(7px)", userSelect: "none" } : {}) }}>
         {giaTri}
       </p>
+      {mo && <Lock size={15} color={MUTED} strokeWidth={2} className="absolute right-4 top-4" aria-hidden="true" />}
       {phu && (
         <p className="text-[11px] mt-1 relative" style={{ color: MUTED }}>
           {phu}
@@ -419,7 +421,7 @@ export default async function TrangTongQuan() {
 
         {/* TOP CO HOI DANG CHU Y: 4 o lenh CUA PHIEN HOM NAY - hang tren Mua | Ban, hang duoi Mua moi | Ban bot. Tong quan/Ra soat nhanh
             (breadth, top nganh, khoi ngoai...) o trang /dashboard rieng. */}
-        {tatCa.length > 0 && (xemTinHieu ? <CoHoiHomNay tatCa={tatCa} dongLenh={dongLenh} ngay={ngayPhien} /> : <KhoaTinHieuTrangChu choDuyet={choDuyet} />)}
+        {(tatCa.length > 0 || !xemTinHieu) && (xemTinHieu ? <CoHoiHomNay tatCa={tatCa} dongLenh={dongLenh} ngay={ngayPhien} /> : <KhoaTinHieuTrangChu choDuyet={choDuyet} />)}
 
         {/* HANG KPI */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
@@ -434,10 +436,10 @@ export default async function TrangTongQuan() {
             </>
           ) : (
             <>
-              <TheKPI nhan="Tín hiệu MUA" giaTri="🔒" phu="Đăng nhập để xem" mau={MUTED} />
-              <TheKPI nhan="Cảnh báo Mắt Thần" giaTri="🔒" phu="Đăng nhập để xem" mau={MUTED} />
-              <TheKPI nhan="Cơ hội chốt lời" giaTri="🔒" phu="Đăng nhập để xem" mau={MUTED} />
-              <TheKPI nhan="Cảnh báo bán bớt" giaTri="🔒" phu="Đăng nhập để xem" mau={MUTED} />
+              <TheKPI nhan="Tín hiệu MUA" giaTri="88" phu="Đăng nhập để xem" mau={PRIMARY} mo />
+              <TheKPI nhan="Cảnh báo Mắt Thần" giaTri="88" phu="Đăng nhập để xem" mau={DO} mo />
+              <TheKPI nhan="Cơ hội chốt lời" giaTri="88" phu="Đăng nhập để xem" mau="var(--vang)" mo />
+              <TheKPI nhan="Cảnh báo bán bớt" giaTri="88" phu="Đăng nhập để xem" mau="var(--cam)" mo />
             </>
           )}
         </div>
