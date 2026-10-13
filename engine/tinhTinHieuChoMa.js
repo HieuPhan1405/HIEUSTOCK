@@ -384,6 +384,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     doi: phanTramDoiCuoi,
     rs_vni: rsVsVni[cuoi],
     rs_vni_60: rsVsVni60[cuoi],
+    atr_pct: close[cuoi] > 0 ? (atrArr[cuoi] / close[cuoi]) * 100 : null, // ATR/gia (%) - chi hien thi canh bao "bien dong manh" tren So lenh, khong tham gia tin hieu
     breadth_nganh: breadthNganhMa,
     kijun: kijun[cuoi],
     gg_top: cbTop[cuoi],
@@ -448,6 +449,6 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   };
   // CHI DE BACKTEST (mac dinh TAT, khong anh huong CSV/upload): thamSo.traChuoi = true tra them CA CHUOI theo tung nen de mo phong lai
   // cach quan ly lenh (vd kieu chot loi khac) tren dung cac lan vao lenh/tin hieu BAN cua engine - xem engine/dich-vu/backtestChotLoi.mjs.
-  if (p.traChuoi) hangCuoi._chuoi = { nen, close, open, high, low, kijun, tenkan, atr: atrArr, totalScore, sellTinHieu: sellTinHieuArr, kq, diemRank: diemRankArr, diemConfidence: diemConfidenceArr, adx, rsVsVni, relVol, cloudTop, cloudBot, cbTop, cbBot };
+  if (p.traChuoi) hangCuoi._chuoi = { nen, close, open, high, low, kijun, tenkan, atr: atrArr, totalScore, sellTinHieu: sellTinHieuArr, kq, diemRank: diemRankArr, diemConfidence: diemConfidenceArr, adx, rsVsVni, relVol, cloudTop, cloudBot, cbTop, cbBot, sanyaku, trendScore, momScore, mfScore };
   return hangCuoi;
 }

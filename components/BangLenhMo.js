@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { TriangleAlert, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
+import { canhBaoVaoLenh } from "@/lib/canhBaoVaoLenh";
 import NutThamGia from "@/components/NutThamGia";
 import { CAC_COT } from "@/components/cotChung";
 import {
@@ -102,6 +103,11 @@ const COT_RIENG = {
             ↺ {nhanLoaiVao(row).nhan}
           </span>
         )}
+        {canhBaoVaoLenh(row).map((c) => (
+          <span key={c.khoa} className="text-[10px] font-bold tracking-wide" style={{ color: CAM }} title={c.moTa} data-may="canh-bao-vao-lenh">
+            ⚠ {c.nhan}
+          </span>
+        ))}
         {row.ban_bot && (
           <span className="text-[10px] font-bold tracking-wide" style={{ color: CAM }}>
             ⚠ Bán bớt

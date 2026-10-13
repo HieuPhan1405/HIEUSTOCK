@@ -73,7 +73,7 @@ export function chayEngine({ cache, vni, soNenToiThieu = 300, thamSoThem = {} })
       continue;
     }
     soMa++;
-    const { close, open, high, low, kijun, tenkan, sellTinHieu, kq, diemRank, diemConfidence, totalScore, adx, rsVsVni, relVol, atr, cloudTop, cloudBot, cbTop, cbBot } = hang._chuoi;
+    const { close, open, high, low, kijun, tenkan, sellTinHieu, kq, diemRank, diemConfidence, totalScore, adx, rsVsVni, relVol, atr, cloudTop, cloudBot, cbTop, cbBot, sanyaku, trendScore, momScore, mfScore } = hang._chuoi;
     const n = nen.length;
     const ngayArr = nen.map((b) => b.t);
     const sma50 = sma(close, 50);
@@ -97,7 +97,7 @@ export function chayEngine({ cache, vni, soNenToiThieu = 300, thamSoThem = {} })
       "Tang 20 phien truoc do (dong luc)": iv >= 20 ? (close[iv] / close[iv - 20] - 1) * 100 : NaN,
       "Gia so voi Kijun (% tren Kijun)": kijun[iv] > 0 ? (E / kijun[iv] - 1) * 100 : NaN,
     });
-    const chung = { ma, open, high, low, close, kijun, tenkan, sma20, sma50, atr, cloudTop, cloudBot, cbTop, cbBot, sell: sellTinHieu, n, ngayArr, vol: nen.map((b) => b.v), relVol };
+    const chung = { ma, open, high, low, close, kijun, tenkan, sma20, sma50, atr, cloudTop, cloudBot, cbTop, cbBot, sell: sellTinHieu, n, ngayArr, vol: nen.map((b) => b.v), relVol, sanyaku, trendScore, momScore, mfScore };
     for (let iv = 1; iv < n - 1; iv++) {
       if (!kq.muaGiuaSuKien?.[iv]) continue;
       const E = kq.muaGiuaGia[iv];

@@ -18,6 +18,8 @@ export const CAC_COT = [
   "tp_da_cham_giua",
   // RS 60 phien so voi VN-Index (diem %) - chi hien thi xep hang RS nganh tren Dashboard, khong tham gia tin hieu. Bo sung 2026-10-12.
   "rs_vni_60",
+  // ATR/gia (%) - canh bao "bien dong manh" tren So lenh (chi hien thi). Bo sung 2026-10-13.
+  "atr_pct",
 ];
 
 // true/false -> "1"/"0" (route.js soBool/boolTriState doc dung 2 gia tri nay). null/undefined ->
