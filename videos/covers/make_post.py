@@ -125,14 +125,20 @@ def lines_svg(ch, H=480):
         pts = " ".join(f"{X(i):.1f},{Y(v):.1f}" for i, v in enumerate(vals[k]))
         w = 6 if series[k]["color"] == "gold" else 5
         lines += f'<polyline points="{pts}" fill="none" stroke="{col}" stroke-width="{w}" stroke-linejoin="round" stroke-linecap="round"/>'
+    ys = [Y(vals[k][-1]) for k in range(len(series))]
+    ly = list(ys)  # vị trí nhãn cuối đường: đẩy xuống nếu hai đường kết thúc quá gần (tránh chữ đè nhau)
+    srt = sorted(range(len(series)), key=lambda k: ys[k])
+    for a, b in zip(srt, srt[1:]):
+        if ly[b] - ly[a] < 64:
+            ly[b] = ly[a] + 64
     for k in range(len(series)):
         col = COLORS[series[k]["color"]]
-        x, y, last = X(n - 1), Y(vals[k][-1]), vals[k][-1]
+        x, y, last = X(n - 1), ys[k], vals[k][-1]
         chg = (last / vals[k][0] - 1) * 100 if raw else last - 100
         shown = vi(last, dec) if raw else vi(last)
         ends += (f'<circle cx="{x:.1f}" cy="{y:.1f}" r="9" fill="{col}" stroke="{BG}" stroke-width="3"/>'
-                 f'<text x="{x+22:.1f}" y="{y-4:.1f}" font-size="28" font-weight="800" fill="{INK}">{shown}</text>'
-                 f'<text x="{x+22:.1f}" y="{y+26:.1f}" font-size="24" font-weight="700" fill="{INK}">{sgn(chg)}%</text>')
+                 f'<text x="{x+22:.1f}" y="{ly[k]-4:.1f}" font-size="28" font-weight="800" fill="{INK}">{shown}</text>'
+                 f'<text x="{x+22:.1f}" y="{ly[k]+26:.1f}" font-size="24" font-weight="700" fill="{INK}">{sgn(chg)}%</text>')
         legend += f'<span><i style="background:{col}"></i>{e(series[k]["name"])}</span>'
     svg = f'<svg width="{W}" height="{H}" viewBox="0 0 {W} {H}" style="font-family:\'Be Vietnam Pro\'">{band}{grid}{lines}{ends}{xt}</svg>'
     return svg, legend

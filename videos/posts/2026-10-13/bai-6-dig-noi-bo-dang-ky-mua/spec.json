@@ -1,0 +1,95 @@
+{
+ "type": "card",
+ "stamp": "DIG · HẾT PHIÊN 12/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 12/10/2026.",
+ "kicker": "DIG · NGƯỜI NỘI BỘ",
+ "title": [
+  "Chủ tịch đăng ký mua 5 triệu",
+  "cổ phiếu DIG: mới là kế hoạch"
+ ],
+ "title_size": 52,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Đăng ký mua",
+     "value": "5 triệu",
+     "tone": "gold",
+     "sub": "cp, 12/10 → 10/11"
+    },
+    {
+     "label": "Sở hữu hiện tại",
+     "value": "3,41%",
+     "tone": "plain",
+     "sub": "28,77 triệu cp"
+    },
+    {
+     "label": "Nếu mua hết",
+     "value": "4%",
+     "tone": "gold",
+     "sub": "33,77 triệu cp"
+    }
+   ]
+  },
+  {
+   "type": "lines",
+   "title": "Giá đóng cửa, quy về 100 tại 30/9",
+   "subtitle": "DIG và VN-Index, 30/9 → 12/10",
+   "height": 300,
+   "chart": {
+    "series": [
+     {
+      "name": "DIG",
+      "color": "gold",
+      "values": [
+       9.57,
+       9.55,
+       9.25,
+       9.02,
+       9.3,
+       9.3,
+       9.3,
+       9.4,
+       9.46
+      ]
+     },
+     {
+      "name": "VN-Index",
+      "color": "blue",
+      "values": [
+       1768.62,
+       1749.3,
+       1737.71,
+       1753.2,
+       1759.08,
+       1753.39,
+       1738.97,
+       1735.09,
+       1720.98
+      ]
+     }
+    ],
+    "xticks": [
+     [
+      0,
+      "30/9"
+     ],
+     [
+      4,
+      "6/10"
+     ],
+     [
+      8,
+      "12/10"
+     ]
+    ]
+   }
+  },
+  {
+   "type": "note",
+   "text": "Kết quả giao dịch phải công bố trong 5 ngày làm việc sau khi hoàn tất hoặc hết hạn. Mình không dự đoán giá."
+  }
+ ],
+ "sources": "VnEconomy 6/10, CafeF 7/10, Tạp chí KT-TC 12/10; SSI (Thông tư 96/2020/TT-BTC); DNSE."
+}

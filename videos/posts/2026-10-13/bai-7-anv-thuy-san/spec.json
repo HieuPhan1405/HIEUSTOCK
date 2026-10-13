@@ -1,0 +1,57 @@
+{
+ "type": "card",
+ "stamp": "ANV · HẾT PHIÊN 12/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 12/10/2026.",
+ "kicker": "ANV · THỦY SẢN",
+ "title": [
+  "ANV +19% từ 30/9, VN-Index −2,7%:",
+  "số ngành tăng chưa phải lợi nhuận"
+ ],
+ "title_size": 50,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "ANV, 30/9 → 12/10",
+     "value": "+19,0%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "15.550 → 18.500 đồng"
+    },
+    {
+     "label": "VN-Index cùng kỳ",
+     "value": "−2,7%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "1.768,62 → 1.720,98"
+    },
+    {
+     "label": "Cá tra xuất khẩu T9",
+     "value": "+18,6%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "214 triệu USD (VASEP)"
+    }
+   ]
+  },
+  {
+   "type": "lines",
+   "title": "Giá đóng cửa, quy về 100 tại 30/9",
+   "subtitle": "ANV và VN-Index, 30/9 → 12/10",
+   "height": 300,
+   "chart": {
+    "series": [
+     {"name": "ANV", "color": "gold", "values": [15.55, 15.9, 17, 17.4, 17.2, 17.45, 18.65, 18.65, 18.5]},
+     {"name": "VN-Index", "color": "blue", "values": [1768.62, 1749.3, 1737.71, 1753.2, 1759.08, 1753.39, 1738.97, 1735.09, 1720.98]}
+    ],
+    "xticks": [[0, "30/9"], [4, "6/10"], [8, "12/10"]]
+   }
+  },
+  {
+   "type": "note",
+   "text": "Kim ngạch cả ngành tăng chưa chắc lợi nhuận từng doanh nghiệp tăng. Sao Ta (tôm): doanh số tháng 9 −15%. VHC cùng kỳ +7,2%."
+  }
+ ],
+ "sources": "DNSE (giá); VASEP; Người Quan Sát 8/10; trang Sao Ta (Fimex) 1/10."
+}

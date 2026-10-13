@@ -1,0 +1,57 @@
+{
+ "type": "card",
+ "stamp": "PHIÊN 12/10/2026",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 12/10/2026.",
+ "kicker": "TỔNG KẾT PHIÊN 12/10",
+ "title": [
+  "VN-Index đỏ 14 điểm,",
+  "nhưng mã tăng nhỉnh hơn mã giảm"
+ ],
+ "title_size": 54,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "VN-Index",
+     "value": "1.720,98",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "−14,11 điểm (−0,81%)"
+    },
+    {
+     "label": "HNX-Index",
+     "value": "264,69",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "+3,09 điểm (+1,18%)"
+    },
+    {
+     "label": "HoSE: mã tăng | giảm",
+     "value": "154 | 148",
+     "tone": "gold",
+     "sub": "60 mã đứng giá"
+    }
+   ]
+  },
+  {
+   "type": "hbars",
+   "title": "Biến động giá phiên 12/10",
+   "subtitle": "VIC, VHM, GAS làm chỉ số mất 14,7 điểm; thép và TCB đi ngược",
+   "items": [
+    {"label": "NKG", "value": 6.89},
+    {"label": "HSG", "value": 3.54},
+    {"label": "TCB", "value": 0.77},
+    {"label": "GAS", "value": -2.11},
+    {"label": "VIC", "value": -2.88},
+    {"label": "VHM", "value": -3.18}
+   ],
+   "decimals": 2
+  },
+  {
+   "type": "note",
+   "text": "Ngoại bán ròng ~615 tỷ, tự doanh mua ròng ~145 tỷ. Thứ Năm 15/10: đáo hạn phái sinh. Chỉ ghi số đã xảy ra."
+  }
+ ],
+ "sources": "DNSE (giá); Thời báo Tài chính VN, VnEconomy, Tạp chí Tài chính Doanh nghiệp 12/10."
+}

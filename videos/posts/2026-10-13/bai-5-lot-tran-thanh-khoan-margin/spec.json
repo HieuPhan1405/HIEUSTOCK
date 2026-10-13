@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "LỘT TRẦN #2",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Ý kiến cá nhân. Ví dụ là số giả định.",
+ "kicker": "LỘT TRẦN NGHỀ MÔI GIỚI #2",
+ "title": [
+  "Thanh khoản giảm hơn nửa,",
+  "margin vẫn tăng ~49%"
+ ],
+ "title_size": 58,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Thanh khoản Q3 (VCBS dự báo)",
+     "value": "−55–60%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "so với cùng kỳ"
+    },
+    {
+     "label": "Dư nợ margin cuối quý 2",
+     "value": "+49%",
+     "tone": "gold",
+     "sub": "~454 nghìn tỷ đồng"
+    },
+    {
+     "label": "LNST nhóm CTCK Q3 (VPBankS)",
+     "value": "−10,2%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "3.175 tỷ; dự báo"
+    }
+   ],
+   "size": 44
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Lãi suất sau ưu đãi là bao nhiêu?",
+     "text": "Tính theo ngày hay theo tháng?"
+    },
+    {
+     "head": "Giá nào thì bị bán giải chấp?",
+     "text": "Hỏi tỷ lệ ký quỹ ban đầu và duy trì."
+    },
+    {
+     "head": "Giảm 20% thì còn bao nhiêu?",
+     "text": "Vốn 100 + vay 100, giá −20%: vốn còn 60 (−40%)."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Phí tính trên giá trị giao dịch, không phụ thuộc bạn lãi hay lỗ. Ý kiến cá nhân, không đại diện công ty nào."
+  }
+ ],
+ "sources": "Thời báo Tài chính VN 13/10; VnEconomy 9/10 (VPBankS); Vietstock."
+}

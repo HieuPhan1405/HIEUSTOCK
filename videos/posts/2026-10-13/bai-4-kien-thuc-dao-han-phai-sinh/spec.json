@@ -1,0 +1,36 @@
+{
+ "type": "card",
+ "stamp": "KIẾN THỨC 60 GIÂY #2",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Ví dụ lãi lỗ là số giả định.",
+ "kicker": "KIẾN THỨC 60 GIÂY #2",
+ "title": [
+  "Đáo hạn phái sinh 15/10:",
+  "giá thanh toán không phải",
+  "chỉ số lúc đóng cửa"
+ ],
+ "title_size": 56,
+ "blocks": [
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Ngày: thứ Năm thứ ba của tháng",
+     "text": "Tháng 10/2026 là 15/10. Thanh toán bằng tiền vào ngày làm việc kế tiếp (16/10)."
+    },
+    {
+     "head": "Giá thanh toán = trung bình 30 phút cuối",
+     "text": "Trung bình chỉ số VN30, bỏ 3 giá trị cao nhất và 3 thấp nhất của phiên liên tục."
+    },
+    {
+     "head": "Mỗi điểm = 100.000 đồng",
+     "text": "Ví dụ giả định: mua ở 1.870, thanh toán ở 1.880 thì lãi 10 × 100.000 = 1.000.000 đồng."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Ví dụ thật 12/10: hợp đồng tháng 10 đóng cửa 1.874,5; VN30 là 1.869,38; chênh +5,12 điểm. Khoản chênh này không phải lãi chắc chắn."
+  }
+ ],
+ "sources": "DSC, VPS, Vietcap, VNDirect (quy định hợp đồng); Thời báo Tài chính VN 12/10."
+}

@@ -1,0 +1,67 @@
+{
+ "type": "card",
+ "stamp": "DẦU KHÍ · PHIÊN 12/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Dự báo là ý kiến của VPBankS, có thể sai.",
+ "kicker": "NGÀNH DẦU KHÍ",
+ "title": [
+  "Dự báo lợi nhuận quý 3 +147,5%,",
+  "nhưng phiên 12/10 cả nhóm giảm"
+ ],
+ "title_size": 54,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Dầu khí: dự báo LNST Q3",
+     "value": "+147,5%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "13.183 tỷ (VPBankS)"
+    },
+    {
+     "label": "Giá dầu Brent",
+     "value": "> 100",
+     "tone": "gold",
+     "sub": "USD/thùng (102–105)"
+    },
+    {
+     "label": "Xây dựng: dự báo Q3",
+     "value": "−95,2%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "157 tỷ; nền cao"
+    }
+   ]
+  },
+  {
+   "type": "hbars",
+   "title": "Biến động giá phiên 12/10",
+   "subtitle": "Cả nhóm dầu khí giảm; giá một phiên khác với lợi nhuận cả quý",
+   "items": [
+    {
+     "label": "BSR",
+     "value": -1.45
+    },
+    {
+     "label": "PVD",
+     "value": -1.65
+    },
+    {
+     "label": "GAS",
+     "value": -2.11
+    },
+    {
+     "label": "PLX",
+     "value": -3.08
+    }
+   ],
+   "decimals": 2
+  },
+  {
+   "type": "note",
+   "text": "Giá dầu hôm nay, lợi nhuận cả quý, giá một phiên: ba thước đo khác nhau. Mình không nói cái này giải thích cái kia."
+  }
+ ],
+ "sources": "VnEconomy 9/10, CafeF 8/10 (VPBankS); Markettimes, Thời báo Tài chính VN 12/10; DNSE."
+}

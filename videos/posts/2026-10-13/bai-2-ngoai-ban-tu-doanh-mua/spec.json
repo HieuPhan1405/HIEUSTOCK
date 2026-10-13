@@ -1,0 +1,68 @@
+{
+ "type": "card",
+ "stamp": "DÒNG TIỀN PHIÊN 12/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 12/10/2026.",
+ "kicker": "KHỐI NGOẠI VÀ TỰ DOANH",
+ "title": [
+  "Ngoại bán ròng ~615 tỷ,",
+  "tự doanh mua ròng ~145 tỷ"
+ ],
+ "title_size": 56,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Khối ngoại, ròng",
+     "value": "−615",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "tỷ đồng, toàn thị trường"
+    },
+    {
+     "label": "Tự doanh, ròng",
+     "value": "+145",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "tỷ đồng, HoSE"
+    },
+    {
+     "label": "Ngoại mua vào (HoSE)",
+     "value": "1.251",
+     "tone": "gold",
+     "sub": "tỷ đồng; bán ra 1.835"
+    }
+   ]
+  },
+  {
+   "type": "table",
+   "head": [
+    "NHÓM",
+    "MUA RÒNG NHIỀU NHẤT",
+    "BÁN RÒNG NHIỀU NHẤT"
+   ],
+   "rows": [
+    {
+     "cells": [
+      "Khối ngoại",
+      "HPG 128 · HDB 31 · NVL 18",
+      "TCB 115 · FPT 91"
+     ]
+    },
+    {
+     "cells": [
+      "Tự doanh",
+      "VPB (~223)",
+      "TCB (~85)"
+     ]
+    }
+   ],
+   "arrow_col": 1
+  },
+  {
+   "type": "note",
+   "text": "TCB bị cả ngoại và tự doanh bán ròng, giá vẫn +0,77%: có nhóm khác mua. Nguồn không tách theo mã, mình không biết là ai. Đơn vị: tỷ đồng."
+  }
+ ],
+ "sources": "VnEconomy, Thời báo Tài chính VN, Tin nhanh chứng khoán, Vietnambiz, Vietstock 12/10; DNSE."
+}
