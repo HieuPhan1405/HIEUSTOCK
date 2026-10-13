@@ -17,6 +17,13 @@ COVERS = {
     "nvb": dict(photo="img/nvb.jpg", l1="NVB", c1="#F5C542", l2="TĂNG TRẦN", c2="#22C55E", l3="Tiền năm sau mới về, ai được gì?"),
     "thue": dict(photo="img/thue.jpg", l1="THUẾ MỸ", c1="#F5C542", l2="CHỐT CHƯA?", c2="#22C55E", l3="Chốt đàm phán, chưa chốt mức thuế"),
     "msn": dict(photo="img/msn.jpg", l1="MSN", c1="#F5C542", l2="TRÊN 110.000đ", c2="#22C55E", l3="2 tổ chức bất đồng ở đâu?"),
+    # video 12/10: đầu người nói nằm cao hơn các video trước nên đẩy ảnh xuống (dy) để chữ không đè mặt; s1 = cỡ chữ dòng 1 riêng từng khung
+    "maicolen": dict(photo="img/mai-co-len.jpg", tag2="LỘT TRẦN NGHỀ MÔI GIỚI", l1="MAI MÃ NÀO<br>SẼ LÊN?", c1="#F5C542", l2="KHÔNG AI BIẾT", c2="#FAFAFA",
+                     l3="Môi giới trả lời được mọi câu,<br>trừ câu này",
+                     dy={"tiktok_1080x1920": 430, "facebook_1080x1350": 330}, s1={"tiktok_1080x1920": 118, "facebook_1080x1350": 98}),
+    "hpg": dict(photo="img/hpg-san-luong.jpg", l1="BÁN +54%", c1="#F5C542", l2="HÒA PHÁT QUÝ 3", c2="#FAFAFA",
+                l3="Hơn một nửa mức tăng<br>đến từ một loại thép",
+                dy={"tiktok_1080x1920": 400, "facebook_1080x1350": 300}, s1={"tiktok_1080x1920": 146, "facebook_1080x1350": 128}),
 }
 # (rộng, cao, offset y của ảnh, cỡ chữ l1, l2, l3, top của khối chữ)
 SIZES = {
@@ -25,6 +32,8 @@ SIZES = {
 }
 for key, c in COVERS.items():
     for name, (w, h, dy, s1, s2, s3, top) in SIZES.items():
+        dy, s1 = c.get("dy", {}).get(name, dy), c.get("s1", {}).get(name, s1)
+        tag2 = f'<div class="tag2">{c["tag2"]}</div>' if c.get("tag2") else ""
         html = f"""<!doctype html><html><head><meta charset="utf-8"><style>{FONTS}
 *{{box-sizing:border-box;margin:0}}html,body{{width:{w}px;height:{h}px;overflow:hidden;background:#000}}
 .bg{{position:absolute;inset:-40px;background:url('{c['photo']}') center/cover;filter:blur(28px) brightness(.55)}}
@@ -32,10 +41,11 @@ for key, c in COVERS.items():
 .sh{{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.82) 0%,rgba(0,0,0,.55) 38%,rgba(0,0,0,0) 62%),linear-gradient(to top,rgba(0,0,0,.45),rgba(0,0,0,0) 22%)}}
 .t{{position:absolute;left:60px;width:960px;top:{top}px;text-align:center;font-family:'Be Vietnam Pro';font-weight:800;line-height:1}}
 .tag{{display:inline-block;font:800 30px 'Be Vietnam Pro';letter-spacing:5px;color:#111;background:#F5C542;padding:8px 24px;border-radius:12px;margin-bottom:22px}}
+.tag2{{font:700 28px 'Be Vietnam Pro';letter-spacing:4px;color:#FAFAFA;margin:-8px 0 18px;text-shadow:0 3px 14px rgba(0,0,0,.8)}}
 .l1{{font-size:{s1}px;color:{c['c1']};text-shadow:0 6px 0 rgba(0,0,0,.5),0 16px 40px rgba(0,0,0,.6)}}
 .l2{{display:inline-block;font-size:{s2}px;color:{c['c2']};background:rgba(10,10,10,.82);padding:0 30px 8px;border-radius:24px;margin-top:6px}}
 .l3{{margin-top:26px;font:italic 700 {s3}px 'Playfair Display';color:#FAFAFA;text-shadow:0 4px 22px rgba(0,0,0,.8);line-height:1.1}}
 </style></head><body><div class="bg"></div><div class="ph"></div><div class="sh"></div>
-<div class="t"><div class="tag">PHAN HIẾU STOCK</div><div class="l1">{c['l1']}</div><div class="l2">{c['l2']}</div><div class="l3">{c['l3']}</div></div></body></html>"""
+<div class="t"><div class="tag">PHAN HIẾU STOCK</div>{tag2}<div class="l1">{c['l1']}</div><div class="l2">{c['l2']}</div><div class="l3">{c['l3']}</div></div></body></html>"""
         (R / f"cover_{key}_{name}.html").write_text(html)
 print("ok")
