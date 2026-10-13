@@ -1,5 +1,5 @@
 // Test tay cho lib/phaVoPhaiSinh.js. Chay: node engine/test/phaVoPhaiSinh.test.mjs
-import { viTriPhut, gioCuaPhut, tachPhien, bienDoPhien, tinhBienDong, tinhKhoangMoCua, thuNamTuanBa, laPhienDauHopDong, phiVong, K_CUOI, K_HET_GIO_VAO } from "../../lib/phaVoPhaiSinh.js";
+import { viTriPhut, gioCuaPhut, tachPhien, bienDoPhien, tinhBienDong, tinhKhoangMoCua, thuNamTuanBa, laPhienDauHopDong, phiVong, vungGiaTriPhien, viTriVungGiaTri, K_CUOI, K_HET_GIO_VAO } from "../../lib/phaVoPhaiSinh.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -116,6 +116,20 @@ ok("dao han som 1 ngay do nghi le: phien truoc 14/10, hom nay 16/10", laPhienDau
 ok("ngay thuong khong phai", laPhienDauHopDong("2026-10-12", "2026-10-13") === false && laPhienDauHopDong("2026-10-16", "2026-10-19") === false);
 ok("qua thang: 30/09 -> 01/10 khong phai", laPhienDauHopDong("2026-09-30", "2026-10-01") === false);
 ok("phi vong o 1.867,5 ~ 0,482 diem", Math.abs(phiVong(1867.5) - 0.4825) < 0.001, phiVong(1867.5));
+
+// 6. Vung gia tri phien truoc (chi de theo doi)
+{
+  // 100 phut o 1000 (KL 100 / phut), 100 phut o 1002, 41 phut o 1010 -> POC o bac 1000..1000,5 hoac 1002 (bang nhau -> lay bac thap), vung 70% phai chua 1000 va 1002, khong chua 1010
+  const g = phang(241, 1000); for (let k = 100; k < 200; k++) g[k] = 1002; for (let k = 200; k <= 240; k++) g[k] = 1010;
+  const p = tachPhien(phien("2026-10-12", g, { 100: { o: 1002, h: 1002, l: 1002 }, 200: { o: 1010, h: 1010, l: 1010 } })).get("2026-10-12");
+  const v = vungGiaTriPhien(p);
+  ok("POC nam o bac gia nhieu khoi luong nhat", gan(v.poc, 1000.25), JSON.stringify(v));
+  ok("vung gia tri 70% chua 1000 va 1002, khong chua 1010", v.val <= 1000 && v.vah >= 1002 && v.vah < 1010, JSON.stringify(v));
+  ok("vi tri: trong vung", viTriVungGiaTri(1001, 1, v) === "trong" && viTriVungGiaTri(1001, -1, v) === "trong");
+  ok("vi tri: mua tren VAH / ban duoi VAL = da ra khoi vung", viTriVungGiaTri(1008, 1, v) === "ra" && viTriVungGiaTri(995, -1, v) === "ra");
+  ok("vi tri: ban tren VAH / mua duoi VAL = huong vao vung", viTriVungGiaTri(1008, -1, v) === "vao" && viTriVungGiaTri(995, 1, v) === "vao");
+  ok("khong co vung / khong co lenh -> null", viTriVungGiaTri(1000, 1, null) === null && viTriVungGiaTri(1000, 0, v) === null && vungGiaTriPhien(null) === null);
+}
 
 console.log(loi ? `\n${loi} LOI` : "\nTat ca dat.");
 process.exit(loi ? 1 : 0);

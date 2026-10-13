@@ -29,6 +29,8 @@ const NHAN_TRANG_THAI = {
   catLo: { chu: "Đã cắt lỗ", mau: DO },
   cuoiPhien: { chu: "Đã đóng cuối phiên", mau: MUTED },
 };
+// Vi tri gia vao so voi vung gia tri phien truoc - chi de THEO DOI (xem ghi chu cuoi trang), khong phai bo loc
+const NHAN_VUNG = { trong: { chu: "trong vùng giá trị hôm trước", gon: "trong", mau: VANG }, ra: { chu: "đã ra khỏi vùng giá trị hôm trước", gon: "ngoài", mau: MUTED }, vao: { chu: "ngoài vùng giá trị, hướng vào vùng", gon: "vào", mau: MUTED } };
 const NHAN_PHA = { truocPhien: "Chưa mở cửa", trongPhien: "Đang trong phiên", nghiTrua: "Nghỉ trưa", sauPhien: "Đã hết phiên", ngayCu: "Xem lại ngày cũ" };
 
 function Dong({ nhan, gia, mau, ghiChu }) {
@@ -61,6 +63,11 @@ function LenhDangCo({ x }) {
       ) : (
         <p className="text-sm" style={{ color: TEXT }}>
           Đang giữ · cắt lỗ tại <span style={mono}>{d1(x.catLo)}</span> · đóng lúc 14:29
+        </p>
+      )}
+      {NHAN_VUNG[x.viTriVao] && (
+        <p className="text-xs mt-1" style={{ color: NHAN_VUNG[x.viTriVao].mau }}>
+          Giá vào {NHAN_VUNG[x.viTriVao].chu}
         </p>
       )}
       <p className="text-sm mt-1" style={{ color: MUTED }}>
@@ -145,6 +152,12 @@ function BieuDoTrongNgay({ du }) {
       them(k.dinh, "#38BDF8", k.trangThai === "dangDo" ? "Đỉnh (tạm)" : "Đỉnh 15'", LineStyle.SparseDotted);
       them(k.day, "#38BDF8", k.trangThai === "dangDo" ? "Đáy (tạm)" : "Đáy 15'", LineStyle.SparseDotted);
     }
+    const vg = du.vungGiaTriTruoc;
+    if (vg) {
+      them(vg.vah, "#A78BFA", "VAH", LineStyle.LargeDashed);
+      them(vg.val, "#A78BFA", "VAL", LineStyle.LargeDashed);
+      them(vg.poc, "#A78BFA", "POC", LineStyle.Dotted);
+    }
     const dd = [];
     for (const [x, ten] of [[b, "BĐ"], [k, "KM"]]) {
       if (!x.phia) continue;
@@ -167,6 +180,11 @@ function OKetQua({ x }) {
     <span style={mono}>
       <b style={{ color: x.phia > 0 ? XANH : DO }}>{x.phia > 0 ? "Mua" : "Bán"}</b> {d1(x.vao)} <span style={{ color: MUTED }}>{x.gioVao}</span> → {x.ra != null ? d1(x.ra) : "…"}{" "}
       <span style={{ color: MUTED }}>{x.lyDo === "catLo" ? "cắt lỗ" : x.lyDo === "cuoiPhien" ? "14:29" : "đang giữ"}</span>
+      {NHAN_VUNG[x.viTri] && (
+        <span className="ml-2 text-[10px]" style={{ color: NHAN_VUNG[x.viTri].mau }} title={`Giá vào ${NHAN_VUNG[x.viTri].chu}`}>
+          {NHAN_VUNG[x.viTri].gon}
+        </span>
+      )}
     </span>
   );
 }
@@ -286,6 +304,16 @@ export default function PhaVoPhaiSinh() {
   const tong = (khoa) => duocTinh(khoa).reduce((s, x) => s + x[khoa].diemSauPhi, 0);
   const soLenh = (khoa) => duocTinh(khoa).length;
   const soThang = (khoa) => duocTinh(khoa).filter((x) => x[khoa].diemSauPhi > 0).length;
+  const theoVung = (khoa) =>
+    ["ra", "trong", "vao"]
+      .map((v) => {
+        const g = duocTinh(khoa).filter((x) => x[khoa].viTri === v);
+        return g.length ? `${NHAN_VUNG[v].gon} ${g.length} lệnh ${diemCoDau(g.reduce((s, x) => s + x[khoa].diemSauPhi, 0))}` : null;
+      })
+      .filter(Boolean)
+      .join(" · ");
+  const vg = du?.vungGiaTriTruoc;
+  const ghiChuVung = (vt) => (NHAN_VUNG[vt] ? (vt === "trong" ? "mức này nằm trong vùng giá trị hôm trước" : vt === "ra" ? "mức này nằm ngoài vùng giá trị hôm trước" : "mức này hướng vào vùng giá trị hôm trước") : undefined);
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: TEXT }}>
@@ -359,8 +387,8 @@ export default function PhaVoPhaiSinh() {
           )}
           {b.giaMoCua != null ? (
             <>
-              <Dong nhan="MUA khi giá chạm" gia={`≥ ${d1(b.mucMua)}`} mau={XANH} />
-              <Dong nhan="BÁN KHỐNG khi giá chạm" gia={`≤ ${d1(b.mucBan)}`} mau={DO} />
+              <Dong nhan="MUA khi giá chạm" gia={`≥ ${d1(b.mucMua)}`} mau={XANH} ghiChu={ghiChuVung(b.viTriMua)} />
+              <Dong nhan="BÁN KHỐNG khi giá chạm" gia={`≤ ${d1(b.mucBan)}`} mau={DO} ghiChu={ghiChuVung(b.viTriBan)} />
               <Dong nhan="Cắt lỗ" ghiChu="bằng giá mở cửa" gia={d1(b.catLo)} />
             </>
           ) : (
@@ -393,6 +421,11 @@ export default function PhaVoPhaiSinh() {
 
       <div className="rounded-2xl border p-3 mb-4 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
         <b style={{ color: TEXT }}>Luật chung:</b> mỗi kiểu tối đa 1 lệnh mỗi ngày · chỉ vào lệnh trước 13:29 · không chốt lời sớm · chưa bị cắt lỗ thì đóng lúc 14:29, không giữ qua đêm.
+        {vg && (
+          <span className="block mt-1">
+            <b style={{ color: TEXT }}>Vùng giá trị phiên {ngayHien(du.ngayTruoc)}:</b> <span style={mono}>{d1(vg.val)} – {d1(vg.vah)}</span> · POC <span style={mono}>{d1(vg.poc)}</span> (chỉ để theo dõi, không phải bộ lọc)
+          </span>
+        )}
       </div>
 
       {suKien.length > 0 && (
@@ -472,11 +505,17 @@ export default function PhaVoPhaiSinh() {
             </tbody>
           </table>
         </div>
+        {lichSu && (theoVung("bienDong") || theoVung("khoangMoCua")) && (
+          <p className="px-3 py-2 text-xs border-t" style={{ borderColor: VIEN, color: MUTED }}>
+            Theo vị trí giá vào so với vùng giá trị hôm trước — Biến động: {theoVung("bienDong") || "—"} | Khoảng mở cửa: {theoVung("khoangMoCua") || "—"}
+          </p>
+        )}
       </div>
 
       <p className="text-[11px]" style={{ color: MUTED }}>
         Công cụ thống kê cá nhân, không phải khuyến nghị đầu tư và không tự đặt lệnh. Giá lấy từ nến 1 phút nên chậm hơn bảng giá vài giây đến một phút; tín hiệu khoảng mở cửa chỉ tính khi nến 1 phút đã đóng xong. Điểm sau phí theo biểu phí MBS (3.000đ + 2.700đ + 2.550đ mỗi lượt và thuế),
-        1 điểm = 100.000đ mỗi hợp đồng. Trong kiểm chứng 2018–2026, mỗi kiểu chỉ thắng khoảng một phần ba số lệnh và từng thua 10–13 phiên liên tiếp.
+        1 điểm = 100.000đ mỗi hợp đồng. Trong kiểm chứng 2018–2026, mỗi kiểu chỉ thắng khoảng một phần ba số lệnh và từng thua 10–13 phiên liên tiếp. Vùng giá trị hôm trước là vùng giá chứa 70% khối lượng của
+        phiên trước (VAL – VAH, POC là mức nhiều khối lượng nhất); trong kiểm chứng, lệnh có giá vào còn nằm trong vùng này gần hoà vốn, lệnh đã ra khỏi vùng lãi trung bình cao hơn, nhưng chênh lệch chưa đủ chắc để dùng làm bộ lọc nên chỉ ghi lại để theo dõi.
       </p>
     </div>
   );
