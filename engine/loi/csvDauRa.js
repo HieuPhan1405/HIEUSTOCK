@@ -20,6 +20,8 @@ export const CAC_COT = [
   "rs_vni_60",
   // ATR/gia (%) - canh bao "bien dong manh" tren So lenh (chi hien thi). Bo sung 2026-10-13.
   "atr_pct",
+  // Ti le mua/ban cua SO LENH (3 buoc gia tot nhat, kenh DNSE top_price) luc engine gui - chi de ghi nhan nghien cuu lenh web giu (2026-10-13), khong tham gia tin hieu.
+  "ti_le_mua", "kl_mua3", "kl_ban3",
 ];
 
 // true/false -> "1"/"0" (route.js soBool/boolTriState doc dung 2 gia tri nay). null/undefined ->

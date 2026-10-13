@@ -23,6 +23,7 @@ import { taoOpenApiClient } from "../dnse/openApiClient.js";
 import { ketNoiWebSocketDNSE } from "../dnse/wsClient.js";
 import { taiLichSuToanBo, tinhTinHieuToanBo, capNhatNenMoiNhat, chiaNhoMang } from "../loi/quetToanBo.js";
 import { xayDungCSV } from "../loi/csvDauRa.js";
+import { tinhTiLeMua } from "../loi/topGia.js";
 import { tinhChecklistBatDayToanBo, xayDungCsvBatDay } from "../loi/checklistBatDay.js";
 import { tinhChiBaoLocToanBo, xayDungCsvChiBao } from "../loi/chiBaoLoc.js";
 import { dangTrongPhienDinhKyMoCua } from "../../lib/khungGioVaoLenh.js";
@@ -172,6 +173,7 @@ async function main() {
     });
   }
 
+  const topGiaTheoMa = new Map(); // ma -> { mua3, ban3, tiLe } (so lenh moi nhat, xem engine/loi/topGia.js)
   let dangTinh = false;
   let lanCuoiTinhBatDay = 0;
 
@@ -200,6 +202,8 @@ async function main() {
         `[${new Date().toLocaleTimeString("vi-VN")}] Tinh lai xong (${hang.length} dong): MUA=${dem.MUA || 0} NAM GIU=${dem["NAM GIU"] || 0} BAN=${dem.BAN || 0} TRUNG LAP=${dem["TRUNG LAP"] || 0}`
       );
 
+      // Ti le mua/ban cua so lenh (kenh top_price): ghi nhan cho nghien cuu lenh web giu, khong tham gia tin hieu.
+      for (const h of hang) { const t = topGiaTheoMa.get(h.ma); if (t) { h.ti_le_mua = t.tiLe; h.kl_mua3 = t.mua3; h.kl_ban3 = t.ban3; } }
       const csv = xayDungCSV(hang);
       writeFileSync(duongDanCsv, csv, "utf-8");
       await guiLenWebNeuDuocPhep(csv);
@@ -236,6 +240,24 @@ async function main() {
     coThayDoi = true;
     chiBaoCu = true;
   };
+
+  // SO LENH (top_price.G1.json): moi ma 1 dong moi nhat {mua3, ban3, tiLe}. Dung cac ket noi RIENG (moi ket noi toi da 190 ma) de khong vuot gioi han stream cua kenh ohlc.
+  const onDataTopGia = (_loai, doi) => {
+    if (!doi?.symbol) return;
+    const r = tinhTiLeMua(doi);
+    if (r) topGiaTheoMa.set(doi.symbol, r);
+  };
+  const dsKetNoiTopGia = nhomMa.map((nhom, idx) =>
+    ketNoiWebSocketDNSE(
+      { apiKey, apiSecret },
+      {
+        kenh: [{ name: "top_price.G1.json", symbols: nhom.filter((m) => m !== "VNINDEX") }],
+        onTrangThai: (chuoi) => console.log(`[ws-sol#${idx + 1}] ${chuoi}`),
+        onLoi: (loi) => console.error(`[ws-sol#${idx + 1} loi] ${loi.message}`),
+        onData: onDataTopGia,
+      }
+    )
+  );
 
   const dsKetNoi = nhomMa.map((nhom, idx) =>
     ketNoiWebSocketDNSE(
@@ -290,6 +312,7 @@ async function main() {
       clearInterval(henGioChiBao);
       clearInterval(henGioKichBan);
       dsKetNoi.forEach((k) => k.dong());
+      dsKetNoiTopGia.forEach((k) => k.dong());
       process.exit(3);
     }, 20_000);
   }
@@ -300,6 +323,7 @@ async function main() {
     clearInterval(henGioChiBao);
     clearInterval(henGioKichBan);
     dsKetNoi.forEach((k) => k.dong());
+      dsKetNoiTopGia.forEach((k) => k.dong());
     process.exit(0);
   });
 }
