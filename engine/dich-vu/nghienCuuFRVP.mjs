@@ -36,7 +36,7 @@ function frvp(t, tu, den) {
   while (s < 0.7 * tong && (a > 0 || b < nBin - 1)) { const l = a > 0 ? kl[a - 1] : -1, r = b < nBin - 1 ? kl[b + 1] : -1; if (l >= r) { a--; s += kl[a]; } else { b++; s += kl[b]; } }
   const tbBin = tong / nBin; const hvn = [];
   for (let x = 1; x < nBin - 1; x++) if (kl[x] >= kl[x - 1] && kl[x] >= kl[x + 1] && kl[x] >= 1.5 * tbBin) hvn.push(gia(x));
-  return { poc: gia(poc), vah: gia(b), val: gia(a), hvn };
+  return { poc: gia(poc), vah: gia(b), val: gia(a), hvn, kl, tbBin, bin, nBin, lo };
 }
 
 const { lenh } = taiLenh();
@@ -52,13 +52,20 @@ for (const t of lenh) {
   const khoangSwing = Math.max(...t.high.slice(iv - 120, iv));
   const canTren = [fr.poc, fr.vah, ...fr.hvn, khoangSwing].filter((g) => g > E * 1.005);
   const rui = E - t.S;
+  // PHAN 3: khoang cach toi vung can THEO KL (POC / VAH / HVN) tinh bang % gia vao, va "lo trong" (LVN): ty le muc gia trong (E, E+8%] co KL < 0,5 trung binh
+  const canKL = [fr.poc, fr.vah, ...fr.hvn].filter((g) => g > E * 1.005);
+  const dCan = canKL.length ? (Math.min(...canKL) / E - 1) * 100 : 99;
+  let nTrong = 0, nTong = 0;
+  if (E * 1.005 > fr.lo) for (let x = fr.bin(E * 1.005); x <= Math.min(fr.nBin - 1, fr.bin(E * 1.08)); x++) { nTong++; if (fr.kl[x] < 0.5 * fr.tbBin) nTrong++; }
+  const loTrong = nTong ? nTrong / nTong : 1; // khong co du lieu phia tren (gia cao hon moi dinh trong vung) = coi la trong hoan toan
+  const ruiPct = (rui / E) * 100;
   const rr = canTren.length ? (Math.min(...canTren) - E) / rui : Infinity;
   const A = c >= fr.val * 0.99 && c <= fr.poc * 1.03;
   const C = !!frHomQua && c > frHomQua.vah && (t.relVol[iv] ?? 0) >= 1.5 && E <= frHomQua.vah * 1.04;
   const rangeBar = t.high[iv] - t.low[iv];
   const tuChoi = rangeBar > 0 && (Math.min(t.open[iv], c) - t.low[iv]) / rangeBar >= 0.5 && c >= (t.high[iv] + t.low[iv]) / 2;
   const vuotDinh = c > Math.max(t.high[iv - 1], t.high[iv - 2], t.high[iv - 3]);
-  dong.push({ ret: r.ret, nam: t.ngayArr[iv].slice(0, 4), ngay: t.ngayArr[iv], A, C, rr, B2: rr >= 2, B15: rr >= 1.5, B1: rr >= 1, PA: tuChoi || vuotDinh, stop: /STOP/.test(r.ly) });
+  dong.push({ dCan, loTrong, ruiPct, ret: r.ret, nam: t.ngayArr[iv].slice(0, 4), ngay: t.ngayArr[iv], A, C, rr, B2: rr >= 2, B15: rr >= 1.5, B1: rr >= 1, PA: tuChoi || vuotDinh, stop: /STOP/.test(r.ly) });
 }
 
 const pf = (g) => { const w = g.filter((x) => x.ret > 0).reduce((s, x) => s + x.ret, 0), l = -g.filter((x) => x.ret <= 0).reduce((s, x) => s + x.ret, 0); return l > 0 ? w / l : NaN; };
@@ -118,4 +125,24 @@ for (const [ten, fn] of [["A", (x) => x.A], ["C", (x) => x.C], ["A hoac C", (x) 
   const t1 = dong.filter((x) => x.ngay < moc), t2 = dong.filter((x) => x.ngay >= moc);
   console.log(`   ${ten.padEnd(9)} nua dau: ${f(tb(t1.filter(fn).map((x) => x.ret)))}% vs ${f(tb(t1.map((x) => x.ret)))}% | nua sau: ${f(tb(t2.filter(fn).map((x) => x.ret)))}% vs ${f(tb(t2.map((x) => x.ret)))}%  (giu vs moc)`);
 }
+// ---------- PHAN 3 (2026-10-14): CHI tang 3 FRVP - khoang cach toi vung can (POC/VAH/HVN) bang %, va "lo trong" LVN phia tren ----------
+console.log("\n=== PHAN 3: KHOANG CACH TOI VUNG CAN KL + LO TRONG (LVN) ===");
+const chia4 = (ten, khoa, dat = (v) => f(v, 2)) => {
+  const sx = [...dong].sort((a, b) => a[khoa] - b[khoa]); const n = sx.length;
+  console.log(`\n-- ${ten} (4 nhom, thap -> cao) --`);
+  const nh = [0, 1, 2, 3].map((k) => sx.slice(Math.floor((k * n) / 4), Math.floor(((k + 1) * n) / 4)));
+  nh.forEach((g, k) => hang(`Q${k + 1}: ${dat(g[0][khoa])} .. ${dat(g[g.length - 1][khoa])}`, g));
+  const [lo, hi] = boot([...nh[0], ...nh[1]].map((x) => x.ret), [...nh[2], ...nh[3]].map((x) => x.ret));
+  console.log(`      -> chenh (nua thap - nua cao) = ${f(tb([...nh[0], ...nh[1]].map((x) => x.ret)) - tb([...nh[2], ...nh[3]].map((x) => x.ret)))}% [CI ${f(lo)} .. ${f(hi)}]`);
+};
+chia4("Khoang cach toi vung can KL gan nhat phia tren (% so voi gia vao)", "dCan");
+chia4("Ty le 'lo trong' LVN trong +0,5..8% phia tren (cao = it can)", "loTrong");
+chia4("Khoang cach cat lo (% gia vao) - de doi chung, vi R/R bi lan voi cai nay", "ruiPct");
+// kiem soat: trong tung nhom do rong cat lo, vung can gan (< 3%) co kem hon vung can xa (>= 3%) khong
+console.log("\n-- Kiem soat do rong cat lo: vung can gan (<3%) so voi xa (>=3%) trong tung nhom cat lo --");
+{ const sx = [...dong].sort((a, b) => a.ruiPct - b.ruiPct), n = sx.length;
+  for (let k = 0; k < 3; k++) { const g = sx.slice(Math.floor((k * n) / 3), Math.floor(((k + 1) * n) / 3)); const gan = g.filter((x) => x.dCan < 3), xa = g.filter((x) => x.dCan >= 3);
+    console.log(`   cat lo ${f(g[0].ruiPct, 1)}..${f(g[g.length - 1].ruiPct, 1)}%: can GAN n=${gan.length} TB ${f(tb(gan.map((x) => x.ret)))}% | can XA n=${xa.length} TB ${f(tb(xa.map((x) => x.ret)))}%`); } }
+console.log("\n-- Bo loc don gian: bo lenh khi vung can KL nam trong X% phia tren --");
+for (const X of [1.5, 3, 5]) { const giu = dong.filter((x) => x.dCan >= X), bo = dong.filter((x) => x.dCan < X); hang(`giu khi can >= ${X}%`, giu); sosanh(`X=${X}`, giu, bo); }
 process.exit(0);
