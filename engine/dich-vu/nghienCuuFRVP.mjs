@@ -1,0 +1,96 @@
+// NGHIEN CUU (2026-10-14): bo loc VI TRI bang FRVP (POC / VAH / VAL / HVN) + Price Action tren cac lenh MUA cua he thong. Y tuong tu 1 bai tu van AI Hieu dan vao.
+// FRVP tu dong, KHONG nhin truoc: diem dau = pivot LOW gan nhat da XAC NHAN (thap nhat trong +-5 nen, xac nhan sau 5 nen) cach tin hieu >= 10 nen; khong co thi lay 60 nen.
+// Khoi luong theo muc gia: xap xi tu nen ngay (chia deu KL moi nen tren [thap, cao], 1 bin = 0,5% gia) - KHONG phai du lieu khop lenh that.
+// Quy tac (dung nhu bai dan):
+//   A  pullback co ho tro: gia dong cua nam trong [VAL*0,99 .. POC*1,03]
+//   B  han che mua sat khang cu: R/R = (muc can gan nhat phia tren - E) / (E - SL) >= 2  (muc can = POC, VAH, HVN, dinh swing 120 nen; khong co muc can nao = dinh moi -> dat)
+//   C  breakout khoi vung gia tri: dong cua > VAH cua vung tinh den HOM QUA, KL tuong doi >= 1,5, E khong cao hon VAH qua 4%
+//   PA xac nhan gia: nen tu choi (rau duoi >= 50% bien do, dong cua o nua tren) HOAC dong cua vuot dinh 3 nen truoc
+// Phuong an: A = he thong hien tai | B = + FRVP (R/R>=2 VA (pullback hoac breakout)) | C = B + Price Action. Kem cac bien the don le.
+// Vao lenh: mo cua phien sau, thoat theo luat he thong (mo()). Chi phi da tru (CHI_PHI).
+// Chay: node engine/dich-vu/nghienCuuFRVP.mjs
+import { taiLenh, mo, tb, f, boot } from "./nghienCuuLenh.mjs";
+
+const BIN = 0.005, PIVOT_K = 5;
+
+function pivotLowGanNhat(t, iv) {
+  for (let j = iv - PIVOT_K - 10; j >= Math.max(PIVOT_K, iv - 200); j--) {
+    let ok = true;
+    for (let k = j - PIVOT_K; k <= j + PIVOT_K; k++) if (k !== j && t.low[k] <= t.low[j]) { ok = false; break; }
+    if (ok) return j;
+  }
+  return null;
+}
+function frvp(t, tu, den) {
+  let lo = Infinity, hi = -Infinity;
+  for (let j = tu; j <= den; j++) { lo = Math.min(lo, t.low[j]); hi = Math.max(hi, t.high[j]); }
+  if (!(lo > 0) || !(hi > lo)) return null;
+  const nBin = Math.max(8, Math.ceil(Math.log(hi / lo) / Math.log(1 + BIN)) + 1);
+  const bin = (g) => Math.min(nBin - 1, Math.max(0, Math.floor(Math.log(g / lo) / Math.log(1 + BIN))));
+  const gia = (x) => lo * (1 + BIN) ** (x + 0.5);
+  const kl = new Array(nBin).fill(0);
+  for (let j = tu; j <= den; j++) { const v = t.vol[j]; if (!(v > 0)) continue; const a = bin(t.low[j]), b = bin(t.high[j]); for (let x = a; x <= b; x++) kl[x] += v / (b - a + 1); }
+  const tong = kl.reduce((x, y) => x + y, 0); if (!(tong > 0)) return null;
+  let poc = 0; for (let x = 1; x < nBin; x++) if (kl[x] > kl[poc]) poc = x;
+  let a = poc, b = poc, s = kl[poc];
+  while (s < 0.7 * tong && (a > 0 || b < nBin - 1)) { const l = a > 0 ? kl[a - 1] : -1, r = b < nBin - 1 ? kl[b + 1] : -1; if (l >= r) { a--; s += kl[a]; } else { b++; s += kl[b]; } }
+  const tbBin = tong / nBin; const hvn = [];
+  for (let x = 1; x < nBin - 1; x++) if (kl[x] >= kl[x - 1] && kl[x] >= kl[x + 1] && kl[x] >= 1.5 * tbBin) hvn.push(gia(x));
+  return { poc: gia(poc), vah: gia(b), val: gia(a), hvn };
+}
+
+const { lenh } = taiLenh();
+const dong = [];
+for (const t of lenh) {
+  const iv = t.iv, E = t.open[iv + 1];
+  if (!(E > 0) || iv < 130) continue;
+  const r = mo(t, { E, vao: iv + 1, banTu: iv + 3, S: t.S }); if (!r) continue;
+  let pj = pivotLowGanNhat(t, iv); if (pj == null) pj = iv - 60; if (iv - pj < 10) pj = iv - 60;
+  const fr = frvp(t, pj, iv); if (!fr) continue;
+  const frHomQua = frvp(t, pj, iv - 1);
+  const c = t.close[iv];
+  const khoangSwing = Math.max(...t.high.slice(iv - 120, iv));
+  const canTren = [fr.poc, fr.vah, ...fr.hvn, khoangSwing].filter((g) => g > E * 1.005);
+  const rui = E - t.S;
+  const rr = canTren.length ? (Math.min(...canTren) - E) / rui : Infinity;
+  const A = c >= fr.val * 0.99 && c <= fr.poc * 1.03;
+  const C = !!frHomQua && c > frHomQua.vah && (t.relVol[iv] ?? 0) >= 1.5 && E <= frHomQua.vah * 1.04;
+  const rangeBar = t.high[iv] - t.low[iv];
+  const tuChoi = rangeBar > 0 && (Math.min(t.open[iv], c) - t.low[iv]) / rangeBar >= 0.5 && c >= (t.high[iv] + t.low[iv]) / 2;
+  const vuotDinh = c > Math.max(t.high[iv - 1], t.high[iv - 2], t.high[iv - 3]);
+  dong.push({ ret: r.ret, nam: t.ngayArr[iv].slice(0, 4), ngay: t.ngayArr[iv], A, C, rr, B2: rr >= 2, B15: rr >= 1.5, B1: rr >= 1, PA: tuChoi || vuotDinh, stop: /STOP/.test(r.ly) });
+}
+
+const pf = (g) => { const w = g.filter((x) => x.ret > 0).reduce((s, x) => s + x.ret, 0), l = -g.filter((x) => x.ret <= 0).reduce((s, x) => s + x.ret, 0); return l > 0 ? w / l : NaN; };
+const mdd = (g) => { const s = [...g].sort((a, b) => (a.ngay < b.ngay ? -1 : 1)); let c = 0, pk = 0, dd = 0; for (const x of s) { c += x.ret; pk = Math.max(pk, c); dd = Math.max(dd, pk - c); } return dd; };
+const nams = [...new Set(dong.map((x) => x.nam))].sort();
+const hang = (ten, g) => {
+  const r = g.map((x) => x.ret);
+  console.log(`   ${ten.padEnd(52)} n=${String(g.length).padStart(4)} | TB ${f(tb(r)).padStart(6)}% | thang ${f((g.filter((x) => x.ret > 0).length / (g.length || 1)) * 100, 0).padStart(3)}% | PF ${f(pf(g)).padStart(5)} | tong ${f(r.reduce((s, v) => s + v, 0), 0).padStart(6)}% | sut toi da ${f(mdd(g), 0).padStart(5)}%`);
+};
+const sosanh = (ten, giu, bo) => {
+  const [lo, hi] = boot(giu.map((x) => x.ret), bo.map((x) => x.ret));
+  const nTot = nams.filter((y) => { const a = giu.filter((x) => x.nam === y), b = bo.filter((x) => x.nam === y); return a.length >= 15 && b.length >= 15 && tb(a.map((x) => x.ret)) > tb(b.map((x) => x.ret)); }).length;
+  const nDu = nams.filter((y) => giu.filter((x) => x.nam === y).length >= 15 && bo.filter((x) => x.nam === y).length >= 15).length;
+  console.log(`      -> ${ten}: giu - bo = ${f(tb(giu.map((x) => x.ret)) - tb(bo.map((x) => x.ret)))}% [95% CI ${f(lo)} .. ${f(hi)}] | nam giu tot hon: ${nTot}/${nDu}`);
+};
+
+console.log("so lenh:", dong.length, "| ty le co R/R>=2:", f((dong.filter((x) => x.B2).length / dong.length) * 100, 0) + "%", "| A:", f((dong.filter((x) => x.A).length / dong.length) * 100, 0) + "%", "| C:", f((dong.filter((x) => x.C).length / dong.length) * 100, 0) + "%", "| PA:", f((dong.filter((x) => x.PA).length / dong.length) * 100, 0) + "%");
+console.log("\n=== QUY TAC DON LE ===");
+hang("Tat ca lenh (he thong hien tai)", dong);
+hang("A: pullback co ho tro - CO", dong.filter((x) => x.A)); hang("A: - KHONG", dong.filter((x) => !x.A)); sosanh("A", dong.filter((x) => x.A), dong.filter((x) => !x.A));
+hang("B: R/R >= 2 - DAT", dong.filter((x) => x.B2)); hang("B: R/R >= 2 - KHONG DAT (sat khang cu)", dong.filter((x) => !x.B2)); sosanh("B (R/R>=2)", dong.filter((x) => x.B2), dong.filter((x) => !x.B2));
+hang("B: R/R >= 1.5 - DAT", dong.filter((x) => x.B15)); hang("B: R/R >= 1.5 - KHONG DAT", dong.filter((x) => !x.B15)); sosanh("B (R/R>=1.5)", dong.filter((x) => x.B15), dong.filter((x) => !x.B15));
+hang("B: R/R >= 1 - DAT", dong.filter((x) => x.B1)); hang("B: R/R >= 1 - KHONG DAT", dong.filter((x) => !x.B1)); sosanh("B (R/R>=1)", dong.filter((x) => x.B1), dong.filter((x) => !x.B1));
+hang("C: breakout khoi vung gia tri - CO", dong.filter((x) => x.C)); hang("C: - KHONG", dong.filter((x) => !x.C)); sosanh("C", dong.filter((x) => x.C), dong.filter((x) => !x.C));
+hang("PA: xac nhan gia - CO", dong.filter((x) => x.PA)); hang("PA: - KHONG", dong.filter((x) => !x.PA)); sosanh("PA", dong.filter((x) => x.PA), dong.filter((x) => !x.PA));
+
+console.log("\n=== 3 PHUONG AN DOI CHUNG (theo bai dan) ===");
+const pB = (x) => x.B2 && (x.A || x.C);
+const pC = (x) => pB(x) && x.PA;
+hang("A: he thong hien tai", dong);
+hang("B: + FRVP (R/R>=2 VA (pullback HOAC breakout))", dong.filter(pB)); sosanh("B", dong.filter(pB), dong.filter((x) => !pB(x)));
+hang("C: + FRVP + Price Action", dong.filter(pC)); sosanh("C", dong.filter(pC), dong.filter((x) => !pC(x)));
+console.log("\n   Theo nam (TB %/lenh):  nam | he thong | B | C");
+for (const y of nams) { const g = dong.filter((x) => x.nam === y); console.log(`     ${y} | ${f(tb(g.map((x) => x.ret))).padStart(6)} (n=${g.length}) | ${f(tb(g.filter(pB).map((x) => x.ret))).padStart(6)} (n=${g.filter(pB).length}) | ${f(tb(g.filter(pC).map((x) => x.ret))).padStart(6)} (n=${g.filter(pC).length})`); }
+process.exit(0);
