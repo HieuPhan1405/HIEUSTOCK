@@ -86,4 +86,38 @@ for (const K of [3, 5, 8]) {
   const [lo, hi] = boot(dong.filter((x) => x.loai === "TANG").map((x) => x.ret), khac.map((x) => x.ret));
   console.log(`\n   Cau truc TANG vs khong TANG (chua dung FRVP): chenh = ${f(tb(dong.filter((x) => x.loai === "TANG").map((x) => x.ret)) - tb(khac.map((x) => x.ret)))}% [CI ${f(lo)} .. ${f(hi)}]`);
 }
+// ---------- PHAN 2: HE THONG HIEN TAI + (cau truc TANG HH-HL) + (FRVP vi tri A hoac C), KHONG chon K: dat o it nhat 2/3 cach chon pivot (K=3,5,8) ----------
+console.log("\n================ PHAN 2: HE THONG CU + CAU TRUC TANG + FRVP (A hoac C), DONG THUAN 2/3 CACH CHON PIVOT ================");
+{
+  const dong = [];
+  for (const t of lenh) {
+    const iv = t.iv, E = t.open[iv + 1];
+    if (!(E > 0) || iv < 150) continue;
+    const r = mo(t, { E, vao: iv + 1, banTu: iv + 3, S: t.S }); if (!r) continue;
+    let dat = 0, datTang = 0, soK = 0;
+    for (const K of [3, 5, 8]) {
+      const ct = cauTruc(t, iv, K); if (!ct) continue; soK++;
+      if (ct.loai !== "TANG") continue; datTang++;
+      if (ct.neo == null) continue;
+      const fr = frvp(t, ct.neo, iv), fh = frvp(t, ct.neo, iv - 1); if (!fr) continue;
+      const c = t.close[iv];
+      const A = c >= fr.val * 0.99 && c <= fr.poc * 1.03;
+      const C = !!fh && c > fh.vah && (t.relVol[iv] ?? 0) >= 1.5 && E <= fh.vah * 1.04;
+      if (A || C) dat++;
+    }
+    if (soK < 3) continue;
+    dong.push({ ret: r.ret, nam: t.ngayArr[iv].slice(0, 4), ngay: t.ngayArr[iv], dat, datTang });
+  }
+  const mdd = (g) => { const s = [...g].sort((a, b) => (a.ngay < b.ngay ? -1 : 1)); let c = 0, pk = 0, dd = 0; for (const x of s) { c += x.ret; pk = Math.max(pk, c); dd = Math.max(dd, pk - c); } return dd; };
+  const hang2 = (ten, g) => { hang(ten, g); };
+  const nams = [...new Set(dong.map((x) => x.nam))].sort();
+  const sosanh = (ten, giu, bo) => { const [lo, hi] = boot(giu.map((x) => x.ret), bo.map((x) => x.ret)); const du = nams.filter((y) => giu.filter((x) => x.nam === y).length >= 10 && bo.filter((x) => x.nam === y).length >= 10); const tot = du.filter((y) => tb(giu.filter((x) => x.nam === y).map((x) => x.ret)) > tb(bo.filter((x) => x.nam === y).map((x) => x.ret))).length; console.log(`      -> ${ten}: giu - bo = ${f(tb(giu.map((x) => x.ret)) - tb(bo.map((x) => x.ret)))}% [95% CI ${f(lo)} .. ${f(hi)}] | nam giu tot hon: ${tot}/${du.length}`); };
+  hang2("HE THONG HIEN TAI (moc)", dong);
+  for (const [ten, fn] of [["Cau truc TANG o >=2/3 cach pivot", (x) => x.datTang >= 2], ["Cau truc TANG + FRVP(A hoac C) o >=2/3 cach pivot", (x) => x.dat >= 2], ["Cau truc TANG + FRVP(A hoac C) o CA 3/3", (x) => x.dat >= 3]]) {
+    const giu = dong.filter(fn), bo = dong.filter((x) => !fn(x));
+    hang2(ten + " - GIU", giu); hang2(ten + " - BO", bo); sosanh(ten, giu, bo);
+    console.log(`         sut toi da (cong don): giu ${f(mdd(giu), 0)}% | moc ${f(mdd(dong), 0)}%`);
+    console.log("         theo nam (giu | moc):", nams.map((y) => { const g = giu.filter((x) => x.nam === y), m = dong.filter((x) => x.nam === y); return g.length >= 10 ? `${y}:${f(tb(g.map((x) => x.ret)), 1)}|${f(tb(m.map((x) => x.ret)), 1)}(n${g.length})` : null; }).filter(Boolean).join(" "));
+  }
+}
 process.exit(0);
