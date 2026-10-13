@@ -50,6 +50,24 @@ def nap():
 # TRUOT = truot gia ca vong tinh bang diem (mac dinh 0,4 = 2 buoc gia moi chieu); doi bang bien moi truong PS_TRUOT hoac tham so truot.
 PHI_CO_DINH = 2 * (3000 + 2700 + 2550) / 100000
 TRUOT = float(os.environ.get("PS_TRUOT", "0.4"))
+# Chi so VN30 (nen 1 phut, co tu 05/2020) dua ve cung luoi (ngay x 241 phut) voi hop dong tuong lai; ngay khong co du lieu = toan NaN.
+def nap_chi_so(ngay):
+    d = pd.DataFrame(json.load(open(GOC + "vn30_1p.json")))
+    dt = pd.to_datetime(d.t, unit="s") + pd.Timedelta(hours=7)
+    d["ngay"] = dt.dt.strftime("%Y-%m-%d"); ph = dt.dt.hour * 60 + dt.dt.minute
+    d["k"] = np.where((ph >= 540) & (ph <= 690), ph - 540, np.where((ph >= 780) & (ph <= 869), 151 + ph - 780, -1))
+    d = d[d.k >= 0]; vt = {x: i for i, x in enumerate(ngay)}; d = d[d.ngay.isin(vt)]
+    I = np.full((len(ngay), NP), np.nan); I[d.ngay.map(vt).values, d.k.values] = d.c.values
+    for a in range(len(ngay)):
+        r = I[a]
+        if np.isnan(r).all(): continue
+        last = np.nan
+        for j in range(NP):
+            if np.isnan(r[j]): r[j] = last
+            else: last = r[j]
+        first = np.argmax(~np.isnan(r)); r[:first] = r[first]
+    return I
+
 def phi(gia, truot=None):
     return PHI_CO_DINH + 0.00017 * gia + (TRUOT if truot is None else truot)
 
