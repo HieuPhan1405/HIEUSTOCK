@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createChart, createSeriesMarkers, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
-import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine } from "lucide-react";
+import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen } from "lucide-react";
 import { tinhIchimoku, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { LopVe } from "@/components/veBieuDoLop";
@@ -85,6 +85,9 @@ const CONG_CU_VE = [
   { khoa: "chuNhat", nhan: "Chữ nhật", Icon: Square },
   { khoa: "fib", nhan: "Fibonacci", Icon: null },
   { khoa: "thuoc", nhan: "Thước đo", Icon: Ruler },
+  { khoa: "kenh", nhan: "Kênh song song", Icon: Equal },
+  { khoa: "mui", nhan: "Mũi tên", Icon: ArrowUpRight },
+  { khoa: "chu", nhan: "Ghi chú", Icon: Type },
 ];
 const MAU_VE = ["#F6C544", "#3B9EFF", "#22C55E", "#EF4444", "#E879F9", "#E5E7EB"];
 const khoaLuu = (ma, kt) => `cs-ve|${ma}|${kt}`;
@@ -231,7 +234,10 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, rsi: false, macd: false, stoch: false });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
   const [mauVe, setMauVe] = useState(MAU_VE[0]);
-  const [hitGia, setHitGia] = useState(true);
+  const [hitGia, setHitGia] = useState(false);
+  const [giuCongCu, setGiuCongCu] = useState(false);
+  const [lichSuVe, setLichSuVe] = useState({ coHoanTac: false, coLamLai: false });
+  const rootRef = useRef(null);
   const [chonVe, setChonVe] = useState(null);
   const [soHinhVe, setSoHinhVe] = useState(0);
   const khoaVeRef = useRef(null);
@@ -310,6 +316,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     // Lop ke ve (canvas phu len bieu do): hinh luu o localStorage theo ma + khung thoi gian.
     s.lopVe = new LopVe({
       khung: khungRef.current,
+      goc: rootRef.current,
       chart,
       series: s.candle,
       onThayDoi: (ds) => {
@@ -322,6 +329,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       },
       onCongCu: (c) => setCongCuState(c),
       onChon: (id) => setChonVe(id),
+      onLichSu: (t) => setLichSuVe(t),
     });
     s.lopVe.datMauGiaoDien({ mo: m.mo, nen: m.nen });
     veRef.current = s;
@@ -373,6 +381,9 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   useEffect(() => {
     veRef.current?.lopVe.datHitGia(hitGia);
   }, [hitGia]);
+  useEffect(() => {
+    veRef.current?.lopVe.datGiu(giuCongCu);
+  }, [giuCongCu]);
 
   // 2. Tai gia lich su khi doi ma / khung thoi gian, hoac lam moi (lanThu, xem 2b) - khoa KHONG
   // gom lanThu de lam moi trong luc da co du lieu cu khong lam bieu do nhap nhay ve trang thai "dang tai".
@@ -531,7 +542,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const mauDoi = doiPct == null ? MUTED : doiPct >= 0 ? XANH : DO;
 
   return (
-    <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
+    <div ref={rootRef} className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-3 py-2.5 border-b" style={{ borderColor: VIEN }}>
         <div className="flex items-center gap-1.5">
           <Chip bat={khungTG === "D"} onClick={() => setKhungTG("D")}>
@@ -596,7 +607,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             type="button"
             onClick={() => setCongCuState((c) => (c === k ? null : k))}
             aria-pressed={congCu === k}
-            title={`${nhan}: bấm lên biểu đồ để vẽ`}
+            title={`${nhan}: bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ`}
             className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
             style={{ background: congCu === k ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === k ? PRIMARY : VIEN}`, color: congCu === k ? TEXT : MUTED, fontFamily: "'Inter', sans-serif" }}
           >
@@ -620,6 +631,17 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         </div>
         <button
           type="button"
+          onClick={() => setGiuCongCu((v) => !v)}
+          aria-pressed={giuCongCu}
+          title="Giữ công cụ: vẽ xong vẫn giữ công cụ đang chọn để vẽ tiếp (Esc để thoát)"
+          className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
+          style={{ background: giuCongCu ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${giuCongCu ? PRIMARY : VIEN}`, color: giuCongCu ? TEXT : MUTED, fontFamily: "'Inter', sans-serif" }}
+        >
+          {giuCongCu ? <Lock size={13} strokeWidth={2} /> : <LockOpen size={13} strokeWidth={2} />}
+          Giữ công cụ
+        </button>
+        <button
+          type="button"
           onClick={() => setHitGia((v) => !v)}
           aria-pressed={hitGia}
           title="Hít giá: điểm vẽ tự bám vào Mở / Cao / Thấp / Đóng của nến gần nhất"
@@ -628,6 +650,28 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         >
           <Magnet size={13} strokeWidth={2} />
           Hít giá
+        </button>
+        <button
+          type="button"
+          disabled={!lichSuVe.coHoanTac}
+          onClick={() => veRef.current?.lopVe.hoanTac()}
+          title="Hoàn tác (Ctrl+Z)"
+          className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
+          style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: lichSuVe.coHoanTac ? 1 : 0.45, cursor: lichSuVe.coHoanTac ? "pointer" : "default", fontFamily: "'Inter', sans-serif" }}
+        >
+          <Undo2 size={13} strokeWidth={2} />
+          Hoàn tác
+        </button>
+        <button
+          type="button"
+          disabled={!lichSuVe.coLamLai}
+          onClick={() => veRef.current?.lopVe.lamLai()}
+          title="Làm lại (Ctrl+Y hoặc Ctrl+Shift+Z)"
+          className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
+          style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: lichSuVe.coLamLai ? 1 : 0.45, cursor: lichSuVe.coLamLai ? "pointer" : "default", fontFamily: "'Inter', sans-serif" }}
+        >
+          <Redo2 size={13} strokeWidth={2} />
+          Làm lại
         </button>
         <button
           type="button"
@@ -655,6 +699,18 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         </button>
       </div>
 
+      {/* Dong goi y luon hien, cao co dinh: neu chi hien khi chon cong cu thi bieu do bi day xuong, lech vi tri con tro */}
+      <div className="px-3 h-7 flex items-center text-[11px] border-b truncate" style={{ borderColor: VIEN, color: congCu ? TEXT : MUTED, fontFamily: "'Inter', sans-serif" }}>
+        {congCu ? (
+          <span>
+            Đang vẽ: bấm 2 lần hoặc bấm - kéo - thả. Giữ <b>Space</b> để kéo biểu đồ, lăn chuột để thu phóng, <b>Esc</b> để thoát.
+          </span>
+        ) : (
+          <span>
+            Chọn công cụ để vẽ. Bấm vào hình để chọn (chuột phải cũng được), kéo để di chuyển; <b>Ctrl+Z</b> hoàn tác, <b>Delete</b> xóa.
+          </span>
+        )}
+      </div>
       {thongTin && (
         <div className="min-[1340px]:hidden px-3 py-2 border-b" style={{ borderColor: VIEN }}>
           <BangThongTinBieuDo tt={thongTin} />

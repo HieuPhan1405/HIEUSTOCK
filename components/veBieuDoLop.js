@@ -1,16 +1,20 @@
-// LOP VE (cong cu ke ve) tren bieu do ky thuat (2026-10-13): canvas phu len bieu do lightweight-charts, luu hinh theo (chi so nen logic, gia) nen khong lech khi keo / thu phong.
+// LOP VE (cong cu ke ve) tren bieu do ky thuat (2026-10-13, nang cap cung ngay): canvas phu len bieu do lightweight-charts, luu hinh theo (chi so nen logic, gia) nen khong lech khi keo / thu phong.
 // Khong phai React: BieuDoKyThuat tao 1 doi tuong LopVe sau khi tao chart, chi goi cac ham datXxx; moi thay doi (them / sua / xoa) goi onThayDoi(danhSach) de React luu localStorage.
-// Cong cu: xuHuong (doan thang), tia (keo dai sang phai), ngang, doc, chuNhat, fib (Fibonacci hoi quy), thuoc (do % va so nen).
-// Khong dung cong cu: bieu do keo / thu phong binh thuong; bam vao hinh ve de chon, keo diem dau mut de sua, Delete de xoa. Co cong cu: moi cu bam / keo tren bieu do la ve (Esc huy).
+// Cong cu: xuHuong, tia, ngang, doc, chuNhat, fib, thuoc, mui (mui ten), chu (ghi chu), kenh (kenh song song, 3 diem).
+// Cach ve: bam 2 lan, HOAC bam - keo - tha (nhu TradingView). Giu Space (hoac chuot giua) de keo bieu do khi dang chon cong cu. Esc thoat.
+// Chinh sua: bam vao hinh de chon, keo than / dau mut; thanh nho hien canh hinh (do day / nhan ban / xoa); Delete xoa; chuot phai chon; Ctrl+Z hoan tac, Ctrl+Y / Ctrl+Shift+Z lam lai.
 import { soVN, pctVN } from "@/lib/soVN";
 
-export const CONG_CU_2_DIEM = ["xuHuong", "tia", "chuNhat", "fib", "thuoc"];
 export const MUC_FIB = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
-const KHOANG_CHON = 8; // px
+const LOAI_1_DIEM = ["ngang", "doc", "chu"];
+const KHOANG_CHON = 10; // px (chuot); cam ung dung 18
 const KHOANG_HIT_GIA = 14; // px: hit nam cham gia O/H/L/C
+const NGUONG_KEO = 6; // px: keo xa hon muc nay thi tinh la "bam - keo - tha"
+const TOI_DA_LICH_SU = 100;
 
 let boDem = 0;
 const taoId = () => `v${Date.now().toString(36)}${(boDem++).toString(36)}`;
+const sao = (v) => JSON.parse(JSON.stringify(v));
 
 function khoangCachDoan(px, py, x1, y1, x2, y2, keoDai = false) {
   const dx = x2 - x1;
@@ -22,37 +26,58 @@ function khoangCachDoan(px, py, x1, y1, x2, y2, keoDai = false) {
 }
 
 export class LopVe {
-  constructor({ khung, chart, series, onThayDoi, onCongCu, onChon }) {
+  constructor({ khung, goc, chart, series, onThayDoi, onCongCu, onChon, onLichSu }) {
     this.khung = khung; // div chua bieu do (position: relative)
+    this.goc = goc || khung; // phan tu goc cua ca khoi bieu do: bam trong do thi phim tat (Ctrl+Z, Delete...) moi co hieu luc
     this.chart = chart;
     this.series = series; // series nen (dung cho truc gia)
     this.onThayDoi = onThayDoi || (() => {});
     this.onCongCu = onCongCu || (() => {}); // goi khi ve xong -> React doi ve con tro
     this.onChon = onChon || (() => {});
+    this.onLichSu = onLichSu || (() => {});
     this.hinh = [];
     this.congCu = null; // null = con tro
+    this.giu = false; // true: ve xong van giu cong cu de ve tiep
     this.mau = "#F6C544";
     this.nen = [];
-    this.hitGia = true;
+    this.hitGia = false; // mac dinh TAT (nam cham gia chi bat khi nguoi dung chon)
     this.chon = null;
-    this.dangVe = null; // { loai, p1, p2 }
-    this.keo = null; // { id, diem: 'p1'|'p2' }
-    this.bat = true;
+    this.dangVe = null; // { loai, p1, p2, p3, buoc }
+    this.xuongTai = null; // vi tri bam dau tien (de nhan ra "keo")
+    this.keo = null;
+    this.space = false;
+    this.hoat = false;
+    this.tol = KHOANG_CHON;
     this.mauChu = "#9ca3af";
     this.mauNen = "#111827";
     this.sig = "";
     this.huy = false;
+    this.ls = [JSON.stringify([])];
+    this.vt = 0;
     this.canvas = document.createElement("canvas");
     Object.assign(this.canvas.style, { position: "absolute", inset: "0", pointerEvents: "none", zIndex: "5" });
     khung.appendChild(this.canvas);
+    this._taoThanh();
     this.xuLyXuong = (e) => this._xuong(e);
     this.xuLyDiChuyen = (e) => this._diChuyen(e);
     this.xuLyLen = (e) => this._len(e);
     this.xuLyPhim = (e) => this._phim(e);
+    this.xuLyNha = (e) => this._nhaPhim(e);
+    this.xuLyToanCuc = (e) => {
+      this.hoat = this.goc.contains(e.target);
+    };
+    this.xuLyMenu = (e) => this._menu(e);
+    this.xuLyMat = () => {
+      this.space = false;
+    };
     khung.addEventListener("pointerdown", this.xuLyXuong, true);
     khung.addEventListener("pointermove", this.xuLyDiChuyen, true);
+    khung.addEventListener("contextmenu", this.xuLyMenu, true);
+    window.addEventListener("pointerdown", this.xuLyToanCuc, true);
     window.addEventListener("pointerup", this.xuLyLen, true);
     window.addEventListener("keydown", this.xuLyPhim);
+    window.addEventListener("keyup", this.xuLyNha);
+    window.addEventListener("blur", this.xuLyMat);
     this.ro = new ResizeObserver(() => this._doiKichThuoc());
     this.ro.observe(khung);
     this._doiKichThuoc();
@@ -68,6 +93,10 @@ export class LopVe {
   datHinh(ds) {
     this.hinh = Array.isArray(ds) ? ds : [];
     if (!this.hinh.some((h) => h.id === this.chon)) this.chon = null;
+    this.dangVe = null;
+    this.ls = [JSON.stringify(this.hinh)];
+    this.vt = 0;
+    this._baoLichSu();
     this._ve(true);
   }
   datNen(nen) {
@@ -76,8 +105,11 @@ export class LopVe {
   datCongCu(c) {
     this.congCu = c || null;
     this.dangVe = null;
-    this.khung.style.cursor = this.congCu ? "crosshair" : "";
+    this._capNhatCon();
     this._ve(true);
+  }
+  datGiu(v) {
+    this.giu = !!v;
   }
   datMau(m) {
     this.mau = m;
@@ -95,6 +127,7 @@ export class LopVe {
   datMauGiaoDien({ mo, nen }) {
     this.mauChu = mo || this.mauChu;
     this.mauNen = nen || this.mauNen;
+    this._kieuThanh();
     this._ve(true);
   }
   xoaChon() {
@@ -106,32 +139,102 @@ export class LopVe {
     return true;
   }
   xoaHet() {
+    if (!this.hinh.length) return;
     this.hinh = [];
     this.chon = null;
     this.onChon(null);
     this._xong();
+  }
+  nhanBan() {
+    const h = this.hinh.find((x) => x.id === this.chon);
+    if (!h) return;
+    const b = sao(h);
+    b.id = taoId();
+    b.p1.i += 3;
+    if (b.p2) b.p2.i += 3;
+    if (b.p3) b.p3.i += 3;
+    this.hinh.push(b);
+    this.chon = b.id;
+    this.onChon(b.id);
+    this._xong();
+  }
+  doiDam() {
+    const h = this.hinh.find((x) => x.id === this.chon);
+    if (!h) return;
+    const cur = h.dam || 1.5;
+    h.dam = cur < 1.6 ? 2.5 : cur < 2.6 ? 4 : 1.5;
+    this._xong();
+  }
+  hoanTac() {
+    if (this.vt <= 0) return false;
+    this.vt--;
+    this._ap(this.ls[this.vt]);
+    return true;
+  }
+  lamLai() {
+    if (this.vt >= this.ls.length - 1) return false;
+    this.vt++;
+    this._ap(this.ls[this.vt]);
+    return true;
   }
   huyLop() {
     this.huy = true;
     cancelAnimationFrame(this.raf);
     this.khung.removeEventListener("pointerdown", this.xuLyXuong, true);
     this.khung.removeEventListener("pointermove", this.xuLyDiChuyen, true);
+    this.khung.removeEventListener("contextmenu", this.xuLyMenu, true);
+    window.removeEventListener("pointerdown", this.xuLyToanCuc, true);
     window.removeEventListener("pointerup", this.xuLyLen, true);
     window.removeEventListener("keydown", this.xuLyPhim);
+    window.removeEventListener("keyup", this.xuLyNha);
+    window.removeEventListener("blur", this.xuLyMat);
     this.ro.disconnect();
     this.canvas.remove();
+    this.thanh.remove();
+    this.khung.style.touchAction = "";
   }
 
   // ---------- noi bo ----------
-  _xong() {
+  _ap(chuoi) {
+    this.hinh = JSON.parse(chuoi);
+    if (!this.hinh.some((h) => h.id === this.chon)) {
+      this.chon = null;
+      this.onChon(null);
+    }
+    this.dangVe = null;
     this.onThayDoi(this.hinh.map((h) => ({ ...h })));
+    this._baoLichSu();
     this._ve(true);
+  }
+  _baoLichSu() {
+    this.onLichSu({ coHoanTac: this.vt > 0, coLamLai: this.vt < this.ls.length - 1 });
+  }
+  // Ghi nhan 1 thay doi da hoan tat: luu lich su (neu co doi that su), bao React luu localStorage.
+  _xong() {
+    const s = JSON.stringify(this.hinh);
+    if (s !== this.ls[this.vt]) {
+      this.ls = this.ls.slice(0, this.vt + 1);
+      this.ls.push(s);
+      if (this.ls.length > TOI_DA_LICH_SU) this.ls.shift();
+      this.vt = this.ls.length - 1;
+    }
+    this.onThayDoi(this.hinh.map((h) => ({ ...h })));
+    this._baoLichSu();
+    this._ve(true);
+  }
+  _capNhatCon() {
+    this.khung.style.cursor = this.congCu ? (this.space ? "grab" : "crosshair") : "";
+    // cam ung: dang ve / dang chon hinh thi khong de trinh duyet cuon trang
+    this.khung.style.touchAction = this.congCu || this.chon ? "none" : "";
   }
   _doiKichThuoc() {
     const r = this.khung.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
     this.rong = r.width;
     this.cao = r.height;
+    // Kich thuoc CSS PHAI dat ro (canvas la phan tu thay the, "inset: 0" khong keo gian no): neu khong, man hinh phong to 125% / 150% se ve lech hinh so voi con tro.
+    this.canvas.style.width = `${r.width}px`;
+    this.canvas.style.height = `${r.height}px`;
     this.canvas.width = Math.max(1, Math.round(r.width * dpr));
     this.canvas.height = Math.max(1, Math.round(r.height * dpr));
     this.dpr = dpr;
@@ -171,6 +274,7 @@ export class LopVe {
     return { i: l, p };
   }
   _diemPx(pt) {
+    if (!pt) return null;
     const x = this._x(pt.i);
     const y = this._y(pt.p);
     return x == null || y == null ? null : { x, y };
@@ -179,32 +283,58 @@ export class LopVe {
     const k = this.chart.paneSize ? this.chart.paneSize(0) : null;
     return { W: k?.width ?? this.rong, H: k?.height ?? this.cao };
   }
+  _rongChu(h) {
+    const ctx = this.canvas.getContext("2d");
+    ctx.font = "600 13px 'Inter', sans-serif";
+    return ctx.measureText(h.chu || "").width;
+  }
+  // doan song song thu 2 cua kenh: tra ve { a2, b2 } theo px
+  _kenh2(h, a, b) {
+    const c = this._diemPx(h.p3);
+    if (!c) return null;
+    const m = b.x === a.x ? 0 : (b.y - a.y) / (b.x - a.x);
+    const dy = c.y - (a.y + m * (c.x - a.x));
+    return { a2: { x: a.x, y: a.y + dy }, b2: { x: b.x, y: b.y + dy }, c };
+  }
 
-  // hit test mot hinh: tra ve { cham: 'p1'|'p2'|'than' } hoac null
+  // hit test mot hinh: tra ve { cham: 'p1'|'p2'|'p3'|'than' } hoac null
   _hit(h, x, y) {
     const a = this._diemPx(h.p1);
     if (!a) return null;
-    if (Math.hypot(x - a.x, y - a.y) <= KHOANG_CHON + 2) return { cham: "p1" };
+    const T = this.tol;
+    if (Math.hypot(x - a.x, y - a.y) <= T + 2) return { cham: "p1" };
     const { W } = this._chuKhungVe();
-    if (h.loai === "ngang") return Math.abs(y - a.y) <= KHOANG_CHON ? { cham: "than" } : null;
-    if (h.loai === "doc") return Math.abs(x - a.x) <= KHOANG_CHON ? { cham: "than" } : null;
+    if (h.loai === "ngang") return Math.abs(y - a.y) <= T ? { cham: "than" } : null;
+    if (h.loai === "doc") return Math.abs(x - a.x) <= T ? { cham: "than" } : null;
+    if (h.loai === "chu") {
+      const w = this._rongChu(h);
+      return x >= a.x - 4 && x <= a.x + w + 6 && Math.abs(y - a.y) <= 11 ? { cham: "than" } : null;
+    }
     const b = h.p2 ? this._diemPx(h.p2) : null;
     if (!b) return null;
-    if (Math.hypot(x - b.x, y - b.y) <= KHOANG_CHON + 2) return { cham: "p2" };
-    if (h.loai === "xuHuong" || h.loai === "thuoc") return khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= KHOANG_CHON ? { cham: "than" } : null;
-    if (h.loai === "tia") return khoangCachDoan(x, y, a.x, a.y, b.x, b.y, true) <= KHOANG_CHON ? { cham: "than" } : null;
+    if (Math.hypot(x - b.x, y - b.y) <= T + 2) return { cham: "p2" };
+    if (h.loai === "xuHuong" || h.loai === "thuoc" || h.loai === "mui") return khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T ? { cham: "than" } : null;
+    if (h.loai === "tia") return khoangCachDoan(x, y, a.x, a.y, b.x, b.y, true) <= T ? { cham: "than" } : null;
+    if (h.loai === "kenh") {
+      const k = this._kenh2(h, a, b);
+      if (!k) return khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T ? { cham: "than" } : null;
+      if (Math.hypot(x - k.c.x, y - k.c.y) <= T + 2) return { cham: "p3" };
+      if (khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T || khoangCachDoan(x, y, k.a2.x, k.a2.y, k.b2.x, k.b2.y) <= T) return { cham: "than" };
+      return null;
+    }
     if (h.loai === "chuNhat") {
       const x1 = Math.min(a.x, b.x), x2 = Math.max(a.x, b.x), y1 = Math.min(a.y, b.y), y2 = Math.max(a.y, b.y);
-      const trong = x >= x1 - KHOANG_CHON && x <= x2 + KHOANG_CHON && y >= y1 - KHOANG_CHON && y <= y2 + KHOANG_CHON;
-      const trongHan = x > x1 + KHOANG_CHON && x < x2 - KHOANG_CHON && y > y1 + KHOANG_CHON && y < y2 - KHOANG_CHON;
-      return trong && !trongHan ? { cham: "than" } : null;
+      const trong = x >= x1 - T && x <= x2 + T && y >= y1 - T && y <= y2 + T;
+      // chon duoc ca khi bam vao BEN TRONG hinh (de tim hon la chi canh vien)
+      return trong ? { cham: "than" } : null;
     }
     if (h.loai === "fib") {
       const x1 = Math.min(a.x, b.x);
       for (const m of MUC_FIB) {
         const yy = this._y(h.p1.p + (h.p2.p - h.p1.p) * m);
-        if (yy != null && x >= x1 - KHOANG_CHON && x <= W && Math.abs(y - yy) <= KHOANG_CHON) return { cham: "than" };
+        if (yy != null && x >= x1 - T && x <= W && Math.abs(y - yy) <= T) return { cham: "than" };
       }
+      if (khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T) return { cham: "than" };
     }
     return null;
   }
@@ -218,66 +348,109 @@ export class LopVe {
     }
     return null;
   }
+  _chonHinh(id) {
+    this.chon = id;
+    this.onChon(id);
+    this._capNhatCon();
+  }
+  _hoanTat(h) {
+    this.hinh.push(h);
+    this.dangVe = null;
+    this._chonHinh(h.id);
+    if (!this.giu) {
+      this.congCu = null;
+      this.onCongCu(null);
+    }
+    this._capNhatCon();
+    this._xong();
+  }
+  _hinhMoi(loai, p1, p2, p3) {
+    const h = { id: taoId(), loai, p1, mau: this.mau, dam: 1.5 };
+    if (p2) h.p2 = p2;
+    if (p3) h.p3 = p3;
+    return h;
+  }
 
   _xuong(e) {
     if (this.huy || e.button !== 0) return;
+    if (this.thanh.contains(e.target)) return; // bam vao thanh nho: de nut xu ly
     const { x, y } = this._toaDo(e);
-    const { W } = this._chuKhungVe();
+    const { W, H } = this._chuKhungVe();
     if (x > W + 2) return; // vung truc gia: de bieu do xu ly
+    this.tol = e.pointerType === "touch" ? 18 : KHOANG_CHON;
     if (this.congCu) {
+      if (this.space || y > H) return; // giu Space: keo bieu do; o cua so chi bao phu: khong ve
       e.stopPropagation();
       e.preventDefault();
       const pt = this._chiDiem(x, y);
       if (!pt) return;
       const c = this.congCu;
-      if (c === "ngang" || c === "doc") {
-        const h = { id: taoId(), loai: c, p1: pt, mau: this.mau };
-        this.hinh.push(h);
-        this.chon = h.id;
-        this.onChon(h.id);
-        this.onCongCu(null);
-        this.congCu = null;
-        this.khung.style.cursor = "";
-        this._xong();
+      if (LOAI_1_DIEM.includes(c)) {
+        const h = this._hinhMoi(c, pt);
+        if (c === "chu") {
+          const t = window.prompt("Nội dung ghi chú:", "");
+          if (!t || !t.trim()) {
+            this.dangVe = null;
+            this._ve(true);
+            return;
+          }
+          h.chu = t.trim().slice(0, 80);
+        }
+        this._hoanTat(h);
         return;
       }
-      if (!this.dangVe) this.dangVe = { loai: c, p1: pt, p2: pt };
-      else {
-        const h = { id: taoId(), loai: c, p1: this.dangVe.p1, p2: pt, mau: this.mau };
-        this.dangVe = null;
-        this.hinh.push(h);
-        this.chon = h.id;
-        this.onChon(h.id);
-        this.onCongCu(null);
-        this.congCu = null;
-        this.khung.style.cursor = "";
-        this._xong();
+      if (!this.dangVe) {
+        this.dangVe = { loai: c, p1: pt, p2: pt, p3: null, buoc: 1 };
+        this.xuongTai = { x, y };
+      } else if (this.dangVe.buoc === 1) {
+        const a = this._diemPx(this.dangVe.p1);
+        if (a && Math.hypot(x - a.x, y - a.y) < 3) return; // bam trung diem dau: bo qua
+        this._datDiem2(pt);
+      } else {
+        this.dangVe.p3 = pt;
+        const d = this.dangVe;
+        this._hoanTat(this._hinhMoi(d.loai, d.p1, d.p2, d.p3));
+        return;
       }
       this._ve(true);
       return;
     }
     // khong co cong cu: chon / keo hinh co san
-    const k = this._timHinh(x, y);
+    const k = y <= H ? this._timHinh(x, y) : null;
     if (k) {
       e.stopPropagation();
       e.preventDefault();
-      this.chon = k.h.id;
-      this.onChon(k.h.id);
-      if (k.cham === "p1" || k.cham === "p2") this.keo = { id: k.h.id, diem: k.cham, loai: "diem" };
-      else this.keo = { id: k.h.id, diem: "than", loai: "than", x0: x, y0: y, goc: JSON.parse(JSON.stringify(k.h)) };
+      this._chonHinh(k.h.id);
+      if (k.cham === "p1" || k.cham === "p2" || k.cham === "p3") this.keo = { id: k.h.id, diem: k.cham, loai: "diem" };
+      else this.keo = { id: k.h.id, diem: "than", loai: "than", x0: x, y0: y, goc: sao(k.h) };
       this._ve(true);
     } else if (this.chon) {
-      this.chon = null;
-      this.onChon(null);
+      this._chonHinh(null);
       this._ve(true);
     }
+  }
+  // dat diem thu 2: kenh song song can them diem thu 3, cac hinh con lai hoan tat
+  _datDiem2(pt) {
+    const d = this.dangVe;
+    d.p2 = pt;
+    if (d.loai === "kenh") {
+      d.buoc = 2;
+      d.p3 = pt;
+      this.xuongTai = null;
+      return;
+    }
+    this._hoanTat(this._hinhMoi(d.loai, d.p1, d.p2));
   }
   _diChuyen(e) {
     if (this.huy) return;
     const { x, y } = this._toaDo(e);
+    this.tol = e.pointerType === "touch" ? 18 : KHOANG_CHON;
     if (this.congCu && this.dangVe) {
       const pt = this._chiDiem(x, y);
-      if (pt) this.dangVe.p2 = pt;
+      if (pt) {
+        if (this.dangVe.buoc === 2) this.dangVe.p3 = pt;
+        else this.dangVe.p2 = pt;
+      }
       this._ve(true);
       return;
     }
@@ -296,46 +469,150 @@ export class LopVe {
         if (l0 != null && l1 != null && p0 != null && p1 != null) {
           const di = l1 - l0;
           const dp = p1 - p0;
-          h.p1 = { i: this.keo.goc.p1.i + di, p: this.keo.goc.p1.p + dp };
-          if (this.keo.goc.p2) h.p2 = { i: this.keo.goc.p2.i + di, p: this.keo.goc.p2.p + dp };
+          for (const k of ["p1", "p2", "p3"]) if (this.keo.goc[k]) h[k] = { i: this.keo.goc[k].i + di, p: this.keo.goc[k].p + dp };
         }
       }
       this._ve(true);
       return;
     }
     if (!this.congCu) {
-      const { W } = this._chuKhungVe();
-      const k = x <= W ? this._timHinh(x, y) : null;
+      const { W, H } = this._chuKhungVe();
+      const k = x <= W && y <= H ? this._timHinh(x, y) : null;
       this.khung.style.cursor = k ? (k.cham === "than" ? "move" : "grab") : "";
     }
   }
-  _len() {
+  _len(e) {
     if (this.keo) {
       this.keo = null;
       this._xong();
     }
+    // bam - keo - tha: tha chuot xa diem bam dau thi chot diem 2
+    if (this.xuongTai && this.dangVe && this.dangVe.buoc === 1 && this.congCu) {
+      const { x, y } = this._toaDo(e);
+      if (Math.hypot(x - this.xuongTai.x, y - this.xuongTai.y) > NGUONG_KEO) {
+        const pt = this._chiDiem(x, y);
+        if (pt) this._datDiem2(pt);
+      }
+    }
+    this.xuongTai = null;
+  }
+  _menu(e) {
+    // chuot phai len hinh: chon hinh + hien thanh nho, khong mo menu cua trinh duyet
+    const { x, y } = this._toaDo(e);
+    const { W, H } = this._chuKhungVe();
+    if (this.congCu || x > W || y > H) return;
+    const k = this._timHinh(x, y);
+    if (k) {
+      e.preventDefault();
+      e.stopPropagation();
+      this._chonHinh(k.h.id);
+      this._ve(true);
+    }
+  }
+  _trongONhap() {
+    const t = document.activeElement?.tagName;
+    return t === "INPUT" || t === "TEXTAREA" || t === "SELECT";
   }
   _phim(e) {
+    if (this.huy) return;
+    const trongONhap = this._trongONhap();
+    if (e.code === "Space" && this.hoat && this.congCu && !trongONhap) {
+      e.preventDefault(); // khong cuon trang
+      if (!this.space) {
+        this.space = true;
+        this._capNhatCon();
+      }
+      return;
+    }
+    if ((e.ctrlKey || e.metaKey) && !trongONhap && this.hoat) {
+      const k = e.key.toLowerCase();
+      if (k === "z" && !e.shiftKey) {
+        e.preventDefault();
+        this.hoanTac();
+        return;
+      }
+      if (k === "y" || (k === "z" && e.shiftKey)) {
+        e.preventDefault();
+        this.lamLai();
+        return;
+      }
+    }
     if (e.key === "Escape") {
       if (this.dangVe || this.congCu) {
         this.dangVe = null;
         this.congCu = null;
-        this.khung.style.cursor = "";
+        this._capNhatCon();
         this.onCongCu(null);
         this._ve(true);
       } else if (this.chon) {
-        this.chon = null;
-        this.onChon(null);
+        this._chonHinh(null);
         this._ve(true);
       }
       return;
     }
-    if ((e.key === "Delete" || e.key === "Backspace") && this.chon) {
-      const t = document.activeElement?.tagName;
-      if (t === "INPUT" || t === "TEXTAREA" || t === "SELECT") return;
+    if ((e.key === "Delete" || e.key === "Backspace") && this.chon && !trongONhap && (this.hoat || this.chon)) {
       e.preventDefault();
       this.xoaChon();
     }
+  }
+  _nhaPhim(e) {
+    if (e.code === "Space" && this.space) {
+      e.preventDefault(); // nut dang duoc focus khong bi "bam" bang phim Space
+      this.space = false;
+      this._capNhatCon();
+    }
+  }
+
+  // thanh nho canh hinh dang chon
+  _taoThanh() {
+    const t = document.createElement("div");
+    Object.assign(t.style, { position: "absolute", zIndex: "6", display: "none", gap: "2px", padding: "3px", borderRadius: "8px", font: "600 11px 'Inter', sans-serif", userSelect: "none", boxShadow: "0 4px 14px rgba(0,0,0,0.35)" });
+    const nut = (nhan, tieuDe, fn, doNguyHiem) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = nhan;
+      b.title = tieuDe;
+      Object.assign(b.style, { padding: "3px 8px", borderRadius: "6px", border: "0", cursor: "pointer", background: "transparent", font: "inherit", color: doNguyHiem ? "#EF4444" : "inherit" });
+      b.addEventListener("click", (e) => {
+        e.stopPropagation();
+        fn();
+      });
+      t.appendChild(b);
+    };
+    nut("Dày nét", "Đổi độ dày nét", () => this.doiDam());
+    nut("Nhân bản", "Sao chép hình này", () => this.nhanBan());
+    nut("Xóa", "Xóa hình (phím Delete)", () => this.xoaChon(), true);
+    this.thanh = t;
+    this._kieuThanh();
+    this.khung.appendChild(t);
+  }
+  _kieuThanh() {
+    if (!this.thanh) return;
+    Object.assign(this.thanh.style, { background: this.mauNen, border: `1px solid ${this.mauChu}`, color: this.mauChu === "#9ca3af" ? "#e5e7eb" : this.mauChu });
+  }
+  _datThanh(W, H, ds) {
+    const h = this.chon && !this.keo && !this.dangVe ? ds.find((v) => v.id === this.chon) : null;
+    const a = h ? this._diemPx(h.p1) : null;
+    if (!h || !a) {
+      this.thanh.style.display = "none";
+      return;
+    }
+    let ax = a.x, ay = a.y;
+    if (h.loai === "ngang") ax = W / 2;
+    if (h.loai === "doc") ay = 30;
+    if (h.p2) {
+      const b = this._diemPx(h.p2);
+      if (b && b.y < ay) {
+        ax = b.x;
+        ay = b.y;
+      }
+    }
+    this.thanh.style.display = "flex";
+    const w = this.thanh.offsetWidth || 190;
+    const left = Math.max(4, Math.min(ax - w / 2, W - w - 4));
+    const top = ay - 40 < 4 ? ay + 14 : ay - 40;
+    this.thanh.style.left = `${left}px`;
+    this.thanh.style.top = `${Math.max(4, Math.min(top, H - 34))}px`;
   }
 
   // ---------- ve ----------
@@ -358,6 +635,7 @@ export class LopVe {
     ctx.restore();
     // nhan gia o truc phai cho duong ngang
     for (const h of ds) if (h.loai === "ngang") this._nhanGia(ctx, h, W);
+    this._datThanh(W, H, ds);
   }
   _nhanGia(ctx, h, W) {
     const y = this._y(h.p1.p);
@@ -375,7 +653,8 @@ export class LopVe {
     const a = this._diemPx(h.p1);
     if (!a) return;
     const chon = h.id === this.chon;
-    ctx.lineWidth = chon ? 2 : 1.5;
+    const dam = h.dam || 1.5;
+    ctx.lineWidth = chon ? dam + 0.6 : dam;
     ctx.strokeStyle = h.mau;
     ctx.fillStyle = h.mau;
     ctx.setLineDash([]);
@@ -383,12 +662,15 @@ export class LopVe {
     ctx.font = "11px 'JetBrains Mono', monospace";
     const diem = (p) => {
       ctx.beginPath();
-      ctx.arc(p.x, p.y, 4, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
       ctx.fillStyle = this.mauNen;
       ctx.fill();
       ctx.strokeStyle = h.mau;
       ctx.lineWidth = 2;
       ctx.stroke();
+    };
+    const dauCham = (...ps) => {
+      if (chon || h.tam) for (const p of ps) if (p) diem(p);
     };
     if (h.loai === "ngang") {
       ctx.beginPath();
@@ -406,9 +688,23 @@ export class LopVe {
       if (chon) diem({ x: a.x, y: Math.min(Math.max(a.y, 10), H - 10) });
       return;
     }
+    if (h.loai === "chu") {
+      ctx.font = "600 13px 'Inter', sans-serif";
+      ctx.fillStyle = h.mau;
+      ctx.fillText(h.chu || "", a.x, a.y);
+      if (chon) {
+        const w = ctx.measureText(h.chu || "").width;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([3, 3]);
+        ctx.strokeRect(a.x - 4, a.y - 11, w + 8, 22);
+        ctx.setLineDash([]);
+        diem(a);
+      }
+      return;
+    }
     const b = h.p2 ? this._diemPx(h.p2) : null;
     if (!b) return;
-    if (h.loai === "xuHuong" || h.loai === "thuoc" || h.loai === "tia") {
+    if (h.loai === "xuHuong" || h.loai === "thuoc" || h.loai === "tia" || h.loai === "mui") {
       let x2 = b.x, y2 = b.y;
       if (h.loai === "tia" && b.x !== a.x) {
         const t = (W + 50 - a.x) / (b.x - a.x);
@@ -421,6 +717,17 @@ export class LopVe {
       ctx.lineTo(x2, y2);
       ctx.stroke();
       ctx.setLineDash([]);
+      if (h.loai === "mui" && (b.x !== a.x || b.y !== a.y)) {
+        const g = Math.atan2(b.y - a.y, b.x - a.x);
+        const L = 12 + dam * 1.5;
+        ctx.beginPath();
+        ctx.moveTo(b.x, b.y);
+        ctx.lineTo(b.x - L * Math.cos(g - 0.45), b.y - L * Math.sin(g - 0.45));
+        ctx.lineTo(b.x - L * Math.cos(g + 0.45), b.y - L * Math.sin(g + 0.45));
+        ctx.closePath();
+        ctx.fillStyle = h.mau;
+        ctx.fill();
+      }
       if (h.loai === "thuoc") {
         const dp = h.p2.p - h.p1.p;
         const pc = h.p1.p ? (dp / h.p1.p) * 100 : 0;
@@ -434,10 +741,32 @@ export class LopVe {
         ctx.fillStyle = "#fff";
         ctx.fillText(chu, bx + 6, by + 9);
       }
-      if (chon || h.tam) {
-        diem(a);
-        diem(b);
+      dauCham(a, b);
+      return;
+    }
+    if (h.loai === "kenh") {
+      const k = h.p3 ? this._kenh2(h, a, b) : null;
+      if (k) {
+        ctx.globalAlpha = 0.1;
+        ctx.fillStyle = h.mau;
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.lineTo(k.b2.x, k.b2.y);
+        ctx.lineTo(k.a2.x, k.a2.y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
+        ctx.moveTo(k.a2.x, k.a2.y);
+        ctx.lineTo(k.b2.x, k.b2.y);
+        ctx.stroke();
       }
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+      dauCham(a, b, k?.c);
       return;
     }
     if (h.loai === "chuNhat") {
@@ -447,10 +776,7 @@ export class LopVe {
       ctx.fillRect(x1, y1, w, hh);
       ctx.globalAlpha = 1;
       ctx.strokeRect(x1, y1, w, hh);
-      if (chon || h.tam) {
-        diem(a);
-        diem(b);
-      }
+      dauCham(a, b);
       return;
     }
     if (h.loai === "fib") {
@@ -469,7 +795,7 @@ export class LopVe {
         }
         truoc = y;
         ctx.strokeStyle = h.mau;
-        ctx.lineWidth = m === 0 || m === 1 ? 1.5 : 1;
+        ctx.lineWidth = m === 0 || m === 1 ? dam : Math.max(1, dam - 0.5);
         ctx.setLineDash(m === 0 || m === 1 ? [] : [4, 3]);
         ctx.beginPath();
         ctx.moveTo(x1, y);
@@ -477,19 +803,17 @@ export class LopVe {
         ctx.stroke();
         ctx.setLineDash([]);
         ctx.fillStyle = h.mau;
-        ctx.fillText(`${soVN(m * 100, m === 0.236 || m === 0.786 ? 1 : 1)}%  ${soVN(gia, 2, true)}`, x1 + 6, y - 8);
+        ctx.fillText(`${soVN(m * 100, 1)}%  ${soVN(gia, 2, true)}`, x1 + 6, y - 8);
       }
       ctx.strokeStyle = h.mau;
+      ctx.lineWidth = 1;
       ctx.setLineDash([2, 3]);
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
       ctx.stroke();
       ctx.setLineDash([]);
-      if (chon || h.tam) {
-        diem(a);
-        diem(b);
-      }
+      dauCham(a, b);
     }
   }
 }
