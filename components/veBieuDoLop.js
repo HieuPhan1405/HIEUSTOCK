@@ -1,6 +1,6 @@
 // LOP VE (cong cu ke ve) tren bieu do ky thuat (2026-10-13, nang cap cung ngay): canvas phu len bieu do lightweight-charts, luu hinh theo (chi so nen logic, gia) nen khong lech khi keo / thu phong.
 // Khong phai React: BieuDoKyThuat tao 1 doi tuong LopVe sau khi tao chart, chi goi cac ham datXxx; moi thay doi (them / sua / xoa) goi onThayDoi(danhSach) de React luu localStorage.
-// Cong cu: xuHuong, tia, ngang, doc, chuNhat, fib, thuoc, mui (mui ten), chu (ghi chu), kenh (kenh song song, 3 diem).
+// Cong cu: xuHuong, tia, ngang, doc, chuNhat, fib, thuoc, mui (mui ten), chu (ghi chu), kenh (kenh song song, 3 diem), gapKhuc (duong dan: bam trai them tung doan, chuot phai / bam dup / Enter ket thuc).
 // Cach ve: bam 2 lan, HOAC bam - keo - tha (nhu TradingView). Giu Space (hoac chuot giua) de keo bieu do khi dang chon cong cu. Esc thoat.
 // Chinh sua: bam vao hinh de chon, keo than / dau mut; thanh nho hien canh hinh (do day / nhan ban / xoa); Delete xoa; chuot phai chon; Ctrl+Z hoan tac, Ctrl+Y / Ctrl+Shift+Z lam lai.
 import { soVN, pctVN } from "@/lib/soVN";
@@ -153,6 +153,10 @@ export class LopVe {
     b.p1.i += 3;
     if (b.p2) b.p2.i += 3;
     if (b.p3) b.p3.i += 3;
+    if (b.ds) {
+      for (const q of b.ds) q.i += 3;
+      b.p1 = b.ds[0];
+    }
     this.hinh.push(b);
     this.chon = b.id;
     this.onChon(b.id);
@@ -299,6 +303,12 @@ export class LopVe {
 
   // hit test mot hinh: tra ve { cham: 'p1'|'p2'|'p3'|'than' } hoac null
   _hit(h, x, y) {
+    if (h.loai === "gapKhuc") {
+      const px = (h.ds || []).map((p) => this._diemPx(p));
+      for (let k = 0; k < px.length; k++) if (px[k] && Math.hypot(x - px[k].x, y - px[k].y) <= this.tol + 2) return { cham: `d${k}` };
+      for (let k = 1; k < px.length; k++) if (px[k - 1] && px[k] && khoangCachDoan(x, y, px[k - 1].x, px[k - 1].y, px[k].x, px[k].y) <= this.tol) return { cham: "than" };
+      return null;
+    }
     const a = this._diemPx(h.p1);
     if (!a) return null;
     const T = this.tol;
@@ -399,6 +409,18 @@ export class LopVe {
         this._hoanTat(h);
         return;
       }
+      if (c === "gapKhuc") {
+        // duong dan: moi lan bam trai them 1 diem (1 doan); chuot phai / bam dup / Enter moi dung
+        if (!this.dangVe) {
+          this.dangVe = { loai: c, p1: pt, p2: pt, ds: [pt], cur: pt, buoc: 3 };
+        } else {
+          const cuoi = this._diemPx(this.dangVe.ds[this.dangVe.ds.length - 1]);
+          if (cuoi && Math.hypot(x - cuoi.x, y - cuoi.y) < 4) this._ketThucGapKhuc(); // bam dup tai diem cuoi = ket thuc
+          else this.dangVe.ds.push(pt);
+        }
+        this._ve(true);
+        return;
+      }
       if (!this.dangVe) {
         this.dangVe = { loai: c, p1: pt, p2: pt, p3: null, buoc: 1 };
         this.xuongTai = { x, y };
@@ -421,13 +443,25 @@ export class LopVe {
       e.stopPropagation();
       e.preventDefault();
       this._chonHinh(k.h.id);
-      if (k.cham === "p1" || k.cham === "p2" || k.cham === "p3") this.keo = { id: k.h.id, diem: k.cham, loai: "diem" };
+      if (k.cham === "p1" || k.cham === "p2" || k.cham === "p3" || /^d\d+$/.test(k.cham)) this.keo = { id: k.h.id, diem: k.cham, loai: "diem" };
       else this.keo = { id: k.h.id, diem: "than", loai: "than", x0: x, y0: y, goc: sao(k.h) };
       this._ve(true);
     } else if (this.chon) {
       this._chonHinh(null);
       this._ve(true);
     }
+  }
+  _ketThucGapKhuc() {
+    const d = this.dangVe;
+    if (!d || d.loai !== "gapKhuc") return false;
+    if (d.ds.length < 2) {
+      this.dangVe = null;
+      this._ve(true);
+      return false;
+    }
+    const h = { id: taoId(), loai: "gapKhuc", p1: d.ds[0], ds: d.ds, mau: this.mau, dam: 1.5 };
+    this._hoanTat(h);
+    return true;
   }
   // dat diem thu 2: kenh song song can them diem thu 3, cac hinh con lai hoan tat
   _datDiem2(pt) {
@@ -447,6 +481,11 @@ export class LopVe {
     this.tol = e.pointerType === "touch" ? 18 : KHOANG_CHON;
     if (this.congCu && this.dangVe) {
       const pt = this._chiDiem(x, y);
+      if (this.dangVe.loai === "gapKhuc") {
+        if (pt) this.dangVe.cur = pt;
+        this._ve(true);
+        return;
+      }
       if (pt) {
         if (this.dangVe.buoc === 2) this.dangVe.p3 = pt;
         else this.dangVe.p2 = pt;
@@ -460,7 +499,12 @@ export class LopVe {
       if (!h) return;
       if (this.keo.loai === "diem") {
         const pt = this._chiDiem(x, y);
-        if (pt) h[this.keo.diem] = pt;
+        if (pt) {
+          if (/^d\d+$/.test(this.keo.diem) && h.ds) {
+            h.ds[Number(this.keo.diem.slice(1))] = pt;
+            h.p1 = h.ds[0];
+          } else h[this.keo.diem] = pt;
+        }
       } else {
         const l0 = this.chart.timeScale().coordinateToLogical(this.keo.x0);
         const l1 = this.chart.timeScale().coordinateToLogical(x);
@@ -470,6 +514,10 @@ export class LopVe {
           const di = l1 - l0;
           const dp = p1 - p0;
           for (const k of ["p1", "p2", "p3"]) if (this.keo.goc[k]) h[k] = { i: this.keo.goc[k].i + di, p: this.keo.goc[k].p + dp };
+          if (this.keo.goc.ds) {
+            h.ds = this.keo.goc.ds.map((q) => ({ i: q.i + di, p: q.p + dp }));
+            h.p1 = h.ds[0];
+          }
         }
       }
       this._ve(true);
@@ -500,7 +548,16 @@ export class LopVe {
     // chuot phai len hinh: chon hinh + hien thanh nho, khong mo menu cua trinh duyet
     const { x, y } = this._toaDo(e);
     const { W, H } = this._chuKhungVe();
-    if (this.congCu || x > W || y > H) return;
+    if (this.congCu) {
+      // dang ve: chuot phai khong mo menu trinh duyet; voi duong dan thi la lenh KET THUC
+      if (x <= W && y <= H) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.dangVe?.loai === "gapKhuc") this._ketThucGapKhuc();
+      }
+      return;
+    }
+    if (x > W || y > H) return;
     const k = this._timHinh(x, y);
     if (k) {
       e.preventDefault();
@@ -537,7 +594,13 @@ export class LopVe {
         return;
       }
     }
+    if (e.key === "Enter" && this.dangVe?.loai === "gapKhuc" && !trongONhap) {
+      e.preventDefault();
+      this._ketThucGapKhuc();
+      return;
+    }
     if (e.key === "Escape") {
+      if (this.dangVe?.loai === "gapKhuc" && this.dangVe.ds.length >= 2 && this._ketThucGapKhuc()) return; // Esc chot duong dan dang ve
       if (this.dangVe || this.congCu) {
         this.dangVe = null;
         this.congCu = null;
@@ -700,6 +763,25 @@ export class LopVe {
         ctx.setLineDash([]);
         diem(a);
       }
+      return;
+    }
+    if (h.loai === "gapKhuc") {
+      const px = (h.ds || []).map((q) => this._diemPx(q)).filter(Boolean);
+      if (h.tam && h.cur) {
+        const c = this._diemPx(h.cur);
+        if (c) px.push(c);
+      }
+      if (px.length < 2) {
+        dauCham(...px);
+        return;
+      }
+      ctx.lineJoin = "round";
+      ctx.beginPath();
+      ctx.moveTo(px[0].x, px[0].y);
+      for (let k = 1; k < px.length; k++) ctx.lineTo(px[k].x, px[k].y);
+      ctx.stroke();
+      ctx.lineJoin = "miter";
+      dauCham(...(h.tam ? px.slice(0, -1) : px));
       return;
     }
     const b = h.p2 ? this._diemPx(h.p2) : null;

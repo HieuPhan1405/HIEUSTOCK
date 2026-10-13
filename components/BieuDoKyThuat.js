@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createChart, createSeriesMarkers, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
-import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen } from "lucide-react";
+import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline } from "lucide-react";
 import { tinhIchimoku, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { LopVe } from "@/components/veBieuDoLop";
@@ -85,6 +85,7 @@ const CONG_CU_VE = [
   { khoa: "chuNhat", nhan: "Chữ nhật", Icon: Square },
   { khoa: "fib", nhan: "Fibonacci", Icon: null },
   { khoa: "thuoc", nhan: "Thước đo", Icon: Ruler },
+  { khoa: "gapKhuc", nhan: "Đường dẫn", Icon: Spline },
   { khoa: "kenh", nhan: "Kênh song song", Icon: Equal },
   { khoa: "mui", nhan: "Mũi tên", Icon: ArrowUpRight },
   { khoa: "chu", nhan: "Ghi chú", Icon: Type },
@@ -703,7 +704,12 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       <div className="px-3 h-7 flex items-center text-[11px] border-b truncate" style={{ borderColor: VIEN, color: congCu ? TEXT : MUTED, fontFamily: "'Inter', sans-serif" }}>
         {congCu ? (
           <span>
-            Đang vẽ: bấm 2 lần hoặc bấm - kéo - thả. Giữ <b>Space</b> để kéo biểu đồ, lăn chuột để thu phóng, <b>Esc</b> để thoát.
+            {congCu === "gapKhuc" ? (
+              <>Đường dẫn: bấm <b>chuột trái</b> để thêm từng đoạn, <b>chuột phải</b> (hoặc bấm đúp / Enter) để kết thúc. </>
+            ) : (
+              <>Đang vẽ: bấm 2 lần hoặc bấm - kéo - thả. </>
+            )}
+            Giữ <b>Space</b> để kéo biểu đồ, <b>Esc</b> để thoát.
           </span>
         ) : (
           <span>
