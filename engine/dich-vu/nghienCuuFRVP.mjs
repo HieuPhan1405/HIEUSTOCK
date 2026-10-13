@@ -93,4 +93,29 @@ hang("B: + FRVP (R/R>=2 VA (pullback HOAC breakout))", dong.filter(pB)); sosanh(
 hang("C: + FRVP + Price Action", dong.filter(pC)); sosanh("C", dong.filter(pC), dong.filter((x) => !pC(x)));
 console.log("\n   Theo nam (TB %/lenh):  nam | he thong | B | C");
 for (const y of nams) { const g = dong.filter((x) => x.nam === y); console.log(`     ${y} | ${f(tb(g.map((x) => x.ret))).padStart(6)} (n=${g.length}) | ${f(tb(g.filter(pB).map((x) => x.ret))).padStart(6)} (n=${g.filter(pB).length}) | ${f(tb(g.filter(pC).map((x) => x.ret))).padStart(6)} (n=${g.filter(pC).length})`); }
+// ---------- PHAN 2 (2026-10-14): chi thu quy tac A (pullback co ho tro) va C (breakout khoi vung gia tri), KHONG dung quy tac B (R/R) ----------
+console.log("\n=== PHAN 2: CHI QUY TAC A + C ===");
+const nguonMau = dong.map((x) => x.ret);
+let seed = 24680; const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+const hoanVi = (n, tbQuanSat) => { let dem = 0; const SO = 3000; for (let k = 0; k < SO; k++) { let s = 0; for (let i = 0; i < n; i++) s += nguonMau[Math.floor(rnd() * nguonMau.length)]; if (s / n >= tbQuanSat) dem++; } return dem / SO; };
+const phuongAn = [
+  ["A", (x) => x.A], ["C", (x) => x.C],
+  ["A HOAC C", (x) => x.A || x.C], ["A VA C", (x) => x.A && x.C],
+  ["A + Price Action", (x) => x.A && x.PA], ["C + Price Action", (x) => x.C && x.PA],
+  ["(A HOAC C) + Price Action", (x) => (x.A || x.C) && x.PA],
+];
+hang("He thong hien tai (moc)", dong);
+for (const [ten, fn] of phuongAn) {
+  const g = dong.filter(fn), bo = dong.filter((x) => !fn(x));
+  hang(ten, g); sosanh(ten, g, bo);
+  console.log(`      -> xac suat chon NGAU NHIEN cung so lenh cung dat TB >= ${f(tb(g.map((x) => x.ret)))}%: ${f(hoanVi(g.length, tb(g.map((x) => x.ret))) * 100, 1)}%`);
+}
+console.log("\n   Theo nam (TB %/lenh): nam | moc | A | C | A hoac C");
+for (const y of nams) { const g = dong.filter((x) => x.nam === y); const m = (fn) => { const h = g.filter(fn); return `${f(tb(h.map((x) => x.ret))).padStart(6)} (n=${h.length})`; }; console.log(`     ${y} | ${f(tb(g.map((x) => x.ret))).padStart(6)} | ${m((x) => x.A)} | ${m((x) => x.C)} | ${m((x) => x.A || x.C)}`); }
+// nua dau / nua sau thoi gian (out-of-sample thô)
+const moc = dong.map((x) => x.ngay).sort()[Math.floor(dong.length / 2)];
+for (const [ten, fn] of [["A", (x) => x.A], ["C", (x) => x.C], ["A hoac C", (x) => x.A || x.C]]) {
+  const t1 = dong.filter((x) => x.ngay < moc), t2 = dong.filter((x) => x.ngay >= moc);
+  console.log(`   ${ten.padEnd(9)} nua dau: ${f(tb(t1.filter(fn).map((x) => x.ret)))}% vs ${f(tb(t1.map((x) => x.ret)))}% | nua sau: ${f(tb(t2.filter(fn).map((x) => x.ret)))}% vs ${f(tb(t2.map((x) => x.ret)))}%  (giu vs moc)`);
+}
 process.exit(0);
