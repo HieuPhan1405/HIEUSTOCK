@@ -69,6 +69,8 @@ function chay(W) {
       let gt = 0; for (const b of cs) gt += b.c * b.v; if (gt / W < 3e6) continue; // thanh khoan TB < 3 ty / phien: bo
       const hs = tinhHoSoKhoiLuong(cs, { soHang: 100 }); if (!hs) continue;
       const dinh = timDinhKhoiLuong(hs); const c = nen[t].c; const nam = nen[t].t.slice(0, 4);
+      // VWAP cua chinh cua so W phien (gia binh quan theo khoi luong, gia dien hinh moi phien = (cao + thap + dong cua) / 3)
+      let spv = 0, sv = 0; for (const b of cs) { spv += ((b.h + b.l + b.c) / 3) * b.v; sv += b.v; } const vwap = spv / sv;
       const klMin = (lo, hi) => { let tot = null; for (const r of hs.hang) { const g = (r.tu + r.den) / 2; if (g < lo || g > hi) continue; if (dinh.some((x) => Math.abs(g / x.gia - 1) < 0.015)) continue; if (!tot || r.kl < tot.kl) tot = { g, kl: r.kl }; } return tot ? tot.g : null; };
       for (const phia of ["duoi", "tren"]) {
         const lo = phia === "duoi" ? c * 0.88 : c * 1.02, hi = phia === "duoi" ? c * 0.98 : c * 1.12;
@@ -79,8 +81,11 @@ function chay(W) {
         const bien = phia === "duoi" ? hs.val : hs.vah; if (bien >= lo && bien <= hi && !dinh.some((x) => Math.abs(bien / x.gia - 1) < 0.01)) muc.BIEN = bien;
         const dc = klMin(lo, hi); if (dc != null) muc.DOI_CHUNG = dc;
         const pv = pivotGanNhat(nen, t, W, phia === "duoi" ? "day" : "dinh", lo, hi); if (pv != null) muc.PIVOT = pv;
-        // ---- ho tro / khang cu CU cua he thong ----
         const trongDai = (v) => v != null && v >= lo && v <= hi;
+        // ---- VWAP va HOP LUU VWAP + dinh khoi luong (cach nhau < 1,5%) ----
+        if (trongDai(vwap)) { muc.VWAP = vwap; const g = vwap * (phia === "duoi" ? 0.98 : 1.02); if (trongDai(g)) muc.VWAP_LECH = g; }
+        { const gan = trong.filter((x) => Math.abs(x.gia / vwap - 1) < 0.015); if (gan.length) muc.HOP_LUU = phia === "duoi" ? gan[gan.length - 1].gia : gan[0].gia; else if (muc.KL != null) muc.KL_XA_VWAP = muc.KL; }
+        // ---- ho tro / khang cu CU cua he thong ----
         const dong = {}; // loai -> mang de di theo
         if (trongDai(kijun[t])) { muc.KIJUN = kijun[t]; dong.KIJUN_DONG = kijun; }
         // GIA DUOC: cung trang thai (Kijun / duong can bang nam trong dai) nhung dat muc LECH 2% ra xa gia hon. Neu ty le giu van cao nhu muc that thi loi the la do XU HUONG, khong phai do dung duong do.
@@ -91,7 +96,7 @@ function chay(W) {
           if (tat.length) { const a = tat.reduce((x, y) => ((phia === "duoi" ? x[t] > y[t] : x[t] < y[t]) ? x : y)); muc.CU = a[t]; if (a !== d52) dong.CU_DONG = a; } }
         // co de so sanh TRONG CUNG TRANG THAI: phien nay Kijun / duong can bang co nam trong dai khong (gan vao moi su kien, ke ca muc doi chung)
         const kj = trongDai(kijun[t]), cbx = [cbTop, cbBot].some((a) => trongDai(a[t]));
-        for (const [loai, g] of Object.entries(muc)) { const kq = theoDoi(nen, t, g, phia); if (kq === undefined) continue; sk.push({ ma, nam, phia, loai, cach: Math.abs(g / c - 1) * 100, kq, kj, cbx }); }
+        for (const [loai, g] of Object.entries(muc)) { const kq = theoDoi(nen, t, g, phia); if (kq === undefined) continue; sk.push({ ma, nam, phia, loai, cach: Math.abs(g / c - 1) * 100, kq, kj, cbx, vw: trongDai(vwap) }); }
         for (const [loai, a] of Object.entries(dong)) { const kq = theoDoiDong(nen, t, a, phia); if (kq === undefined) continue; sk.push({ ma, nam, phia, loai, cach: Math.abs(a[t] / c - 1) * 100, kq }); }
       }
     }
@@ -109,7 +114,8 @@ function chenh(a, b) {
 }
 const NHAN = { KL: "Dinh khoi luong (HVN / POC)", KL_MANH: "Dinh khoi luong MANH (>= 60% dinh lon nhat)", BIEN: "Bien vung gia tri (VAL / VAH)", PIVOT: "Day / dinh pivot (co dien)", DOI_CHUNG: "DOI CHUNG: muc khoi luong thap nhat",
   CU: "HE THONG CU: muc gan nhat (nhu hien tren web)", CU_DONG: "HE THONG CU: muc gan nhat, di theo moi phien", KIJUN: "  rieng Kijun (giu nguyen)", KIJUN_DONG: "  rieng Kijun (di theo moi phien)", CB: "  rieng duong can bang dai han", DINH52: "  rieng dinh 52 tuan",
-  KIJUN_LECH: "  GIA DUOC: Kijun lech 2% ra xa gia", CB_LECH: "  GIA DUOC: duong can bang lech 2% ra xa gia" };
+  KIJUN_LECH: "  GIA DUOC: Kijun lech 2% ra xa gia", CB_LECH: "  GIA DUOC: duong can bang lech 2% ra xa gia",
+  VWAP: "VWAP cua cua so (gia binh quan theo KL)", VWAP_LECH: "  GIA DUOC: VWAP lech 2% ra xa gia", HOP_LUU: "HOP LUU: dinh khoi luong trung VWAP (< 1,5%)", KL_XA_VWAP: "  dinh khoi luong KHONG trung VWAP" };
 // node ... [W]  -> chi chay 1 cua so (vd 120 = cua so dang dung tren web)
 for (const W of process.argv[2] ? [Number(process.argv[2])] : [60, 120, 250]) {
   const sk = chay(W);
@@ -117,7 +123,7 @@ for (const W of process.argv[2] ? [Number(process.argv[2])] : [60, 120, 250]) {
   for (const [phia, ten, giu] of [["duoi", "HO TRO (muc phia duoi gia)", "bat len +3% truoc khi thung -3%"], ["tren", "KHANG CU (muc phia tren gia)", "bi day xuong -3% truoc khi vuot +3%"]]) {
     console.log(`\n--- ${ten}: ty le GIU = ${giu} ---`);
     const g0 = sk.filter((x) => x.phia === phia), dc = g0.filter((x) => x.loai === "DOI_CHUNG");
-    for (const loai of ["KL", "KL_MANH", "BIEN", "PIVOT", "CU", "CU_DONG", "KIJUN", "KIJUN_LECH", "KIJUN_DONG", "CB", "CB_LECH", "DINH52", "DOI_CHUNG"]) {
+    for (const loai of ["VWAP", "VWAP_LECH", "HOP_LUU", "KL_XA_VWAP", "KL", "KL_MANH", "BIEN", "PIVOT", "CU", "CU_DONG", "KIJUN", "KIJUN_LECH", "KIJUN_DONG", "CB", "CB_LECH", "DINH52", "DOI_CHUNG"]) {
       const g = g0.filter((x) => x.loai === loai); if (!g.length) continue; const [d, lo, hi] = loai === "DOI_CHUNG" ? [0, 0, 0] : chenh(g, dc);
       const theoKC = [[2, 5], [5, 8], [8, 12.5]].map(([a, b]) => { const h = g.filter((x) => x.cach >= a && x.cach < b), h2 = dc.filter((x) => x.cach >= a && x.cach < b); return `${a}-${b}%: ${f(tyLe(h))} (dc ${f(tyLe(h2))})`; }).join(" | ");
       const theoGD = [["2000", "2020"], ["2020", "2023"], ["2023", "2099"]].map(([a, b]) => f(tyLe(g.filter((x) => x.nam >= a && x.nam < b)) - tyLe(dc.filter((x) => x.nam >= a && x.nam < b)))).join(" / ");
@@ -125,7 +131,7 @@ for (const W of process.argv[2] ? [Number(process.argv[2])] : [60, 120, 250]) {
       console.log(`        theo khoang cach: ${theoKC}`);
     }
     // So sanh TRONG CUNG TRANG THAI (cung cac phien co Kijun / duong can bang nam trong dai): muc that so voi 1 muc gia bat ky cua chinh nhung phien do
-    for (const [loai, co, ten] of [["KIJUN", "kj", "Kijun"], ["CB", "cbx", "duong can bang dai han"], ["KL", "kj", "dinh khoi luong (cac phien co Kijun trong dai)"]]) {
+    for (const [loai, co, ten] of [["KIJUN", "kj", "Kijun"], ["CB", "cbx", "duong can bang dai han"], ["KL", "kj", "dinh khoi luong (cac phien co Kijun trong dai)"], ["VWAP", "vw", "VWAP"], ["HOP_LUU", "vw", "hop luu VWAP + dinh khoi luong (cac phien co VWAP trong dai)"]]) {
       const g = g0.filter((x) => x.loai === loai && x[co]), d2 = dc.filter((x) => x[co]); if (!g.length || !d2.length) continue;
       const [d, lo, hi] = chenh(g, d2);
       const gd = [["2000", "2020"], ["2020", "2023"], ["2023", "2099"]].map(([a, b]) => f(tyLe(g.filter((x) => x.nam >= a && x.nam < b)) - tyLe(d2.filter((x) => x.nam >= a && x.nam < b)))).join(" / ");
