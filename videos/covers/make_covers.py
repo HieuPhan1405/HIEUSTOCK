@@ -19,11 +19,11 @@ COVERS = {
     "msn": dict(photo="img/msn.jpg", l1="MSN", c1="#F5C542", l2="TRÊN 110.000đ", c2="#22C55E", l3="2 tổ chức bất đồng ở đâu?"),
     # video 12/10: đầu người nói nằm cao hơn các video trước nên đẩy ảnh xuống (dy) để chữ không đè mặt; s1 = cỡ chữ dòng 1 riêng từng khung
     "maicolen": dict(photo="img/mai-co-len.jpg", tag2="LỘT TRẦN NGHỀ MÔI GIỚI", l1="MAI MÃ NÀO<br>SẼ LÊN?", c1="#F5C542", l2="KHÔNG AI BIẾT", c2="#FAFAFA",
-                     l3="Môi giới trả lời được mọi câu,<br>trừ câu này",
-                     dy={"tiktok_1080x1920": 430, "facebook_1080x1350": 330}, s1={"tiktok_1080x1920": 118, "facebook_1080x1350": 98}),
+                     dy={"tiktok_1080x1920": 390, "facebook_1080x1350": 70}, s1={"tiktok_1080x1920": 118, "facebook_1080x1350": 92},
+                     s2={"facebook_1080x1350": 66}, s3={"facebook_1080x1350": 40}, l3={"tiktok_1080x1920": "Môi giới trả lời được mọi câu,<br>trừ câu này", "facebook_1080x1350": "Môi giới trả lời được mọi câu, trừ câu này"}),
     "hpg": dict(photo="img/hpg-san-luong.jpg", l1="BÁN +54%", c1="#F5C542", l2="HÒA PHÁT QUÝ 3", c2="#FAFAFA",
                 l3="Hơn một nửa mức tăng<br>đến từ một loại thép",
-                dy={"tiktok_1080x1920": 400, "facebook_1080x1350": 300}, s1={"tiktok_1080x1920": 146, "facebook_1080x1350": 128}),
+                dy={"tiktok_1080x1920": 400, "facebook_1080x1350": 90}, s1={"tiktok_1080x1920": 146, "facebook_1080x1350": 128}),
 }
 # (rộng, cao, offset y của ảnh, cỡ chữ l1, l2, l3, top của khối chữ)
 SIZES = {
@@ -32,7 +32,8 @@ SIZES = {
 }
 for key, c in COVERS.items():
     for name, (w, h, dy, s1, s2, s3, top) in SIZES.items():
-        dy, s1 = c.get("dy", {}).get(name, dy), c.get("s1", {}).get(name, s1)
+        dy, s1, s2, s3 = (c.get(k, {}).get(name, v) for k, v in (("dy", dy), ("s1", s1), ("s2", s2), ("s3", s3)))
+        l3 = c["l3"][name] if isinstance(c["l3"], dict) else c["l3"]
         tag2 = f'<div class="tag2">{c["tag2"]}</div>' if c.get("tag2") else ""
         html = f"""<!doctype html><html><head><meta charset="utf-8"><style>{FONTS}
 *{{box-sizing:border-box;margin:0}}html,body{{width:{w}px;height:{h}px;overflow:hidden;background:#000}}
@@ -46,6 +47,6 @@ for key, c in COVERS.items():
 .l2{{display:inline-block;font-size:{s2}px;color:{c['c2']};background:rgba(10,10,10,.82);padding:0 30px 8px;border-radius:24px;margin-top:6px}}
 .l3{{margin-top:26px;font:italic 700 {s3}px 'Playfair Display';color:#FAFAFA;text-shadow:0 4px 22px rgba(0,0,0,.8);line-height:1.1}}
 </style></head><body><div class="bg"></div><div class="ph"></div><div class="sh"></div>
-<div class="t"><div class="tag">PHAN HIẾU STOCK</div>{tag2}<div class="l1">{c['l1']}</div><div class="l2">{c['l2']}</div><div class="l3">{c['l3']}</div></div></body></html>"""
+<div class="t"><div class="tag">PHAN HIẾU STOCK</div>{tag2}<div class="l1">{c['l1']}</div><div class="l2">{c['l2']}</div><div class="l3">{l3}</div></div></body></html>"""
         (R / f"cover_{key}_{name}.html").write_text(html)
 print("ok")
