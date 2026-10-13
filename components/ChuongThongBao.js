@@ -323,7 +323,7 @@ export default function ChuongThongBao() {
               </p>
             ) : nhom.length === 0 ? (
               <p className="px-4 py-6 text-xs" style={{ color: MUTED }}>
-                {du.loi ? "Chưa tải được thông báo — thử lại sau ít phút." : "Chưa có thông báo nào trong 7 ngày qua."}
+                {du.loi ? "Chưa tải được thông báo — thử lại sau ít phút." : du.khoa ? "Đăng nhập (và được duyệt) để xem thông báo tín hiệu." : "Chưa có thông báo nào trong 7 ngày qua."}
               </p>
             ) : (
               nhom.map((n) => (

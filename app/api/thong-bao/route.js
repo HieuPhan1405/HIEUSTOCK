@@ -6,7 +6,7 @@ import { thongBaoLoi } from "@/lib/loiAnToan";
 const TEN_COOKIE = "cs_token";
 
 // GET: danh sach cho chuong thong bao (7 ngay) + so chua xem + trang thai tai khoan + khoa cong khai de bat thong bao ve may.
-// Khach chua dang nhap van xem duoc thong bao tin hieu (giong o "Top co hoi" trang dau), khong thay thong bao chi quan tri; so chua xem cua khach tinh o trinh duyet.
+// KHOA TIN HIEU (2026-10-13): khach chua dang nhap / tai khoan chua duoc duyet KHONG nhan danh sach thong bao tin hieu (ds rong + khoa: true) - cung quy tac voi trang Tong quan, /api/signals va /bo-loc.
 export async function GET(request) {
   try {
     const nguoiDung = await layNguoiDungTuToken(request.cookies.get(TEN_COOKIE)?.value);
@@ -15,11 +15,13 @@ export async function GET(request) {
       layKhoaCongKhai(),
       nguoiDung ? demDangKyDay(nguoiDung.id) : 0,
     ]);
+    const duocXem = nguoiDung?.da_duyet === true || nguoiDung?.la_admin === true;
     return Response.json(
       {
-        ds,
+        ds: duocXem ? ds : [],
+        khoa: !duocXem,
         // Chua mo chuong lan nao -> chi tinh thong bao 24 gio qua la "chua xem" (khong hien 9+ ngay lan dau).
-        chuaXem: nguoiDung ? demChuaXem(ds, xemLuc ?? new Date(Date.now() - 86400e3)) : null,
+        chuaXem: nguoiDung ? (duocXem ? demChuaXem(ds, xemLuc ?? new Date(Date.now() - 86400e3)) : 0) : null,
         xemLuc,
         nguoiDung: nguoiDung ? { laAdmin: nguoiDung.la_admin === true, daDuyet: nguoiDung.da_duyet === true, phamVi, soMay } : null,
         khoaDay,

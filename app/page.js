@@ -7,6 +7,9 @@ import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhe } from "@
 import NhanCapNhat from "@/components/NhanCapNhat";
 import { soVN } from "@/lib/soVN";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import { layNguoiDungHienTai } from "@/lib/nguoiDung";
+import { quyenTrangChu, locCauNhanDinh } from "@/lib/khoaTrangChu";
+import KhoaTinHieuTrangChu from "@/components/KhoaTinHieuTrangChu";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +43,7 @@ function sinhKetLuan(pctXanh, pctDo, tong) {
 // VN30/Midcap/Smallcap dang theo doi, gom ca HOSE lan HNX/UPCOM tu khi mo
 // rong (KHONG phai toan bo thi truong nen khong dung so lieu "do rong ca
 // thi truong" tuyet doi, chi noi ro pham vi dang co).
-function sinhNhanDinh(tatCa) {
+function sinhNhanDinh(tatCa, xemTinHieu) {
   const tong = tatCa.length;
   if (!tong) return null;
 
@@ -60,18 +63,19 @@ function sinhNhanDinh(tatCa) {
   if (pctGiam - pctTang > 30) { sacThai = "TIÊU CỰC"; mau = DO; }
   else if (pctTang - pctGiam > 30) { sacThai = "TÍCH CỰC"; mau = XANH; }
 
+  // Moi cau co co tinHieu (true = noi ve tin hieu MUA/BAN, Mat Than) - khach chua dang nhap khong thay (lib/khoaTrangChu.js).
   const cau = [
-    `Thị trường nghiêng ${sacThai.toLowerCase()} với ${soVN(pctGiam, 1, true)}% mã giảm điểm / ${soVN(pctTang, 1, true)}% mã tăng điểm trong ${tong} mã VN30-Midcap-Smallcap đang theo dõi (HOSE, HNX, UPCOM), trong đó ${soGiamManh} mã (${soVN(pctGiamManh, 1, true)}%) giảm mạnh trên 3%.`,
+    { tinHieu: false, cau: `Thị trường nghiêng ${sacThai.toLowerCase()} với ${soVN(pctGiam, 1, true)}% mã giảm điểm / ${soVN(pctTang, 1, true)}% mã tăng điểm trong ${tong} mã VN30-Midcap-Smallcap đang theo dõi (HOSE, HNX, UPCOM), trong đó ${soGiamManh} mã (${soVN(pctGiamManh, 1, true)}%) giảm mạnh trên 3%.` },
   ];
   if (soMatThan > 0) {
-    cau.push(`Có ${soMatThan} mã đang cảnh báo Mắt Thần — rủi ro đảo chiều cần theo dõi sát trong các phiên tới.`);
+    cau.push({ tinHieu: true, cau: `Có ${soMatThan} mã đang cảnh báo Mắt Thần — rủi ro đảo chiều cần theo dõi sát trong các phiên tới.` });
   }
   if (soVuotDinh > 0) {
-    cau.push(`Vẫn có ${soVuotDinh} mã vượt đỉnh 52 tuần, cho thấy dòng tiền chưa rút hoàn toàn mà đang chọn lọc theo từng nhóm ngành.`);
+    cau.push({ tinHieu: false, cau: `Vẫn có ${soVuotDinh} mã vượt đỉnh 52 tuần, cho thấy dòng tiền chưa rút hoàn toàn mà đang chọn lọc theo từng nhóm ngành.` });
   }
-  cau.push(`Tín hiệu mới phát sinh hôm nay: ${soMua} mã MUA, ${soBan} mã BÁN.`);
+  cau.push({ tinHieu: true, cau: `Tín hiệu mới phát sinh hôm nay: ${soMua} mã MUA, ${soBan} mã BÁN.` });
 
-  return { sacThai, mau, doanVan: cau.join(" "), soTang, soGiam, soDung };
+  return { sacThai, mau, doanVan: locCauNhanDinh(cau, xemTinHieu).join(" "), soTang, soGiam, soDung };
 }
 
 // PTKT VNINDEX - dung dung cong thuc Ichimoku/duong can bang dai han/diem so nhu tung ma,
@@ -176,6 +180,8 @@ function BieuDoTronDoRong({ soXanh, soSideway, soDo, tong }) {
 }
 
 export default async function TrangTongQuan() {
+  const nguoiDung = await layNguoiDungHienTai().catch(() => null);
+  const { xemTinHieu, choDuyet } = quyenTrangChu(nguoiDung); // khach chua dang nhap / chua duyet: khoa tin hieu (lib/khoaTrangChu.js)
   let tatCa = [];
   let chiSoVNIndex = null;
   let loi = null;
@@ -190,12 +196,12 @@ export default async function TrangTongQuan() {
   const ngayPhien = capNhat ? ngayGiaoDichVN(new Date(capNhat)) : null;
   let dongLenh = [];
   try {
-    dongLenh = await layLenhCoSuKienNgay(ngayPhien);
+    if (xemTinHieu) dongLenh = await layLenhCoSuKienNgay(ngayPhien);
   } catch {
     // giu rong - o Ban / Ban bot van hien tu tin hieu
   }
 
-  const nhanDinh = sinhNhanDinh(tatCa);
+  const nhanDinh = sinhNhanDinh(tatCa, xemTinHieu);
 
   const tong = tatCa.length;
   const soXanh = tatCa.filter((r) => phanLoaiXuHuong(r) === "xanh").length;
@@ -413,16 +419,27 @@ export default async function TrangTongQuan() {
 
         {/* TOP CO HOI DANG CHU Y: 4 o lenh CUA PHIEN HOM NAY - hang tren Mua | Ban, hang duoi Mua moi | Ban bot. Tong quan/Ra soat nhanh
             (breadth, top nganh, khoi ngoai...) o trang /dashboard rieng. */}
-        {tatCa.length > 0 && <CoHoiHomNay tatCa={tatCa} dongLenh={dongLenh} ngay={ngayPhien} />}
+        {tatCa.length > 0 && (xemTinHieu ? <CoHoiHomNay tatCa={tatCa} dongLenh={dongLenh} ngay={ngayPhien} /> : <KhoaTinHieuTrangChu choDuyet={choDuyet} />)}
 
         {/* HANG KPI */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
           <TheKPI nhan="Mã đang theo dõi" giaTri={tong} mau={TEXT} href="/bo-loc" />
           <TheKPI nhan="Xu hướng tăng" giaTri={`${pctXanh.toFixed(0)}%`} phu={`${soXanh} mã`} mau={XANH} href="/bo-loc?xuhuong=xanh" />
-          <TheKPI nhan="Tín hiệu MUA" giaTri={soMua} phu="hôm nay" mau={PRIMARY} href="/bo-loc?tin=MUA" />
-          <TheKPI may="mat-than" nhan="Cảnh báo Mắt Thần" giaTri={soMatThan} phu="rủi ro đảo chiều" mau={soMatThan > 0 ? DO : MUTED} href="/bo-loc?matthan=1" />
-          <TheKPI nhan="Cơ hội chốt lời" giaTri={soChotLoi} phu="đã chạm TP" mau={soChotLoi > 0 ? "var(--vang)" : MUTED} href="/bo-loc?chotloi=1" />
-          <TheKPI nhan="Cảnh báo bán bớt" giaTri={soBanBot} phu="điểm dưới ngưỡng" mau={soBanBot > 0 ? "var(--cam)" : MUTED} href="/bo-loc?banbot=1" />
+          {xemTinHieu ? (
+            <>
+              <TheKPI nhan="Tín hiệu MUA" giaTri={soMua} phu="hôm nay" mau={PRIMARY} href="/bo-loc?tin=MUA" />
+              <TheKPI may="mat-than" nhan="Cảnh báo Mắt Thần" giaTri={soMatThan} phu="rủi ro đảo chiều" mau={soMatThan > 0 ? DO : MUTED} href="/bo-loc?matthan=1" />
+              <TheKPI nhan="Cơ hội chốt lời" giaTri={soChotLoi} phu="đã chạm TP" mau={soChotLoi > 0 ? "var(--vang)" : MUTED} href="/bo-loc?chotloi=1" />
+              <TheKPI nhan="Cảnh báo bán bớt" giaTri={soBanBot} phu="điểm dưới ngưỡng" mau={soBanBot > 0 ? "var(--cam)" : MUTED} href="/bo-loc?banbot=1" />
+            </>
+          ) : (
+            <>
+              <TheKPI nhan="Tín hiệu MUA" giaTri="🔒" phu="Đăng nhập để xem" mau={MUTED} />
+              <TheKPI nhan="Cảnh báo Mắt Thần" giaTri="🔒" phu="Đăng nhập để xem" mau={MUTED} />
+              <TheKPI nhan="Cơ hội chốt lời" giaTri="🔒" phu="Đăng nhập để xem" mau={MUTED} />
+              <TheKPI nhan="Cảnh báo bán bớt" giaTri="🔒" phu="Đăng nhập để xem" mau={MUTED} />
+            </>
+          )}
         </div>
 
         {/* KET LUAN + BIEU DO TRON  ·  DO RONG THEO VON HOA */}
