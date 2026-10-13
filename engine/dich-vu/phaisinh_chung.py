@@ -1,7 +1,7 @@
 # PHAI SINH VN30F1M - phan DUNG CHUNG: nap nen 1 phut, dung ma tran (ngay x phut), chi phi, thong ke.
 # Phien lien tuc: 09:00-11:30 (151 phut, chi so 0..150) + 13:00-14:29 (90 phut, chi so 151..240). ATC 14:45 luu rieng. Phut khong co giao dich = giu gia dong cua phut truoc.
-# CHI PHI 1 vong (mua + ban) cho 1 hop dong = 0,022% gia (phi so 2.700d x2 + phi cong ty ~2.000d x2 + thue = gia x 100.000 x 17% x 0,1% / 2 moi chieu) + 0,4 diem truot gia (2 buoc gia moi chieu).
-#   O muc 1.870 diem ~ 0,81 diem / vong. Lai / lo tinh theo % GIA TRI HOP DONG (chua don bay); ky quy ~18% nen % tren tien ky quy lon gap ~5,5 lan (ca lai lan lo).
+# CHI PHI 1 vong (mua + ban) cho 1 hop dong: theo BIEU PHI MBS (xem ham phi() ben duoi) + 0,4 diem truot gia (2 buoc gia moi chieu) ~ 0,88 diem / vong o muc 1.870.
+#   Lai / lo tinh theo % GIA TRI HOP DONG (chua don bay); ky quy ~18% nen % tren tien ky quy lon gap ~5,5 lan (ca lai lan lo).
 import json, os, numpy as np, pandas as pd
 GOC = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "output") + os.sep
 NP = 241
@@ -43,8 +43,15 @@ def nap():
     sauDao = np.r_[False, dao[:-1]]
     return dict(ngay=ngay, O=O, H=H, L=L, C=C, V=V, ATC=ATC, dao=dao, sauDao=sauDao)
 
-def phi(gia):
-    return 0.00022 * gia + 0.4
+# BIEU PHI MBS (mbs.com.vn/bieu-phi-giao-dich-chung-khoan-phai-sinh, doc ngay 14/10/2026), tinh cho 1 hop dong, MOI LUOT (mua hoac ban):
+#   3.000d phi giao dich MBS + 2.700d phi tra So + 2.550d phi bu tru VSDC = 8.250d ; thue TNCN = gia x 100.000 x 17% ky quy ban dau x 0,1% / 2 = 8,5d x gia
+#   -> 1 vong (2 luot) = 16.500d + 17d x gia  = 0,165 diem + 0,00017 x gia  (o muc 1.870: ~0,48 diem ~ 48 nghin dong)
+# Ngoai ra con phi quan ly tai san ky quy 0,0024% / thang (toi thieu 100.000d / tai khoan / thang) - khoan co dinh theo tai khoan, khong tinh vao tung lenh.
+# TRUOT = truot gia ca vong tinh bang diem (mac dinh 0,4 = 2 buoc gia moi chieu); doi bang bien moi truong PS_TRUOT hoac tham so truot.
+PHI_CO_DINH = 2 * (3000 + 2700 + 2550) / 100000
+TRUOT = float(os.environ.get("PS_TRUOT", "0.4"))
+def phi(gia, truot=None):
+    return PHI_CO_DINH + 0.00017 * gia + (TRUOT if truot is None else truot)
 
 # gd: list (ngay, phia, giaVao, giaRa) -> DataFrame co lai rong (%) va diem quy ve muc gia 1.870
 def bang(gd, phi_he_so=1.0):
