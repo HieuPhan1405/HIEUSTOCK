@@ -6,7 +6,7 @@ import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Squar
 import { tinhIchimoku, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { LopVe } from "@/components/veBieuDoLop";
-import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio } from "@/lib/volumeProfile";
+import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio, timDinhKhoiLuong, chonHoTroKhangCu } from "@/lib/volumeProfile";
 import { DaiMay, DaiGia } from "@/components/bieuDoPlugin";
 import { fmt } from "@/components/dungChung";
 import BangThongTinBieuDo from "@/components/BangThongTinBieuDo";
@@ -69,7 +69,12 @@ const CONG_TAT = [
   { khoa: "ema", nhan: "EMA 9/21", mau: "#22D3EE" },
   { khoa: "boll", nhan: "Bollinger", mau: "#94A3B8" },
   { khoa: "vp", nhan: "Volume Profile", mau: "#F6C544" },
+  { khoa: "htkc", nhan: "Hỗ trợ / Kháng cự (KL)", mau: "#38BDF8" },
 ];
+// Ho tro / khang cu THAM KHAO theo khoi luong: dinh khoi luong cua SO_NEN_HTKC nen gan nhat (khung ngay ~6 thang; khung tuan lay 26 tuan)
+const SO_NEN_HTKC = { D: 120, W: 26 };
+const MAU_HO_TRO = "#22C55E";
+const MAU_KHANG_CU = "#EF4444";
 // Chi bao PHU o cua so rieng phia duoi (moi chi bao 1 khung): bat / tat bang chip.
 const CHI_BAO_PHU = [
   { khoa: "rsi", nhan: "RSI 14", mau: "#A78BFA" },
@@ -235,7 +240,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
-  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, rsi: false, macd: false, stoch: false });
+  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
   const [mauVe, setMauVe] = useState(MAU_VE[0]);
   const [hitGia, setHitGia] = useState(false);
@@ -396,7 +401,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   }, [giuCongCu]);
 
   // 1d. VOLUME PROFILE. Nen 1 gio chi tai khi can (bat chi bao, dang chon cong cu, hoac ma nay da co hinh vung chon); loi / khong co thi dung nen cua bieu do.
-  const canNenGio = bat.vp || congCu === "frvp" || coFrvp;
+  const canNenGio = bat.vp || bat.htkc || congCu === "frvp" || coFrvp;
   useEffect(() => {
     if (!canNenGio || nenGio.ma === ma) return;
     let huy = false;
@@ -454,6 +459,30 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       s.chart.timeScale().unsubscribeVisibleLogicalRangeChange(khiDoi);
     };
   }, [bat.vp, nen, nenGioCuaMa, khungTG]);
+
+  // 1e. HO TRO / KHANG CU THAM KHAO theo khoi luong: toi da 2 dinh khoi luong gan gia nhat o moi phia, ve thanh duong gia co nhan tren truc.
+  useEffect(() => {
+    const s = veRef.current;
+    if (!s) return;
+    for (const d of s.duongHTKC || []) {
+      try {
+        s.candle.removePriceLine(d);
+      } catch {
+        /* da bi go cung bieu do */
+      }
+    }
+    s.duongHTKC = [];
+    if (!bat.htkc || !nen || nen.length < 30 || !s.tinhHoSo) return;
+    const n = nen.length;
+    const hs = s.tinhHoSo(Math.max(0, n - (SO_NEN_HTKC[khungTG] ?? 120)), n - 1, 100);
+    if (!hs) return;
+    const { hoTro, khangCu } = chonHoTroKhangCu(timDinhKhoiLuong(hs), nen[n - 1].c);
+    const ve = (ds, mau, nhan) => {
+      for (const d of ds) s.duongHTKC.push(s.candle.createPriceLine({ price: d.gia, color: mau, lineWidth: d.doManh >= 0.6 ? 2 : 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: nhan }));
+    };
+    ve(hoTro, MAU_HO_TRO, "Hỗ trợ KL");
+    ve(khangCu, MAU_KHANG_CU, "Kháng cự KL");
+  }, [bat.htkc, nen, nenGioCuaMa, khungTG]);
 
   // 2. Tai gia lich su khi doi ma / khung thoi gian, hoac lam moi (lanThu, xem 2b) - khoa KHONG
   // gom lanThu de lam moi trong luc da co du lieu cu khong lam bieu do nhap nhay ve trang thai "dang tai".
@@ -847,7 +876,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
 
       <p className="px-3 py-2 text-[11px] border-t" style={{ borderColor: VIEN, color: MUTED }}>
         Giá đã điều chỉnh cổ tức/thưởng cổ phiếu (giống dữ liệu AmiBroker), khối lượng khớp lệnh; chỉ báo tính giống hệ thống tín hiệu (Ichimoku 9-17-33, mây dịch 26
-        phiên, đường cân bằng dài hạn 65/129); EMA, Bollinger, RSI, MACD, Stochastic là chỉ báo tham khảo thông dụng. Volume Profile là ước lượng: khối lượng mỗi nến chia đều theo khoảng giá của nến đó (dùng nến 1 giờ khi có, từ khoảng 10/2023; trước đó dùng nến của biểu đồ), không phải dữ liệu khớp lệnh theo từng mức giá. Hình vẽ lưu trên trình duyệt này theo từng mã và khung thời gian. Trong phiên, nến hôm nay cập nhật theo giá khớp thực tế, web tự làm mới mỗi 30 giây, không dùng để đặt lệnh khớp từng giây.
+        phiên, đường cân bằng dài hạn 65/129); EMA, Bollinger, RSI, MACD, Stochastic là chỉ báo tham khảo thông dụng. Volume Profile là ước lượng: khối lượng mỗi nến chia đều theo khoảng giá của nến đó (dùng nến 1 giờ khi có, từ khoảng 10/2023; trước đó dùng nến của biểu đồ), không phải dữ liệu khớp lệnh theo từng mức giá. Hỗ trợ / Kháng cự (KL) là các vùng giá có khối lượng giao dịch lớn trong khoảng 6 tháng gần nhất (nét đậm = vùng lớn), chỉ để tham khảo: kiểm tra lịch sử cho thấy giá giữ được ở các mức này khoảng một nửa số lần. Hình vẽ lưu trên trình duyệt này theo từng mã và khung thời gian. Trong phiên, nến hôm nay cập nhật theo giá khớp thực tế, web tự làm mới mỗi 30 giây, không dùng để đặt lệnh khớp từng giây.
       </p>
     </div>
   );

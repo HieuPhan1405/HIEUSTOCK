@@ -1,5 +1,5 @@
 // Test tay cho lib/volumeProfile.js. Chay: node engine/test/volumeProfile.test.mjs
-import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio } from "../../lib/volumeProfile.js";
+import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio, timDinhKhoiLuong, chonHoTroKhangCu } from "../../lib/volumeProfile.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -80,6 +80,26 @@ const gan = (a, b, e = 1e-9) => a != null && b != null && Math.abs(a - b) < e;
   const gio = chuanBiNenGio([[t, 11, 12, 10.5, 11.5, 700]]);
   const a = chonNenChoHoSo({ nenBieuDo: tuan, nenGio: gio, tuNgay: "2026-01-05", denNgay: "2026-01-18", soNgayMoiNen: 7 });
   ok("tuan 05/01 dung nen tuan, tuan 12/01 (co nen gio tu 13/01) dung nen gio", a.soBieuDo === 1 && a.soGio === 1, JSON.stringify({ a: a.soBieuDo, b: a.soGio }));
+}
+
+// 8. Dinh khoi luong + chon ho tro / khang cu
+{
+  const nen = [];
+  for (let i = 0; i < 60; i++) nen.push({ o: 20, h: 20.6, l: 19.6, c: 20.2, v: 1000 }); // cum quanh 20
+  for (let i = 0; i < 40; i++) nen.push({ o: 30, h: 30.5, l: 29.6, c: 30.1, v: 800 }); // cum quanh 30
+  for (let i = 0; i < 10; i++) nen.push({ o: 20 + i, h: 21 + i, l: 20 + i, c: 20.8 + i, v: 100 }); // noi 2 cum, KL nho
+  const hs = tinhHoSoKhoiLuong(nen, { soHang: 100 });
+  const d = timDinhKhoiLuong(hs);
+  ok("2 cum khoi luong -> 2 dinh, tang dan theo gia", d.length === 2 && d[0].gia < d[1].gia, JSON.stringify(d.map((x) => x.gia)));
+  ok("dinh 1 quanh 20, dinh 2 quanh 30", Math.abs(d[0].gia - 20.1) < 0.6 && Math.abs(d[1].gia - 30.05) < 0.6, JSON.stringify(d.map((x) => x.gia)));
+  ok("doManh: dinh lon nhat = 1, dinh kia < 1", gan(Math.max(...d.map((x) => x.doManh)), 1) && Math.min(...d.map((x) => x.doManh)) < 1);
+  const a = chonHoTroKhangCu(d, 25);
+  ok("gia 25: ho tro = dinh ~20, khang cu = dinh ~30", a.hoTro.length === 1 && a.khangCu.length === 1 && a.hoTro[0].gia < 25 && a.khangCu[0].gia > 25);
+  const b = chonHoTroKhangCu(d, 35);
+  ok("gia 35: 2 ho tro (gan gia truoc), khong co khang cu", b.hoTro.length === 2 && b.hoTro[0].gia > b.hoTro[1].gia && b.khangCu.length === 0);
+  const c = chonHoTroKhangCu(d, d[0].gia * 1.005);
+  ok("muc cach gia duoi 1% bi bo", c.hoTro.length === 0 && c.khangCu.length === 1);
+  ok("dau vao loi -> mang rong", chonHoTroKhangCu(null, 10).hoTro.length === 0 && chonHoTroKhangCu(d, 0).khangCu.length === 0 && timDinhKhoiLuong(null).length === 0);
 }
 
 console.log(loi ? `\n${loi} LOI` : "\nTat ca dat.");
