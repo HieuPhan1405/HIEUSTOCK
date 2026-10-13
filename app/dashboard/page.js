@@ -7,6 +7,9 @@ import { tinhRSNganh } from "@/lib/rsNganh";
 import ThanhKhoanThiTruong from "@/components/ThanhKhoanThiTruong";
 import AnhHuongIndex from "@/components/AnhHuongIndex";
 import KhoiNgoaiThiTruong from "@/components/KhoiNgoaiThiTruong";
+import VungGiaTriChiSo from "@/components/VungGiaTriChiSo";
+import { layLichSuGia } from "@/lib/lichSuGia";
+import { viTriTheoVungGiaTri } from "@/lib/vungGiaTriChiSo";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +34,14 @@ export default async function TrangDashboard() {
   // Khoi ngoai: nguon ben ngoai, cho toi da 4 giay de khong lam cham trang.
   const ngoai = await Promise.race([layDongTienNuocNgoai().catch(() => null), new Promise((r) => setTimeout(() => r(null), 4000))]);
 
+  // VN-Index so voi vung gia tri 60 phien (Volume Profile): nguon gia ben ngoai, cho toi da 4 giay; loi thi bo qua the nay.
+  const vungGiaTri = await Promise.race([
+    layLichSuGia("VNINDEX", 200)
+      .then((nen) => viTriTheoVungGiaTri(nen))
+      .catch(() => null),
+    new Promise((r) => setTimeout(() => r(null), 4000)),
+  ]);
+
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
       <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
@@ -47,6 +58,7 @@ export default async function TrangDashboard() {
       )}
 
       <TongQuanThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} />
+      <VungGiaTriChiSo vt={vungGiaTri} />
       <BangRSNganh hang={tinhRSNganh(tatCa)} />
       <BanDoNhiet tatCa={tatCa} />
       <ThanhKhoanThiTruong ma="VNINDEX" />

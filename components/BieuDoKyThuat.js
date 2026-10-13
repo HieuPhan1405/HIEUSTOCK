@@ -2,10 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createChart, createSeriesMarkers, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
-import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline } from "lucide-react";
+import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal } from "lucide-react";
 import { tinhIchimoku, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { LopVe } from "@/components/veBieuDoLop";
+import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio } from "@/lib/volumeProfile";
 import { DaiMay, DaiGia } from "@/components/bieuDoPlugin";
 import { fmt } from "@/components/dungChung";
 import BangThongTinBieuDo from "@/components/BangThongTinBieuDo";
@@ -67,6 +68,7 @@ const CONG_TAT = [
   { khoa: "ma", nhan: "MA 20/50/200", mau: MAU.ma20 },
   { khoa: "ema", nhan: "EMA 9/21", mau: "#22D3EE" },
   { khoa: "boll", nhan: "Bollinger", mau: "#94A3B8" },
+  { khoa: "vp", nhan: "Volume Profile", mau: "#F6C544" },
 ];
 // Chi bao PHU o cua so rieng phia duoi (moi chi bao 1 khung): bat / tat bang chip.
 const CHI_BAO_PHU = [
@@ -86,6 +88,7 @@ const CONG_CU_VE = [
   { khoa: "fib", nhan: "Fibonacci", Icon: null },
   { khoa: "thuoc", nhan: "Thước đo", Icon: Ruler },
   { khoa: "gapKhuc", nhan: "Đường dẫn", Icon: Spline },
+  { khoa: "frvp", nhan: "Volume Profile vùng chọn", Icon: BarChartHorizontal },
   { khoa: "kenh", nhan: "Kênh song song", Icon: Equal },
   { khoa: "mui", nhan: "Mũi tên", Icon: ArrowUpRight },
   { khoa: "chu", nhan: "Ghi chú", Icon: Type },
@@ -232,13 +235,17 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
-  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, rsi: false, macd: false, stoch: false });
+  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, rsi: false, macd: false, stoch: false });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
   const [mauVe, setMauVe] = useState(MAU_VE[0]);
   const [hitGia, setHitGia] = useState(false);
   const [giuCongCu, setGiuCongCu] = useState(false);
   const [lichSuVe, setLichSuVe] = useState({ coHoanTac: false, coLamLai: false });
   const rootRef = useRef(null);
+  // Volume Profile: nen 1 gio (tai khi can), co hinh "frvp" hay khong, va cac tham chieu de ham tinh ho so luon doc du lieu moi nhat
+  const [nenGio, setNenGio] = useState({ ma: "", nen: null });
+  const [coFrvp, setCoFrvp] = useState(false);
+  const duLieuHoSoRef = useRef({ nen: null, nenGio: null, khungTG: "D" });
   const [chonVe, setChonVe] = useState(null);
   const [soHinhVe, setSoHinhVe] = useState(0);
   const khoaVeRef = useRef(null);
@@ -322,6 +329,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       series: s.candle,
       onThayDoi: (ds) => {
         setSoHinhVe(ds.length);
+        setCoFrvp(ds.some((h) => h.loai === "frvp"));
         try {
           if (khoaVeRef.current) localStorage.setItem(khoaVeRef.current, JSON.stringify(ds));
         } catch {
@@ -369,6 +377,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     }
     s.lopVe.datHinh(Array.isArray(ds) ? ds : []);
     setSoHinhVe(Array.isArray(ds) ? ds.length : 0);
+    setCoFrvp(Array.isArray(ds) && ds.some((h) => h.loai === "frvp"));
     setChonVe(null);
   }, [ma, khungTG]);
 
@@ -385,6 +394,66 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   useEffect(() => {
     veRef.current?.lopVe.datGiu(giuCongCu);
   }, [giuCongCu]);
+
+  // 1d. VOLUME PROFILE. Nen 1 gio chi tai khi can (bat chi bao, dang chon cong cu, hoac ma nay da co hinh vung chon); loi / khong co thi dung nen cua bieu do.
+  const canNenGio = bat.vp || congCu === "frvp" || coFrvp;
+  useEffect(() => {
+    if (!canNenGio || nenGio.ma === ma) return;
+    let huy = false;
+    fetch(`/api/gia-gio?ma=${encodeURIComponent(ma)}`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (!huy) setNenGio({ ma, nen: j.trangThai === "ok" ? chuanBiNenGio(j.nen) : [] });
+      })
+      .catch(() => {
+        if (!huy) setNenGio({ ma, nen: [] });
+      });
+    return () => {
+      huy = true;
+    };
+  }, [canNenGio, ma, nenGio.ma]);
+  // Ham tinh ho so cho khoang nen [i1, i2] cua bieu do (chi so logic): doi ra khoang ngay roi chon nen 1 gio neu co.
+  const nenGioCuaMa = nenGio.ma === ma ? nenGio.nen : null;
+  useEffect(() => {
+    const s = veRef.current;
+    if (!s) return;
+    duLieuHoSoRef.current = { nen, nenGio: nenGioCuaMa, khungTG };
+    const tinh = (i1, i2, soHang = 48) => {
+      const d = duLieuHoSoRef.current;
+      if (!d.nen || !d.nen.length) return null;
+      const a = Math.max(0, Math.ceil(Math.min(i1, i2))), b = Math.min(d.nen.length - 1, Math.floor(Math.max(i1, i2)));
+      if (b < a) return null;
+      const tuan = d.khungTG === "W";
+      const denNgay = tuan ? new Date(Date.parse(`${d.nen[b].t}T00:00:00Z`) + 6 * 86400e3).toISOString().slice(0, 10) : d.nen[b].t;
+      const chon = chonNenChoHoSo({ nenBieuDo: d.nen, nenGio: d.nenGio, tuNgay: d.nen[a].t, denNgay, soNgayMoiNen: tuan ? 7 : 1 });
+      const hs = tinhHoSoKhoiLuong(chon.nen, { soHang });
+      return hs ? { ...hs, nguon: chon.nguon } : null;
+    };
+    s.tinhHoSo = tinh;
+    s.lopVe.datNguonHoSo((i1, i2) => tinh(i1, i2, 48));
+    if (!bat.vp) {
+      s.lopVe.datHoSo(null);
+      return;
+    }
+    // Ho so cua VUNG DANG XEM: tinh lai (co tre 120 ms) moi khi keo / thu phong
+    let hen = null;
+    const capNhat = () => {
+      const r = s.chart.timeScale().getVisibleLogicalRange();
+      if (!r) return;
+      const cao = s.chart.paneSize ? s.chart.paneSize(0).height : 400;
+      s.lopVe.datHoSo(tinh(r.from, r.to, Math.max(30, Math.min(120, Math.round(cao / 5)))));
+    };
+    const khiDoi = () => {
+      clearTimeout(hen);
+      hen = setTimeout(capNhat, 120);
+    };
+    capNhat();
+    s.chart.timeScale().subscribeVisibleLogicalRangeChange(khiDoi);
+    return () => {
+      clearTimeout(hen);
+      s.chart.timeScale().unsubscribeVisibleLogicalRangeChange(khiDoi);
+    };
+  }, [bat.vp, nen, nenGioCuaMa, khungTG]);
 
   // 2. Tai gia lich su khi doi ma / khung thoi gian, hoac lam moi (lanThu, xem 2b) - khoa KHONG
   // gom lanThu de lam moi trong luc da co du lieu cu khong lam bieu do nhap nhay ve trang thai "dang tai".
@@ -706,6 +775,8 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           <span>
             {congCu === "gapKhuc" ? (
               <>Đường dẫn: bấm <b>chuột trái</b> để thêm từng đoạn, <b>chuột phải</b> (hoặc bấm đúp / Enter) để kết thúc. </>
+            ) : congCu === "frvp" ? (
+              <>Volume Profile vùng chọn: bấm nến <b>bắt đầu</b> rồi bấm nến <b>kết thúc</b> (hoặc bấm - kéo - thả). </>
             ) : (
               <>Đang vẽ: bấm 2 lần hoặc bấm - kéo - thả. </>
             )}
@@ -776,7 +847,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
 
       <p className="px-3 py-2 text-[11px] border-t" style={{ borderColor: VIEN, color: MUTED }}>
         Giá đã điều chỉnh cổ tức/thưởng cổ phiếu (giống dữ liệu AmiBroker), khối lượng khớp lệnh; chỉ báo tính giống hệ thống tín hiệu (Ichimoku 9-17-33, mây dịch 26
-        phiên, đường cân bằng dài hạn 65/129); EMA, Bollinger, RSI, MACD, Stochastic là chỉ báo tham khảo thông dụng. Hình vẽ lưu trên trình duyệt này theo từng mã và khung thời gian. Trong phiên, nến hôm nay cập nhật theo giá khớp thực tế, web tự làm mới mỗi 30 giây, không dùng để đặt lệnh khớp từng giây.
+        phiên, đường cân bằng dài hạn 65/129); EMA, Bollinger, RSI, MACD, Stochastic là chỉ báo tham khảo thông dụng. Volume Profile là ước lượng: khối lượng mỗi nến chia đều theo khoảng giá của nến đó (dùng nến 1 giờ khi có, từ khoảng 10/2023; trước đó dùng nến của biểu đồ), không phải dữ liệu khớp lệnh theo từng mức giá. Hình vẽ lưu trên trình duyệt này theo từng mã và khung thời gian. Trong phiên, nến hôm nay cập nhật theo giá khớp thực tế, web tự làm mới mỗi 30 giây, không dùng để đặt lệnh khớp từng giây.
       </p>
     </div>
   );

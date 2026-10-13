@@ -1,6 +1,6 @@
 // LOP VE (cong cu ke ve) tren bieu do ky thuat (2026-10-13, nang cap cung ngay): canvas phu len bieu do lightweight-charts, luu hinh theo (chi so nen logic, gia) nen khong lech khi keo / thu phong.
 // Khong phai React: BieuDoKyThuat tao 1 doi tuong LopVe sau khi tao chart, chi goi cac ham datXxx; moi thay doi (them / sua / xoa) goi onThayDoi(danhSach) de React luu localStorage.
-// Cong cu: xuHuong, tia, ngang, doc, chuNhat, fib, thuoc, mui (mui ten), chu (ghi chu), kenh (kenh song song, 3 diem), gapKhuc (duong dan: bam trai them tung doan, chuot phai / bam dup / Enter ket thuc).
+// Cong cu: xuHuong, tia, ngang, doc, chuNhat, fib, thuoc, mui (mui ten), chu (ghi chu), kenh (kenh song song, 3 diem), frvp (Volume Profile cua vung chon: 2 diem = 2 mep thoi gian), gapKhuc (duong dan: bam trai them tung doan, chuot phai / bam dup / Enter ket thuc).
 // Cach ve: bam 2 lan, HOAC bam - keo - tha (nhu TradingView). Giu Space (hoac chuot giua) de keo bieu do khi dang chon cong cu. Esc thoat.
 // Chinh sua: bam vao hinh de chon, keo than / dau mut; thanh nho hien canh hinh (do day / nhan ban / xoa); Delete xoa; chuot phai chon; Ctrl+Z hoan tac, Ctrl+Y / Ctrl+Shift+Z lam lai.
 import { soVN, pctVN } from "@/lib/soVN";
@@ -54,6 +54,11 @@ export class LopVe {
     this.huy = false;
     this.ls = [JSON.stringify([])];
     this.vt = 0;
+    // VOLUME PROFILE: hoSo = ho so cua vung dang xem (React tinh roi dua vao); nguonHoSo(i1, i2) = ham tinh ho so cho hinh "frvp" (vung chon)
+    this.hoSo = null;
+    this.nguonHoSo = null;
+    this.pbHoSo = 0;
+    this.boNhoHoSo = new Map();
     this.canvas = document.createElement("canvas");
     Object.assign(this.canvas.style, { position: "absolute", inset: "0", pointerEvents: "none", zIndex: "5" });
     khung.appendChild(this.canvas);
@@ -101,6 +106,18 @@ export class LopVe {
   }
   datNen(nen) {
     this.nen = nen || [];
+  }
+  // Ho so khoi luong cua vung dang xem (null = tat). Ve o mep phai cua so gia.
+  datHoSo(hs) {
+    this.hoSo = hs || null;
+    this._ve(true);
+  }
+  // Ham (i1, i2) => ho so khoi luong cho khoang nen [i1, i2] - dung cho hinh "frvp". Goi lai moi khi du lieu doi de xoa bo nho dem.
+  datNguonHoSo(fn) {
+    this.nguonHoSo = fn || null;
+    this.pbHoSo++;
+    this.boNhoHoSo.clear();
+    this._ve(true);
   }
   datCongCu(c) {
     this.congCu = c || null;
@@ -303,6 +320,13 @@ export class LopVe {
 
   // hit test mot hinh: tra ve { cham: 'p1'|'p2'|'p3'|'than' } hoac null
   _hit(h, x, y) {
+    if (h.loai === "frvp") {
+      const k = this._khungFrvp(h);
+      if (!k) return null;
+      if (Math.hypot(x - k.a.x, y - k.yGiua) <= this.tol + 2) return { cham: "p1" };
+      if (Math.hypot(x - k.b.x, y - k.yGiua) <= this.tol + 2) return { cham: "p2" };
+      return x >= k.x1 - this.tol && x <= k.x2 + this.tol && y >= k.yTren - this.tol && y <= k.yDuoi + this.tol ? { cham: "than" } : null;
+    }
     if (h.loai === "gapKhuc") {
       const px = (h.ds || []).map((p) => this._diemPx(p));
       for (let k = 0; k < px.length; k++) if (px[k] && Math.hypot(x - px[k].x, y - px[k].y) <= this.tol + 2) return { cham: `d${k}` };
@@ -678,6 +702,84 @@ export class LopVe {
     this.thanh.style.top = `${Math.max(4, Math.min(top, H - 34))}px`;
   }
 
+  // ---------- volume profile ----------
+  _hoSoHinh(h) {
+    if (!this.nguonHoSo || !h.p2) return null;
+    const i1 = Math.round(Math.min(h.p1.i, h.p2.i)), i2 = Math.round(Math.max(h.p1.i, h.p2.i));
+    const khoa = `${i1}|${i2}|${this.pbHoSo}`;
+    if (this.boNhoHoSo.has(khoa)) return this.boNhoHoSo.get(khoa);
+    let hs = null;
+    try {
+      hs = this.nguonHoSo(i1, i2);
+    } catch {
+      hs = null;
+    }
+    if (this.boNhoHoSo.size > 60) this.boNhoHoSo.clear();
+    this.boNhoHoSo.set(khoa, hs);
+    return hs;
+  }
+  // Khung hinh hoc cua hinh "frvp": 2 mep doc + dai gia cua ho so (de ve va de bat chuot)
+  _khungFrvp(h) {
+    const a = this._diemPx(h.p1), b = h.p2 ? this._diemPx(h.p2) : null;
+    if (!a || !b) return null;
+    const hs = this._hoSoHinh(h);
+    let yTren = Math.min(a.y, b.y), yDuoi = Math.max(a.y, b.y);
+    if (hs) {
+      const y1 = this._y(hs.giaCao), y2 = this._y(hs.giaThap);
+      if (y1 != null && y2 != null) {
+        yTren = y1;
+        yDuoi = y2;
+      }
+    }
+    return { a, b, hs, x1: Math.min(a.x, b.x), x2: Math.max(a.x, b.x), yTren, yDuoi, yGiua: (yTren + yDuoi) / 2 };
+  }
+  // Ve 1 ho so: cac thanh ngang (xanh = KL nen tang, do = KL nen giam; trong vung gia tri dam hon), duong POC, VAH, VAL.
+  //   neoPhai = true : thanh moc tu xGoc keo sang TRAI (ho so vung dang xem, mep phai cua so gia), duong POC / VAH / VAL chay het be ngang [xDuong1, xDuong2]
+  //   neoPhai = false: thanh moc tu xGoc keo sang PHAI (ho so vung chon)
+  _veHoSo(ctx, hs, { xGoc, rongToiDa, neoPhai, xDuong1, xDuong2, nhanTrai }) {
+    if (!hs || !(hs.klLonNhat > 0)) return;
+    for (let k = 0; k < hs.hang.length; k++) {
+      const r = hs.hang[k];
+      if (!(r.kl > 0)) continue;
+      const y1 = this._y(r.den), y2 = this._y(r.tu);
+      if (y1 == null || y2 == null) continue;
+      const cao = Math.max(1, y2 - y1 - (y2 - y1 > 3 ? 1 : 0));
+      const trongVA = k >= hs.iVal && k <= hs.iVah;
+      const alpha = k === hs.iPoc ? 0.85 : trongVA ? 0.5 : 0.22;
+      const wT = (r.tang / hs.klLonNhat) * rongToiDa, wG = (r.giam / hs.klLonNhat) * rongToiDa;
+      ctx.fillStyle = `rgba(38,166,154,${alpha})`;
+      ctx.fillRect(neoPhai ? xGoc - wT : xGoc, y1, wT, cao);
+      ctx.fillStyle = `rgba(239,83,80,${alpha})`;
+      ctx.fillRect(neoPhai ? xGoc - wT - wG : xGoc + wT, y1, wG, cao);
+    }
+    const duong = (gia, mau, net, nhan) => {
+      const y = this._y(gia);
+      if (y == null) return;
+      ctx.strokeStyle = mau;
+      ctx.lineWidth = nhan === "POC" ? 1.5 : 1;
+      ctx.setLineDash(net);
+      ctx.beginPath();
+      ctx.moveTo(xDuong1, y);
+      ctx.lineTo(xDuong2, y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font = "10px 'JetBrains Mono', monospace";
+      ctx.textBaseline = "middle";
+      const chu = `${nhan} ${soVN(gia, 2, true)}`;
+      const w = ctx.measureText(chu).width;
+      const x = nhanTrai != null ? nhanTrai : xGoc - rongToiDa - w - 8;
+      ctx.fillStyle = this.mauNen;
+      ctx.globalAlpha = 0.75;
+      ctx.fillRect(x - 2, y - 13, w + 4, 12);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = mau;
+      ctx.fillText(chu, x, y - 7);
+    };
+    duong(hs.vah, this.mauChu, [3, 3], "VAH");
+    duong(hs.val, this.mauChu, [3, 3], "VAL");
+    duong(hs.poc, "#F6C544", [], "POC");
+  }
+
   // ---------- ve ----------
   _ve(ep) {
     if (this.huy || !this.rong) return;
@@ -693,9 +795,26 @@ export class LopVe {
     ctx.beginPath();
     ctx.rect(0, 0, W, H);
     ctx.clip();
+    if (this.hoSo) {
+      const rongToiDa = Math.min(W * 0.28, 260);
+      this._veHoSo(ctx, this.hoSo, { xGoc: W, rongToiDa, neoPhai: true, xDuong1: 0, xDuong2: W });
+      // ghi nguon du lieu (trung thuc: day la uoc luong, khong phai du lieu khop lenh tung muc gia)
+      const chu = this.hoSo.nguon === "gio" ? "KL theo giá · nến 1 giờ" : this.hoSo.nguon === "ghep" ? "KL theo giá · nến 1 giờ + nến biểu đồ" : "KL theo giá · ước lượng từ nến biểu đồ";
+      ctx.font = "10px 'Inter', sans-serif";
+      ctx.textBaseline = "middle";
+      const w = ctx.measureText(chu).width;
+      ctx.fillStyle = this.mauNen;
+      ctx.globalAlpha = 0.75;
+      // dat o goc duoi phai cua so gia (goc tren da co dong chu thich gia cua bieu do)
+      ctx.fillRect(W - w - 10, H - 18, w + 8, 14);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = this.mauChu;
+      ctx.fillText(chu, W - w - 6, H - 11);
+    }
     const ds = this.dangVe ? [...this.hinh, { id: "_tam", ...this.dangVe, mau: this.mau, tam: true }] : this.hinh;
     for (const h of ds) this._veHinh(ctx, h, W, H);
     ctx.restore();
+    if (this.hoSo) this._nhanGia(ctx, { p1: { p: this.hoSo.poc }, mau: "#F6C544" }, W);
     // nhan gia o truc phai cho duong ngang
     for (const h of ds) if (h.loai === "ngang") this._nhanGia(ctx, h, W);
     this._datThanh(W, H, ds);
@@ -762,6 +881,36 @@ export class LopVe {
         ctx.strokeRect(a.x - 4, a.y - 11, w + 8, 22);
         ctx.setLineDash([]);
         diem(a);
+      }
+      return;
+    }
+    if (h.loai === "frvp") {
+      const k = this._khungFrvp(h);
+      if (!k) return;
+      const rong = k.x2 - k.x1;
+      ctx.globalAlpha = 0.05;
+      ctx.fillStyle = h.mau;
+      ctx.fillRect(k.x1, k.yTren, rong, k.yDuoi - k.yTren);
+      ctx.globalAlpha = 1;
+      ctx.strokeStyle = h.mau;
+      ctx.lineWidth = chon ? 1.5 : 1;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath();
+      ctx.moveTo(k.x1, k.yTren);
+      ctx.lineTo(k.x1, k.yDuoi);
+      ctx.moveTo(k.x2, k.yTren);
+      ctx.lineTo(k.x2, k.yDuoi);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      if (k.hs) this._veHoSo(ctx, k.hs, { xGoc: k.x1, rongToiDa: Math.max(30, rong * 0.85), neoPhai: false, xDuong1: k.x1, xDuong2: Math.max(k.x2, k.x1 + 30), nhanTrai: k.x1 + 4 });
+      else if (!h.tam) {
+        ctx.fillStyle = this.mauChu;
+        ctx.font = "11px 'Inter', sans-serif";
+        ctx.fillText("Không đủ dữ liệu khối lượng", k.x1 + 6, k.yGiua);
+      }
+      if (chon || h.tam) {
+        diem({ x: k.a.x, y: k.yGiua });
+        diem({ x: k.b.x, y: k.yGiua });
       }
       return;
     }
