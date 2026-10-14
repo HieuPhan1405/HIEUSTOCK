@@ -45,7 +45,9 @@ const MAC_DINH = {
   rsiKieuDem: "docTatCa",
   mfiVungDem: 10,
   trongSoDiem: { trend: 1.5, mf: 1.2, mom: 1.0 }, // ti trong diem (AFL: Trend 1,5 / MF 1,2 / Mom 1,0)
-  rsiTrenTheoNhom: null, // chi nghien cuu: { VN30: 72, Midcap: 80, Smallcap: 82 } - nguong RSI qua mua rieng tung nhom von hoa (null = dung chung rsiTren)
+  // NGUONG RSI QUA MUA THEO NHOM (14/10/2026, Hieu chot): bluechips VN30 va chi so 70, Midcap / Smallcap / ma khac 75 (midcap hay duoc keo manh hon, RSI > 70 chua phai dinh).
+  // Backtest: gan nhu khong doi ket qua chung (nguong qua mua it quyet dinh lenh). AFL 7/8/9 CHUA doi theo. Dat null de dung chung rsiTren = 70.
+  rsiTrenTheoNhom: { VN30: 70, ChiSo: 70, Midcap: 75, Smallcap: 75, Khac: 75 },
   tatCongKhoiLuongNgayDau: false, // chi nghien cuu: true = bo cong khoi luong ngay dau (AFL khong co)
   fvgLookback: 15,
   nguongDiemFVGMem: 0.6,
@@ -159,7 +161,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     rsi: rsiArr,
     mfi: mfiArr,
     relVol,
-    momCauHinh: { rsiTren: p.rsiTrenTheoNhom?.[phanLoaiVonHoa(ma) ?? "Khac"] ?? p.rsiTren, rsiDuoi: p.rsiDuoi, vungDem: p.rsiVungDem, kieuDem: p.rsiKieuDem },
+    momCauHinh: { rsiTren: p.rsiTrenTheoNhom?.[ma === "VNINDEX" ? "ChiSo" : phanLoaiVonHoa(ma) ?? "Khac"] ?? p.rsiTren, rsiDuoi: p.rsiDuoi, vungDem: p.rsiVungDem, kieuDem: p.rsiKieuDem },
     mfiVungDem: p.mfiVungDem,
     trongSo: p.trongSoDiem,
   });
