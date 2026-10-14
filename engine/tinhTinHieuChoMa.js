@@ -38,12 +38,10 @@ const MAC_DINH = {
   nguongDiemBreakout: 1.0,
   rsiTren: 70,
   rsiDuoi: 30,
-  // DIEM TUYEN TINH (14/10/2026): 3 vach RSI (30 / 50 / 70) va 3 vach MFI (20 / 50 / 80) KHONG con la bac thang cung ma noi doc +- 10 diem (RSI 69,9 va 70,8 chi lech ~0,05 diem
-  // thay vi 1 diem). Ly do: AmiBroker va web lech RSI < 1 diem lam ANV vao lenh khac ngay (gia vao / cat lo lech). Backtest 2013-2026: lai TB +0,29% -> +0,39%, PF 1,09 -> 1,12, nhung
-  // ~23% lenh doi / mat so voi bac thang. LUU Y: AFL 7/8/9 CHUA doi theo - phai sua cung cong thuc truoc khi doi chieu AmiBroker. Muon ve bac thang cu: rsiVungDem: 0, mfiVungDem: 0.
-  rsiVungDem: 10,
+  // DIEM BAC THANG CUNG nhu AFL (14/10/2026: da thu diem tuyen tinh +-10 cho RSI / MFI roi BO theo y Hieu; xem memory project-diem-tuyen-tinh-rsi-mfi).
+  rsiVungDem: 0, // 0 = bac thang cung nhu AFL (14/10/2026 Hieu bo diem tuyen tinh +-10; muon bat lai: rsiVungDem 10 + rsiKieuDem "docTatCa" + mfiVungDem 10)
   rsiKieuDem: "docTatCa",
-  mfiVungDem: 10,
+  mfiVungDem: 0,
   trongSoDiem: { trend: 1.5, mf: 1.2, mom: 1.0 }, // ti trong diem (AFL: Trend 1,5 / MF 1,2 / Mom 1,0)
   // NGUONG RSI QUA MUA THEO NHOM (14/10/2026, Hieu chot): bluechips VN30 va chi so 70, Midcap / Smallcap / ma khac 75 (midcap hay duoc keo manh hon, RSI > 70 chua phai dinh).
   // Backtest: gan nhu khong doi ket qua chung (nguong qua mua it quyet dinh lenh). AFL 7/8/9 CHUA doi theo. Dat null de dung chung rsiTren = 70.
