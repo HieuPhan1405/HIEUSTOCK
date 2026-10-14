@@ -36,11 +36,14 @@ const MAC_DINH = {
   boQuaADXNeuDiemManh: 2.0,
   cheDoFVG: "Thong minh",
   nguongDiemBreakout: 1.0,
-  rsiTren: 70, // nguong RSI qua mua (diem dong luc -0,5) - chi doi de NGHIEN CUU, khop AFL 70
+  rsiTren: 70,
   rsiDuoi: 30,
-  rsiVungDem: 0, // 0 = ranh gioi cung (AFL). > 0: vung dem quanh nguong (xem tinhMomTuRSI)
-  rsiKieuDem: "cung",
-  mfiVungDem: 0, // > 0: ba vach MFI (20 / 50 / 80) noi doc +- vungDem (chi nghien cuu)
+  // DIEM TUYEN TINH (14/10/2026): 3 vach RSI (30 / 50 / 70) va 3 vach MFI (20 / 50 / 80) KHONG con la bac thang cung ma noi doc +- 10 diem (RSI 69,9 va 70,8 chi lech ~0,05 diem
+  // thay vi 1 diem). Ly do: AmiBroker va web lech RSI < 1 diem lam ANV vao lenh khac ngay (gia vao / cat lo lech). Backtest 2013-2026: lai TB +0,29% -> +0,39%, PF 1,09 -> 1,12, nhung
+  // ~23% lenh doi / mat so voi bac thang. LUU Y: AFL 7/8/9 CHUA doi theo - phai sua cung cong thuc truoc khi doi chieu AmiBroker. Muon ve bac thang cu: rsiVungDem: 0, mfiVungDem: 0.
+  rsiVungDem: 10,
+  rsiKieuDem: "docTatCa",
+  mfiVungDem: 10,
   fvgLookback: 15,
   nguongDiemFVGMem: 0.6,
   soPhienBanXacNhan: 3,
