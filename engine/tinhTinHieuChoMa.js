@@ -44,6 +44,7 @@ const MAC_DINH = {
   rsiVungDem: 10,
   rsiKieuDem: "docTatCa",
   mfiVungDem: 10,
+  trongSoDiem: { trend: 1.5, mf: 1.2, mom: 1.0 }, // ti trong diem (AFL: Trend 1,5 / MF 1,2 / Mom 1,0)
   tatCongKhoiLuongNgayDau: false, // chi nghien cuu: true = bo cong khoi luong ngay dau (AFL khong co)
   fvgLookback: 15,
   nguongDiemFVGMem: 0.6,
@@ -159,6 +160,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     relVol,
     momCauHinh: { rsiTren: p.rsiTren, rsiDuoi: p.rsiDuoi, vungDem: p.rsiVungDem, kieuDem: p.rsiKieuDem },
     mfiVungDem: p.mfiVungDem,
+    trongSo: p.trongSoDiem,
   });
 
   // ---- Cong + RS so voi VNINDEX ----

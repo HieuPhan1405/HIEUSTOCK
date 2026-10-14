@@ -52,7 +52,7 @@ export function tinhMomTuRSI(rsi, { rsiTren = 70, rsiDuoi = 30, vungDem = 0, kie
   return mom;
 }
 
-export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kijun, adx, diPlus, diMinus, rsi, mfi, relVol, momCauHinh, mfiVungDem = 0 }) {
+export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kijun, adx, diPlus, diMinus, rsi, mfi, relVol, momCauHinh, mfiVungDem = 0, trongSo = { trend: 1.5, mf: 1.2, mom: 1.0 } }) {
   const n = close.length;
   const trendScore = new Array(n).fill(null);
   const momScore = new Array(n).fill(null);
@@ -96,7 +96,7 @@ export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kiju
     }
     mfScore[i] = mf + phanRelVol;
 
-    totalScore[i] = trendScore[i] * 1.5 + mfScore[i] * 1.2 + momScore[i] * 1.0;
+    totalScore[i] = trendScore[i] * trongSo.trend + mfScore[i] * trongSo.mf + momScore[i] * trongSo.mom;
   }
 
   return { trendScore, momScore, mfScore, totalScore };
