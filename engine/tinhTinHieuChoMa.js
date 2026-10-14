@@ -44,6 +44,7 @@ const MAC_DINH = {
   rsiVungDem: 10,
   rsiKieuDem: "docTatCa",
   mfiVungDem: 10,
+  tatCongKhoiLuongNgayDau: false, // chi nghien cuu: true = bo cong khoi luong ngay dau (AFL khong co)
   fvgLookback: 15,
   nguongDiemFVGMem: 0.6,
   soPhienBanXacNhan: 3,
@@ -141,6 +142,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     { close, volume, relVol },
     { volMinPctTB20: p.volMinPctTB20, volMinPctHomTruoc: p.volMinPctHomTruoc, pocketPivotNhinLai: p.pocketPivotNhinLai }
   );
+  if (p.tatCongKhoiLuongNgayDau) volumeGateNgayDau.fill(true); // CHI NGHIEN CUU (mac dinh false): bo cong khoi luong ngay dau
   const { trendScore, momScore, mfScore, totalScore } = tinhDiem({
     close,
     cloudTop,
