@@ -6,7 +6,7 @@
 //   1. Luc khoi dong: lay TOAN BO lich su gia qua REST (giong chayPipelineDayDu.mjs) 1 LAN.
 //   2. Ket noi WebSocket, subscribe nen "1D" cho toan bo vu tru quet + VNINDEX.
 //   3. Moi khi co nen moi ve (bat ky ma nao) -> cap nhat vao bo nho, danh dau "co thay doi".
-//   4. Cu moi CHU_KY_TINH_LAI_MS (mac dinh 10 giay) - NEU co thay doi tu lan truoc - TINH LAI TOAN
+//   4. Cu moi CHU_KY_TINH_LAI_MS (mac dinh 30 giay) - NEU co thay doi tu lan truoc - TINH LAI TOAN
 //      BO (giong AmiBroker, an toan hon tinh tang dan - xem plan) roi ghi de 1 file CSV cuc bo.
 //
 // AN TOAN - giong het chayPipelineDayDu.mjs: MAC DINH CHI ghi CSV cuc bo, KHONG tu POST len web.
@@ -35,7 +35,8 @@ if (!apiKey || !apiSecret) {
   process.exit(1);
 }
 
-const CHU_KY_TINH_LAI_MS = 10000; // 10s - du "gan real-time", tranh tinh lai qua day (~389 ma tinh lai TOAN BO moi lan)
+// 30s (14/10/2026, doi tu 10s): moi lan upload web doc lai ~0,3 MB tu DB + xoa bo nho dem -> 10s lam het han muc truyen du lieu mang cua Neon (5,55 GB / 14 ngay). 30s giam ~3 lan.
+const CHU_KY_TINH_LAI_MS = 30000; // 30s - tranh tinh lai qua day (~389 ma tinh lai TOAN BO moi lan)
 // Checklist bat day (VN100) chi phu thuoc du lieu NGAY (HHV252/MA200/RSI...), khong can do tuoi
 // nhu tin hieu MUA/BAN chinh - tinh lai/upload rieng theo chu ky THUA hon (15 phut) de tranh ghi DB
 // (upload-bat-day) qua day trong khi tin hieu chinh van tinh lai moi 10s nhu binh thuong.
