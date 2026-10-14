@@ -36,6 +36,10 @@ const MAC_DINH = {
   boQuaADXNeuDiemManh: 2.0,
   cheDoFVG: "Thong minh",
   nguongDiemBreakout: 1.0,
+  rsiTren: 70, // nguong RSI qua mua (diem dong luc -0,5) - chi doi de NGHIEN CUU, khop AFL 70
+  rsiDuoi: 30,
+  rsiVungDem: 0, // 0 = ranh gioi cung (AFL). > 0: vung dem quanh nguong (xem tinhMomTuRSI)
+  rsiKieuDem: "cung",
   fvgLookback: 15,
   nguongDiemFVGMem: 0.6,
   soPhienBanXacNhan: 3,
@@ -147,6 +151,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     rsi: rsiArr,
     mfi: mfiArr,
     relVol,
+    momCauHinh: { rsiTren: p.rsiTren, rsiDuoi: p.rsiDuoi, vungDem: p.rsiVungDem, kieuDem: p.rsiKieuDem },
   });
 
   // ---- Cong + RS so voi VNINDEX ----

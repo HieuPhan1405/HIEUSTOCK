@@ -3,12 +3,41 @@
 // chuc nen dau tien), thanh phan diem tuong ung tra ve 0 (khong cong/tru) thay vi coi nhu qua
 // nguong - JS coerce null thanh 0 khi so sanh (">"/"<") se cho ket qua SAI (vd "gia > null" luon
 // dung), nen phai kiem tra null tuong minh truoc moi phep so sanh trong file nay.
-export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kijun, adx, diPlus, diMinus, rsi, mfi, relVol }) {
+// DIEM DONG LUONG tu RSI. Mac dinh (rsiTren 70, rsiDuoi 30, khong vung dem) = AFL goc: RSI > 70 -> -0,5; < 30 -> +0,5; con lai > 50 -> +0,5, khac -> -0,5.
+// Tuy chon NGHIEN CUU (khong dung production, chi de backtest - xem engine/dich-vu/nghienCuuVungDemRSI.mjs): vungDem > 0 lam ranh gioi tren / duoi mem:
+//   kieu "trungTinh": RSI nam trong (nguong - vungDem, nguong + vungDem) -> diem 0 (khong cong / tru);
+//   kieu "tre" (hysteresis): doi trang thai chi khi vuot nguong +- vungDem, o giua giu trang thai cua nen truoc.
+export function tinhMomTuRSI(rsi, { rsiTren = 70, rsiDuoi = 30, vungDem = 0, kieuDem = "cung" } = {}) {
+  const n = rsi.length;
+  const mom = new Array(n).fill(-0.5);
+  let quaMua = false, quaBan = false;
+  for (let i = 0; i < n; i++) {
+    const r = rsi[i];
+    if (r == null) { mom[i] = -0.5; continue; }
+    const giua = r > 50 ? 0.5 : -0.5;
+    if (vungDem <= 0 || kieuDem === "cung") {
+      mom[i] = r > rsiTren ? -0.5 : r < rsiDuoi ? 0.5 : giua;
+    } else if (kieuDem === "trungTinh") {
+      if (Math.abs(r - rsiTren) < vungDem || Math.abs(r - rsiDuoi) < vungDem) mom[i] = 0;
+      else mom[i] = r >= rsiTren + vungDem ? -0.5 : r <= rsiDuoi - vungDem ? 0.5 : giua;
+    } else {
+      if (r > rsiTren + vungDem) quaMua = true;
+      else if (r < rsiTren - vungDem) quaMua = false;
+      if (r < rsiDuoi - vungDem) quaBan = true;
+      else if (r > rsiDuoi + vungDem) quaBan = false;
+      mom[i] = quaMua ? -0.5 : quaBan ? 0.5 : giua;
+    }
+  }
+  return mom;
+}
+
+export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kijun, adx, diPlus, diMinus, rsi, mfi, relVol, momCauHinh }) {
   const n = close.length;
   const trendScore = new Array(n).fill(null);
   const momScore = new Array(n).fill(null);
   const mfScore = new Array(n).fill(null);
   const totalScore = new Array(n).fill(null);
+  const momTuRSI_ = tinhMomTuRSI(rsi, momCauHinh);
 
   for (let i = 0; i < n; i++) {
     const c = close[i];
@@ -30,13 +59,7 @@ export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kiju
     const trend = phanMay + phanCB + phanTenkanKijun + phanADX;
     trendScore[i] = trend;
 
-    let mom = -0.5;
-    if (rsi[i] != null) {
-      if (rsi[i] > 70) mom = -0.5;
-      else if (rsi[i] < 30) mom = 0.5;
-      else mom = rsi[i] > 50 ? 0.5 : -0.5;
-    }
-    momScore[i] = mom;
+    momScore[i] = momTuRSI_[i];
 
     let mf = -0.5;
     if (mfi[i] != null) {
