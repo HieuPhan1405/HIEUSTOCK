@@ -71,7 +71,7 @@ function nhanKetThucGoc(x) {
 
 function The({ so, nhan, phu, mau, may }) {
   return (
-    <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
+    <div className="rounded-2xl border p-4 text-center h-full" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mau }}>
         {so}
       </p>
@@ -117,7 +117,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         </p>
       )}
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-3">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-3">
         <The
           so={tk.soLenh}
           nhan="Lệnh đã đóng"
@@ -139,14 +139,9 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
           }
           mau={tk.tyLeThangGomKhoaLai == null ? MUTED : tk.tyLeThangGomKhoaLai >= 50 ? XANH : DO}
         />
-        <The
-          so={tk.laiTB == null ? "—" : pct(tk.laiTB, 2)}
-          nhan="Lãi/lỗ trung bình mỗi lệnh"
-          may="lai-tb"
-          phu={tk.laiTB == null ? undefined : `≈ ${pct(tk.laiTB - CHI_PHI_UOC_TINH, 2)} sau phí + thuế (~${CHI_PHI_CHU}%/lệnh)`}
-          mau={mauLai(tk.laiTB)}
-        />
-        <The so={tk.phienTB == null ? "—" : `${tk.phienTB.toFixed(0)} phiên`} nhan="Thời gian giữ trung bình" may="so-phien" />
+        <div className="col-span-2 lg:col-span-1">
+          <The so={tk.phienTB == null ? "—" : `${tk.phienTB.toFixed(0)} phiên`} nhan="Thời gian giữ trung bình" may="so-phien" />
+        </div>
       </div>
       {tk.soLenh > 0 && (
         <div className="grid grid-cols-2 gap-4 mb-3">
