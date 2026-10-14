@@ -15,7 +15,9 @@ export function tinhMomTuRSI(rsi, { rsiTren = 70, rsiDuoi = 30, vungDem = 0, kie
     const r = rsi[i];
     if (r == null) { mom[i] = -0.5; continue; }
     const giua = r > 50 ? 0.5 : -0.5;
-    if (vungDem <= 0 || kieuDem === "cung") {
+    if (kieuDem === "quaMua0") {
+      mom[i] = r > rsiTren ? 0 : r < rsiDuoi ? 0.5 : giua; // qua mua chi mat diem cong (0), khong bi tru
+    } else if (vungDem <= 0 || kieuDem === "cung") {
       mom[i] = r > rsiTren ? -0.5 : r < rsiDuoi ? 0.5 : giua;
     } else if (kieuDem === "trungTinh") {
       if (Math.abs(r - rsiTren) < vungDem || Math.abs(r - rsiDuoi) < vungDem) mom[i] = 0;

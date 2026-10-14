@@ -18,6 +18,10 @@ const BIEN_THE = [
   ["Vung dem 68-72, trung tinh", { rsiVungDem: 2, rsiKieuDem: "trungTinh" }],
   ["Vung dem 68-72, hysteresis", { rsiVungDem: 2, rsiKieuDem: "tre" }],
   ["Vung dem 67-73, hysteresis", { rsiVungDem: 3, rsiKieuDem: "tre" }],
+  ["Vung dem 66-74, trung tinh (diem 0)", { rsiVungDem: 4, rsiKieuDem: "trungTinh" }],
+  ["Vung dem 65-75, trung tinh (diem 0)", { rsiVungDem: 5, rsiKieuDem: "trungTinh" }],
+  ["Vung dem 60-80, trung tinh (diem 0)", { rsiVungDem: 10, rsiKieuDem: "trungTinh" }],
+  ["RSI > 70 chi cho 0 diem (khong tru 0,5)", { rsiKieuDem: "quaMua0" }],
   ["Bo han diem dong luc RSI (luon +0,5 neu > 50)", { rsiTren: 101, rsiDuoi: 0 }],
 ];
 
