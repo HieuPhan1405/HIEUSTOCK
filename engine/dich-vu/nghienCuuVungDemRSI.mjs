@@ -58,11 +58,15 @@ function onDinh(goc, bt) { // so voi lenh goc: cung ngay / lech <= 3 phien / mat
   return { cung: (cung / goc.length) * 100, lech: (lech / goc.length) * 100, mat: (mat / goc.length) * 100 };
 }
 
+const nam = (ds, y) => { const g = ds.filter((x) => x.ngay.startsWith(y)); const R = g.map((x) => x.ret), w = R.filter((v) => v > 0), l = R.filter((v) => v <= 0); return { n: g.length, tb: tb(R), thang: (w.length / (R.length || 1)) * 100, pf: -w.reduce((a, b) => a + b, 0) / l.reduce((a, b) => a + b, 0), tong: R.reduce((a, b) => a + b, 0) }; };
+const NAM = process.argv[2] || null; // vd: node nghienCuuVungDemRSI.mjs 2026  -> them cot rieng nam do
+const o0 = (g, d) => { if (g === d) return "-"; const o = onDinh(g.filter((x) => x.ngay.startsWith(NAM)), d); return `cung ngay ${f(o.cung, 0)}% / lech ${f(o.lech, 0)}% / mat ${f(o.mat, 0)}%`; };
 let goc = null;
 console.log(`${"Bien the".padEnd(46)} | ${"n".padStart(5)} | ${"TB%".padStart(5)} | thang | ${"PF".padStart(4)} | sut(cong don %) | truoc 05/2022 | tu 05/2022 (n, TB, PF) | on dinh so voi goc: cung ngay / lech<=3 / mat`);
 for (const [ten, tsm] of BIEN_THE) {
   const ds = chay(tsm); if (!goc) goc = ds;
   const s = so(ds), o = ds === goc ? null : onDinh(goc, ds);
+  if (NAM) { const y = nam(ds, NAM), y0 = nam(goc, NAM); console.log(`${ten.padEnd(46)} | ${NAM}: n=${String(y.n).padStart(3)} | TB ${f(y.tb).padStart(6)}% | thang ${f(y.thang, 0)}% | PF ${f(y.pf)} | tong ${f(y.tong, 0).padStart(5)}% (goc ${f(y0.tong, 0)}%) | ${o0(goc, ds)}`); continue; }
   console.log(`${ten.padEnd(46)} | ${String(s.n).padStart(5)} | ${f(s.tb).padStart(5)} | ${f(s.thang, 0).padStart(4)}% | ${f(s.pf).padStart(4)} | ${f(s.dd, 0).padStart(7)}        | ${f(s.tbKP).padStart(6)}%      | ${String(s.nKC).padStart(4)}, ${f(s.tbKC).padStart(5)}%, ${f(s.pfKC)} | ${o ? `${f(o.cung, 0)}% / ${f(o.lech, 0)}% / ${f(o.mat, 0)}%` : "-"}`);
 }
 process.exit(0);
