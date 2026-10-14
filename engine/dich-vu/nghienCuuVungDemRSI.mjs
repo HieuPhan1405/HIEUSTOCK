@@ -22,6 +22,8 @@ const BIEN_THE = [
   ["Vung dem 65-75, trung tinh (diem 0)", { rsiVungDem: 5, rsiKieuDem: "trungTinh" }],
   ["Vung dem 60-80, trung tinh (diem 0)", { rsiVungDem: 10, rsiKieuDem: "trungTinh" }],
   ["RSI > 70 chi cho 0 diem (khong tru 0,5)", { rsiKieuDem: "quaMua0" }],
+  ["Doc lien tuc 68-72 (khong co vach cung)", { rsiVungDem: 2, rsiKieuDem: "doc" }],
+  ["Doc lien tuc 65-75", { rsiVungDem: 5, rsiKieuDem: "doc" }],
   ["Bo han diem dong luc RSI (luon +0,5 neu > 50)", { rsiTren: 101, rsiDuoi: 0 }],
 ];
 

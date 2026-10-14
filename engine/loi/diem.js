@@ -15,7 +15,15 @@ export function tinhMomTuRSI(rsi, { rsiTren = 70, rsiDuoi = 30, vungDem = 0, kie
     const r = rsi[i];
     if (r == null) { mom[i] = -0.5; continue; }
     const giua = r > 50 ? 0.5 : -0.5;
-    if (kieuDem === "quaMua0") {
+    if (kieuDem === "doc" && vungDem > 0) {
+      // doc lien tuc: diem doi dan tu muc "binh thuong" (giua) sang -0,5 trong (rsiTren - vungDem, rsiTren + vungDem); tuong tu phia duoi quanh rsiDuoi (-> +0,5)
+      let m = giua;
+      if (r >= rsiTren + vungDem) m = -0.5;
+      else if (r > rsiTren - vungDem) m = giua + ((r - (rsiTren - vungDem)) / (2 * vungDem)) * (-0.5 - giua);
+      if (r <= rsiDuoi - vungDem) m = 0.5;
+      else if (r < rsiDuoi + vungDem) m = 0.5 + ((r - (rsiDuoi - vungDem)) / (2 * vungDem)) * (giua - 0.5);
+      mom[i] = m;
+    } else if (kieuDem === "quaMua0") {
       mom[i] = r > rsiTren ? 0 : r < rsiDuoi ? 0.5 : giua; // qua mua chi mat diem cong (0), khong bi tru
     } else if (vungDem <= 0 || kieuDem === "cung") {
       mom[i] = r > rsiTren ? -0.5 : r < rsiDuoi ? 0.5 : giua;
