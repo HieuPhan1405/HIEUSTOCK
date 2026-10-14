@@ -151,6 +151,10 @@ ok("he thong da ghi dong (vong 1) -> ket thuc", danhGiaLenhMuaChot({ l: lGMD, ro
   ok("web giu 1 phien, gia duoi gia mua: chua thoat", k.dongMoi.length === 0 && k.capNhat.web_giu_tu === "2026-10-09");
   k = danhGiaLenhMuaChot({ l: lWeb, row: rowVic, ngay: "2026-10-13" });
   ok("web giu 2 phien, chua cham TP1, gia duoi gia mua: THOAT_SOM", k.dongMoi.length === 1 && k.dongMoi[0].ly_do === "THOAT_SOM" && k.dongMoi[0].phan_chot_pct === 100 && k.dongMoi[0].vong === 4 && k.capNhat.trang_thai === "dong", JSON.stringify(k.dongMoi));
+  k = danhGiaLenhMuaChot({ l: lWeb, row: { ...rowVic, diem: 1.6 }, ngay: "2026-10-13" });
+  ok("web giu 2 phien, gia duoi gia mua NHUNG diem da len lai >= 1,25: KHONG thoat som", k.dongMoi.length === 0 && k.capNhat.web_giu === true, JSON.stringify(k.dongMoi));
+  k = danhGiaLenhMuaChot({ l: lWeb, row: { ...rowVic, diem: 1.2 }, ngay: "2026-10-13" });
+  ok("diem 1,2 (chua toi 1,25): van thoat som", k.dongMoi.length === 1 && k.dongMoi[0].ly_do === "THOAT_SOM");
   k = danhGiaLenhMuaChot({ l: lWeb, row: { ...rowVic, gia: 233 }, ngay: "2026-10-13" });
   ok("web giu 2 phien nhung gia tren gia mua: giu tiep", k.dongMoi.length === 0 && k.capNhat.web_giu === true);
   k = danhGiaLenhMuaChot({ l: { ...lWeb, tp_da_cham: "TP1" }, row: rowVic, ngay: "2026-10-13" });
