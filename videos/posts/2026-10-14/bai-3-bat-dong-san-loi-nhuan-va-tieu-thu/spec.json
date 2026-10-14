@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "BẤT ĐỘNG SẢN · QUÝ 3/2026",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Dự báo là ý kiến của VPBankS, có thể sai.",
+ "kicker": "NGÀNH BẤT ĐỘNG SẢN",
+ "title": [
+  "BĐS dân cư: dự báo lợi nhuận Q3 +213,8%,",
+  "nhưng tiêu thụ nhà ở Q3 −36%"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Dự báo LNST Q3 (VPBankS)",
+     "value": "+213,8%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "21.134 tỷ; có thể sai"
+    },
+    {
+     "label": "Hấp thụ nhà ở Q3",
+     "value": "−36%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "6.368 sản phẩm (DXS-FERI)"
+    },
+    {
+     "label": "Nguồn cung mới Q3",
+     "value": "−54%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "12.357 sản phẩm"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Dự báo lợi nhuận",
+     "text": "Ghi nhận khi bàn giao nhà; theo VPBankS, một doanh nghiệp lớn chi phối con số của cả nhóm."
+    },
+    {
+     "head": "Tiêu thụ nhà ở",
+     "text": "Số sản phẩm bán được trong quý: 9 tháng −16%; giá sơ cấp giảm phổ biến 5–20% so với quý 2."
+    },
+    {
+     "head": "Ví dụ giả định",
+     "text": "5 công ty: một lãi 100, bốn lỗ 5 mỗi công ty. Cả nhóm lãi 80, nhưng 4/5 công ty lỗ."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Mình không nói con số này giải thích con số kia."
+  }
+ ],
+ "sources": "VnEconomy 9/10 (VPBankS); Vietstock 13/10 (DXS-FERI)."
+}

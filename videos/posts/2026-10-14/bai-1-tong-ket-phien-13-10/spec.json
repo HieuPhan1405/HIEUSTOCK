@@ -1,0 +1,72 @@
+{
+ "type": "card",
+ "stamp": "PHIÊN 13/10/2026",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 13/10/2026.",
+ "kicker": "TỔNG KẾT PHIÊN 13/10",
+ "title": [
+  "VN-Index chỉ giảm 1,56 điểm,",
+  "nhưng 200 mã giảm",
+  "và chưa tới 100 mã tăng"
+ ],
+ "title_size": 54,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "VN-Index",
+     "value": "1.719,42",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "−1,56 điểm (−0,09%)"
+    },
+    {
+     "label": "HoSE: mã tăng | giảm",
+     "value": "<100 | 200",
+     "tone": "gold",
+     "sub": "69 mã đứng giá"
+    },
+    {
+     "label": "Khối ngoại",
+     "value": "−468 tỷ",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "bán ròng, toàn thị trường"
+    }
+   ]
+  },
+  {
+   "type": "hbars",
+   "title": "VN-Index theo phiên, 5 phiên giảm liên tiếp",
+   "subtitle": "Tổng −39,66 điểm (−2,25%) từ 6/10 đến 13/10",
+   "items": [
+    {
+     "label": "7/10",
+     "value": -0.32
+    },
+    {
+     "label": "8/10",
+     "value": -0.82
+    },
+    {
+     "label": "9/10",
+     "value": -0.22
+    },
+    {
+     "label": "12/10",
+     "value": -0.81
+    },
+    {
+     "label": "13/10",
+     "value": -0.09
+    }
+   ],
+   "decimals": 2
+  },
+  {
+   "type": "note",
+   "text": "Hôm trước (12/10) ngược lại: chỉ số đỏ hơn nhiều, mã tăng nhỉnh hơn mã giảm. Tự doanh mua ròng 21,8 tỷ. Chỉ ghi số đã xảy ra."
+  }
+ ],
+ "sources": "DNSE; VnEconomy, Tạp chí Điện tử & Ứng dụng, Dân trí, Markettimes 13/10."
+}

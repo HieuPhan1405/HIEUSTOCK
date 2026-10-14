@@ -1,0 +1,110 @@
+{
+ "type": "card",
+ "stamp": "VND · QUÝ 2/2026",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 13/10/2026.",
+ "kicker": "VND · CHỨNG KHOÁN",
+ "title": [
+  "VND: lãi quý 2 gấp 2,4 lần,",
+  "môi giới −32%, giá thấp nhất 1 năm"
+ ],
+ "title_size": 50,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "LNST quý 2",
+     "value": "+139%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "883 tỷ (gấp 2,4 lần)"
+    },
+    {
+     "label": "Doanh thu môi giới",
+     "value": "−32%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "quý 2/2026"
+    },
+    {
+     "label": "Doanh thu margin",
+     "value": "+26%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "374 tỷ"
+    }
+   ]
+  },
+  {
+   "type": "lines",
+   "title": "Giá đóng cửa, quy về 100 tại 16/10/2025",
+   "subtitle": "VND và VN-Index, 16/10/2025 → 13/10/2026",
+   "height": 270,
+   "chart": {
+    "series": [
+     {
+      "name": "VND",
+      "color": "gold",
+      "values": [
+       23.13,
+       19.34,
+       18.32,
+       19.05,
+       18.27,
+       15.06,
+       15.74,
+       17.95,
+       18.4,
+       16.95,
+       16.05,
+       13.1,
+       12.9
+      ]
+     },
+     {
+      "name": "VN-Index",
+      "color": "blue",
+      "values": [
+       1766.85,
+       1654.42,
+       1673.66,
+       1893.78,
+       1879.64,
+       1662.54,
+       1854.06,
+       1819.01,
+       1862.08,
+       1777.23,
+       1830.44,
+       1738.97,
+       1719.42
+      ]
+     }
+    ],
+    "xticks": [
+     [
+      0,
+      "16/10/25"
+     ],
+     [
+      5,
+      "30/3"
+     ],
+     [
+      9,
+      "4/8"
+     ],
+     [
+      12,
+      "13/10"
+     ]
+    ]
+   }
+  },
+  {
+   "type": "note",
+   "text": "Hoàn nhập dự phòng 332 tỷ, trích bổ sung 36 tỷ. Bỏ phần chênh ~296 tỷ, LNTT vẫn tăng ~66% (tự tính). VND −44%, VN-Index −2,7% cùng kỳ."
+  }
+ ],
+ "sources": "Vietstock 23/7; Thời báo Tài chính VN, DNSE 21/7; DNSE (giá)."
+}

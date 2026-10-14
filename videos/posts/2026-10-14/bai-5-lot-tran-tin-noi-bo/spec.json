@@ -1,0 +1,39 @@
+{
+ "type": "card",
+ "stamp": "LỘT TRẦN #3",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Không phải tư vấn pháp lý. Ví dụ là số giả định. Ý kiến cá nhân.",
+ "kicker": "LỘT TRẦN NGHỀ MÔI GIỚI #3",
+ "title": [
+  "“Mình có tin nội bộ”:",
+  "nếu là bạn thì sao?"
+ ],
+ "title_size": 58,
+ "blocks": [
+  {
+   "type": "claim",
+   "text": "Thông tin nội bộ: chưa công bố, nếu công bố có thể ảnh hưởng lớn đến giá chứng khoán. Luật cấm dùng và tiết lộ."
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Tin đã công bố chính thức chưa?",
+     "text": "Đã đăng trên trang của sở giao dịch hoặc doanh nghiệp thì không còn là thông tin nội bộ."
+    },
+    {
+     "head": "Chưa công bố, người nhắn lấy từ đâu?",
+     "text": "Tiết lộ thông tin nội bộ là hành vi luật cấm."
+    },
+    {
+     "head": "Tin sai thì ai chịu?",
+     "text": "Ví dụ giả định: dồn 100 triệu, giá −15%, mất 15 triệu, là của tài khoản bạn."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Mình không phải luật sư. Nghi ngờ thì hỏi bộ phận pháp chế của công ty chứng khoán hoặc UBCKNN. Ý kiến cá nhân, không đại diện công ty nào."
+  }
+ ],
+ "sources": "Luật Chứng khoán 54/2019/QH14 (LuatVietnam); UBCKNN; LSVN."
+}

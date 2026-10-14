@@ -1,0 +1,110 @@
+{
+ "type": "card",
+ "stamp": "VJC · QUÝ 2/2026",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 13/10/2026.",
+ "kicker": "VJC · HÀNG KHÔNG",
+ "title": [
+  "VJC: doanh thu quý 2 +71%,",
+  "lợi nhuận −47%"
+ ],
+ "title_size": 58,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Doanh thu hợp nhất Q2",
+     "value": "+71%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "30.499 tỷ"
+    },
+    {
+     "label": "LNST hợp nhất Q2",
+     "value": "−47%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "349 tỷ; riêng mẹ −68%"
+    },
+    {
+     "label": "Bán và thuê lại tàu bay",
+     "value": "39,9%",
+     "tone": "gold",
+     "sub": "doanh thu Q2 (Tuổi Trẻ)"
+    }
+   ],
+   "size": 44
+  },
+  {
+   "type": "lines",
+   "title": "Giá đóng cửa, quy về 100 tại 25/11/2025",
+   "subtitle": "VJC và VN-Index, 25/11/2025 → 13/10/2026",
+   "height": 280,
+   "chart": {
+    "series": [
+     {
+      "name": "VJC",
+      "color": "gold",
+      "values": [
+       168.54,
+       158.46,
+       139.85,
+       134.54,
+       121,
+       137.08,
+       131.62,
+       139.08,
+       139,
+       126.1,
+       124.5,
+       129.6,
+       128.2
+      ]
+     },
+     {
+      "name": "VN-Index",
+      "color": "blue",
+      "values": [
+       1660.36,
+       1751.03,
+       1893.78,
+       1860.14,
+       1647.81,
+       1819.83,
+       1927.94,
+       1791.65,
+       1840.7,
+       1776.46,
+       1853.08,
+       1749.3,
+       1719.42
+      ]
+     }
+    ],
+    "xticks": [
+     [
+      0,
+      "25/11/25"
+     ],
+     [
+      4,
+      "20/3"
+     ],
+     [
+      8,
+      "9/7"
+     ],
+     [
+      12,
+      "13/10"
+     ]
+    ]
+   }
+  },
+  {
+   "type": "note",
+   "text": "Bỏ khoản bán và thuê lại tàu bay, doanh thu tăng ~5% (tự tính, theo số của Tuổi Trẻ). Công ty nêu giá nhiên liệu bay cao."
+  }
+ ],
+ "sources": "Giải trình Vietjet 30/7; VnEconomy 30/7; Tuổi Trẻ 15/8; DNSE (giá)."
+}

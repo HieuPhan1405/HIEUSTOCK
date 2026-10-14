@@ -1,0 +1,109 @@
+{
+ "type": "card",
+ "stamp": "DÒNG TIỀN · PHIÊN 13/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 13/10/2026.",
+ "kicker": "DÒNG TIỀN",
+ "title": [
+  "Tỷ trọng dòng tiền tăng ở chứng khoán",
+  "và công nghệ, nhưng giá các mã giảm"
+ ],
+ "title_size": 46,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "VND (chứng khoán)",
+     "value": "−1,90%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "phiên 13/10"
+    },
+    {
+     "label": "VIX (chứng khoán)",
+     "value": "−1,71%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "phiên 13/10"
+    },
+    {
+     "label": "VNIT (công nghệ)",
+     "value": "−1,44%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "chỉ số ngành"
+    }
+   ]
+  },
+  {
+   "type": "table",
+   "head": [
+    "NHÓM",
+    "TỶ TRỌNG 12/10",
+    "TỶ TRỌNG 13/10"
+   ],
+   "rows": [
+    {
+     "cells": [
+      "Chứng khoán",
+      "giảm",
+      "tăng"
+     ],
+     "arrow": "▲",
+     "tone": "green"
+    },
+    {
+     "cells": [
+      "Công nghệ thông tin",
+      "giảm",
+      "tăng"
+     ],
+     "arrow": "▲",
+     "tone": "green"
+    },
+    {
+     "cells": [
+      "Ngân hàng",
+      "giảm",
+      "tăng"
+     ],
+     "arrow": "▲",
+     "tone": "green"
+    },
+    {
+     "cells": [
+      "Thép",
+      "tăng",
+      "giảm"
+     ],
+     "arrow": "▼",
+     "tone": "red"
+    },
+    {
+     "cells": [
+      "Vận tải",
+      "tăng",
+      "giảm"
+     ],
+     "arrow": "▼",
+     "tone": "red"
+    },
+    {
+     "cells": [
+      "Xây dựng",
+      "tăng",
+      "giảm"
+     ],
+     "arrow": "▼",
+     "tone": "red"
+    }
+   ],
+   "arrow_col": 2
+  },
+  {
+   "type": "note",
+   "text": "Tỷ trọng tăng không cho biết bên mua hay bán mạnh hơn: mỗi giao dịch có cả hai bên. Nhóm mã giảm giá chiếm ~51% giá trị khớp lệnh, nhóm mã tăng ~38%."
+  }
+ ],
+ "sources": "VnEconomy 12/10 và 13/10; Tạp chí Điện tử & Ứng dụng 13/10; DNSE."
+}

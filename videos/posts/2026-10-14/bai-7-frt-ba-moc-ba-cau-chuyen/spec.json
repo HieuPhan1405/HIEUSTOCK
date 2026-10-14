@@ -1,0 +1,102 @@
+{
+ "type": "card",
+ "stamp": "FRT · HẾT PHIÊN 13/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 13/10/2026.",
+ "kicker": "FRT · BÁN LẺ",
+ "title": [
+  "FRT: một cổ phiếu,",
+  "ba mốc, ba câu chuyện"
+ ],
+ "title_size": 58,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Phiên 13/10",
+     "value": "−3,81%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "143,8 nghìn đồng"
+    },
+    {
+     "label": "Từ đáy 22/7",
+     "value": "+37%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "105 → 143,8"
+    },
+    {
+     "label": "Từ đỉnh 2/2",
+     "value": "−14%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "167,1 → 143,8"
+    }
+   ]
+  },
+  {
+   "type": "lines",
+   "title": "Giá đóng cửa, quy về 100 tại 2/2",
+   "subtitle": "FRT và VN-Index, 2/2 → 13/10",
+   "height": 280,
+   "chart": {
+    "series": [
+     {
+      "name": "FRT",
+      "color": "gold",
+      "values": [
+       167.14,
+       160.95,
+       141.9,
+       124.76,
+       123.81,
+       115.5,
+       105,
+       145,
+       129,
+       145,
+       143.8
+      ]
+     },
+     {
+      "name": "VN-Index",
+      "color": "blue",
+      "values": [
+       1806.5,
+       1846.1,
+       1758.96,
+       1863.67,
+       1830.47,
+       1840.7,
+       1668.53,
+       1734.24,
+       1811.15,
+       1759.08,
+       1719.42
+      ]
+     }
+    ],
+    "xticks": [
+     [
+      0,
+      "2/2"
+     ],
+     [
+      6,
+      "22/7"
+     ],
+     [
+      10,
+      "13/10"
+     ]
+    ]
+   }
+  },
+  {
+   "type": "note",
+   "text": "Quý 2: doanh thu +37%, LNST 451 tỷ (+187%), công ty công bố từ tháng 8. Mốc nào cũng đúng; chọn mốc nào là chọn câu chuyện nào."
+  }
+ ],
+ "sources": "DNSE (giá); Tạp chí Điện tử & Ứng dụng, VnEconomy 13/10; CafeBiz 13/8; VnExpress."
+}

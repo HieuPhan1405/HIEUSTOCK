@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "KIẾN THỨC 60 GIÂY #3",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Ví dụ là số giả định. Số liệu đến hết phiên 13/10/2026.",
+ "kicker": "KIẾN THỨC 60 GIÂY #3",
+ "title": [
+  "Cùng một phiên, ba chỉ số,",
+  "ba con số khác nhau"
+ ],
+ "title_size": 56,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "VN-Index",
+     "value": "−0,09%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "1.719,42 · cả HoSE"
+    },
+    {
+     "label": "VN30",
+     "value": "−0,45%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "1.860,99 · 30 mã"
+    },
+    {
+     "label": "HNX-Index",
+     "value": "−0,17%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "264,25 · sàn HNX"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Ba chỉ số đo ba nhóm",
+     "text": "VN-Index: mọi mã trên HoSE. VN30: 30 mã vốn hóa và thanh khoản hàng đầu HoSE. HNX-Index: sàn HNX."
+    },
+    {
+     "head": "Mã lớn có sức nặng lớn hơn",
+     "text": "Tính theo vốn hóa điều chỉnh tỷ lệ tự do chuyển nhượng, không đếm số mã."
+    },
+    {
+     "head": "Ví dụ giả định",
+     "text": "A (vốn hóa 900) −1%, B (100) +5%: (−9 + 5) ÷ 1.000 = −0,4%."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Phiên 13/10: HoSE ~200 mã giảm, chưa tới 100 mã tăng mà VN-Index chỉ −0,09%. Hợp đồng VN30 đáo hạn 15/10 tính theo VN30."
+  }
+ ],
+ "sources": "VnExpress (quy tắc HOSE-Index v3.0), DSC; VnEconomy 13/10; DNSE."
+}
