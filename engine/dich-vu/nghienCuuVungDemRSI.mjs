@@ -24,6 +24,11 @@ const BIEN_THE = [
   ["RSI > 70 chi cho 0 diem (khong tru 0,5)", { rsiKieuDem: "quaMua0" }],
   ["Doc lien tuc 68-72 (khong co vach cung)", { rsiVungDem: 2, rsiKieuDem: "doc" }],
   ["Doc lien tuc 65-75", { rsiVungDem: 5, rsiKieuDem: "doc" }],
+  ["Tuyen tinh RSI ca 3 vach (30/50/70) +-2", { rsiVungDem: 2, rsiKieuDem: "docTatCa" }],
+  ["Tuyen tinh RSI ca 3 vach +-5 (65-75 quanh 70)", { rsiVungDem: 5, rsiKieuDem: "docTatCa" }],
+  ["Tuyen tinh MFI ca 3 vach (20/50/80) +-5", { mfiVungDem: 5 }],
+  ["Tuyen tinh RSI +-5 VA MFI +-5", { rsiVungDem: 5, rsiKieuDem: "docTatCa", mfiVungDem: 5 }],
+  ["Tuyen tinh RSI +-10 VA MFI +-10", { rsiVungDem: 10, rsiKieuDem: "docTatCa", mfiVungDem: 10 }],
   ["Bo han diem dong luc RSI (luon +0,5 neu > 50)", { rsiTren: 101, rsiDuoi: 0 }],
 ];
 

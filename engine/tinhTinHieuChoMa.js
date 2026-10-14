@@ -40,6 +40,7 @@ const MAC_DINH = {
   rsiDuoi: 30,
   rsiVungDem: 0, // 0 = ranh gioi cung (AFL). > 0: vung dem quanh nguong (xem tinhMomTuRSI)
   rsiKieuDem: "cung",
+  mfiVungDem: 0, // > 0: ba vach MFI (20 / 50 / 80) noi doc +- vungDem (chi nghien cuu)
   fvgLookback: 15,
   nguongDiemFVGMem: 0.6,
   soPhienBanXacNhan: 3,
@@ -152,6 +153,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     mfi: mfiArr,
     relVol,
     momCauHinh: { rsiTren: p.rsiTren, rsiDuoi: p.rsiDuoi, vungDem: p.rsiVungDem, kieuDem: p.rsiKieuDem },
+    mfiVungDem: p.mfiVungDem,
   });
 
   // ---- Cong + RS so voi VNINDEX ----

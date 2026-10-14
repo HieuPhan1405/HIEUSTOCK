@@ -7,6 +7,14 @@
 // Tuy chon NGHIEN CUU (khong dung production, chi de backtest - xem engine/dich-vu/nghienCuuVungDemRSI.mjs): vungDem > 0 lam ranh gioi tren / duoi mem:
 //   kieu "trungTinh": RSI nam trong (nguong - vungDem, nguong + vungDem) -> diem 0 (khong cong / tru);
 //   kieu "tre" (hysteresis): doi trang thai chi khi vuot nguong +- vungDem, o giua giu trang thai cua nen truoc.
+// Ham bac thang MEM (cho nghien cuu): giaTri[k] ap dung cho x trong [nguong[k-1], nguong[k]); quanh moi nguong +- d thi noi tuyen tinh giua 2 gia tri ke nhau (d = 0 -> bac thang cung nhu AFL).
+export function buocMem(x, nguong, giaTri, d) {
+  if (d > 0) for (let k = 0; k < nguong.length; k++) {
+    if (x > nguong[k] - d && x < nguong[k] + d) return giaTri[k] + ((x - (nguong[k] - d)) / (2 * d)) * (giaTri[k + 1] - giaTri[k]);
+  }
+  let k = 0; while (k < nguong.length && x >= nguong[k]) k++;
+  return giaTri[k];
+}
 export function tinhMomTuRSI(rsi, { rsiTren = 70, rsiDuoi = 30, vungDem = 0, kieuDem = "cung" } = {}) {
   const n = rsi.length;
   const mom = new Array(n).fill(-0.5);
@@ -15,7 +23,10 @@ export function tinhMomTuRSI(rsi, { rsiTren = 70, rsiDuoi = 30, vungDem = 0, kie
     const r = rsi[i];
     if (r == null) { mom[i] = -0.5; continue; }
     const giua = r > 50 ? 0.5 : -0.5;
-    if (kieuDem === "doc" && vungDem > 0) {
+    if (kieuDem === "docTatCa") {
+      // ca 3 vach (30 / 50 / 70) deu noi doc: <30 +0,5 | 30-50 -0,5 | 50-70 +0,5 | >70 -0,5
+      mom[i] = buocMem(r, [rsiDuoi, 50, rsiTren], [0.5, -0.5, 0.5, -0.5], vungDem);
+    } else if (kieuDem === "doc" && vungDem > 0) {
       // doc lien tuc: diem doi dan tu muc "binh thuong" (giua) sang -0,5 trong (rsiTren - vungDem, rsiTren + vungDem); tuong tu phia duoi quanh rsiDuoi (-> +0,5)
       let m = giua;
       if (r >= rsiTren + vungDem) m = -0.5;
@@ -41,7 +52,7 @@ export function tinhMomTuRSI(rsi, { rsiTren = 70, rsiDuoi = 30, vungDem = 0, kie
   return mom;
 }
 
-export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kijun, adx, diPlus, diMinus, rsi, mfi, relVol, momCauHinh }) {
+export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kijun, adx, diPlus, diMinus, rsi, mfi, relVol, momCauHinh, mfiVungDem = 0 }) {
   const n = close.length;
   const trendScore = new Array(n).fill(null);
   const momScore = new Array(n).fill(null);
@@ -73,7 +84,8 @@ export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kiju
 
     let mf = -0.5;
     if (mfi[i] != null) {
-      if (mfi[i] > 80) mf = -0.5;
+      if (mfiVungDem > 0) mf = buocMem(mfi[i], [20, 50, 80], [0.5, -0.5, 0.5, -0.5], mfiVungDem);
+      else if (mfi[i] > 80) mf = -0.5;
       else if (mfi[i] < 20) mf = 0.5;
       else mf = mfi[i] > 50 ? 0.5 : -0.5;
     }
