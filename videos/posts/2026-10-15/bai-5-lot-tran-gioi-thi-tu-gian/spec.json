@@ -1,0 +1,57 @@
+{
+ "type": "card",
+ "stamp": "LỘT TRẦN NGHỀ MÔI GIỚI #4",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Phép tính là ví dụ giả định.",
+ "kicker": "LỘT TRẦN NGHỀ MÔI GIỚI #4",
+ "title": [
+  "\"Môi giới giỏi thì tự giàu?\"",
+  "Hai việc khác nhau, một phép tính"
+ ],
+ "title_size": 50,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Vốn 500 triệu, lãi 20%",
+     "value": "100 triệu",
+     "tone": "gold",
+     "arrow": "▲",
+     "sub": "mỗi năm · ≈ 8,3 triệu/tháng"
+    },
+    {
+     "label": "Muốn 50 triệu/tháng",
+     "value": "3 tỷ",
+     "tone": "gold",
+     "arrow": "▲",
+     "sub": "vốn cần · ví dụ giả định"
+    },
+    {
+     "label": "Berkshire 1965–2025",
+     "value": "19,7%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "bình quân một năm"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Hai nguồn thu nhập",
+     "text": "Môi giới thu phí dịch vụ; tự đầu tư dùng vốn của mình."
+    },
+    {
+     "head": "Câu hỏi nên hỏi",
+     "text": "Tính trên vốn bao nhiêu, trong bao nhiêu năm, đã trừ thuế và phí chưa?"
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Không ai biết chắc mức lợi nhuận có lặp lại không. Đây là ví dụ giả định, không phải cam kết."
+  }
+ ],
+ "sources": "CafeF (Berkshire 1965–2025); Gate; phép tính của mình."
+}

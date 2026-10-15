@@ -1,0 +1,55 @@
+{
+ "type": "card",
+ "stamp": "DÒNG TIỀN · KHỐI NGOẠI",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 14/10/2026.",
+ "kicker": "KHỐI NGOẠI · KHỚP LỆNH VÀ THỎA THUẬN",
+ "title": [
+  "Khối ngoại bán ròng gần 14.000 tỷ,",
+  "nhưng khớp lệnh chỉ 1.269 tỷ"
+ ],
+ "title_size": 50,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Bán ròng cả tuần",
+     "value": "13.921 tỷ",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "VnEconomy · tuần qua"
+    },
+    {
+     "label": "Khớp lệnh",
+     "value": "1.269 tỷ",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "phần trên sàn từng phiên"
+    },
+    {
+     "label": "Thỏa thuận",
+     "value": "≈ 91%",
+     "sub": "phép tính của mình"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Hai phần giao dịch",
+     "text": "Khớp lệnh là từng lệnh trên bảng giá. Thỏa thuận là lô lớn, thỏa thuận riêng rồi báo lên sàn."
+    },
+    {
+     "head": "Cách đọc",
+     "text": "Khi thấy \"bán ròng X tỷ\", hỏi X gồm khớp lệnh hay cả thỏa thuận."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Các báo không nêu lô thỏa thuận thuộc mã nào. Ngày của tuần giao dịch đang được đối chiếu."
+  }
+ ],
+ "sources": "VnEconomy (tuần qua); Lao Động; phép tính của mình."
+}

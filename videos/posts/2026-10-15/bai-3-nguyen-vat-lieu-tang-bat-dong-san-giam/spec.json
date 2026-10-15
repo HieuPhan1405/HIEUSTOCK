@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "NGÀNH · 14/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 14/10/2026.",
+ "kicker": "NHÓM NGÀNH · HAI HƯỚNG",
+ "title": [
+  "Nguyên vật liệu tăng 1,3%,",
+  "bất động sản thành lực cản lớn nhất"
+ ],
+ "title_size": 50,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Nguyên vật liệu",
+     "value": "+1,3%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "DNSE · 14/10"
+    },
+    {
+     "label": "Hóa chất – phân bón",
+     "value": "+2,36%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "Doanh nhân & Công lý"
+    },
+    {
+     "label": "VN-Index",
+     "value": "−0,85%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "1.704,87 điểm"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Thép",
+     "text": "Tăng khoảng 1,5% trong phiên, theo Doanh nhân & Công lý."
+    },
+    {
+     "head": "Bất động sản",
+     "text": "Gây sức ép lớn nhất; hệ sinh thái Vingroup và một số mã khác đi xuống."
+    },
+    {
+     "head": "Điều chưa biết",
+     "text": "Chưa có nguồn giải thích vì sao hai nhóm đi hai hướng."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Các báo không tính riêng chỉ số nhóm bất động sản, nên không đưa con số phần trăm cho nhóm này."
+  }
+ ],
+ "sources": "DNSE (chỉ số nhóm ngành 14/10); Doanh nhân & Công lý 14/10; Báo Đầu Tư 14/10."
+}

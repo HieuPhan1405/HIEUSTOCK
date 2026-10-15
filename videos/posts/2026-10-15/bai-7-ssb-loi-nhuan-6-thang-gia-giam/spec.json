@@ -1,0 +1,53 @@
+{
+ "type": "card",
+ "stamp": "SSB · 6 THÁNG 2026",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 14/10/2026.",
+ "kicker": "SSB · SEABANK",
+ "title": [
+  "SSB giảm 4,28% dù lãi 6 tháng",
+  "hơn 2.600 tỷ: đọc lũy kế, không phải quý"
+ ],
+ "title_size": 46,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "SSB phiên 14/10",
+     "value": "−4,28%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "15.650 đồng · từ 16.350"
+    },
+    {
+     "label": "Lãi trước thuế 6 tháng",
+     "value": "2.625 tỷ",
+     "sub": "hợp nhất · lũy kế"
+    },
+    {
+     "label": "Tổng tài sản",
+     "value": "427.100",
+     "sub": "tỷ đồng · tổng tài sản, 6 tháng 2026"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Lũy kế, không phải quý",
+     "text": "Khi thấy \"lãi 6 tháng\", tách riêng quý để biết đang tăng hay giảm."
+    },
+    {
+     "head": "Điều chưa biết",
+     "text": "Chưa đọc được công văn giải trình biến động lợi nhuận; chưa có nguyên nhân giá giảm."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Không đưa số lợi nhuận quý 2 riêng vì chưa đối chiếu được với báo cáo của công ty."
+  }
+ ],
+ "sources": "DNSE; Vietstock (14/10); CafeF (6 tháng 2026); SeABank."
+}

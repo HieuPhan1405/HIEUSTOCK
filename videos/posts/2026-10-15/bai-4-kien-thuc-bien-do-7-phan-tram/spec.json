@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "KIẾN THỨC 60 GIÂY #4",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Ví dụ là số giả định.",
+ "kicker": "KIẾN THỨC 60 GIÂY #4",
+ "title": [
+  "Giá chỉ được đi trong ±7%",
+  "so với giá tham chiếu"
+ ],
+ "title_size": 52,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Giá trần",
+     "value": "+7%",
+     "tone": "gold",
+     "arrow": "▲",
+     "sub": "69.550 đồng (tham chiếu 65.000)"
+    },
+    {
+     "label": "Giá sàn",
+     "value": "−7%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "60.450 đồng (tham chiếu 65.000)"
+    },
+    {
+     "label": "Giảm 6% trong ngày",
+     "value": "−6%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "61.100 đồng · cách sàn 650 đồng"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "HoSE",
+     "text": "±7% so với giá tham chiếu trong phiên."
+    },
+    {
+     "head": "HNX và UPCoM",
+     "text": "HNX ±10%, UPCoM ±15%."
+    },
+    {
+     "head": "Chạm sàn",
+     "text": "Giảm đúng 7% so với tham chiếu; không phải là đã mất 7% vốn."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Ví dụ giả định, không phải một mã cụ thể. Giá tham chiếu có thể đã điều chỉnh vì cổ tức hoặc thưởng cổ phiếu."
+  }
+ ],
+ "sources": "VnExpress (biên độ giao dịch); TVSI; anfin."
+}

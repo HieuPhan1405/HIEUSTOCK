@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "MWG · QUÝ 2/2026",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 14/10/2026.",
+ "kicker": "MWG · THẾ GIỚI DI ĐỘNG",
+ "title": [
+  "MWG giảm 1,74% dù lợi nhuận",
+  "quý 2 gấp đôi cùng kỳ"
+ ],
+ "title_size": 50,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "MWG phiên 14/10",
+     "value": "−1,74%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "73.500 đồng · từ 74.800"
+    },
+    {
+     "label": "Doanh thu quý 2",
+     "value": "+30%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "khoảng 48.751 tỷ đồng"
+    },
+    {
+     "label": "LNST công ty mẹ",
+     "value": "gấp đôi",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "quý 2 · khoảng 3.303 tỷ"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Thời điểm công bố",
+     "text": "Kết quả quý 2 công bố cuối tháng 7, không phải tin mới trong phiên."
+    },
+    {
+     "head": "Điều chưa biết",
+     "text": "Chưa có nguồn nào giải thích vì sao giá giảm hôm nay."
+    },
+    {
+     "head": "Theo dõi",
+     "text": "Báo cáo quý 3, ngày do công ty công bố."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Doanh thu và lợi nhuận là số công ty đã công bố. Không đoán giá, không nói mã nào nên mua hay bán."
+  }
+ ],
+ "sources": "DNSE; Entrade; CafeF (quý 2/2026); Vietstock (quý 2/2026)."
+}

@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "GEE · QUÝ 2/2026",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 14/10/2026.",
+ "kicker": "GEE · ĐIỆN LỰC GELEX",
+ "title": [
+  "GEE giảm 6%, nhưng doanh thu",
+  "quý 2 tăng khoảng 46%"
+ ],
+ "title_size": 50,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "GEE phiên 14/10",
+     "value": "−6,04%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "65.300 đồng (đã điều chỉnh)"
+    },
+    {
+     "label": "Doanh thu quý 2",
+     "value": "+46%",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "khoảng 9.524 tỷ đồng"
+    },
+    {
+     "label": "Lợi nhuận sau thuế",
+     "value": "+30%+",
+     "tone": "green",
+     "arrow": "▲",
+     "sub": "quý 2/2026"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Giá",
+     "text": "Đã điều chỉnh thưởng cổ phiếu và cổ tức; giá trên bảng có thể khác."
+    },
+    {
+     "head": "Điều chưa biết",
+     "text": "Chưa có nguồn nào giải thích vì sao giá giảm hôm nay."
+    },
+    {
+     "head": "Theo dõi",
+     "text": "Báo cáo quý 3, ngày do công ty công bố."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Doanh thu và lợi nhuận là số công ty đã công bố. Giá phản ứng thế nào với kết quả đó không nằm trong báo cáo tài chính."
+  }
+ ],
+ "sources": "DNSE; Entrade; CafeF (quý 2/2026); Đan Việt (quý 2/2026)."
+}

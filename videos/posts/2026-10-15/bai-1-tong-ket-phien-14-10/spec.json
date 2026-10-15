@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "TỔNG KẾT PHIÊN 14/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 14/10/2026.",
+ "kicker": "TỔNG KẾT PHIÊN 14/10 · HOSE",
+ "title": [
+  "VN-Index giảm phiên thứ sáu liên tiếp,",
+  "HoSE vẫn có 128 mã tăng"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "VN-Index",
+     "value": "−0,85%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "1.704,87 · −14,55 điểm"
+    },
+    {
+     "label": "VN30",
+     "value": "−0,46%",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "1.852,44 · 30 mã"
+    },
+    {
+     "label": "HoSE tăng / giảm",
+     "value": "128 / 163",
+     "tone": "red",
+     "arrow": "▼",
+     "sub": "số mã · 14/10"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Sáu phiên giảm liên tiếp",
+     "text": "Từ 6/10 đến 14/10, VN-Index mất 54,21 điểm, khoảng 3,1%."
+    },
+    {
+     "head": "Lực cản lớn nhất",
+     "text": "Nhóm cổ phiếu Vingroup; lực bán mạnh hơn từ buổi chiều."
+    },
+    {
+     "head": "Khối ngoại",
+     "text": "Bán ròng khoảng 772 tỷ trên HoSE; mua ròng mạnh nhất một ngân hàng."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Mốc 1.700 điểm bị thủng trong phiên chiều, rồi lấy lại cuối phiên."
+  }
+ ],
+ "sources": "Báo Đầu Tư; Doanh nhân & Công lý; DNSE."
+}
