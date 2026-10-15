@@ -10,6 +10,16 @@ const ok = (ten, dk, them = "") => {
   } else console.log("ok:", ten);
 };
 
+// ---- RSI phan ky (rsi_pk_cach / rsi_pk_tuan_cach: tang = +k, giam = -(k+1)) ----
+{
+  const bo2 = (d) => taoBoLocChiBao("rsi_pk", d);
+  ok("PK tang hom nay khop (0), khong khop khi cach 1", khopChiBao({ rsi_pk_cach: 0 }, bo2("tang_1")) && !khopChiBao({ rsi_pk_cach: 1 }, bo2("tang_1")));
+  ok("PK tang 3 phien: cach 2 khop, cach 3 khong", khopChiBao({ rsi_pk_cach: 2 }, bo2("tang_3")) && !khopChiBao({ rsi_pk_cach: 3 }, bo2("tang_3")));
+  ok("PK GIAM khong bi tinh la PK tang", !khopChiBao({ rsi_pk_cach: -1 }, bo2("tang_10")) && khopChiBao({ rsi_pk_cach: -3 }, bo2("giam_5")));
+  ok("khung tuan: tang trong 4 tuan", khopChiBao({ rsi_pk_tuan_cach: 3 }, bo2("tang_tuan_4")) && !khopChiBao({ rsi_pk_tuan_cach: 4 }, bo2("tang_tuan_4")));
+  ok("khong co phan ky (null): khong khop", !khopChiBao({ rsi_pk_cach: null }, bo2("tang_10")));
+}
+
 // ---- Cau truc dinh nghia ----
 {
   const khoaTrung = DS_CHI_BAO_LOC.length !== new Set(DS_CHI_BAO_LOC.map((d) => d.khoa)).size;

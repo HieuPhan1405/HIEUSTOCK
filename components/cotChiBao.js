@@ -53,10 +53,35 @@ function cotCat(khoa, nhan, moTa) {
   };
 }
 
+// Cot RSI phan ky (khung ngay / tuan): "↑ hom nay" = phan ky TANG vua xac nhan (canh dao chieu), "↓ ..." = phan ky GIAM. donVi: "phiên" hoặc "tuần".
+function cotPhanKy(khoa, nhan, donVi, moTa) {
+  return {
+    nhan,
+    nhom: NHOM,
+    canPhai: true,
+    lay: (r) => {
+      const c = giaiMaCat(r[khoa]);
+      return c ? c.huong * (1000 - c.cach) : null;
+    },
+    hien: (r) => {
+      const c = giaiMaCat(r[khoa]);
+      if (!c) return Trong;
+      const khi = c.cach === 0 ? (donVi === "tuần" ? "tuần này" : "hôm nay") : `${c.cach} ${donVi}`;
+      return (
+        <span style={{ color: c.huong > 0 ? XANH : DO }} title={`${moTa}: phân kỳ ${c.huong > 0 ? "tăng (đáy sau thấp hơn, RSI cao hơn)" : "giảm (đỉnh sau cao hơn, RSI thấp hơn)"} xác nhận ${khi === "hôm nay" || khi === "tuần này" ? khi : khi + " trước"}. Chỉ là điều kiện tham khảo.`}>
+          {c.huong > 0 ? "↑ PK tăng" : "↓ PK giảm"} · {khi}
+        </span>
+      );
+    },
+  };
+}
+
 const pct1 = (v) => pct(v, 1);
 
 export const COT_CHI_BAO_HIEN = {
   rsi14: cotSo("rsi14", "RSI (14)", so1So, (v) => (v < 30 ? XANH : v > 70 ? DO : undefined), "Dưới 30: quá bán (xanh) · trên 70: quá mua (đỏ)"),
+  rsi_pk_cach: cotPhanKy("rsi_pk_cach", "RSI phân kỳ (ngày)", "phiên", "Khung ngày, 3 tháng gần nhất"),
+  rsi_pk_tuan_cach: cotPhanKy("rsi_pk_tuan_cach", "RSI phân kỳ (tuần)", "tuần", "Khung tuần, 6 tháng gần nhất"),
   macd: cotSo("macd", "MACD", (v) => soAn(v, 3), mauDau, "Đường MACD (12, 26)"),
   macd_hist: cotSo("macd_hist", "MACD Hist", (v) => soAn(v, 3), mauDau, "MACD trừ Signal (9): dương = MACD trên Signal"),
   macd_cat_cach: cotCat("macd_cat_cach", "MACD cắt Signal", "MACD và Signal"),

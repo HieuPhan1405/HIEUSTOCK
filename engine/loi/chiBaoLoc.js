@@ -6,10 +6,14 @@ import { atr, adxHeThong, rsi, mfi } from "./taChiBao.js";
 import { hhv, llv, sma } from "./mang.js";
 import { tinhIchimoku } from "./ichimoku.js";
 import { COT_CHI_BAO } from "../../lib/cotChiBaoKyThuat.js";
+import { rsi as rsiLib } from "../../lib/chiBaoPhu.js";
+import { phanKyRSI, gopNenTuan } from "../../lib/phanKyRSI.js";
 
 export const SO_NEN_TINH = 800;
 const SO_NEN_TIM_CAT = 60;
 const SO_NEN_TOI_THIEU = 60;
+const SO_NEN_PK_NGAY = 60; // chi bao phan ky trong ~3 thang gan nhat (khung ngay)
+const SO_NEN_PK_TUAN = 26; // ~6 thang (khung tuan)
 
 // EMA kieu TradingView: nen dau = chinh gia tri do, ve sau a*x + (1-a)*EMA truoc.
 export function ema(mang, n) {
@@ -64,7 +68,17 @@ const cuoi = (m) => {
 };
 const lam = (v, chuSo = 4) => (v == null || !Number.isFinite(v) ? null : Math.round(v * 10 ** chuSo) / 10 ** chuSo);
 const pctCach = (a, b) => (a != null && b != null && b !== 0 ? (a / b - 1) * 100 : null);
-const COT_NGUYEN = new Set(["macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
+// RSI phan ky gan nhat (lib/phanKyRSI.js) -> ma hoa nhu _cat_cach: TANG xac nhan k nen truoc = +k, GIAM = -(k + 1); null neu khong co trong `toiDa` nen cuoi.
+export function maHoaPhanKy(nen, toiDa) {
+  if (!Array.isArray(nen) || nen.length < 40) return null;
+  const ev = phanKyRSI(nen, rsiLib(nen.map((x) => x.c), 14), { k: 3 });
+  const cuoiCung = ev[ev.length - 1];
+  if (!cuoiCung) return null;
+  const cach = nen.length - 1 - cuoiCung.xacNhan;
+  if (cach < 0 || cach >= toiDa) return null;
+  return cuoiCung.loai === "tang" ? cach : -(cach + 1);
+}
+const COT_NGUYEN = new Set(["rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
 
 // Tra ve object { ngay_nen, ...COT_CHI_BAO } cho 1 ma, hoac null neu chua du du lieu.
 export function tinhChiBaoLocChoMa(nen) {
@@ -150,6 +164,8 @@ export function tinhChiBaoLocChoMa(nen) {
     macd_signal: cuoi(macdSignal),
     macd_hist: cuoi(macdHist),
     macd_cat_cach: nenTuLanCat(macdLine, macdSignal),
+    rsi_pk_cach: maHoaPhanKy(b, SO_NEN_PK_NGAY),
+    rsi_pk_tuan_cach: maHoaPhanKy(gopNenTuan(b), SO_NEN_PK_TUAN),
     stoch_k: cuoi(stochK),
     stoch_d: cuoi(stochD),
     stoch_cat_cach: nenTuLanCat(stochK, stochD),
