@@ -5,6 +5,7 @@ import { createChart, createSeriesMarkers, CandlestickSeries, HistogramSeries, L
 import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal } from "lucide-react";
 import { tinhIchimoku, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
+import { phanKyRSI } from "@/lib/phanKyRSI";
 import { LopVe } from "@/components/veBieuDoLop";
 import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio, timDinhKhoiLuong, chonHoTroKhangCu } from "@/lib/volumeProfile";
 import { DaiMay, DaiGia } from "@/components/bieuDoPlugin";
@@ -81,6 +82,9 @@ const CHI_BAO_PHU = [
   { khoa: "macd", nhan: "MACD", mau: "#60A5FA" },
   { khoa: "stoch", nhan: "Stochastic", mau: "#FBBF24" },
 ];
+// RSI phan ky (lib/phanKyRSI.js): 2 day / dinh gia lien tiep nguoc chieu RSI - chi la DIEU KIEN THAM KHAO, nghien cuu 2026-10-16 tren 390 ma cho thay KHONG co loi the thong ke rieng le.
+const CHI_BAO_PK = { khoa: "phanKy", nhan: "RSI phân kỳ", mau: "#34D399" };
+const SO_PK_HIEN = 8; // chi ve SO_PK_HIEN phan ky gan nhat moi loai (tranh roi bieu do)
 const CHIEU_CAO_PHU = 140;
 
 // Cong cu ke ve (components/veBieuDoLop.js)
@@ -240,7 +244,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
-  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false });
+  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false, phanKy: false });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
   const [mauVe, setMauVe] = useState(MAU_VE[0]);
   const [hitGia, setHitGia] = useState(false);
@@ -265,6 +269,10 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const loi = ketQua.khoa === khoa ? ketQua.loi : null;
   const chiBao = useMemo(() => (nen && nen.length >= 2 ? tinhChiBao(nen, khungTG === "W") : null), [nen, khungTG]);
   const chiBaoPhu = useMemo(() => (nen && nen.length >= 30 ? tinhChiBaoPhu(nen) : null), [nen]);
+  const phanKy = useMemo(() => {
+    if (!nen || nen.length < 60) return [];
+    return phanKyRSI(nen.map((b) => ({ h: b.h, l: b.l, c: b.c })), rsi(nen.map((b) => b.c), 14), { k: 3 });
+  }, [nen]);
   const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0);
   const chieuCaoTong = chieuCao + soPhu * CHIEU_CAO_PHU;
   khoaVeRef.current = khoaLuu(ma, khungTG);
@@ -326,6 +334,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.cb1.attachPrimitive(canBang);
     s.candle.attachPrimitive(daiGia);
     s.markers = createSeriesMarkers(s.candle, []);
+    s.markersPK = createSeriesMarkers(s.candle, []);
     // Lop ke ve (canvas phu len bieu do): hinh luu o localStorage theo ma + khung thoi gian.
     s.lopVe = new LopVe({
       khung: khungRef.current,
@@ -583,6 +592,29 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       const sr = dong("#A78BFA", cp.rsi, o, { title: "RSI 14", ...khoang0_100 });
       vach(sr, 70, "rgba(239,68,68,0.6)");
       vach(sr, 30, "rgba(34,197,94,0.6)");
+      // RSI phan ky: noi 2 day (hoac 2 dinh) tren gia va tren RSI, danh dau nen dinh / day thu hai
+      if (bat.phanKy && nen) {
+        const mauTang = "#22C55E", mauGiam = "#EF4444";
+        const gan = [...phanKy.filter((e) => e.loai === "tang").slice(-SO_PK_HIEN), ...phanKy.filter((e) => e.loai === "giam").slice(-SO_PK_HIEN)];
+        const nhan = [];
+        for (const e of gan) {
+          const mau = e.loai === "tang" ? mauTang : mauGiam;
+          const doan = (o2, y1, y2) => {
+            const dg = s.chart.addSeries(LineSeries, { color: mau, lineWidth: 2, lineStyle: LineStyle.Solid, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false }, o2);
+            dg.setData([{ time: nen[e.i1].t, value: y1 }, { time: nen[e.i2].t, value: y2 }]);
+            s.phu.push(dg);
+          };
+          doan(0, e.gia1, e.gia2);
+          doan(o, e.rsi1, e.rsi2);
+          nhan.push({ time: nen[e.i2].t, position: e.loai === "tang" ? "belowBar" : "aboveBar", color: mau, shape: e.loai === "tang" ? "arrowUp" : "arrowDown", text: e.loai === "tang" ? "PK↑" : "PK↓" });
+        }
+        nhan.sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
+        s.markersPK.setMarkers(nhan);
+      } else {
+        s.markersPK.setMarkers([]);
+      }
+    } else {
+      s.markersPK.setMarkers([]);
     }
     if (bat.macd) {
       const o = cuaSo++;
@@ -602,7 +634,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     // cua so gia lon hon cac cua so chi bao
     const panes = s.chart.panes();
     panes.forEach((p, i) => p.setStretchFactor(i === 0 ? 3.2 : 1));
-  }, [bat.rsi, bat.macd, bat.stoch, chiBaoPhu]);
+  }, [bat.rsi, bat.macd, bat.stoch, bat.phanKy, chiBaoPhu, phanKy, nen]);
 
   // 4. Vung lenh + diem MUA.
   useEffect(() => {
@@ -668,6 +700,9 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
               {c.nhan}
             </Chip>
           ))}
+          <Chip bat={bat.phanKy} mau={CHI_BAO_PK.mau} onClick={() => setBat((b) => ({ ...b, phanKy: !b.phanKy, rsi: !b.phanKy ? true : b.rsi }))}>
+            {CHI_BAO_PK.nhan}
+          </Chip>
         </div>
         <div className="flex items-center gap-1 ml-auto">
           {KHOANG.map((k) => (
@@ -876,7 +911,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
 
       <p className="px-3 py-2 text-[11px] border-t" style={{ borderColor: VIEN, color: MUTED }}>
         Giá đã điều chỉnh cổ tức/thưởng cổ phiếu (giống dữ liệu AmiBroker), khối lượng khớp lệnh; chỉ báo tính giống hệ thống tín hiệu (Ichimoku 9-17-33, mây dịch 26
-        phiên, đường cân bằng dài hạn 65/129); EMA, Bollinger, RSI, MACD, Stochastic là chỉ báo tham khảo thông dụng. Volume Profile là ước lượng: khối lượng mỗi nến chia đều theo khoảng giá của nến đó (dùng nến 1 giờ khi có, từ khoảng 10/2023; trước đó dùng nến của biểu đồ), không phải dữ liệu khớp lệnh theo từng mức giá. Hỗ trợ / Kháng cự (KL) là các vùng giá có khối lượng giao dịch lớn trong khoảng 6 tháng gần nhất (nét đậm = vùng lớn), chỉ để tham khảo: kiểm tra lịch sử cho thấy giá giữ được ở các mức này khoảng một nửa số lần. Hình vẽ lưu trên trình duyệt này theo từng mã và khung thời gian. Trong phiên, nến hôm nay cập nhật theo giá khớp thực tế, web tự làm mới mỗi 30 giây, không dùng để đặt lệnh khớp từng giây.
+        phiên, đường cân bằng dài hạn 65/129); EMA, Bollinger, RSI, MACD, Stochastic là chỉ báo tham khảo thông dụng. RSI phân kỳ (PK↑ đáy sau thấp hơn nhưng RSI cao hơn; PK↓ đỉnh sau cao hơn nhưng RSI thấp hơn) chỉ xác nhận sau 3 nến và chỉ là điều kiện tham khảo, không phải tín hiệu mua bán: thống kê 390 mã cho thấy không có lợi thế riêng lẻ. Volume Profile là ước lượng: khối lượng mỗi nến chia đều theo khoảng giá của nến đó (dùng nến 1 giờ khi có, từ khoảng 10/2023; trước đó dùng nến của biểu đồ), không phải dữ liệu khớp lệnh theo từng mức giá. Hỗ trợ / Kháng cự (KL) là các vùng giá có khối lượng giao dịch lớn trong khoảng 6 tháng gần nhất (nét đậm = vùng lớn), chỉ để tham khảo: kiểm tra lịch sử cho thấy giá giữ được ở các mức này khoảng một nửa số lần. Hình vẽ lưu trên trình duyệt này theo từng mã và khung thời gian. Trong phiên, nến hôm nay cập nhật theo giá khớp thực tế, web tự làm mới mỗi 30 giây, không dùng để đặt lệnh khớp từng giây.
       </p>
     </div>
   );
