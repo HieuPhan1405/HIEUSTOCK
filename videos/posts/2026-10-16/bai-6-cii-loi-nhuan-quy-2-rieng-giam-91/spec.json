@@ -1,0 +1,59 @@
+{
+ "type": "card",
+ "stamp": "BCTC QUÝ 2/2026 · CII",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 15/10/2026.",
+ "kicker": "BCTC QUÝ 2/2026 · CII",
+ "title": [
+  "CII tăng 6,15%, lợi nhuận quý 2",
+  "riêng công ty mẹ giảm hơn 90%"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "CII",
+     "value": "+6,15%",
+     "sub": "12.950 đồng · 15/10",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "LNST quý 2",
+     "value": "−91%",
+     "sub": "riêng công ty mẹ",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "Lợi nhuận",
+     "value": "16,9 tỷ",
+     "sub": "quý 2 · công ty mẹ"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Số riêng",
+     "text": "Không gồm công ty con và công ty liên kết."
+    },
+    {
+     "head": "Số hợp nhất",
+     "text": "Có thể khác đáng kể, nên bài không dùng để kết luận."
+    },
+    {
+     "head": "Giá tăng",
+     "text": "Chưa có nguồn giải thích, nên không gắn nguyên nhân."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Khi đọc tin lợi nhuận, hỏi trước: riêng hay hợp nhất, kỳ nào."
+  }
+ ],
+ "sources": "CafeF; Thời báo Tài chính VN; DNSE; Entrade."
+}

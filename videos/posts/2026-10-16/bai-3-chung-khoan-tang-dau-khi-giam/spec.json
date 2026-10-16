@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "NHÓM NGÀNH 15/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 15/10/2026.",
+ "kicker": "NHÓM NGÀNH 15/10 · HOSE",
+ "title": [
+  "Chứng khoán tăng 2,1%,",
+  "dầu khí giảm 4,5% cùng phiên"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Chứng khoán",
+     "value": "+2,1%",
+     "sub": "nhóm ngành",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "Năng lượng",
+     "value": "−4,5%",
+     "sub": "nhóm dầu khí",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "PVT",
+     "value": "−4,25%",
+     "sub": "23.650 đồng",
+     "tone": "red",
+     "arrow": "▼"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Đi ngược chiều",
+     "text": "Hai nhóm cùng một phiên nhưng đi hai hướng."
+    },
+    {
+     "head": "Nhóm khác",
+     "text": "Bảo hiểm, giấy và bao bì cũng giảm trong phiên."
+    },
+    {
+     "head": "Chưa rõ nguyên nhân",
+     "text": "Báo chí chưa nêu lý do chung cho hai nhóm."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Báo cáo quý 3 sắp công bố. Đọc số liệu trước khi kết luận."
+  }
+ ],
+ "sources": "Thời báo Tài chính VN; Báo Đầu Tư; DNSE; Entrade."
+}

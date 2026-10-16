@@ -1,0 +1,59 @@
+{
+ "type": "card",
+ "stamp": "BCTC QUÝ 2/2026 · CTS",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 15/10/2026.",
+ "kicker": "BCTC QUÝ 2/2026 · CTS",
+ "title": [
+  "CTS tăng gần 7% phiên 15/10,",
+  "lợi nhuận quý 2 giảm 91%"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "CTS",
+     "value": "+6,79%",
+     "sub": "20.450 đồng",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "LNST quý 2",
+     "value": "−91%",
+     "sub": "thấp nhất 13 quý",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "Nguyên nhân",
+     "value": "Tự doanh",
+     "sub": "giảm mạnh · Báo Mới"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Hai chuyện khác thời điểm",
+     "text": "Phiên tăng và báo cáo quý 2 không nối với nhau trong nguồn nào."
+    },
+    {
+     "head": "Không so sánh",
+     "text": "Bài không đối chiếu với công ty chứng khoán khác."
+    },
+    {
+     "head": "Điều chưa biết",
+     "text": "Chưa có số tự doanh của phiên 15/10."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Không kết luận vì sao giá tăng khi lợi nhuận quý 2 giảm."
+  }
+ ],
+ "sources": "Báo Mới; CafeF; DNSE; Entrade; Thời báo Tài chính VN."
+}

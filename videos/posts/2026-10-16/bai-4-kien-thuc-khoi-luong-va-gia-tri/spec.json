@@ -1,0 +1,55 @@
+{
+ "type": "card",
+ "stamp": "KIẾN THỨC 60 GIÂY #5",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 15/10/2026.",
+ "kicker": "KIẾN THỨC 60 GIÂY #5",
+ "title": [
+  "Khối lượng khác giá trị",
+  "giao dịch: đọc đúng hai con số"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Ví dụ 1",
+     "value": "20 tỷ",
+     "sub": "1 triệu cp × 20.000 đồng · giả định"
+    },
+    {
+     "label": "Ví dụ 2",
+     "value": "50 tỷ",
+     "sub": "1 triệu cp × 50.000 đồng · giả định"
+    },
+    {
+     "label": "HoSE 15/10",
+     "value": "15.043 tỷ",
+     "sub": "giá trị khớp lệnh · +9%"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Khối lượng",
+     "text": "Số cổ phiếu được giao dịch."
+    },
+    {
+     "head": "Giá trị",
+     "text": "Số cổ phiếu nhân với giá."
+    },
+    {
+     "head": "Khi đọc tin",
+     "text": "Hỏi đó là khối lượng hay giá trị."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Giá trị khớp lệnh không gồm giao dịch thỏa thuận."
+  }
+ ],
+ "sources": "Thời báo Tài chính VN; Báo Đầu Tư. Ví dụ là số giả định."
+}

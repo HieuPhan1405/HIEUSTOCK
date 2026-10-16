@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "KHỐI NGOẠI 15/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 15/10/2026.",
+ "kicker": "KHỐI NGOẠI 15/10 · HOSE",
+ "title": [
+  "Khối ngoại bán ròng khoảng 690 tỷ,",
+  "nhóm chứng khoán vẫn tăng"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Khối ngoại",
+     "value": "−690 tỷ",
+     "sub": "bán ròng · HoSE",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "Chứng khoán",
+     "value": "+2,1%",
+     "sub": "nhóm ngành",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "Năng lượng",
+     "value": "−4,5%",
+     "sub": "nhóm ngành",
+     "tone": "red",
+     "arrow": "▼"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Bán ròng không phải bán hết",
+     "text": "Trong phiên, bán nhiều hơn mua. Không nói lên toàn bộ danh mục."
+    },
+    {
+     "head": "Ai mua?",
+     "text": "Nhà đầu tư trong nước và tự doanh. Số tự doanh phiên này chưa đối chiếu được."
+    },
+    {
+     "head": "Ví dụ giả định",
+     "text": "Bán 100 tỷ, mua 20 tỷ thì bán ròng 80 tỷ."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Số bán ròng là 688 tỷ hoặc 685 tỷ tùy nguồn; bài làm tròn."
+  }
+ ],
+ "sources": "Thời báo Tài chính VN; Báo Đầu Tư; DNSE."
+}

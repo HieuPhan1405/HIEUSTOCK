@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "TỔNG KẾT PHIÊN 15/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 15/10/2026.",
+ "kicker": "TỔNG KẾT PHIÊN 15/10 · HOSE",
+ "title": [
+  "VN-Index mất mốc 1.700 điểm,",
+  "thanh khoản HoSE tăng 9%"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "VN-Index",
+     "value": "−0,38%",
+     "sub": "1.698,35 · −6,52 điểm",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "VN30",
+     "value": "−0,47%",
+     "sub": "1.843,71 · −8,73 điểm",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "Khối ngoại",
+     "value": "−688 tỷ",
+     "sub": "bán ròng · HoSE",
+     "tone": "red",
+     "arrow": "▼"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Giảm thứ bảy liên tiếp",
+     "text": "Từ đỉnh 6/10, VN-Index mất 60,73 điểm, khoảng 3,5%."
+    },
+    {
+     "head": "Thanh khoản",
+     "text": "Giá trị khớp lệnh HoSE khoảng 15.043 tỷ, tăng 9%."
+    },
+    {
+     "head": "Nhóm ngành",
+     "text": "Chứng khoán tăng 2,1%; năng lượng giảm 4,5%."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Số mã tăng, giảm của hai nguồn lệch nhau nên bài không nêu. Chưa rõ nguyên nhân chung."
+  }
+ ],
+ "sources": "Báo Đầu Tư; Thời báo Tài chính VN; Entrade."
+}

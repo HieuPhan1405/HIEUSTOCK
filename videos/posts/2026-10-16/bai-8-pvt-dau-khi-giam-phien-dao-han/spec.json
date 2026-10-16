@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "PHIÊN ĐÁO HẠN 15/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 15/10/2026.",
+ "kicker": "PHIÊN ĐÁO HẠN 15/10 · PVT",
+ "title": [
+  "PVT giảm 4,25% phiên đáo hạn,",
+  "lợi nhuận quý 2 tăng hơn 80%"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "PVT",
+     "value": "−4,25%",
+     "sub": "23.650 đồng",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "Nhóm năng lượng",
+     "value": "−4,5%",
+     "sub": "15/10",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "LNST quý 2",
+     "value": "Hơn 80%",
+     "sub": "tăng · quý 2/2026",
+     "tone": "green",
+     "arrow": "▲"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Giá",
+     "text": "Từ 24.700 xuống 23.650 đồng."
+    },
+    {
+     "head": "Bối cảnh",
+     "text": "Ngày đáo hạn phái sinh tháng 10. Chưa rõ nguyên nhân giảm."
+    },
+    {
+     "head": "Kết quả",
+     "text": "Lợi nhuận quý 2 tăng; mức tăng cụ thể khác nhau giữa các nguồn."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Không dự đoán giá phiên tới."
+  }
+ ],
+ "sources": "DNSE; Entrade; Báo Mới; Thời báo Tài chính VN; Báo Đầu Tư."
+}

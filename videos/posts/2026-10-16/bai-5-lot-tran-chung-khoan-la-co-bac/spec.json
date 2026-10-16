@@ -1,0 +1,35 @@
+{
+ "type": "card",
+ "stamp": "LỘT TRẦN NGHỀ MÔI GIỚI #5",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 15/10/2026.",
+ "kicker": "LỘT TRẦN NGHỀ MÔI GIỚI #5",
+ "title": [
+  "Chứng khoán là cờ bạc,",
+  "môi giới là nhà cái?"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Nhà cái",
+     "text": "Đối ứng trực tiếp với người chơi: khách thua thì nhà cái thắng."
+    },
+    {
+     "head": "Sàn khớp lệnh",
+     "text": "Người mua và người bán gặp nhau. Công ty chứng khoán là trung gian, thu phí."
+    },
+    {
+     "head": "Khác ở đâu",
+     "text": "Cổ phiếu là quyền sở hữu một doanh nghiệp, không phải một ván cược."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Ba câu hỏi để tự kiểm: ai đối ứng với lệnh, công ty thu phí gì, mình sở hữu gì?"
+  }
+ ],
+ "sources": "Kiến thức chung về khớp lệnh và hoạt động môi giới."
+}
