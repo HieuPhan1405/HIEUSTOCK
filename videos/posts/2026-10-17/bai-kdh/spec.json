@@ -1,0 +1,59 @@
+{
+ "type": "card",
+ "stamp": "KDH 16/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 16/10/2026.",
+ "kicker": "KDH · BẤT ĐỘNG SẢN",
+ "title": [
+  "KDH tăng 3,66% phiên 16/10,",
+  "khi nhóm bất động sản chịu áp lực"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "KDH",
+     "value": "+3,66%",
+     "sub": "14.150 đồng · 16/10",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "9/10 → 16/10",
+     "value": "+5,6%",
+     "sub": "13.400 → 14.150 đồng",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "LNST quý 2",
+     "value": "Tăng",
+     "sub": "công ty mẹ · DNSE"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Doanh thu quý 2",
+     "text": "Theo DNSE, doanh thu thuần giảm so với cùng kỳ."
+    },
+    {
+     "head": "Kế hoạch 2026",
+     "text": "Doanh thu 4.200 tỷ, lợi nhuận sau thuế 1.500 tỷ (công bố tháng 4)."
+    },
+    {
+     "head": "Chưa rõ",
+     "text": "Nguyên nhân giá tăng và vì sao doanh thu giảm mà lợi nhuận tăng."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Khi đọc báo cáo bất động sản, đặt cạnh nhau doanh thu và lợi nhuận."
+  }
+ ],
+ "sources": "Entrade; DNSE; Vietstock; Người Quan Sát (11/4/2026)."
+}

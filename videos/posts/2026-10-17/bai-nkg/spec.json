@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "NKG 16/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 16/10/2026.",
+ "kicker": "NKG · THÉP",
+ "title": [
+  "NKG giảm 0,95% phiên 16/10,",
+  "nhưng tăng khoảng 11,9% trong tuần"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "NKG",
+     "value": "−0,95%",
+     "sub": "10.400 đồng · 16/10",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "9/10 → 16/10",
+     "value": "+11,9%",
+     "sub": "9.290 → 10.400 đồng",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "Doanh thu Q2",
+     "value": "+9%",
+     "sub": "so với cùng kỳ",
+     "tone": "green",
+     "arrow": "▲"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Nhóm thép",
+     "text": "Thép nằm trong các nhóm phục hồi tuần 12–16/10 (Nhân Dân)."
+    },
+    {
+     "head": "Lợi nhuận quý 2",
+     "text": "Hai nguồn lệch phạm vi nên bài không nêu con số."
+    },
+    {
+     "head": "Chưa rõ",
+     "text": "Nguyên nhân giá tăng trong tuần; chưa đối chiếu BCTC gốc."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Quý 3: xem hàng tồn kho, dư nợ vay và biên lợi nhuận gộp."
+  }
+ ],
+ "sources": "Entrade; DNSE; Báo Nhân Dân; Thương hiệu và Công luận."
+}
