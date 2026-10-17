@@ -1,11 +1,11 @@
 {
  "type": "card",
- "stamp": "KDH 16/10",
- "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 16/10/2026.",
- "kicker": "KDH · BẤT ĐỘNG SẢN",
+ "stamp": "NHẬN ĐỊNH KDH",
+ "disclaimer": "Nhận định cá nhân từ số liệu kỹ thuật, không phải khuyến nghị mua/bán. Số liệu đến hết phiên 16/10/2026.",
+ "kicker": "KDH · NHẬN ĐỊNH KỸ THUẬT",
  "title": [
-  "KDH tăng 3,66% phiên 16/10,",
-  "khi nhóm bất động sản chịu áp lực"
+  "KDH bật lên trên MA20 với",
+  "khối lượng gấp 2,1 lần bình quân"
  ],
  "title_size": 44,
  "blocks": [
@@ -13,23 +13,21 @@
    "type": "stats",
    "items": [
     {
-     "label": "KDH",
+     "label": "KDH 16/10",
      "value": "+3,66%",
-     "sub": "14.150 đồng · 16/10",
+     "sub": "14.150 đồng",
      "tone": "green",
      "arrow": "▲"
     },
     {
-     "label": "9/10 → 16/10",
-     "value": "+5,6%",
-     "sub": "13.400 → 14.150 đồng",
-     "tone": "green",
-     "arrow": "▲"
+     "label": "Khối lượng",
+     "value": "2,1 lần",
+     "sub": "so với bình quân 20 phiên"
     },
     {
-     "label": "LNST quý 2",
-     "value": "Tăng",
-     "sub": "công ty mẹ · DNSE"
+     "label": "MA20",
+     "value": "13.850",
+     "sub": "giá đang trên MA20"
     }
    ]
   },
@@ -37,23 +35,23 @@
    "type": "list",
    "items": [
     {
-     "head": "Doanh thu quý 2",
-     "text": "Theo DNSE, doanh thu thuần giảm so với cùng kỳ."
+     "head": "Kỹ thuật",
+     "text": "Thoát vùng đi ngang 13.250–13.700 của 10 phiên trước, kèm khối lượng tăng."
     },
     {
-     "head": "Kế hoạch 2026",
-     "text": "Doanh thu 4.200 tỷ, lợi nhuận sau thuế 1.500 tỷ (công bố tháng 4)."
+     "head": "Vùng quan sát",
+     "text": "Trên: 14.300, 14.770, MA50 ~15.000. Dưới: 13.850, 13.000."
     },
     {
-     "head": "Chưa rõ",
-     "text": "Nguyên nhân giá tăng và vì sao doanh thu giảm mà lợi nhuận tăng."
+     "head": "Nhận định",
+     "text": "Nhịp hồi kỹ thuật ngắn hạn; xu hướng trung hạn còn dưới MA50."
     }
    ]
   },
   {
    "type": "note",
-   "text": "Khi đọc báo cáo bất động sản, đặt cạnh nhau doanh thu và lợi nhuận."
+   "text": "Giữ trên 13.850 thì nhịp hồi còn giữ được; mất vùng này, giá dễ quay lại đi ngang."
   }
  ],
- "sources": "Entrade; DNSE; Vietstock; Người Quan Sát (11/4/2026)."
+ "sources": "Entrade (giá, khối lượng, MA tự tính)."
 }
