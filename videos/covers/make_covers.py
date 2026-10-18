@@ -24,6 +24,13 @@ COVERS = {
     "hpg": dict(photo="img/hpg-san-luong.jpg", l1="BÁN +54%", c1="#F5C542", l2="HÒA PHÁT QUÝ 3", c2="#FAFAFA",
                 l3="Hơn một nửa mức tăng<br>đến từ một loại thép",
                 dy={"tiktok_1080x1920": 400, "facebook_1080x1350": 90}, s1={"tiktok_1080x1920": 146, "facebook_1080x1350": 128}),
+    # video ghim giới thiệu 18/10: khung chân dung cuối video (không cầm mic, mặt trống); chỉ bản TikTok
+    "gioithieu": dict(photo="img/gioi-thieu.jpg", l1="MÌNH LÀ HIẾU", c1="#F5C542", l2="ĐỌC SỐ LIỆU CÙNG BẠN", c2="#FAFAFA",
+                      l3="Nhìn thị trường gọn<br>và bình tĩnh hơn", only=["tiktok_1080x1920"],
+                      dy={"tiktok_1080x1920": 400}, s1={"tiktok_1080x1920": 126}, s2={"tiktok_1080x1920": 64}),
+    "gioithieu_hook": dict(photo="img/gioi-thieu.jpg", l1="NHÌN VÀO ĐÂU<br>TRƯỚC?", c1="#F5C542", l2="BẢNG GIÁ CẢ TRĂM MÃ", c2="#FAFAFA",
+                           l3="Mình là Hiếu, kể bạn nghe<br>cách mình nhìn thị trường", only=["tiktok_1080x1920"],
+                           dy={"tiktok_1080x1920": 400}, s1={"tiktok_1080x1920": 108}, s2={"tiktok_1080x1920": 62}),
 }
 # (rộng, cao, offset y của ảnh, cỡ chữ l1, l2, l3, top của khối chữ)
 SIZES = {
@@ -32,6 +39,8 @@ SIZES = {
 }
 for key, c in COVERS.items():
     for name, (w, h, dy, s1, s2, s3, top) in SIZES.items():
+        if c.get("only") and name not in c["only"]:
+            continue
         dy, s1, s2, s3 = (c.get(k, {}).get(name, v) for k, v in (("dy", dy), ("s1", s1), ("s2", s2), ("s3", s3)))
         l3 = c["l3"][name] if isinstance(c["l3"], dict) else c["l3"]
         tag2 = f'<div class="tag2">{c["tag2"]}</div>' if c.get("tag2") else ""
