@@ -1,0 +1,59 @@
+{
+ "type": "card",
+ "stamp": "ACV 16/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 16/10/2026.",
+ "kicker": "ACV · HÀNG KHÔNG",
+ "title": [
+  "ACV: doanh thu 6 tháng +1,78%,",
+  "lợi nhuận trước thuế 83,6% kế hoạch"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Doanh thu 6T",
+     "value": "+1,78%",
+     "sub": "10.745 tỷ",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "LNTT 6 tháng",
+     "value": "5.862 tỷ",
+     "sub": "83,6% kế hoạch năm"
+    },
+    {
+     "label": "Giá 9/10→16/10",
+     "value": "+1,2%",
+     "sub": "40.900 → 41.400 đồng",
+     "tone": "green",
+     "arrow": "▲"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Quý 2",
+     "text": "Lợi nhuận tăng trên 25%, doanh thu giảm nhẹ (DNSE)."
+    },
+    {
+     "head": "Vì sao có thể lệch",
+     "text": "Lợi nhuận = doanh thu − chi phí + thu nhập khác; báo cáo phân tích nêu biên gộp và lãi tỷ giá."
+    },
+    {
+     "head": "Chưa rõ",
+     "text": "Nguyên nhân giá tăng; chưa đối chiếu phần lãi tỷ giá."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Mình không dự đoán giá phiên tới."
+  }
+ ],
+ "sources": "CafeF; Fechtin; DNSE; Vietstock; Entrade."
+}

@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "VNM 16/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 16/10/2026.",
+ "kicker": "VNM · SỮA",
+ "title": [
+  "VNM: lãi quý 2 cao nhất hơn 5 năm,",
+  "giá cả tuần chỉ nhích 0,2%"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "LNST quý 2",
+     "value": "+28%",
+     "sub": "3.184 tỷ · sơ bộ",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "Doanh thu quý 2",
+     "value": "+12,5%",
+     "sub": "18.856 tỷ · sơ bộ",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "Giá 9/10→16/10",
+     "value": "+0,2%",
+     "sub": "57.700 → 57.800 đồng",
+     "tone": "green",
+     "arrow": "▲"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Số sơ bộ",
+     "text": "Báo cáo chính thức, nhất là sau soát xét, có thể khác."
+    },
+    {
+     "head": "Hai khung thời gian",
+     "text": "Lợi nhuận công bố từ 24/7; giá là diễn biến 5 phiên."
+    },
+    {
+     "head": "Chưa rõ",
+     "text": "Vì sao giá gần như đi ngang cả tuần."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Lợi nhuận tốt không buộc giá phải tăng ngay; mình không dự đoán giá."
+  }
+ ],
+ "sources": "Vietstock; CafeF; DNSE; Entrade."
+}

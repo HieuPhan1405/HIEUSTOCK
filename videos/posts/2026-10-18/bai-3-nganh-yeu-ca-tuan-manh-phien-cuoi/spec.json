@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "NGÀNH · TUẦN 12–16/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 16/10/2026.",
+ "kicker": "NGÀNH · TUẦN 12–16/10",
+ "title": [
+  "Bán lẻ yếu cả tuần,",
+  "nhưng mạnh ở phiên cuối tuần"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Dịch vụ bán lẻ",
+     "value": "+0,7%",
+     "sub": "phiên 16/10 · VNDirect",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "Ngân hàng",
+     "value": "+1,0%",
+     "sub": "phiên 16/10 · VNDirect",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "Tiêu dùng · Fili",
+     "value": "+1,41%",
+     "sub": "phiên 16/10",
+     "tone": "green",
+     "arrow": "▲"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Cả tuần",
+     "text": "Bán lẻ, bất động sản, dầu khí, bảo hiểm chịu áp lực; thép, xây dựng, chứng khoán, hàng không phục hồi."
+    },
+    {
+     "head": "Phiên cuối tuần",
+     "text": "Nhiều nhóm yếu cả tuần lại tăng ngày 16/10."
+    },
+    {
+     "head": "Ví dụ giả định",
+     "text": "Giảm 3%, 2%, 1%, 1% rồi tăng 1,5%: cả tuần vẫn giảm khoảng 5,5%."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Đọc bảng ngành ở cả hai khung: cả tuần và phiên gần nhất."
+  }
+ ],
+ "sources": "Báo Nhân Dân; VNDirect; Fili."
+}

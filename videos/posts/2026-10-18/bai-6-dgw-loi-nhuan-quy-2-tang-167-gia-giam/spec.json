@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "DGW 16/10",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 16/10/2026.",
+ "kicker": "DGW · BÁN LẺ CÔNG NGHỆ",
+ "title": [
+  "DGW: lãi quý 2 tăng 167%,",
+  "giá cả tuần giảm 5,8%"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "LNST quý 2",
+     "value": "+167%",
+     "sub": "309 tỷ · so cùng kỳ",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "Giá 9/10→16/10",
+     "value": "−5,8%",
+     "sub": "47.250 → 44.500 đồng",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "VN-Index tuần",
+     "value": "−29",
+     "sub": "điểm",
+     "tone": "red",
+     "arrow": "▼"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Hai khung thời gian",
+     "text": "Lợi nhuận là kết quả quý 2; giá là diễn biến 5 phiên gần nhất."
+    },
+    {
+     "head": "Nên đọc thêm",
+     "text": "Thuyết minh: lãi đến từ kinh doanh chính hay đầu tư tài chính."
+    },
+    {
+     "head": "Chưa rõ",
+     "text": "Nguyên nhân giá giảm trong tuần."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Mình không dự đoán giá phiên tới."
+  }
+ ],
+ "sources": "Vietstock; VnEconomy; DNSE; Entrade."
+}

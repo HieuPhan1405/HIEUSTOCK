@@ -1,0 +1,35 @@
+{
+ "type": "card",
+ "stamp": "LỘT TRẦN NGHỀ MÔI GIỚI #6",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Ví dụ là số giả định.",
+ "kicker": "LỘT TRẦN NGHỀ MÔI GIỚI #6",
+ "title": [
+  "Tài khoản lỗ 15%, có người",
+  "gợi ý vay margin để \"gỡ\""
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Margin nhân lên cả lãi lẫn lỗ",
+     "text": "Giả định vốn 100 triệu, vay thêm 100 triệu: giá ±10% thành ±20 triệu (20% vốn), chưa tính lãi vay."
+    },
+    {
+     "head": "Hỏi công ty",
+     "text": "Lãi suất vay là bao nhiêu? Ngưỡng bổ sung tiền hoặc bán bớt là bao nhiêu?"
+    },
+    {
+     "head": "Hỏi người gợi ý",
+     "text": "Thu nhập của họ tính theo cái gì? Nếu lỗ thêm, ai chịu phần lỗ đó?"
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Bài này không nói bạn nên hay không nên vay margin."
+  }
+ ],
+ "sources": "Kiến thức chung về margin. Ví dụ là số giả định."
+}

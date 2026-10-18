@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "TỔNG KẾT TUẦN 42",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 16/10/2026.",
+ "kicker": "TỔNG KẾT TUẦN 42 · 12–16/10",
+ "title": [
+  "VN-Index mất 29 điểm cả tuần,",
+  "nhưng phiên cuối tuần tăng 7,56"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "VN-Index cả tuần",
+     "value": "−29",
+     "sub": "điểm · 1.735 → 1.706",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "Phiên 16/10",
+     "value": "+7,56",
+     "sub": "điểm · 1.705,91",
+     "tone": "green",
+     "arrow": "▲"
+    },
+    {
+     "label": "Khối ngoại",
+     "value": "−3.000",
+     "sub": "tỷ · bán ròng HoSE · tuần",
+     "tone": "red",
+     "arrow": "▼"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Phục hồi cả tuần",
+     "text": "Thép, xây dựng, chứng khoán, hàng không."
+    },
+    {
+     "head": "Chịu áp lực",
+     "text": "Bất động sản, ngân hàng, dầu khí, bán lẻ và một số nhóm khác."
+    },
+    {
+     "head": "Tuần 19–23/10",
+     "text": "Mùa báo cáo quý 3; 12 doanh nghiệp chốt quyền cổ tức."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Chưa có nguồn giải thích nguyên nhân tuần giảm; mình không dự đoán tuần tới."
+  }
+ ],
+ "sources": "VNDirect; Fili; Báo Nhân Dân; Người Quan Sát."
+}

@@ -1,0 +1,55 @@
+{
+ "type": "card",
+ "stamp": "KIẾN THỨC 60 GIÂY #6",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Ví dụ là số giả định, chưa tính thuế.",
+ "kicker": "KIẾN THỨC 60 GIÂY #6",
+ "title": [
+  "Cổ tức tiền mặt 3.000 đồng,",
+  "giá tham chiếu giảm 3.000 đồng"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Trước ngày chốt",
+     "value": "30.000",
+     "sub": "1 cổ phiếu · giả định"
+    },
+    {
+     "label": "Giá tham chiếu",
+     "value": "27.000",
+     "sub": "ngày không hưởng quyền"
+    },
+    {
+     "label": "Cộng cổ tức",
+     "value": "30.000",
+     "sub": "27.000 + 3.000 · chưa tính thuế"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Ngày không hưởng quyền",
+     "text": "Từ ngày này, ai mua mới không nhận cổ tức đợt đó."
+    },
+    {
+     "head": "Giá tham chiếu điều chỉnh",
+     "text": "Giảm đúng bằng cổ tức tiền mặt của mỗi cổ phiếu."
+    },
+    {
+     "head": "Tiền về sau",
+     "text": "Cổ tức vào tài khoản ở ngày thanh toán, không phải ngay ngày không hưởng quyền."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Tuần 19–23/10 có 12 doanh nghiệp chốt quyền cổ tức. So giá qua ngày này, dùng giá đã điều chỉnh."
+  }
+ ],
+ "sources": "Người Quan Sát 17/10; kiến thức chung. Ví dụ là số giả định."
+}

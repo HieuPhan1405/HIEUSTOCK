@@ -1,0 +1,61 @@
+{
+ "type": "card",
+ "stamp": "KHỐI NGOẠI · TUẦN",
+ "disclaimer": "Nội dung tổng hợp thông tin, không phải khuyến nghị đầu tư. Số liệu đến hết phiên 16/10/2026.",
+ "kicker": "KHỐI NGOẠI · TUẦN 12–16/10",
+ "title": [
+  "Khối ngoại bán ròng 3.000 tỷ cả tuần,",
+  "phiên cuối tuần chỉ số vẫn tăng"
+ ],
+ "title_size": 44,
+ "blocks": [
+  {
+   "type": "stats",
+   "items": [
+    {
+     "label": "Cả tuần",
+     "value": "−3.013",
+     "sub": "tỷ · bán ròng HoSE",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "Phiên 16/10",
+     "value": "−534",
+     "sub": "tỷ · bán ròng HoSE",
+     "tone": "red",
+     "arrow": "▼"
+    },
+    {
+     "label": "VN-Index 16/10",
+     "value": "+7,56",
+     "sub": "điểm · 1.705,91",
+     "tone": "green",
+     "arrow": "▲"
+    }
+   ]
+  },
+  {
+   "type": "list",
+   "items": [
+    {
+     "head": "Bán ròng không phải bán hết",
+     "text": "Bán nhiều hơn mua. Ví dụ giả định: mua 400 tỷ, bán 934 tỷ, ròng 534 tỷ."
+    },
+    {
+     "head": "Hai phiên cuối",
+     "text": "15/10 và 16/10 bán ròng khoảng 1.220 tỷ, chừng 40% của cả tuần."
+    },
+    {
+     "head": "VN-Index",
+     "text": "Tính theo vốn hóa, có thể tăng nhờ cổ phiếu lớn dù ngoại bán ròng."
+    }
+   ]
+  },
+  {
+   "type": "note",
+   "text": "Chưa có số tự doanh nên không biết ai mua phần ngoại bán."
+  }
+ ],
+ "sources": "Báo Nhân Dân; Fili; Thời báo Tài chính VN; VNDirect."
+}
