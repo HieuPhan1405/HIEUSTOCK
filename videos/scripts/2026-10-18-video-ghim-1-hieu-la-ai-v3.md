@@ -1,4 +1,4 @@
-# VIDEO GHIM 1/3 (bản 3) – "Mình là Hiếu: người đứng sau kênh và CloudStock" (bản nháp, soạn 18/10/2026; ~64 giây)
+# VIDEO GHIM 1/3 (bản 3) – "Mình là Hiếu: người đứng sau kênh và CloudStock" (bản nháp, soạn 18/10/2026; ~61 giây)
 
 Viết lại sau góp ý "tôi chẳng thấy thông tin gì của tôi cả". Bản 2 chỉ có "Mình là Hiếu" nên người xem không biết Hiếu là ai. Bản 3 **kể về Hiếu** (học gì, làm gì, vì sao làm kênh và web) nhưng vẫn theo giọng đã chốt: mở bằng cảm giác người xem, nói lợi ích, không rao, **không bày sự non nớt** (không "thực tập", "đang học", "không phải chuyên gia"). Khung của video mẫu Danny: *là ai → thấy gì → đã làm gì → bạn nhận được gì*. Công ty duyệt trước khi đăng/ghim.
 
@@ -20,7 +20,7 @@ Viết lại sau góp ý "tôi chẳng thấy thông tin gì của tôi cả". B
 - **B:** "Chỉ số xanh mà danh mục của bạn vẫn đỏ. Mình muốn kể bạn nghe vì sao mình làm kênh này." · CHỮ: "XANH MÀ VẪN ĐỎ?"
 - **C:** "Mình là Hiếu. Hằng ngày mình đọc số liệu chứng khoán, và đây là điều mình thấy nhà đầu tư hay vướng nhất." · CHỮ: "ĐIỀU NHÀ ĐẦU TƯ HAY VƯỚNG"
 
-## 3. Kịch bản (lời nói ≈ 245 chữ ≈ 64 giây ở ~230 chữ/phút; bấm giờ thật khi đọc)
+## 3. Kịch bản (lời nói ≈ 234 chữ ≈ 61 giây (đã đếm cả dòng rủi ro) ở ~230 chữ/phút; bấm giờ thật khi đọc)
 
 [0:00–0:07] HOOK (A)
 *(giọng: gần gũi; ánh mắt nhìn thẳng ống kính; im 0,3 giây sau "nhìn vào đâu trước")*
