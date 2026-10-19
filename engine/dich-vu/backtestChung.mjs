@@ -166,7 +166,7 @@ export function moPhong(t, cach) {
   const { E, S, iv, open, high, low, close, sell, n } = t;
   const duongTheo = cach.duongTheo === "tenkan" ? t.tenkan : t.kijun;
   const chay = cach.chay ?? null; // { duong: "kijun"|"tenkan"|"sma20"|"sma50", soNen: so dong cua lien tiep duoi duong, atrMult: k (bam gia cao nhat - k x ATR), chuyenSauLai: { pct, duong } }
-  const mangDuong = (ten) => ({ kijun: t.kijun, tenkan: t.tenkan, sma20: t.sma20, sma50: t.sma50, cloudTop: t.cloudTop, cloudBot: t.cloudBot, cbTop: t.cbTop, cbBot: t.cbBot })[ten];
+  const mangDuong = (ten) => ({ kijun: t.kijun, tenkan: t.tenkan, tkMax: t.tkMax, tkMin: t.tkMin, sma20: t.sma20, sma50: t.sma50, cloudTop: t.cloudTop, cloudBot: t.cloudBot, cbTop: t.cbTop, cbBot: t.cbBot })[ten];
   let demDuoi = 0;
   let dinhClose = t.close[iv];
   let daLoLon = false; // da tung lai >= chuyenSauLai.pct (tinh theo dinh cao nhat cac nen truoc)
