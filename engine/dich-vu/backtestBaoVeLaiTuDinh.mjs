@@ -17,12 +17,12 @@ export function mo(t, cfg = {}) {
   const moc = [{ w: 0.3, gia: t.tp[0], xong: false }, { w: 0.3, gia: t.tp[1], xong: false }];
   let conLai = 1, thu = 0, phienTS = 0;
   let daTP1 = false, daTP2 = false;
-  let dinh = -Infinity;
+  let dinh = -Infinity, dinhIdx = iv;
   let jThoat = -1, lyDo = 0;
   const ban = (w, g, i) => { thu += w * (g / E); phienTS += w * (i - iv); conLai -= w; };
   for (let i = iv + 1; i < n; i++) {
     if (i - 1 > iv) {
-      dinh = Math.max(dinh, high[i - 1]);
+      if (high[i - 1] > dinh) { dinh = high[i - 1]; dinhIdx = i - 1; }
       if (high[i - 1] >= t.tp[0]) daTP1 = true;
       if (high[i - 1] >= t.tp[1]) daTP2 = true;
     }
@@ -42,9 +42,20 @@ export function mo(t, cfg = {}) {
       const batVol = cfg.volBatDau === "vao" ? true : cfg.volBatDau === "tp2" ? daTP2 : daTP1;
       volBan = batVol && relVol[i] >= cfg.vol && (!cfg.nenGiam || close[i] < open[i]) && (!cfg.duoiTenkan || (tenkan[i] != null && close[i] < tenkan[i])) && (!cfg.duoiKijun || (kijun[i] != null && close[i] < kijun[i]));
     }
+    // NHIP CHINH VOL BE = chinh de len, VOL LON = mat xu huong (Hieu 2026-10-19): sau TP1, dong cua < duong (Tenkan/Kijun) VA vol TB cac phien tu dinh den nay (relVol) >= chinh.k -> ban het o gia dong cua;
+    // chinh vol be thi khong ban, chi con san trailing rong (cfg.pct, khongSan) de khong bi tra qua nhieu lai.
+    let chinhBan = false;
+    if (cfg.chinh && daTP1 && Number.isFinite(dinh)) {
+      const duong = cfg.chinh.duong === "kijun" ? kijun : tenkan;
+      if (duong[i] != null && close[i] < duong[i]) {
+        let tong = 0, dem = 0;
+        for (let j = dinhIdx + 1; j <= i; j++) { tong += relVol[j]; dem++; }
+        if (dem > 0 && tong / dem >= cfg.chinh.k) chinhBan = true;
+      }
+    }
     let g = null;
     if (low[i] <= S) { g = Math.min(open[i], S); lyDo = 2; }
-    else if (sell[i] || dongDuoiKijun || volBan) { g = close[i]; lyDo = sell[i] ? 1 : volBan ? 6 : 4; }
+    else if (sell[i] || dongDuoiKijun || volBan || chinhBan) { g = close[i]; lyDo = sell[i] ? 1 : volBan ? 6 : chinhBan ? 7 : 4; }
     else if (muc > 0 && low[i] <= muc) { g = Math.min(open[i], muc); lyDo = 3; }
     if (g != null) { if (conLai > 1e-12) ban(conLai, g, i); jThoat = i; break; }
     for (const m of moc) if (!m.xong && high[i] >= m.gia) { ban(m.w, m.gia, i); m.xong = true; }
@@ -106,7 +117,27 @@ const CACH_VOL = [
   { ten: "bvRong 15% + Vol>=2.0 + giam + < Tenkan (sau TP1)", cfg: { ...BV15, vol: 2, nenGiam: true, duoiTenkan: true } },
   { ten: "Hoa von + Vol>=2.0 + giam + < Tenkan (sau TP1)", cfg: { vol: 2, nenGiam: true, duoiTenkan: true } },
 ];
-const CACH_CHAY = process.argv.includes("--chi=vol") ? CACH_VOL : CACH;
+const CACH_CHINH = [
+  { ten: "HIEN TAI: hoa von sau TP2", cfg: {} },
+  { ten: "[bvRong that] 15% tu dinh sau TP1", cfg: BV15 },
+  { ten: "Trailing 20% tu dinh sau TP1 (khong vol)", cfg: { batDau: "tp1", pct: 20, khongSan: true } },
+  { ten: "Tenkan + vol TB nhip chinh>=0.8 | san 20%", cfg: { chinh: { duong: "tenkan", k: 0.8 }, batDau: "tp1", pct: 20, khongSan: true } },
+  { ten: "Tenkan + vol TB nhip chinh>=1.0 | san 20%", cfg: { chinh: { duong: "tenkan", k: 1.0 }, batDau: "tp1", pct: 20, khongSan: true } },
+  { ten: "Tenkan + vol TB nhip chinh>=1.2 | san 20%", cfg: { chinh: { duong: "tenkan", k: 1.2 }, batDau: "tp1", pct: 20, khongSan: true } },
+  { ten: "Tenkan + vol TB nhip chinh>=1.5 | san 20%", cfg: { chinh: { duong: "tenkan", k: 1.5 }, batDau: "tp1", pct: 20, khongSan: true } },
+  { ten: "Tenkan + vol TB nhip chinh>=1.0 | san 25%", cfg: { chinh: { duong: "tenkan", k: 1.0 }, batDau: "tp1", pct: 25, khongSan: true } },
+  { ten: "Tenkan + vol TB nhip chinh>=1.0 | san 15%", cfg: { chinh: { duong: "tenkan", k: 1.0 }, batDau: "tp1", pct: 15, khongSan: true } },
+  { ten: "Kijun + vol TB nhip chinh>=1.0 | san 20%", cfg: { chinh: { duong: "kijun", k: 1.0 }, batDau: "tp1", pct: 20, khongSan: true } },
+  { ten: "Kijun + vol TB nhip chinh>=1.2 | san 20%", cfg: { chinh: { duong: "kijun", k: 1.2 }, batDau: "tp1", pct: 20, khongSan: true } },
+  { ten: "Kijun + vol TB nhip chinh>=0.8 | san 20%", cfg: { chinh: { duong: "kijun", k: 0.8 }, batDau: "tp1", pct: 20, khongSan: true } },
+  { ten: "Kijun + vol TB nhip chinh>=1.5 | san 20%", cfg: { chinh: { duong: "kijun", k: 1.5 }, batDau: "tp1", pct: 20, khongSan: true } },
+  { ten: "Kijun + vol TB nhip chinh>=1.0 | san 15%", cfg: { chinh: { duong: "kijun", k: 1 }, batDau: "tp1", pct: 15, khongSan: true } },
+  { ten: "Kijun + vol TB nhip chinh>=1.0 | san 25%", cfg: { chinh: { duong: "kijun", k: 1 }, batDau: "tp1", pct: 25, khongSan: true } },
+  { ten: "Kijun + vol TB nhip chinh>=1.0 | san 30%", cfg: { chinh: { duong: "kijun", k: 1 }, batDau: "tp1", pct: 30, khongSan: true } },
+  { ten: "Kijun + vol TB nhip chinh>=0.0 | san 20%  [doi chung, khong vol]", cfg: { chinh: { duong: "kijun", k: 0 }, batDau: "tp1", pct: 20, khongSan: true } },
+  { ten: "Tenkan (moi vol, k=0) | san 20%  [doi chung]", cfg: { chinh: { duong: "tenkan", k: 0 }, batDau: "tp1", pct: 20, khongSan: true } },
+];
+const CACH_CHAY = process.argv.includes("--chi=chinh") ? CACH_CHINH : process.argv.includes("--chi=vol") ? CACH_VOL : CACH;
 // kiem tra: cach hien tai phai khop moPhong() cua backtestChung
 {
   const a = tb(lenh.map((t) => moPhong(t, { moc: [{ w: 0.3, muc: "tp1" }, { w: 0.3, muc: "tp2" }] })).filter(Boolean).map((x) => x.ret));
@@ -134,7 +165,7 @@ for (const [tenTap, fn] of TAP) {
     const traLai = tb(ok.map((x) => x.dinhPct - x.ret)); // dinh dat duoc - ket qua thuc nhan (diem %): cang nho cang it tra lai
     const d10 = danhMucNhieuLan(kqs, ds, 10, SO_LAN, {});
     const d20 = danhMucNhieuLan(kqs, ds, 20, SO_LAN, {});
-    console.log(c.ten.padEnd(46), f(k.tb).padStart(7), f(k.trungVi).padStart(6), f(k.thang, 0).padStart(7), f(k.pf).padStart(5), f(k.phienTB, 1).padStart(6), f(k.laiMoiPhien, 3).padStart(8), f(traLai, 1).padStart(8), "|", ky.map((a) => `${f(tb(a)).padStart(5)}`).join(" "), `| ${f(d10.cagr, 1)}%/${f(d10.sut, 0)}%`, `${f(d20.cagr, 1)}%/${f(d20.sut, 0)}%`, `| vol ${((ok.filter((x) => x.lyDo === 6).length / ok.length) * 100).toFixed(0)}%`);
+    console.log(c.ten.padEnd(46), f(k.tb).padStart(7), f(k.trungVi).padStart(6), f(k.thang, 0).padStart(7), f(k.pf).padStart(5), f(k.phienTB, 1).padStart(6), f(k.laiMoiPhien, 3).padStart(8), f(traLai, 1).padStart(8), "|", ky.map((a) => `${f(tb(a)).padStart(5)}`).join(" "), `| ${f(d10.cagr, 1)}%/${f(d10.sut, 0)}%`, `${f(d20.cagr, 1)}%/${f(d20.sut, 0)}%`, `| vol ${((ok.filter((x) => x.lyDo === 6 || x.lyDo === 7).length / ok.length) * 100).toFixed(0)}%`);
   }
 }
 console.log(`(chi phi ${CHI_PHI}%/lenh da tru; "tra lai" = dinh dat duoc tru ket qua nhan, diem %, cang nho cang it tra lai cho thi truong; giai doan ${TEN_KY.join(" | ")})`);
@@ -189,5 +220,44 @@ if (process.argv.includes("--chi=vol")) {
   for (const [ten, fn] of DK) {
     const g = gom(fn);
     console.log(ten.padEnd(46), String(g.nTin).padStart(5), g.tbs.map((x) => f(x, 2).padStart(8)).join("  "), "|", g.thang.map((x) => f(x, 0)).join(" / "));
+  }
+}
+
+// CHAN DOAN "CHINH VOL BE -> LEN, VOL LON -> MAT XU HUONG": moi lenh, lan DAU dong cua cat xuong duoi Tenkan sau TP1 (dang giu theo cach hien tai) = mot nhip chinh. Chia theo vol TB (relVol) cac phien tu dinh den hom do.
+// Xem 5/10/20 phien sau gia doi bao nhieu %, co len dinh moi trong 20 phien khong, co sut them >=10% khong.
+if (process.argv.includes("--chi=chinh")) {
+  const NHOM = [["Vol BE (TB < 0.8)", (v) => v < 0.8], ["Vol vua (0.8-1.2)", (v) => v >= 0.8 && v < 1.2], ["Vol LON (TB >= 1.2)", (v) => v >= 1.2], ["Vol RAT LON (TB >= 1.6)", (v) => v >= 1.6]];
+  const ev = [];
+  for (const t of lenh) {
+    const r = mo(t, {});
+    if (!r) continue;
+    let daTP1 = false, dinh = -Infinity, dIdx = t.iv, truoc = true;
+    for (let i = t.iv + 1; i <= r.jThoat; i++) {
+      if (i - 1 > t.iv) { if (t.high[i - 1] > dinh) { dinh = t.high[i - 1]; dIdx = i - 1; } if (t.high[i - 1] >= t.tp[0]) daTP1 = true; }
+      if (!daTP1) continue;
+      const duoi = t.tenkan[i] != null && t.close[i] < t.tenkan[i];
+      if (duoi && truoc) {
+        let tong = 0, dem = 0;
+        for (let j = dIdx + 1; j <= i; j++) { tong += t.relVol[j]; dem++; }
+        if (dem > 0) {
+          const x = { vol: tong / dem, sau: dIdx, depth: (1 - t.close[i] / dinh) * 100 };
+          x.f = [5, 10, 20].map((N) => (i + N < t.n ? (t.close[i + N] / t.close[i] - 1) * 100 : null));
+          let hMax = -Infinity, lMin = Infinity;
+          for (let j = i + 1; j <= Math.min(t.n - 1, i + 20); j++) { hMax = Math.max(hMax, t.high[j]); lMin = Math.min(lMin, t.low[j]); }
+          x.dinhMoi = i + 20 < t.n ? hMax > dinh : null;
+          x.sut10 = i + 20 < t.n ? lMin < t.close[i] * 0.9 : null;
+          ev.push(x);
+        }
+        truoc = false; // chi lan dau moi lenh
+      }
+    }
+  }
+  console.log("\n=== Nhip chinh dau tien duoi Tenkan sau TP1: theo vol TB tu dinh den hom do ===");
+  console.log("Nhom".padEnd(26), "n".padStart(5), "sau tu dinh".padStart(12), "+5p".padStart(7), "+10p".padStart(7), "+20p".padStart(7), "dinh moi 20p".padStart(14), "sut them>=10%".padStart(14));
+  for (const [ten, fn] of NHOM) {
+    const g = ev.filter((e) => fn(e.vol));
+    const m = (k) => tb(g.map((e) => e.f[k]).filter((x) => x != null));
+    const ty = (key) => { const a = g.map((e) => e[key]).filter((x) => x != null); return a.length ? (a.filter(Boolean).length / a.length) * 100 : NaN; };
+    console.log(ten.padEnd(26), String(g.length).padStart(5), (f(tb(g.map((e) => e.depth)), 1) + "% sau").padStart(12), f(m(0)).padStart(7), f(m(1)).padStart(7), f(m(2)).padStart(7), (f(ty("dinhMoi"), 0) + "%").padStart(14), (f(ty("sut10"), 0) + "%").padStart(14));
   }
 }
