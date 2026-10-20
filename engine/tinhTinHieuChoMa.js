@@ -333,17 +333,20 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   // ---- Cac gia tri "tung cham TP nao" DE HIEN THI (HighestSince TU LUC Buy - BAO GOM CHINH nen
   // Buy, KHAC voi daTP1Vong/2/3 NOI BO cua may trang thai von CHU DINH BO QUA nen vao lenh - day
   // la 2 duong tinh khac nhau CO CHU DICH trong chinh AFL goc, khong phai loi). ----
-  const dinhCaoNhatTuKhiMua = highestSince(kq.buy, high);
+  // HANG CHI VE T+2,5 (2026-10-20): mua phien T thi toi chieu T+2 hang moi ve, nen CHI TINH dinh tu nen T+2 tro di (khong tinh nen mua va nen T+1 - truoc day web ghi
+  // "chot TP1/TP2" ngay phien T+1 la khong ban duoc). Giong backtestChung moPhongThucTe (banTu = iv+2). Hai nen dau sau khi mua -> null.
+  const dichPhai = (arr, k) => arr.map((_, i) => (i >= k ? arr[i - k] === true : false));
+  const sauMuaItNhat2Nen = barsSince(kq.buy).map((b) => b >= 2);
+  const dinhCaoNhatTuKhiMua = highestSince(dichPhai(kq.buy, 2), high).map((v, i) => (sauMuaItNhat2Nen[i] ? v : null));
   const chamTP1TuKhiMua = dinhCaoNhatTuKhiMua.map((v, i) => v != null && kq.tp1VaoVong[i] != null && v >= kq.tp1VaoVong[i]);
   const chamTP2TuKhiMua = dinhCaoNhatTuKhiMua.map((v, i) => v != null && kq.tp2VaoVong[i] != null && v >= kq.tp2VaoVong[i]);
   const chamTP3TuKhiMua = dinhCaoNhatTuKhiMua.map((v, i) => v != null && kq.tp3VaoVong[i] != null && v >= kq.tp3VaoVong[i]);
   const tpDaChamCuoi = chamTP3TuKhiMua[cuoi] ? "TP3" : chamTP2TuKhiMua[cuoi] ? "TP2" : chamTP1TuKhiMua[cuoi] ? "TP1" : "";
   // LENH MUA MOI da cham TP nao (dinh cao nhat cac phien SAU phien vao lenh mua moi, tinh ca hom nay - phien vao lenh mua o gia dong cua nen khong tinh dinh cua no) - web ghi
   // dong chot 30% TP1 / 30% TP2 cua lenh mua moi theo cot nay. Chi co gia tri khi lenh mua moi dang giu hoac vua dong hom nay. AFL 7: MucTPDaChamMuaGiua.
-  const dinhSauMuaGiua = highestSince(
-    kq.muaGiuaSuKien,
-    high.map((h, i) => (kq.muaGiuaSuKien[i] ? -Infinity : h))
-  );
+  // Cung quy tac T+2,5: chi tinh dinh tu nen T+2 sau phien vao lenh mua moi (phien vao lenh o gia dong cua).
+  const sauGiuaItNhat2Nen = barsSince(kq.muaGiuaSuKien).map((b) => b >= 2);
+  const dinhSauMuaGiua = highestSince(dichPhai(kq.muaGiuaSuKien, 2), high).map((v, i) => (sauGiuaItNhat2Nen[i] ? v : null));
   const conLenhGiua = kq.muaGiuaGiu[cuoi] === true || kq.muaGiuaCat[cuoi] > 0;
   const chamGiua = (tp) => conLenhGiua && tp > 0 && dinhSauMuaGiua[cuoi] != null && dinhSauMuaGiua[cuoi] >= tp;
   const tpDaChamGiuaCuoi = chamGiua(kq.muaGiuaTP3[cuoi]) ? "TP3" : chamGiua(kq.muaGiuaTP2[cuoi]) ? "TP2" : chamGiua(kq.muaGiuaTP1[cuoi]) ? "TP1" : "";

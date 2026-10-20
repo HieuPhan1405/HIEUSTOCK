@@ -1165,7 +1165,8 @@ ChotLoi_TP3_TaiMua = ValueWhen(Buy, ChotLoi_TP3, 1);
 // Loi da phat hien: mot ma giu lau (vd FRT 29 phien) co the CHAM TP1 giua
 // chung roi gia tut xuong lai duoi TP1 - web truoc day chi so gia hien tai
 // voi TP nen bao nham "chua cham", trong khi thuc te da co the chot duoc.
-DinhCaoNhatTuKhiMua = HighestSince(Buy, H);
+// HANG CHI VE T+2,5 (2026-10-20): chi tinh dinh tu nen T+2 sau nen Mua (nen Mua va T+1 chua ban duoc); 2 nen dau -> 0. Mirror engine tinhTinHieuChoMa.js (dichPhai 2).
+DinhCaoNhatTuKhiMua = IIf(BarsSince(Buy) < 2, 0, HighestSince(Ref(Buy, -2), H));
 DaChamTP1_TuKhiMua = DinhCaoNhatTuKhiMua >= ChotLoi_TP1_TaiMua;
 DaChamTP2_TuKhiMua = DinhCaoNhatTuKhiMua >= ChotLoi_TP2_TaiMua;
 DaChamTP3_TuKhiMua = DinhCaoNhatTuKhiMua >= ChotLoi_TP3_TaiMua;
@@ -1319,7 +1320,7 @@ ThangMuaGiua = ValueWhen(MuaGiuaSuKien, Month(), 1);
 NgayMuaGiua = ValueWhen(MuaGiuaSuKien, Day(), 1);
 // LENH MUA MOI da cham TP nao: dinh cao nhat cac phien SAU phien vao lenh mua moi (tinh ca hom nay; phien vao lenh mua o gia dong cua nen khong tinh dinh cua no). Chi co gia tri
 // khi lenh mua moi dang giu hoac vua dong hom nay - web ghi dong chot 30% TP1 / 30% TP2 cua lenh mua moi theo cot nay. Mirror engine tp_da_cham_giua.
-DinhSauMuaGiua = HighestSince(MuaGiuaSuKien, IIf(MuaGiuaSuKien, 0, H));
+DinhSauMuaGiua = IIf(BarsSince(MuaGiuaSuKien) < 2, 0, HighestSince(Ref(MuaGiuaSuKien, -2), H)); // T+2,5: chi tinh dinh tu nen T+2 sau phien vao lenh
 ConLenhGiua = MuaGiuaGiu == 1 OR MuaGiuaCat > 0;
 ChamGiuaTP1 = ConLenhGiua AND MuaGiuaTP1 > 0 AND DinhSauMuaGiua >= MuaGiuaTP1;
 ChamGiuaTP2 = ConLenhGiua AND MuaGiuaTP2 > 0 AND DinhSauMuaGiua >= MuaGiuaTP2;
