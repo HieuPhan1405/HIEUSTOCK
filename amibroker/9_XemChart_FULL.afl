@@ -421,7 +421,7 @@ VNSmallCapList = "AAA,AAM,ABS,ABT,ACC,ACL,ADG,ADP,ADS,AGG,"+
     "WSS,AAS,NVB,ABB,BAB,TVN,SMC,VGS,POM,GDA,"+
     "PVC,PLC,PVB,PSD,ABI,VNR,PRE,PTI,IDC,IDV,"+
     "FOC,TV1,QTP,HND,PVG,RIC,SAS,LDP,DHT,TNG,"+
-    "DXP,PHP,NET,LAS,HBC,DRI,KSV,HGM,SLS,TAR,HUT";
+    "DXP,PHP,NET,LAS,HBC,DRI,KSV,HGM,SLS,TAR,HUT,DDV";
 InVNSmallCap = StrFind( "," + VNSmallCapList + ",", "," + Name() + "," ) > 0;
 // GHI CHU: Da BO dieu kien bat buoc "phai nam trong VN100List" o Buy ben duoi
 // (xem dong "Buy = TurnedGreen AND ChiTrong12NamGanNhat AND BreadthOk15").

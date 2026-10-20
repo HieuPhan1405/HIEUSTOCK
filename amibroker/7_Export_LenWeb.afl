@@ -339,7 +339,7 @@ VNSmallCapList = "AAA,AAM,ABS,ABT,ACC,ACL,ADG,ADP,ADS,AGG,"+
     "WSS,AAS,NVB,ABB,BAB,TVN,SMC,VGS,POM,GDA,"+
     "PVC,PLC,PVB,PSD,ABI,VNR,PRE,PTI,IDC,IDV,"+
     "FOC,TV1,QTP,HND,PVG,RIC,SAS,LDP,DHT,TNG,"+
-    "DXP,PHP,NET,LAS,HBC,DRI,KSV,HGM,SLS,TAR,HUT";
+    "DXP,PHP,NET,LAS,HBC,DRI,KSV,HGM,SLS,TAR,HUT,DDV";
 InVNSmallCap = StrFind( "," + VNSmallCapList + ",", "," + Name() + "," ) > 0;
 
 SoNamGanNhat = Param("So nam gan nhat de test (0 = khong gioi han)", 12, 0, 99, 1);
