@@ -37,7 +37,8 @@ export function chayMayTrangThai(dauVao) {
     stopMuaMuonBar,
     muaThemGiuaChungTinHieu,
     stopMuaThemGiuaChungBar,
-    kijun, // chi can khi thamSo.thoatKijunSauTP2 = true
+    kijun, // chi can khi thamSo.thoatKijunSauTP2 / thoatKijunVolChinh = true
+    relVol, // chi can khi thamSo.thoatKijunVolChinh = true (KL / TB20)
   } = dauVao;
   const {
     slChamLaCat = true,
@@ -54,6 +55,11 @@ export function chayMayTrangThai(dauVao) {
     ketThucTaiTP3 = false,
     // Sau TP2 (da chot 60%), neu dong cua < Kijun truoc khi toi TP3 thi ban not phan con lai (bao ve bang Ichimoku).
     thoatKijunSauTP2 = false,
+    // LUAT THOAT "B" (2026-10-19, backtestGopHaiLuat.mjs): sau TP1, dong cua < Kijun VA relVol TB cac phien tu DINH (cao nhat tu sau khi vao) toi hom nay >= volChinhNguongThoat
+    // (chinh vol lon = mat xu huong) -> ban het o gia dong cua (ly do 6). Chinh vol be thi GIU, chi con san trailing sanTrailPct% tu dinh (THAY hoa von / bvRong). Mac dinh TAT.
+    thoatKijunVolChinh = false,
+    volChinhNguongThoat = 1.0,
+    sanTrailPct = 25,
   } = dauVao.thamSo || {};
 
   const n = close.length;
@@ -113,6 +119,9 @@ export function chayMayTrangThai(dauVao) {
   let banGanNhatCoLai = false;
   let banGanNhatGia = 0;
   let soLanMuaLaiLienTiep = 0;
+  // Luat thoat B: dinh = cao nhat cac nen TRUOC hom nay ke tu sau nen vao (khong tinh gia vao) va vi tri cua no; reset moi lan vao lenh goc.
+  let kvDinh = -Infinity;
+  let kvDinhViTri = -1;
 
   for (let i = 1; i < n; i++) {
     // Doc lap voi giu-gioc-hay-khong - tinh truoc o day de dung lai ben duoi (ca 2 nhanh).
@@ -154,6 +163,10 @@ export function chayMayTrangThai(dauVao) {
       tp2VaoVong[i] = tp2VaoVong[i - 1];
       let hPrev = 0;
       if (i - 1 > viTriVaoTrongVongLap[i]) hPrev = high[i - 1];
+      if (hPrev > kvDinh) {
+        kvDinh = hPrev;
+        kvDinhViTri = i - 1;
+      }
       dinhSauVaoVong[i] = Math.max(dinhSauVaoVong[i - 1], hPrev);
       daTP1Vong[i] = daTP1Vong[i - 1] === 1 || hPrev >= tp1VaoVong[i] ? 1 : 0;
       daTP2Vong[i] = daTP2Vong[i - 1] === 1 || hPrev >= tp2VaoVong[i] ? 1 : 0;
@@ -162,6 +175,8 @@ export function chayMayTrangThai(dauVao) {
       let stopBaoVe = 0;
       if (bvHoaVon && daTP2Vong[i] === 1) stopBaoVe = giaVaoTrongVongLap[i];
       if (bvRong && daTP1Vong[i] === 1) stopBaoVe = dinhSauVaoVong[i] * (1 - baoVeRongPct / 100);
+      // Luat thoat B: sau TP1 san la trailing tu dinh (khong con hoa von); Stop-loss goc van dung rieng.
+      if (thoatKijunVolChinh && daTP1Vong[i] === 1 && kvDinh > 0) stopBaoVe = kvDinh * (1 - sanTrailPct / 100);
       stopBaoVeMoiNen[i] = stopBaoVe;
       const chamBaoVe = stopBaoVe > 0 && low[i] <= stopBaoVe;
 
@@ -170,14 +185,25 @@ export function chayMayTrangThai(dauVao) {
 
       // Kijun sau TP2: dung DaTP2Vong (cac phien TRUOC hom nay) nhu bao ve hoa von - khong nhin truoc tuong lai.
       const chamKijunSauTP2 = thoatKijunSauTP2 && daTP2Vong[i] === 1 && kijun != null && kijun[i] != null && close[i] < kijun[i];
+      // Luat thoat B: dong cua < Kijun va vol TB nhip chinh (tu dinh toi hom nay) >= nguong.
+      let chamKijunVol = false;
+      if (thoatKijunVolChinh && daTP1Vong[i] === 1 && kvDinh > 0 && kijun != null && kijun[i] != null && relVol != null && close[i] < kijun[i]) {
+        let tong = 0;
+        let dem = 0;
+        for (let j = kvDinhViTri + 1; j <= i; j++) {
+          tong += relVol[j];
+          dem++;
+        }
+        if (dem > 0 && tong / dem >= volChinhNguongThoat) chamKijunVol = true;
+      }
       // Cham TP3 (dinh phien >= TP3): dong lenh tai TP3 (hoac gia mo cua neu gap len tren TP3). Uu tien THAP NHAT - stop/tin hieu/Kijun/bao ve xet truoc
       // (cung nen vua cham stop vua cham TP3 = cham stop truoc, than trong; khop backtest engine/dich-vu/backtestBaMocKetThuc.mjs).
       const chamTP3 = ketThucTaiTP3 && tp3VaoVong[i] > 0 && high[i] >= tp3VaoVong[i];
 
-      if (sellTinHieu[i] === true || chamStopThuong || chamBaoVe || chamKijunSauTP2 || chamTP3) {
+      if (sellTinHieu[i] === true || chamStopThuong || chamBaoVe || chamKijunSauTP2 || chamKijunVol || chamTP3) {
         sell[i] = true;
-        // Ly do ban (uu tien): 2 Stop-loss > 1 tin hieu diem > 4 thoat Kijun sau TP2 > 3 bao ve hoa von > 5 chot du TP3.
-        lyDoBanBar[i] = chamStopThuong ? 2 : sellTinHieu[i] ? 1 : chamKijunSauTP2 ? 4 : chamBaoVe ? 3 : 5;
+        // Ly do ban (uu tien): 2 Stop-loss > 1 tin hieu diem > 4 thoat Kijun sau TP2 > 6 thoat Kijun + vol nhip chinh > 3 bao ve (hoa von / san trailing) > 5 chot du TP3.
+        lyDoBanBar[i] = chamStopThuong ? 2 : sellTinHieu[i] ? 1 : chamKijunSauTP2 ? 4 : chamKijunVol ? 6 : chamBaoVe ? 3 : 5;
         giuTrongVongLap[i] = 0;
         thamDoTrongVongLap[i] = 0;
         if (mua2Giu[i - 1] === true) {
@@ -290,6 +316,8 @@ export function chayMayTrangThai(dauVao) {
       tp3VaoVong[i] = tp3Vong[i];
       dinhSauVaoVong[i] = giaVaoLoop;
       viTriVaoTrongVongLap[i] = i;
+      kvDinh = -Infinity;
+      kvDinhViTri = i;
       thamDoTrongVongLap[i] = rsvniOk[i] ? 0 : 1;
     } else {
       giuTrongVongLap[i] = 0;

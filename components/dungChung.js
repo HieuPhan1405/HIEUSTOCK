@@ -224,6 +224,7 @@ export function tinhVungLenh(row) {
 // lib/tinHieu.js chuan hoa tin thanh TRUNG LAP va gan ket_thuc_tp3), 4 = thoat theo Kijun sau TP2, 3 = bao ve lai, 2 = cat lo (Stop-loss), 1 = diem so tut duoi nguong (tin hieu BAN
 // thuong). Tra null neu khong phai ma vua ket thuc lenh hoac chua co du lieu (CSV cu).
 const LY_DO_BAN = {
+  6: { nhan: "Thoát: dưới Kijun + vol chỉnh lớn", mau: "var(--cam)", moTa: "Đã chốt TP1 rồi giá đóng cửa xuống dưới Kijun trong lúc volume nhịp chỉnh từ đỉnh lớn (từ 1,0 lần trung bình 20 phiên) nên bán nốt phần còn lại — chỉnh volume lớn thường là mất xu hướng." },
   5: { nhan: "Chạm TP3 · kết thúc lệnh", mau: "var(--tim-chu)", moTa: `Giá chạm TP3: chốt nốt phần cuối, đủ ${CHUOI_TY_LE_CHOT_KET_THUC} (TP1/TP2/TP3) — không còn nắm vị thế, trạng thái về TRUNG LẬP.` },
   4: { nhan: "Thoát theo Kijun (sau TP2)", mau: "var(--cam)", moTa: "Đã chốt TP1, TP2 rồi giá đóng cửa xuống dưới Kijun trước khi tới TP3 nên bán nốt phần còn lại." },
   3: { nhan: "Bảo vệ lãi", mau: "var(--tim-nhat)", moTa: "Giá quay về mức cắt lỗ đã dời lên (hòa vốn) sau khi chạm mốc chốt lời nên bán ngay." },

@@ -450,5 +450,52 @@ function khungTP(n) {
   ok("P: sau chot TP3 co lai -> mua lai phien 5 (LoaiVaoLenh = 2)", kq.buy[5] === true && kq.loaiVaoLenh[5] === 2);
 }
 
+// ---- Q: Luat thoat B (thoatKijunVolChinh): sau TP1, dong cua < Kijun VA vol TB nhip chinh tu dinh >= nguong -> ban het (ly do 6); vol be thi GIU, chi cham san trailing tu dinh ----
+{
+  const mk = (n) => {
+    const d = khungTP(n);
+    d.high[2] = 112; // cham TP1 (110) o phien 2 -> daTP1Vong[3] = 1; dinh sau vao = 112 (nen 2)
+    d.kijun = new Array(n).fill(104);
+    d.close.fill(107);
+    d.relVol = new Array(n).fill(0.5);
+    return d;
+  };
+  // Q1: nhip chinh vol LON (relVol 1.4 phien 3-4), phien 4 dong cua 103 < Kijun 104 -> ban o gia dong cua, ly do 6
+  let d = mk(7);
+  d.relVol[3] = 1.4; d.relVol[4] = 1.4; d.close[4] = 103;
+  let kq = chayMayTrangThai({ ...d, thamSo: { thoatKijunVolChinh: true } });
+  ok("Q1: vol chinh TB 1.4 >= 1.0 + dong cua < Kijun -> ban phien 4, ly do = 6", kq.sell[4] === true && kq.lyDoBanBar[4] === 6);
+  ok("Q1: het giu sau ban", kq.giuTrongVongLap[4] === 0 && kq.giuTrongVongLap[5] === 0);
+  // Q2: vol chinh BE (0.5) -> KHONG ban du dong cua < Kijun
+  d = mk(7);
+  d.close[4] = 103;
+  kq = chayMayTrangThai({ ...d, thamSo: { thoatKijunVolChinh: true } });
+  ok("Q2: vol chinh TB 0.5 < 1.0 -> GIU du dong cua < Kijun", kq.sell[4] !== true && kq.giuTrongVongLap[4] === 1);
+  // Q3: chua cham TP1 -> khong kich hoat
+  d = mk(7);
+  d.high[2] = 108;
+  d.relVol[3] = 1.4; d.relVol[4] = 1.4; d.close[4] = 103;
+  kq = chayMayTrangThai({ ...d, thamSo: { thoatKijunVolChinh: true } });
+  ok("Q3: chua cham TP1 -> khong thoat theo Kijun + vol", kq.sell[4] !== true);
+  // Q4: tat (mac dinh) -> khong thoat
+  d = mk(7);
+  d.relVol[3] = 1.4; d.relVol[4] = 1.4; d.close[4] = 103;
+  kq = chayMayTrangThai({ ...d, thamSo: {} });
+  ok("Q4: tat (mac dinh) -> khong thoat, hanh vi cu", kq.sell[4] !== true && kq.giuTrongVongLap[4] === 1);
+  // Q5: san trailing 25% tu dinh: dinh 112 -> san 84; low phien 4 = 80 <= 84 (va > SL 90? SL 90 > 84 nen SL cham truoc) -> doi SL thap hon de thu san
+  d = mk(7);
+  d.stopVaoBar[1] = 60; // SL 60 de khong cham truoc san 84
+  d.low[4] = 80; d.open[4] = 100;
+  kq = chayMayTrangThai({ ...d, thamSo: { thoatKijunVolChinh: true } });
+  ok("Q5: giu vol be nhung gia roi cham san trailing 25% tu dinh (84) -> ban, ly do = 3, gia = min(mo cua, san) = 84", kq.sell[4] === true && kq.lyDoBanBar[4] === 3 && Math.abs(kq.giaBanBaoVe[4] - 84) < 1e-9);
+  // Q6: hoa von KHONG con tac dung khi bat luat B: sau TP2, gia ve 99 (< gia vao 100) nhung > san 84 va > SL -> van giu
+  d = mk(8);
+  d.high[2] = 121; // TP2 phien 2
+  d.stopVaoBar[1] = 60;
+  d.low[5] = 99; d.open[5] = 106; d.close[5] = 107;
+  kq = chayMayTrangThai({ ...d, thamSo: { thoatKijunVolChinh: true, bvHoaVon: true } });
+  ok("Q6: bat luat B thi san trailing THAY hoa von: low 99 < gia vao 100 van GIU", kq.sell[5] !== true && kq.giuTrongVongLap[5] === 1);
+}
+
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

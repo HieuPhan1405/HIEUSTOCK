@@ -659,6 +659,15 @@ BVBat = BVHoaVon OR BVRong;
 //  - ThoatKijunSauTP2: sau TP2, dong cua < Kijun truoc khi toi TP3 thi ban not phan con lai (nhanh von hon nhung lai TB/lenh giam - xem backtest).
 KetThucTaiTP3    = ParamToggle("KET THUC LENH o TP3: chot 30/30/40 (TP1/TP2/TP3), khong giu phan chay", "Tat|Bat", 0);
 ThoatKijunSauTP2 = ParamToggle("Sau TP2: ban not neu dong cua < Kijun (truoc khi toi TP3)", "Tat|Bat", 0);
+// 2 LUAT GOP (2026-10-19, backtest engine/dich-vu/backtestGopHaiLuat.mjs; MAC DINH TAT) - mirror engine/loi/volNhipChinh.js + engine/loi/mayTrangThai.js (thoatKijunVolChinh):
+//  LUAT VAO: bo lenh MUA THUONG khi RelVol TB cua NHIP CHINH truoc phien tin hieu (tu dinh cao nhat 20 nen truoc toi truoc phien tin hieu) >= nguong (chinh vol lon = mat xu huong).
+//  LUAT THOAT B: sau TP1, dong cua < Kijun VA RelVol TB cac phien tu DINH (sau khi vao) toi hom nay >= nguong -> ban het o gia dong cua (LyDoBan = 6); vol chinh be thi GIU,
+//   chi con san trailing SanTrailPct% tu dinh (THAY hoa von / BVRong). Stop-loss goc van dung rieng.
+LocVolChinhVao     = ParamToggle("LUAT VAO 19/10: bo lenh Mua thuong khi vol nhip chinh truoc tin hieu lon", "Tat|Bat", 0);
+VolChinhNguongVao  = Param("Luat vao: nguong RelVol TB nhip chinh (bo lenh khi >=)", 1.2, 0.5, 3, 0.1);
+ThoatKijunVolChinh = ParamToggle("LUAT THOAT B 19/10: sau TP1 dong cua < Kijun + vol nhip chinh lon -> ban het", "Tat|Bat", 0);
+VolChinhNguongThoat = Param("Luat thoat B: nguong RelVol TB nhip chinh (ban khi >=)", 1.0, 0.5, 3, 0.1);
+SanTrailPct        = Param("Luat thoat B: san trailing tu dinh (%)", 25, 5, 40, 1);
 
 // TP1/TP2 dung trong vong lap de biet "da cham TP chua" - CUNG cong thuc voi ChotLoi_TP1/2
 // o phan Chot loi phia duoi (neu doi cong thuc TP thi sua CA HAI cho khop).
@@ -797,6 +806,26 @@ MuaGiuaDaTP2 = 0;
 // MUA MUON: co nho "da bat kip 1 lan cho lan bo lo gan nhat" - chan mua-cat-mua lap lai cung 1
 // vung gia bo lo, reset khi co 1 dot bo lo MOI (DotKetThucBoLo[i] moi).
 DaMuaMuonSauBoLo = 0;
+// LUAT VAO: VolChinhTruoc[iv] = RelVol TB nhip chinh truoc phien iv (dinh = cao nhat 20 nen iv-20..iv-1; neu dinh la nen iv-1 thi lay RelVol nen do; 0 = thieu du lieu). Mirror volNhipChinh.js.
+VolChinhTruoc = 0;
+if (LocVolChinhVao)
+{
+    for (iv = 22; iv < BarCount; iv++)
+    {
+        dIdxV = iv - 1;
+        for (jv = iv - 1; jv >= iv - 20; jv--) if (H[jv] > H[dIdxV]) dIdxV = jv;
+        if (dIdxV >= iv - 1) VolChinhTruoc[iv] = RelVol[iv-1];
+        else
+        {
+            tongV = 0;
+            for (jv = dIdxV + 1; jv <= iv - 1; jv++) tongV = tongV + RelVol[jv];
+            VolChinhTruoc[iv] = tongV / (iv - 1 - dIdxV);
+        }
+    }
+}
+// Buy GOC van dung cho SellTinHieu / dot bo lo; BuyDuocVao chi dung de VAO LENH trong vong lap (lenh bi bo coi nhu da qua dot, khong mua lai cung dot).
+BuyDuocVao = Buy AND NOT (LocVolChinhVao AND VolChinhTruoc > 0 AND VolChinhTruoc >= VolChinhNguongVao);
+kvDinh = 0; kvDinhViTri = -1; chamKijunVol = 0; // LUAT THOAT B: dinh cao nhat sau khi vao (cac nen TRUOC hom nay) va vi tri nen dinh; reset moi lan vao lenh.
 stopBaoVe = 0; chamBaoVe = 0; // khoi tao truoc vong lap - ma chua tung giu lenh (nhanh if ben duoi khong bao gio chay) se
                               // khong duoc gan lai, doc o ngoai vong lap (LastValue...) se bao Error 29 neu thieu dong nay.
 for (i = 1; i < BarCount; i++)
@@ -842,6 +871,7 @@ for (i = 1; i < BarCount; i++)
         TP2VaoVong[i] = TP2VaoVong[i-1];
         hPrev = 0;
         if ((i - 1) > ViTriVaoTrongVongLap[i]) hPrev = H[i-1];
+        if (hPrev > kvDinh) { kvDinh = hPrev; kvDinhViTri = i - 1; }
         DinhSauVaoVong[i] = Max(DinhSauVaoVong[i-1], hPrev);
         DaTP1Vong[i] = 0;
         DaTP2Vong[i] = 0;
@@ -852,6 +882,7 @@ for (i = 1; i < BarCount; i++)
         stopBaoVe = 0;
         if (BVHoaVon AND DaTP2Vong[i] == 1) stopBaoVe = GiaVaoTrongVongLap[i];
         if (BVRong AND DaTP1Vong[i] == 1) stopBaoVe = DinhSauVaoVong[i] * (1 - BaoVeRongPct/100);
+        if (ThoatKijunVolChinh AND DaTP1Vong[i] == 1 AND kvDinh > 0) stopBaoVe = kvDinh * (1 - SanTrailPct/100); // luat thoat B: san trailing tu dinh THAY hoa von
         chamBaoVe = 0;
         if (stopBaoVe > 0 AND L[i] <= stopBaoVe) chamBaoVe = 1;
 
@@ -864,13 +895,20 @@ for (i = 1; i < BarCount; i++)
         // KET THUC LENH O TP3 + THOAT KIJUN SAU TP2 (2026-09-25) - mirror engine/loi/mayTrangThai.js va 7_Export_LenWeb.afl (xem chu thich o do).
         chamKijunSauTP2 = 0;
         if (ThoatKijunSauTP2 AND DaTP2Vong[i] == 1 AND C[i] < Kijun[i]) chamKijunSauTP2 = 1;
+        chamKijunVol = 0;
+        if (ThoatKijunVolChinh AND DaTP1Vong[i] == 1 AND kvDinh > 0 AND C[i] < Kijun[i])
+        {
+            tongV = 0; demV = 0;
+            for (jv = kvDinhViTri + 1; jv <= i; jv++) { tongV = tongV + RelVol[jv]; demV = demV + 1; }
+            if (demV > 0 AND tongV / demV >= VolChinhNguongThoat) chamKijunVol = 1;
+        }
         chamTP3 = 0;
         if (KetThucTaiTP3 AND TP3VaoVong[i] > 0 AND H[i] >= TP3VaoVong[i]) chamTP3 = 1;
-        if (SellTinHieu[i] == 1 OR ChamStopThat OR chamBaoVe == 1 OR chamKijunSauTP2 == 1 OR chamTP3 == 1)
+        if (SellTinHieu[i] == 1 OR ChamStopThat OR chamBaoVe == 1 OR chamKijunSauTP2 == 1 OR chamKijunVol == 1 OR chamTP3 == 1)
         {
             Sell[i] = 1;
-            // Ly do ban (uu tien): 2 Stop-loss > 1 tin hieu diem > 4 thoat Kijun sau TP2 > 3 bao ve hoa von > 5 chot du TP3.
-            LyDoBan[i] = IIf(ChamStopThat, 2, IIf(SellTinHieu[i] == 1, 1, IIf(chamKijunSauTP2 == 1, 4, IIf(chamBaoVe == 1, 3, 5))));
+            // Ly do ban (uu tien): 2 Stop-loss > 1 tin hieu diem > 4 thoat Kijun sau TP2 > 6 thoat Kijun + vol nhip chinh (luat B) > 3 bao ve (hoa von / san trailing) > 5 chot du TP3.
+            LyDoBan[i] = IIf(ChamStopThat, 2, IIf(SellTinHieu[i] == 1, 1, IIf(chamKijunSauTP2 == 1, 4, IIf(chamKijunVol == 1, 6, IIf(chamBaoVe == 1, 3, 5)))));
             GiuTrongVongLap[i] = 0;
             ThamDoTrongVongLap[i] = 0;
             // MUA MOI SAU TP3: lenh goc bi Ban thi lenh moi (neu dang giu) dong theo.
@@ -975,10 +1013,10 @@ for (i = 1; i < BarCount; i++)
             }
         }
     }
-    else if (Buy[i] OR DuDieuKienMuaLai OR DuDieuKienMuaMuon)
+    else if (BuyDuocVao[i] OR DuDieuKienMuaLai OR DuDieuKienMuaMuon)
     {
         // CHUA GIU - Buy moi kich hoat vao lenh (hoac MUA LAI/MUA MUON khi cong tac bat)
-        if (Buy[i])
+        if (BuyDuocVao[i])
         {
             giaVaoLoop = GiaVaoBar[i];
             stopVaoLoop = StopVaoBar[i];
@@ -1013,6 +1051,7 @@ for (i = 1; i < BarCount; i++)
         TP3VaoVong[i] = TP3Vong[i];
         DinhSauVaoVong[i] = giaVaoLoop;
         ViTriVaoTrongVongLap[i] = i;
+        kvDinh = 0; kvDinhViTri = i; // luat thoat B: reset dinh moi lan vao lenh
         if (RSVNI_OK[i]) ThamDoTrongVongLap[i] = 0;
         else ThamDoTrongVongLap[i] = 1;
     }

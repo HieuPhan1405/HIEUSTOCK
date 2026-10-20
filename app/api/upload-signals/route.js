@@ -682,13 +682,15 @@ export async function POST(request) {
       const tieuDe =
         b.ly_do === "TP3"
           ? "🎯 CHỐT ĐỦ TP3 – KẾT THÚC LỆNH"
-          : b.ly_do === "THOAT_KIJUN"
+          : b.ly_do === "THOAT_KIJUN_VOL"
+            ? "🟠 THOÁT: DƯỚI KIJUN + VOL CHỈNH LỚN (sau TP1)"
+            : b.ly_do === "THOAT_KIJUN"
             ? "🟠 THOÁT THEO KIJUN (sau TP2)"
             : b.ly_do === "BAN"
               ? "TÍN HIỆU BÁN / CẮT LỖ"
               : "THOÁT LỆNH";
       const dong = [
-        `${b.ly_do === "TP3" || b.ly_do === "THOAT_KIJUN" ? "" : "🔴 "}${tieuDe}: ${b.ma}`,
+        `${b.ly_do === "TP3" || b.ly_do === "THOAT_KIJUN" || b.ly_do === "THOAT_KIJUN_VOL" ? "" : "🔴 "}${tieuDe}: ${b.ma}`,
         b.ly_do === "TP3"
           ? `Giá chốt TP3: ${b.gia_ban} (giá mua ${b.gia_mua})`
           : `Giá: ${b.gia_ban} (giá mua ${b.gia_mua}, ${lai})`,

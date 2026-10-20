@@ -57,6 +57,7 @@ function nhanKetThucGoc(x) {
     if (pc === TY_LE_CHOT_KET_THUC.tp3 || pc >= 100 || x.ly_do === "CHOT_TP3") chinh = `Chạm TP3 (chốt ${x.phan_chot_pct ?? 100}% vị thế) · kết thúc lệnh`;
     else chinh = `Chốt TP3 (${x.phan_chot_pct}% vị thế) · lệnh cũ, còn ${TY_LE_CHOT_CU.giu}% giữ chạy`;
   } else if (x.ly_do === "THOAT_KIJUN") chinh = "Thoát theo Kijun (đóng cửa dưới Kijun sau TP2)";
+  else if (x.ly_do === "THOAT_KIJUN_VOL") chinh = "Thoát: đóng cửa dưới Kijun khi volume nhịp chỉnh lớn (sau TP1)";
   else if (x.ly_do === "CAT_LO") chinh = "Cắt lỗ";
   else if (x.ly_do === "BAO_VE_LAI") chinh = "Bảo vệ lãi (mức cắt lỗ đã dời lên cao hơn)";
   else if (x.ly_do === "THOAT_SOM") chinh = "Thoát sớm (tín hiệu đã mất, giá dưới giá mua sau 2 phiên)";

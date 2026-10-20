@@ -11,6 +11,7 @@ import { tinhSanyaku } from "./loi/sanyaku.js";
 import { tinhFVG, fvgDuLon as tinhFvgDuLonTuTy } from "./loi/fvg.js";
 import { tinhMatThan } from "./loi/matThan.js";
 import { tinhRelVol, tinhVolumeGateNgayDau } from "./loi/volumeGate.js";
+import { tinhVolNhipChinhTruoc } from "./loi/volNhipChinh.js";
 import { tinhDiem } from "./loi/diem.js";
 import { tinhTinHieuTho } from "./loi/tinHieuTho.js";
 import { tinhCheDoMocVaoLenh, tinhBaMocChotLoi, tinhMuaLai, tinhMuaMoiSauTP3, tinhMuaMuon, tinhMuaThemGiuaChung } from "./loi/vaoLenh.js";
@@ -84,6 +85,15 @@ const MAC_DINH = {
   // o TP3 (30/30/40, 2026-09-25); thoatKijunSauTP2 = sau TP2 ban not neu dong cua < Kijun. "Mua moi sau TP3" (vong 2, batMuaMoi) DA BO 27/09/2026 (AFL khoa cung Tat) - chi con de backtest / doc lenh cu.
   ketThucTaiTP3: false,
   thoatKijunSauTP2: false,
+  // 2 LUAT GOP (2026-10-19, backtest engine/dich-vu/backtestGopHaiLuat.mjs, mac dinh TAT - chua bat production, cho chay song song theo doi):
+  //  locVolChinhVao: bo lenh Mua THUONG khi vol nhip chinh truoc phien tin hieu (relVol TB tu dinh soNenDinhVolChinh nen toi hom truoc) >= volChinhNguongVao;
+  //  thoatKijunVolChinh: sau TP1, dong cua < Kijun va vol TB nhip chinh (tu dinh toi hom nay) >= volChinhNguongThoat -> ban het; vol be thi giu, san trailing sanTrailPct% tu dinh (thay hoa von).
+  locVolChinhVao: false,
+  volChinhNguongVao: 1.2,
+  soNenDinhVolChinh: 20,
+  thoatKijunVolChinh: false,
+  volChinhNguongThoat: 1.0,
+  sanTrailPct: 25,
   batMuaMoi: false,
   kieuHoTroMuaMoi: "Kijun",
   diemToiThieuMuaMoi: 1.25,
@@ -240,6 +250,9 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     const soPhienTuBuy = barsSince(buyTho);
     return turnedPink.map((v, i) => v && soPhienTuBuy[i] >= 2);
   })();
+  // Luat VAO: bo lenh Mua thuong khi vol nhip chinh >= nguong. CHI loc buy dua vao may trang thai - buyTho goc van dung cho SellTinHieu / dot bo lo (lenh bi bo coi nhu da qua dot, khong mua lai cung dot).
+  const volChinhTruoc = p.locVolChinhVao ? tinhVolNhipChinhTruoc({ high, relVol }, { soNen: p.soNenDinhVolChinh }) : null;
+  const buyVaoMayTrangThai = volChinhTruoc ? buyTho.map((b, i) => b && !(volChinhTruoc[i] != null && volChinhTruoc[i] >= p.volChinhNguongVao)) : buyTho;
   const kq = chayMayTrangThai({
     close,
     open,
@@ -247,7 +260,8 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     low,
     atr: atrArr,
     totalScore,
-    buyTho,
+    relVol,
+    buyTho: buyVaoMayTrangThai,
     sellTinHieu: sellTinHieuArr,
     rsvniOk,
     giaVaoBar,
@@ -277,6 +291,9 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
       soLanMuaLaiToiDa: p.soLanMuaLaiToiDa,
       ketThucTaiTP3: p.ketThucTaiTP3,
       thoatKijunSauTP2: p.thoatKijunSauTP2,
+      thoatKijunVolChinh: p.thoatKijunVolChinh,
+      volChinhNguongThoat: p.volChinhNguongThoat,
+      sanTrailPct: p.sanTrailPct,
     },
   });
 
