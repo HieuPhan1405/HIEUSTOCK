@@ -1,4 +1,4 @@
-# VIDEO – "Phiên 20/10: thép và đầu tư công cùng bật, nhưng có một chỗ chưa ai nối được" (bản nháp, soạn 20/10/2026 sau phiên; ~90 giây)
+# VIDEO – "Phiên 20/10: thép và đầu tư công cùng bật, nhưng có một chỗ chưa ai nối được" (bản nháp, soạn 20/10/2026 sau phiên; ~85 giây)
 
 Dạng: **tổng kết phiên theo ngành** (công thức nghịch lý + "3 điều, điều 3 là chỗ cần để ý"). Giọng thẳng, nhanh, tự nhiên (theo góp ý "không cần đồng cảm, chỉ cần viral"). Công ty duyệt trước khi đăng.
 
@@ -16,8 +16,8 @@ Dạng: **tổng kết phiên theo ngành** (công thức nghịch lý + "3 đi�
 - **B:** "VN-Index hôm nay rơi sâu rồi vẫn đóng cửa xanh. Kéo lại là thép và xây dựng hạ tầng. Nhưng lý do thì chưa ai nói rõ." · CHỮ: "THÉP KÉO VN-INDEX XANH"
 - **C:** "Giải ngân đầu tư công mới đến 63,8%. Hôm nay nhóm thép và xây dựng lại bật mạnh. Hai chuyện này có nối với nhau không?" · CHỮ: "THÉP + ĐẦU TƯ CÔNG: CÓ NỐI?"
 
-## 3. Kịch bản (lời nói ≈ 330 chữ ≈ 86 giây ở ~230 chữ/phút, gồm dòng rủi ro; bấm giờ thật)
-*(giọng nhanh, dứt khoản; nhìn thẳng ống kính; tay chặt theo "thứ nhất/hai/ba"; cắt hết khoảng lặng)*
+## 3. Kịch bản (lời nói ≈ 312 chữ ≈ 82 giây ở ~230 chữ/phút, gồm dòng rủi ro; bấm giờ thật)
+*(giọng nhanh, dứt khoát; nhìn thẳng ống kính; tay chặt theo "thứ nhất/hai/ba"; cắt hết khoảng lặng)*
 
 [0:00–0:09] HOOK (A)
 "Khối ngoại vẫn bán ròng hơn 200 tỷ hôm nay. Nhưng cổ phiếu đầu ngành thép lại được mua ròng khoảng 145 tỷ. Chuyện gì đang xảy ra ở nhóm thép?"
