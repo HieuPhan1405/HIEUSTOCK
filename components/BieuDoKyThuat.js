@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createChart, createSeriesMarkers, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
 import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal } from "lucide-react";
-import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
+import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { phanKyRSI } from "@/lib/phanKyRSI";
 import { LopVe } from "@/components/veBieuDoLop";
@@ -43,7 +43,7 @@ function apDungMau(s) {
 }
 
 // Kieu "cham tron" cho duong tuong lai: tat duong noi, chi hien diem.
-const CHAM = { lineVisible: false, pointMarkersVisible: true, pointMarkersRadius: 2.5 };
+const CHAM = { lineVisible: false, pointMarkersVisible: true, pointMarkersRadius: 1.5 };
 
 const MAU = {
   tenkan: "#3B9EFF",
@@ -133,6 +133,7 @@ function tinhChiBao(nen, tuan) {
 
   const ich = tinhIchimoku(bars);
   const tl = tinhIchimokuTuongLai(bars);
+  const tlCb = tinhCanBangTuongLai(bars);
   const chamTL = (ds, dichThem) => ds.map(({ k, value }) => ({ time: thoiGian[n - 1 + k + dichThem], value })).filter((x) => x.time);
   const cb = tinhCanBang(bars);
   const dong = (mang) => {
@@ -160,6 +161,8 @@ function tinhChiBao(nen, tuan) {
     ttKijun: chamTL(tl.kijun, 0),
     ttSpanA: chamTL(tl.spanA, dich),
     ttSpanB: chamTL(tl.spanB, dich),
+    ttCb1: chamTL(tlCb.cb1, 0),
+    ttCb2: chamTL(tlCb.cb2, 0),
     may: dai(ich.spanA, ich.spanB),
     cb1: dong(cb.cb1),
     cb2: dong(cb.cb2),
@@ -327,6 +330,8 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       ttKijun: dong(MAU.kijun, 1, CHAM),
       ttSpanA: dong(MAU.spanA, 1, CHAM),
       ttSpanB: dong(MAU.spanB, 1, CHAM),
+      ttCb1: dong(MAU.cb1, 1, CHAM),
+      ttCb2: dong(MAU.cb2, 1, CHAM),
       ema9: dong("#22D3EE", 1, { visible: false }),
       ema21: dong("#0EA5E9", 1, { visible: false }),
       bbTren: dong("#94A3B8", 1, { lineStyle: LineStyle.Dashed, visible: false }),
@@ -546,14 +551,14 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     const s = veRef.current;
     if (!s) return;
     if (!chiBao) {
-      for (const k of ["candle", "vol", "tenkan", "kijun", "spanA", "spanB", "chikou", "ttTenkan", "ttKijun", "ttSpanA", "ttSpanB", "cb1", "cb2", "ma20", "ma50", "ma200"]) s[k].setData([]);
+      for (const k of ["candle", "vol", "tenkan", "kijun", "spanA", "spanB", "chikou", "ttTenkan", "ttKijun", "ttSpanA", "ttSpanB", "ttCb1", "ttCb2", "cb1", "cb2", "ma20", "ma50", "ma200"]) s[k].setData([]);
       s.may.datDuLieu([]);
       s.canBang.datDuLieu([]);
       return;
     }
     s.candle.setData(nen.map((b) => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c })));
     s.vol.setData(nen.map((b) => ({ time: b.t, value: b.v, color: b.c >= b.o ? "rgba(34,197,94,0.45)" : "rgba(239,68,68,0.45)" })));
-    for (const k of ["tenkan", "kijun", "spanA", "spanB", "chikou", "ttTenkan", "ttKijun", "ttSpanA", "ttSpanB", "cb1", "cb2", "ma20", "ma50", "ma200"]) s[k].setData(chiBao[k]);
+    for (const k of ["tenkan", "kijun", "spanA", "spanB", "chikou", "ttTenkan", "ttKijun", "ttSpanA", "ttSpanB", "ttCb1", "ttCb2", "cb1", "cb2", "ma20", "ma50", "ma200"]) s[k].setData(chiBao[k]);
     s.may.datDuLieu(chiBao.may);
     s.canBang.datDuLieu(chiBao.cbBand);
     s.lopVe.datNen(nen);
@@ -666,7 +671,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     if (!s) return;
     for (const k of ["tenkan", "kijun", "spanA", "spanB", "chikou", "ttTenkan", "ttKijun", "ttSpanA", "ttSpanB"]) s[k].applyOptions({ visible: bat.ichimoku });
     s.may.datHien(bat.ichimoku);
-    for (const k of ["cb1", "cb2"]) s[k].applyOptions({ visible: bat.canBang });
+    for (const k of ["cb1", "cb2", "ttCb1", "ttCb2"]) s[k].applyOptions({ visible: bat.canBang });
     s.canBang.datHien(bat.canBang);
     for (const k of ["ma20", "ma50", "ma200"]) s[k].applyOptions({ visible: bat.ma });
     s.daiGia.datHien(bat.vung);
