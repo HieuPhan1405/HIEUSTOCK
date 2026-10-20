@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createChart, createSeriesMarkers, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
 import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal } from "lucide-react";
-import { tinhIchimoku, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
+import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { phanKyRSI } from "@/lib/phanKyRSI";
 import { LopVe } from "@/components/veBieuDoLop";
@@ -41,6 +41,9 @@ function apDungMau(s) {
   s.ma200.applyOptions({ color: m.ma200 });
   s.lopVe?.datMauGiaoDien({ mo: m.mo, nen: m.nen });
 }
+
+// Kieu "cham tron" cho duong tuong lai: tat duong noi, chi hien diem.
+const CHAM = { lineVisible: false, pointMarkersVisible: true, pointMarkersRadius: 2.5 };
 
 const MAU = {
   tenkan: "#3B9EFF",
@@ -126,9 +129,11 @@ function tinhChiBao(nen, tuan) {
   const bars = nen.map((b) => ({ h: b.h, l: b.l, c: b.c }));
   const dich = THAM_SO_MAC_DINH.dichMay;
   const thoiGian = nen.map((b) => b.t);
-  for (let k = 1; k <= dich; k++) thoiGian.push(ngayTuongLai(nen[n - 1].t, k, tuan));
+  for (let k = 1; k <= dich + SO_BUOC_TUONG_LAI.spanB; k++) thoiGian.push(ngayTuongLai(nen[n - 1].t, k, tuan)); // dich: may goc; them spanB buoc de ve cham Senkou B tuong lai
 
   const ich = tinhIchimoku(bars);
+  const tl = tinhIchimokuTuongLai(bars);
+  const chamTL = (ds, dichThem) => ds.map(({ k, value }) => ({ time: thoiGian[n - 1 + k + dichThem], value })).filter((x) => x.time);
   const cb = tinhCanBang(bars);
   const dong = (mang) => {
     const kq = [];
@@ -151,6 +156,10 @@ function tinhChiBao(nen, tuan) {
     spanA: dong(ich.spanA),
     spanB: dong(ich.spanB),
     chikou: dong(ich.chikou),
+    ttTenkan: chamTL(tl.tenkan, 0),
+    ttKijun: chamTL(tl.kijun, 0),
+    ttSpanA: chamTL(tl.spanA, dich),
+    ttSpanB: chamTL(tl.spanB, dich),
     may: dai(ich.spanA, ich.spanB),
     cb1: dong(cb.cb1),
     cb2: dong(cb.cb2),
@@ -313,6 +322,11 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       chikou: dong(MAU.chikou, 1, { lineStyle: LineStyle.Dotted }),
       tenkan: dong(MAU.tenkan),
       kijun: dong(MAU.kijun, 2),
+      // Duong Ichimoku TUONG LAI dang cham tron (kieu chi bao Future Ichimoku Lines): chi cham, khong noi duong
+      ttTenkan: dong(MAU.tenkan, 1, CHAM),
+      ttKijun: dong(MAU.kijun, 1, CHAM),
+      ttSpanA: dong(MAU.spanA, 1, CHAM),
+      ttSpanB: dong(MAU.spanB, 1, CHAM),
       ema9: dong("#22D3EE", 1, { visible: false }),
       ema21: dong("#0EA5E9", 1, { visible: false }),
       bbTren: dong("#94A3B8", 1, { lineStyle: LineStyle.Dashed, visible: false }),
@@ -532,18 +546,18 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     const s = veRef.current;
     if (!s) return;
     if (!chiBao) {
-      for (const k of ["candle", "vol", "tenkan", "kijun", "spanA", "spanB", "chikou", "cb1", "cb2", "ma20", "ma50", "ma200"]) s[k].setData([]);
+      for (const k of ["candle", "vol", "tenkan", "kijun", "spanA", "spanB", "chikou", "ttTenkan", "ttKijun", "ttSpanA", "ttSpanB", "cb1", "cb2", "ma20", "ma50", "ma200"]) s[k].setData([]);
       s.may.datDuLieu([]);
       s.canBang.datDuLieu([]);
       return;
     }
     s.candle.setData(nen.map((b) => ({ time: b.t, open: b.o, high: b.h, low: b.l, close: b.c })));
     s.vol.setData(nen.map((b) => ({ time: b.t, value: b.v, color: b.c >= b.o ? "rgba(34,197,94,0.45)" : "rgba(239,68,68,0.45)" })));
-    for (const k of ["tenkan", "kijun", "spanA", "spanB", "chikou", "cb1", "cb2", "ma20", "ma50", "ma200"]) s[k].setData(chiBao[k]);
+    for (const k of ["tenkan", "kijun", "spanA", "spanB", "chikou", "ttTenkan", "ttKijun", "ttSpanA", "ttSpanB", "cb1", "cb2", "ma20", "ma50", "ma200"]) s[k].setData(chiBao[k]);
     s.may.datDuLieu(chiBao.may);
     s.canBang.datDuLieu(chiBao.cbBand);
     s.lopVe.datNen(nen);
-    s.chart.timeScale().setVisibleLogicalRange({ from: Math.max(-2, chiBao.n - 150), to: chiBao.n + THAM_SO_MAC_DINH.dichMay + 2 });
+    s.chart.timeScale().setVisibleLogicalRange({ from: Math.max(-2, chiBao.n - 150), to: chiBao.n + THAM_SO_MAC_DINH.dichMay + SO_BUOC_TUONG_LAI.spanB + 2 });
   }, [chiBao, nen]);
 
   // 3b. Chi bao phu tren cung cua so gia: EMA 9/21, Bollinger.
@@ -650,7 +664,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   useEffect(() => {
     const s = veRef.current;
     if (!s) return;
-    for (const k of ["tenkan", "kijun", "spanA", "spanB", "chikou"]) s[k].applyOptions({ visible: bat.ichimoku });
+    for (const k of ["tenkan", "kijun", "spanA", "spanB", "chikou", "ttTenkan", "ttKijun", "ttSpanA", "ttSpanB"]) s[k].applyOptions({ visible: bat.ichimoku });
     s.may.datHien(bat.ichimoku);
     for (const k of ["cb1", "cb2"]) s[k].applyOptions({ visible: bat.canBang });
     s.canBang.datHien(bat.canBang);
@@ -662,7 +676,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     const s = veRef.current;
     if (!s || !chiBao) return;
     const from = soNen ? chiBao.n - soNen : -2;
-    s.chart.timeScale().setVisibleLogicalRange({ from, to: chiBao.n + THAM_SO_MAC_DINH.dichMay + 2 });
+    s.chart.timeScale().setVisibleLogicalRange({ from, to: chiBao.n + THAM_SO_MAC_DINH.dichMay + SO_BUOC_TUONG_LAI.spanB + 2 });
   }
 
   const conVung = vung && (vung.mua || vung.sl || vung.tp);
