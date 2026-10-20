@@ -41,9 +41,11 @@ VNI_Close = Foreign("VNINDEX", "C");
 RS_SoVoiVNI = (C/Ref(C,-20) - 1 - (VNI_Close/Ref(VNI_Close,-20) - 1)) * 100;
 RSVNI_OK = RS_SoVoiVNI > 0;
 
-VolMinPctTB20     = Param("Ngay1-Vol: toi thieu so voi TB20 (%)", 50, 0, 300, 5);
+VolMinPctTB20     = Param("Ngay1-Vol: toi thieu so voi TB20 (%) [noi 20/10]", 20, 0, 300, 5); // 2026-10-20: 50 -> 20
 VolMinPctHomTruoc = Param("Ngay1-Vol: toi thieu so voi hom truoc (%)", 30, 0, 300, 5);
 PocketPivotNhinLai= Param("Ngay1-Vol: Pocket Pivot nhin lai (phien)", 10, 5, 30, 1);
+DungVolHomTruoc    = ParamToggle("Ngay1-Vol: dung dk so voi hom truoc [noi 20/10]", "Tat|Bat", 0); // 2026-10-20: mac dinh TAT (khop engine dungVolHomTruoc=false)
+DungPocketPivot    = ParamToggle("Ngay1-Vol: dung dk Pocket Pivot [noi 20/10]", "Tat|Bat", 0); // 2026-10-20: mac dinh TAT (khop engine dungPocketPivot=false)
 
 Tenkan  = (HHV(H,TenkanLen) + LLV(L,TenkanLen)) / 2;
 Kijun   = (HHV(H,KijunLen) + LLV(L,KijunLen)) / 2;
@@ -158,7 +160,7 @@ VolDatTB20        = RelVol >= (1 + VolMinPctTB20/100);
 VolDatHomTruoc     = IIf(Ref(V,-1)>0, V >= Ref(V,-1)*(1+VolMinPctHomTruoc/100), False);
 MaxVolNgayGiam10  = Ref(HHV(IIf(C<Ref(C,-1), V, 0), PocketPivotNhinLai), -1);
 VolDatPocketPivot = V > MaxVolNgayGiam10;
-VolumeGateNgayDau = VolDatTB20 AND VolDatHomTruoc AND VolDatPocketPivot;
+VolumeGateNgayDau = VolDatTB20 AND (NOT DungVolHomTruoc OR VolDatHomTruoc) AND (NOT DungPocketPivot OR VolDatPocketPivot);
 
 TrendScore = IIf(C>CloudTop,1, IIf(C<CloudBot,-1,0))
            + IIf(C>CBTop,1, IIf(C<CBBot,-1,0))

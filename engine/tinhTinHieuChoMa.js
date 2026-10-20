@@ -52,7 +52,10 @@ const MAC_DINH = {
   nguongDiemFVGMem: 0.6,
   soPhienBanXacNhan: 3,
   diemBoCongFVGPhienSau: null, // thu nghiem, mac dinh TAT (xem tinHieuTho.js)
-  volMinPctTB20: 50,
+  // 2026-10-20: noi cong KL ngay dau - chi con dk KL >= TB20 +20% (bo dk so hom truoc + Pocket Pivot). Backtest engine/dich-vu/backtestNoiKhoiLuong.mjs: lai khong doi, tin hieu hien som hon trong phien.
+  volMinPctTB20: 20,
+  dungVolHomTruoc: false,
+  dungPocketPivot: false,
   volMinPctHomTruoc: 30,
   pocketPivotNhinLai: 10,
   atrMult: 2.2,
@@ -152,7 +155,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   const relVol = tinhRelVol({ volume });
   const volumeGateNgayDau = tinhVolumeGateNgayDau(
     { close, volume, relVol },
-    { volMinPctTB20: p.volMinPctTB20, volMinPctHomTruoc: p.volMinPctHomTruoc, pocketPivotNhinLai: p.pocketPivotNhinLai }
+    { volMinPctTB20: p.volMinPctTB20, volMinPctHomTruoc: p.volMinPctHomTruoc, pocketPivotNhinLai: p.pocketPivotNhinLai, dungVolHomTruoc: p.dungVolHomTruoc, dungPocketPivot: p.dungPocketPivot }
   );
   if (p.tatCongKhoiLuongNgayDau) volumeGateNgayDau.fill(true); // CHI NGHIEN CUU (mac dinh false): bo cong khoi luong ngay dau
   const { trendScore, momScore, mfScore, totalScore } = tinhDiem({

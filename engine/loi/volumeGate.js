@@ -11,7 +11,7 @@ export function tinhRelVol({ volume }, { doDaiTB = 20 } = {}) {
 // (3) "Pocket Pivot": khoi luong hom nay vuot khoi luong CAO NHAT trong cac phien GIAM GIA gan day.
 export function tinhVolumeGateNgayDau(
   { close, volume, relVol },
-  { volMinPctTB20 = 50, volMinPctHomTruoc = 30, pocketPivotNhinLai = 10 } = {}
+  { volMinPctTB20 = 50, volMinPctHomTruoc = 30, pocketPivotNhinLai = 10, dungVolHomTruoc = true, dungPocketPivot = true } = {}
 ) {
   const n = close.length;
   const volDatTB20 = relVol.map((v) => v >= 1 + volMinPctTB20 / 100);
@@ -28,6 +28,6 @@ export function tinhVolumeGateNgayDau(
   for (let i = 0; i < n; i++) volDatPocketPivot[i] = maxVolNgayGiam10[i] != null && volume[i] > maxVolNgayGiam10[i];
 
   const ketQua = new Array(n).fill(false);
-  for (let i = 0; i < n; i++) ketQua[i] = volDatTB20[i] && volDatHomTruoc[i] && volDatPocketPivot[i];
+  for (let i = 0; i < n; i++) ketQua[i] = volDatTB20[i] && (!dungVolHomTruoc || volDatHomTruoc[i]) && (!dungPocketPivot || volDatPocketPivot[i]);
   return ketQua;
 }
