@@ -15,7 +15,7 @@ const ok = (ten, dk, them = "") => {
 // tai bang script rieng, khop tuyet doi 0 thieu/0 thua truoc khi chot con so nay vao test).
 ok("VN30 co 30 ma", VN30.size === 30, VN30.size);
 ok("VNMidCap co 90 ma (da doi chieu tung ma voi AFL hien tai, khop tuyet doi)", VN_MIDCAP.size === 90, VN_MIDCAP.size);
-ok("VNSmallCap co 270 ma (da doi chieu tung ma voi AFL hien tai, khop tuyet doi)", VN_SMALLCAP.size === 270, VN_SMALLCAP.size);
+ok("VNSmallCap co 271 ma (da doi chieu tung ma voi AFL hien tai, khop tuyet doi)", VN_SMALLCAP.size === 271, VN_SMALLCAP.size);
 ok("khong co ma nao trung giua VN30 va Midcap", ![...VN30].some((m) => VN_MIDCAP.has(m)));
 ok("khong co ma nao trung giua VN30 va Smallcap", ![...VN30].some((m) => VN_SMALLCAP.has(m)));
 ok("khong co ma nao trung giua Midcap va Smallcap", ![...VN_MIDCAP].some((m) => VN_SMALLCAP.has(m)));
