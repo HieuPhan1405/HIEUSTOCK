@@ -67,7 +67,7 @@ function cotPhanKy(khoa, nhan, donVi, moTa) {
     hien: (r) => {
       const c = giaiMaCat(r[khoa]);
       if (!c) return Trong;
-      const khi = c.cach === 0 ? (donVi === "tuần" ? "tuần này" : "hôm nay") : `${c.cach} ${donVi}`;
+      const khi = c.cach === 0 ? (donVi === "tuần" ? "tuần này" : donVi.startsWith("nến") ? "nến này" : "hôm nay") : `${c.cach} ${donVi}`;
       return (
         <span style={{ color: c.huong > 0 ? XANH : DO }} title={`${moTa}: phân kỳ ${c.huong > 0 ? "tăng (đáy sau thấp hơn, RSI cao hơn)" : "giảm (đỉnh sau cao hơn, RSI thấp hơn)"} xác nhận ${khi === "hôm nay" || khi === "tuần này" ? khi : khi + " trước"}. Chỉ là điều kiện tham khảo.`}>
           {c.huong > 0 ? "↑ PK tăng" : "↓ PK giảm"} · {khi}
@@ -117,6 +117,8 @@ export const COT_CHI_BAO_HIEN = {
   mh_ngay: cotMauHinh("", "Mẫu hình giá (ngày)", "phiên", "Mẫu hình đã phá vỡ đường cổ / biên trong 10 phiên gần nhất (khung ngày) — tham khảo, bấm vào mã rồi vào Biểu đồ kỹ thuật → Mẫu hình để xem vẽ trên hình"),
   mh_tuan: cotMauHinh("_tuan", "Mẫu hình giá (tuần)", "tuần", "Mẫu hình đã phá vỡ trong 6 tuần gần nhất (khung tuần) — tham khảo"),
   rsi14: cotSo("rsi14", "RSI (14)", so1So, (v) => (v < 30 ? XANH : v > 70 ? DO : undefined), "Dưới 30: quá bán (xanh) · trên 70: quá mua (đỏ)"),
+  rsi_h1: cotSo("rsi_h1", "RSI 1H (14)", so1So, (v) => (v < 30 ? XANH : v > 70 ? DO : undefined), "RSI 14 trên nến 1 giờ - dưới 30: quá bán (xanh) · trên 70: quá mua (đỏ); cập nhật ~10 phút/lần trong phiên"),
+  rsi_h1_pk_cach: cotPhanKy("rsi_h1_pk_cach", "RSI phân kỳ (1H)", "nến 1H", "Khung 1 giờ, ~12 phiên gần nhất"),
   rsi_pk_cach: cotPhanKy("rsi_pk_cach", "RSI phân kỳ (ngày)", "phiên", "Khung ngày, 3 tháng gần nhất"),
   rsi_pk_tuan_cach: cotPhanKy("rsi_pk_tuan_cach", "RSI phân kỳ (tuần)", "tuần", "Khung tuần, 6 tháng gần nhất"),
   macd: cotSo("macd", "MACD", (v) => soAn(v, 3), mauDau, "Đường MACD (12, 26)"),

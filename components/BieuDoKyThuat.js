@@ -66,6 +66,41 @@ const KHOANG = [
   { nhan: "3N", nen: 756 },
   { nhan: "Tất cả", nen: 0 },
 ];
+// Khung nho trong ngay (nen 1 gio / 30 / 15 / 5 phut): thoi gian nen la giay Unix da cong 7 gio (xem lib/lichSuGia.js layNenNoiNgay) - hien dung GIO VIET NAM. So nen moi ngay giao dich: 1H = 5, 30P = 9, 15P = 16, 5P = 48.
+const KHUNG_CHON = [
+  { khoa: "D", nhan: "Ngày" },
+  { khoa: "W", nhan: "Tuần" },
+  { khoa: "H", nhan: "1 giờ" },
+  { khoa: "M30", nhan: "30 phút" },
+  { khoa: "M15", nhan: "15 phút" },
+  { khoa: "M5", nhan: "5 phút" },
+];
+const NEN_MOI_NGAY = { H: 5, M30: 9, M15: 16, M5: 48 };
+const BUOC_PHUT = { H: 60, M30: 30, M15: 15, M5: 5 };
+const laNoiNgay = (kt) => kt in BUOC_PHUT;
+const khoangNoiNgay = (kt) => [{ nhan: "1T", nen: 5 * NEN_MOI_NGAY[kt] }, { nhan: "2T", nen: 10 * NEN_MOI_NGAY[kt] }, { nhan: "1th", nen: 21 * NEN_MOI_NGAY[kt] }, { nhan: "Tất cả", nen: 0 }];
+// Nen ke tiep (giay, da cong 7 gio) theo cac phien 9:00-11:30 va 13:00-14:45, bo qua T7 / CN - dung ve "may tuong lai" o khung nho.
+function nenNoiNgayKeTiep(t, kt) {
+  const s = BUOC_PHUT[kt];
+  const d = new Date(t * 1000);
+  const ph = d.getUTCHours() * 60 + d.getUTCMinutes();
+  const moc = [];
+  for (let m = 540; m < 690; m += s) moc.push(m);
+  for (let m = 780; m < 885; m += s) moc.push(m);
+  const nx = moc.find((m) => m > ph);
+  if (nx != null) return t + (nx - ph) * 60;
+  const e = new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  do e.setUTCDate(e.getUTCDate() + 1);
+  while ([0, 6].includes(e.getUTCDay()));
+  return e.getTime() / 1000 + moc[0] * 60;
+}
+// Nhan thoi gian cua 1 nen: nen ngay / tuan = "yyyy-mm-dd" -> "dd/mm/yyyy"; nen khung nho = giay -> "dd/mm/yyyy hh:mm" (gio Viet Nam).
+const nhanThoiGian = (t) => {
+  if (typeof t !== "number") return String(t).split("-").reverse().join("/");
+  const d = new Date(t * 1000);
+  const p = (x) => String(x).padStart(2, "0");
+  return `${p(d.getUTCDate())}/${p(d.getUTCMonth() + 1)}/${d.getUTCFullYear()} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
+};
 
 const CONG_TAT = [
   { khoa: "ichimoku", nhan: "Ichimoku", mau: MAU.kijun },
@@ -125,12 +160,13 @@ function ngayTuongLai(ngayCuoi, k, tuan) {
   return d.toISOString().slice(0, 10);
 }
 
-function tinhChiBao(nen, tuan) {
+function tinhChiBao(nen, khung) {
+  const tuan = khung === "W";
   const n = nen.length;
   const bars = nen.map((b) => ({ h: b.h, l: b.l, c: b.c }));
   const dich = THAM_SO_MAC_DINH.dichMay;
   const thoiGian = nen.map((b) => b.t);
-  for (let k = 1; k <= dich + SO_BUOC_TUONG_LAI.spanB; k++) thoiGian.push(ngayTuongLai(nen[n - 1].t, k, tuan)); // dich: may goc; them spanB buoc de ve cham Senkou B tuong lai
+  for (let k = 1; k <= dich + SO_BUOC_TUONG_LAI.spanB; k++) thoiGian.push(laNoiNgay(khung) ? nenNoiNgayKeTiep(thoiGian[thoiGian.length - 1], khung) : ngayTuongLai(nen[n - 1].t, k, tuan)); // dich: may goc; them spanB buoc de ve cham Senkou B tuong lai
 
   const ich = tinhIchimoku(bars);
   const tl = tinhIchimokuTuongLai(bars);
@@ -226,7 +262,7 @@ function timNenTruoc(nen, ngay) {
   return kq;
 }
 
-const chuoiThoiGian = (t) => (typeof t === "object" && t ? `${t.year}-${String(t.month).padStart(2, "0")}-${String(t.day).padStart(2, "0")}` : String(t));
+const chuoiThoiGian = (t) => (typeof t === "object" && t ? `${t.year}-${String(t.month).padStart(2, "0")}-${String(t.day).padStart(2, "0")}` : typeof t === "number" ? t : String(t));
 const chuoiKL = (v) => (v >= 1e6 ? `${soVN(v / 1e6, 2, true)} tr` : v >= 1e3 ? `${soVN(v / 1e3, 0)} nghìn` : soVN(v ?? 0, 0));
 
 function Chip({ bat, onClick, children, mau }) {
@@ -277,10 +313,11 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const [kieuMau, setKieuMau] = useState(0); // tang moi khi doi che do sang/toi de ve lai cac phan tu co mau rieng (vd mui ten MUA)
 
   const khoa = `${ma}|${khungTG}`;
+  const noiNgay = laNoiNgay(khungTG);
   const nen = ketQua.khoa === khoa ? ketQua.nen : null;
   const dangTai = ketQua.khoa !== khoa;
   const loi = ketQua.khoa === khoa ? ketQua.loi : null;
-  const chiBao = useMemo(() => (nen && nen.length >= 2 ? tinhChiBao(nen, khungTG === "W") : null), [nen, khungTG]);
+  const chiBao = useMemo(() => (nen && nen.length >= 2 ? tinhChiBao(nen, khungTG) : null), [nen, khungTG]);
   const chiBaoPhu = useMemo(() => (nen && nen.length >= 30 ? tinhChiBaoPhu(nen) : null), [nen]);
   const phanKy = useMemo(() => {
     if (!nen || nen.length < 60) return [];
@@ -441,7 +478,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   }, [giuCongCu]);
 
   // 1d. VOLUME PROFILE. Nen 1 gio chi tai khi can (bat chi bao, dang chon cong cu, hoac ma nay da co hinh vung chon); loi / khong co thi dung nen cua bieu do.
-  const canNenGio = bat.vp || bat.htkc || congCu === "frvp" || coFrvp;
+  const canNenGio = !noiNgay && (bat.vp || bat.htkc || congCu === "frvp" || coFrvp);
   useEffect(() => {
     if (!canNenGio || nenGio.ma === ma) return;
     let huy = false;
@@ -465,7 +502,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     duLieuHoSoRef.current = { nen, nenGio: nenGioCuaMa, khungTG };
     const tinh = (i1, i2, soHang = 48) => {
       const d = duLieuHoSoRef.current;
-      if (!d.nen || !d.nen.length) return null;
+      if (!d.nen || !d.nen.length || typeof d.nen[0].t === "number") return null; // Volume Profile chi cho khung ngay / tuan
       const a = Math.max(0, Math.ceil(Math.min(i1, i2))), b = Math.min(d.nen.length - 1, Math.floor(Math.max(i1, i2)));
       if (b < a) return null;
       const tuan = d.khungTG === "W";
@@ -476,7 +513,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     };
     s.tinhHoSo = tinh;
     s.lopVe.datNguonHoSo((i1, i2) => tinh(i1, i2, 48));
-    if (!bat.vp) {
+    if (!bat.vp || noiNgay) {
       s.lopVe.datHoSo(null);
       return;
     }
@@ -498,7 +535,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       clearTimeout(hen);
       s.chart.timeScale().unsubscribeVisibleLogicalRangeChange(khiDoi);
     };
-  }, [bat.vp, nen, nenGioCuaMa, khungTG]);
+  }, [bat.vp, nen, nenGioCuaMa, khungTG, noiNgay]);
 
   // 1e. HO TRO / KHANG CU THAM KHAO theo khoi luong: toi da 2 dinh khoi luong gan gia nhat o moi phia, ve thanh duong gia co nhan tren truc.
   useEffect(() => {
@@ -512,7 +549,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       }
     }
     s.duongHTKC = [];
-    if (!bat.htkc || !nen || nen.length < 30 || !s.tinhHoSo) return;
+    if (!bat.htkc || noiNgay || !nen || nen.length < 30 || !s.tinhHoSo) return;
     const n = nen.length;
     const hs = s.tinhHoSo(Math.max(0, n - (SO_NEN_HTKC[khungTG] ?? 120)), n - 1, 100);
     if (!hs) return;
@@ -522,7 +559,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     };
     ve(hoTro, MAU_HO_TRO, "Hỗ trợ KL");
     ve(khangCu, MAU_KHANG_CU, "Kháng cự KL");
-  }, [bat.htkc, nen, nenGioCuaMa, khungTG]);
+  }, [bat.htkc, nen, nenGioCuaMa, khungTG, noiNgay]);
 
   // 2. Tai gia lich su khi doi ma / khung thoi gian, hoac lam moi (lanThu, xem 2b) - khoa KHONG
   // gom lanThu de lam moi trong luc da co du lieu cu khong lam bieu do nhap nhay ve trang thai "dang tai".
@@ -551,7 +588,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   // 2b. Trong phien giao dich: tu dong lam moi nen "hom nay" moi 30 giay (khung Ngay - nguon
   // DNSE tra ve nen hom nay dang chay, khong phai da chot) - khung Tuan khong can vi khong doi trong ngay.
   useEffect(() => {
-    if (khungTG !== "D") return;
+    if (khungTG === "W") return;
     const hen = setInterval(() => {
       if (dangTrongPhienGiaoDich() && document.visibilityState === "visible") setLanThu((x) => x + 1);
     }, 30_000);
@@ -673,9 +710,9 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     if (!s) return;
     s.daiGia.datDuLieu(daiTuVung(vung), nen ? nen[nen.length - 1].c : null);
     const ngay = ngayMua ? new Date(ngayMua).toISOString().slice(0, 10) : null;
-    const nenMua = nen && ngay ? timNenTruoc(nen, ngay) : null;
+    const nenMua = nen && ngay && !noiNgay ? timNenTruoc(nen, ngay) : null;
     s.markers.setMarkers(nenMua ? [{ time: nenMua, position: "belowBar", color: mauTheoGiaoDien().xanh, shape: "arrowUp", text: "MUA" }] : []);
-  }, [vung, ngayMua, nen, kieuMau]);
+  }, [vung, ngayMua, nen, kieuMau, noiNgay]);
 
   // 4b. Tu ve MAU HINH GIA len bieu do: duong co / canh (LineSeries), diem chinh (marker), muc tieu + cat lo (vach gia); cuon bieu do toi mau hinh.
   useEffect(() => {
@@ -726,6 +763,11 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.chart.timeScale().setVisibleLogicalRange({ from: Math.max(-2, dau - 12), to: Math.min(nen.length + 12, m.i + (dangHT ? 12 : 30)) });
   }, [mauHinhVe, nen]);
 
+  // 4c. Khung nho: truc thoi gian hien gio (HH:MM).
+  useEffect(() => {
+    veRef.current?.chart.applyOptions({ timeScale: { timeVisible: noiNgay, secondsVisible: false } });
+  }, [noiNgay]);
+
   // 5. Bat/tat chi bao.
   useEffect(() => {
     const s = veRef.current;
@@ -756,15 +798,14 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     <div ref={rootRef} className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-3 py-2.5 border-b" style={{ borderColor: VIEN }}>
         <div className="flex items-center gap-1.5">
-          <Chip bat={khungTG === "D"} onClick={() => setKhungTG("D")}>
-            Ngày
-          </Chip>
-          <Chip bat={khungTG === "W"} onClick={() => setKhungTG("W")}>
-            Tuần
-          </Chip>
+          {KHUNG_CHON.map((k) => (
+            <Chip key={k.khoa} bat={khungTG === k.khoa} onClick={() => setKhungTG(k.khoa)}>
+              {k.nhan}
+            </Chip>
+          ))}
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          {CONG_TAT.map((c) => (
+          {CONG_TAT.filter((c) => !(noiNgay && (c.khoa === "vp" || c.khoa === "htkc"))).map((c) => (
             <Chip key={c.khoa} bat={bat[c.khoa]} mau={c.mau} onClick={() => setBat((b) => ({ ...b, [c.khoa]: !b[c.khoa] }))}>
               {c.nhan}
             </Chip>
@@ -789,7 +830,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           </Chip>
         </div>
         <div className="flex items-center gap-1 ml-auto">
-          {KHOANG.map((k) => (
+          {(noiNgay ? khoangNoiNgay(khungTG) : KHOANG).map((k) => (
             <button
               key={k.nhan}
               type="button"
@@ -807,7 +848,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         <div className="px-3 py-2 border-b" style={{ borderColor: VIEN }} data-may="mau-hinh" aria-label="Nhận diện mẫu hình giá">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-[11px] mr-1" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-              Mẫu hình ({khungTG === "W" ? "khung tuần" : "khung ngày"}) — ⏳ đang hình thành · ▲▼ đã phá vỡ. Bấm để vẽ lên hình:
+              Mẫu hình ({khungTG === "W" ? "khung tuần" : noiNgay ? `khung ${KHUNG_CHON.find((k) => k.khoa === khungTG).nhan.toLowerCase()}` : "khung ngày"}) — ⏳ đang hình thành · ▲▼ đã phá vỡ. Bấm để vẽ lên hình:
             </span>
             {dsMauHinh.length === 0 && (
               <span className="text-xs" style={{ color: MUTED }}>
@@ -828,7 +869,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
                   style={{ background: chon ? "rgba(246,197,68,0.16)" : "transparent", border: `1px ${dangHT ? "dashed" : "solid"} ${chon ? "#F6C544" : VIEN}`, color: chon ? TEXT : MUTED, fontFamily: "'Inter', sans-serif" }}
                 >
                   {dangHT ? <span>⏳</span> : <span style={{ color: mau }}>{m.huong > 0 ? "▲" : "▼"}</span>} {m.ten} ·{" "}
-                  {dangHT ? `cách mức phá vỡ ${soVN(m.cachPhaVoPct, 1)}%` : m.cach === 0 ? (khungTG === "W" ? "tuần này" : "hôm nay") : `${m.cach} ${khungTG === "W" ? "tuần" : "phiên"} trước`}
+                  {dangHT ? `cách mức phá vỡ ${soVN(m.cachPhaVoPct, 1)}%` : m.cach === 0 ? (khungTG === "W" ? "tuần này" : noiNgay ? "nến này" : "hôm nay") : `${m.cach} ${khungTG === "W" ? "tuần" : noiNgay ? "nến" : "phiên"} trước`}
                 </button>
               );
             })}
@@ -843,12 +884,12 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
                 </span>
               ))}
               <br />
-              Thống kê lịch sử (khung ngày, 390 mã): các mẫu hình ở trạng thái đang hình thành chỉ phá vỡ đúng hướng trong 20 phiên tiếp theo khoảng 40–50% trường hợp, và khoảng 30–55% chạm cắt lỗ trước (gần ngang ngửa tung đồng xu). Chưa phá vỡ thì chưa phải tín hiệu. Chỉ để tham khảo, không phải khuyến nghị mua bán.
+              Thống kê lịch sử (khung ngày, 390 mã): các mẫu hình ở trạng thái đang hình thành chỉ phá vỡ đúng hướng trong 20 phiên tiếp theo khoảng 40–50% trường hợp, và khoảng 30–55% chạm cắt lỗ trước (gần ngang ngửa tung đồng xu). Chưa phá vỡ thì chưa phải tín hiệu. Chỉ để tham khảo, không phải khuyến nghị mua bán.{noiNgay ? " Thống kê trên là của khung ngày; khung nhỏ chưa được kiểm chứng và nhiễu hơn." : ""}
             </div>
           )}
           {mauHinhVe && mauHinhVe.trangThai !== "dang_hinh_thanh" && (
             <div className="mt-2 text-xs leading-relaxed" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-              <span style={{ color: TEXT, fontWeight: 600 }}>{mauHinhVe.ten}</span> — phá vỡ {mauHinhVe.t} tại {soVN(mauHinhVe.gia, 2, true)}; mục tiêu đo từ mẫu hình{" "}
+              <span style={{ color: TEXT, fontWeight: 600 }}>{mauHinhVe.ten}</span> — phá vỡ {nhanThoiGian(mauHinhVe.t)} tại {soVN(mauHinhVe.gia, 2, true)}; mục tiêu đo từ mẫu hình{" "}
               <span style={{ color: XANH }}>{soVN(mauHinhVe.mucTieu, 2, true)}</span>, cắt lỗ theo mẫu hình <span style={{ color: DO }}>{soVN(mauHinhVe.catLo, 2, true)}</span> (lãi/lỗ tiềm năng{" "}
               {(((mauHinhVe.huong > 0 ? mauHinhVe.mucTieu - mauHinhVe.gia : mauHinhVe.gia - mauHinhVe.mucTieu) / Math.abs(mauHinhVe.gia - mauHinhVe.catLo)) || 0).toFixed(1).replace(".", ",")}R).{" "}
               {(() => {
@@ -1017,7 +1058,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             style={{ fontFamily: "'JetBrains Mono', monospace", color: MUTED, textShadow: `0 0 4px ${NEN_CARD}, 0 0 4px ${NEN_CARD}` }}
           >
             <b style={{ color: TEXT, fontFamily: "'Inter', sans-serif" }}>{ma}</b>
-            <span>{hienTai.t.split("-").reverse().join("/")}</span>
+            <span>{nhanThoiGian(hienTai.t)}</span>
             <span>
               M <b style={{ color: TEXT }}>{fmt(hienTai.o)}</b>
             </span>

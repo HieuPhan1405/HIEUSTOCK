@@ -44,6 +44,7 @@ const CHU_KY_BAT_DAY_MS = 15 * 60 * 1000;
 // Chi bao ky thuat cho bo loc (RSI, MACD, MA...): tinh ~0,3 giay cho ca 389 ma nhung ghi DB 389 dong, nen gui moi 1 phut NEU co nen moi (khong can moi 10 giay nhu tin hieu).
 // Chay bang bo hen RIENG, loi o day khong bao gio duoc anh huong toi luong tin hieu chinh.
 const CHU_KY_CHI_BAO_MS = 60 * 1000;
+const CHU_KY_RSI_H1_MS = 10 * 60 * 1000; // RSI khung 1 gio cho bo loc (dayRsiH1.mjs, tien trinh con)
 const CHU_KY_KICH_BAN_MS = 15 * 60 * 1000; // kich ban mua (trang /kich-ban-mua): ~340 ma x ~60 lan tinh -> chay TIEN TRINH CON rieng de khong chan engine
 
 const ngayIsoTuGiay = (giay) => new Date(giay * 1000).toISOString().slice(0, 10);
@@ -174,6 +175,23 @@ async function main() {
     });
   }
 
+  // RSI KHUNG 1 GIO cho bo loc: engine/dich-vu/dayRsiH1.mjs --upload o tien trinh con (tai nen 1 gio ~390 ma, ~1 phut/lan), moi 10 phut.
+  let dangChayRsiH1 = false;
+  function chayRsiH1() {
+    if (!uploadDuocPhep || dangChayRsiH1) return;
+    dangChayRsiH1 = true;
+    const con = spawn(process.execPath, [fileURLToPath(new URL("./dayRsiH1.mjs", import.meta.url)), "--upload"], { stdio: ["ignore", "pipe", "pipe"] });
+    let cuoi = "";
+    const nho = (b) => (cuoi = (cuoi + b.toString()).split(String.fromCharCode(10)).filter(Boolean).slice(-3).join(" | "));
+    con.stdout.on("data", nho);
+    con.stderr.on("data", nho);
+    con.on("error", (loi) => console.log(`[rsi h1] LOI: ${loi.message}`));
+    con.on("close", (ma) => {
+      dangChayRsiH1 = false;
+      console.log(`[${new Date().toLocaleTimeString("vi-VN")}] RSI 1H (tien trinh con) xong, ma thoat ${ma}: ${cuoi.slice(0, 200)}`);
+    });
+  }
+
   const topGiaTheoMa = new Map(); // ma -> { mua3, ban3, tiLe } (so lenh moi nhat, xem engine/loi/topGia.js)
   let dangTinh = false;
   let lanCuoiTinhBatDay = 0;
@@ -278,6 +296,8 @@ async function main() {
   const henGioChiBao = setInterval(tinhVaGuiChiBao, CHU_KY_CHI_BAO_MS);
   chayKichBanMua();
   const henGioKichBan = setInterval(chayKichBanMua, CHU_KY_KICH_BAN_MS);
+  chayRsiH1();
+  const henGioRsiH1 = setInterval(chayRsiH1, CHU_KY_RSI_H1_MS);
 
   // TU DUNG 15h30 (2026-10-12): engine khoi dong TRUOC 15h30 vao ngay lam viec (T2-T6, gio VN) thi tinh + day lan cuoi luc 15h30 roi tu thoat voi ma 3 -
   // CHAY_REALTIME_UPLOAD.bat thay ma 3 thi KHONG khoi dong lai. Khoi dong sau 15h30 (chay tay buoi toi / cuoi tuan) thi chay den khi dong cua so.
@@ -312,6 +332,7 @@ async function main() {
       clearInterval(henGio);
       clearInterval(henGioChiBao);
       clearInterval(henGioKichBan);
+      clearInterval(henGioRsiH1);
       dsKetNoi.forEach((k) => k.dong());
       dsKetNoiTopGia.forEach((k) => k.dong());
       process.exit(3);
@@ -323,6 +344,7 @@ async function main() {
     clearInterval(henGio);
     clearInterval(henGioChiBao);
     clearInterval(henGioKichBan);
+    clearInterval(henGioRsiH1);
     dsKetNoi.forEach((k) => k.dong());
       dsKetNoiTopGia.forEach((k) => k.dong());
     process.exit(0);

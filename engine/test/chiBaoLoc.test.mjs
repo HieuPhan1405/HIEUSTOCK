@@ -1,6 +1,6 @@
 // Test tay cho engine/loi/chiBaoLoc.js (chi bao ky thuat cho bo loc). Chay: node engine/test/chiBaoLoc.test.mjs
 import { ema, nenTuLanCat, tinhChiBaoLocChoMa, tinhChiBaoLocToanBo, xayDungCsvChiBao } from "../loi/chiBaoLoc.js";
-import { COT_CHI_BAO } from "../../lib/cotChiBaoKyThuat.js";
+import { COT_CHI_BAO, COT_CHI_BAO_H1 } from "../../lib/cotChiBaoKyThuat.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -114,10 +114,22 @@ function nenTuGia(gia, kl = 1000) {
   ok("toan bo: bo ma thieu du lieu, khong bao loi", ds.length === 1 && ds[0].ma === "AAA" && loiTinh.length === 0);
   const csv = xayDungCsvChiBao(ds).split("\n");
   const header = csv[0].split(",");
-  ok("CSV: header = ma, ngay_nen + moi cot chi bao", header.length === 2 + COT_CHI_BAO.length && header[0] === "ma" && header[1] === "ngay_nen");
+  ok("CSV: header = ma, ngay_nen + moi cot chi bao (tru cot RSI 1H do job rieng day)", header.length === 2 + COT_CHI_BAO.length - COT_CHI_BAO_H1.length && header[0] === "ma" && header[1] === "ngay_nen" && !header.includes("rsi_h1"));
   ok("CSV: moi dong co dung so cot", csv[1].split(",").length === header.length);
   ok("CSV: gia tri null xuat rong (MA200 chua du du lieu)", csv[1].split(",")[header.indexOf("cach_ma200_pct")] === "");
 }
 
+// RSI 1 gio (engine/loi/rsiH1.js)
+import { tinhRsiH1ChoMa, xayDungCsvRsiH1 } from "../loi/rsiH1.js";
+{
+  const barsDay = Array.from({ length: 80 }, (_, i) => { const c = 20 - i * 0.2 + Math.sin(i) * 0.05; return { t: 1700000000 + i * 3600, h: c + 0.05, l: c - 0.05, c }; });
+  const r = tinhRsiH1ChoMa(barsDay);
+  ok("RSI 1H: chuoi giam deu -> RSI thap (< 30)", r && r.rsi_h1 < 30, JSON.stringify(r));
+  const barsTang = Array.from({ length: 80 }, (_, i) => { const c = 10 + i * 0.2; return { t: 1700000000 + i * 3600, h: c + 0.05, l: c - 0.05, c }; });
+  ok("RSI 1H: chuoi tang deu -> RSI cao (> 70)", tinhRsiH1ChoMa(barsTang).rsi_h1 > 70);
+  ok("RSI 1H: thieu nen -> null", tinhRsiH1ChoMa(barsDay.slice(0, 10)) === null);
+  const csv = xayDungCsvRsiH1([{ ma: "AAA", rsi_h1: 55.5, rsi_h1_pk_cach: -3 }, { ma: "BBB", rsi_h1: 20, rsi_h1_pk_cach: null }]).split("\n");
+  ok("RSI 1H: CSV rieng chi 3 cot", csv[0] === "ma,rsi_h1,rsi_h1_pk_cach" && csv[1] === "AAA,55.5,-3" && csv[2] === "BBB,20,");
+}
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);
