@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { fmt, pct, nhe } from "@/components/dungChung";
 import { soVN } from "@/lib/soVN";
-import { locDiemB, ketQuaDiemB, thongKeDiemB, danhSachNganh, laKhuyenNghi, DAI_GIAM, KHOANG_PHIEN, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "@/lib/locDiemB";
+import { ganDacTrungNganh, locDiemB, ketQuaDiemB, thongKeDiemB, danhSachNganh, laKhuyenNghi, DAI_GIAM, KHOANG_PHIEN, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "@/lib/locDiemB";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -65,7 +65,8 @@ function Sel({ loc, dat, k, ds, tatCa }) {
   );
 }
 
-export default function BangDiemB({ duLieu }) {
+export default function BangDiemB({ duLieu: duLieuTho }) {
+  const duLieu = useMemo(() => ganDacTrungNganh(duLieuTho), [duLieuTho]);
   const [loc, setLoc] = useState(LOC_MAC_DINH);
   const [sapXep, setSapXep] = useState({ khoa: "ngay", chieu: "desc" });
   const dat = (k, v) => setLoc((l) => ({ ...l, [k]: v }));
@@ -117,6 +118,8 @@ export default function BangDiemB({ duLieu }) {
         <Sel loc={loc} dat={dat} k="dai" ds={DAI_GIAM} />
         <Sel loc={loc} dat={dat} k="nganh" ds={nganhs} tatCa="Mọi ngành" />
         <Ck loc={loc} dat={dat} k="klDay" nhan="KL đáy ≥ 2×" tieuDe="KL lớn nhất 5 phiên quanh đáy ≥ 2 lần KL trung bình 20 phiên trước đáy (bán tháo có khối lượng) — yếu tố kiểm chứng tốt nhất" />
+        <Ck loc={loc} dat={dat} k="cungNganh" nhan="Cả ngành cùng hồi (≥ 3 mã cùng ngành có điểm B)" tieuDe="Có ít nhất 3 mã khác cùng ngành cũng có điểm B trong 5 phiên (cả ngành cùng quay đầu). Lịch sử: trong bộ lọc khuyến nghị lãi 10 phiên khoảng +5,7% so với +3,3% khi không." />
+        <Ck loc={loc} dat={dat} k="manhNganh" nhan="Giảm mạnh hơn trung vị ngành" tieuDe="Mã giảm nhiều hơn trung vị các điểm B cùng ngành trong 5 phiên: lịch sử +7,0% so với +3,5% (trong bộ lọc khuyến nghị)." />
         <Ck loc={loc} dat={dat} k="vniYeu" nhan="Thị trường yếu" tieuDe="VN-Index thấp hơn đỉnh 60 phiên từ 7% lúc điểm B xuất hiện" />
         <Ck loc={loc} dat={dat} k="chuaMuaThuong" nhan="Chưa có lệnh MUA thường trước" tieuDe="Loại mã mà web đã ghi nhận lệnh MUA của hệ thống trong 60 ngày trước điểm B: nhóm này có kết quả lịch sử kém hơn" />
         <Ck loc={loc} dat={dat} k="ganGiaB" nhan="Còn gần giá vào (≤ +5%)" tieuDe="Giá hiện tại không cao hơn giá vào quá 5% và chưa thủng cắt lỗ" />
@@ -152,6 +155,11 @@ export default function BangDiemB({ duLieu }) {
                   <tr key={`${r.ma}-${r.ngay}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                     <td className="py-2.5 px-3 whitespace-nowrap">
                       <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ ...sans, fontWeight: 700 }}>{r.ma}</Link>
+                      {r.ng_so_ma >= 3 && (
+                        <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(PRIMARY, 13), color: PRIMARY, ...sans }} title={`${r.ng_so_ma} mã khác cùng ngành cũng có điểm B trong 5 phiên — cả ngành cùng hồi`}>
+                          ngành hồi ({r.ng_so_ma})
+                        </span>
+                      )}
                       {laKhuyenNghi(r) && (
                         <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(XANH, 13), color: XANH, ...sans }} title="Giảm từ 20% + KL đáy ≥ 2× + thị trường yếu lúc đó">
                           ⭐ khuyến nghị
