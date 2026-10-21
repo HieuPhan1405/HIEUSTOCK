@@ -2,6 +2,7 @@ import { layTatCaBatDay } from "@/lib/batDay";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import BangBatDay from "@/components/BangBatDay";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
+import HuongDanDungHieuQua from "@/components/HuongDanDungHieuQua";
 import { pct } from "@/components/dungChung";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 
@@ -77,6 +78,8 @@ export default async function TrangBatDay() {
         Toàn bộ lịch sử các lần checklist bắt đáy kích hoạt (chiết khấu sâu + quá bán + capitulation/phân kỳ + follow-through day)
         trên toàn bộ cổ phiếu có GTGD ≥ 3 tỷ (VN100 và các mã khác, mã ngoài VN100 có nhãn &quot;khác&quot;), kèm kết quả thực tế sau 5/10/20 phiên để tự đánh giá độ tin cậy.
       </p>
+
+      <HuongDanDungHieuQua moSan={false} />
 
       {loi && (
         <p className="text-sm mb-6" style={{ color: DO }}>

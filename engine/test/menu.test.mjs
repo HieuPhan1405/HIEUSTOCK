@@ -17,7 +17,7 @@ ok("/lenh-mo khong nham voi /lenh-da-dong", tabCuaTrang("/lenh-mo")?.dangChon ==
 ok("/bo-loc va /kich-ban-mua chung muc Bo loc (co tab)", mucDangMo("/bo-loc")?.nhan === "Bộ lọc cổ phiếu" && mucDangMo("/kich-ban-mua")?.nhan === "Bộ lọc cổ phiếu" && tabCuaTrang("/kich-ban-mua")?.dangChon === "/kich-ban-mua" && tabCuaTrang("/bo-loc")?.tab.length === 2);
 ok("/ma/VPB, /lien-he khong thuoc menu", mucDangMo("/ma/VPB") === null && mucDangMo("/lien-he") === null);
 ok("tab trang dau: 3 tab, dang chon Tong quan", tabCuaTrang("/")?.tab.length === 3 && tabCuaTrang("/")?.dangChon === "/");
-ok("/bat-day va /hoi-giam-dai chung muc Bat day (co tab)", mucDangMo("/hoi-giam-dai")?.href === "/bat-day" && tabCuaTrang("/hoi-giam-dai")?.dangChon === "/hoi-giam-dai" && tabCuaTrang("/bat-day")?.tab.length === 2);
+ok("/bat-day va /hoi-giam-dai chung muc Bat day (co tab)", mucDangMo("/hoi-giam-dai")?.href === "/bat-day" && tabCuaTrang("/hoi-giam-dai")?.dangChon === "/hoi-giam-dai" && tabCuaTrang("/bat-day")?.tab.length === 3 && mucDangMo("/mua-phuc-hoi")?.href === "/bat-day");
 ok("moi muc co nhan ngan", MENU.every((m) => m.nhanNgan && m.nhanNgan.length <= 10));
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { fmt, pct, nhe } from "@/components/dungChung";
 import { soVN } from "@/lib/soVN";
+import { ngayBatDauKhoang, danhSachNganh } from "@/lib/locDiemB";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -27,6 +28,16 @@ function formatNgay(v) {
   return new Date(v).toLocaleDateString("vi-VN");
 }
 
+// Khoang thoi gian loc nhanh theo SO PHIEN co su kien gan nhat (null = khong gioi han; "nam" = tu dau 2026).
+const KHOANG = [
+  { k: "tat_ca", nhan: "Tất cả", phien: null },
+  { k: "nam", nhan: "Từ đầu 2026", nam: "2026-01-01" },
+  { k: "30", nhan: "30 phiên", phien: 30 },
+  { k: "10", nhan: "10 phiên", phien: 10 },
+  { k: "5", nhan: "5 phiên", phien: 5 },
+  { k: "1", nhan: "Phiên mới nhất", phien: 1 },
+];
+
 const COT = [
   { khoa: "ma", nhan: "Mã", canPhai: false, lay: (r) => r.ma },
   { khoa: "ngay_tin_hieu", nhan: "Ngày tín hiệu", canPhai: false, lay: (r) => new Date(r.ngay_tin_hieu).getTime() },
@@ -38,6 +49,7 @@ const COT = [
   { khoa: "pct_sau_20", nhan: "%Sau 20 phiên", canPhai: true, lay: (r) => r.pct_sau_20 },
   { khoa: "chiet_khau", nhan: "Chiết khấu", canPhai: true, lay: (r) => r.chiet_khau },
   { khoa: "kl_day", nhan: "KL đáy", canPhai: true, lay: (r) => r.kl_day },
+  { khoa: "ngay_diem_b", nhan: "Điểm B sau", canPhai: false, lay: (r) => r.ngay_diem_b ?? "" },
   { khoa: "ket_qua", nhan: "Kết quả", canPhai: false, lay: (r) => ketQuaBatDay(r).hang },
 ];
 
@@ -47,6 +59,11 @@ export default function BangBatDay({ duLieu }) {
   const [chiThanhCong, setChiThanhCong] = useState(false);
   const [chiVn100, setChiVn100] = useState(false);
   const [chiCoKL, setChiCoKL] = useState(false);
+  const [khoang, setKhoang] = useState("tat_ca");
+  const [nganh, setNganh] = useState("");
+  const [chiDiemCao, setChiDiemCao] = useState(false);
+  const [chiCoDiemB, setChiCoDiemB] = useState(false);
+  const nganhs = useMemo(() => danhSachNganh(duLieu), [duLieu]);
 
   const daLoc = useMemo(() => {
     const tuKhoa = timKiem.trim().toUpperCase();
@@ -54,6 +71,12 @@ export default function BangBatDay({ duLieu }) {
     if (chiThanhCong) ds = ds.filter((r) => ketQuaBatDay(r).nhan === "Thành công");
     if (chiVn100) ds = ds.filter((r) => r.vn100 !== false);
     if (chiCoKL) ds = ds.filter((r) => r.kl_day != null && r.kl_day >= 2);
+    if (chiDiemCao) ds = ds.filter((r) => r.diem >= 6);
+    if (chiCoDiemB) ds = ds.filter((r) => r.ngay_diem_b != null);
+    if (nganh) ds = ds.filter((r) => r.nganh === nganh);
+    const kh = KHOANG.find((x) => x.k === khoang);
+    const tu = kh?.nam ?? (kh?.phien ? ngayBatDauKhoang(duLieu.map((r) => ({ ngay: r.ngay_iso })), kh.phien) : null);
+    if (tu) ds = ds.filter((r) => (r.ngay_iso ?? "") >= tu);
     const cot = COT.find((c) => c.khoa === sapXep.khoa);
     ds = [...ds].sort((a, b) => {
       const va = cot.lay(a);
@@ -67,7 +90,7 @@ export default function BangBatDay({ duLieu }) {
       return sapXep.chieu === "asc" ? so : -so;
     });
     return ds;
-  }, [duLieu, timKiem, sapXep, chiThanhCong, chiVn100, chiCoKL]);
+  }, [duLieu, timKiem, sapXep, chiThanhCong, chiVn100, chiCoKL, chiDiemCao, chiCoDiemB, nganh, khoang]);
 
   function doiSapXep(khoa) {
     setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: "desc" }));
@@ -75,6 +98,13 @@ export default function BangBatDay({ duLieu }) {
 
   return (
     <div>
+      <div className="flex flex-wrap items-center gap-2 mb-2">
+        {KHOANG.map((x) => (
+          <button key={x.k} onClick={() => setKhoang(x.k)} className="px-3 py-1.5 text-xs rounded-full border" style={{ borderColor: khoang === x.k ? PRIMARY : VIEN, background: khoang === x.k ? nhe(PRIMARY, 13) : "transparent", color: khoang === x.k ? PRIMARY : MUTED, fontFamily: "'Inter', sans-serif" }}>
+            {x.nhan}
+          </button>
+        ))}
+      </div>
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <div className="relative max-w-sm flex-1 min-w-[180px]">
           <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" color={MUTED} />
@@ -97,6 +127,20 @@ export default function BangBatDay({ duLieu }) {
         <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }} title="KL lớn nhất 5 phiên quanh tín hiệu ≥ 2× KL trung bình 20 phiên trước đó: bán tháo có khối lượng. Lịch sử tốt hơn trong 2022 và 2025 nhưng không ổn định mọi năm.">
           <input type="checkbox" checked={chiCoKL} onChange={(e) => setChiCoKL(e.target.checked)} />
           Chỉ bán tháo có KL (≥ 2×)
+        </label>
+        <select value={nganh} onChange={(e) => setNganh(e.target.value)} className="text-xs rounded-lg px-2 py-2 outline-none" style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT }}>
+          <option value="">Mọi ngành</option>
+          {nganhs.map((x) => (
+            <option key={x} value={x}>{x}</option>
+          ))}
+        </select>
+        <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }} title="Điểm checklist từ 6 trở lên (ngưỡng 6 cho kết quả tốt hơn ngưỡng 5 từ 2022.5 nhưng không ổn định mọi năm)">
+          <input type="checkbox" checked={chiDiemCao} onChange={(e) => setChiDiemCao(e.target.checked)} />
+          Điểm ≥ 6
+        </label>
+        <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }} title="Mã đã có điểm mua phục hồi (điểm B) trong 30 ngày sau tín hiệu checklist: cảnh báo đáy + xác nhận quay đầu. Dữ liệu điểm B chỉ có từ đầu 2026.">
+          <input type="checkbox" checked={chiCoDiemB} onChange={(e) => setChiCoDiemB(e.target.checked)} />
+          Đã có điểm B sau
         </label>
       </div>
 
@@ -176,6 +220,9 @@ export default function BangBatDay({ duLieu }) {
                     </td>
                     <td className="py-2.5 px-3 text-right text-xs" style={{ color: row.kl_day != null && row.kl_day >= 2 ? XANH : MUTED, fontWeight: row.kl_day != null && row.kl_day >= 2 ? 700 : 400 }}>
                       {row.kl_day != null ? `${soVN(row.kl_day, 1, true)}×` : "—"}
+                    </td>
+                    <td className="py-2.5 px-3 text-xs" style={{ color: row.ngay_diem_b ? XANH : MUTED }}>
+                      {row.ngay_diem_b ? formatNgay(row.ngay_diem_b) : "—"}
                     </td>
                     <td className="py-2.5 px-3">
                       <span

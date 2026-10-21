@@ -28,7 +28,7 @@ const TRANG_THAI_VUNG = {
 };
 
 // 1 O LENH: tieu de + so luong + mo ta, danh sach dong (moi dong 1 lenh, bam vao mo trang ma).
-function OLenh({ tieuDe, mau, moTa, ds, trong, hien, may }) {
+function OLenh({ tieuDe, mau, moTa, ds, trong, hien, may, lienKet = null }) {
   return (
     <div className="rounded-2xl border flex flex-col min-w-0" style={{ borderColor: VIEN, background: NEN_CARD, borderTop: `3px solid ${mau}` }}>
       <div className="px-4 pt-4 pb-3 border-b" style={{ borderColor: "var(--vien-nhe)" }}>
@@ -43,6 +43,11 @@ function OLenh({ tieuDe, mau, moTa, ds, trong, hien, may }) {
         <p className="text-[11px] mt-0.5 leading-snug" style={{ color: MUTED }}>
           {moTa}
         </p>
+        {lienKet && (
+          <Link href={lienKet.href} className="text-[11px] mt-1 inline-block" style={{ color: PRIMARY }}>
+            {lienKet.nhan}
+          </Link>
+        )}
       </div>
       <div className="px-2 py-1 flex-1">
         {ds.length === 0 ? (
@@ -286,6 +291,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) 
             may="mua-phuc-hoi"
             mau={VANG}
             moTa="Cổ phiếu đã giảm 20–30% rồi đóng cửa lấy lại Tenkan và Kijun — giải ngân 1/2 phần dự định, 1/2 còn lại khi hệ thống báo MUA. Ưu tiên mã có nhãn bán tháo có KL (KL quanh đáy ≥ 2×). Chưa phải tín hiệu MUA, chỉ tham khảo. Không gồm mã hệ thống đang giữ"
+            lienKet={{ href: "/mua-phuc-hoi", nhan: "Lịch sử điểm B từ đầu 2026, bộ lọc và hướng dẫn dùng →" }}
             ds={muaPhucHoi}
             trong="Hiện không có mã nào vừa có điểm B."
             hien={(x) => (

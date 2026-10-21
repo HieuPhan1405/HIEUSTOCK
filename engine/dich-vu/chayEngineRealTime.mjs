@@ -25,6 +25,7 @@ import { taiLichSuToanBo, tinhTinHieuToanBo, capNhatNenMoiNhat, chiaNhoMang } fr
 import { xayDungCSV } from "../loi/csvDauRa.js";
 import { tinhTiLeMua } from "../loi/topGia.js";
 import { tinhChecklistBatDayToanBo, xayDungCsvBatDay } from "../loi/checklistBatDay.js";
+import { tinhLichSuDiemBToanBo, xayDungCsvDiemB } from "../loi/lichSuDiemB.js";
 import { tinhChiBaoLocToanBo, xayDungCsvChiBao } from "../loi/chiBaoLoc.js";
 import { dangTrongPhienDinhKyMoCua } from "../../lib/khungGioVaoLenh.js";
 
@@ -117,6 +118,22 @@ async function main() {
       console.log(`[upload bat-day] HTTP ${res.status}`);
     } catch (loi) {
       console.log(`[upload bat-day] LOI: ${loi.message}`);
+    }
+  }
+
+  async function guiDiemBLenWebNeuDuocPhep(csv) {
+    if (!uploadDuocPhep) return;
+    try {
+      const gocWeb = process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn";
+      const res = await fetch(`${gocWeb}/api/upload-diem-b`, {
+        method: "POST",
+        headers: { "Content-Type": "text/csv", "x-api-key": uploadKey },
+        body: csv,
+        signal: AbortSignal.timeout(120000),
+      });
+      console.log(`[upload diem-b] HTTP ${res.status}`);
+    } catch (loi) {
+      console.log(`[upload diem-b] LOI: ${loi.message}`);
     }
   }
 
@@ -236,6 +253,14 @@ async function main() {
         const csvBatDay = xayDungCsvBatDay(dsBatDay);
         writeFileSync(duongDanCsvBatDay, csvBatDay, "utf-8");
         await guiBatDayLenWebNeuDuocPhep(csvBatDay);
+        // Lich su DIEM MUA PHUC HOI (diem B) tu dau 2026 cho trang /mua-phuc-hoi - cung chu ky voi checklist (loi o day khong lam hong tin hieu chinh).
+        try {
+          const dsDiemB = tinhLichSuDiemBToanBo(nenTheoMa, vniNen);
+          console.log(`[${new Date().toLocaleTimeString("vi-VN")}] Lich su diem B (tu 2026): ${dsDiemB.length} su kien.`);
+          await guiDiemBLenWebNeuDuocPhep(xayDungCsvDiemB(dsDiemB));
+        } catch (loiB) {
+          console.log(`[lich su diem B] LOI: ${loiB.message}`);
+        }
       }
     } finally {
       dangTinh = false;

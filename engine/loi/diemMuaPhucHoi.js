@@ -13,7 +13,7 @@ export const CAU_HINH_B = { giamPct: 10, giamTuPct: 20, giamDenPct: 30, trongNen
 export const SO_NEN_B_GAN_DAY = 10;
 
 // {high, low, close, volume, atr, tenkan, kijun, cloudTop, cbTop}: cac mang cung do dai (null cho nen chua du du lieu).
-// Tra ve { laB: bool[], gan: { i, cach, gia, giam, day, klDay, sl, tp1, tp2, tp3 } | null } - `gan` = diem B gan nhat trong SO_NEN_B_GAN_DAY nen cuoi.
+// Tra ve { laB: bool[], gan: { i, cach, gia, giam, day, klDay, sl, tp1, tp2, tp3 } | null, giamB: (muc giam % tai nen B hoac null)[], moTa(i) } - `gan` = diem B gan nhat trong SO_NEN_B_GAN_DAY nen cuoi; moTa(i) mo ta diem B bat ky.
 export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kijun, cloudTop, cbTop }, cauHinh = CAU_HINH_B) {
   const c = { ...CAU_HINH_B, ...cauHinh };
   const n = close.length;
@@ -41,9 +41,8 @@ export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kiju
     giamB[i] = giam;
     if (giam >= c.giamTuPct && giam < c.giamDenPct) laB[i] = true;
   }
-  let gan = null;
-  for (let i = n - 1; i >= Math.max(0, n - SO_NEN_B_GAN_DAY); i--) {
-    if (!laB[i]) continue;
+  // Mo ta 1 diem B tai nen i: gia vao (dong cua nen B), muc giam, day 20 nen, KL quanh day, cat lo, TP1-3 (dung chung cho `gan` va lich su diem B).
+  const moTa = (i) => {
     const E = close[i];
     let day = Infinity, kDay = i;
     for (let j = i - 19; j <= i; j++) if (low[j] <= day) { day = low[j]; kDay = j; }
@@ -59,8 +58,13 @@ export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kiju
     sl = Math.max(sl, E * (1 - c.hardStopPct / 100));
     const giaVaoBar = new Array(n).fill(E);
     const tp = tinhBaMocChotLoi({ high, giaVaoBar, cloudTop, cbTop });
-    gan = { i, cach: n - 1 - i, gia: E, giam: giamB[i], day, klDay, sl, tp1: tp.tp1Vong[i], tp2: tp.tp2Vong[i], tp3: tp.tp3Vong[i] };
+    return { i, cach: n - 1 - i, gia: E, giam: giamB[i], day, klDay, sl, tp1: tp.tp1Vong[i], tp2: tp.tp2Vong[i], tp3: tp.tp3Vong[i] };
+  };
+  let gan = null;
+  for (let i = n - 1; i >= Math.max(0, n - SO_NEN_B_GAN_DAY); i--) {
+    if (!laB[i]) continue;
+    gan = moTa(i);
     break;
   }
-  return { laB, gan };
+  return { laB, gan, giamB, moTa };
 }
