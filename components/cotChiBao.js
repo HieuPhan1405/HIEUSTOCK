@@ -1,5 +1,6 @@
 import { soAn, so1So, pct } from "@/components/dungChung";
 import { giaiMaCat } from "@/lib/boLocChiBao";
+import { MAU_HINH, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
 
 // Cot CHI BAO KY THUAT cho bang Bo loc co phieu (khoa cot = ten truong trong bang chi_bao_ky_thuat, xem lib/cotChiBaoKyThuat.js).
 // Chi hien khi nguoi dung bat trong "Cot hien thi" hoac dang loc theo chi bao do (BangBoLoc tu hien cot cua bo loc dang dung).
@@ -78,7 +79,43 @@ function cotPhanKy(khoa, nhan, donVi, moTa) {
 
 const pct1 = (v) => pct(v, 1);
 
+// Cot MAU HINH GIA tom tat (khung ngay / tuan): liet ke cac mau hinh da pha vo gan day, ▲ tang (xanh) / ▼ giam (do) + so nen truoc. Sap xep: nhieu mau hinh TANG / pha vo gan nhat len dau.
+function cotMauHinh(hau, nhan, donVi, moTa) {
+  const ds = (r) =>
+    MAU_HINH.map((m) => ({ m, cach: r[`mh_${m.khoa}${hau}`] }))
+      .filter((x) => coSo(x.cach))
+      .sort((a, b) => a.cach - b.cach);
+  return {
+    nhan,
+    nhom: NHOM,
+    canPhai: false,
+    lay: (r) => {
+      const l = ds(r);
+      return l.length ? l.reduce((s, x) => s + x.m.huong * (100 - x.cach), 0) : null;
+    },
+    hien: (r) => {
+      const l = ds(r);
+      if (!l.length) return Trong;
+      return (
+        <span className="flex flex-wrap gap-x-2 gap-y-0.5" title={moTa}>
+          {l.slice(0, 3).map((x) => {
+            const tk = THONG_KE_MAU_HINH[x.m.khoa];
+            return (
+              <span key={x.m.khoa} style={{ color: x.m.huong > 0 ? XANH : DO }} title={`${x.m.ten}: phá vỡ ${x.cach === 0 ? (donVi === "tuần" ? "tuần này" : "hôm nay") : `${x.cach} ${donVi} trước`}. Lịch sử: giá ${x.m.huong > 0 ? "tăng" : "giảm"} TB ${tk.r10.toFixed(1).replace(".", ",")}% sau 10 phiên (thị trường chung +0,7%), tham khảo.`}>
+                {x.m.huong > 0 ? "▲" : "▼"} {x.m.ten} · {x.cach === 0 ? (donVi === "tuần" ? "tuần này" : "nay") : `${x.cach}${donVi === "tuần" ? "t" : "p"}`}
+              </span>
+            );
+          })}
+          {l.length > 3 && <span style={{ color: MUTED }}>+{l.length - 3}</span>}
+        </span>
+      );
+    },
+  };
+}
+
 export const COT_CHI_BAO_HIEN = {
+  mh_ngay: cotMauHinh("", "Mẫu hình giá (ngày)", "phiên", "Mẫu hình đã phá vỡ đường cổ / biên trong 10 phiên gần nhất (khung ngày) — tham khảo, bấm vào mã rồi vào Biểu đồ kỹ thuật → Mẫu hình để xem vẽ trên hình"),
+  mh_tuan: cotMauHinh("_tuan", "Mẫu hình giá (tuần)", "tuần", "Mẫu hình đã phá vỡ trong 6 tuần gần nhất (khung tuần) — tham khảo"),
   rsi14: cotSo("rsi14", "RSI (14)", so1So, (v) => (v < 30 ? XANH : v > 70 ? DO : undefined), "Dưới 30: quá bán (xanh) · trên 70: quá mua (đỏ)"),
   rsi_pk_cach: cotPhanKy("rsi_pk_cach", "RSI phân kỳ (ngày)", "phiên", "Khung ngày, 3 tháng gần nhất"),
   rsi_pk_tuan_cach: cotPhanKy("rsi_pk_tuan_cach", "RSI phân kỳ (tuần)", "tuần", "Khung tuần, 6 tháng gần nhất"),

@@ -1,6 +1,8 @@
 // Test tay cho lib/boLocChiBao.js (bo loc chi bao ky thuat). Chay: node engine/test/boLocChiBao.test.mjs
 import { DS_CHI_BAO_LOC, CHI_BAO_LOC, NHOM_CHI_BAO_LOC, GOI_Y_NHANH, KHOANG, giaiMaCat, taoBoLocChiBao, soNhap, khopChiBao, locTheoChiBao, cotChoBoLoc, coDuLieuChiBao } from "../../lib/boLocChiBao.js";
 import { COT_CHI_BAO } from "../../lib/cotChiBaoKyThuat.js";
+import { KHOA_MAU_HINH as KHOA_MH } from "../../lib/mauHinh.js";
+const COT_TONG_HOP = new Set(["mh_ngay", "mh_tuan"]);
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -27,7 +29,9 @@ const ok = (ten, dk, them = "") => {
   ok("moi chi bao thuoc 1 nhom hop le", DS_CHI_BAO_LOC.every((d) => NHOM_CHI_BAO_LOC.includes(d.nhom)));
   ok("moi dieu kien co khoa khong trung + ham dat", DS_CHI_BAO_LOC.every((d) => d.dieuKien.length > 0 && new Set(d.dieuKien.map((c) => c.khoa)).size === d.dieuKien.length && d.dieuKien.every((c) => typeof c.dat === "function")));
   const tatCaTruong = DS_CHI_BAO_LOC.flatMap((d) => [d.truong, ...d.cot].filter(Boolean));
-  ok("moi truong / cot tham chieu deu la cot that cua bang chi bao", tatCaTruong.every((t) => COT_CHI_BAO.includes(t)), tatCaTruong.filter((t) => !COT_CHI_BAO.includes(t)).join(","));
+  ok("moi truong / cot tham chieu deu la cot that cua bang chi bao", tatCaTruong.every((t) => COT_CHI_BAO.includes(t) || COT_TONG_HOP.has(t)), tatCaTruong.filter((t) => !COT_CHI_BAO.includes(t) && !COT_TONG_HOP.has(t)).join(","));
+// mh_ngay / mh_tuan = cot HIEN THI tong hop cac cot mh_<khoa> (components/cotChiBao.js), khong phai cot DB rieng
+ok("moi cot mh_<khoa> cua mau hinh la cot that", KHOA_MH.every((k) => COT_CHI_BAO.includes(`mh_${k}`) && COT_CHI_BAO.includes(`mh_${k}_tuan`)));
   ok("chip goi y tro dung chi bao + dieu kien", GOI_Y_NHANH.every((g) => CHI_BAO_LOC[g.chiBao]?.dieuKien.some((c) => c.khoa === g.dieuKien)));
   ok("khong nhom nao rong", NHOM_CHI_BAO_LOC.every((n) => DS_CHI_BAO_LOC.some((d) => d.nhom === n)));
 }

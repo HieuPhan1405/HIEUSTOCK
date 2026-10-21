@@ -6,6 +6,7 @@ import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Squar
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { phanKyRSI } from "@/lib/phanKyRSI";
+import { nhanDienMauHinh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
 import { LopVe } from "@/components/veBieuDoLop";
 import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio, timDinhKhoiLuong, chonHoTroKhangCu } from "@/lib/volumeProfile";
 import { DaiMay, DaiGia } from "@/components/bieuDoPlugin";
@@ -256,7 +257,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
-  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false, phanKy: false });
+  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false, phanKy: false, mauHinh: false });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
   const [mauVe, setMauVe] = useState(MAU_VE[0]);
   const [hitGia, setHitGia] = useState(false);
@@ -285,6 +286,11 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     if (!nen || nen.length < 60) return [];
     return phanKyRSI(nen.map((b) => ({ h: b.h, l: b.l, c: b.c })), rsi(nen.map((b) => b.c), 14), { k: 3 });
   }, [nen]);
+  // MAU HINH GIA (lib/mauHinh.js): nhan dien tren nen dang hien (ngay / tuan); bam chip "Mẫu hình" de tu ve len bieu do, bam tung mau hinh de xem hinh khac.
+  const dsMauHinh = useMemo(() => (nen && nen.length >= 40 ? nhanDienMauHinh(nen, { khung: khungTG === "W" ? "tuan" : "ngay" }).slice(0, 12) : []), [nen, khungTG]);
+  const [chonMH, setChonMH] = useState({ khoa: "", idx: 0 });
+  const idxMH = chonMH.khoa === khoa ? chonMH.idx : 0; // doi ma / khung -> ve lai mau hinh moi nhat
+  const mauHinhVe = bat.mauHinh && idxMH >= 0 && idxMH < dsMauHinh.length ? dsMauHinh[idxMH] : null;
   const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0);
   const chieuCaoTong = chieuCao + soPhu * CHIEU_CAO_PHU;
   khoaVeRef.current = khoaLuu(ma, khungTG);
@@ -354,6 +360,8 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.candle.attachPrimitive(daiGia);
     s.markers = createSeriesMarkers(s.candle, []);
     s.markersPK = createSeriesMarkers(s.candle, []);
+    s.markersMH = createSeriesMarkers(s.candle, []); // diem chinh cua mau hinh gia dang ve
+    s.mh = { series: [], vach: [] }; // cac duong / vach gia cua mau hinh gia dang ve (xoa khi doi mau hinh)
     // Lop ke ve (canvas phu len bieu do): hinh luu o localStorage theo ma + khung thoi gian.
     s.lopVe = new LopVe({
       khung: khungRef.current,
@@ -665,6 +673,44 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.markers.setMarkers(nenMua ? [{ time: nenMua, position: "belowBar", color: mauTheoGiaoDien().xanh, shape: "arrowUp", text: "MUA" }] : []);
   }, [vung, ngayMua, nen, kieuMau]);
 
+  // 4b. Tu ve MAU HINH GIA len bieu do: duong co / canh (LineSeries), diem chinh (marker), muc tieu + cat lo (vach gia); cuon bieu do toi mau hinh.
+  useEffect(() => {
+    const s = veRef.current;
+    if (!s || !s.mh) return;
+    try {
+      for (const sr of s.mh.series) s.chart.removeSeries(sr);
+      for (const pl of s.mh.vach) s.candle.removePriceLine(pl);
+    } catch {}
+    s.mh = { series: [], vach: [] };
+    s.markersMH.setMarkers([]);
+    if (!mauHinhVe || !nen) return;
+    const m = mauHinhVe;
+    const mauChinh = m.huong > 0 ? "#22C55E" : "#EF4444";
+    const dg = (d) => {
+      if (d.i2 <= d.i1 || !nen[d.i1] || !nen[d.i2]) return;
+      const phu = d.loai === "phu";
+      const sr = s.chart.addSeries(LineSeries, { color: d.loai === "co" ? "#F6C544" : phu ? "rgba(148,163,184,0.9)" : mauChinh, lineWidth: d.loai === "co" ? 2 : 1, lineStyle: phu ? LineStyle.Dotted : LineStyle.Solid, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false });
+      sr.setData([{ time: nen[d.i1].t, value: d.g1 }, { time: nen[d.i2].t, value: d.g2 }]);
+      s.mh.series.push(sr);
+    };
+    m.duong.forEach(dg);
+    const vach = (gia, mau, tieuDe) => s.mh.vach.push(s.candle.createPriceLine({ price: gia, color: mau, lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: tieuDe }));
+    vach(m.mucTieu, "#22C55E", "Mục tiêu");
+    vach(m.catLo, "#EF4444", "Cắt lỗ");
+    const nhan = m.diem
+      .filter((d) => nen[d.i])
+      .map((d) => {
+        const b = nen[d.i];
+        const day = Math.abs(d.gia - b.l) <= Math.abs(d.gia - b.h);
+        return { time: b.t, position: day ? "belowBar" : "aboveBar", color: "#F6C544", shape: "circle", text: d.nhan || "" };
+      });
+    nhan.push({ time: nen[m.i].t, position: m.huong > 0 ? "belowBar" : "aboveBar", color: mauChinh, shape: m.huong > 0 ? "arrowUp" : "arrowDown", text: m.huong > 0 ? "Phá vỡ lên" : "Phá vỡ xuống" });
+    nhan.sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
+    s.markersMH.setMarkers(nhan);
+    const dau = Math.min(m.i, ...m.diem.map((d) => d.i), ...m.duong.map((d) => d.i1));
+    s.chart.timeScale().setVisibleLogicalRange({ from: Math.max(-2, dau - 12), to: Math.min(nen.length + 12, m.i + 30) });
+  }, [mauHinhVe, nen]);
+
   // 5. Bat/tat chi bao.
   useEffect(() => {
     const s = veRef.current;
@@ -719,6 +765,10 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
               {c.nhan}
             </Chip>
           ))}
+          <span className="w-px h-4 mx-1" style={{ background: VIEN }} aria-hidden="true" />
+          <Chip bat={bat.mauHinh} mau="#F6C544" onClick={() => setBat((b) => ({ ...b, mauHinh: !b.mauHinh }))}>
+            Mẫu hình
+          </Chip>
           <Chip bat={bat.phanKy} mau={CHI_BAO_PK.mau} onClick={() => setBat((b) => ({ ...b, phanKy: !b.phanKy, rsi: !b.phanKy ? true : b.rsi }))}>
             {CHI_BAO_PK.nhan}
           </Chip>
@@ -737,6 +787,54 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           ))}
         </div>
       </div>
+
+      {bat.mauHinh && (
+        <div className="px-3 py-2 border-b" style={{ borderColor: VIEN }} data-may="mau-hinh" aria-label="Nhận diện mẫu hình giá">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="text-[11px] mr-1" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+              Mẫu hình đã phá vỡ ({khungTG === "W" ? "khung tuần" : "khung ngày"}) — bấm để vẽ lên hình:
+            </span>
+            {dsMauHinh.length === 0 && (
+              <span className="text-xs" style={{ color: MUTED }}>
+                {dangTai ? "Đang tải…" : "Không thấy mẫu hình đã phá vỡ trong dữ liệu này."}
+              </span>
+            )}
+            {dsMauHinh.map((m, k) => {
+              const chon = k === idxMH;
+              const mau = m.huong > 0 ? XANH : DO;
+              return (
+                <button
+                  key={`${m.khoa}|${m.i}`}
+                  type="button"
+                  onClick={() => setChonMH({ khoa, idx: chon ? -1 : k })}
+                  aria-pressed={chon}
+                  className="px-2.5 py-1 rounded-md text-xs cursor-pointer"
+                  style={{ background: chon ? "rgba(246,197,68,0.16)" : "transparent", border: `1px solid ${chon ? "#F6C544" : VIEN}`, color: chon ? TEXT : MUTED, fontFamily: "'Inter', sans-serif" }}
+                >
+                  <span style={{ color: mau }}>{m.huong > 0 ? "▲" : "▼"}</span> {m.ten} · {m.cach === 0 ? (khungTG === "W" ? "tuần này" : "hôm nay") : `${m.cach} ${khungTG === "W" ? "tuần" : "phiên"} trước`}
+                </button>
+              );
+            })}
+          </div>
+          {mauHinhVe && (
+            <div className="mt-2 text-xs leading-relaxed" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+              <span style={{ color: TEXT, fontWeight: 600 }}>{mauHinhVe.ten}</span> — phá vỡ {mauHinhVe.t} tại {soVN(mauHinhVe.gia, 2, true)}; mục tiêu đo từ mẫu hình{" "}
+              <span style={{ color: XANH }}>{soVN(mauHinhVe.mucTieu, 2, true)}</span>, cắt lỗ theo mẫu hình <span style={{ color: DO }}>{soVN(mauHinhVe.catLo, 2, true)}</span> (lãi/lỗ tiềm năng{" "}
+              {(((mauHinhVe.huong > 0 ? mauHinhVe.mucTieu - mauHinhVe.gia : mauHinhVe.gia - mauHinhVe.mucTieu) / Math.abs(mauHinhVe.gia - mauHinhVe.catLo)) || 0).toFixed(1).replace(".", ",")}R).{" "}
+              {(() => {
+                const tk = THONG_KE_MAU_HINH[mauHinhVe.khoa];
+                return tk ? (
+                  <>
+                    Thống kê lịch sử (390 mã, 11 năm, khung ngày): chạm mục tiêu trước cắt lỗ {String(tk.tc).replace(".", ",")}% (đường ngẫu nhiên {String(tk.nn).replace(".", ",")}%); sau 10 phiên giá {mauHinhVe.huong > 0 ? "tăng" : "giảm"} TB{" "}
+                    {String(tk.r10).replace(".", ",")}% (thị trường chung +0,7%).{" "}
+                  </>
+                ) : null;
+              })()}
+              Chỉ để tham khảo, không phải khuyến nghị mua bán.
+            </div>
+          )}
+        </div>
+      )}
 
       {/* THANH CONG CU KE VE: chon cong cu roi bam / bam hai lan len bieu do; bam vao hinh de chon, keo diem dau mut de sua, Delete de xoa; Esc huy. */}
       <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 px-3 py-2 border-b" style={{ borderColor: VIEN }} data-may="cong-cu-ve">

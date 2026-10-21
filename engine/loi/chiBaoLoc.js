@@ -8,6 +8,7 @@ import { tinhIchimoku } from "./ichimoku.js";
 import { COT_CHI_BAO } from "../../lib/cotChiBaoKyThuat.js";
 import { rsi as rsiLib } from "../../lib/chiBaoPhu.js";
 import { phanKyRSI, gopNenTuan } from "../../lib/phanKyRSI.js";
+import { cachMauHinhGanNhat, KHOA_MAU_HINH, COT_MAU_HINH_NGAY, COT_MAU_HINH_TUAN, SO_NEN_MAU_HINH_NGAY, SO_NEN_MAU_HINH_TUAN } from "../../lib/mauHinh.js";
 
 export const SO_NEN_TINH = 800;
 const SO_NEN_TIM_CAT = 60;
@@ -78,7 +79,7 @@ export function maHoaPhanKy(nen, toiDa) {
   if (cach < 0 || cach >= toiDa) return null;
   return cuoiCung.loai === "tang" ? cach : -(cach + 1);
 }
-const COT_NGUYEN = new Set(["rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
+const COT_NGUYEN = new Set([...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
 
 // Tra ve object { ngay_nen, ...COT_CHI_BAO } cho 1 ma, hoac null neu chua du du lieu.
 export function tinhChiBaoLocChoMa(nen) {
@@ -196,6 +197,13 @@ export function tinhChiBaoLocChoMa(nen) {
     tenkan_tren_kijun: tenkan != null && kijun != null ? (tenkan > kijun ? 1 : 0) : null,
     cach_kijun_pct: pctCach(gia, kijun),
   };
+  // Mau hinh gia (lib/mauHinh.js): khung ngay (10 phien gan nhat) va khung tuan (6 tuan gan nhat)
+  const mhNgay = cachMauHinhGanNhat(b, { khung: "ngay", tuoiToiDa: SO_NEN_MAU_HINH_NGAY });
+  const mhTuan = cachMauHinhGanNhat(gopNenTuan(b), { khung: "tuan", tuoiToiDa: SO_NEN_MAU_HINH_TUAN });
+  for (const k of KHOA_MAU_HINH) {
+    kq[`mh_${k}`] = mhNgay[k];
+    kq[`mh_${k}_tuan`] = mhTuan[k];
+  }
   for (const k of COT_CHI_BAO) if (!COT_NGUYEN.has(k)) kq[k] = lam(kq[k], k.startsWith("macd") ? 6 : 4);
   return kq;
 }
