@@ -205,6 +205,7 @@ export function tinhChiBaoLocChoMa(nen) {
     const atrArr = atr({ high, low, close }, 14);
     const { gan } = tinhDiemMuaPhucHoi({ high, low, close, volume, atr: atrArr, tenkan: ich.tenkan, kijun: ich.kijun, cloudTop: ich.cloudTop, cbTop: cb.cbTop });
     kq.pb_cach = gan ? gan.cach : null;
+    kq.pb_giam = gan ? gan.giam : null;
     kq.pb_gia = gan ? gan.gia : null;
     kq.pb_day = gan ? gan.day : null;
     kq.pb_sl = gan ? gan.sl : null;

@@ -285,7 +285,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) 
             tieuDe="Mua phục hồi (điểm B)"
             may="mua-phuc-hoi"
             mau={VANG}
-            moTa="Cổ phiếu đã giảm ≥15% rồi đóng cửa lấy lại Tenkan và Kijun — giải ngân 1/2 phần dự định, 1/2 còn lại khi hệ thống báo MUA. Chưa phải tín hiệu MUA, chỉ tham khảo. Không gồm mã hệ thống đang giữ"
+            moTa="Cổ phiếu đã giảm 20–30% rồi đóng cửa lấy lại Tenkan và Kijun — giải ngân 1/2 phần dự định, 1/2 còn lại khi hệ thống báo MUA. Chưa phải tín hiệu MUA, chỉ tham khảo. Không gồm mã hệ thống đang giữ"
             ds={muaPhucHoi}
             trong="Hiện không có mã nào vừa có điểm B."
             hien={(x) => (
@@ -304,6 +304,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) 
                 }
               >
                 Giá B <b style={{ color: TEXT }}>{fmt(x.giaB)}</b>
+                {x.giam != null && <span> · đã giảm {fmt(x.giam)}%</span>}
                 {x.bDayPct != null && <span> · cách đáy +{fmt(x.bDayPct)}%</span>}
                 <br />
                 Cắt lỗ <b style={{ color: DO }}>{fmt(x.sl)}</b>

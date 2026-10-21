@@ -9,10 +9,10 @@ const ok = (ten, dk, them = "") => {
   } else console.log("ok:", ten);
 };
 
-// 100 nen: di ngang 100 (0..39), giam deu xuong 80 (40..59, day nen 59), hoi len 80 -> 90 (60..99). Tenkan / Kijun dung tay: duoi gia tu nen 70.
+// 100 nen: di ngang 100 (0..39), giam deu xuong 78 (40..59, ~22% tu dinh, day nen 59), hoi len 78 -> 88 (60..99). Tenkan / Kijun dung tay: duoi gia tu nen 70.
 const n = 100;
 const close = [];
-for (let i = 0; i < n; i++) close.push(i < 40 ? 100 : i < 60 ? 100 - (i - 39) : 80 + (i - 59) * 0.25);
+for (let i = 0; i < n; i++) close.push(i < 40 ? 100 : i < 60 ? 100 - (i - 39) * 1.1 : 78 + (i - 59) * 0.25);
 const high = close.map((c) => c + 0.5);
 const low = close.map((c) => c - 0.5);
 const volume = close.map(() => 1e6); // gtgd = gia x 1e6 / 1e6 ~ 80-100 ty
@@ -34,7 +34,16 @@ ok("diem B cu hon 10 nen khong con la gan", tinhDiemMuaPhucHoi({ high, low, clos
 ok("SL duoi gia vao toi thieu 3,5% va khong qua 6%", gan.sl <= gan.gia * (1 - 0.035) + 1e-9 && gan.sl >= gan.gia * (1 - 0.06) - 1e-9, `sl=${gan?.sl}`);
 ok("day = day thap nhat 20 nen", Math.abs(gan.day - Math.min(...low.slice(iB - 19, iB + 1))) < 1e-9);
 
-// Khong co boi canh giam >= 15%: khong co diem B
+// Muc giam ngoai [20%, 30%): giam ~12% va giam ~35% deu KHONG co diem B (nghien cuu: 10-20% khong co loi the, >= 30% mat dan)
+for (const [ten, day] of [["giam ~12%", 88], ["giam ~35%", 65]]) {
+  const cl = [];
+  for (let i = 0; i < n; i++) cl.push(i < 40 ? 100 : i < 60 ? 100 - (i - 39) * ((100 - day) / 20) : day + (i - 59) * 0.25);
+  const r = tinhDiemMuaPhucHoi({ high: cl.map((x) => x + 0.5), low: cl.map((x) => x - 0.5), close: cl, volume, atr, tenkan: cl.map((x, i) => (i < 70 ? x + 1 : x - 1)), kijun: cl.map((x, i) => (i < 70 ? x + 2 : x - 2)), cloudTop: nul, cbTop: nul });
+  ok(`${ten}: khong co diem B`, !r.laB.some(Boolean));
+}
+ok("gan.giam trong [20, 30)", gan.giam >= 20 && gan.giam < 30, `giam=${gan?.giam}`);
+
+// Khong co boi canh giam: khong co diem B
 const dichVuPhang = close.map(() => 100);
 const phang = tinhDiemMuaPhucHoi({
   high: dichVuPhang.map((c) => c + 0.5), low: dichVuPhang.map((c) => c - 0.5), close: dichVuPhang, volume, atr,

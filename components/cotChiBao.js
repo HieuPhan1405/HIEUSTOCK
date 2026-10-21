@@ -90,8 +90,8 @@ const cotDiemMuaPhucHoi = {
     const khi = r.pb_cach === 0 ? "hôm nay" : `${r.pb_cach} phiên`;
     const cachDay = coSo(r.pb_day) && r.pb_day > 0 ? (r.pb_gia / r.pb_day - 1) * 100 : null;
     return (
-      <span title={`Điểm B: đã giảm ≥ 15% rồi đóng cửa lấy lại Tenkan và Kijun, đáy cách ≥ 3 phiên. Giải ngân 1/2 phần dự định, cắt lỗ theo SL. SL / TP theo công thức bình thường của hệ thống. Chỉ để tham khảo.${cachDay != null ? ` Giá B cách đáy 20 phiên ${soAn(cachDay, 1)}%.` : ""}`}>
-        <span style={{ color: XANH, fontWeight: 600 }}>{khi}</span> · B {soAn(r.pb_gia, 2)} · <span style={{ color: DO }}>SL {soAn(r.pb_sl, 2)}</span> · <span style={{ color: XANH }}>TP {soAn(r.pb_tp1, 2)} / {soAn(r.pb_tp2, 2)}</span>
+      <span title={`Điểm B: đã giảm 20–30% (từ đỉnh 20 phiên) rồi đóng cửa lấy lại Tenkan và Kijun, đáy cách ≥ 3 phiên. Giải ngân 1/2 phần dự định, cắt lỗ theo SL. SL / TP theo công thức bình thường của hệ thống. Chỉ để tham khảo.${cachDay != null ? ` Giá B cách đáy 20 phiên ${soAn(cachDay, 1)}%.` : ""}`}>
+        <span style={{ color: XANH, fontWeight: 600 }}>{khi}</span>{coSo(r.pb_giam) ? ` · giảm ${soAn(r.pb_giam, 0)}%` : ""} · B {soAn(r.pb_gia, 2)} · <span style={{ color: DO }}>SL {soAn(r.pb_sl, 2)}</span> · <span style={{ color: XANH }}>TP {soAn(r.pb_tp1, 2)} / {soAn(r.pb_tp2, 2)}</span>
       </span>
     );
   },
