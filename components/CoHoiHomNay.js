@@ -116,7 +116,7 @@ function VungLenh({ row }) {
 }
 
 // TOP CO HOI DANG CHU Y (trang dau): 4 O LENH CUA PHIEN HOM NAY - hang tren Mua | Ban, hang duoi Mua moi | Ban bot (dien thoai: xep doc cung thu tu). Du lieu: lib/coHoiHomNay.js.
-export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
+export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) {
   const { mua, ban, muaMoi, banBot } = dungCoHoiHomNay({ tatCa, dongLenh, ngay });
   return (
     <section aria-label="Top cơ hội đáng chú ý hôm nay" className="mb-8">
@@ -279,6 +279,42 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay }) {
             )
           }
         />
+
+        <div className="md:col-span-2">
+          <OLenh
+            tieuDe="Mua phục hồi (điểm B)"
+            may="mua-phuc-hoi"
+            mau={VANG}
+            moTa="Cổ phiếu đã giảm ≥15% rồi đóng cửa lấy lại Tenkan và Kijun — giải ngân 1/2 phần dự định, 1/2 còn lại khi hệ thống báo MUA. Chưa phải tín hiệu MUA, chỉ tham khảo. Không gồm mã hệ thống đang giữ"
+            ds={muaPhucHoi}
+            trong="Hiện không có mã nào vừa có điểm B."
+            hien={(x) => (
+              <Dong
+                key={x.ma}
+                ma={x.ma}
+                nhan={x.cach === 0 ? "Điểm B hôm nay" : `Điểm B ${x.cach} phiên trước`}
+                mauNhan={VANG}
+                phai={
+                  <>
+                    <span style={{ color: TEXT }}>{fmt(x.gia)}</span>
+                    <span className="block text-[11px]" style={{ color: mauLai(x.doi) }}>
+                      {pct(x.doi, 2)}
+                    </span>
+                  </>
+                }
+              >
+                Giá B <b style={{ color: TEXT }}>{fmt(x.giaB)}</b>
+                {x.bDayPct != null && <span> · cách đáy +{fmt(x.bDayPct)}%</span>}
+                <br />
+                Cắt lỗ <b style={{ color: DO }}>{fmt(x.sl)}</b>
+                {" · "}TP1/TP2{" "}
+                <b style={{ color: XANH }}>
+                  {fmt(x.tp1)} / {fmt(x.tp2)}
+                </b>
+              </Dong>
+            )}
+          />
+        </div>
       </div>
     </section>
   );

@@ -2,7 +2,7 @@
 import { DS_CHI_BAO_LOC, CHI_BAO_LOC, NHOM_CHI_BAO_LOC, GOI_Y_NHANH, KHOANG, giaiMaCat, taoBoLocChiBao, soNhap, khopChiBao, locTheoChiBao, cotChoBoLoc, coDuLieuChiBao } from "../../lib/boLocChiBao.js";
 import { COT_CHI_BAO } from "../../lib/cotChiBaoKyThuat.js";
 import { KHOA_MAU_HINH as KHOA_MH } from "../../lib/mauHinh.js";
-const COT_TONG_HOP = new Set(["mh_ngay", "mh_tuan"]);
+const COT_TONG_HOP = new Set(["mh_ngay", "mh_tuan", "pb"]);
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -20,6 +20,15 @@ const ok = (ten, dk, them = "") => {
   ok("PK GIAM khong bi tinh la PK tang", !khopChiBao({ rsi_pk_cach: -1 }, bo2("tang_10")) && khopChiBao({ rsi_pk_cach: -3 }, bo2("giam_5")));
   ok("khung tuan: tang trong 4 tuan", khopChiBao({ rsi_pk_tuan_cach: 3 }, bo2("tang_tuan_4")) && !khopChiBao({ rsi_pk_tuan_cach: 4 }, bo2("tang_tuan_4")));
   ok("khong co phan ky (null): khong khop", !khopChiBao({ rsi_pk_cach: null }, bo2("tang_10")));
+}
+
+// ---- Diem mua phuc hoi (pb_cach = so phien tu diem B, 0 = hom nay) ----
+{
+  const bo = (d) => taoBoLocChiBao("mua_phuc_hoi", d);
+  ok("diem B hom nay khop (0), cach 1 khong", khopChiBao({ pb_cach: 0 }, bo("hom_nay")) && !khopChiBao({ pb_cach: 1 }, bo("hom_nay")));
+  ok("diem B trong 5 phien: cach 4 khop, cach 5 khong", khopChiBao({ pb_cach: 4 }, bo("trong_5")) && !khopChiBao({ pb_cach: 5 }, bo("trong_5")));
+  ok("khong co diem B (null): khong khop", !khopChiBao({ pb_cach: null }, bo("trong_10")));
+  ok("gan day: gia B cach day <= 15% khop, > 15% khong", khopChiBao({ pb_cach: 2, pb_gia: 11, pb_day: 9.6 }, bo("gan_day")) && !khopChiBao({ pb_cach: 2, pb_gia: 11.5, pb_day: 9.6 }, bo("gan_day")));
 }
 
 // ---- Cau truc dinh nghia ----

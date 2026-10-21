@@ -79,6 +79,24 @@ function cotPhanKy(khoa, nhan, donVi, moTa) {
 
 const pct1 = (v) => pct(v, 1);
 
+// Cot DIEM MUA PHUC HOI (diem B): "hôm nay · B 10,5 · SL 9,9 · TP 11,4 / 11,6". Sap xep: diem B moi nhat (gan day nhat) len dau.
+const cotDiemMuaPhucHoi = {
+  nhan: "Điểm mua phục hồi",
+  nhom: NHOM,
+  canPhai: false,
+  lay: (r) => (coSo(r.pb_cach) ? -r.pb_cach : null),
+  hien: (r) => {
+    if (!coSo(r.pb_cach) || !coSo(r.pb_gia)) return Trong;
+    const khi = r.pb_cach === 0 ? "hôm nay" : `${r.pb_cach} phiên`;
+    const cachDay = coSo(r.pb_day) && r.pb_day > 0 ? (r.pb_gia / r.pb_day - 1) * 100 : null;
+    return (
+      <span title={`Điểm B: đã giảm ≥ 15% rồi đóng cửa lấy lại Tenkan và Kijun, đáy cách ≥ 3 phiên. Giải ngân 1/2 phần dự định, cắt lỗ theo SL. SL / TP theo công thức bình thường của hệ thống. Chỉ để tham khảo.${cachDay != null ? ` Giá B cách đáy 20 phiên ${soAn(cachDay, 1)}%.` : ""}`}>
+        <span style={{ color: XANH, fontWeight: 600 }}>{khi}</span> · B {soAn(r.pb_gia, 2)} · <span style={{ color: DO }}>SL {soAn(r.pb_sl, 2)}</span> · <span style={{ color: XANH }}>TP {soAn(r.pb_tp1, 2)} / {soAn(r.pb_tp2, 2)}</span>
+      </span>
+    );
+  },
+};
+
 // Cot MAU HINH GIA tom tat (khung ngay / tuan): liet ke cac mau hinh da pha vo gan day, ▲ tang (xanh) / ▼ giam (do) + so nen truoc. Sap xep: nhieu mau hinh TANG / pha vo gan nhat len dau.
 function cotMauHinh(hau, nhan, donVi, moTa) {
   const ds = (r) =>
@@ -114,6 +132,7 @@ function cotMauHinh(hau, nhan, donVi, moTa) {
 }
 
 export const COT_CHI_BAO_HIEN = {
+  pb: cotDiemMuaPhucHoi,
   mh_ngay: cotMauHinh("", "Mẫu hình giá (ngày)", "phiên", "Mẫu hình đã phá vỡ đường cổ / biên trong 10 phiên gần nhất (khung ngày) — tham khảo, bấm vào mã rồi vào Biểu đồ kỹ thuật → Mẫu hình để xem vẽ trên hình"),
   mh_tuan: cotMauHinh("_tuan", "Mẫu hình giá (tuần)", "tuần", "Mẫu hình đã phá vỡ trong 6 tuần gần nhất (khung tuần) — tham khảo"),
   rsi14: cotSo("rsi14", "RSI (14)", so1So, (v) => (v < 30 ? XANH : v > 70 ? DO : undefined), "Dưới 30: quá bán (xanh) · trên 70: quá mua (đỏ)"),

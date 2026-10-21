@@ -3,6 +3,8 @@ import { Lock } from "lucide-react";
 import Image from "next/image";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import CoHoiHomNay from "@/components/CoHoiHomNay";
+import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
+import { dungMuaPhucHoi } from "@/lib/muaPhucHoi";
 import { layLenhCoSuKienNgay, ngayGiaoDichVN } from "@/lib/lenhDaDong";
 import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhe } from "@/components/dungChung";
 import NhanCapNhat from "@/components/NhanCapNhat";
@@ -201,6 +203,13 @@ export default async function TrangTongQuan() {
     if (xemTinHieu) dongLenh = await layLenhCoSuKienNgay(ngayPhien);
   } catch {
     // giu rong - o Ban / Ban bot van hien tu tin hieu
+  }
+  // O "Mua phuc hoi (diem B)": tu bang chi_bao_ky_thuat (cot pb_*) - loi / chua co du lieu thi o rong, khong lam hong trang.
+  let muaPhucHoi = [];
+  try {
+    if (xemTinHieu) muaPhucHoi = dungMuaPhucHoi({ hang: (await layChiBaoKyThuat()).hang, tatCa });
+  } catch {
+    // giu rong
   }
 
   const nhanDinh = sinhNhanDinh(tatCa, xemTinHieu);
@@ -421,7 +430,7 @@ export default async function TrangTongQuan() {
 
         {/* TOP CO HOI DANG CHU Y: 4 o lenh CUA PHIEN HOM NAY - hang tren Mua | Ban, hang duoi Mua moi | Ban bot. Tong quan/Ra soat nhanh
             (breadth, top nganh, khoi ngoai...) o trang /dashboard rieng. */}
-        {(tatCa.length > 0 || !xemTinHieu) && (xemTinHieu ? <CoHoiHomNay tatCa={tatCa} dongLenh={dongLenh} ngay={ngayPhien} /> : <KhoaTinHieuTrangChu choDuyet={choDuyet} />)}
+        {(tatCa.length > 0 || !xemTinHieu) && (xemTinHieu ? <CoHoiHomNay tatCa={tatCa} dongLenh={dongLenh} ngay={ngayPhien} muaPhucHoi={muaPhucHoi} /> : <KhoaTinHieuTrangChu choDuyet={choDuyet} />)}
 
         {/* HANG KPI */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
