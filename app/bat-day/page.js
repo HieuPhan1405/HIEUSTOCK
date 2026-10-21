@@ -75,7 +75,7 @@ export default async function TrangBatDay() {
       </h1>
       <p className="text-sm mb-6" style={{ color: MUTED }}>
         Toàn bộ lịch sử các lần checklist bắt đáy kích hoạt (chiết khấu sâu + quá bán + capitulation/phân kỳ + follow-through day)
-        trên nhóm VN100, kèm kết quả thực tế sau 5/10/20 phiên để tự đánh giá độ tin cậy.
+        trên toàn bộ cổ phiếu có GTGD ≥ 3 tỷ (VN100 và các mã khác, mã ngoài VN100 có nhãn &quot;khác&quot;), kèm kết quả thực tế sau 5/10/20 phiên để tự đánh giá độ tin cậy.
       </p>
 
       {loi && (
@@ -105,7 +105,7 @@ export default async function TrangBatDay() {
       )}
 
       <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-        &quot;Đang theo dõi&quot; = tín hiệu quá mới, chưa đủ 20 phiên để đánh giá kết quả. Không phải khuyến nghị đầu tư — chỉ là công cụ tham khảo lịch sử.
+        &quot;Đang theo dõi&quot; = tín hiệu quá mới, chưa đủ 20 phiên để đánh giá kết quả. Mã ngoài VN100 và nhóm &quot;KL đáy&quot; kiểm tra lịch sử cho kết quả không ổn định theo từng năm — chỉ là công cụ tham khảo, không phải khuyến nghị đầu tư.
       </p>
     </div>
   );

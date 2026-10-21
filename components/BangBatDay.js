@@ -37,6 +37,7 @@ const COT = [
   { khoa: "pct_sau_10", nhan: "%Sau 10 phiên", canPhai: true, lay: (r) => r.pct_sau_10 },
   { khoa: "pct_sau_20", nhan: "%Sau 20 phiên", canPhai: true, lay: (r) => r.pct_sau_20 },
   { khoa: "chiet_khau", nhan: "Chiết khấu", canPhai: true, lay: (r) => r.chiet_khau },
+  { khoa: "kl_day", nhan: "KL đáy", canPhai: true, lay: (r) => r.kl_day },
   { khoa: "ket_qua", nhan: "Kết quả", canPhai: false, lay: (r) => ketQuaBatDay(r).hang },
 ];
 
@@ -44,11 +45,15 @@ export default function BangBatDay({ duLieu }) {
   const [timKiem, setTimKiem] = useState("");
   const [sapXep, setSapXep] = useState({ khoa: "ngay_tin_hieu", chieu: "desc" });
   const [chiThanhCong, setChiThanhCong] = useState(false);
+  const [chiVn100, setChiVn100] = useState(false);
+  const [chiCoKL, setChiCoKL] = useState(false);
 
   const daLoc = useMemo(() => {
     const tuKhoa = timKiem.trim().toUpperCase();
     let ds = tuKhoa ? duLieu.filter((r) => r.ma.includes(tuKhoa)) : duLieu;
     if (chiThanhCong) ds = ds.filter((r) => ketQuaBatDay(r).nhan === "Thành công");
+    if (chiVn100) ds = ds.filter((r) => r.vn100 !== false);
+    if (chiCoKL) ds = ds.filter((r) => r.kl_day != null && r.kl_day >= 2);
     const cot = COT.find((c) => c.khoa === sapXep.khoa);
     ds = [...ds].sort((a, b) => {
       const va = cot.lay(a);
@@ -62,7 +67,7 @@ export default function BangBatDay({ duLieu }) {
       return sapXep.chieu === "asc" ? so : -so;
     });
     return ds;
-  }, [duLieu, timKiem, sapXep, chiThanhCong]);
+  }, [duLieu, timKiem, sapXep, chiThanhCong, chiVn100, chiCoKL]);
 
   function doiSapXep(khoa) {
     setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: "desc" }));
@@ -84,6 +89,14 @@ export default function BangBatDay({ duLieu }) {
         <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }}>
           <input type="checkbox" checked={chiThanhCong} onChange={(e) => setChiThanhCong(e.target.checked)} />
           Chỉ hiện lệnh bắt thành công
+        </label>
+        <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }} title="Mã ngoài VN100 có kết quả lịch sử kém hơn (từ 2022.5: 20 phiên −0,06% so với VN100 +1,86%)">
+          <input type="checkbox" checked={chiVn100} onChange={(e) => setChiVn100(e.target.checked)} />
+          Chỉ VN100
+        </label>
+        <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }} title="KL lớn nhất 5 phiên quanh tín hiệu ≥ 2× KL trung bình 20 phiên trước đó: bán tháo có khối lượng. Lịch sử tốt hơn trong 2022 và 2025 nhưng không ổn định mọi năm.">
+          <input type="checkbox" checked={chiCoKL} onChange={(e) => setChiCoKL(e.target.checked)} />
+          Chỉ bán tháo có KL (≥ 2×)
         </label>
       </div>
 
@@ -127,6 +140,11 @@ export default function BangBatDay({ duLieu }) {
                       <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
                         {row.ma}
                       </Link>
+                      {row.vn100 === false && (
+                        <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(MUTED, 15), color: MUTED, fontFamily: "'Inter', sans-serif" }} title="Ngoài VN100 (GTGD TB20 ≥ 3 tỷ)">
+                          khác
+                        </span>
+                      )}
                     </td>
                     <td className="py-2.5 px-3" style={{ color: MUTED }}>
                       {formatNgay(row.ngay_tin_hieu)}
@@ -155,6 +173,9 @@ export default function BangBatDay({ duLieu }) {
                     </td>
                     <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED }}>
                       {row.chiet_khau != null ? `${soVN(row.chiet_khau, 1, true)}%` : "—"}
+                    </td>
+                    <td className="py-2.5 px-3 text-right text-xs" style={{ color: row.kl_day != null && row.kl_day >= 2 ? XANH : MUTED, fontWeight: row.kl_day != null && row.kl_day >= 2 ? 700 : 400 }}>
+                      {row.kl_day != null ? `${soVN(row.kl_day, 1, true)}×` : "—"}
                     </td>
                     <td className="py-2.5 px-3">
                       <span

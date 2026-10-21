@@ -41,6 +41,13 @@ for (const [ten, day] of [["giam ~12%", 88], ["giam ~35%", 65]]) {
   const r = tinhDiemMuaPhucHoi({ high: cl.map((x) => x + 0.5), low: cl.map((x) => x - 0.5), close: cl, volume, atr, tenkan: cl.map((x, i) => (i < 70 ? x + 1 : x - 1)), kijun: cl.map((x, i) => (i < 70 ? x + 2 : x - 2)), cloudTop: nul, cbTop: nul });
   ok(`${ten}: khong co diem B`, !r.laB.some(Boolean));
 }
+ok("KL deu nhau: KL quanh day = 1x", Math.abs(gan.klDay - 1) < 1e-9, `klDay=${gan?.klDay}`);
+{
+  // KL phien day (nen 59) gap 3 lan -> KL quanh day = 3x
+  const vol = cat(volume).map((x, i) => (i === 59 ? 3e6 : x));
+  const r = tinhDiemMuaPhucHoi({ high: cat(high), low: cat(low), close: cat(close), volume: vol, atr: cat(atr), tenkan: cat(tenkan), kijun: cat(kijun), cloudTop: cat(nul), cbTop: cat(nul) });
+  ok("ban thao co KL o day: KL quanh day = 3x", r.gan && Math.abs(r.gan.klDay - 3) < 1e-9, `klDay=${r.gan?.klDay}`);
+}
 ok("gan.giam trong [20, 30)", gan.giam >= 20 && gan.giam < 30, `giam=${gan?.giam}`);
 
 // Khong co boi canh giam: khong co diem B

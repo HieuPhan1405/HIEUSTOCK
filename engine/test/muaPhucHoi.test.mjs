@@ -34,6 +34,10 @@ ok("chi giu AAA va BBB", ds.map((x) => x.ma).join(",") === "AAA,BBB", ds.map((x)
 ok("diem B hom nay len truoc", ds[0].ma === "AAA" && ds[0].cach === 0);
 ok("SL / TP lay tu cot pb_*", ds[0].sl === 9.4 && ds[0].tp1 === 10.8 && ds[0].tp2 === 11.5);
 ok("gia B cach day tinh %", Math.abs(ds[0].bDayPct - (10 / 8.8 - 1) * 100) < 1e-9);
+{
+  const r = dungMuaPhucHoi({ hang: [{ ...hang[0], ma: "KL1", pb_cach: 2, pb_kl_day: 2.5 }, { ...hang[0], ma: "KL0", pb_cach: 0, pb_kl_day: 1.2 }], tatCa: [{ ma: "KL1", tin: "TRUNG LAP", gia: 10, doi: 0 }, { ma: "KL0", tin: "TRUNG LAP", gia: 10, doi: 0 }] });
+  ok("ma ban thao co KL (>= 2x) xep truoc du diem B cu hon", r.map((x) => x.ma).join(",") === "KL1,KL0" && r[0].klDay === 2.5, r.map((x) => x.ma).join(","));
+}
 ok("khong co du lieu: mang rong", dungMuaPhucHoi({}).length === 0);
 
 if (loi) {

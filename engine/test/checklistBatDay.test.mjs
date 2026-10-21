@@ -2,7 +2,7 @@
 // Cac ham nen (hhv/llv/sma/ref/valueWhen/rsi/mfi) da co test rieng - o day chi kiem tra logic
 // GHEP (nguong diem, su kien vuot nguong, pct sau N phien, dinh dang CSV), khong tinh tay lai tung
 // chi so. Chay: node engine/test/checklistBatDay.test.mjs
-import { tinhChecklistBatDay, xayDungCsvBatDay } from "../loi/checklistBatDay.js";
+import { tinhChecklistBatDay, tinhChecklistBatDayToanBo, xayDungCsvBatDay } from "../loi/checklistBatDay.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -109,6 +109,25 @@ function sinhNenSuySup() {
   ok("Ngay doi tu ISO sang D/M/YYYY khong so 0 dau", dong[1].includes(",5/3/2024,"), dong[1]);
   ok("pct_sau_10 null -> o rong (khong phai chu 'null')", dong[1].split(",")[5] === "", dong[1]);
   ok("capitulation true -> '1', ftd false -> '0'", dong[1].endsWith(",1,0"), dong[1]);
+}
+
+// ---- Mo rong 21/10/2026: kl_day, loc thanh khoan, toan bo ma, CSV cot tuy chon ----
+{
+  const nen = sinhNenSuySup();
+  const kq = tinhChecklistBatDay(nen);
+  ok("su kien co kl_day (KL lon nhat 5 phien / TB20 truoc do) la so duong", kq.length >= 1 && kq.every((s) => s.kl_day === null || s.kl_day > 0), JSON.stringify(kq.map((s) => s.kl_day)));
+  ok("capitulation 6.000.000 / 1.000.000 -> kl_day >= 2 o it nhat 1 su kien", kq.some((s) => s.kl_day >= 2));
+  // gia ~65-100, KL 1 trieu -> GTGD ~ 65-100 ty; dat nguong 1000 ty -> khong con su kien nao
+  ok("gtgdToiThieuTy rat cao -> loai het su kien", tinhChecklistBatDay(nen, { gtgdToiThieuTy: 1000 }).length === 0);
+  ok("gtgdToiThieuTy thap -> giu su kien", tinhChecklistBatDay(nen, { gtgdToiThieuTy: 1 }).length === kq.length);
+  const nenTheoMa = new Map([["VNM", nen], ["ZZZ", nen]]); // VNM thuoc VN100, ZZZ thi khong
+  const ds = tinhChecklistBatDayToanBo(nenTheoMa);
+  ok("toan bo: ca ma ngoai VN100 (GTGD du) deu co su kien", ds.some((s) => s.ma === "VNM") && ds.some((s) => s.ma === "ZZZ"));
+  ok("co vn100 dung: VNM = true, ZZZ = false", ds.filter((s) => s.ma === "VNM").every((s) => s.vn100 === true) && ds.filter((s) => s.ma === "ZZZ").every((s) => s.vn100 === false));
+  ok("ma ngoai VN100 bi loai khi GTGD duoi nguong, VN100 thi khong", !tinhChecklistBatDayToanBo(nenTheoMa, { gtgdNgoaiVn100Ty: 1000 }).some((s) => s.ma === "ZZZ") && tinhChecklistBatDayToanBo(nenTheoMa, { gtgdNgoaiVn100Ty: 1000 }).some((s) => s.ma === "VNM"));
+  const csv = xayDungCsvBatDay(ds).trim().split("\n");
+  ok("CSV moi co them cot kl_day, vn100 o cuoi", csv[0].endsWith(",ftd,kl_day,vn100") && csv[1].split(",").length === 13, csv[0]);
+  ok("CSV AFL cu (khong co kl_day / vn100) van 11 cot", xayDungCsvBatDay([{ ma: "ABC", ngay: "2024-03-05", diem: 5, gia_luc_tin_hieu: 1, capitulation: false, ftd: false }]).split("\n")[0].split(",").length === 11);
 }
 
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);

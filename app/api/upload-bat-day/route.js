@@ -4,6 +4,7 @@ import { withDb, daoDamBangBatDay } from "@/lib/db";
 // checklist bat day kich hoat trong QUA KHU (khong phai trang thai hom nay
 // nhu tin_hieu). Header CSV bat buoc (11 cot):
 // ma,ngay,diem,gia_luc_tin_hieu,pct_sau_5,pct_sau_10,pct_sau_20,chiet_khau,rsi,capitulation,ftd
+// Hai cot TUY CHON them o cuoi (engine moi gui, AFL cu khong): kl_day (KL quanh day, x TB20) va vn100 (1 / 0, mac dinh 1 khi thieu).
 
 function kiemTraApiKey(request) {
   const key = request.headers.get("x-api-key");
@@ -93,10 +94,11 @@ export async function POST(request) {
     await daoDamBangBatDay(client);
     await client.query(
       `INSERT INTO bat_day_su_kien
-        (ma, ngay_tin_hieu, diem, gia_luc_tin_hieu, pct_sau_5, pct_sau_10, pct_sau_20, chiet_khau, rsi, capitulation, ftd)
+        (ma, ngay_tin_hieu, diem, gia_luc_tin_hieu, pct_sau_5, pct_sau_10, pct_sau_20, chiet_khau, rsi, capitulation, ftd, kl_day, vn100)
        SELECT * FROM unnest(
          $1::text[], $2::date[], $3::float8[], $4::float8[], $5::float8[],
-         $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::boolean[], $11::boolean[]
+         $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::boolean[], $11::boolean[],
+         $12::float8[], $13::boolean[]
        )
        ON CONFLICT (ma, ngay_tin_hieu) DO UPDATE SET
          diem = EXCLUDED.diem,
@@ -107,7 +109,9 @@ export async function POST(request) {
          chiet_khau = EXCLUDED.chiet_khau,
          rsi = EXCLUDED.rsi,
          capitulation = EXCLUDED.capitulation,
-         ftd = EXCLUDED.ftd`,
+         ftd = EXCLUDED.ftd,
+         kl_day = EXCLUDED.kl_day,
+         vn100 = EXCLUDED.vn100`,
       [
         cot("ma", (v) => v),
         cot("ngay", soNgayVN),
@@ -120,6 +124,8 @@ export async function POST(request) {
         cot("rsi", soFloat),
         cot("capitulation", soBool),
         cot("ftd", soBool),
+        cot("kl_day", soFloat),
+        cot("vn100", (v) => (v === undefined || v === "" ? true : soBool(v))),
       ]
     );
 

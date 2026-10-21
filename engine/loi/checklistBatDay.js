@@ -11,8 +11,10 @@ const SO_NEN_TOI_THIEU = 260; // can du cho HHV(H,252) co y nghia, giong AFL can
 
 // nen: [{t: "YYYY-MM-DD", o, h, l, c, v}] tang dan (index 0 = cu nhat) - dung chung dinh dang voi
 // phan con lai cua engine (xem engine/loi/quetToanBo.js).
-// Tra ve mang su kien: [{ ngay, diem, gia_luc_tin_hieu, pct_sau_5, pct_sau_10, pct_sau_20, chiet_khau, rsi, capitulation, ftd }].
-export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024 } = {}) {
+// Tra ve mang su kien: [{ ngay, diem, gia_luc_tin_hieu, pct_sau_5, pct_sau_10, pct_sau_20, chiet_khau, rsi, capitulation, ftd, kl_day }].
+// kl_day = KL lon nhat 5 phien gan nhat / KL TB 20 phien truoc do (ban thao co KL >= 2x: ket qua lich su tot hon trong 2022 va 2025 nhung khong on dinh theo nam - nghienCuuNangCapChecklist.mjs).
+// gtgdToiThieuTy: loc thanh khoan khi mo rong ra moi ma (GTGD TB20 = gia x KL / 1 trieu, don vi ty); null = khong loc (VN100 giu nguyen nhu AFL).
+export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024, gtgdToiThieuTy = null } = {}) {
   const n = nen.length;
   if (n < SO_NEN_TOI_THIEU) return [];
 
@@ -62,6 +64,21 @@ export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024 } = {}) {
   );
   const c8DaySauCaoHon = low.map((l, i) => isLocalLow[i] && prevLowPrice[i] != null && l > prevLowPrice[i]);
 
+  // KL quanh day: KL lon nhat 5 nen gan nhat / KL TB 20 nen truoc 5 nen do
+  const klDay = close.map((_, i) => {
+    if (i < 25 || avgVol20[i - 5] == null || !(avgVol20[i - 5] > 0)) return null;
+    let m = 0;
+    for (let j = i - 4; j <= i; j++) if (volume[j] > m) m = volume[j];
+    return m / avgVol20[i - 5];
+  });
+  // GTGD TB 20 phien (ty) cho bo loc thanh khoan
+  const gtgdTB = close.map((c, i) => {
+    if (i < 19) return null;
+    let s = 0;
+    for (let j = i - 19; j <= i; j++) s += (close[j] * volume[j]) / 1e6;
+    return s / 20;
+  });
+
   const nhomHaiDiem = close.map((_, i) => (c6Capitulation[i] ? 1 : 0) + (c7PhanKy[i] ? 1 : 0) + (c8DaySauCaoHon[i] ? 1 : 0));
 
   // C9: follow-through day (tang manh >=1.25% kem khoi luong cao hon hom truoc, dang trong vung chiet khau >=15%).
@@ -86,6 +103,7 @@ export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024 } = {}) {
   const ketQua = [];
   for (let i = 0; i < n; i++) {
     if (!tinHieuKichHoat[i]) continue;
+    if (gtgdToiThieuTy != null && !(gtgdTB[i] >= gtgdToiThieuTy)) continue;
     const giaLucTinHieu = close[i];
     ketQua.push({
       ngay: nen[i].t,
@@ -98,6 +116,7 @@ export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024 } = {}) {
       rsi: rsiVal[i],
       capitulation: c6Capitulation[i],
       ftd: c9Ftd[i],
+      kl_day: klDay[i],
     });
   }
   return ketQua;
@@ -107,12 +126,16 @@ export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024 } = {}) {
 // dung LAI ban tai boi taiLichSuToanBo() cho tin hieu chinh, xem engine/loi/quetToanBo.js: ca 100 ma
 // VN100 da nam trong vu tru VN30+Midcap+Smallcap nen khong can fetch rieng). Tra ve mang phang
 // [{ ma, ngay, diem, ... }], san sang dua thang vao xayDungCsvBatDay().
-export function tinhChecklistBatDayToanBo(nenTheoMa, opts) {
+// Mo rong (21/10/2026): TOAN BO ma trong nenTheoMa. VN100 giu nguyen (khong loc thanh khoan, vn100 = true); ma ngoai VN100 chi tinh khi GTGD TB20 tai ngay tin hieu >= gtgdNgoaiVn100Ty (mac dinh 3 ty) - vn100 = false.
+// Ket qua lich su tu 2022-05: ma ngoai VN100 it loi the hon (20 phien -0,06% so voi VN100 +1,86%) nen co cot "Nhom" de loc.
+export function tinhChecklistBatDayToanBo(nenTheoMa, opts = {}) {
+  const { gtgdNgoaiVn100Ty = 3, ...rest } = opts;
+  const vn100 = new Set(VN100);
   const ketQua = [];
-  for (const ma of VN100) {
-    const nen = nenTheoMa.get(ma);
+  for (const [ma, nen] of nenTheoMa) {
     if (!nen) continue;
-    for (const suKien of tinhChecklistBatDay(nen, opts)) ketQua.push({ ma, ...suKien });
+    const laVn100 = vn100.has(ma);
+    for (const suKien of tinhChecklistBatDay(nen, { ...rest, gtgdToiThieuTy: laVn100 ? null : gtgdNgoaiVn100Ty })) ketQua.push({ ma, ...suKien, vn100: laVn100 });
   }
   return ketQua;
 }
@@ -129,12 +152,16 @@ const bool01 = (v) => (v ? "1" : "0");
 
 // dsSuKien: [{ ma, ...tinhChecklistBatDay() }] da gop tat ca ma - xuat dung 11 cot theo dung thu tu
 // header app/api/upload-bat-day/route.js mong doi.
+// Hai cot TUY CHON o cuoi (chi them khi su kien co truong do): kl_day (KL quanh day x) va vn100 (1 / 0) - AFL cu van gui dung 11 cot.
 export function xayDungCsvBatDay(dsSuKien) {
-  const dong = ["ma,ngay,diem,gia_luc_tin_hieu,pct_sau_5,pct_sau_10,pct_sau_20,chiet_khau,rsi,capitulation,ftd"];
+  const coKl = dsSuKien.some((s) => s.kl_day !== undefined);
+  const coNhom = dsSuKien.some((s) => s.vn100 !== undefined);
+  const dong = ["ma,ngay,diem,gia_luc_tin_hieu,pct_sau_5,pct_sau_10,pct_sau_20,chiet_khau,rsi,capitulation,ftd" + (coKl ? ",kl_day" : "") + (coNhom ? ",vn100" : "")];
   for (const s of dsSuKien) {
-    dong.push(
-      [s.ma, isoSangDMY(s.ngay), so2(s.diem), so2(s.gia_luc_tin_hieu), so2(s.pct_sau_5), so2(s.pct_sau_10), so2(s.pct_sau_20), so2(s.chiet_khau), so2(s.rsi), bool01(s.capitulation), bool01(s.ftd)].join(",")
-    );
+    const cot = [s.ma, isoSangDMY(s.ngay), so2(s.diem), so2(s.gia_luc_tin_hieu), so2(s.pct_sau_5), so2(s.pct_sau_10), so2(s.pct_sau_20), so2(s.chiet_khau), so2(s.rsi), bool01(s.capitulation), bool01(s.ftd)];
+    if (coKl) cot.push(so2(s.kl_day));
+    if (coNhom) cot.push(bool01(s.vn100));
+    dong.push(cot.join(","));
   }
   return dong.join("\n") + "\n";
 }

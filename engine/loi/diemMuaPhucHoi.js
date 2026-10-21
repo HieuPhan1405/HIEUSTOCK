@@ -13,7 +13,7 @@ export const CAU_HINH_B = { giamPct: 10, giamTuPct: 20, giamDenPct: 30, trongNen
 export const SO_NEN_B_GAN_DAY = 10;
 
 // {high, low, close, volume, atr, tenkan, kijun, cloudTop, cbTop}: cac mang cung do dai (null cho nen chua du du lieu).
-// Tra ve { laB: bool[], gan: { i, cach, gia, giam, day, sl, tp1, tp2, tp3 } | null } - `gan` = diem B gan nhat trong SO_NEN_B_GAN_DAY nen cuoi.
+// Tra ve { laB: bool[], gan: { i, cach, gia, giam, day, klDay, sl, tp1, tp2, tp3 } | null } - `gan` = diem B gan nhat trong SO_NEN_B_GAN_DAY nen cuoi.
 export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kijun, cloudTop, cbTop }, cauHinh = CAU_HINH_B) {
   const c = { ...CAU_HINH_B, ...cauHinh };
   const n = close.length;
@@ -45,14 +45,21 @@ export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kiju
   for (let i = n - 1; i >= Math.max(0, n - SO_NEN_B_GAN_DAY); i--) {
     if (!laB[i]) continue;
     const E = close[i];
-    let day = Infinity;
-    for (let j = i - 19; j <= i; j++) if (low[j] < day) day = low[j];
+    let day = Infinity, kDay = i;
+    for (let j = i - 19; j <= i; j++) if (low[j] <= day) { day = low[j]; kDay = j; }
+    // KL QUANH DAY: KL lon nhat 5 phien quanh day (kDay - 2 .. kDay + 2, khong qua nen B) / KL TB 20 phien truoc day - ban thao co KL (>= 2x) la yeu to kiem chung tot nhat (nghienCuuQuyLuatNhipHoi.mjs)
+    let tb20 = 0, soNen = 0;
+    for (let j = Math.max(0, kDay - 20); j < kDay; j++) { tb20 += volume[j] ?? 0; soNen++; }
+    tb20 = soNen ? tb20 / soNen : 0;
+    let vMax = 0;
+    for (let j = Math.max(0, kDay - 2); j <= Math.min(kDay + 2, i); j++) vMax = Math.max(vMax, volume[j] ?? 0);
+    const klDay = tb20 > 0 ? vMax / tb20 : null;
     const a = atr[i] ?? E * 0.03;
     let sl = Math.min(kijun[i] - c.demSLtheoATR * a, E * (1 - c.slToiThieuPct / 100));
     sl = Math.max(sl, E * (1 - c.hardStopPct / 100));
     const giaVaoBar = new Array(n).fill(E);
     const tp = tinhBaMocChotLoi({ high, giaVaoBar, cloudTop, cbTop });
-    gan = { i, cach: n - 1 - i, gia: E, giam: giamB[i], day, sl, tp1: tp.tp1Vong[i], tp2: tp.tp2Vong[i], tp3: tp.tp3Vong[i] };
+    gan = { i, cach: n - 1 - i, gia: E, giam: giamB[i], day, klDay, sl, tp1: tp.tp1Vong[i], tp2: tp.tp2Vong[i], tp3: tp.tp3Vong[i] };
     break;
   }
   return { laB, gan };

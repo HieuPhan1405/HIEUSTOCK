@@ -285,7 +285,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) 
             tieuDe="Mua phục hồi (điểm B)"
             may="mua-phuc-hoi"
             mau={VANG}
-            moTa="Cổ phiếu đã giảm 20–30% rồi đóng cửa lấy lại Tenkan và Kijun — giải ngân 1/2 phần dự định, 1/2 còn lại khi hệ thống báo MUA. Chưa phải tín hiệu MUA, chỉ tham khảo. Không gồm mã hệ thống đang giữ"
+            moTa="Cổ phiếu đã giảm 20–30% rồi đóng cửa lấy lại Tenkan và Kijun — giải ngân 1/2 phần dự định, 1/2 còn lại khi hệ thống báo MUA. Ưu tiên mã có nhãn bán tháo có KL (KL quanh đáy ≥ 2×). Chưa phải tín hiệu MUA, chỉ tham khảo. Không gồm mã hệ thống đang giữ"
             ds={muaPhucHoi}
             trong="Hiện không có mã nào vừa có điểm B."
             hien={(x) => (
@@ -306,6 +306,12 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) 
                 Giá B <b style={{ color: TEXT }}>{fmt(x.giaB)}</b>
                 {x.giam != null && <span> · đã giảm {fmt(x.giam)}%</span>}
                 {x.bDayPct != null && <span> · cách đáy +{fmt(x.bDayPct)}%</span>}
+                {x.klDay != null && (
+                  <span style={x.klDay >= 2 ? { color: XANH, fontWeight: 700, ...sans, fontSize: 11 } : undefined} title="KL lớn nhất 5 phiên quanh đáy / KL TB 20 phiên trước đáy. ≥ 2× = bán tháo có khối lượng, nhóm điểm B có kết quả lịch sử tốt nhất">
+                    {" · "}
+                    {x.klDay >= 2 ? `bán tháo có KL (${fmt(x.klDay)}×)` : `KL đáy ${fmt(x.klDay)}×`}
+                  </span>
+                )}
                 <br />
                 Cắt lỗ <b style={{ color: DO }}>{fmt(x.sl)}</b>
                 {" · "}TP1/TP2{" "}

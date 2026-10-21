@@ -209,6 +209,7 @@ export function tinhChiBaoLocChoMa(nen) {
     kq.pb_giam = gan ? gan.giam : null;
     kq.pb_gia = gan ? gan.gia : null;
     kq.pb_day = gan ? gan.day : null;
+    kq.pb_kl_day = gan ? gan.klDay : null;
     kq.pb_sl = gan ? gan.sl : null;
     kq.pb_tp1 = gan ? gan.tp1 : null;
     kq.pb_tp2 = gan ? gan.tp2 : null;

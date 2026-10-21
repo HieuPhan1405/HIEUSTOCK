@@ -28,6 +28,7 @@ const ok = (ten, dk, them = "") => {
   ok("diem B hom nay khop (0), cach 1 khong", khopChiBao({ pb_cach: 0 }, bo("hom_nay")) && !khopChiBao({ pb_cach: 1 }, bo("hom_nay")));
   ok("diem B trong 5 phien: cach 4 khop, cach 5 khong", khopChiBao({ pb_cach: 4 }, bo("trong_5")) && !khopChiBao({ pb_cach: 5 }, bo("trong_5")));
   ok("khong co diem B (null): khong khop", !khopChiBao({ pb_cach: null }, bo("trong_10")));
+  ok("ban thao co KL: KL quanh day >= 2x khop, 1,5x khong", khopChiBao({ pb_cach: 3, pb_kl_day: 2.4 }, bo("kl_day")) && !khopChiBao({ pb_cach: 3, pb_kl_day: 1.5 }, bo("kl_day")) && !khopChiBao({ pb_cach: null, pb_kl_day: 3 }, bo("kl_day")));
   ok("gan day: gia B cach day <= 15% khop, > 15% khong", khopChiBao({ pb_cach: 2, pb_gia: 11, pb_day: 9.6 }, bo("gan_day")) && !khopChiBao({ pb_cach: 2, pb_gia: 11.5, pb_day: 9.6 }, bo("gan_day")));
 }
 
