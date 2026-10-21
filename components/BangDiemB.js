@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { fmt, pct, nhe } from "@/components/dungChung";
 import { soVN } from "@/lib/soVN";
-import { locDiemB, ketQuaDiemB, thongKeDiemB, danhSachNganh, DAI_GIAM, KHOANG_PHIEN, LOC_MAC_DINH } from "@/lib/locDiemB";
+import { locDiemB, ketQuaDiemB, thongKeDiemB, danhSachNganh, laKhuyenNghi, DAI_GIAM, KHOANG_PHIEN, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "@/lib/locDiemB";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -83,6 +83,8 @@ export default function BangDiemB({ duLieu }) {
   const tk = useMemo(() => thongKeDiemB(daLoc), [daLoc]);
   const doiSapXep = (khoa) => setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: "desc" }));
   const dangLoc = JSON.stringify(loc) !== JSON.stringify(LOC_MAC_DINH);
+  const dangKhuyenNghi = loc.dai === "tu_20" && loc.klDay && loc.vniYeu;
+  const soKhuyenNghi = useMemo(() => duLieu.filter(laKhuyenNghi).length, [duLieu]);
   return (
     <div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
@@ -93,6 +95,14 @@ export default function BangDiemB({ duLieu }) {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-2">
+        <button
+          onClick={() => setLoc(dangKhuyenNghi ? LOC_MAC_DINH : LOC_KHUYEN_NGHI)}
+          className="px-3 py-1.5 text-xs rounded-full border font-bold"
+          style={{ borderColor: XANH, background: dangKhuyenNghi ? XANH : nhe(XANH, 13), color: dangKhuyenNghi ? "#fff" : XANH, ...sans }}
+          title="Giảm từ 20% + KL đáy ≥ 2× + thị trường yếu lúc đó. Lịch sử từ đầu 2026: 19 điểm, lãi TB sau 10 phiên khoảng +6% (thắng 69%) — mẫu nhỏ, chỉ tham khảo."
+        >
+          ⭐ Bộ lọc khuyến nghị ({soKhuyenNghi})
+        </button>
         {KHOANG_PHIEN.map((x) => (
           <button key={x.k} onClick={() => dat("khoang", x.k)} className="px-3 py-1.5 text-xs rounded-full border" style={{ borderColor: loc.khoang === x.k ? PRIMARY : VIEN, background: loc.khoang === x.k ? nhe(PRIMARY, 13) : "transparent", color: loc.khoang === x.k ? PRIMARY : MUTED, ...sans }}>
             {x.nhan}
@@ -142,6 +152,11 @@ export default function BangDiemB({ duLieu }) {
                   <tr key={`${r.ma}-${r.ngay}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                     <td className="py-2.5 px-3 whitespace-nowrap">
                       <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ ...sans, fontWeight: 700 }}>{r.ma}</Link>
+                      {laKhuyenNghi(r) && (
+                        <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(XANH, 13), color: XANH, ...sans }} title="Giảm từ 20% + KL đáy ≥ 2× + thị trường yếu lúc đó">
+                          ⭐ khuyến nghị
+                        </span>
+                      )}
                       {r.co_mua_thuong_truoc && (
                         <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(DO, 13), color: DO, ...sans }} title="Web đã ghi nhận lệnh MUA của hệ thống trong 60 ngày trước điểm B — nhóm này có kết quả lịch sử kém hơn">
                           đã có lệnh MUA

@@ -1,5 +1,5 @@
 // Test tay cho lib/locDiemB.js (loc lich su diem B). Chay: node engine/test/locDiemB.test.mjs
-import { locDiemB, thongKeDiemB, ketQuaDiemB, ngayBatDauKhoang, danhSachNganh, LOC_MAC_DINH } from "../../lib/locDiemB.js";
+import { locDiemB, thongKeDiemB, ketQuaDiemB, ngayBatDauKhoang, danhSachNganh, laKhuyenNghi, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "../../lib/locDiemB.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -36,6 +36,8 @@ ok("thong ke: n=5, 10p co 3 mau TB (4 - 3 + 7)/3, thang 2/3", tk.n === 5 && tk.n
 ok("thong ke rong -> null", thongKeDiemB([]).tb10 === null && thongKeDiemB([]).n === 0);
 ok("ngayBatDauKhoang: Infinity -> null; 1 -> ngay moi nhat", ngayBatDauKhoang(ds, Infinity) === null && ngayBatDauKhoang(ds, 1) === "2026-10-21");
 ok("danh sach nganh khong trung, sap xep", danhSachNganh(ds).join("|") === ["Bất động sản", "Chứng khoán", "Thép"].join("|"), danhSachNganh(ds).join("|"));
+ok("bo loc khuyen nghi: giam >= 20 + KL >= 2x + thi truong yeu -> chi AAA", ma(locDiemB(ds, LOC_KHUYEN_NGHI)) === "AAA", ma(locDiemB(ds, LOC_KHUYEN_NGHI)));
+ok("laKhuyenNghi khop bo loc: CCC (VNI khong yeu) khong, AAA co, null an toan", laKhuyenNghi(ds[0]) === true && laKhuyenNghi(ds[2]) === false && laKhuyenNghi(null) === false && laKhuyenNghi({}) === false);
 ok("LOC_MAC_DINH khong dong vao du lieu", locDiemB(ds, LOC_MAC_DINH).length === 5);
 
 if (loi) {
