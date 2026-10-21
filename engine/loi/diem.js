@@ -52,7 +52,7 @@ export function tinhMomTuRSI(rsi, { rsiTren = 70, rsiDuoi = 30, vungDem = 0, kie
   return mom;
 }
 
-export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kijun, adx, diPlus, diMinus, rsi, mfi, relVol, momCauHinh, mfiVungDem = 0, trongSo = { trend: 1.5, mf: 1.2, mom: 1.0 } }) {
+export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kijun, adx, diPlus, diMinus, rsi, mfi, relVol, momCauHinh, mfiVungDem = 0, boQuaMay = false, trongSo = { trend: 1.5, mf: 1.2, mom: 1.0 } }) {
   const n = close.length;
   const trendScore = new Array(n).fill(null);
   const momScore = new Array(n).fill(null);
@@ -64,7 +64,8 @@ export function tinhDiem({ close, cloudTop, cloudBot, cbTop, cbBot, tenkan, kiju
     const c = close[i];
 
     let phanMay = 0;
-    if (cloudTop[i] != null && c > cloudTop[i]) phanMay = 1;
+    if (boQuaMay) phanMay = 0; // CHI NGHIEN CUU (backtestBoQuaMay.mjs): bo thanh phan vi tri gia so voi may khoi diem xu huong
+    else if (cloudTop[i] != null && c > cloudTop[i]) phanMay = 1;
     else if (cloudBot[i] != null && c < cloudBot[i]) phanMay = -1;
 
     let phanCB = 0;

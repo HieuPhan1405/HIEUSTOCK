@@ -91,6 +91,9 @@ const MAC_DINH = {
   // 2 LUAT GOP (2026-10-19, backtest engine/dich-vu/backtestGopHaiLuat.mjs, mac dinh TAT - chua bat production, cho chay song song theo doi):
   //  locVolChinhVao: bo lenh Mua THUONG khi vol nhip chinh truoc phien tin hieu (relVol TB tu dinh soNenDinhVolChinh nen toi hom truoc) >= volChinhNguongVao;
   //  thoatKijunVolChinh: sau TP1, dong cua < Kijun va vol TB nhip chinh (tu dinh toi hom nay) >= volChinhNguongThoat -> ban het; vol be thi giu, san trailing sanTrailPct% tu dinh (thay hoa von).
+  // NGHIEN CUU (21/10/2026, backtestBoQuaMay.mjs, mac dinh TAT): boQuaMay = diem xu huong khong tinh vi tri gia so voi may Ichimoku; yeuCauGiaTenkanKijun = chi MUA khi dong cua > Tenkan va Tenkan > Kijun.
+  boQuaMay: false,
+  yeuCauGiaTenkanKijun: false,
   locVolChinhVao: false,
   volChinhNguongVao: 1.2,
   soNenDinhVolChinh: 20,
@@ -174,6 +177,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     relVol,
     momCauHinh: { rsiTren: p.rsiTrenTheoNhom?.[ma === "VNINDEX" ? "ChiSo" : phanLoaiVonHoa(ma) ?? "Khac"] ?? p.rsiTren, rsiDuoi: p.rsiDuoi, vungDem: p.rsiVungDem, kieuDem: p.rsiKieuDem },
     mfiVungDem: p.mfiVungDem,
+    boQuaMay: p.boQuaMay,
     trongSo: p.trongSoDiem,
   });
 
@@ -255,7 +259,8 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   })();
   // Luat VAO: bo lenh Mua thuong khi vol nhip chinh >= nguong. CHI loc buy dua vao may trang thai - buyTho goc van dung cho SellTinHieu / dot bo lo (lenh bi bo coi nhu da qua dot, khong mua lai cung dot).
   const volChinhTruoc = p.locVolChinhVao ? tinhVolNhipChinhTruoc({ high, relVol }, { soNen: p.soNenDinhVolChinh }) : null;
-  const buyVaoMayTrangThai = volChinhTruoc ? buyTho.map((b, i) => b && !(volChinhTruoc[i] != null && volChinhTruoc[i] >= p.volChinhNguongVao)) : buyTho;
+  const buyLocVol = volChinhTruoc ? buyTho.map((b, i) => b && !(volChinhTruoc[i] != null && volChinhTruoc[i] >= p.volChinhNguongVao)) : buyTho;
+  const buyVaoMayTrangThai = p.yeuCauGiaTenkanKijun ? buyLocVol.map((b, i) => b && tenkan[i] != null && kijun[i] != null && close[i] > tenkan[i] && tenkan[i] > kijun[i]) : buyLocVol;
   const kq = chayMayTrangThai({
     close,
     open,
