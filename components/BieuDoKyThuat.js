@@ -6,7 +6,7 @@ import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Squar
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { phanKyRSI } from "@/lib/phanKyRSI";
-import { nhanDienMauHinh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
+import { nhanDienMauHinh, nhanDienDangHinhThanh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
 import { LopVe } from "@/components/veBieuDoLop";
 import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio, timDinhKhoiLuong, chonHoTroKhangCu } from "@/lib/volumeProfile";
 import { DaiMay, DaiGia } from "@/components/bieuDoPlugin";
@@ -287,7 +287,11 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     return phanKyRSI(nen.map((b) => ({ h: b.h, l: b.l, c: b.c })), rsi(nen.map((b) => b.c), 14), { k: 3 });
   }, [nen]);
   // MAU HINH GIA (lib/mauHinh.js): nhan dien tren nen dang hien (ngay / tuan); bam chip "Mẫu hình" de tu ve len bieu do, bam tung mau hinh de xem hinh khac.
-  const dsMauHinh = useMemo(() => (nen && nen.length >= 40 ? nhanDienMauHinh(nen, { khung: khungTG === "W" ? "tuan" : "ngay" }).slice(0, 12) : []), [nen, khungTG]);
+  const dsMauHinh = useMemo(() => {
+    if (!nen || nen.length < 40) return [];
+    const khungMH = khungTG === "W" ? "tuan" : "ngay";
+    return [...nhanDienDangHinhThanh(nen, { khung: khungMH }).slice(0, 6), ...nhanDienMauHinh(nen, { khung: khungMH }).slice(0, 12)];
+  }, [nen, khungTG]);
   const [chonMH, setChonMH] = useState({ khoa: "", idx: 0 });
   const idxMH = chonMH.khoa === khoa ? chonMH.idx : 0; // doi ma / khung -> ve lai mau hinh moi nhat
   const mauHinhVe = bat.mauHinh && idxMH >= 0 && idxMH < dsMauHinh.length ? dsMauHinh[idxMH] : null;
@@ -685,18 +689,29 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.markersMH.setMarkers([]);
     if (!mauHinhVe || !nen) return;
     const m = mauHinhVe;
-    const mauChinh = m.huong > 0 ? "#22C55E" : "#EF4444";
+    const dangHT = m.trangThai === "dang_hinh_thanh";
+    const mauChinh = m.huong > 0 ? "#22C55E" : m.huong < 0 ? "#EF4444" : "#F6C544";
     const dg = (d) => {
       if (d.i2 <= d.i1 || !nen[d.i1] || !nen[d.i2]) return;
       const phu = d.loai === "phu";
-      const sr = s.chart.addSeries(LineSeries, { color: d.loai === "co" ? "#F6C544" : phu ? "rgba(148,163,184,0.9)" : mauChinh, lineWidth: d.loai === "co" ? 2 : 1, lineStyle: phu ? LineStyle.Dotted : LineStyle.Solid, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false });
+      const sr = s.chart.addSeries(LineSeries, { color: d.loai === "co" ? "#F6C544" : phu ? "rgba(148,163,184,0.9)" : mauChinh, lineWidth: d.loai === "co" ? 2 : 1, lineStyle: phu || dangHT ? LineStyle.Dotted : LineStyle.Solid, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false });
       sr.setData([{ time: nen[d.i1].t, value: d.g1 }, { time: nen[d.i2].t, value: d.g2 }]);
       s.mh.series.push(sr);
     };
     m.duong.forEach(dg);
     const vach = (gia, mau, tieuDe) => s.mh.vach.push(s.candle.createPriceLine({ price: gia, color: mau, lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: tieuDe }));
-    vach(m.mucTieu, "#22C55E", "Mục tiêu");
-    vach(m.catLo, "#EF4444", "Cắt lỗ");
+    if (dangHT) {
+      for (const k of m.kichBan) {
+        vach(k.mucPhaVo, k.huong > 0 ? "#22C55E" : "#EF4444", k.huong > 0 ? "Phá vỡ lên" : "Phá vỡ xuống");
+        if (m.kichBan.length === 1) {
+          vach(k.mucTieu, "#22C55E", "Mục tiêu");
+          vach(k.catLo, "#EF4444", "Cắt lỗ");
+        }
+      }
+    } else {
+      vach(m.mucTieu, "#22C55E", "Mục tiêu");
+      vach(m.catLo, "#EF4444", "Cắt lỗ");
+    }
     const nhan = m.diem
       .filter((d) => nen[d.i])
       .map((d) => {
@@ -704,11 +719,11 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         const day = Math.abs(d.gia - b.l) <= Math.abs(d.gia - b.h);
         return { time: b.t, position: day ? "belowBar" : "aboveBar", color: "#F6C544", shape: "circle", text: d.nhan || "" };
       });
-    nhan.push({ time: nen[m.i].t, position: m.huong > 0 ? "belowBar" : "aboveBar", color: mauChinh, shape: m.huong > 0 ? "arrowUp" : "arrowDown", text: m.huong > 0 ? "Phá vỡ lên" : "Phá vỡ xuống" });
+    if (!dangHT) nhan.push({ time: nen[m.i].t, position: m.huong > 0 ? "belowBar" : "aboveBar", color: mauChinh, shape: m.huong > 0 ? "arrowUp" : "arrowDown", text: m.huong > 0 ? "Phá vỡ lên" : "Phá vỡ xuống" });
     nhan.sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
     s.markersMH.setMarkers(nhan);
     const dau = Math.min(m.i, ...m.diem.map((d) => d.i), ...m.duong.map((d) => d.i1));
-    s.chart.timeScale().setVisibleLogicalRange({ from: Math.max(-2, dau - 12), to: Math.min(nen.length + 12, m.i + 30) });
+    s.chart.timeScale().setVisibleLogicalRange({ from: Math.max(-2, dau - 12), to: Math.min(nen.length + 12, m.i + (dangHT ? 12 : 30)) });
   }, [mauHinhVe, nen]);
 
   // 5. Bat/tat chi bao.
@@ -792,31 +807,46 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         <div className="px-3 py-2 border-b" style={{ borderColor: VIEN }} data-may="mau-hinh" aria-label="Nhận diện mẫu hình giá">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-[11px] mr-1" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
-              Mẫu hình đã phá vỡ ({khungTG === "W" ? "khung tuần" : "khung ngày"}) — bấm để vẽ lên hình:
+              Mẫu hình ({khungTG === "W" ? "khung tuần" : "khung ngày"}) — ⏳ đang hình thành · ▲▼ đã phá vỡ. Bấm để vẽ lên hình:
             </span>
             {dsMauHinh.length === 0 && (
               <span className="text-xs" style={{ color: MUTED }}>
-                {dangTai ? "Đang tải…" : "Không thấy mẫu hình đã phá vỡ trong dữ liệu này."}
+                {dangTai ? "Đang tải…" : "Không thấy mẫu hình nào trong dữ liệu này."}
               </span>
             )}
             {dsMauHinh.map((m, k) => {
               const chon = k === idxMH;
-              const mau = m.huong > 0 ? XANH : DO;
+              const dangHT = m.trangThai === "dang_hinh_thanh";
+              const mau = m.huong > 0 ? XANH : m.huong < 0 ? DO : "#F6C544";
               return (
                 <button
-                  key={`${m.khoa}|${m.i}`}
+                  key={`${m.khoa}|${m.trangThai ?? "xong"}|${m.i}`}
                   type="button"
                   onClick={() => setChonMH({ khoa, idx: chon ? -1 : k })}
                   aria-pressed={chon}
                   className="px-2.5 py-1 rounded-md text-xs cursor-pointer"
-                  style={{ background: chon ? "rgba(246,197,68,0.16)" : "transparent", border: `1px solid ${chon ? "#F6C544" : VIEN}`, color: chon ? TEXT : MUTED, fontFamily: "'Inter', sans-serif" }}
+                  style={{ background: chon ? "rgba(246,197,68,0.16)" : "transparent", border: `1px ${dangHT ? "dashed" : "solid"} ${chon ? "#F6C544" : VIEN}`, color: chon ? TEXT : MUTED, fontFamily: "'Inter', sans-serif" }}
                 >
-                  <span style={{ color: mau }}>{m.huong > 0 ? "▲" : "▼"}</span> {m.ten} · {m.cach === 0 ? (khungTG === "W" ? "tuần này" : "hôm nay") : `${m.cach} ${khungTG === "W" ? "tuần" : "phiên"} trước`}
+                  {dangHT ? <span>⏳</span> : <span style={{ color: mau }}>{m.huong > 0 ? "▲" : "▼"}</span>} {m.ten} ·{" "}
+                  {dangHT ? `cách mức phá vỡ ${soVN(m.cachPhaVoPct, 1)}%` : m.cach === 0 ? (khungTG === "W" ? "tuần này" : "hôm nay") : `${m.cach} ${khungTG === "W" ? "tuần" : "phiên"} trước`}
                 </button>
               );
             })}
           </div>
-          {mauHinhVe && (
+          {mauHinhVe && mauHinhVe.trangThai === "dang_hinh_thanh" && (
+            <div className="mt-2 text-xs leading-relaxed" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+              <span style={{ color: TEXT, fontWeight: 600 }}>⏳ {mauHinhVe.ten} (đang hình thành, chưa phá vỡ)</span> — {mauHinhVe.ghiChu}. Giá hiện tại {soVN(mauHinhVe.gia, 2, true)}.{" "}
+              {mauHinhVe.kichBan.map((k) => (
+                <span key={k.huong} className="mr-2">
+                  Nếu phá vỡ <span style={{ color: k.huong > 0 ? XANH : DO }}>{k.huong > 0 ? "lên" : "xuống"}</span> (đóng cửa {k.huong > 0 ? "trên" : "dưới"} {soVN(k.mucPhaVo, 2, true)}): mục tiêu <span style={{ color: XANH }}>{soVN(k.mucTieu, 2, true)}</span>, cắt lỗ{" "}
+                  <span style={{ color: DO }}>{soVN(k.catLo, 2, true)}</span>.
+                </span>
+              ))}
+              <br />
+              Thống kê lịch sử (khung ngày, 390 mã): các mẫu hình ở trạng thái đang hình thành chỉ phá vỡ đúng hướng trong 20 phiên tiếp theo khoảng 40–50% trường hợp, và khoảng 30–55% chạm cắt lỗ trước (gần ngang ngửa tung đồng xu). Chưa phá vỡ thì chưa phải tín hiệu. Chỉ để tham khảo, không phải khuyến nghị mua bán.
+            </div>
+          )}
+          {mauHinhVe && mauHinhVe.trangThai !== "dang_hinh_thanh" && (
             <div className="mt-2 text-xs leading-relaxed" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
               <span style={{ color: TEXT, fontWeight: 600 }}>{mauHinhVe.ten}</span> — phá vỡ {mauHinhVe.t} tại {soVN(mauHinhVe.gia, 2, true)}; mục tiêu đo từ mẫu hình{" "}
               <span style={{ color: XANH }}>{soVN(mauHinhVe.mucTieu, 2, true)}</span>, cắt lỗ theo mẫu hình <span style={{ color: DO }}>{soVN(mauHinhVe.catLo, 2, true)}</span> (lãi/lỗ tiềm năng{" "}

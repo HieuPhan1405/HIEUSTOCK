@@ -1,5 +1,5 @@
 // Test tay cho lib/mauHinh.js: du lieu tong hop (day doi, dinh doi) va du lieu that (so mau hinh hop ly, hinh hoc hop le).
-import { nhanDienMauHinh, cachMauHinhGanNhat, KHOA_MAU_HINH, COT_MAU_HINH_NGAY, COT_MAU_HINH_TUAN } from "../../lib/mauHinh.js";
+import { nhanDienMauHinh, nhanDienDangHinhThanh, cachMauHinhGanNhat, KHOA_MAU_HINH, COT_MAU_HINH_NGAY, COT_MAU_HINH_TUAN } from "../../lib/mauHinh.js";
 import { khopChiBao, taoBoLocChiBao } from "../../lib/boLocChiBao.js";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -27,6 +27,15 @@ ok("khong du du lieu -> mang rong", nhanDienMauHinh(dung([[14, 5]], 3)).length =
 ok("cachMauHinhGanNhat tra du khoa", KHOA_MAU_HINH.every((k) => k in cachMauHinhGanNhat(dung([[10, 15], [12.5, 12], [10.1, 12], [13.6, 14]]), { tuoiToiDa: 30 })));
 ok("ten cot ngay / tuan khong trung nhau", new Set([...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN]).size === 2 * KHOA_MAU_HINH.length);
 
+// mau hinh DANG HINH THANH: day doi chua pha vo (dung truoc nen pha vo)
+const Wf = dung([[10, 15], [12.5, 12], [10.1, 12], [12.2, 9]]);
+const dht = nhanDienDangHinhThanh(Wf);
+const wf = dht.find((m) => m.khoa === "day_doi");
+ok("day doi dang hinh thanh duoc nhan dien", !!wf, JSON.stringify(dht.map((m) => m.khoa)));
+ok("day doi dang hinh thanh: 1 kich ban tang, muc pha vo > gia", wf && wf.kichBan.length === 1 && wf.kichBan[0].huong === 1 && wf.kichBan[0].mucPhaVo > wf.gia && wf.cachPhaVoPct > 0, wf && JSON.stringify(wf.kichBan));
+ok("sau khi pha vo thi khong con la dang hinh thanh", !nhanDienDangHinhThanh(dung([[10, 15], [12.5, 12], [10.1, 12], [13.6, 14]])).some((m) => m.khoa === "day_doi"));
+ok("du lieu ngan -> khong co mau hinh dang hinh thanh", nhanDienDangHinhThanh(dung([[14, 5]], 3)).length === 0);
+
 // bo loc mau hinh (lib/boLocChiBao.js)
 const locDay = taoBoLocChiBao("mau_hinh_ngay", "day_doi");
 ok("bo loc mau hinh ngay: day doi cach 2 phien khop", khopChiBao({ mh_day_doi: 2 }, locDay) === true);
@@ -49,6 +58,17 @@ for (const [ma, bars] of Object.entries(cache).slice(0, 60)) {
     for (const d of m.duong) if (!(d.i1 >= 0 && d.i2 < bars.length && d.i2 >= d.i1) || !(d.g1 > 0 && d.g2 > 0)) hinhSai++;
   }
 }
+let dhtTong = 0, dhtSai = 0;
+for (const [ma, bars] of Object.entries(cache).slice(0, 120)) {
+  for (const m of nhanDienDangHinhThanh(bars)) {
+    dhtTong++;
+    if (!m.kichBan.every((k) => (k.huong > 0 ? k.mucTieu > m.gia && k.catLo < m.gia : k.mucTieu < m.gia && k.catLo > m.gia))) dhtSai++;
+    for (const d of m.duong) if (!(d.i1 >= 0 && d.i2 <= bars.length - 1 && d.i2 >= d.i1)) dhtSai++;
+    if (!(m.cachPhaVoPct >= 0)) dhtSai++;
+  }
+}
+console.log(`  120 ma that: ${dhtTong} mau hinh dang hinh thanh, sai ${dhtSai}`);
+ok("dang hinh thanh tren du lieu that: hinh hoc hop le", dhtSai === 0, `sai=${dhtSai}`);
 console.log(`  60 ma that: ${tong} mau hinh;`, JSON.stringify(dem));
 ok("du lieu that: co mau hinh va hinh hoc hop le", tong > 50 && hinhSai === 0, `hinhSai=${hinhSai}`);
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
