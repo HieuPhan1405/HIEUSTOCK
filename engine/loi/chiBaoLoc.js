@@ -9,6 +9,7 @@ import { COT_CHI_BAO, COT_CHI_BAO_H1 } from "../../lib/cotChiBaoKyThuat.js";
 import { rsi as rsiLib } from "../../lib/chiBaoPhu.js";
 import { phanKyRSI, gopNenTuan } from "../../lib/phanKyRSI.js";
 import { tinhDiemMuaPhucHoi } from "./diemMuaPhucHoi.js";
+import { tinhHoiSauGiamDai } from "./hoiSauGiamDai.js";
 import { tinhDuongCanBangDaiHan } from "./ichimoku.js";
 import { cachMauHinhGanNhat, KHOA_MAU_HINH, COT_MAU_HINH_NGAY, COT_MAU_HINH_TUAN, SO_NEN_MAU_HINH_NGAY, SO_NEN_MAU_HINH_TUAN } from "../../lib/mauHinh.js";
 
@@ -81,7 +82,7 @@ export function maHoaPhanKy(nen, toiDa) {
   if (cach < 0 || cach >= toiDa) return null;
   return cuoiCung.loai === "tang" ? cach : -(cach + 1);
 }
-const COT_NGUYEN = new Set(["pb_cach", "rsi_h1_pk_cach", ...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
+const COT_NGUYEN = new Set(["hg_giam_dai", "hg_gtgd_ok", "hg_day_cao", "hg_tren_tk_kj", "hg_cach", "hg_ban", "pb_cach", "rsi_h1_pk_cach", ...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
 
 // Tra ve object { ngay_nen, ...COT_CHI_BAO } cho 1 ma, hoac null neu chua du du lieu.
 export function tinhChiBaoLocChoMa(nen) {
@@ -212,6 +213,19 @@ export function tinhChiBaoLocChoMa(nen) {
     kq.pb_tp1 = gan ? gan.tp1 : null;
     kq.pb_tp2 = gan ? gan.tp2 : null;
     kq.pb_tp3 = gan ? gan.tp3 : null;
+    // HOI SAU GIAM DAI: checklist 4 dieu kien + vi the cam het nhip hoi (engine/loi/hoiSauGiamDai.js)
+    const hg = tinhHoiSauGiamDai({ open: b.map((x) => x.o ?? x.c), high, low, close, volume, atr: atrArr, tenkan: ich.tenkan, kijun: ich.kijun });
+    const so01 = (v) => (v == null ? null : v ? 1 : 0);
+    kq.hg_giam_dai = so01(hg.giamDai);
+    kq.hg_gtgd_ok = so01(hg.gtgdOk);
+    kq.hg_day_cao = so01(hg.dayCao);
+    kq.hg_tren_tk_kj = so01(hg.trenTkKj);
+    kq.hg_cach = hg.vaoLenh ? hg.vaoLenh.cach : null;
+    kq.hg_gia_vao = hg.vaoLenh ? hg.vaoLenh.giaVao : null;
+    kq.hg_sl = hg.vaoLenh ? hg.vaoLenh.sl : null;
+    kq.hg_ma50 = hg.vaoLenh ? hg.vaoLenh.ma50 : null;
+    kq.hg_ch4 = hg.vaoLenh ? hg.vaoLenh.ch4 : null;
+    kq.hg_ban = hg.vaoLenh ? (hg.vaoLenh.canBan ? 1 : 0) : null;
   }
   // Mau hinh gia (lib/mauHinh.js): khung ngay (10 phien gan nhat) va khung tuan (6 tuan gan nhat)
   const mhNgay = cachMauHinhGanNhat(b, { khung: "ngay", tuoiToiDa: SO_NEN_MAU_HINH_NGAY });
