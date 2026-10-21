@@ -7,6 +7,7 @@ import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuong
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { phanKyRSI } from "@/lib/phanKyRSI";
 import { nhanDienMauHinh, nhanDienDangHinhThanh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
+import { nhanDienMauHinhNen, THONG_KE_MAU_HINH_NEN } from "@/lib/mauHinhNen";
 import { LopVe } from "@/components/veBieuDoLop";
 import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio, timDinhKhoiLuong, chonHoTroKhangCu } from "@/lib/volumeProfile";
 import { DaiMay, DaiGia } from "@/components/bieuDoPlugin";
@@ -293,7 +294,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
-  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false, phanKy: false, mauHinh: false });
+  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false, phanKy: false, mauHinh: false, nenNhat: false });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
   const [mauVe, setMauVe] = useState(MAU_VE[0]);
   const [hitGia, setHitGia] = useState(false);
@@ -329,6 +330,8 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     const khungMH = khungTG === "W" ? "tuan" : "ngay";
     return [...nhanDienDangHinhThanh(nen, { khung: khungMH }).slice(0, 6), ...nhanDienMauHinh(nen, { khung: khungMH }).slice(0, 12)];
   }, [nen, khungTG]);
+  // MAU HINH NEN NHAT (lib/mauHinhNen.js): chip "Mẫu hình nến" danh dau cac nen tren 120 nen gan nhat (bo doji thuong cho do roi).
+  const dsNenNhat = useMemo(() => (bat.nenNhat && nen && nen.length >= 25 ? nhanDienMauHinhNen(nen, { tuoiToiDa: 120 }).filter((m) => m.khoa !== "doji") : []), [bat.nenNhat, nen]);
   const [chonMH, setChonMH] = useState({ khoa: "", idx: 0 });
   const idxMH = chonMH.khoa === khoa ? chonMH.idx : 0; // doi ma / khung -> ve lai mau hinh moi nhat
   const mauHinhVe = bat.mauHinh && idxMH >= 0 && idxMH < dsMauHinh.length ? dsMauHinh[idxMH] : null;
@@ -402,6 +405,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.markers = createSeriesMarkers(s.candle, []);
     s.markersPK = createSeriesMarkers(s.candle, []);
     s.markersMH = createSeriesMarkers(s.candle, []); // diem chinh cua mau hinh gia dang ve
+    s.markersNen = createSeriesMarkers(s.candle, []); // mau hinh NEN NHAT (chip "Mẫu hình nến")
     s.mh = { series: [], vach: [] }; // cac duong / vach gia cua mau hinh gia dang ve (xoa khi doi mau hinh)
     // Lop ke ve (canvas phu len bieu do): hinh luu o localStorage theo ma + khung thoi gian.
     s.lopVe = new LopVe({
@@ -763,6 +767,17 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.chart.timeScale().setVisibleLogicalRange({ from: Math.max(-2, dau - 12), to: Math.min(nen.length + 12, m.i + (dangHT ? 12 : 30)) });
   }, [mauHinhVe, nen]);
 
+  // 4b'. Mau hinh NEN NHAT: mui ten tren / duoi nen cuoi cua mau hinh (tang: duoi nen, xanh; giam: tren nen, do).
+  useEffect(() => {
+    const s = veRef.current;
+    if (!s || !s.markersNen) return;
+    const nhan = dsNenNhat
+      .filter((m) => nen && nen[m.i])
+      .map((m) => ({ time: nen[m.i].t, position: m.huong >= 0 ? "belowBar" : "aboveBar", color: m.huong > 0 ? "#22C55E" : m.huong < 0 ? "#EF4444" : "#94A3B8", shape: m.huong >= 0 ? "arrowUp" : "arrowDown", text: m.ten }));
+    nhan.sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
+    s.markersNen.setMarkers(nhan);
+  }, [dsNenNhat, nen]);
+
   // 4c. Khung nho: truc thoi gian hien gio (HH:MM).
   useEffect(() => {
     veRef.current?.chart.applyOptions({ timeScale: { timeVisible: noiNgay, secondsVisible: false } });
@@ -825,6 +840,9 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           <Chip bat={bat.mauHinh} mau="#F6C544" onClick={() => setBat((b) => ({ ...b, mauHinh: !b.mauHinh }))}>
             Mẫu hình
           </Chip>
+          <Chip bat={bat.nenNhat} mau="#38BDF8" onClick={() => setBat((b) => ({ ...b, nenNhat: !b.nenNhat }))}>
+            Mẫu hình nến
+          </Chip>
           <Chip bat={bat.phanKy} mau={CHI_BAO_PK.mau} onClick={() => setBat((b) => ({ ...b, phanKy: !b.phanKy, rsi: !b.phanKy ? true : b.rsi }))}>
             {CHI_BAO_PK.nhan}
           </Chip>
@@ -843,6 +861,27 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           ))}
         </div>
       </div>
+
+      {bat.nenNhat && (
+        <div className="px-3 py-2 border-b" style={{ borderColor: VIEN }} data-may="mau-hinh-nen" aria-label="Mẫu hình nến Nhật">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]" style={{ fontFamily: "'Inter', sans-serif", color: MUTED }}>
+            <span style={{ color: TEXT, fontWeight: 600 }}>Mẫu hình nến ({dsNenNhat.length} trên 120 nến gần nhất)</span>
+            <span style={{ color: XANH }}>▲ đảo chiều tăng</span>
+            <span style={{ color: DO }}>▼ đảo chiều giảm</span>
+            {dsNenNhat.slice(-6).reverse().map((m) => {
+              const tk = THONG_KE_MAU_HINH_NEN[m.khoa];
+              return (
+                <span key={`${m.khoa}-${m.i}`} style={{ color: m.huong > 0 ? XANH : m.huong < 0 ? DO : MUTED }} title={tk ? `Lịch sử: sau 10 phiên lãi TB ${tk.r10.toFixed(1).replace(".", ",")}% theo hướng mẫu hình (cơ sở ${tk.cs10.toFixed(1).replace(".", ",")}%, ${tk.n} lần)` : undefined}>
+                  {nhanThoiGian(m.t)} {m.ten}
+                </span>
+              );
+            })}
+          </div>
+          <p className="text-[10px] mt-1" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+            Mẫu hình đảo chiều chỉ tính sau nhịp giảm (tăng) hoặc nhịp tăng (giảm). Thống kê 11 năm trên ~390 mã: hầu hết mẫu hình nến <b>không hơn</b> việc mua / bán ngẫu nhiên (chỉ &quot;Búa ngược&quot; và &quot;Ba chàng lính&quot; nhỉnh hơn) — dùng để xác nhận cùng các tín hiệu khác, không phải tín hiệu mua bán riêng.
+          </p>
+        </div>
+      )}
 
       {bat.mauHinh && (
         <div className="px-3 py-2 border-b" style={{ borderColor: VIEN }} data-may="mau-hinh" aria-label="Nhận diện mẫu hình giá">

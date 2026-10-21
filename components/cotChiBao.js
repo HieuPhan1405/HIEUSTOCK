@@ -1,6 +1,7 @@
 import { soAn, so1So, pct } from "@/components/dungChung";
 import { giaiMaCat } from "@/lib/boLocChiBao";
 import { MAU_HINH, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
+import { MAU_HINH_NEN, THONG_KE_MAU_HINH_NEN } from "@/lib/mauHinhNen";
 
 // Cot CHI BAO KY THUAT cho bang Bo loc co phieu (khoa cot = ten truong trong bang chi_bao_ky_thuat, xem lib/cotChiBaoKyThuat.js).
 // Chi hien khi nguoi dung bat trong "Cot hien thi" hoac dang loc theo chi bao do (BangBoLoc tu hien cot cua bo loc dang dung).
@@ -137,7 +138,38 @@ function cotMauHinh(hau, nhan, donVi, moTa) {
   };
 }
 
+// Cot MAU HINH NEN NHAT (khung ngay, 5 phien gan nhat): liet ke cac mau hinh nen da xuat hien, ▲ tang (xanh) / ▼ giam (do) / ◆ trung tinh + so phien truoc. Kem thong ke lich su trong chu thich (hau het KHONG hon co so).
+const cotMauHinhNen = {
+  nhan: "Mẫu hình nến (ngày)",
+  nhom: NHOM,
+  canPhai: false,
+  lay: (r) => {
+    const l = MAU_HINH_NEN.filter((m) => m.huong !== 0 && coSo(r[`nen_${m.khoa}`]));
+    return l.length ? l.reduce((s, m) => s + m.huong * (10 - r[`nen_${m.khoa}`]), 0) : null;
+  },
+  hien: (r) => {
+    const l = MAU_HINH_NEN.filter((m) => coSo(r[`nen_${m.khoa}`]) && m.khoa !== "doji")
+      .map((m) => ({ m, cach: r[`nen_${m.khoa}`] }))
+      .sort((a, b) => a.cach - b.cach);
+    if (!l.length) return Trong;
+    return (
+      <span className="flex flex-wrap gap-x-2 gap-y-0.5" title="Mẫu hình nến Nhật trong 5 phiên gần nhất — tham khảo, không phải tín hiệu">
+        {l.slice(0, 3).map((x) => {
+          const tk = THONG_KE_MAU_HINH_NEN[x.m.khoa];
+          return (
+            <span key={x.m.khoa} style={{ color: x.m.huong > 0 ? XANH : x.m.huong < 0 ? DO : MUTED }} title={`${x.m.ten}: ${x.cach === 0 ? "hôm nay" : `${x.cach} phiên trước`}. Lịch sử: sau 10 phiên lãi TB ${tk.r10.toFixed(1).replace(".", ",")}% theo hướng mẫu hình (cơ sở ${tk.cs10.toFixed(1).replace(".", ",")}%), tham khảo.`}>
+              {x.m.huong > 0 ? "▲" : x.m.huong < 0 ? "▼" : "◆"} {x.m.ten} · {x.cach === 0 ? "nay" : `${x.cach}p`}
+            </span>
+          );
+        })}
+        {l.length > 3 && <span style={{ color: MUTED }}>+{l.length - 3}</span>}
+      </span>
+    );
+  },
+};
+
 export const COT_CHI_BAO_HIEN = {
+  nen: cotMauHinhNen,
   pb: cotDiemMuaPhucHoi,
   mh_ngay: cotMauHinh("", "Mẫu hình giá (ngày)", "phiên", "Mẫu hình đã phá vỡ đường cổ / biên trong 10 phiên gần nhất (khung ngày) — tham khảo, bấm vào mã rồi vào Biểu đồ kỹ thuật → Mẫu hình để xem vẽ trên hình"),
   mh_tuan: cotMauHinh("_tuan", "Mẫu hình giá (tuần)", "tuần", "Mẫu hình đã phá vỡ trong 6 tuần gần nhất (khung tuần) — tham khảo"),

@@ -2,7 +2,7 @@
 import { DS_CHI_BAO_LOC, CHI_BAO_LOC, NHOM_CHI_BAO_LOC, GOI_Y_NHANH, KHOANG, giaiMaCat, taoBoLocChiBao, soNhap, khopChiBao, locTheoChiBao, cotChoBoLoc, coDuLieuChiBao } from "../../lib/boLocChiBao.js";
 import { COT_CHI_BAO } from "../../lib/cotChiBaoKyThuat.js";
 import { KHOA_MAU_HINH as KHOA_MH } from "../../lib/mauHinh.js";
-const COT_TONG_HOP = new Set(["mh_ngay", "mh_tuan", "pb"]);
+const COT_TONG_HOP = new Set(["mh_ngay", "mh_tuan", "pb", "nen"]);
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -30,6 +30,16 @@ const ok = (ten, dk, them = "") => {
   ok("khong co diem B (null): khong khop", !khopChiBao({ pb_cach: null }, bo("trong_10")));
   ok("ban thao co KL: KL quanh day >= 2x khop, 1,5x khong", khopChiBao({ pb_cach: 3, pb_kl_day: 2.4 }, bo("kl_day")) && !khopChiBao({ pb_cach: 3, pb_kl_day: 1.5 }, bo("kl_day")) && !khopChiBao({ pb_cach: null, pb_kl_day: 3 }, bo("kl_day")));
   ok("gan day: gia B cach day <= 15% khop, > 15% khong", khopChiBao({ pb_cach: 2, pb_gia: 11, pb_day: 9.6 }, bo("gan_day")) && !khopChiBao({ pb_cach: 2, pb_gia: 11.5, pb_day: 9.6 }, bo("gan_day")));
+}
+
+// ---- Mau hinh nen nhat (nen_<khoa> = so phien tu nen cuoi cua mau hinh) ----
+{
+  const bo = (d) => taoBoLocChiBao("mau_hinh_nen", d);
+  ok("nen tang hom nay: bua cach 0 khop, cach 1 khong", khopChiBao({ nen_bua: 0 }, bo("tang_hom_nay")) && !khopChiBao({ nen_bua: 1 }, bo("tang_hom_nay")));
+  ok("nen tang trong 3 phien: cach 2 khop, cach 3 khong", khopChiBao({ nen_nhan_chim_tang: 2 }, bo("tang_3")) && !khopChiBao({ nen_nhan_chim_tang: 3 }, bo("tang_3")));
+  ok("nen giam khong tinh la nen tang", !khopChiBao({ nen_sao_bang: 0 }, bo("tang_3")) && khopChiBao({ nen_sao_bang: 0 }, bo("giam_hom_nay")));
+  ok("doji (trung tinh) khong tinh vao tang / giam", !khopChiBao({ nen_doji: 0 }, bo("tang_3")) && !khopChiBao({ nen_doji: 0 }, bo("giam_3")) && khopChiBao({ nen_doji: 1 }, bo("doji")));
+  ok("tung mau hinh: sao mai trong 3 phien", khopChiBao({ nen_sao_mai: 1 }, bo("sao_mai")) && !khopChiBao({ nen_sao_mai: null }, bo("sao_mai")));
 }
 
 // ---- Cau truc dinh nghia ----

@@ -11,6 +11,7 @@ import { phanKyRSI, gopNenTuan } from "../../lib/phanKyRSI.js";
 import { tinhDiemMuaPhucHoi } from "./diemMuaPhucHoi.js";
 import { tinhHoiSauGiamDai } from "./hoiSauGiamDai.js";
 import { tinhDuongCanBangDaiHan } from "./ichimoku.js";
+import { cachMauHinhNenGanNhat, KHOA_MAU_HINH_NEN, COT_MAU_HINH_NEN } from "../../lib/mauHinhNen.js";
 import { cachMauHinhGanNhat, KHOA_MAU_HINH, COT_MAU_HINH_NGAY, COT_MAU_HINH_TUAN, SO_NEN_MAU_HINH_NGAY, SO_NEN_MAU_HINH_TUAN } from "../../lib/mauHinh.js";
 
 export const SO_NEN_TINH = 800;
@@ -82,7 +83,7 @@ export function maHoaPhanKy(nen, toiDa) {
   if (cach < 0 || cach >= toiDa) return null;
   return cuoiCung.loai === "tang" ? cach : -(cach + 1);
 }
-const COT_NGUYEN = new Set(["hg_giam_dai", "hg_gtgd_ok", "hg_day_cao", "hg_tren_tk_kj", "hg_cach", "hg_ban", "pb_cach", "rsi_h1_pk_cach", ...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
+const COT_NGUYEN = new Set([...COT_MAU_HINH_NEN, "hg_giam_dai", "hg_gtgd_ok", "hg_day_cao", "hg_tren_tk_kj", "hg_cach", "hg_ban", "pb_cach", "rsi_h1_pk_cach", ...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
 
 // Tra ve object { ngay_nen, ...COT_CHI_BAO } cho 1 ma, hoac null neu chua du du lieu.
 export function tinhChiBaoLocChoMa(nen) {
@@ -231,6 +232,9 @@ export function tinhChiBaoLocChoMa(nen) {
   // Mau hinh gia (lib/mauHinh.js): khung ngay (10 phien gan nhat) va khung tuan (6 tuan gan nhat)
   const mhNgay = cachMauHinhGanNhat(b, { khung: "ngay", tuoiToiDa: SO_NEN_MAU_HINH_NGAY });
   const mhTuan = cachMauHinhGanNhat(gopNenTuan(b), { khung: "tuan", tuoiToiDa: SO_NEN_MAU_HINH_TUAN });
+  // Mau hinh nen nhat (khung ngay, 5 phien gan nhat)
+  const nenNhat = cachMauHinhNenGanNhat(b);
+  for (const k of KHOA_MAU_HINH_NEN) kq[`nen_${k}`] = nenNhat[k];
   for (const k of KHOA_MAU_HINH) {
     kq[`mh_${k}`] = mhNgay[k];
     kq[`mh_${k}_tuan`] = mhTuan[k];
