@@ -33,8 +33,18 @@ const raw = {
 // Mang co thu tu (Map giu dung thu tu khai bao) - dung khi 1 ma nam trong > 1 danh sach.
 export const NGANH = new Map(Object.entries(raw).map(([ten, ds]) => [ten, new Set(ds.split(","))]));
 
+// NGANH TRONG TAM (Hieu 2026-10-22): dung cho DIEM MUA PHUC HOI (diem B) - chi giu ma thuoc 11 nganh lon (top 11 theo GTGD: Ngan hang, BDS (+ BDS KCN), Chung khoan, Thep, Thuc pham, Ban le - O to, CN - Vien thong, Logistics, Dau khi, Hoa chat - Cao su, Xay dung - Ha tang);
+// BO 10 nganh nho (Thiet bi dien - Co khi, Nong nghiep, Dien - Nuoc, Thuy san, Det may - Go, Khoang san, Du lich - Giai tri, Vat lieu xay dung, Bao hiem, Y te - Duoc) va ma chua gan nganh: diem B nhom nho ket qua kem (tu 2022-05 lai 10 phien -0,52%, nghien cuu diemBTheoNganhLonNho.mjs).
+export const NGANH_TRONG_TAM = new Set(["Ngan hang", "Bat dong san", "BDS Khu cong nghiep", "Chung khoan", "Thep", "Thuc pham - Do uong", "Ban le - O to", "Cong nghe - Vien thong", "Logistics - Van tai", "Dau khi", "Hoa chat - Cao su", "Xay dung - Ha tang"]);
+
 // Ten nganh dau tien (theo dung thu tu uu tien AFL) chua ma nay, hoac null neu khong thuoc nganh nao.
 export function nganhCuaMa(ma) {
   for (const [ten, ds] of NGANH) if (ds.has(ma)) return ten;
   return null;
+}
+
+// true neu ma thuoc nganh trong tam (xem NGANH_TRONG_TAM).
+export function laNganhTrongTam(ma) {
+  const n = nganhCuaMa(ma);
+  return n != null && NGANH_TRONG_TAM.has(n);
 }

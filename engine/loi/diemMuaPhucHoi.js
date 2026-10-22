@@ -4,12 +4,12 @@
 //   - dong cua > Tenkan (9) va > Kijun (17), day thap nhat 20 nen cach nen i it nhat 3 nen (da qua day, khong phai dang roi);
 //   - GTGD TB 20 phien >= 3 ty (gia x KL / 1 trieu, gia nghin dong);
 //   - cach diem B truoc do >= 15 nen (moi nhip hoi chi bao 1 lan; tinh tren moi diem B giam >= 10% roi moi loc nhom 20-30%, giong cach do trong nghien cuu).
-// Muc cat lo va chot loi theo cong thuc "binh thuong" cua he thong (engine/loi/vaoLenh.js) voi gia vao = dong cua nen B: SL cau truc theo Kijun (Kijun - 0,5 ATR, cach gia >= 3,5%, khong qua 6%), TP1 / TP2 / TP3 = 3 moc (dinh 60 nen / may + can bang dai han / dinh 252 nen,
+// Muc cat lo = gia vao - 2,5 x ATR14 kep trong 3-10% (xem moTa), chot loi theo cong thuc "binh thuong" cua he thong (engine/loi/vaoLenh.js) voi gia vao = dong cua nen B: TP1 / TP2 / TP3 = 3 moc (dinh 60 nen / may + can bang dai han / dinh 252 nen,
 // moi moc cach gia vao it nhat 5% / 10% / 15%). Chi la DIEM VAO THAM KHAO (khong tinh vao tin hieu MUA/BAN). Ket qua lich su: day goc 18-19% (B), thung day 23% trong 20 phien, sut >= 5% trong 10 phien ~ 50% - nen chia 1/2 von va co cat lo.
 import { hhv } from "./mang.js";
 import { tinhBaMocChotLoi } from "./vaoLenh.js";
 
-export const CAU_HINH_B = { giamPct: 10, giamTuPct: 20, giamDenPct: 30, trongNen: 10, dayCachToiThieu: 3, giuaHaiLan: 15, gtgdToiThieuTy: 3, demSLtheoATR: 0.5, slToiThieuPct: 3.5, hardStopPct: 6 };
+export const CAU_HINH_B = { giamPct: 10, giamTuPct: 20, giamDenPct: 30, trongNen: 10, dayCachToiThieu: 3, giuaHaiLan: 15, gtgdToiThieuTy: 3, heSoATR: 2.5, slToiThieuPct: 3, hardStopPct: 10 };
 export const SO_NEN_B_GAN_DAY = 10;
 
 // {high, low, close, volume, atr, tenkan, kijun, cloudTop, cbTop}: cac mang cung do dai (null cho nen chua du du lieu).
@@ -54,8 +54,9 @@ export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kiju
     for (let j = Math.max(0, kDay - 2); j <= Math.min(kDay + 2, i); j++) vMax = Math.max(vMax, volume[j] ?? 0);
     const klDay = tb20 > 0 ? vMax / tb20 : null;
     const a = atr[i] ?? E * 0.03;
-    let sl = Math.min(kijun[i] - c.demSLtheoATR * a, E * (1 - c.slToiThieuPct / 100));
-    sl = Math.max(sl, E * (1 - c.hardStopPct / 100));
+    // CAT LO THEO ATR (Hieu 2026-10-22, nghienCuuDiemBVaoT1CatLoATR.mjs): gia vao - heSoATR x ATR14, kep trong [slToiThieuPct, hardStopPct] duoi gia vao. SL cau truc cu (Kijun - 0,5 ATR, 3,5-6%) bi cat oan (tu 2022.5 mo cua T+1: +0,35% -> +0,86..+1,23% khi dung ATR 2-3x).
+    let sl = E - c.heSoATR * a;
+    sl = Math.min(E * (1 - c.slToiThieuPct / 100), Math.max(E * (1 - c.hardStopPct / 100), sl));
     const giaVaoBar = new Array(n).fill(E);
     const tp = tinhBaMocChotLoi({ high, giaVaoBar, cloudTop, cbTop });
     return { i, cach: n - 1 - i, gia: E, giam: giamB[i], day, klDay, sl, tp1: tp.tp1Vong[i], tp2: tp.tp2Vong[i], tp3: tp.tp3Vong[i] };

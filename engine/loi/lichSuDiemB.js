@@ -5,6 +5,7 @@
 import { atr } from "./taChiBao.js";
 import { tinhIchimoku, tinhDuongCanBangDaiHan } from "./ichimoku.js";
 import { tinhDiemMuaPhucHoi } from "./diemMuaPhucHoi.js";
+import { laNganhTrongTam } from "../danh-sach/nganh.js";
 
 export const SO_NEN_TINH_B = 800;
 export const NGAY_BAT_DAU_MAC_DINH = "2026-01-01";
@@ -25,8 +26,9 @@ export function tinhVniYeuTheoNgay(vniNen) {
 const so = (v, d = 4) => (v == null || !Number.isFinite(v) ? null : Math.round(v * 10 ** d) / 10 ** d);
 
 // nen: [{ t, o, h, l, c, v }] 1 ma. Tra ve mang su kien (cu -> moi).
-export function tinhLichSuDiemBChoMa(ma, nen, { tuNgay = NGAY_BAT_DAU_MAC_DINH, vniYeu = new Map() } = {}) {
+export function tinhLichSuDiemBChoMa(ma, nen, { tuNgay = NGAY_BAT_DAU_MAC_DINH, vniYeu = new Map(), chiNganhTrongTam = true } = {}) {
   if (!Array.isArray(nen) || nen.length < 120) return [];
+  if (chiNganhTrongTam && !laNganhTrongTam(ma)) return []; // bo 10 nganh nho + ma chua gan nganh (Hieu 2026-10-22)
   const b = nen.slice(-SO_NEN_TINH_B);
   const n = b.length;
   const high = b.map((x) => x.h), low = b.map((x) => x.l), close = b.map((x) => x.c), volume = b.map((x) => x.v ?? 0);

@@ -40,7 +40,7 @@ export default async function TrangMuaPhucHoi() {
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
       <h1 className="text-2xl mb-1" style={{ ...sans, fontWeight: 700 }}>Điểm mua phục hồi (điểm B)</h1>
       <p className="text-sm mb-6" style={{ color: MUTED }}>
-        Cổ phiếu đã giảm sâu rồi đóng cửa lấy lại cả Tenkan và Kijun — xác nhận nhịp hồi đã bắt đầu, thường sớm hơn điểm MUA của hệ thống. Toàn bộ điểm B từ đầu 2026 trên các mã có GTGD ≥ 3 tỷ, kèm kết quả thực tế sau khi vào lệnh (mở cửa phiên kế tiếp).
+        Cổ phiếu đã giảm sâu rồi đóng cửa lấy lại cả Tenkan và Kijun — xác nhận nhịp hồi đã bắt đầu, thường sớm hơn điểm MUA của hệ thống. Toàn bộ điểm B từ đầu 2026 trên các mã có GTGD ≥ 3 tỷ thuộc 11 ngành trọng tâm (ngân hàng, BĐS, chứng khoán, thép, thực phẩm, bán lẻ, công nghệ, logistics, dầu khí, hóa chất, xây dựng), kèm kết quả thực tế sau khi vào lệnh (mở cửa phiên kế tiếp).
       </p>
 
       <HuongDanDungHieuQua moSan />

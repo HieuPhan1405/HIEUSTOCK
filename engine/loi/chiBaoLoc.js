@@ -11,6 +11,7 @@ import { phanKyRSI, gopNenTuan } from "../../lib/phanKyRSI.js";
 import { tinhDiemMuaPhucHoi } from "./diemMuaPhucHoi.js";
 import { tinhHoiSauGiamDai } from "./hoiSauGiamDai.js";
 import { tinhDuongCanBangDaiHan } from "./ichimoku.js";
+import { laNganhTrongTam } from "../danh-sach/nganh.js";
 import { cachMauHinhNenGanNhat, KHOA_MAU_HINH_NEN, COT_MAU_HINH_NEN } from "../../lib/mauHinhNen.js";
 import { cachMauHinhGanNhat, KHOA_MAU_HINH, COT_MAU_HINH_NGAY, COT_MAU_HINH_TUAN, SO_NEN_MAU_HINH_NGAY, SO_NEN_MAU_HINH_TUAN } from "../../lib/mauHinh.js";
 
@@ -86,7 +87,8 @@ export function maHoaPhanKy(nen, toiDa) {
 const COT_NGUYEN = new Set([...COT_MAU_HINH_NEN, "hg_giam_dai", "hg_gtgd_ok", "hg_day_cao", "hg_tren_tk_kj", "hg_cach", "hg_ban", "pb_cach", "rsi_h1_pk_cach", ...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
 
 // Tra ve object { ngay_nen, ...COT_CHI_BAO } cho 1 ma, hoac null neu chua du du lieu.
-export function tinhChiBaoLocChoMa(nen) {
+// ma (tuy chon): neu co, cot DIEM B (pb_*) chi tinh cho ma thuoc nganh trong tam (bo 10 nganh nho + ma chua gan nganh); khong truyen ma = tinh nhu cu.
+export function tinhChiBaoLocChoMa(nen, ma = null) {
   if (!Array.isArray(nen) || nen.length < SO_NEN_TOI_THIEU) return null;
   const b = nen.slice(-SO_NEN_TINH);
   const n = b.length;
@@ -205,7 +207,7 @@ export function tinhChiBaoLocChoMa(nen) {
   {
     const cb = tinhDuongCanBangDaiHan({ high, low });
     const atrArr = atr({ high, low, close }, 14);
-    const { gan } = tinhDiemMuaPhucHoi({ high, low, close, volume, atr: atrArr, tenkan: ich.tenkan, kijun: ich.kijun, cloudTop: ich.cloudTop, cbTop: cb.cbTop });
+    const { gan } = ma != null && !laNganhTrongTam(ma) ? { gan: null } : tinhDiemMuaPhucHoi({ high, low, close, volume, atr: atrArr, tenkan: ich.tenkan, kijun: ich.kijun, cloudTop: ich.cloudTop, cbTop: cb.cbTop });
     kq.pb_cach = gan ? gan.cach : null;
     kq.pb_giam = gan ? gan.giam : null;
     kq.pb_gia = gan ? gan.gia : null;
@@ -249,7 +251,7 @@ export function tinhChiBaoLocToanBo(nenTheoMa) {
   const loi = [];
   for (const [ma, nen] of nenTheoMa) {
     try {
-      const kq = tinhChiBaoLocChoMa(nen);
+      const kq = tinhChiBaoLocChoMa(nen, ma);
       if (kq) ds.push({ ma, ...kq });
     } catch (e) {
       loi.push({ ma, loi: String(e.message || e) });

@@ -31,7 +31,7 @@ ok("chi 1 diem B moi nhip hoi (cach nhau >= 15 nen)", laB.filter(Boolean).length
 ok("diem B la nen dau tien dong cua len tren Tenkan va Kijun", iB === 70, `iB=${iB}`);
 ok("gan = diem B vua tim, cach 5 nen", gan && gan.i === iB && gan.gia === close[iB] && gan.cach === 5, JSON.stringify(gan));
 ok("diem B cu hon 10 nen khong con la gan", tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kijun, cloudTop: nul, cbTop: nul }).gan === null);
-ok("SL duoi gia vao toi thieu 3,5% va khong qua 6%", gan.sl <= gan.gia * (1 - 0.035) + 1e-9 && gan.sl >= gan.gia * (1 - 0.06) - 1e-9, `sl=${gan?.sl}`);
+ok("SL theo ATR: gia vao - 2,5 x ATR kep trong 3-10% duoi gia vao (ATR = 2 -> 5 duoi gia ~ 6%)", Math.abs(gan.sl - Math.min(gan.gia * 0.97, Math.max(gan.gia * 0.9, gan.gia - 2.5 * 2))) < 1e-9 && gan.sl <= gan.gia * 0.97 + 1e-9 && gan.sl >= gan.gia * 0.9 - 1e-9, `sl=${gan?.sl} gia=${gan?.gia}`);
 ok("day = day thap nhat 20 nen", Math.abs(gan.day - Math.min(...low.slice(iB - 19, iB + 1))) < 1e-9);
 
 // Muc giam ngoai [20%, 30%): giam ~12% va giam ~35% deu KHONG co diem B (nghien cuu: 10-20% khong co loi the, >= 30% mat dan)

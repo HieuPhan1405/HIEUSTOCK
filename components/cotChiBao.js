@@ -91,7 +91,7 @@ const cotDiemMuaPhucHoi = {
     const khi = r.pb_cach === 0 ? "hôm nay" : `${r.pb_cach} phiên`;
     const cachDay = coSo(r.pb_day) && r.pb_day > 0 ? (r.pb_gia / r.pb_day - 1) * 100 : null;
     return (
-      <span title={`Điểm B: đã giảm 20–30% (từ đỉnh 20 phiên) rồi đóng cửa lấy lại Tenkan và Kijun, đáy cách ≥ 3 phiên. Giải ngân 1/2 phần dự định, cắt lỗ theo SL. SL / TP theo công thức bình thường của hệ thống. Chỉ để tham khảo.${cachDay != null ? ` Giá B cách đáy 20 phiên ${soAn(cachDay, 1)}%.` : ""}`}>
+      <span title={`Điểm B: đã giảm 20–30% (từ đỉnh 20 phiên) rồi đóng cửa lấy lại Tenkan và Kijun, đáy cách ≥ 3 phiên. Giải ngân 1/2 phần dự định, cắt lỗ theo SL. Cắt lỗ = giá B − 2,5×ATR (3–10%), TP theo công thức bình thường của hệ thống; nên đặt lệnh chờ ở giá B. Chỉ gồm 11 ngành trọng tâm. Chỉ để tham khảo.${cachDay != null ? ` Giá B cách đáy 20 phiên ${soAn(cachDay, 1)}%.` : ""}`}>
         <span style={{ color: XANH, fontWeight: 600 }}>{khi}</span>{coSo(r.pb_giam) ? ` · giảm ${soAn(r.pb_giam, 0)}%` : ""}
         {coSo(r.pb_kl_day) && (
           <span style={{ color: r.pb_kl_day >= 2 ? XANH : undefined, fontWeight: r.pb_kl_day >= 2 ? 600 : undefined }} title="KL lớn nhất 5 phiên quanh đáy / KL trung bình 20 phiên trước đáy. ≥ 2× = bán tháo có khối lượng: lịch sử từ 2022.5 điểm B giảm ≥ 20% có KL đáy ≥ 2× lãi TB 10 phiên +4,1% (thắng 67%), không có KL đáy thì âm.">

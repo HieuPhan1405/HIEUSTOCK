@@ -290,7 +290,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) 
             tieuDe="Mua phục hồi (điểm B)"
             may="mua-phuc-hoi"
             mau={VANG}
-            moTa="Cổ phiếu đã giảm 20–30% rồi đóng cửa lấy lại Tenkan và Kijun — giải ngân 1/2 phần dự định, 1/2 còn lại khi hệ thống báo MUA. Ưu tiên mã có nhãn bán tháo có KL (KL quanh đáy ≥ 2×). Chưa phải tín hiệu MUA, chỉ tham khảo. Không gồm mã hệ thống đang giữ"
+            moTa="Cổ phiếu đã giảm 20–30% rồi đóng cửa lấy lại Tenkan và Kijun — giải ngân 1/2 phần dự định, 1/2 còn lại khi hệ thống báo MUA. Ưu tiên mã có nhãn bán tháo có KL (KL quanh đáy ≥ 2×). Chỉ gồm 11 ngành trọng tâm. Cắt lỗ = giá B − 2,5×ATR; nên đặt lệnh chờ ở giá B, không mua đuổi. Chưa phải tín hiệu MUA, chỉ tham khảo. Không gồm mã hệ thống đang giữ"
             lienKet={{ href: "/mua-phuc-hoi", nhan: "Lịch sử điểm B từ đầu 2026, bộ lọc và hướng dẫn dùng →" }}
             ds={muaPhucHoi}
             trong="Hiện không có mã nào vừa có điểm B."

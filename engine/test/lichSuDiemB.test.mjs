@@ -17,7 +17,7 @@ function nenGiamRoiHoi(n = 160) {
   return close.map((c, i) => ({ t: ngay(i), o: i > 0 ? close[i - 1] : c, h: c + 0.5, l: c - 0.5, c, v: 1_000_000 }));
 }
 const nen = nenGiamRoiHoi();
-const kq = tinhLichSuDiemBChoMa("AAA", nen, { tuNgay: "2025-01-01" });
+const kq = tinhLichSuDiemBChoMa("AAA", nen, { tuNgay: "2025-01-01", chiNganhTrongTam: false });
 ok("co diem B trong giai doan hoi", kq.length >= 1, kq.length);
 if (kq.length) {
   const e = kq[0];
@@ -28,14 +28,14 @@ if (kq.length) {
   ok("KL deu nhau -> kl_day = 1", Math.abs(e.kl_day - 1) < 1e-9, e.kl_day);
   ok("gtgd tinh bang ty (gia ~78-110 x 1 trieu / 1 trieu)", e.gtgd > 50 && e.gtgd < 130, e.gtgd);
 }
-ok("tuNgay loc: dat sau toan bo chuoi -> khong co su kien", tinhLichSuDiemBChoMa("AAA", nen, { tuNgay: "2099-01-01" }).length === 0);
+ok("tuNgay loc: dat sau toan bo chuoi -> khong co su kien", tinhLichSuDiemBChoMa("AAA", nen, { tuNgay: "2099-01-01", chiNganhTrongTam: false }).length === 0);
 ok("it nen -> mang rong", tinhLichSuDiemBChoMa("AAA", nen.slice(0, 50)).length === 0);
 ok("moi diem B tu 2025 tro di", kq.every((e) => e.ngay >= "2025-01-01"));
 
 // diem B o nen cuoi: chua du phien -> gia_vao / pct null
 {
   let cuoi = null;
-  for (let n = 125; n <= 160; n++) { const r = tinhLichSuDiemBChoMa("AAA", nenGiamRoiHoi(n), { tuNgay: "2025-01-01" }); if (r.length && r[r.length - 1].ngay === ngay(n - 1)) { cuoi = r[r.length - 1]; break; } }
+  for (let n = 125; n <= 160; n++) { const r = tinhLichSuDiemBChoMa("AAA", nenGiamRoiHoi(n), { tuNgay: "2025-01-01", chiNganhTrongTam: false }); if (r.length && r[r.length - 1].ngay === ngay(n - 1)) { cuoi = r[r.length - 1]; break; } }
   ok("diem B o nen cuoi cua chuoi: gia_vao null, pct_sau null (chua co du lieu tuong lai)", cuoi == null || (cuoi.gia_vao === null && cuoi.pct_sau_5 === null && cuoi.pct_sau_10 === null));
 }
 
@@ -45,7 +45,7 @@ ok("moi diem B tu 2025 tro di", kq.every((e) => e.ngay >= "2025-01-01"));
   const y = tinhVniYeuTheoNgay(vni);
   ok("VN-Index giam >= 7% so dinh 60 phien -> yeu (nen cuoi 1000-30*4=880: -12%)", y.get(ngay(99)) === true);
   ok("VN-Index quanh dinh -> khong yeu", y.get(ngay(65)) === false);
-  const ds = tinhLichSuDiemBToanBo(new Map([["AAA", nen], ["BBB", nen.slice(0, 40)]]), vni, { tuNgay: "2025-01-01" });
+  const ds = tinhLichSuDiemBToanBo(new Map([["AAA", nen], ["BBB", nen.slice(0, 40)]]), vni, { tuNgay: "2025-01-01", chiNganhTrongTam: false });
   ok("toan bo: ma it nen bi bo qua, khong loi", ds.every((s) => s.ma === "AAA"));
   const csv = xayDungCsvDiemB(ds).trim().split("\n");
   ok("CSV: header 16 cot, so cot moi dong khop", csv[0].split(",").length === 16 && csv.slice(1).every((d) => d.split(",").length === 16), csv[0]);
