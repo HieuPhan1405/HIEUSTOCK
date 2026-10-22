@@ -18,6 +18,7 @@ ok("/bo-loc va /kich-ban-mua chung muc Bo loc (co tab)", mucDangMo("/bo-loc")?.n
 ok("/ma/VPB, /lien-he khong thuoc menu", mucDangMo("/ma/VPB") === null && mucDangMo("/lien-he") === null);
 ok("tab trang dau: 3 tab, dang chon Tong quan", tabCuaTrang("/")?.tab.length === 3 && tabCuaTrang("/")?.dangChon === "/");
 ok("/bat-day va /hoi-giam-dai chung muc Bat day (co tab)", mucDangMo("/hoi-giam-dai")?.href === "/bat-day" && tabCuaTrang("/hoi-giam-dai")?.dangChon === "/hoi-giam-dai" && tabCuaTrang("/bat-day")?.tab.length === 3 && mucDangMo("/mua-phuc-hoi")?.href === "/bat-day");
+ok("/danh-muc va /danh-muc-goi-y chung muc Danh muc (khong nham duong dan)", mucDangMo("/danh-muc-goi-y")?.href === "/danh-muc" && tabCuaTrang("/danh-muc-goi-y")?.dangChon === "/danh-muc-goi-y" && tabCuaTrang("/danh-muc")?.dangChon === "/danh-muc");
 ok("moi muc co nhan ngan", MENU.every((m) => m.nhanNgan && m.nhanNgan.length <= 10));
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);
