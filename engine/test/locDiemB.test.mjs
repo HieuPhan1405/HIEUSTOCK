@@ -1,5 +1,5 @@
 // Test tay cho lib/locDiemB.js (loc lich su diem B). Chay: node engine/test/locDiemB.test.mjs
-import { ganDacTrungNganh, nganhGop, locDiemB, thongKeDiemB, ketQuaDiemB, ngayBatDauKhoang, danhSachNganh, laKhuyenNghi, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "../../lib/locDiemB.js";
+import { ganDacTrungNganh, nganhGop, locDiemB, thongKeDiemB, ketQuaDiemB, laiHienTai, ngayBatDauKhoang, danhSachNganh, laKhuyenNghi, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "../../lib/locDiemB.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -29,11 +29,13 @@ ok("chua co lenh MUA thuong truoc: loai BBB", ma(locDiemB(ds, { chuaMuaThuong: t
 ok("con gan gia B: AAA (ngay trong 5%), EEE; BBB +10% va CCC thung SL bi loai", ma(locDiemB(ds, { ganGiaB: true })) === "AAA,DDD,EEE", ma(locDiemB(ds, { ganGiaB: true })));
 ok("nganh: khong phan biet dau / hoa thuong", ma(locDiemB(ds, { nganh: "chung khoan" })) === "AAA,DDD");
 ok("tim ma", ma(locDiemB(ds, { tuKhoa: " cc " })) === "CCC");
-ok("chi thanh cong: CCC, EEE", ma(locDiemB(ds, { chiThanhCong: true })) === "CCC,EEE");
-ok("ket qua: cho / tot / xau", ketQuaDiemB(ds[0]).loai === "cho" && ketQuaDiemB(ds[2]).loai === "tot" && ketQuaDiemB(ds[3]).loai === "xau");
+ok("chi dang lai (gia hien tai > gia vao): AAA, BBB, EEE", ma(locDiemB(ds, { chiThanhCong: true })) === "AAA,BBB,EEE", ma(locDiemB(ds, { chiThanhCong: true })));
+ok("ket qua theo lai hien tai: AAA dang lai, CCC va DDD dang lo, khong co gia -> cho", ketQuaDiemB(ds[0]).loai === "tot" && ketQuaDiemB(ds[2]).loai === "xau" && ketQuaDiemB(ds[3]).loai === "xau" && ketQuaDiemB({ gia_vao: 10 }).loai === "cho");
+ok("laiHienTai: AAA +2%, thieu gia vao lay gia B, thieu gia hien tai -> null", Math.abs(laiHienTai(ds[0]) - 2) < 1e-9 && Math.abs(laiHienTai({ gia_b: 10, gia_hien_tai: 11 }) - 10) < 1e-9 && laiHienTai({ gia_vao: 10 }) === null && laiHienTai(null) === null);
 const tk = thongKeDiemB(ds);
-ok("thong ke: n=5, 10p co 3 mau TB (4 - 3 + 7)/3, thang 2/3", tk.n === 5 && tk.n10 === 3 && Math.abs(tk.tb10 - 8 / 3) < 1e-9 && Math.abs(tk.thang10 - 200 / 3) < 1e-9);
-ok("thong ke rong -> null", thongKeDiemB([]).tb10 === null && thongKeDiemB([]).n === 0);
+const laiMau = [2, 10, (14 / 15 - 1) * 100, (7.9 / 8 - 1) * 100, 2].sort((x, y) => x - y);
+ok("thong ke lai hien tai: n=5, TB, trung vi, ty le dang lai 3/5", tk.n === 5 && tk.nGia === 5 && Math.abs(tk.tbLai - laiMau.reduce((s, x) => s + x, 0) / 5) < 1e-9 && Math.abs(tk.trungVi - laiMau[2]) < 1e-9 && Math.abs(tk.tyLeLai - 60) < 1e-9, JSON.stringify(tk));
+ok("thong ke rong -> null", thongKeDiemB([]).tbLai === null && thongKeDiemB([]).tyLeLai === null && thongKeDiemB([]).n === 0);
 ok("ngayBatDauKhoang: Infinity -> null; 1 -> ngay moi nhat", ngayBatDauKhoang(ds, Infinity) === null && ngayBatDauKhoang(ds, 1) === "2026-10-21");
 ok("danh sach nganh khong trung, sap xep", danhSachNganh(ds).join("|") === ["Bất động sản", "Chứng khoán", "Thép"].join("|"), danhSachNganh(ds).join("|"));
 ok("bo loc khuyen nghi: giam >= 20 + KL >= 2x + thi truong yeu -> chi AAA", ma(locDiemB(ds, LOC_KHUYEN_NGHI)) === "AAA", ma(locDiemB(ds, LOC_KHUYEN_NGHI)));

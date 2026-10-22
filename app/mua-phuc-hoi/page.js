@@ -55,7 +55,7 @@ export default async function TrangMuaPhucHoi() {
       )}
 
       <p className="text-[11px] mt-3" style={{ color: MUTED, ...sans }}>
-        Lãi/lỗ là phần trăm từ giá mở cửa phiên vào lệnh tới giá đóng cửa sau 5/10/20 phiên, chưa trừ phí. &quot;Thành công&quot; = lãi sau 10 phiên &gt; 0; chưa đủ 10 phiên là &quot;Đang theo dõi&quot;. Cột &quot;Thị trường&quot;: yếu = VN-Index thấp hơn đỉnh 60 phiên từ 7%. Nhãn &quot;đã có lệnh MUA&quot; chỉ dựa trên lệnh đã ghi nhận trên web. Không phải khuyến nghị đầu tư.
+        Lãi hiện tại = giá hiện tại so với giá vào (mở cửa phiên kế tiếp sau điểm B), chưa trừ phí; &quot;+5 phiên&quot; là lãi/lỗ sau 5 phiên kể từ khi vào. Các điểm B có ngày khác nhau nên thời gian nắm giữ khác nhau. &quot;Đang lãi&quot; = lãi hiện tại &gt; 0. Cột &quot;Thị trường&quot;: yếu = VN-Index thấp hơn đỉnh 60 phiên từ 7%. Nhãn &quot;đã có lệnh MUA&quot; chỉ dựa trên lệnh đã ghi nhận trên web. Không phải khuyến nghị đầu tư.
       </p>
     </div>
   );

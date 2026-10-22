@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { fmt, pct, nhe } from "@/components/dungChung";
 import { soVN } from "@/lib/soVN";
-import { ganDacTrungNganh, locDiemB, ketQuaDiemB, thongKeDiemB, danhSachNganh, laKhuyenNghi, DAI_GIAM, KHOANG_PHIEN, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "@/lib/locDiemB";
+import { ganDacTrungNganh, locDiemB, ketQuaDiemB, thongKeDiemB, laiHienTai, danhSachNganh, laKhuyenNghi, DAI_GIAM, KHOANG_PHIEN, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "@/lib/locDiemB";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -30,10 +30,8 @@ const COT = [
   { khoa: "kl_day", nhan: "KL đáy", canPhai: true, lay: (r) => r.kl_day },
   { khoa: "sl", nhan: "Cắt lỗ", canPhai: true, lay: (r) => r.sl },
   { khoa: "tp", nhan: "TP1 / TP2", canPhai: true, lay: (r) => r.tp1 },
-  { khoa: "gia_hien_tai", nhan: "Hiện tại", canPhai: true, lay: (r) => (r.gia_vao > 0 && r.gia_hien_tai != null ? (r.gia_hien_tai / r.gia_vao - 1) * 100 : null) },
+  { khoa: "gia_hien_tai", nhan: "Lãi hiện tại", canPhai: true, lay: (r) => laiHienTai(r) },
   { khoa: "pct_sau_5", nhan: "+5 phiên", canPhai: true, lay: (r) => r.pct_sau_5 },
-  { khoa: "pct_sau_10", nhan: "+10 phiên", canPhai: true, lay: (r) => r.pct_sau_10 },
-  { khoa: "pct_sau_20", nhan: "+20 phiên", canPhai: true, lay: (r) => r.pct_sau_20 },
   { khoa: "vni", nhan: "Thị trường", lay: (r) => (r.vni_yeu === true ? 1 : 0) },
   { khoa: "ket_qua", nhan: "Kết quả", lay: (r) => ({ tot: 2, xau: 1, cho: 0 })[ketQuaDiemB(r).loai] },
 ];
@@ -90,9 +88,9 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
     <div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         <The nhan="Điểm B đang hiển thị" giaTri={tk.n} phu={`/ ${duLieu.length} từ đầu 2026`} />
-        <The nhan="Lãi TB sau 10 phiên" giaTri={tk.tb10 == null ? "—" : pct(tk.tb10, 2)} mau={tk.tb10 == null ? MUTED : mauPct(tk.tb10)} phu={`${tk.n10} điểm đủ 10 phiên (chưa trừ phí)`} />
-        <The nhan="Tỷ lệ dương sau 10 phiên" giaTri={tk.thang10 == null ? "—" : `${tk.thang10.toFixed(0)}%`} mau={tk.thang10 == null ? MUTED : tk.thang10 >= 50 ? XANH : DO} />
-        <The nhan="Lãi TB sau 20 phiên" giaTri={tk.tb20 == null ? "—" : pct(tk.tb20, 2)} mau={tk.tb20 == null ? MUTED : mauPct(tk.tb20)} phu={`${tk.n20} điểm đủ 20 phiên`} />
+        <The nhan="Lãi hiện tại TB" giaTri={tk.tbLai == null ? "—" : pct(tk.tbLai, 2)} mau={tk.tbLai == null ? MUTED : mauPct(tk.tbLai)} phu="giá hiện tại so với giá vào (chưa trừ phí)" />
+        <The nhan="Tỷ lệ đang lãi" giaTri={tk.tyLeLai == null ? "—" : `${tk.tyLeLai.toFixed(0)}%`} mau={tk.tyLeLai == null ? MUTED : tk.tyLeLai >= 50 ? XANH : DO} phu={`${tk.nGia} điểm có giá`} />
+        <The nhan="Trung vị lãi hiện tại" giaTri={tk.trungVi == null ? "—" : pct(tk.trungVi, 2)} mau={tk.trungVi == null ? MUTED : mauPct(tk.trungVi)} />
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -128,7 +126,7 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
         <Ck loc={loc} dat={dat} k="vniYeu" nhan="Thị trường yếu" tieuDe="VN-Index thấp hơn đỉnh 60 phiên từ 7% lúc điểm B xuất hiện" />
         <Ck loc={loc} dat={dat} k="chuaMuaThuong" nhan="Chưa có lệnh MUA thường trước" tieuDe="Loại mã mà web đã ghi nhận lệnh MUA của hệ thống trong 60 ngày trước điểm B: nhóm này có kết quả lịch sử kém hơn" />
         <Ck loc={loc} dat={dat} k="ganGiaB" nhan="Còn gần giá vào (≤ +5%)" tieuDe="Giá hiện tại không cao hơn giá vào quá 5% và chưa thủng cắt lỗ" />
-        <Ck loc={loc} dat={dat} k="chiThanhCong" nhan="Chỉ thành công (+10 phiên > 0)" />
+        <Ck loc={loc} dat={dat} k="chiThanhCong" nhan="Chỉ đang lãi" />
         {dangLoc && (
           <button onClick={() => setLoc(LOC_MAC_DINH)} className="text-xs underline" style={{ color: PRIMARY }}>
             Xóa bộ lọc
@@ -154,7 +152,7 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
             <tbody>
               {daLoc.map((r, i) => {
                 const kq = ketQuaDiemB(r);
-                const hien = r.gia_vao > 0 && r.gia_hien_tai != null ? (r.gia_hien_tai / r.gia_vao - 1) * 100 : null;
+                const hien = laiHienTai(r);
                 const klCao = r.kl_day != null && r.kl_day >= 2;
                 return (
                   <tr key={`${r.ma}-${r.ngay}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
@@ -183,10 +181,8 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
                     <td className="py-2.5 px-3 text-right" style={{ color: klCao ? XANH : MUTED, fontWeight: klCao ? 700 : 400 }}>{r.kl_day != null ? `${soVN(r.kl_day, 1, true)}×` : "—"}</td>
                     <td className="py-2.5 px-3 text-right" style={{ color: DO }}>{fmt(r.sl)}</td>
                     <td className="py-2.5 px-3 text-right text-xs" style={{ color: XANH }}>{fmt(r.tp1)} / {fmt(r.tp2)}</td>
-                    <td className="py-2.5 px-3 text-right" style={{ color: mauPct(hien) }}>{hien == null ? "—" : pct(hien, 1)}</td>
+                    <td className="py-2.5 px-3 text-right font-bold" style={{ color: mauPct(hien) }}>{hien == null ? "—" : pct(hien, 1)}</td>
                     <td className="py-2.5 px-3 text-right" style={{ color: mauPct(r.pct_sau_5) }}>{r.pct_sau_5 == null ? "—" : pct(r.pct_sau_5, 1)}</td>
-                    <td className="py-2.5 px-3 text-right font-bold" style={{ color: mauPct(r.pct_sau_10) }}>{r.pct_sau_10 == null ? "—" : pct(r.pct_sau_10, 1)}</td>
-                    <td className="py-2.5 px-3 text-right" style={{ color: mauPct(r.pct_sau_20) }}>{r.pct_sau_20 == null ? "—" : pct(r.pct_sau_20, 1)}</td>
                     <td className="py-2.5 px-3 text-xs whitespace-nowrap" style={{ color: r.vni_yeu ? VANG : MUTED, ...sans }}>{r.vni_yeu === true ? "yếu" : r.vni_yeu === false ? "bình thường" : "—"}</td>
                     <td className="py-2.5 px-3">
                       <span className="px-2 py-0.5 text-xs font-bold rounded-sm whitespace-nowrap" style={{ background: nhe(MAU_KQ[kq.loai], 13), color: MAU_KQ[kq.loai], ...sans }}>{kq.nhan}</span>
