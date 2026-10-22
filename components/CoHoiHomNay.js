@@ -290,7 +290,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) 
             tieuDe="Mua phục hồi (điểm B)"
             may="mua-phuc-hoi"
             mau={VANG}
-            moTa="Cổ phiếu đã giảm 20–30% rồi đóng cửa lấy lại Tenkan và Kijun — giải ngân 1/2 phần dự định, 1/2 còn lại khi hệ thống báo MUA. Ưu tiên mã có nhãn bán tháo có KL (KL quanh đáy ≥ 2×). Chỉ gồm 11 ngành trọng tâm. Cắt lỗ = giá B − 2,5×ATR; nên đặt lệnh chờ ở giá B, không mua đuổi. Chưa phải tín hiệu MUA, chỉ tham khảo. Không gồm mã hệ thống đang giữ"
+            moTa="Cổ phiếu đã giảm 20–30% rồi đóng cửa lấy lại Tenkan và Kijun — giải ngân 1/2 phần dự định, 1/2 còn lại khi hệ thống báo MUA. Ưu tiên mã có nhãn bán tháo có KL (KL quanh đáy ≥ 2×). Chỉ gồm 11 ngành trọng tâm và các lệnh ĐANG GIỮ (chưa chạm cắt lỗ = giá B − 2,5×ATR, mã đã cắt lỗ bị ẩn). Nên đặt lệnh chờ ở giá B, không mua đuổi. Chưa phải tín hiệu MUA, chỉ tham khảo. Không gồm mã hệ thống đang giữ"
             lienKet={{ href: "/mua-phuc-hoi", nhan: "Lịch sử điểm B từ đầu 2026, bộ lọc và hướng dẫn dùng →" }}
             ds={muaPhucHoi}
             trong="Hiện không có mã nào vừa có điểm B."
@@ -303,13 +303,16 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) 
                 phai={
                   <>
                     <span style={{ color: TEXT }}>{fmt(x.gia)}</span>
-                    <span className="block text-[11px]" style={{ color: mauLai(x.doi) }}>
-                      {pct(x.doi, 2)}
+                    <span className="block text-[11px]" style={{ color: mauLai(x.laiPct) }} title="Lãi / lỗ hiện tại so với giá vào (mở cửa phiên sau điểm B; chưa có thì lấy giá B), chưa trừ phí">
+                      {pct(x.laiPct, 2)}
+                    </span>
+                    <span className="block text-[9px]" style={{ color: MUTED, ...sans }}>
+                      lãi/lỗ hiện tại
                     </span>
                   </>
                 }
               >
-                Giá B <b style={{ color: TEXT }}>{fmt(x.giaB)}</b>
+                Giá B <b style={{ color: TEXT }}>{fmt(x.giaB)}</b>{x.giaVao !== x.giaB && <span> · vào <b style={{ color: TEXT }}>{fmt(x.giaVao)}</b></span>}
                 {x.giam != null && <span> · đã giảm {fmt(x.giam)}%</span>}
                 {x.bDayPct != null && <span> · cách đáy +{fmt(x.bDayPct)}%</span>}
                 {x.klDay != null && (

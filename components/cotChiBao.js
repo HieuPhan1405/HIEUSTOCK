@@ -88,6 +88,7 @@ const cotDiemMuaPhucHoi = {
   lay: (r) => (coSo(r.pb_cach) ? -r.pb_cach : null),
   hien: (r) => {
     if (!coSo(r.pb_cach) || !coSo(r.pb_gia)) return Trong;
+    if (r.pb_cat === 1) return <span style={{ color: MUTED }} title="Từ khi vào lệnh giá đã chạm mốc cắt lỗ — lệnh đã cắt">B {soAn(r.pb_gia, 2)} · đã cắt lỗ</span>;
     const khi = r.pb_cach === 0 ? "hôm nay" : `${r.pb_cach} phiên`;
     const cachDay = coSo(r.pb_day) && r.pb_day > 0 ? (r.pb_gia / r.pb_day - 1) * 100 : null;
     return (

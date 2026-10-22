@@ -38,6 +38,16 @@ ok("gia B cach day tinh %", Math.abs(ds[0].bDayPct - (10 / 8.8 - 1) * 100) < 1e-
   const r = dungMuaPhucHoi({ hang: [{ ...hang[0], ma: "KL1", pb_cach: 2, pb_kl_day: 2.5 }, { ...hang[0], ma: "KL0", pb_cach: 0, pb_kl_day: 1.2 }], tatCa: [{ ma: "KL1", tin: "TRUNG LAP", gia: 10, doi: 0 }, { ma: "KL0", tin: "TRUNG LAP", gia: 10, doi: 0 }] });
   ok("ma ban thao co KL (>= 2x) xep truoc du diem B cu hon", r.map((x) => x.ma).join(",") === "KL1,KL0" && r[0].klDay === 2.5, r.map((x) => x.ma).join(","));
 }
+{
+  // lenh da cat lo (pb_cat = 1) bi an; laiPct = gia hien tai so voi gia vao (pb_vao), thieu pb_vao thi so voi gia B
+  const r = dungMuaPhucHoi({
+    hang: [{ ...hang[0], ma: "OK1", pb_cach: 1, pb_vao: 9.5, pb_cat: 0 }, { ...hang[0], ma: "CUT", pb_cach: 1, pb_cat: 1 }, { ...hang[0], ma: "NOV", pb_cach: 0 }],
+    tatCa: [{ ma: "OK1", tin: "TRUNG LAP", gia: 10.45, doi: 0 }, { ma: "CUT", tin: "TRUNG LAP", gia: 10, doi: 0 }, { ma: "NOV", tin: "TRUNG LAP", gia: 10.3, doi: 0 }],
+  });
+  ok("an lenh da cat lo (pb_cat = 1)", !r.some((x) => x.ma === "CUT"), r.map((x) => x.ma).join(","));
+  const ok1 = r.find((x) => x.ma === "OK1"), nov = r.find((x) => x.ma === "NOV");
+  ok("laiPct so voi gia vao (10,45 / 9,5 - 1 = +10%); thieu pb_vao so voi gia B (10,3 / 10 - 1 = +3%)", ok1 && Math.abs(ok1.laiPct - 10) < 1e-9 && ok1.giaVao === 9.5 && nov && Math.abs(nov.laiPct - 3) < 1e-9 && nov.giaVao === 10, JSON.stringify([ok1?.laiPct, nov?.laiPct]));
+}
 ok("khong co du lieu: mang rong", dungMuaPhucHoi({}).length === 0);
 
 if (loi) {

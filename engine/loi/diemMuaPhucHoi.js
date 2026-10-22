@@ -13,8 +13,8 @@ export const CAU_HINH_B = { giamPct: 10, giamTuPct: 20, giamDenPct: 30, trongNen
 export const SO_NEN_B_GAN_DAY = 10;
 
 // {high, low, close, volume, atr, tenkan, kijun, cloudTop, cbTop}: cac mang cung do dai (null cho nen chua du du lieu).
-// Tra ve { laB: bool[], gan: { i, cach, gia, giam, day, klDay, sl, tp1, tp2, tp3 } | null, giamB: (muc giam % tai nen B hoac null)[], moTa(i) } - `gan` = diem B gan nhat trong SO_NEN_B_GAN_DAY nen cuoi; moTa(i) mo ta diem B bat ky.
-export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kijun, cloudTop, cbTop }, cauHinh = CAU_HINH_B) {
+// Tra ve { laB: bool[], gan: { i, cach, gia, giaVao, catLo, giam, day, klDay, sl, tp1, tp2, tp3 } | null, giamB: (muc giam % tai nen B hoac null)[], moTa(i) } - `gan` = diem B gan nhat trong SO_NEN_B_GAN_DAY nen cuoi; moTa(i) mo ta diem B bat ky.
+export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kijun, cloudTop, cbTop, open = null }, cauHinh = CAU_HINH_B) {
   const c = { ...CAU_HINH_B, ...cauHinh };
   const n = close.length;
   const laB = new Array(n).fill(false);
@@ -59,7 +59,11 @@ export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kiju
     sl = Math.min(E * (1 - c.slToiThieuPct / 100), Math.max(E * (1 - c.hardStopPct / 100), sl));
     const giaVaoBar = new Array(n).fill(E);
     const tp = tinhBaMocChotLoi({ high, giaVaoBar, cloudTop, cbTop });
-    return { i, cach: n - 1 - i, gia: E, giam: giamB[i], day, klDay, sl, tp1: tp.tp1Vong[i], tp2: tp.tp2Vong[i], tp3: tp.tp3Vong[i] };
+    // Trang thai lenh: gia vao = MO CUA nen ke tiep (neu co mang `open` va da co nen do); catLo = tu nen vao lenh (i + 1) tro di co nen gia thap nhat <= cat lo (lenh da bi cat, khong con "dang giu").
+    const giaVao = open && i + 1 < n ? open[i + 1] : null;
+    let catLo = false;
+    for (let j = i + 1; j < n; j++) if (low[j] <= sl) { catLo = true; break; }
+    return { i, cach: n - 1 - i, gia: E, giaVao, catLo, giam: giamB[i], day, klDay, sl, tp1: tp.tp1Vong[i], tp2: tp.tp2Vong[i], tp3: tp.tp3Vong[i] };
   };
   let gan = null;
   for (let i = n - 1; i >= Math.max(0, n - SO_NEN_B_GAN_DAY); i--) {

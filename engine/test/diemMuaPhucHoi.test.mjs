@@ -34,6 +34,17 @@ ok("diem B cu hon 10 nen khong con la gan", tinhDiemMuaPhucHoi({ high, low, clos
 ok("SL theo ATR: gia vao - 2,5 x ATR kep trong 3-10% duoi gia vao (ATR = 2 -> 5 duoi gia ~ 6%)", Math.abs(gan.sl - Math.min(gan.gia * 0.97, Math.max(gan.gia * 0.9, gan.gia - 2.5 * 2))) < 1e-9 && gan.sl <= gan.gia * 0.97 + 1e-9 && gan.sl >= gan.gia * 0.9 - 1e-9, `sl=${gan?.sl} gia=${gan?.gia}`);
 ok("day = day thap nhat 20 nen", Math.abs(gan.day - Math.min(...low.slice(iB - 19, iB + 1))) < 1e-9);
 
+// Trang thai lenh: co mang open -> giaVao = mo cua nen ke tiep; gia di len sau diem B -> chua cat lo; gia roi thung SL sau khi vao -> catLo
+{
+  const open = close.map((c, i) => (i > 0 ? close[i - 1] : c));
+  const g1 = tinhDiemMuaPhucHoi({ open, high, low, close, volume, atr, tenkan, kijun, cloudTop: nul, cbTop: nul }).moTa(iB);
+  ok("giaVao = mo cua nen ke tiep (= dong cua nen B vi open[i+1] = close[i]); gia tang tiep -> chua cat lo", g1.giaVao === close[iB] && g1.catLo === false, JSON.stringify(g1));
+  const low2 = low.map((x, i) => (i === iB + 3 ? g1.sl - 1 : x));
+  const g2 = tinhDiemMuaPhucHoi({ open, high, low: low2, close, volume, atr, tenkan, kijun, cloudTop: nul, cbTop: nul }).moTa(iB);
+  ok("nen sau do co low <= cat lo -> catLo = true", g2.catLo === true);
+  ok("khong co mang open -> giaVao = null", tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kijun, cloudTop: nul, cbTop: nul }).moTa(iB).giaVao === null);
+}
+
 // Muc giam ngoai [20%, 30%): giam ~12% va giam ~35% deu KHONG co diem B (nghien cuu: 10-20% khong co loi the, >= 30% mat dan)
 for (const [ten, day] of [["giam ~12%", 88], ["giam ~35%", 65]]) {
   const cl = [];

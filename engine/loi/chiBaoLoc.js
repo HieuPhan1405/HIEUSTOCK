@@ -84,7 +84,7 @@ export function maHoaPhanKy(nen, toiDa) {
   if (cach < 0 || cach >= toiDa) return null;
   return cuoiCung.loai === "tang" ? cach : -(cach + 1);
 }
-const COT_NGUYEN = new Set([...COT_MAU_HINH_NEN, "hg_giam_dai", "hg_gtgd_ok", "hg_day_cao", "hg_tren_tk_kj", "hg_cach", "hg_ban", "pb_cach", "rsi_h1_pk_cach", ...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
+const COT_NGUYEN = new Set(["pb_cat", ...COT_MAU_HINH_NEN, "hg_giam_dai", "hg_gtgd_ok", "hg_day_cao", "hg_tren_tk_kj", "hg_cach", "hg_ban", "pb_cach", "rsi_h1_pk_cach", ...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
 
 // Tra ve object { ngay_nen, ...COT_CHI_BAO } cho 1 ma, hoac null neu chua du du lieu.
 // ma (tuy chon): neu co, cot DIEM B (pb_*) chi tinh cho ma thuoc nganh trong tam (bo 10 nganh nho + ma chua gan nganh); khong truyen ma = tinh nhu cu.
@@ -207,13 +207,15 @@ export function tinhChiBaoLocChoMa(nen, ma = null) {
   {
     const cb = tinhDuongCanBangDaiHan({ high, low });
     const atrArr = atr({ high, low, close }, 14);
-    const { gan } = ma != null && !laNganhTrongTam(ma) ? { gan: null } : tinhDiemMuaPhucHoi({ high, low, close, volume, atr: atrArr, tenkan: ich.tenkan, kijun: ich.kijun, cloudTop: ich.cloudTop, cbTop: cb.cbTop });
+    const { gan } = ma != null && !laNganhTrongTam(ma) ? { gan: null } : tinhDiemMuaPhucHoi({ open: b.map((x) => x.o ?? x.c), high, low, close, volume, atr: atrArr, tenkan: ich.tenkan, kijun: ich.kijun, cloudTop: ich.cloudTop, cbTop: cb.cbTop });
     kq.pb_cach = gan ? gan.cach : null;
     kq.pb_giam = gan ? gan.giam : null;
     kq.pb_gia = gan ? gan.gia : null;
     kq.pb_day = gan ? gan.day : null;
     kq.pb_kl_day = gan ? gan.klDay : null;
     kq.pb_sl = gan ? gan.sl : null;
+    kq.pb_vao = gan ? gan.giaVao : null;
+    kq.pb_cat = gan ? (gan.catLo ? 1 : 0) : null;
     kq.pb_tp1 = gan ? gan.tp1 : null;
     kq.pb_tp2 = gan ? gan.tp2 : null;
     kq.pb_tp3 = gan ? gan.tp3 : null;
