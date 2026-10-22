@@ -64,7 +64,7 @@ function OLenh({ tieuDe, mau, moTa, ds, trong, hien, may, lienKet = null }) {
 }
 
 // 1 DONG trong o: ma (+ ten ngan / nhan) ben trai, noi dung o giua, con so ben phai.
-function Dong({ ma, ten, nhan, mauNhan, children, phai, the = null }) {
+function Dong({ ma, ten, nhan, mauNhan, children, phai, the = null, bieuTuong = null }) {
   const t = tenCongTy(ma);
   return (
     <Link
@@ -73,7 +73,8 @@ function Dong({ ma, ten, nhan, mauNhan, children, phai, the = null }) {
       style={{ borderColor: "var(--vien-nhe)" }}
     >
       <span className="min-w-0">
-        <span className="block" style={{ ...sans, fontWeight: 700, fontSize: 15, color: TEXT }}>
+        <span className="flex items-center gap-1" style={{ ...sans, fontWeight: 700, fontSize: 15, color: TEXT }}>
+          {bieuTuong}
           {ten ?? ma}
         </span>
         {nhan ? (
@@ -144,7 +145,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
           tieuDe="Mua"
           may="mua"
           mau={XANH}
-          moTa="Tín hiệu MUA mới trong phiên — ngoài khung giờ vào lệnh hiện THEO DÕI, chỉ mua trong khung"
+          moTa="Tín hiệu MUA mới trong phiên — ngoài khung giờ vào lệnh hiện THEO DÕI, chỉ mua trong khung. Huy hiệu B vàng trước mã = mã đã có điểm mua phục hồi trong 45 ngày trước"
           ds={mua}
           trong="Phiên này không có tín hiệu MUA."
           hien={(r) => {
@@ -155,20 +156,29 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
               ma={r.ma}
               nhan={nhanLenhWeb(r)?.nhan ?? nhanLoaiVao(r)?.nhan ?? nhanGiaiNgan(r)?.nhan}
               mauNhan={nhanLenhWeb(r)?.mau ?? nhanLoaiVao(r)?.mau ?? nhanGiaiNgan(r)?.mau}
-              the={
-                <>
-                  {r.lenh_web || r.da_chot_mua ? null : <NhanTheoDoi loai="mua" />}
-                  {b && (
-                    <span
-                      className="inline-block mt-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold"
-                      style={{ ...sans, color: "#fff", background: VANG }}
-                      title={`Đã có điểm mua phục hồi (điểm B) ngày ${ngayNgan(b.ngay)} (${b.soNgay === 0 ? "cùng phiên" : `${b.soNgay} ngày trước`}), giá B ${fmt(b.giaB)}${b.giam != null ? `, đã giảm ${fmt(b.giam)}%` : ""}${b.daCatLo ? ", lệnh B đã chạm cắt lỗ" : ""}`}
-                      data-may="co-diem-b-truoc"
-                    >
-                      Có điểm B trước
-                    </span>
-                  )}
-                </>
+              the={r.lenh_web || r.da_chot_mua ? null : <NhanTheoDoi loai="mua" />}
+              bieuTuong={
+                b && (
+                  <span
+                    className="inline-flex items-center justify-center shrink-0 rounded-full"
+                    style={{
+                      width: 17,
+                      height: 17,
+                      fontSize: 10,
+                      lineHeight: 1,
+                      fontWeight: 800,
+                      ...sans,
+                      color: "#fff",
+                      background: `linear-gradient(135deg, ${VANG}, ${CAM})`,
+                      boxShadow: "0 0 0 2px color-mix(in srgb, var(--vang) 25%, transparent)",
+                    }}
+                    title={`Đã có điểm mua phục hồi (điểm B) ngày ${ngayNgan(b.ngay)} (${b.soNgay === 0 ? "cùng phiên" : `${b.soNgay} ngày trước`}), giá B ${fmt(b.giaB)}${b.giam != null ? `, đã giảm ${fmt(b.giam)}%` : ""}${b.daCatLo ? ", lệnh B đã chạm cắt lỗ" : ""}`}
+                    aria-label="Có điểm mua phục hồi trước đó"
+                    data-may="co-diem-b-truoc"
+                  >
+                    B
+                  </span>
+                )
               }
               phai={
                 <>
