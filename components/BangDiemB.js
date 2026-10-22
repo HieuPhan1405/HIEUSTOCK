@@ -118,7 +118,12 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
         <Sel loc={loc} dat={dat} k="dai" ds={DAI_GIAM} />
         <Sel loc={loc} dat={dat} k="nganh" ds={nganhs} tatCa="Mọi ngành" />
         <Ck loc={loc} dat={dat} k="klDay" nhan="KL đáy ≥ 2×" tieuDe="KL lớn nhất 5 phiên quanh đáy ≥ 2 lần KL trung bình 20 phiên trước đáy (bán tháo có khối lượng) — yếu tố kiểm chứng tốt nhất" />
-        <Ck loc={loc} dat={dat} k="cungNganh" nhan="Cả ngành cùng hồi (≥ 3 mã cùng ngành có điểm B)" tieuDe="Có ít nhất 3 mã khác cùng ngành cũng có điểm B trong 5 phiên (cả ngành cùng quay đầu). Lịch sử: trong bộ lọc khuyến nghị lãi 10 phiên khoảng +5,7% so với +3,3% khi không." />
+        <select value={loc.cungNganh} onChange={(e) => dat("cungNganh", Number(e.target.value))} className="text-xs rounded-lg px-2 py-2 outline-none" style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT }} title="Số mã KHÁC cùng ngành cũng có điểm B trong 7 ngày (~5 phiên). Càng nhiều mã cùng hồi, kết quả lịch sử càng tốt (≥ 1 mã: +0,4% so với −0,9% sau 10 phiên từ 2022.5; ≥ 3 mã: +0,7% so với −0,5%).">
+          <option value={0}>Ngành cùng hồi: không lọc</option>
+          <option value={1}>Ngành cùng hồi: ≥ 1 mã khác</option>
+          <option value={2}>Ngành cùng hồi: ≥ 2 mã khác</option>
+          <option value={3}>Ngành cùng hồi: ≥ 3 mã khác</option>
+        </select>
         <Ck loc={loc} dat={dat} k="manhNganh" nhan="Giảm mạnh hơn trung vị ngành" tieuDe="Mã giảm nhiều hơn trung vị các điểm B cùng ngành trong 5 phiên: lịch sử +7,0% so với +3,5% (trong bộ lọc khuyến nghị)." />
         <Ck loc={loc} dat={dat} k="vniYeu" nhan="Thị trường yếu" tieuDe="VN-Index thấp hơn đỉnh 60 phiên từ 7% lúc điểm B xuất hiện" />
         <Ck loc={loc} dat={dat} k="chuaMuaThuong" nhan="Chưa có lệnh MUA thường trước" tieuDe="Loại mã mà web đã ghi nhận lệnh MUA của hệ thống trong 60 ngày trước điểm B: nhóm này có kết quả lịch sử kém hơn" />
@@ -155,8 +160,8 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
                   <tr key={`${r.ma}-${r.ngay}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                     <td className="py-2.5 px-3 whitespace-nowrap">
                       <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ ...sans, fontWeight: 700 }}>{r.ma}</Link>
-                      {r.ng_so_ma >= 3 && (
-                        <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(PRIMARY, 13), color: PRIMARY, ...sans }} title={`${r.ng_so_ma} mã khác cùng ngành cũng có điểm B trong 5 phiên — cả ngành cùng hồi`}>
+                      {r.ng_so_ma >= 1 && (
+                        <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(PRIMARY, 13), color: PRIMARY, ...sans }} title={`${r.ng_so_ma} mã khác cùng ngành cũng có điểm B trong 7 ngày (~5 phiên) — càng nhiều mã càng là cả ngành cùng hồi`}>
                           ngành hồi ({r.ng_so_ma})
                         </span>
                       )}

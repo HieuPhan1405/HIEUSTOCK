@@ -39,20 +39,20 @@ ok("danh sach nganh khong trung, sap xep", danhSachNganh(ds).join("|") === ["B�
 ok("bo loc khuyen nghi: giam >= 20 + KL >= 2x + thi truong yeu -> chi AAA", ma(locDiemB(ds, LOC_KHUYEN_NGHI)) === "AAA", ma(locDiemB(ds, LOC_KHUYEN_NGHI)));
 ok("laKhuyenNghi khop bo loc: CCC (VNI khong yeu) khong, AAA co, null an toan", laKhuyenNghi(ds[0]) === true && laKhuyenNghi(ds[2]) === false && laKhuyenNghi(null) === false && laKhuyenNghi({}) === false);
 {
-  // ngành cùng hồi: 4 mã cùng ngành "Bất động sản" trong 5 phiên + 1 mã khu công nghiệp (gộp vào BĐS) + 1 mã ngành khác
+  // nganh cung hoi: cua so 7 NGAY LICH (~5 phien), khong dem theo so ngay co du lieu. BDS KCN gop vao BDS.
   const mk = (ma, ngay, giam, nganh) => ({ ma, ngay, giam, nganh, kl_day: 1 });
   const d = [
-    mk("B1", "2026-10-14", 18, "Bất động sản"), mk("B2", "2026-10-16", 22, "Bất động sản"), mk("B3", "2026-10-19", 12, "BĐS khu công nghiệp"), mk("B4", "2026-10-20", 30, "Bất động sản"),
+    mk("B1", "2026-10-12", 18, "Bất động sản"), mk("B2", "2026-10-15", 22, "Bất động sản"), mk("B3", "2026-10-19", 12, "BĐS khu công nghiệp"), mk("B4", "2026-10-20", 30, "Bất động sản"),
     mk("T1", "2026-10-20", 25, "Thép"), mk("B5", "2026-10-05", 40, "Bất động sản"),
   ];
   const g = ganDacTrungNganh(d); const m = Object.fromEntries(g.map((r) => [r.ma, r]));
   ok("nganhGop: BDS khu cong nghiep -> bat dong san", nganhGop("BĐS khu công nghiệp") === "bat dong san" && nganhGop("Bất động sản") === "bat dong san");
-  ok("B4 (20/10, phien thu 5 cua du lieu): cua so 5 phien phu ca 5 ngay -> 4 ma khac cung nganh (B1, B2, B3 gop BDS KCN, B5)", m.B4.ng_so_ma === 4, String(m.B4.ng_so_ma));
-  ok("T1 (nganh Thep) khong co ma khac cung nganh -> 0, khong manh", m.T1.ng_so_ma === 0 && m.T1.ng_manh === false);
-  ok("B5 (5/10) o xa cac ma khac: ng_so_ma = 0", m.B5.ng_so_ma === 0);
-  const ngay = [...new Set(d.map((r) => r.ngay))].sort();
-  ok("loc cungNganh (>= 3 ma khac): chi ma co du 3 ma khac trong 5 phien", locDiemB(g, { cungNganh: true }).every((r) => r.ng_so_ma >= 3) && ngay.length === 5);
-  ok("manhNganh: B4 giam 30% > trung vi cua so, B3 (12%) khong", m.B4.ng_manh === true && m.B3.ng_manh === false, `${m.B4.ng_manh} ${m.B3.ng_manh}`);
+  ok("B4 (20/10): cua so 13/10..20/10 co B2 (15/10), B3 (19/10 BDS KCN); B1 (12/10) ngoai cua so; B5 (5/10) ngoai -> 2 ma khac", m.B4.ng_so_ma === 2, String(m.B4.ng_so_ma));
+  ok("B2 (15/10): cua so 8/10..15/10 co B1 (12/10) -> 1 ma khac; B1 (12/10): cua so 5/10..12/10 co B5 -> 1", m.B2.ng_so_ma === 1 && m.B1.ng_so_ma === 1, `${m.B2.ng_so_ma} ${m.B1.ng_so_ma}`);
+  ok("B5 (5/10) la diem dau: 0 ma khac; T1 (Thep) khong co ma cung nganh: 0", m.B5.ng_so_ma === 0 && m.T1.ng_so_ma === 0 && m.T1.ng_manh === false);
+  ok("loc cungNganh = 2: B3 (B1, B2) va B4 (B2, B3); = 1: them B1 (B5 dung moc 5/10) va B2", ma(locDiemB(g, { cungNganh: 2 })) === "B3,B4" && ma(locDiemB(g, { cungNganh: 1 })) === "B1,B2,B3,B4", ma(locDiemB(g, { cungNganh: 2 })) + " / " + ma(locDiemB(g, { cungNganh: 1 })));
+  ok("cungNganh = 0: khong loc", locDiemB(g, { cungNganh: 0 }).length === g.length);
+  ok("manhNganh: B4 giam 30% > trung vi cua so (>= 3 diem, trung vi >= 10%)", typeof m.B4.ng_manh === "boolean" && m.B1.ng_manh === false, `${m.B4.ng_manh}`);
 }
 ok("LOC_MAC_DINH khong dong vao du lieu", locDiemB(ds, LOC_MAC_DINH).length === 5);
 

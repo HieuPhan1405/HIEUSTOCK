@@ -62,7 +62,7 @@ for (const e of ev) {
   const M = bTheoNganhNgay[e.ng]; let dem = 0;
   for (let q = e.vi - 5; q <= e.vi; q++) { const x = M.get(lich[q]) ?? []; dem += x.filter((y) => y.ma !== e.ma).length; }
   const tong = ngTong[e.ng]?.get(e.t) ?? 0, tren = ngTren[e.ng]?.get(e.t) ?? 0;
-  e.NG_B2 = dem >= 2; e.NG_B3 = dem >= 3; e.NG_B_PCT = tong >= 4 && (dem + 1) / tong >= 0.15;
+  e.NG_B1 = dem >= 1; e.NG_B2 = dem >= 2; e.NG_B3 = dem >= 3; e.NG_B_PCT = tong >= 4 && (dem + 1) / tong >= 0.15;
   e.NG_TREN = tong >= 4 && tren / tong >= 0.5;
   let min10 = 1; for (let q = e.vi - 10; q < e.vi; q++) { const tt = ngTong[e.ng]?.get(lich[q]) ?? 0; if (tt >= 4) min10 = Math.min(min10, (ngTren[e.ng]?.get(lich[q]) ?? 0) / tt); }
   e.NG_DAO = e.NG_TREN && min10 <= 0.25;
@@ -73,7 +73,7 @@ for (const e of ev) {
   for (let q = e.vi - 5; q <= e.vi + 0; q++) for (const y of M.get(lich[q]) ?? []) g.push(y.giam);
   e.NG_MANH = g.length >= 3 && med(g) >= 10 && e.giam > med(g);
 }
-const FE = ["NG_B2", "NG_B3", "NG_B_PCT", "NG_TREN", "NG_DAO", "NG_MANH"];
+const FE = ["NG_B1", "NG_B2", "NG_B3", "NG_B_PCT", "NG_TREN", "NG_DAO", "NG_MANH"];
 const dong = (ten, a) => (a.length < 25
   ? console.log(`     ${ten.padEnd(30)} n=${String(a.length).padStart(5)} (it mau)`)
   : console.log(`     ${ten.padEnd(30)} n=${String(a.length).padStart(5)} | 10p ${f(tb(a.map((x) => x.r10))).padStart(6)} [${f(th(a.map((x) => x.r10)), 0)}%] | 20p ${f(tb(a.map((x) => x.r20))).padStart(6)} [${f(th(a.map((x) => x.r20)), 0)}%]`));
