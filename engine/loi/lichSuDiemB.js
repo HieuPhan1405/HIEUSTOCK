@@ -1,5 +1,6 @@
 // LICH SU DIEM MUA PHUC HOI (diem B) cho trang /mua-phuc-hoi (Hieu 2026-10-21: "viet ca lich su tu dau 2026"). Moi dong = 1 diem B cua 1 ma (giam >= 15% tu dinh 20 phien roi dong cua lay lai Tenkan + Kijun, xem diemMuaPhucHoi.js),
 // kem muc giam, KL quanh day, day 20 phien, cat lo / TP1-2-3 theo cong thuc binh thuong, GIA VAO = MO CUA PHIEN KE TIEP va ket qua THUC TE sau 5 / 10 / 20 phien (dong cua phien thu k ke tu phien vao, CHUA tru phi 0,4%; null neu chua du phien),
+// va TRANG THAI LENH (ngay_cat_lo: nen dau tien gia thap nhat <= cat lo; tp_cham: so moc TP1-3 da cham) de trang web chi tinh lai / lo HIEN TAI cho cac lenh DANG GIU (Hieu 2026-10-22: cat lo thi thoi),
 // va che do thi truong luc do (vni_yeu = VN-Index <= -7% so dinh 60 phien: nghien cuu cho thay diem B + thi truong yeu hoi tot hon tu 2022.5 nhung khong on dinh theo giai doan).
 // Tinh lai TOAN BO tu `tuNgay` moi lan chay (upsert idempotent o /api/upload-diem-b).
 import { atr } from "./taChiBao.js";
@@ -45,9 +46,17 @@ export function tinhLichSuDiemBChoMa(ma, nen, { tuNgay = NGAY_BAT_DAU_MAC_DINH, 
     const m = moTa(i);
     const E2 = i + 1 < n ? (b[i + 1].o ?? b[i + 1].c) : null;
     const sau = (k) => (E2 && i + 1 + k < n ? (close[i + 1 + k] / E2 - 1) * 100 : null);
+    // CAT LO: nen DAU TIEN ke tu nen vao lenh (i + 1) co gia thap nhat <= cat lo -> lenh da bi cat (khong con "dang giu"). TP da cham: so moc TP1/TP2/TP3 ma gia cao nhat ke tu nen vao lenh da cham.
+    let ngayCatLo = null, cao = -Infinity;
+    for (let j = i + 1; j < n; j++) {
+      if (low[j] <= m.sl) { ngayCatLo = b[j].t; break; }
+      if (high[j] > cao) cao = high[j];
+    }
+    if (ngayCatLo == null) for (let j = i + 1; j < n; j++) if (high[j] > cao) cao = high[j];
+    const tpCham = [m.tp1, m.tp2, m.tp3].filter((x) => x > 0 && cao >= x).length;
     ketQua.push({
       ma, ngay: b[i].t, gia_b: m.gia, giam: so(m.giam, 2), kl_day: so(m.klDay, 2), day_20: m.day, sl: so(m.sl, 3), tp1: so(m.tp1, 3), tp2: so(m.tp2, 3), tp3: so(m.tp3, 3),
-      gia_vao: E2, pct_sau_5: so(sau(5), 2), pct_sau_10: so(sau(10), 2), pct_sau_20: so(sau(20), 2), vni_yeu: vniYeu.has(b[i].t) ? vniYeu.get(b[i].t) : null, gtgd: so(gtgd(i), 1),
+      gia_vao: E2, ngay_cat_lo: ngayCatLo, tp_cham: E2 ? tpCham : null, pct_sau_5: so(sau(5), 2), pct_sau_10: so(sau(10), 2), pct_sau_20: so(sau(20), 2), vni_yeu: vniYeu.has(b[i].t) ? vniYeu.get(b[i].t) : null, gtgd: so(gtgd(i), 1),
     });
   }
   return ketQua;
@@ -66,7 +75,7 @@ export function tinhLichSuDiemBToanBo(nenTheoMa, vniNen, opts = {}) {
   return ds;
 }
 
-const COT_CSV = ["ma", "ngay", "gia_b", "giam", "kl_day", "day_20", "sl", "tp1", "tp2", "tp3", "gia_vao", "pct_sau_5", "pct_sau_10", "pct_sau_20", "vni_yeu", "gtgd"];
+const COT_CSV = ["ma", "ngay", "gia_b", "giam", "kl_day", "day_20", "sl", "tp1", "tp2", "tp3", "gia_vao", "pct_sau_5", "pct_sau_10", "pct_sau_20", "vni_yeu", "gtgd", "ngay_cat_lo", "tp_cham"];
 export function xayDungCsvDiemB(ds) {
   const dong = [COT_CSV.join(",")];
   for (const s of ds) dong.push(COT_CSV.map((c) => (s[c] == null ? "" : c === "vni_yeu" ? (s[c] ? "1" : "0") : String(s[c]))).join(","));

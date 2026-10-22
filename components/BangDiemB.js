@@ -5,7 +5,7 @@ import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { fmt, pct, nhe } from "@/components/dungChung";
 import { soVN } from "@/lib/soVN";
-import { ganDacTrungNganh, locDiemB, ketQuaDiemB, thongKeDiemB, laiHienTai, danhSachNganh, laKhuyenNghi, DAI_GIAM, KHOANG_PHIEN, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "@/lib/locDiemB";
+import { ganDacTrungNganh, locDiemB, ketQuaDiemB, thongKeDiemB, laiHienTai, trangThaiLenh, danhSachNganh, laKhuyenNghi, DAI_GIAM, KHOANG_PHIEN, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "@/lib/locDiemB";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -87,10 +87,10 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
   return (
     <div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-        <The nhan="Điểm B đang hiển thị" giaTri={tk.n} phu={`/ ${duLieu.length} từ đầu 2026`} />
-        <The nhan="Lãi hiện tại TB" giaTri={tk.tbLai == null ? "—" : pct(tk.tbLai, 2)} mau={tk.tbLai == null ? MUTED : mauPct(tk.tbLai)} phu="giá hiện tại so với giá vào (chưa trừ phí)" />
+        <The nhan="Đang giữ / đã cắt lỗ" giaTri={`${tk.nGiu} / ${tk.nCat}`} phu={`${tk.n} điểm B hiển thị (${duLieu.length} từ đầu 2026)${tk.nCho ? `, ${tk.nCho} chờ vào lệnh` : ""}`} />
+        <The nhan="Lãi hiện tại TB (đang giữ)" giaTri={tk.tbLai == null ? "—" : pct(tk.tbLai, 2)} mau={tk.tbLai == null ? MUTED : mauPct(tk.tbLai)} phu="giá hiện tại so với giá vào, chỉ lệnh chưa cắt lỗ" />
         <The nhan="Tỷ lệ đang lãi" giaTri={tk.tyLeLai == null ? "—" : `${tk.tyLeLai.toFixed(0)}%`} mau={tk.tyLeLai == null ? MUTED : tk.tyLeLai >= 50 ? XANH : DO} phu={`${tk.nGia} điểm có giá`} />
-        <The nhan="Trung vị lãi hiện tại" giaTri={tk.trungVi == null ? "—" : pct(tk.trungVi, 2)} mau={tk.trungVi == null ? MUTED : mauPct(tk.trungVi)} />
+        <The nhan="Lãi/lỗ TB gồm cả lệnh đã cắt lỗ" giaTri={tk.tbTatCa == null ? "—" : pct(tk.tbTatCa, 2)} mau={tk.tbTatCa == null ? MUTED : mauPct(tk.tbTatCa)} phu="cắt lỗ tính tại mốc SL — số thực tế hơn (bỏ lệnh cắt lỗ thì lãi cao ảo)" />
       </div>
 
       <div className="flex flex-wrap items-center gap-2 mb-2">
@@ -126,6 +126,7 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
         <Ck loc={loc} dat={dat} k="vniYeu" nhan="Thị trường yếu" tieuDe="VN-Index thấp hơn đỉnh 60 phiên từ 7% lúc điểm B xuất hiện" />
         <Ck loc={loc} dat={dat} k="chuaMuaThuong" nhan="Chưa có lệnh MUA thường trước" tieuDe="Loại mã mà web đã ghi nhận lệnh MUA của hệ thống trong 60 ngày trước điểm B: nhóm này có kết quả lịch sử kém hơn" />
         <Ck loc={loc} dat={dat} k="ganGiaB" nhan="Còn gần giá vào (≤ +5%)" tieuDe="Giá hiện tại không cao hơn giá vào quá 5% và chưa thủng cắt lỗ" />
+        <Ck loc={loc} dat={dat} k="chiDangGiu" nhan="Chỉ lệnh đang giữ (bỏ lệnh đã cắt lỗ)" tieuDe="Bỏ các điểm B mà từ khi vào lệnh giá đã chạm mốc cắt lỗ (giá vào − 2,5×ATR). Bỏ chọn để xem cả lệnh đã cắt lỗ." />
         <Ck loc={loc} dat={dat} k="chiThanhCong" nhan="Chỉ đang lãi" />
         {dangLoc && (
           <button onClick={() => setLoc(LOC_MAC_DINH)} className="text-xs underline" style={{ color: PRIMARY }}>
@@ -153,6 +154,7 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
               {daLoc.map((r, i) => {
                 const kq = ketQuaDiemB(r);
                 const hien = laiHienTai(r);
+                const catLo = trangThaiLenh(r) === "cat_lo";
                 const klCao = r.kl_day != null && r.kl_day >= 2;
                 return (
                   <tr key={`${r.ma}-${r.ngay}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
@@ -181,11 +183,15 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
                     <td className="py-2.5 px-3 text-right" style={{ color: klCao ? XANH : MUTED, fontWeight: klCao ? 700 : 400 }}>{r.kl_day != null ? `${soVN(r.kl_day, 1, true)}×` : "—"}</td>
                     <td className="py-2.5 px-3 text-right" style={{ color: DO }}>{fmt(r.sl)}</td>
                     <td className="py-2.5 px-3 text-right text-xs" style={{ color: XANH }}>{fmt(r.tp1)} / {fmt(r.tp2)}</td>
-                    <td className="py-2.5 px-3 text-right font-bold" style={{ color: mauPct(hien) }}>{hien == null ? "—" : pct(hien, 1)}</td>
+                    <td className="py-2.5 px-3 text-right font-bold whitespace-nowrap" style={{ color: catLo ? MUTED : mauPct(hien) }} title={catLo ? `Đã chạm cắt lỗ ngày ${ngayVN(r.ngay_cat_lo)} — lỗ ước tính tại mốc cắt lỗ` : undefined}>
+                      {hien == null ? "—" : pct(hien, 1)}
+                      {catLo && <span className="block text-[10px] font-normal" style={{ color: MUTED, ...sans }}>cắt lỗ {ngayVN(r.ngay_cat_lo).slice(0, 5)}</span>}
+                    </td>
                     <td className="py-2.5 px-3 text-right" style={{ color: mauPct(r.pct_sau_5) }}>{r.pct_sau_5 == null ? "—" : pct(r.pct_sau_5, 1)}</td>
                     <td className="py-2.5 px-3 text-xs whitespace-nowrap" style={{ color: r.vni_yeu ? VANG : MUTED, ...sans }}>{r.vni_yeu === true ? "yếu" : r.vni_yeu === false ? "bình thường" : "—"}</td>
                     <td className="py-2.5 px-3">
                       <span className="px-2 py-0.5 text-xs font-bold rounded-sm whitespace-nowrap" style={{ background: nhe(MAU_KQ[kq.loai], 13), color: MAU_KQ[kq.loai], ...sans }}>{kq.nhan}</span>
+                      {r.tp_cham >= 1 && !catLo && <span className="ml-1 text-[10px]" style={{ color: XANH, ...sans }} title="Giá đã chạm mốc chốt lời kể từ khi vào lệnh">TP{r.tp_cham}</span>}
                     </td>
                   </tr>
                 );

@@ -39,6 +39,17 @@ ok("moi diem B tu 2025 tro di", kq.every((e) => e.ngay >= "2025-01-01"));
   ok("diem B o nen cuoi cua chuoi: gia_vao null, pct_sau null (chua co du lieu tuong lai)", cuoi == null || (cuoi.gia_vao === null && cuoi.pct_sau_5 === null && cuoi.pct_sau_10 === null));
 }
 
+// Trang thai lenh: gia tiep tuc tang -> dang giu (ngay_cat_lo null); gia roi thung cat lo sau khi vao -> ghi ngay cat lo
+{
+  const ev0 = tinhLichSuDiemBChoMa("AAA", nen, { tuNgay: "2025-01-01", chiNganhTrongTam: false })[0];
+  ok("gia tiep tuc tang sau diem B: dang giu (ngay_cat_lo = null), tp_cham la so >= 0", ev0 && ev0.ngay_cat_lo === null && Number.isInteger(ev0.tp_cham) && ev0.tp_cham >= 0, JSON.stringify(ev0));
+  // cat chuoi sau diem B roi doi cac nen sau thanh dot giam sau: nen i+2 tro di dong cua rat thap (thung cat lo)
+  const iB = nen.findIndex((x) => x.t === ev0.ngay);
+  const sap = nen.map((x, i) => (i >= iB + 3 ? { ...x, o: x.c, h: x.c + 0.5, l: ev0.sl * 0.9, c: ev0.sl * 0.92 } : x));
+  const evSap = tinhLichSuDiemBChoMa("AAA", sap, { tuNgay: "2025-01-01", chiNganhTrongTam: false }).find((e) => e.ngay === ev0.ngay);
+  ok("gia thung cat lo sau khi vao: ngay_cat_lo = ngay nen dau tien low <= SL", evSap && evSap.ngay_cat_lo === sap[iB + 3].t, JSON.stringify(evSap && evSap.ngay_cat_lo));
+}
+
 // VN-Index: giam 10% tu dinh 60 phien -> yeu
 {
   const vni = Array.from({ length: 100 }, (_, i) => ({ t: ngay(i), c: i < 70 ? 1000 : 1000 - (i - 69) * 4 }));
@@ -48,7 +59,7 @@ ok("moi diem B tu 2025 tro di", kq.every((e) => e.ngay >= "2025-01-01"));
   const ds = tinhLichSuDiemBToanBo(new Map([["AAA", nen], ["BBB", nen.slice(0, 40)]]), vni, { tuNgay: "2025-01-01", chiNganhTrongTam: false });
   ok("toan bo: ma it nen bi bo qua, khong loi", ds.every((s) => s.ma === "AAA"));
   const csv = xayDungCsvDiemB(ds).trim().split("\n");
-  ok("CSV: header 16 cot, so cot moi dong khop", csv[0].split(",").length === 16 && csv.slice(1).every((d) => d.split(",").length === 16), csv[0]);
+  ok("CSV: header 18 cot (them ngay_cat_lo, tp_cham), so cot moi dong khop", csv[0].split(",").length === 18 && csv.slice(1).every((d) => d.split(",").length === 18), csv[0]);
   ok("CSV: null -> o rong, vni_yeu 1/0", csv.length < 2 || /,(0|1|),[\d.]*$/.test(csv[1]) || true);
 }
 

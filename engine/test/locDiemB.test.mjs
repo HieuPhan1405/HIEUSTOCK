@@ -1,5 +1,5 @@
 // Test tay cho lib/locDiemB.js (loc lich su diem B). Chay: node engine/test/locDiemB.test.mjs
-import { ganDacTrungNganh, nganhGop, locDiemB, thongKeDiemB, ketQuaDiemB, laiHienTai, ngayBatDauKhoang, danhSachNganh, laKhuyenNghi, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "../../lib/locDiemB.js";
+import { ganDacTrungNganh, nganhGop, locDiemB, thongKeDiemB, ketQuaDiemB, laiHienTai, trangThaiLenh, ngayBatDauKhoang, danhSachNganh, laKhuyenNghi, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "../../lib/locDiemB.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -55,6 +55,22 @@ ok("laKhuyenNghi khop bo loc: CCC (VNI khong yeu) khong, AAA co, null an toan", 
   ok("loc cungNganh = 2: B3 (B1, B2) va B4 (B2, B3); = 1: them B1 (B5 dung moc 5/10) va B2", ma(locDiemB(g, { cungNganh: 2 })) === "B3,B4" && ma(locDiemB(g, { cungNganh: 1 })) === "B1,B2,B3,B4", ma(locDiemB(g, { cungNganh: 2 })) + " / " + ma(locDiemB(g, { cungNganh: 1 })));
   ok("cungNganh = 0: khong loc", locDiemB(g, { cungNganh: 0 }).length === g.length);
   ok("manhNganh: B4 giam 30% > trung vi cua so (>= 3 diem, trung vi >= 10%)", typeof m.B4.ng_manh === "boolean" && m.B1.ng_manh === false, `${m.B4.ng_manh}`);
+}
+{
+  // trang thai lenh: dang giu / da cat lo / cho vao; thong ke chi tinh lenh dang giu; loc mac dinh bo lenh da cat lo
+  const dd = [
+    { ma: "G1", ngay: "2026-10-10", gia_vao: 10, gia_hien_tai: 11, sl: 9, ngay_cat_lo: null, tp_cham: 1 },
+    { ma: "G2", ngay: "2026-10-09", gia_vao: 20, gia_hien_tai: 19, sl: 18, ngay_cat_lo: null },
+    { ma: "C1", ngay: "2026-10-08", gia_vao: 50, gia_hien_tai: 40, sl: 46, ngay_cat_lo: "2026-10-12" },
+    { ma: "N1", ngay: "2026-10-21", gia_b: 30, gia_hien_tai: 30.5, sl: 28, ngay_cat_lo: null },
+  ];
+  ok("trangThaiLenh: giu / cat_lo / cho", trangThaiLenh(dd[0]) === "giu" && trangThaiLenh(dd[2]) === "cat_lo" && trangThaiLenh(dd[3]) === "cho");
+  ok("lai lenh cat lo = lo tai muc cat lo (46 / 50 - 1 = -8%), khong dung gia hien tai", Math.abs(laiHienTai(dd[2]) + 8) < 1e-9, String(laiHienTai(dd[2])));
+  ok("ket qua lenh cat lo: Da cat lo (xau)", ketQuaDiemB(dd[2]).nhan === "Đã cắt lỗ" && ketQuaDiemB(dd[2]).loai === "xau");
+  const t2 = thongKeDiemB(dd);
+  ok("thong ke chi tinh lenh DANG GIU: 2 giu (lai +10%, -5%), 1 cat lo, 1 cho; TB +2,5%, ty le lai 50%", t2.nGiu === 2 && t2.nCat === 1 && t2.nCho === 1 && Math.abs(t2.tbLai - 2.5) < 1e-9 && Math.abs(t2.tyLeLai - 50) < 1e-9, JSON.stringify(t2));
+  ok("tbTatCa gom ca lenh cat lo: (+10, -5, -8) / 3 = -1,0%", Math.abs(t2.tbTatCa + 1) < 1e-9, String(t2.tbTatCa));
+  ok("loc mac dinh: bo lenh da cat lo (C1), giu lenh cho vao; chiDangGiu: false giu tat ca", ma(locDiemB(dd)) === "G1,G2,N1" && ma(locDiemB(dd, { chiDangGiu: false })) === "G1,G2,C1,N1", ma(locDiemB(dd)));
 }
 ok("LOC_MAC_DINH khong dong vao du lieu", locDiemB(ds, LOC_MAC_DINH).length === 5);
 

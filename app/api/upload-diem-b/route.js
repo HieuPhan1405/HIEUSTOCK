@@ -1,7 +1,7 @@
 import { withDb, daoDamBangDiemB } from "@/lib/db";
 
 // Nhan CSV lich su DIEM MUA PHUC HOI (diem B) tu engine (engine/loi/lichSuDiemB.js xayDungCsvDiemB) - moi dong la 1 diem B cua 1 ma, tinh lai TOAN BO tu dau 2026 moi lan.
-// Header: ma,ngay,gia_b,giam,kl_day,day_20,sl,tp1,tp2,tp3,gia_vao,pct_sau_5,pct_sau_10,pct_sau_20,vni_yeu,gtgd (ngay dang yyyy-mm-dd, o rong = NULL).
+// Header: ma,ngay,gia_b,giam,kl_day,day_20,sl,tp1,tp2,tp3,gia_vao,pct_sau_5,pct_sau_10,pct_sau_20,vni_yeu,gtgd,ngay_cat_lo,tp_cham (ngay dang yyyy-mm-dd, o rong = NULL; ngay_cat_lo = ngay cham cat lo, rong = dang giu).
 // Upsert theo (ma, ngay); dong cu tu ngay nho nhat cua lan upload tro di ma khong con trong lan nay bi xoa (chi khi lan upload du lon, tranh xoa nham khi engine moi tai duoc vai ma).
 
 const NGUONG_XOA_TOI_THIEU = 50;
@@ -54,15 +54,15 @@ export async function POST(request) {
   await withDb(async (client) => {
     await daoDamBangDiemB(client);
     await client.query(
-      `INSERT INTO diem_b_su_kien (ma, ngay, gia_b, giam, kl_day, day_20, sl, tp1, tp2, tp3, gia_vao, pct_sau_5, pct_sau_10, pct_sau_20, vni_yeu, gtgd)
+      `INSERT INTO diem_b_su_kien (ma, ngay, gia_b, giam, kl_day, day_20, sl, tp1, tp2, tp3, gia_vao, pct_sau_5, pct_sau_10, pct_sau_20, vni_yeu, gtgd, ngay_cat_lo, tp_cham)
        SELECT * FROM unnest($1::text[], $2::date[], $3::float8[], $4::float8[], $5::float8[], $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
-                            $11::float8[], $12::float8[], $13::float8[], $14::float8[], $15::boolean[], $16::float8[])
+                            $11::float8[], $12::float8[], $13::float8[], $14::float8[], $15::boolean[], $16::float8[], $17::date[], $18::smallint[])
        ON CONFLICT (ma, ngay) DO UPDATE SET
          gia_b = EXCLUDED.gia_b, giam = EXCLUDED.giam, kl_day = EXCLUDED.kl_day, day_20 = EXCLUDED.day_20, sl = EXCLUDED.sl, tp1 = EXCLUDED.tp1, tp2 = EXCLUDED.tp2, tp3 = EXCLUDED.tp3,
-         gia_vao = EXCLUDED.gia_vao, pct_sau_5 = EXCLUDED.pct_sau_5, pct_sau_10 = EXCLUDED.pct_sau_10, pct_sau_20 = EXCLUDED.pct_sau_20, vni_yeu = EXCLUDED.vni_yeu, gtgd = EXCLUDED.gtgd`,
+         gia_vao = EXCLUDED.gia_vao, pct_sau_5 = EXCLUDED.pct_sau_5, pct_sau_10 = EXCLUDED.pct_sau_10, pct_sau_20 = EXCLUDED.pct_sau_20, vni_yeu = EXCLUDED.vni_yeu, gtgd = EXCLUDED.gtgd, ngay_cat_lo = EXCLUDED.ngay_cat_lo, tp_cham = EXCLUDED.tp_cham`,
       [
         cot("ma", (v) => v), cot("ngay", soNgay), cot("gia_b", soFloat), cot("giam", soFloat), cot("kl_day", soFloat), cot("day_20", soFloat), cot("sl", soFloat), cot("tp1", soFloat), cot("tp2", soFloat), cot("tp3", soFloat),
-        cot("gia_vao", soFloat), cot("pct_sau_5", soFloat), cot("pct_sau_10", soFloat), cot("pct_sau_20", soFloat), cot("vni_yeu", soBool), cot("gtgd", soFloat),
+        cot("gia_vao", soFloat), cot("pct_sau_5", soFloat), cot("pct_sau_10", soFloat), cot("pct_sau_20", soFloat), cot("vni_yeu", soBool), cot("gtgd", soFloat), cot("ngay_cat_lo", soNgay), cot("tp_cham", (v) => (soFloat(v) == null ? null : Math.round(soFloat(v)))),
       ]
     );
     if (hangDL.length >= NGUONG_XOA_TOI_THIEU) {
