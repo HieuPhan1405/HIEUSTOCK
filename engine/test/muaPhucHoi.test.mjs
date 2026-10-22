@@ -1,5 +1,5 @@
 // Test tay cho lib/muaPhucHoi.js (o "Mua phuc hoi (diem B)" o trang dau). Chay: node engine/test/muaPhucHoi.test.mjs
-import { dungMuaPhucHoi } from "../../lib/muaPhucHoi.js";
+import { dungMuaPhucHoi, nhanDiemBTruoc } from "../../lib/muaPhucHoi.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -47,6 +47,12 @@ ok("gia B cach day tinh %", Math.abs(ds[0].bDayPct - (10 / 8.8 - 1) * 100) < 1e-
   ok("an lenh da cat lo (pb_cat = 1)", !r.some((x) => x.ma === "CUT"), r.map((x) => x.ma).join(","));
   const ok1 = r.find((x) => x.ma === "OK1"), nov = r.find((x) => x.ma === "NOV");
   ok("laiPct so voi gia vao (10,45 / 9,5 - 1 = +10%); thieu pb_vao so voi gia B (10,3 / 10 - 1 = +3%)", ok1 && Math.abs(ok1.laiPct - 10) < 1e-9 && ok1.giaVao === 9.5 && nov && Math.abs(nov.laiPct - 3) < 1e-9 && nov.giaVao === 10, JSON.stringify([ok1?.laiPct, nov?.laiPct]));
+}
+{
+  const b = nhanDiemBTruoc({ ngay: "2026-10-12", gia_b: "10", gia_vao: "9.5", giam: "22", ngay_cat_lo: null }, "2026-10-22", 10.45);
+  ok("nhan diem B truoc: cach 10 ngay, lai +10% so gia vao, chua cat lo", b && b.soNgay === 10 && Math.abs(b.laiPct - 10) < 1e-9 && b.giaB === 10 && b.giam === 22 && b.daCatLo === false, JSON.stringify(b));
+  ok("nhan diem B truoc: lenh B da cat lo", nhanDiemBTruoc({ ngay: "2026-10-12", gia_b: 10, gia_vao: null, ngay_cat_lo: "2026-10-15" }, "2026-10-22", 9).daCatLo === true);
+  ok("nhan diem B truoc: cung phien = 0 ngay; diem B sau phien hoac thieu du lieu = null", nhanDiemBTruoc({ ngay: "2026-10-22", gia_b: 10 }, "2026-10-22", 10).soNgay === 0 && nhanDiemBTruoc({ ngay: "2026-10-23", gia_b: 10 }, "2026-10-22", 10) === null && nhanDiemBTruoc(undefined, "2026-10-22", 10) === null);
 }
 ok("khong co du lieu: mang rong", dungMuaPhucHoi({}).length === 0);
 

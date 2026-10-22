@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { fmt, pct, tinhVungLenh, chuoiVung, nhanGiaiNgan, nhanLoaiVao, nhanLenhWeb } from "@/components/dungChung";
 import { dungCoHoiHomNay } from "@/lib/coHoiHomNay";
+import { nhanDiemBTruoc } from "@/lib/muaPhucHoi";
 import { tenCongTy } from "@/lib/tenMa";
 import { CHUOI_TY_LE_CHOT } from "@/lib/tyLeChot";
 import NhanTheoDoi from "@/components/NhanTheoDoi";
@@ -121,7 +122,7 @@ function VungLenh({ row }) {
 }
 
 // TOP CO HOI DANG CHU Y (trang dau): 4 O LENH CUA PHIEN HOM NAY - hang tren Mua | Ban, hang duoi Mua moi | Ban bot (dien thoai: xep doc cung thu tu). Du lieu: lib/coHoiHomNay.js.
-export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) {
+export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], diemBGanDay = {} }) {
   const { mua, ban, muaMoi, banBot } = dungCoHoiHomNay({ tatCa, dongLenh, ngay });
   return (
     <section aria-label="Top cơ hội đáng chú ý hôm nay" className="mb-8">
@@ -146,13 +147,29 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) 
           moTa="Tín hiệu MUA mới trong phiên — ngoài khung giờ vào lệnh hiện THEO DÕI, chỉ mua trong khung"
           ds={mua}
           trong="Phiên này không có tín hiệu MUA."
-          hien={(r) => (
+          hien={(r) => {
+            const b = nhanDiemBTruoc(diemBGanDay[r.ma], ngay, r.gia);
+            return (
             <Dong
               key={r.khoa_lenh ?? r.ma}
               ma={r.ma}
               nhan={nhanLenhWeb(r)?.nhan ?? nhanLoaiVao(r)?.nhan ?? nhanGiaiNgan(r)?.nhan}
               mauNhan={nhanLenhWeb(r)?.mau ?? nhanLoaiVao(r)?.mau ?? nhanGiaiNgan(r)?.mau}
-              the={r.lenh_web || r.da_chot_mua ? null : <NhanTheoDoi loai="mua" />}
+              the={
+                <>
+                  {r.lenh_web || r.da_chot_mua ? null : <NhanTheoDoi loai="mua" />}
+                  {b && (
+                    <span
+                      className="inline-block mt-0.5 rounded px-1.5 py-0.5 text-[10px] font-bold"
+                      style={{ ...sans, color: "#fff", background: VANG }}
+                      title={`Đã có điểm mua phục hồi (điểm B) ngày ${ngayNgan(b.ngay)} (${b.soNgay === 0 ? "cùng phiên" : `${b.soNgay} ngày trước`}), giá B ${fmt(b.giaB)}${b.giam != null ? `, đã giảm ${fmt(b.giam)}%` : ""}${b.daCatLo ? ", lệnh B đã chạm cắt lỗ" : ""}`}
+                      data-may="co-diem-b-truoc"
+                    >
+                      Có điểm B trước
+                    </span>
+                  )}
+                </>
+              }
               phai={
                 <>
                   <span style={{ color: TEXT }}>{fmt(r.gia)}</span>
@@ -163,8 +180,21 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [] }) 
               }
             >
               <VungLenh row={r} />
+              {b && (
+                <>
+                  <br />
+                  <span style={{ color: VANG, ...sans, fontWeight: 700 }}>Điểm B {ngayNgan(b.ngay)}</span>
+                  {" · "}giá B <b style={{ color: TEXT }}>{fmt(b.giaB)}</b>
+                  {b.giam != null && <span> · đã giảm {fmt(b.giam)}%</span>}
+                  {b.laiPct != null && (
+                    <span style={{ color: mauLai(b.laiPct) }}> · từ giá vào B {pct(b.laiPct, 2)}</span>
+                  )}
+                  {b.daCatLo && <span style={{ color: DO }}> · lệnh B đã chạm cắt lỗ</span>}
+                </>
+              )}
             </Dong>
-          )}
+            );
+          }}
         />
 
         <OLenh
