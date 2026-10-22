@@ -42,7 +42,7 @@ function The({ nhan, children }) {
   );
 }
 
-const MAC_DINH = { soMa: 8, von: "", hang: [{ ma: "", giaVon: "" }] };
+const MAC_DINH = { soMa: 8, von: "", hang: [{ ma: "", giaVon: "" }], nganh: [] };
 function docDaLuu() {
   try {
     const s = JSON.parse(localStorage.getItem(KHOA) || "null");
@@ -50,6 +50,7 @@ function docDaLuu() {
     return {
       soMa: Number.isFinite(s.soMa) ? Math.max(1, Math.min(20, s.soMa)) : MAC_DINH.soMa,
       von: typeof s.von === "string" ? s.von : "",
+      nganh: Array.isArray(s.nganh) ? s.nganh.filter((x) => typeof x === "string").slice(0, 40) : [],
       hang: Array.isArray(s.hang) && s.hang.length ? s.hang.slice(0, 40).map((h) => ({ ma: String(h.ma ?? ""), giaVon: String(h.giaVon ?? "") })) : MAC_DINH.hang,
     };
   } catch {
@@ -72,17 +73,25 @@ function NoiDung({ tatCa = [], muaPhucHoi = [] }) {
   const [soMa, setSoMa] = useState(daLuu.soMa);
   const [von, setVon] = useState(daLuu.von);
   const [hang, setHang] = useState(daLuu.hang);
+  const [nganhChon, setNganhChon] = useState(daLuu.nganh);
 
   // luu lan nhap (tren trinh duyet cua rieng ban, khong gui len may chu)
   useEffect(() => {
     try {
-      localStorage.setItem(KHOA, JSON.stringify({ soMa, von, hang }));
+      localStorage.setItem(KHOA, JSON.stringify({ soMa, von, hang, nganh: nganhChon }));
     } catch {
       // trinh duyet chan luu tru: van dung binh thuong
     }
-  }, [soMa, von, hang]);
+  }, [soMa, von, hang, nganhChon]);
 
   const dsMa = useMemo(() => tatCa.map((r) => r.ma).sort(), [tatCa]);
+  // moi nganh + so ma dang co tin hieu MUA (de biet nganh nao dang co co hoi)
+  const dsNganh = useMemo(() => {
+    const m = new Map();
+    for (const r of tatCa) if (r.nganh) m.set(r.nganh, (m.get(r.nganh) ?? 0) + (r.tin === "MUA" ? 1 : 0));
+    return [...m.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "vi"));
+  }, [tatCa]);
+  const doiNganh = (ten) => setNganhChon((x) => (x.includes(ten) ? x.filter((n) => n !== ten) : [...x, ten]));
   const kq = useMemo(
     () =>
       goiYDanhMuc({
@@ -91,8 +100,9 @@ function NoiDung({ tatCa = [], muaPhucHoi = [] }) {
         tatCa,
         muaPhucHoi,
         vonTrieu: Number(String(von).replace(",", ".")) || null,
+        nganhChon,
       }),
-    [soMa, hang, von, tatCa, muaPhucHoi]
+    [soMa, hang, von, tatCa, muaPhucHoi, nganhChon]
   );
 
   const capNhatHang = (i, k, v) => setHang((h) => h.map((x, j) => (j === i ? { ...x, [k]: k === "ma" ? v.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 5) : v } : x)));
@@ -108,6 +118,36 @@ function NoiDung({ tatCa = [], muaPhucHoi = [] }) {
           <The nhan="Tổng vốn (triệu đồng) — không bắt buộc, để tính số tiền và số cổ phiếu">
             <input inputMode="decimal" placeholder="vd 500" value={von} onChange={(e) => setVon(e.target.value)} style={oNhap} aria-label="Tổng vốn triệu đồng" />
           </The>
+        </div>
+
+        <div className="mb-4">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2">
+            <span className="text-[11px]" style={{ color: MUTED, ...sans }}>
+              Ngành muốn đầu tư — chỉ áp dụng cho mã gợi ý thêm (số trong ngoặc: mã đang có tín hiệu MUA). Không chọn = mọi ngành.
+            </span>
+            {nganhChon.length > 0 && (
+              <button type="button" onClick={() => setNganhChon([])} className="text-[11px] underline" style={{ color: PRIMARY }}>
+                Bỏ chọn ({nganhChon.length})
+              </button>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-1.5" role="group" aria-label="Ngành muốn đầu tư">
+            {dsNganh.map(([ten, soMua]) => {
+              const bat = nganhChon.includes(ten);
+              return (
+                <button
+                  key={ten}
+                  type="button"
+                  aria-pressed={bat}
+                  onClick={() => doiNganh(ten)}
+                  className="text-xs px-2.5 py-1 rounded-full border"
+                  style={{ ...sans, borderColor: bat ? PRIMARY : VIEN, background: bat ? PRIMARY : "transparent", color: bat ? "#fff" : TEXT, fontWeight: bat ? 700 : 400 }}
+                >
+                  {ten} <span style={{ opacity: 0.7 }}>({soMua})</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         <p className="text-xs mb-2" style={{ color: MUTED, ...sans }}>
@@ -133,7 +173,7 @@ function NoiDung({ tatCa = [], muaPhucHoi = [] }) {
           <button type="button" onClick={() => setHang((x) => (x.length < 40 ? [...x, { ma: "", giaVon: "" }] : x))} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: PRIMARY, color: "#fff", ...sans, fontWeight: 600 }}>
             + Thêm mã
           </button>
-          <button type="button" onClick={() => setHang([{ ma: "", giaVon: "" }])} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: MUTED, ...sans }}>
+          <button type="button" onClick={() => { setHang([{ ma: "", giaVon: "" }]); setNganhChon([]); }} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: MUTED, ...sans }}>
             Xóa hết
           </button>
         </div>
@@ -154,7 +194,7 @@ function NoiDung({ tatCa = [], muaPhucHoi = [] }) {
                 <Link key={x.ma} href={`/ma/${x.ma}`} className="grid grid-cols-[64px_1fr_auto] gap-3 px-3 py-3 border-b last:border-b-0 items-start" style={{ borderColor: "var(--vien-nhe)" }}>
                   <span style={{ ...sans, fontWeight: 700, fontSize: 15 }}>{x.ma}</span>
                   <span className="text-xs leading-relaxed min-w-0" style={{ color: MUTED }}>
-                    <b style={{ color: mau, ...sans }}>{nhan}</b> — {x.lyDo}
+                    <b style={{ color: mau, ...sans }}>{nhan}</b> — {x.lyDo}{x.ngoaiNganh && <span style={{ color: VANG }}> Ngoài ngành bạn chọn{x.nganh ? ` (${x.nganh})` : ""}: nếu muốn tập trung vào ngành đã chọn, đây là mã có thể giảm.</span>}
                     {x.tyTrong != null && x.tyTrong > 0 && <span> Tỷ trọng gợi ý {phanTram(x.tyTrong)}{x.soCp != null && ` (${tien(x.soTien)}, ~${x.soCp.toLocaleString("vi-VN")} cp)`}.</span>}
                     {x.sl != null && <span> Cắt lỗ hệ thống {fmt(x.sl)}.</span>}
                   </span>
@@ -183,7 +223,10 @@ function NoiDung({ tatCa = [], muaPhucHoi = [] }) {
             ? `${kq.them.length} mã lấp chỗ trống (tối đa ${kq.soMa - kq.conLai.length}), chọn từ tín hiệu MUA mới / mã còn trong vùng mua / điểm B, tối đa 2 mã mỗi ngành, bỏ mã thanh khoản thấp và mã giá đã chạy khỏi vùng mua.`
             : kq.soMa - kq.conLai.length <= 0
               ? "Danh mục đã đủ số mã bạn muốn nắm."
-              : "Hiện không có mã nào đủ điều kiện để thêm."}
+              : kq.nganhChon.length > 0
+                ? "Các ngành bạn chọn hiện chưa có mã nào đủ điều kiện để thêm."
+                : "Hiện không có mã nào đủ điều kiện để thêm."}
+          {kq.boQuaViNganh > 0 && ` ${kq.boQuaViNganh} mã đủ điều kiện nhưng nằm ngoài ngành bạn chọn.`}
           {kq.thieuMa > 0 && kq.them.length > 0 && ` Còn thiếu ${kq.thieuMa} mã: phần vốn tương ứng giữ tiền mặt đến khi có cơ hội.`}
         </p>
         {kq.them.length > 0 && (

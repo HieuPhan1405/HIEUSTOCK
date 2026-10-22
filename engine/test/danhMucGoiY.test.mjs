@@ -67,6 +67,14 @@ ok("cat lo khong ap dung khi he thong khong giu (stop cu)", danhGiaMaDangCam(r("
   const kq = goiYDanhMuc({ soMa: 3, dangCam: [], tatCa: [r("X", { tin: "MUA" })] });
   ok("thieu ung vien: co tien mat va thieuMa", kq.them.length === 1 && kq.thieuMa === 2 && kq.tienMat > 0.5, JSON.stringify([kq.thieuMa, kq.tienMat]));
 }
+{
+  const tatCa = [r("A", { tin: "NAM GIU", nganh: "Thep" }), r("M1", { tin: "MUA", diem: 3, nganh: "Ngan hang" }), r("M2", { tin: "MUA", diem: 2, nganh: "Thep" }), r("M3", { tin: "MUA", diem: 1, nganh: "Dau khi" })];
+  const kq = goiYDanhMuc({ soMa: 4, dangCam: [{ ma: "A", giaVon: 15 }], tatCa, nganhChon: ["Thep", "Dau khi"] });
+  ok("nganhChon: chi them ma thuoc nganh da chon, dem so ma bi bo", kq.them.map((t) => t.ma).join() === "M2,M3" && kq.boQuaViNganh === 1, JSON.stringify([kq.them.map((t) => t.ma), kq.boQuaViNganh]));
+  const kq2 = goiYDanhMuc({ soMa: 4, dangCam: [{ ma: "A", giaVon: 15 }], tatCa, nganhChon: ["Ngan hang"] });
+  ok("ma dang cam ngoai nganh chon van duoc danh gia (giu) kem co ngoaiNganh", kq2.dangCam[0].loai === "giu" && kq2.dangCam[0].ngoaiNganh === true && kq2.them.map((t) => t.ma).join() === "M1");
+  ok("nganhChon rong = moi nganh", goiYDanhMuc({ soMa: 4, dangCam: [], tatCa }).them.length === 3);
+}
 
 if (loi) {
   console.log(`\n${loi} loi`);
