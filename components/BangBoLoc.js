@@ -306,10 +306,12 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
   }, [duLieu, loc, sapXep, nguoiDung, coDuLieuMoc, locChiBao]);
 
   // VE DAN: bang ~390 dong x hon chuc cot = gan 30.000 phan tu DOM, nang tren dien thoai. Ve 60 dong dau, cuon toi gan cuoi (hoac bam "Hien them") thi ve them 80 dong.
-  // So dong duoc ghi gan voi `daLoc` hien tai: doi bo loc / sap xep thi quay ve 60 dong dau.
-  const [veDan, setVeDan] = useState({ ds: null, n: SO_DONG_DAU });
-  const soDong = veDan.ds === daLoc ? veDan.n : SO_DONG_DAU;
-  const veThem = useCallback(() => setVeDan({ ds: daLoc, n: soDong + SO_DONG_THEM }), [daLoc, soDong]);
+  // So dong duoc ghi gan voi bo loc + sap xep hien tai: doi bo loc / sap xep thi quay ve 60 dong dau.
+  // Khoa theo bo loc + sap xep (KHONG theo danh tinh mang `daLoc`): du lieu duoc lam moi moi 60 giay (mang moi) nhung so dong da ve va vi tri cuon KHONG bi dat lai.
+  const khoaLoc = JSON.stringify([loc, sapXep, locChiBao, !!nguoiDung]);
+  const [veDan, setVeDan] = useState({ khoa: null, n: SO_DONG_DAU });
+  const soDong = veDan.khoa === khoaLoc ? veDan.n : SO_DONG_DAU;
+  const veThem = useCallback(() => setVeDan({ khoa: khoaLoc, n: soDong + SO_DONG_THEM }), [khoaLoc, soDong]);
   const canCuoiRef = useCallback(
     (el) => {
       if (!el || typeof IntersectionObserver === "undefined") return;

@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import XuatAnh from "@/components/XuatAnh";
+import { layCoDem } from "@/lib/boNhoMem";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import { layDongTienNuocNgoai } from "@/lib/thiTruong";
 import { TongQuanThiTruong } from "@/components/RaSoatThiTruong";
@@ -22,26 +24,33 @@ export const metadata = {
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
 
+// 2 the dung NGUON NGOAI (cham, 1-4 giay): KHONG chan ca trang. Tach thanh Suspense de phan chinh (DB, nhanh) hien ngay, 2 the nay hien sau khi co du lieu; them bo nho may chu
+// (layCoDem: tra ngay ban cu, lam moi ngam) nen tu lan thu 2 gan nhu tuc thi. Truoc day trang cho nguon ngoai toi da 4 giay moi lan mo -> bam gi cung bi do.
+function TheCho({ tieuDe }) {
+  return (
+    <div className="rounded-2xl border p-6 mb-6 text-sm" style={{ borderColor: "var(--vien)", background: "var(--card)", color: MUTED }} aria-busy="true">
+      {tieuDe}: đang tải…
+    </div>
+  );
+}
+async function TheKhoiNgoai() {
+  const ngoai = await layCoDem("khoi-ngoai", 300_000, layDongTienNuocNgoai, { choToiDaMs: 8000 });
+  return <KhoiNgoaiThiTruong ngoai={ngoai} />;
+}
+async function TheVungGiaTri() {
+  const vt = await layCoDem("vung-gia-tri-vnindex", 120_000, () => layLichSuGia("VNINDEX", 200).then((nen) => viTriTheoVungGiaTri(nen)), { choToiDaMs: 8000 });
+  return <VungGiaTriChiSo vt={vt} />;
+}
+
 export default async function TrangDashboard() {
   let tatCa = [];
   let chiSoVNIndex = null;
   let loi = null;
-  // 3 nguon doc SONG SONG (truoc day lan luot: toi da 4 + 4 giay cong don khi nguon ngoai cham):
-  //  - tin hieu + VN-Index tu DB;
-  //  - khoi ngoai: nguon ben ngoai, cho toi da 4 giay de khong lam cham trang;
-  //  - VN-Index so voi vung gia tri 60 phien (Volume Profile): nguon gia ben ngoai, cho toi da 4 giay; loi thi bo qua the nay.
-  const [kqDb, ngoai, vungGiaTri] = await Promise.all([
-    Promise.all([layTatCaTinHieu(), layChiSoVNIndex()]).then((v) => ({ v }), (e) => ({ e })),
-    Promise.race([layDongTienNuocNgoai().catch(() => null), new Promise((r) => setTimeout(() => r(null), 4000))]),
-    Promise.race([
-      layLichSuGia("VNINDEX", 200)
-        .then((nen) => viTriTheoVungGiaTri(nen))
-        .catch(() => null),
-      new Promise((r) => setTimeout(() => r(null), 4000)),
-    ]),
-  ]);
-  if (kqDb.e) loi = thongBaoLoi(kqDb.e);
-  else [tatCa, chiSoVNIndex] = kqDb.v;
+  try {
+    [tatCa, chiSoVNIndex] = await Promise.all([layTatCaTinHieu(), layChiSoVNIndex()]);
+  } catch (e) {
+    loi = thongBaoLoi(e);
+  }
 
   return (
     <div id="chup-dashboard" className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
@@ -62,12 +71,16 @@ export default async function TrangDashboard() {
       )}
 
       <TongQuanThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} />
-      <VungGiaTriChiSo vt={vungGiaTri} />
+      <Suspense fallback={<TheCho tieuDe="Vị trí VN-Index so với vùng giá trị" />}>
+        <TheVungGiaTri />
+      </Suspense>
       <BangRSNganh hang={tinhRSNganh(tatCa)} />
       <BanDoNhiet tatCa={tatCa} />
       <ThanhKhoanThiTruong ma="VNINDEX" />
       <AnhHuongIndex />
-      <KhoiNgoaiThiTruong ngoai={ngoai} />
+      <Suspense fallback={<TheCho tieuDe="Dòng tiền khối ngoại" />}>
+        <TheKhoiNgoai />
+      </Suspense>
     </div>
   );
 }
