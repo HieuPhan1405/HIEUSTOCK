@@ -21,10 +21,10 @@ function Dong({ ma, diem, pct, toiDa }) {
   const tang = diem >= 0;
   const rong = `${Math.max((Math.abs(diem) / toiDa) * 100, 1.5)}%`;
   return (
-    <div className="flex items-center h-7 text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }} title={`${ma}: ${dau(diem)} điểm${pct != null ? ` · giá ${dau(pct, 2)}%` : ""}`}>
+    <div className="flex items-center h-7 text-sm" style={{ fontFamily: "var(--font-chu)" }} title={`${ma}: ${dau(diem)} điểm${pct != null ? ` · giá ${dau(pct, 2)}%` : ""}`}>
       <div className="flex-1 flex items-center justify-end gap-2 min-w-0">
         {tang ? (
-          <Link href={`/ma/${ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", color: TEXT }}>
+          <Link href={`/ma/${ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", color: TEXT }}>
             {ma}
           </Link>
         ) : (
@@ -46,7 +46,7 @@ function Dong({ ma, diem, pct, toiDa }) {
             </span>
           </>
         ) : (
-          <Link href={`/ma/${ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", color: TEXT }}>
+          <Link href={`/ma/${ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", color: TEXT }}>
             {ma}
           </Link>
         )}
@@ -97,11 +97,11 @@ export default function AnhHuongIndex() {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
-        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
           Ảnh hưởng tới VN-Index {du ? (du.laHomNay ? "hôm nay" : `phiên ${ngayVN(du.ngay).slice(0, 5)}`) : ""}
         </p>
         {du && (
-          <p style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+          <p style={{ fontFamily: "var(--font-chu)" }}>
             <span className="text-lg font-bold" style={{ color: TEXT }}>
               {so(du.vniHienTai)}
             </span>{" "}

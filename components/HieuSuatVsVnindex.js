@@ -87,7 +87,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
         </p>
       ) : (
         <>
-          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1 mb-3" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+          <div className="flex flex-wrap items-baseline gap-x-6 gap-y-1 mb-3" style={{ fontFamily: "var(--font-chu)" }}>
             <span className="text-sm" style={{ color: MUTED }}>
               Lệnh đang mở TB <b style={{ color: mau(tk.lai), fontSize: 18 }}>{pct(tk.lai, 2)}</b>
             </span>
@@ -102,7 +102,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
             </span>
           </div>
 
-          <p className="text-xs mb-2 min-h-[16px]" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+          <p className="text-xs mb-2 min-h-[16px]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             {dongChon ? (
               <>
                 <b style={{ color: TEXT }}>{dongChon.ten}</b> · mua {ngayVN(dongChon.ngay)} · mã <b style={{ color: mau(dongChon.lai) }}>{pct(dongChon.lai, 2)}</b> · VNINDEX{" "}
@@ -140,7 +140,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
                       fontSize="9"
                       fill={laChon ? TEXT : MUTED}
                       transform={`rotate(-60 ${x0 + w / 2} ${H - DUOI + 10})`}
-                      style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: laChon ? 700 : 400 }}
+                      style={{ fontFamily: "var(--font-chu)", fontWeight: laChon ? 700 : 400 }}
                     >
                       {x.ten}
                     </text>

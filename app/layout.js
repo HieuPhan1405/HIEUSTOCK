@@ -1,4 +1,4 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import ThanhDau from "@/components/ThanhDau";
@@ -7,16 +7,12 @@ import { KhungGioProvider } from "@/components/KhungGioContext";
 import TuDongLamMoi from "@/components/TuDongLamMoi";
 import MayHuongDan from "@/components/MayHuongDan";
 import ThanhTabNhom from "@/components/ThanhTabNhom";
-import { FONT_IMPORT } from "@/components/dungChung";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+// Plus Jakarta Sans (co dau tieng Viet, so deu hang nho font-variant-numeric: tabular-nums o globals.css): thay Inter + JetBrains Mono (vuong vuc). Phan biet --font-chu-tai (next/font) voi --font-chu (ngan xep du phong).
+const phongChu = Plus_Jakarta_Sans({
+  variable: "--font-chu-tai",
+  subsets: ["latin", "vietnamese"],
+  display: "swap",
 });
 
 // Chan trang doc thong tin lien he tu DB o moi request - khong de Next dong cung luc build (vd /quan-tri, 404).
@@ -40,12 +36,11 @@ const SCRIPT_GIAO_DIEN = `(function(){try{var t=localStorage.getItem("cs-giao-di
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="vi" data-theme="dark" suppressHydrationWarning className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="vi" data-theme="dark" suppressHydrationWarning className={`${phongChu.variable} h-full antialiased`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: SCRIPT_GIAO_DIEN }} />
       </head>
       <body className="min-h-full flex flex-col" style={{ background: "var(--nen)" }}>
-        <style>{FONT_IMPORT}</style>
         <KhungGioProvider>
           <TuDongLamMoi />
           <ThanhDau />

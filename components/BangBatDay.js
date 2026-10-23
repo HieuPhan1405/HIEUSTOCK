@@ -100,7 +100,7 @@ export default function BangBatDay({ duLieu }) {
     <div>
       <div className="flex flex-wrap items-center gap-2 mb-2">
         {KHOANG.map((x) => (
-          <button key={x.k} onClick={() => setKhoang(x.k)} className="px-3 py-1.5 text-xs rounded-full border" style={{ borderColor: khoang === x.k ? PRIMARY : VIEN, background: khoang === x.k ? nhe(PRIMARY, 13) : "transparent", color: khoang === x.k ? PRIMARY : MUTED, fontFamily: "'Inter', sans-serif" }}>
+          <button key={x.k} onClick={() => setKhoang(x.k)} className="px-3 py-1.5 text-xs rounded-full border" style={{ borderColor: khoang === x.k ? PRIMARY : VIEN, background: khoang === x.k ? nhe(PRIMARY, 13) : "transparent", color: khoang === x.k ? PRIMARY : MUTED, fontFamily: "var(--font-chu)" }}>
             {x.nhan}
           </button>
         ))}
@@ -113,7 +113,7 @@ export default function BangBatDay({ duLieu }) {
             onChange={(e) => setTimKiem(e.target.value)}
             placeholder="Tìm mã cổ phiếu..."
             className="w-full pl-9 pr-3 py-2 text-sm rounded-lg outline-none"
-            style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}
+            style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
           />
         </div>
         <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }}>
@@ -150,9 +150,9 @@ export default function BangBatDay({ duLieu }) {
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+          <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
             <thead>
-              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "var(--font-chu)" }}>
                 {COT.map((c) => (
                   <th
                     key={c.khoa}
@@ -181,11 +181,11 @@ export default function BangBatDay({ duLieu }) {
                 return (
                   <tr key={row.id} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                     <td className="py-2.5 px-3">
-                      <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+                      <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
                         {row.ma}
                       </Link>
                       {row.vn100 === false && (
-                        <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(MUTED, 15), color: MUTED, fontFamily: "'Inter', sans-serif" }} title="Ngoài VN100 (GTGD TB20 ≥ 3 tỷ)">
+                        <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(MUTED, 15), color: MUTED, fontFamily: "var(--font-chu)" }} title="Ngoài VN100 (GTGD TB20 ≥ 3 tỷ)">
                           khác
                         </span>
                       )}
@@ -237,7 +237,7 @@ export default function BangBatDay({ duLieu }) {
               })}
               {daLoc.length === 0 && (
                 <tr>
-                  <td colSpan={COT.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                  <td colSpan={COT.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                     Chưa có dữ liệu phù hợp.
                   </td>
                 </tr>

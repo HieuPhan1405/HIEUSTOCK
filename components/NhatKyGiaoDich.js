@@ -63,10 +63,10 @@ function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri, nhanLenh }) {
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5">
-          <p className="text-sm" style={{ color: TEXT, fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
+          <p className="text-sm" style={{ color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 600 }}>
             {chinh}
           </p>
-          <span className="text-xs shrink-0" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+          <span className="text-xs shrink-0" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             {ngay ? ngayVN(ngay) : "—"}
           </span>
         </div>
@@ -76,13 +76,13 @@ function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri, nhanLenh }) {
           </p>
         )}
         {nhanLenh && (
-          <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px]" style={{ background: "var(--vien-nhe)", color: "var(--mo-2)", fontFamily: "'JetBrains Mono', monospace" }}>
+          <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px]" style={{ background: "var(--vien-nhe)", color: "var(--mo-2)", fontFamily: "var(--font-chu)" }}>
             {nhanLenh}
           </span>
         )}
       </div>
       {giaTri && (
-        <div className="shrink-0 text-right" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+        <div className="shrink-0 text-right" style={{ fontFamily: "var(--font-chu)" }}>
           <p className="text-sm font-bold" style={{ color: giaTri.mau }}>
             {giaTri.hien}
           </p>
@@ -119,13 +119,13 @@ function ThanhChonNhatKy({ lenh, khoaChon, datKhoa }) {
       {nut(
         "",
         <>
-          <span className="block text-sm font-bold" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <span className="block text-sm font-bold" style={{ fontFamily: "var(--font-chu)" }}>
             Tất cả
           </span>
-          <span className="block text-[11px]" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+          <span className="block text-[11px]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             {lenh.length} lệnh
           </span>
-          <span className="block text-xs" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+          <span className="block text-xs" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             {soDangGiu} đang giữ · {lenh.length - soDangGiu} đã đóng
           </span>
         </>
@@ -134,7 +134,7 @@ function ThanhChonNhatKy({ lenh, khoaChon, datKhoa }) {
         nut(
           l.khoa,
           <>
-            <span className="block text-sm font-bold" style={{ fontFamily: "'Inter', sans-serif" }}>
+            <span className="block text-sm font-bold" style={{ fontFamily: "var(--font-chu)" }}>
               Mua {ngayVN(l.ngayMua)}
               {l.laMuaMoi && <span style={{ color: NGOC }}> · Mua mới</span>}
               {l.tenLenh && (
@@ -144,11 +144,11 @@ function ThanhChonNhatKy({ lenh, khoaChon, datKhoa }) {
                 </span>
               )}
             </span>
-            <span className="block text-[11px]" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+            <span className="block text-[11px]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
               giá {fmt(l.giaMua)}
               {l.soPhien != null ? ` · ${chuoiGiuPhien(l.soPhien)}` : ""}
             </span>
-            <span className="block text-xs font-bold" style={{ fontFamily: "'JetBrains Mono', monospace", color: mauLaiLo(l.ketQuaPct) }}>
+            <span className="block text-xs font-bold" style={{ fontFamily: "var(--font-chu)", color: mauLaiLo(l.ketQuaPct) }}>
               {l.dangGiu ? "Đang giữ" : "Đã đóng"} · {pct(l.ketQuaPct, 2)}
             </span>
           </>
@@ -164,7 +164,7 @@ function TomTatLenh({ l }) {
   return (
     <div className="rounded-xl border p-3 mb-1 flex flex-wrap items-center justify-between gap-2" style={{ borderColor: VIEN, background: "var(--nen)" }}>
       <div className="min-w-0">
-        <p className="text-sm font-bold" style={{ color: TEXT, fontFamily: "'Inter', sans-serif" }}>
+        <p className="text-sm font-bold" style={{ color: TEXT, fontFamily: "var(--font-chu)" }}>
           Lệnh mua {ngayVN(l.ngayMua)} · giá {fmt(l.giaMua)}
           {l.laMuaMoi && <span style={{ color: NGOC }}> · Mua mới</span>}
           {l.tenLenh && (
@@ -179,7 +179,7 @@ function TomTatLenh({ l }) {
           {l.soPhien != null ? ` · ${chuoiGiuPhien(l.soPhien)}` : ""}
         </p>
       </div>
-      <div className="text-right" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+      <div className="text-right" style={{ fontFamily: "var(--font-chu)" }}>
         <p className="text-sm font-bold" style={{ color: mauLaiLo(kq) }}>
           {kq == null ? "—" : `100 → ${so(100 + kq)}`}
         </p>
@@ -227,7 +227,7 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], cacLenh = [] }) 
 
   return (
     <div className="rounded-2xl border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "#6C5CE7", fontFamily: "'JetBrains Mono', monospace" }}>
+      <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "#6C5CE7", fontFamily: "var(--font-chu)" }}>
         <span data-may="nhat-ky">★ Nhật ký giao dịch {ma}</span>
       </p>
       <p className="text-[11px] mb-3" style={{ color: MUTED }}>

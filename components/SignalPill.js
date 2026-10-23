@@ -37,7 +37,7 @@ export default function SignalPill({ tin: tinHeThong, banTheoDoiTu = null, minhH
   return (
     <span
       data-may={khoaMay}
-      style={{ background: s.bg, color: s.text, fontFamily: "'JetBrains Mono', monospace", border: theoDoiMua || theoDoiBan ? `1px dashed ${s.text}` : undefined }}
+      style={{ background: s.bg, color: s.text, fontFamily: "var(--font-chu)", border: theoDoiMua || theoDoiBan ? `1px dashed ${s.text}` : undefined }}
       className="px-2 py-0.5 text-xs font-bold tracking-wide rounded-sm whitespace-nowrap"
       title={title}
     >

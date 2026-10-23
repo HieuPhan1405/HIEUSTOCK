@@ -6,9 +6,8 @@ import { TY_LE_CHOT, TY_LE_CHOT_CU, CHUOI_TY_LE_CHOT_KET_THUC } from "@/lib/tyLe
 import { kiemTraDuLieuCu } from "@/lib/phienGiaoDich";
 import { soVN, pctVN, tyVN, khoiLuongVN } from "@/lib/soVN";
 
-export const FONT_IMPORT = `
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap');
-`;
+// Phong chu: Plus Jakarta Sans tai bang next/font o app/layout.js (tu host, khong @import Google chan ve trang), bien --font-chu o app/globals.css. Giu hang so de khong vo import cu.
+export const FONT_IMPORT = "";
 
 export function fmt(n) {
   if (n === null || n === undefined || Number.isNaN(Number(n))) return "—";

@@ -22,7 +22,7 @@ const DO = "var(--do)";
 function TheKPI({ nhan, giaTri, phu, mau }) {
   return (
     <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mau || TEXT }}>
+      <p className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mau || TEXT }}>
         {giaTri}
       </p>
       <p className="text-xs mt-1" style={{ color: MUTED }}>
@@ -71,7 +71,7 @@ export default async function TrangBatDay() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
-      <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Checklist dò bắt đáy
       </h1>
       <p className="text-sm mb-6" style={{ color: MUTED }}>
@@ -107,7 +107,7 @@ export default async function TrangBatDay() {
         <BangBatDay duLieu={duLieu} />
       )}
 
-      <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+      <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
         &quot;Đang theo dõi&quot; = tín hiệu quá mới, chưa đủ 20 phiên để đánh giá kết quả. Mã ngoài VN100 và nhóm &quot;KL đáy&quot; kiểm tra lịch sử cho kết quả không ổn định theo từng năm — chỉ là công cụ tham khảo, không phải khuyến nghị đầu tư.
       </p>
     </div>

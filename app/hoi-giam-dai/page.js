@@ -17,8 +17,8 @@ const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
 const DO = "var(--do)";
-const sans = { fontFamily: "'Inter', sans-serif" };
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
+const sans = { fontFamily: "var(--font-chu)" };
+const mono = { fontFamily: "var(--font-chu)" };
 
 function TheKPI({ nhan, giaTri }) {
   return (

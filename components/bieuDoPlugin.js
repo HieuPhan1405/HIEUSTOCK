@@ -133,7 +133,7 @@ export class DaiGia {
   }
   _ve(ctx, { width }) {
     if (!this._hien || !this._series) return;
-    ctx.font = "600 11px Inter, sans-serif";
+    ctx.font = "600 11px 'Plus Jakarta Sans', sans-serif";
     ctx.textBaseline = "top";
     for (const d of this._dai) {
       const y1 = this._series.priceToCoordinate(d.den);

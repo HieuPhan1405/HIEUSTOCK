@@ -103,10 +103,10 @@ function TheKPI({ nhan, giaTri, phu, mau, href, may, mo = false }) {
         className="absolute -right-8 -top-8 w-28 h-28 rounded-full blur-3xl opacity-25 pointer-events-none"
         style={{ background: mau || PRIMARY }}
       />
-      <p className="text-xs uppercase tracking-wide mb-2 relative" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }} data-may={may}>
+      <p className="text-xs uppercase tracking-wide mb-2 relative" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} data-may={may}>
         {nhan}
       </p>
-      <p className="text-3xl relative" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mau || TEXT, ...(mo ? { filter: "blur(7px)", userSelect: "none" } : {}) }}>
+      <p className="text-3xl relative" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mau || TEXT, ...(mo ? { filter: "blur(7px)", userSelect: "none" } : {}) }}>
         {giaTri}
       </p>
       {mo && <Lock size={15} color={MUTED} strokeWidth={2} className="absolute right-4 top-4" aria-hidden="true" />}
@@ -174,10 +174,10 @@ function BieuDoTronDoRong({ soXanh, soSideway, soDo, tong }) {
           daVe += doDai;
           return el;
         })}
-      <text x={tam} y={tam - 3} textAnchor="middle" fontSize="26" fontWeight="700" fill={TEXT} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+      <text x={tam} y={tam - 3} textAnchor="middle" fontSize="26" fontWeight="700" fill={TEXT} style={{ fontFamily: "var(--font-chu)" }}>
         {tong ? Math.round((soXanh / tong) * 100) : 0}%
       </text>
-      <text x={tam} y={tam + 16} textAnchor="middle" fontSize="10" fill={MUTED} style={{ fontFamily: "'Inter', sans-serif" }}>
+      <text x={tam} y={tam + 16} textAnchor="middle" fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
         mã xanh
       </text>
     </svg>
@@ -275,24 +275,24 @@ export default async function TrangTongQuan() {
         <div className="relative max-w-6xl mx-auto px-6 pt-14 pb-10">
           <p
             className="text-xs tracking-[0.25em] uppercase mb-3"
-            style={{ color: PRIMARY, fontFamily: "'JetBrains Mono', monospace" }}
+            style={{ color: PRIMARY, fontFamily: "var(--font-chu)" }}
           >
             Hệ thống hỗ trợ đầu tư · Quét toàn bộ thị trường
           </p>
           <h1
             className="text-4xl sm:text-5xl leading-[1.05] mb-4"
-            style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+            style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}
           >
             Tổng quan thị trường,<br />
             <span style={{ background: "linear-gradient(90deg, var(--tim-chu), #6C5CE7)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>
               đọc trong 5 giây.
             </span>
           </h1>
-          <p className="max-w-xl" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+          <p className="max-w-xl" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             Điểm hợp lưu Xu hướng · Động lượng · Dòng tiền cho {tong > 0 ? tong : "gần 400"} cổ phiếu HOSE, HNX, UPCOM, kiểm chứng
             bằng backtest 11 năm với giá vào lệnh thực tế. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc thị trường nhanh hơn.
           </p>
-          <div className="flex flex-wrap gap-3 mt-6 text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>
+          <div className="flex flex-wrap gap-3 mt-6 text-sm" style={{ fontFamily: "var(--font-chu)" }}>
             <Link href="/bo-loc" className="px-4 py-2.5 rounded-lg font-semibold" style={{ background: PRIMARY, color: "#FFFFFF" }}>
               Mở Bộ lọc cổ phiếu
             </Link>
@@ -327,17 +327,17 @@ export default async function TrangTongQuan() {
               style={{ background: nhanDinh.mau }}
             />
             <div className="flex items-center gap-2 mb-3 relative">
-              <span className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+              <span className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                 Nhận định nhanh
               </span>
               <span
                 className="text-xs font-bold px-2 py-0.5 rounded-sm"
-                style={{ color: nhanDinh.mau, background: nhe(nhanDinh.mau, 13), fontFamily: "'JetBrains Mono', monospace" }}
+                style={{ color: nhanDinh.mau, background: nhe(nhanDinh.mau, 13), fontFamily: "var(--font-chu)" }}
               >
                 {nhanDinh.sacThai}
               </span>
             </div>
-            <p className="text-sm leading-relaxed relative" style={{ fontFamily: "'Inter', sans-serif", color: "var(--chu-2)" }}>
+            <p className="text-sm leading-relaxed relative" style={{ fontFamily: "var(--font-chu)", color: "var(--chu-2)" }}>
               {nhanDinh.doanVan}
             </p>
             <p className="text-[11px] mt-3 relative" style={{ color: MUTED }}>
@@ -351,16 +351,16 @@ export default async function TrangTongQuan() {
           <div className="rounded-2xl border p-6 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
             <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
               <div>
-                <p className="text-xs uppercase tracking-wide mb-1" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                <p className="text-xs uppercase tracking-wide mb-1" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                   PTKT VNINDEX
                 </p>
                 <div className="flex items-baseline gap-3">
-                  <span className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+                  <span className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
                     {fmt(chiSoVNIndex.gia)}
                   </span>
                   <span
                     className="text-sm"
-                    style={{ fontFamily: "'JetBrains Mono', monospace", color: chiSoVNIndex.doi >= 0 ? XANH : DO }}
+                    style={{ fontFamily: "var(--font-chu)", color: chiSoVNIndex.doi >= 0 ? XANH : DO }}
                   >
                     {pct(chiSoVNIndex.doi, 2)}
                   </span>
@@ -369,7 +369,7 @@ export default async function TrangTongQuan() {
               {/* Chi so khong "nam giu" duoc - hien xu huong thay cho nhan lenh MUA / NAM GIU / BAN. */}
               <span
                 className="px-2 py-0.5 text-xs font-bold tracking-wide rounded-sm"
-                style={{ color: phanLoaiTrend(chiSoVNIndex.trend).mau, background: nhe(phanLoaiTrend(chiSoVNIndex.trend).mau, 13), fontFamily: "'JetBrains Mono', monospace" }}
+                style={{ color: phanLoaiTrend(chiSoVNIndex.trend).mau, background: nhe(phanLoaiTrend(chiSoVNIndex.trend).mau, 13), fontFamily: "var(--font-chu)" }}
               >
                 XU HƯỚNG {phanLoaiTrend(chiSoVNIndex.trend).nhan.toUpperCase()}
               </span>
@@ -380,20 +380,20 @@ export default async function TrangTongQuan() {
                 <p className="text-[11px] mb-1" style={{ color: MUTED }}>Điểm tổng hợp</p>
                 <p
                   className="text-lg"
-                  style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: chiSoVNIndex.diem >= 0 ? XANH : DO }}
+                  style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: chiSoVNIndex.diem >= 0 ? XANH : DO }}
                 >
                   {soVN(chiSoVNIndex.diem, 2, true)}
                 </p>
               </div>
               <div>
                 <p className="text-[11px] mb-1" style={{ color: MUTED }}>Xu hướng</p>
-                <p className="text-lg" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: phanLoaiTrend(chiSoVNIndex.trend).mau }}>
+                <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: phanLoaiTrend(chiSoVNIndex.trend).mau }}>
                   {phanLoaiTrend(chiSoVNIndex.trend).nhan}
                 </p>
               </div>
               <div>
                 <p className="text-[11px] mb-1" style={{ color: MUTED }}>Đường cân bằng</p>
-                <p className="text-lg" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+                <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
                   {fmt(chiSoVNIndex.kijun)}
                 </p>
               </div>
@@ -401,7 +401,7 @@ export default async function TrangTongQuan() {
               {chiSoVNIndex.kumo_twist && (
                 <div>
                   <p className="text-[11px] mb-1" style={{ color: MUTED }}>Mây tương lai đổi chiều</p>
-                  <p className="text-lg" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: chiSoVNIndex.kumo_twist === "TANG" ? XANH : DO }}>
+                  <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: chiSoVNIndex.kumo_twist === "TANG" ? XANH : DO }}>
                     {chiSoVNIndex.kumo_twist === "TANG" ? "Tăng" : "Giảm"}
                   </p>
                 </div>
@@ -411,13 +411,13 @@ export default async function TrangTongQuan() {
             <div className="grid sm:grid-cols-2 gap-4 mt-5 pt-5 border-t" style={{ borderColor: VIEN }}>
               <div className="flex justify-between text-sm">
                 <span style={{ color: MUTED }}>Vùng cân bằng trung hạn</span>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                <span style={{ fontFamily: "var(--font-chu)" }}>
                   {fmt(chiSoVNIndex.gg_bot)} – {fmt(chiSoVNIndex.gg_top)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span style={{ color: MUTED }}>Đỉnh 52 tuần</span>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>{fmt(chiSoVNIndex.dinh_52t)}</span>
+                <span style={{ fontFamily: "var(--font-chu)" }}>{fmt(chiSoVNIndex.dinh_52t)}</span>
               </div>
             </div>
 
@@ -468,10 +468,10 @@ export default async function TrangTongQuan() {
               <p className="text-xs uppercase tracking-wide mb-2" style={{ color: MUTED }}>
                 Kết luận thị trường
               </p>
-              <p className="text-base mb-3" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
+              <p className="text-base mb-3" style={{ fontFamily: "var(--font-chu)", fontWeight: 600 }}>
                 {sinhKetLuan(pctXanh, pctDo, tong)}
               </p>
-              <div className="flex flex-col gap-1 text-[11px]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              <div className="flex flex-col gap-1 text-[11px]" style={{ fontFamily: "var(--font-chu)" }}>
                 <span style={{ color: XANH }}>● Xanh {soXanh} mã</span>
                 <span style={{ color: VANG }}>● Sideway {soSideway} mã</span>
                 <span style={{ color: DO }}>● Đỏ {soDo} mã</span>
@@ -487,7 +487,7 @@ export default async function TrangTongQuan() {
               <div key={nhan} className="mb-3 last:mb-0">
                 <div className="flex justify-between text-xs mb-1" style={{ color: "var(--mo-2)" }}>
                   <span>{nhan}</span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                  <span style={{ fontFamily: "var(--font-chu)" }}>
                     {tongNhom === 0 ? "chưa có dữ liệu" : `${xanh}/${tongNhom} mã xanh (${soVN(pctXanhNhom, 1, true)}%)`}
                   </span>
                 </div>

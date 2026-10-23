@@ -11,8 +11,8 @@ const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
-const sans = { fontFamily: "'Inter', sans-serif" };
+const mono = { fontFamily: "var(--font-chu)" };
+const sans = { fontFamily: "var(--font-chu)" };
 
 const CAC_COT = [
   { khoa: "rs20", nhan: "RS 20 phiên", phu: "so với VN-Index, điểm %", kieu: "rs" },

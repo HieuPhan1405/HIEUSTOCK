@@ -46,10 +46,10 @@ function TheChiSo({ ten, hienTai, lichSu, doLech, tbLichSu, tuNgay }) {
           </span>
         )}
       </div>
-      <p className="text-3xl mt-1" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: PRIMARY }}>
+      <p className="text-3xl mt-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: PRIMARY }}>
         {so(hienTai, 2)}
       </p>
-      <div className="mt-2 grid grid-cols-3 gap-2 text-[11px]" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+      <div className="mt-2 grid grid-cols-3 gap-2 text-[11px]" style={{ fontFamily: "var(--font-chu)" }}>
         {[
           ["TB 1 năm", tb.tb1n],
           ["TB 3 năm", tb.tb3n],
@@ -187,25 +187,25 @@ export default function DinhGiaThiTruong() {
             {[tk.tb + tk.doLech, tk.tb, tk.tb - tk.doLech].map((v, i) => (
               <g key={i}>
                 <line x1={0} x2={rongVe} y1={y(v)} y2={y(v)} stroke={i === 1 ? VANG : MUTED} strokeDasharray={i === 1 ? "5,4" : "2,4"} opacity={i === 1 ? 0.8 : 0.45} />
-                <text x={-6} y={y(v) + 3} textAnchor="end" fontSize="9" fill={i === 1 ? VANG : MUTED} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                <text x={-6} y={y(v) + 3} textAnchor="end" fontSize="9" fill={i === 1 ? VANG : MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                   {so(v, dp)}
                 </text>
               </g>
             ))}
-            <text x={rongVe} y={y(tk.tb) - 4} textAnchor="end" fontSize="10" fill={VANG} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            <text x={rongVe} y={y(tk.tb) - 4} textAnchor="end" fontSize="10" fill={VANG} style={{ fontFamily: "var(--font-chu)" }}>
               TB {so(tk.tb, dp)} (±1 độ lệch chuẩn: {so(tk.tb - tk.doLech, dp)} – {so(tk.tb + tk.doLech, dp)})
             </text>
             <path d={duong} fill="none" stroke={PRIMARY} strokeWidth="2" />
             {nam.map((n) => {
               const i = diem.findIndex((d) => d.ngay.startsWith(n));
               return i >= 0 ? (
-                <text key={n} x={x(i)} y={caoVe + 16} fontSize="10" fill={MUTED} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                <text key={n} x={x(i)} y={caoVe + 16} fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                   {n}
                 </text>
               ) : null;
             })}
             <circle cx={x(diem.length - 1)} cy={y(cuoi.v)} r="4" fill={PRIMARY} stroke="#fff" strokeWidth="1.2" />
-            <text x={x(diem.length - 1) - 8} y={y(cuoi.v) - 8} textAnchor="end" fontSize="11" fontWeight="700" fill={PRIMARY} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            <text x={x(diem.length - 1) - 8} y={y(cuoi.v) - 8} textAnchor="end" fontSize="11" fontWeight="700" fill={PRIMARY} style={{ fontFamily: "var(--font-chu)" }}>
               {so(cuoi.v, 2)}
             </text>
             {hover != null && (
@@ -220,7 +220,7 @@ export default function DinhGiaThiTruong() {
         {hover != null && (
           <div
             className="absolute rounded-lg border px-2.5 py-1.5 text-xs"
-            style={{ left: Math.min(LE_TRAI + x(hover) + 10, rong - 130), top: 6, width: 120, pointerEvents: "none", borderColor: VIEN, background: "var(--nen)", fontFamily: "'JetBrains Mono', monospace" }}
+            style={{ left: Math.min(LE_TRAI + x(hover) + 10, rong - 130), top: 6, width: 120, pointerEvents: "none", borderColor: VIEN, background: "var(--nen)", fontFamily: "var(--font-chu)" }}
           >
             <p style={{ color: MUTED }}>{diem[hover].hienTai ? `Hiện tại (${ngayVN(diem[hover].ngay)})` : thangNam(diem[hover].ngay)}</p>
             <p style={{ color: PRIMARY, fontWeight: 700 }}>
@@ -236,9 +236,9 @@ export default function DinhGiaThiTruong() {
             PE / PB theo ngành (so với toàn thị trường: PE {so(du.pe.hienTai, 1)} · PB {so(du.pb.hienTai, 2)})
           </p>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+            <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
               <thead>
-                <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "var(--font-chu)" }}>
                   <th className="py-2 pr-3 font-normal">Ngành</th>
                   <th className="py-2 px-3 font-normal text-right">PE</th>
                   <th className="py-2 px-3 font-normal text-right">PB</th>
@@ -249,7 +249,7 @@ export default function DinhGiaThiTruong() {
               <tbody>
                 {du.theoNganh.map((n, i) => (
                   <tr key={n.nganh} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
-                    <td className="py-2 pr-3" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    <td className="py-2 pr-3" style={{ fontFamily: "var(--font-chu)" }}>
                       {n.nhan}
                     </td>
                     <td className="py-2 px-3 text-right" style={{ color: n.pe == null ? MUTED : n.pe <= du.pe.hienTai ? XANH : DO }}>

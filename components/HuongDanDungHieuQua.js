@@ -5,7 +5,7 @@ const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
-const sans = { fontFamily: "'Inter', sans-serif" };
+const sans = { fontFamily: "var(--font-chu)" };
 
 function Buoc({ so, tieuDe, children }) {
   return (

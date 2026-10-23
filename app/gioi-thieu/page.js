@@ -73,7 +73,7 @@ function TheTinhNang({ Icon, tieuDe, mo }) {
       <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(108,92,231,0.15)" }}>
         <Icon size={20} color={PRIMARY} strokeWidth={2} aria-hidden="true" />
       </div>
-      <h3 className="text-base mb-1.5" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <h3 className="text-base mb-1.5" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         {tieuDe}
       </h3>
       <p className="text-sm leading-relaxed" style={{ color: MUTED }}>
@@ -86,7 +86,7 @@ function TheTinhNang({ Icon, tieuDe, mo }) {
 function TheSo({ so, nhan }) {
   return (
     <div className="text-center">
-      <p className="text-2xl md:text-3xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: PRIMARY }}>
+      <p className="text-2xl md:text-3xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: PRIMARY }}>
         {so}
       </p>
       <p className="text-xs mt-1" style={{ color: MUTED }}>
@@ -104,10 +104,10 @@ export default function TrangGioiThieu() {
         <div aria-hidden="true" className="absolute -top-24 -left-24 w-96 h-96 rounded-full blur-3xl opacity-20 pointer-events-none" style={{ background: PRIMARY }} />
         <div aria-hidden="true" className="absolute -bottom-24 -right-24 w-96 h-96 rounded-full blur-3xl opacity-10 pointer-events-none" style={{ background: XANH }} />
         <div className="relative max-w-4xl mx-auto px-6 pt-20 pb-16 text-center">
-          <p className="text-xs uppercase tracking-widest mb-4" style={{ color: PRIMARY, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+          <p className="text-xs uppercase tracking-widest mb-4" style={{ color: PRIMARY, fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             Hệ thống hỗ trợ đầu tư · quét toàn bộ thị trường
           </p>
-          <h1 className="text-4xl md:text-5xl mb-5" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 800, lineHeight: 1.15 }}>
+          <h1 className="text-4xl md:text-5xl mb-5" style={{ fontFamily: "var(--font-chu)", fontWeight: 800, lineHeight: 1.15 }}>
             Tổng quan thị trường,
             <br />
             đọc trong 5 giây.
@@ -138,7 +138,7 @@ export default function TrangGioiThieu() {
       {/* TINH NANG */}
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="text-center mb-10">
-          <h2 className="text-2xl md:text-3xl mb-2" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <h2 className="text-2xl md:text-3xl mb-2" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             Công cụ cho mọi bước trong hành trình đầu tư
           </h2>
           <p className="text-sm" style={{ color: MUTED }}>
@@ -155,7 +155,7 @@ export default function TrangGioiThieu() {
       {/* CTA CUOI TRANG */}
       <div className="border-t" style={{ borderColor: VIEN }}>
         <div className="max-w-3xl mx-auto px-6 py-16 text-center">
-          <h2 className="text-2xl mb-3" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <h2 className="text-2xl mb-3" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             Trải nghiệm miễn phí trong tuần đầu sử dụng
           </h2>
           <p className="text-sm mb-7" style={{ color: MUTED }}>
@@ -163,7 +163,7 @@ export default function TrangGioiThieu() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <TaiKhoanNut compact nhan="Đăng ký nhận tư vấn miễn phí" />
-            <Link href="/huong-dan" className="text-sm" style={{ color: PRIMARY, fontFamily: "'JetBrains Mono', monospace" }}>
+            <Link href="/huong-dan" className="text-sm" style={{ color: PRIMARY, fontFamily: "var(--font-chu)" }}>
               Xem hướng dẫn & nguyên tắc →
             </Link>
           </div>

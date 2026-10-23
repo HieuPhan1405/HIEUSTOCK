@@ -69,7 +69,7 @@ export default function BanDoNhiet({ tatCa }) {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
           Bản đồ nhiệt theo ngành
         </p>
         <p className="text-[11px]" style={{ color: MUTED }}>
@@ -90,7 +90,7 @@ export default function BanDoNhiet({ tatCa }) {
                   stroke={VIEN}
                 />
                 {nganh.x1 - nganh.x0 > 40 && (
-                  <text x={nganh.x0 + 6} y={nganh.y0 + 14} fontSize="11" fontWeight="700" fill={MUTED} style={{ fontFamily: "'Inter', sans-serif" }}>
+                  <text x={nganh.x0 + 6} y={nganh.y0 + 14} fontSize="11" fontWeight="700" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                     {nganh.data.ten.toUpperCase()}
                   </text>
                 )}
@@ -110,17 +110,17 @@ export default function BanDoNhiet({ tatCa }) {
                   <rect x={la.x0} y={la.y0} width={w} height={h} style={{ cursor: "pointer", fill: mauTheoDoi(la.data.doi) }} />
                   {hienCa2 && (
                     <>
-                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 - 3} textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--nhiet-chu)" style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
+                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 - 3} textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--nhiet-chu)" style={{ pointerEvents: "none", fontFamily: "var(--font-chu)" }}>
                         {la.data.ma}
                       </text>
-                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 11} textAnchor="middle" fontSize="10" fill="var(--nhiet-chu-2)" style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
+                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 11} textAnchor="middle" fontSize="10" fill="var(--nhiet-chu-2)" style={{ pointerEvents: "none", fontFamily: "var(--font-chu)" }}>
                         {la.data.doi >= 0 ? "+" : ""}
                         {soVN(la.data.doi, 1, true)}%
                       </text>
                     </>
                   )}
                   {hienMa && (
-                    <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 4} textAnchor="middle" fontSize="10" fontWeight="700" fill="var(--nhiet-chu)" style={{ pointerEvents: "none", fontFamily: "'JetBrains Mono', monospace" }}>
+                    <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 4} textAnchor="middle" fontSize="10" fontWeight="700" fill="var(--nhiet-chu)" style={{ pointerEvents: "none", fontFamily: "var(--font-chu)" }}>
                       {la.data.ma}
                     </text>
                   )}

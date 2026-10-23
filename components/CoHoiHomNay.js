@@ -16,8 +16,8 @@ const DO = "var(--do)";
 const VANG = "var(--vang)";
 const NGOC = "var(--cyan)";
 const CAM = "var(--cam)";
-const sans = { fontFamily: "'Inter', sans-serif" };
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
+const sans = { fontFamily: "var(--font-chu)" };
+const mono = { fontFamily: "var(--font-chu)" };
 
 const ngayVN = (s) => (s ? String(s).slice(0, 10).split("-").reverse().join("/") : "");
 const ngayNgan = (s) => (s ? `${String(s).slice(8, 10)}/${String(s).slice(5, 7)}` : "");

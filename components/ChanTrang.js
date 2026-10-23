@@ -29,7 +29,7 @@ const THONG_TIN = [
 
 function TieuDe({ children }) {
   return (
-    <h2 className="text-sm mb-3" style={{ color: TEXT, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+    <h2 className="text-sm mb-3" style={{ color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 700 }}>
       {children}
     </h2>
   );
@@ -40,7 +40,7 @@ function DanhSachLink({ ds }) {
     <ul className="flex flex-col gap-2">
       {ds.map((x) => (
         <li key={x.href}>
-          <Link href={x.href} className="text-sm transition-colors hover:text-[color:var(--chu)]" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+          <Link href={x.href} className="text-sm transition-colors hover:text-[color:var(--chu)]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             {x.nhan}
           </Link>
         </li>
@@ -96,7 +96,7 @@ export default async function ChanTrang() {
                 Hệ thống hỗ trợ đầu tư chứng khoán, quét toàn bộ cổ phiếu HOSE, HNX, UPCOM và cập nhật sau mỗi phiên.
               </p>
               {sdt && (
-                <a href={hrefSdt} className="inline-flex items-center gap-2 text-sm hover:text-[color:var(--chu)]" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+                <a href={hrefSdt} className="inline-flex items-center gap-2 text-sm hover:text-[color:var(--chu)]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                   <Phone size={14} color={PRIMARY} aria-hidden="true" />
                   {sdt}
                 </a>

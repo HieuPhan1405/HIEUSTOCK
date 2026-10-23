@@ -23,7 +23,7 @@ function OTab({ active, onClick, children }) {
       style={{
         background: active ? "rgba(108,92,231,0.16)" : "transparent",
         color: active ? PRIMARY : MUTED,
-        fontFamily: "'Inter', sans-serif",
+        fontFamily: "var(--font-chu)",
       }}
     >
       {children}
@@ -35,7 +35,7 @@ function OTab({ active, onClick, children }) {
 function Truong({ nhan, icon: Icon, loi, children, phu }) {
   return (
     <label className="block">
-      <span className="flex items-center justify-between text-xs mb-1" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+      <span className="flex items-center justify-between text-xs mb-1" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
         <span>{nhan}</span>
         {phu}
       </span>
@@ -44,7 +44,7 @@ function Truong({ nhan, icon: Icon, loi, children, phu }) {
         {children}
       </span>
       {loi && (
-        <span className="block text-[11px] mt-1" style={{ color: DO, fontFamily: "'Inter', sans-serif" }} role="alert">
+        <span className="block text-[11px] mt-1" style={{ color: DO, fontFamily: "var(--font-chu)" }} role="alert">
           {loi}
         </span>
       )}
@@ -52,7 +52,7 @@ function Truong({ nhan, icon: Icon, loi, children, phu }) {
   );
 }
 
-const cssO = { background: "transparent", color: TEXT, fontFamily: "'Inter', sans-serif", minWidth: 0 };
+const cssO = { background: "transparent", color: TEXT, fontFamily: "var(--font-chu)", minWidth: 0 };
 const NHAN_MANH = ["", "Yếu", "Trung bình", "Khá", "Mạnh"];
 const MAU_MANH = ["var(--vien)", DO, "var(--vang-2)", "var(--chanh)", XANH];
 
@@ -155,8 +155,8 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
       <div className="w-full max-w-sm rounded-2xl border p-5 my-auto" style={{ borderColor: VIEN, background: NEN_CARD }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between mb-1">
           <div>
-            <p style={{ color: TEXT, fontFamily: "'Inter', sans-serif", fontWeight: 800, fontSize: 18 }}>{laDangKy ? "Tạo tài khoản CloudStock" : "Đăng nhập CloudStock"}</p>
-            <p className="text-xs mt-0.5" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+            <p style={{ color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 800, fontSize: 18 }}>{laDangKy ? "Tạo tài khoản CloudStock" : "Đăng nhập CloudStock"}</p>
+            <p className="text-xs mt-0.5" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
               {laDangKy ? "Miễn phí, chỉ mất khoảng 1 phút." : "Chào mừng bạn quay lại."}
             </p>
           </div>
@@ -166,7 +166,7 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
         </div>
 
         {tieuDeGoiY && (
-          <p className="text-xs my-3 px-3 py-2 rounded-lg" style={{ color: "var(--tim-chu)", background: "rgba(108,92,231,0.12)", fontFamily: "'Inter', sans-serif" }}>
+          <p className="text-xs my-3 px-3 py-2 rounded-lg" style={{ color: "var(--tim-chu)", background: "rgba(108,92,231,0.12)", fontFamily: "var(--font-chu)" }}>
             {tieuDeGoiY}
           </p>
         )}
@@ -205,7 +205,7 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
               autoComplete="tel"
               maxLength={16}
               className="flex-1 py-2.5 text-sm outline-none"
-              style={{ ...cssO, fontFamily: "'JetBrains Mono', monospace" }}
+              style={{ ...cssO, fontFamily: "var(--font-chu)" }}
             />
           </Truong>
           {laDangKy && (
@@ -244,7 +244,7 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
                   <span key={i} className="h-1 flex-1 rounded-full" style={{ background: i <= manh ? MAU_MANH[manh] : VIEN }} />
                 ))}
               </div>
-              <p className="text-[11px] mt-1" style={{ color: MAU_MANH[manh] === VIEN ? MUTED : MAU_MANH[manh], fontFamily: "'Inter', sans-serif" }}>
+              <p className="text-[11px] mt-1" style={{ color: MAU_MANH[manh] === VIEN ? MUTED : MAU_MANH[manh], fontFamily: "var(--font-chu)" }}>
                 Độ mạnh: {NHAN_MANH[manh]}
               </p>
             </div>
@@ -284,7 +284,7 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
           )}
 
           {loi && (
-            <p className="text-xs px-3 py-2 rounded-lg" style={{ color: DO, background: "rgba(239,68,68,0.10)", fontFamily: "'Inter', sans-serif" }} role="alert">
+            <p className="text-xs px-3 py-2 rounded-lg" style={{ color: DO, background: "rgba(239,68,68,0.10)", fontFamily: "var(--font-chu)" }} role="alert">
               {loi}
             </p>
           )}
@@ -298,7 +298,7 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
           </button>
         </form>
 
-        <p className="text-[11px] mt-3 leading-relaxed" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+        <p className="text-[11px] mt-3 leading-relaxed" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
           {laDangKy
             ? "Bằng việc tạo tài khoản, bạn đồng ý để CloudStock liên hệ tư vấn qua số điện thoại hoặc Gmail bạn cung cấp. Tài khoản mới cần được duyệt trước khi xem nội dung dành cho thành viên. Thông tin trên web chỉ mang tính tham khảo, không phải khuyến nghị đầu tư."
             : "Quên mật khẩu? Nhắn cho CloudStock qua Zalo trong mục Liên hệ để được hỗ trợ."}

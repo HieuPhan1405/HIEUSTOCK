@@ -25,7 +25,7 @@ export default function TraCuuMa() {
           background: "var(--card)",
           border: "1px solid var(--vien)",
           color: "var(--chu)",
-          fontFamily: "'JetBrains Mono', monospace",
+          fontFamily: "var(--font-chu)",
         }}
       />
       <button

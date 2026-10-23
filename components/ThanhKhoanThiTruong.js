@@ -178,7 +178,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
 
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <div className="flex items-center gap-1 mb-4 text-sm" style={{ fontFamily: "'Inter', sans-serif" }} role="tablist">
+      <div className="flex items-center gap-1 mb-4 text-sm" style={{ fontFamily: "var(--font-chu)" }} role="tablist">
         {[
           ["tk", "Thanh khoản"],
           ["dg", "Định giá PE/PB"],
@@ -204,7 +204,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
         </div>
       ) : (
         <>
-          <p className="text-center text-sm sm:text-base mb-1" style={{ color: TEXT, fontFamily: "'Inter', sans-serif" }}>
+          <p className="text-center text-sm sm:text-base mb-1" style={{ color: TEXT, fontFamily: "var(--font-chu)" }}>
             Thanh khoản VN-Index {m.daKetThuc ? "đạt" : "hiện"} <b style={{ color: PRIMARY }}>{so(m.giaTriA)} tỷ đồng</b>
             {m.soHomQua != null && (
               <>
@@ -213,7 +213,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
               </>
             )}
           </p>
-          <p className="text-center text-xs mb-3" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+          <p className="text-center text-xs mb-3" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             {m.tb20 != null && (
               <>
                 TB20 phiên: <b style={{ color: VANG }}>{so(m.tb20)} tỷ</b>
@@ -248,13 +248,13 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
                     {trucY.map((v) => (
                       <g key={v}>
                         <line x1={0} x2={rongVe} y1={y(v)} y2={y(v)} stroke={VIEN} />
-                        <text x={-8} y={y(v) + 3} textAnchor="end" fontSize="10" fill={MUTED} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                        <text x={-8} y={y(v) + 3} textAnchor="end" fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                           {so(v)}
                         </text>
                       </g>
                     ))}
                     {trucX.map((p) => (
-                      <text key={p} x={x(p)} y={caoVe + 16} textAnchor="middle" fontSize="10" fill={MUTED} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                      <text key={p} x={x(p)} y={caoVe + 16} textAnchor="middle" fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                         {gioPhut(p)}
                       </text>
                     ))}
@@ -269,7 +269,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
                     {m.tb20 != null && (
                       <>
                         <line x1={0} y1={y(m.tb20)} x2={rongVe} y2={y(m.tb20)} stroke={VANG} strokeWidth="1.2" strokeDasharray="5,4" opacity={0.85} />
-                        <text x={4} y={y(m.tb20) - 4} textAnchor="start" fontSize="10" fill={VANG} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                        <text x={4} y={y(m.tb20) - 4} textAnchor="start" fontSize="10" fill={VANG} style={{ fontFamily: "var(--font-chu)" }}>
                           TB20 phiên: {so(m.tb20)} tỷ
                         </text>
                       </>
@@ -285,7 +285,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
                           fontSize="11"
                           fontWeight="700"
                           fill={PRIMARY}
-                          style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                          style={{ fontFamily: "var(--font-chu)" }}
                         >
                           {so(m.giaTriA)}
                         </text>
@@ -300,7 +300,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
                 {hoverPhut != null && (
                   <div
                     className="absolute rounded-lg border px-2.5 py-1.5 text-xs"
-                    style={{ left: Math.min(LE_TRAI + x(hoverPhut) + 10, rong - 150), top: 6, width: 140, pointerEvents: "none", borderColor: VIEN, background: "var(--nen)", fontFamily: "'JetBrains Mono', monospace" }}
+                    style={{ left: Math.min(LE_TRAI + x(hoverPhut) + 10, rong - 150), top: 6, width: 140, pointerEvents: "none", borderColor: VIEN, background: "var(--nen)", fontFamily: "var(--font-chu)" }}
                   >
                     <p style={{ color: MUTED }}>{gioPhut(hoverPhut)}</p>
                     <p style={{ color: PRIMARY, fontWeight: 700 }}>
@@ -333,13 +333,13 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-wide mb-2" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+              <p className="text-xs uppercase tracking-wide mb-2" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                 Top GTGD {du.laHomNay ? "hôm nay" : `phiên ${ngayVN(m.a.ngay).slice(0, 5)}`}
               </p>
-              <ul className="text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              <ul className="text-sm" style={{ fontFamily: "var(--font-chu)" }}>
                 {(du.top ?? []).map((t, i) => (
                   <li key={t.ma} className={`flex items-center justify-between py-1.5 ${i > 0 ? "border-t" : ""}`} style={{ borderColor: "var(--vien-nhe)" }}>
-                    <Link href={`/ma/${t.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+                    <Link href={`/ma/${t.ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
                       {t.ma}
                     </Link>
                     <span className="text-xs" style={{ color: MUTED }}>

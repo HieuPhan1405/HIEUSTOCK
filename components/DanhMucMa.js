@@ -18,8 +18,8 @@ const VANG = "var(--vang)";
 const NGOC = "var(--cyan)";
 const TIM = "var(--tim-nhat)";
 const PRIMARY = "#6C5CE7";
-const CHU_THAN = "'Inter', sans-serif";
-const CHU_SO = "'JetBrains Mono', monospace";
+const CHU_THAN = "var(--font-chu)";
+const CHU_SO = "var(--font-chu)";
 
 const ngayVN = (s) => (s ? String(s).slice(0, 10).split("-").reverse().join("/") : "—");
 const mauLai = (v) => (v == null ? MUTED : v >= 0 ? XANH : DO);

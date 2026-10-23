@@ -124,10 +124,10 @@ export default function DongHoGiaoDich({ className = "" }) {
       >
         <Clock size={15} color={tt.mau} strokeWidth={2} aria-hidden="true" />
         {/* Dien thoai: chi hien bieu tuong (mau theo trang thai khung vao lenh) de nhuong cho o tim kiem - bam vao xem gio + chi tiet. */}
-        <span className="hidden sm:inline" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "13px", color: TEXT, lineHeight: 1 }}>
+        <span className="hidden sm:inline" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, fontSize: "13px", color: TEXT, lineHeight: 1 }}>
           {gioChuoi}
         </span>
-        <span className="hidden lg:inline text-[11px]" style={{ color: tt.mau, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+        <span className="hidden lg:inline text-[11px]" style={{ color: tt.mau, fontFamily: "var(--font-chu)", fontWeight: 700 }}>
           {tt.nhan}
         </span>
       </button>
@@ -136,17 +136,17 @@ export default function DongHoGiaoDich({ className = "" }) {
           className="fixed left-2 right-2 top-[60px] sm:absolute sm:left-auto sm:right-0 sm:top-full sm:mt-2 sm:w-[320px] rounded-2xl border p-4 shadow-xl"
           style={{ borderColor: tt.trongKhung ? XANH : VIEN, background: NEN_CARD, zIndex: 40 }}
         >
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: "22px", color: TEXT, lineHeight: 1 }}>{gioChuoi}</p>
-          <p className="text-[11px] mt-1" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+          <p style={{ fontFamily: "var(--font-chu)", fontWeight: 700, fontSize: "22px", color: TEXT, lineHeight: 1 }}>{gioChuoi}</p>
+          <p className="text-[11px] mt-1" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             Giờ Việt Nam · {TEN_THU[tt.thu] || ""}
           </p>
-          <p className="text-sm mt-3" style={{ color: tt.mau, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <p className="text-sm mt-3" style={{ color: tt.mau, fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             {tt.nhan}
           </p>
-          <p className="text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+          <p className="text-xs" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             {tt.chiTiet}
           </p>
-          <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+          <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             Chỉ mua và chốt bán (bán theo tín hiệu, cắt lỗ) trong khung <b style={{ color: TEXT }}>{KHUNG_VAO_LENH.map((k) => `${dinhDangGio(k.tu)}–${dinhDangGio(k.den)}`).join(" · ")}</b>. Ngoài khung: tín hiệu hiện THEO DÕI, chưa đặt lệnh.
           </p>
         </div>

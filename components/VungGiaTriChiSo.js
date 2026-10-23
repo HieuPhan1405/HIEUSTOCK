@@ -8,7 +8,7 @@ const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "#F6C544";
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
+const mono = { fontFamily: "var(--font-chu)" };
 
 const TRANG_THAI = {
   tren: {
@@ -45,10 +45,10 @@ export default function VungGiaTriChiSo({ vt, ten = "VN-Index" }) {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
           {ten} theo khối lượng · vùng giá trị {vt.soPhien} phiên
         </p>
-        <span className="px-2.5 py-1 rounded-md text-xs font-bold" style={{ background: nhe(tt.mau, 14), color: tt.mau, border: `1px solid ${nhe(tt.mau, 30)}`, fontFamily: "'Inter', sans-serif" }}>
+        <span className="px-2.5 py-1 rounded-md text-xs font-bold" style={{ background: nhe(tt.mau, 14), color: tt.mau, border: `1px solid ${nhe(tt.mau, 30)}`, fontFamily: "var(--font-chu)" }}>
           {tt.nhan}
         </span>
       </div>

@@ -22,10 +22,10 @@ export default function KhoaTrangNoiDung({ tieuDe, moTa, choDuyet = false }) {
         >
           {choDuyet ? <Clock size={22} color={VANG} strokeWidth={2} /> : <Lock size={22} color="#6C5CE7" strokeWidth={2} />}
         </div>
-        <p className="text-lg mb-2" style={{ color: TEXT, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+        <p className="text-lg mb-2" style={{ color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 700 }}>
           {choDuyet ? "Tài khoản đang chờ duyệt" : tieuDe}
         </p>
-        <p className="text-sm mb-6" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+        <p className="text-sm mb-6" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
           {choDuyet ? "Tài khoản của bạn đã đăng ký thành công, đang chờ quản trị viên duyệt trước khi dùng được tính năng này. Vui lòng quay lại sau." : moTa}
         </p>
         {!choDuyet && (

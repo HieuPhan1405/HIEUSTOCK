@@ -42,7 +42,7 @@ function TheTin({ tin }) {
         />
       )}
       <div className="min-w-0">
-        <p className="text-sm leading-snug mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600, color: TEXT }}>
+        <p className="text-sm leading-snug mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 600, color: TEXT }}>
           {tin.tieuDe}
         </p>
         {tin.moTa && (
@@ -50,7 +50,7 @@ function TheTin({ tin }) {
             {tin.moTa}
           </p>
         )}
-        <p className="text-[11px]" style={{ color: "var(--mo-3)", fontFamily: "'JetBrains Mono', monospace" }}>
+        <p className="text-[11px]" style={{ color: "var(--mo-3)", fontFamily: "var(--font-chu)" }}>
           {thoiGianTuongDoi(tin.ngayISO)} · CafeF
         </p>
       </div>
@@ -63,7 +63,7 @@ function CotDanhMuc({ nhan, danhSach }) {
     <div className="rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <p
         className="text-xs uppercase tracking-wide mb-1 pb-3 border-b"
-        style={{ color: PRIMARY, borderColor: VIEN, fontFamily: "'JetBrains Mono', monospace" }}
+        style={{ color: PRIMARY, borderColor: VIEN, fontFamily: "var(--font-chu)" }}
       >
         {nhan}
       </p>
@@ -92,7 +92,7 @@ export default async function TrangThiTruong() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
-      <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Thông tin thị trường
       </h1>
       <p className="text-sm mb-6" style={{ color: MUTED }}>

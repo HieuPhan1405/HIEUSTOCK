@@ -18,7 +18,7 @@ const TIM = "var(--tim-nhat)";
 function The({ so, mau, nhan, phu, mauPhu }) {
   return (
     <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mau }}>
+      <p className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mau }}>
         {so}
       </p>
       <p className="text-xs mt-1" style={{ color: MUTED }}>
@@ -87,7 +87,7 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
 
   return (
     <>
-      <div className="inline-flex max-w-full overflow-x-auto rounded-xl p-1 mb-6 gap-1" style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, fontFamily: "'Inter', sans-serif" }} role="tablist">
+      <div className="inline-flex max-w-full overflow-x-auto rounded-xl p-1 mb-6 gap-1" style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, fontFamily: "var(--font-chu)" }} role="tablist">
         {TABS.map(([k, nhan, dem, mauDem]) => (
           <button
             key={k}
@@ -137,7 +137,7 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
 
       <BangLenhMo duLieu={lenhGop} loc={loc} datLoc={datLoc} />
       {soMa < lenhGop.length && (
-        <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+        <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
           Mã có nhiều lệnh đang mở được đánh số <b style={{ color: "var(--chu)" }}>(1), (2)...</b> theo ngày mua. Mỗi lệnh có giá mua, cắt lỗ, chốt lời và lãi/lỗ tính riêng; lệnh có nhãn{" "}
           <b style={{ color: "var(--cyan)" }}>Mua mới</b> là lệnh vào đợt sau (khi bạn bỏ qua lệnh đầu, có thể đợi đợt sau). Bấm vào mã để xem từng lệnh.
         </p>

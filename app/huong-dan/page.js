@@ -27,16 +27,16 @@ function Muc({ so, tieuDe, children }) {
         {so != null && (
           <div
             className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-sm"
-            style={{ background: "rgba(34,197,94,0.14)", color: XANH, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}
+            style={{ background: "rgba(34,197,94,0.14)", color: XANH, fontFamily: "var(--font-chu)", fontWeight: 700 }}
           >
             {so}
           </div>
         )}
         <div className="min-w-0">
-          <p className="text-sm mb-2" style={{ color: TEXT, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <p className="text-sm mb-2" style={{ color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             {tieuDe}
           </p>
-          <div className="text-sm leading-relaxed" style={{ color: NHAT, fontFamily: "'Inter', sans-serif" }}>
+          <div className="text-sm leading-relaxed" style={{ color: NHAT, fontFamily: "var(--font-chu)" }}>
             {children}
           </div>
         </div>
@@ -69,7 +69,7 @@ function KyHieu({ ky, mau, chu }) {
     <div className="flex items-start gap-2.5 py-1.5">
       <span
         className="shrink-0 min-w-[34px] text-center text-sm px-1"
-        style={{ color: mau, fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}
+        style={{ color: mau, fontFamily: "var(--font-chu)", fontWeight: 700 }}
       >
         {ky}
       </span>
@@ -81,7 +81,7 @@ function KyHieu({ ky, mau, chu }) {
 function TieuDeLon({ chu, phu }) {
   return (
     <div className="mt-10 mb-4">
-      <h2 className="text-xl" style={{ color: TEXT, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <h2 className="text-xl" style={{ color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         {chu}
       </h2>
       {phu && (
@@ -239,7 +239,7 @@ export default async function TrangHuongDan() {
 
   return (
     <div className="max-w-4xl mx-auto px-6 py-10" style={{ color: TEXT }}>
-      <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Hướng dẫn &amp; nguyên tắc giao dịch
       </h1>
       <p className="text-sm" style={{ color: MUTED }}>
@@ -341,10 +341,10 @@ export default async function TrangHuongDan() {
           <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(108,92,231,0.16)" }}>
             <Lock size={22} color={PRIMARY} strokeWidth={2} />
           </div>
-          <p className="text-base mb-2" style={{ color: TEXT, fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <p className="text-base mb-2" style={{ color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             {nguoiDung ? "Tài khoản đang chờ duyệt" : "Nguyên tắc giao dịch dành cho thành viên"}
           </p>
-          <p className="text-sm mb-6" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+          <p className="text-sm mb-6" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             {nguoiDung
               ? "Tài khoản của bạn đang chờ quản trị viên duyệt trước khi xem được phần này."
               : "Đăng ký hoặc đăng nhập miễn phí để xem đầy đủ 11 nguyên tắc: giải ngân 1 phần, bổ sung, giới hạn tỷ trọng, cắt lỗ, chốt lời, mua lại, bảo vệ lãi, tiêu chí chọn cổ phiếu, thời điểm đặt lệnh và giải thích ký hiệu."}
@@ -357,7 +357,7 @@ export default async function TrangHuongDan() {
         </div>
       )}
 
-      <p className="text-[11px] mt-8" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+      <p className="text-[11px] mt-8" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
         Đây là công cụ hỗ trợ đọc biểu đồ, không phải khuyến nghị đầu tư. Hiệu suất quá khứ không đảm bảo kết quả tương lai; quyết định giao dịch và
         rủi ro thuộc về nhà đầu tư.
       </p>

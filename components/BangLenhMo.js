@@ -41,7 +41,7 @@ const COT_RIENG = {
     hien: (row, ctx) => (
       <div className="flex flex-col min-w-0">
         <div className="flex items-center gap-1.5">
-          <Link href={`/ma/${row.ma}`} className="flex items-center gap-1 hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <Link href={`/ma/${row.ma}`} className="flex items-center gap-1 hover:underline" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             {row.mat_than && <TriangleAlert size={13} color={DO} strokeWidth={2} aria-hidden="true" className="shrink-0" />}
             {row.ten_lenh ?? row.ma}
           </Link>
@@ -55,19 +55,19 @@ const COT_RIENG = {
           )}
         </div>
         {row.la_lenh_moi && (
-          <span className="text-[10px] font-bold tracking-wide mt-0.5" data-may="mua-moi" style={{ color: NGOC, fontFamily: "'Inter', sans-serif" }} title="Lệnh mua mới (đợt sau): có giá mua, mức cắt lỗ, chốt lời và lãi/lỗ tính riêng">
+          <span className="text-[10px] font-bold tracking-wide mt-0.5" data-may="mua-moi" style={{ color: NGOC, fontFamily: "var(--font-chu)" }} title="Lệnh mua mới (đợt sau): có giá mua, mức cắt lỗ, chốt lời và lãi/lỗ tính riêng">
             Mua mới{row.mua_moi_hom_nay ? " · hôm nay" : ""}
           </span>
         )}
         {nhanLenhWeb(row) && (
-          <span className="text-[10px] font-bold tracking-wide mt-0.5" data-may="lenh-web" style={{ color: nhanLenhWeb(row).mau, fontFamily: "'Inter', sans-serif" }} title={nhanLenhWeb(row).moTa}>
+          <span className="text-[10px] font-bold tracking-wide mt-0.5" data-may="lenh-web" style={{ color: nhanLenhWeb(row).mau, fontFamily: "var(--font-chu)" }} title={nhanLenhWeb(row).moTa}>
             {nhanLenhWeb(row).nhan}
           </span>
         )}
         {row.ten_ngan && (
           <span
             className="block max-w-[190px] truncate text-[10px] font-normal leading-tight mt-0.5"
-            style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}
+            style={{ color: MUTED, fontFamily: "var(--font-chu)" }}
             title={row.ten_cong_ty}
           >
             {row.ten_ngan}
@@ -317,9 +317,9 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai 
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+          <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
             <thead>
-              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "var(--font-chu)" }}>
                 {dsCot.map((k, i) => {
                   const c = COT[k];
                   return (
@@ -380,7 +380,7 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai 
               })}
               {daLoc.length === 0 && (
                 <tr>
-                  <td colSpan={dsCot.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                  <td colSpan={dsCot.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                     Không có lệnh nào khớp bộ lọc hiện tại.
                   </td>
                 </tr>

@@ -39,7 +39,7 @@ export default function Sidebar() {
                 style={{
                   background: active ? "rgba(108,92,231,0.16)" : undefined,
                   color: active ? PRIMARY : MUTED,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-chu)",
                   fontWeight: active ? 600 : 500,
                 }}
               >
@@ -50,7 +50,7 @@ export default function Sidebar() {
           })}
         </nav>
 
-        <div className="px-6 py-4 text-[11px] flex flex-col gap-2" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace", borderTop: `1px solid ${VIEN}` }}>
+        <div className="px-6 py-4 text-[11px] flex flex-col gap-2" style={{ color: MUTED, fontFamily: "var(--font-chu)", borderTop: `1px solid ${VIEN}` }}>
           <Link href="/lien-he" className="inline-flex items-center gap-1.5 hover:text-[color:var(--chu)]" style={{ color: pathname === "/lien-he" ? PRIMARY : MUTED }}>
             <Mail size={13} /> Liên hệ
           </Link>
@@ -77,7 +77,7 @@ export default function Sidebar() {
                 style={{
                   borderColor: active ? PRIMARY : "transparent",
                   color: active ? TEXT : MUTED,
-                  fontFamily: "'Inter', sans-serif",
+                  fontFamily: "var(--font-chu)",
                   fontWeight: active ? 600 : 500,
                 }}
               >

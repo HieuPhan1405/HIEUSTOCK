@@ -73,7 +73,7 @@ function nhanKetThucGoc(x) {
 function The({ so, nhan, phu, mau, may }) {
   return (
     <div className="rounded-2xl border p-4 text-center h-full" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mau }}>
+      <p className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mau }}>
         {so}
       </p>
       <p className="text-xs mt-1" style={{ color: MUTED }} data-may={may}>
@@ -97,7 +97,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
 
   return (
     <div className={nhung ? "" : "max-w-6xl mx-auto px-6 py-10"} style={{ color: TEXT }}>
-      <TieuDeTag className={nhung ? "text-lg mb-1" : "text-2xl mb-1"} style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <TieuDeTag className={nhung ? "text-lg mb-1" : "text-2xl mb-1"} style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         {tieuDe}
       </TieuDeTag>
       <p className="text-sm mb-6" style={{ color: MUTED }}>
@@ -163,9 +163,9 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+          <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
             <thead>
-              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "var(--font-chu)" }}>
                 <th className="py-3 px-3 font-normal">Mã</th>
                 <th className="py-3 px-3 font-normal">Ngày mua</th>
                 <th className="py-3 px-3 font-normal text-right">Giá mua</th>
@@ -179,7 +179,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
             <tbody>
               {ds.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="py-8 px-4 text-center text-sm" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                  <td colSpan={8} className="py-8 px-4 text-center text-sm" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                     Chưa có lệnh nào đóng kể từ khi web bắt đầu ghi nhận. Khi một mã đang NẮM GIỮ chuyển sang BÁN, kết quả sẽ tự xuất hiện ở đây.
                   </td>
                 </tr>
@@ -187,16 +187,16 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
               {ds.map((x, i) => (
                 <tr key={`${x.ma}-${x.ngay_mua}-${x.vong}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                   <td className="py-2.5 px-3">
-                    <Link href={`/ma/${x.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+                    <Link href={`/ma/${x.ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
                       {x.ma}
                     </Link>
                     {MUA_THEM[x.vong] && (
-                      <span className="block text-[10px] font-bold tracking-wide leading-tight mt-0.5" style={{ color: MUA_THEM[x.vong].mau, fontFamily: "'Inter', sans-serif" }}>
+                      <span className="block text-[10px] font-bold tracking-wide leading-tight mt-0.5" style={{ color: MUA_THEM[x.vong].mau, fontFamily: "var(--font-chu)" }}>
                         {MUA_THEM[x.vong].nhan}
                       </span>
                     )}
                     {tenCongTy(x.ma) && (
-                      <span className="block max-w-[190px] truncate text-[10px] leading-tight" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }} title={tenCongTy(x.ma).ten}>
+                      <span className="block max-w-[190px] truncate text-[10px] leading-tight" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} title={tenCongTy(x.ma).ten}>
                         {tenCongTy(x.ma).ngan}
                       </span>
                     )}
@@ -215,7 +215,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                   <td className="py-2.5 px-3 text-right" style={{ color: MUTED }}>
                     {x.so_phien ?? "—"}
                   </td>
-                  <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                  <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                     {nhanKetThuc(x)}
                   </td>
                 </tr>

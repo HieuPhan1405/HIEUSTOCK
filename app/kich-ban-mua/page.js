@@ -42,7 +42,7 @@ export default async function TrangKichBanMua() {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
-      <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Kịch bản mua
       </h1>
       <p className="text-sm mb-2" style={{ color: MUTED }}>

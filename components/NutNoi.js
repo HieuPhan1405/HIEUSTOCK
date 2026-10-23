@@ -53,7 +53,7 @@ export default function NutNoi({ zalo, facebook, tiktok }) {
             rel="noopener noreferrer"
             aria-label="Chat Zalo"
             className={`${kieu} text-[11px]`}
-            style={{ background: "#0068FF", color: "#FFFFFF", fontFamily: "'Inter', sans-serif", fontWeight: 700 }}
+            style={{ background: "#0068FF", color: "#FFFFFF", fontFamily: "var(--font-chu)", fontWeight: 700 }}
           >
             Zalo
           </a>

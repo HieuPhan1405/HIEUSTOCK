@@ -32,12 +32,12 @@ function DongKenh({ Icon, nhan, giaTri, laLink }) {
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm hover:underline break-all"
-            style={{ color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}
+            style={{ color: TEXT, fontFamily: "var(--font-chu)" }}
           >
             {giaTri}
           </a>
         ) : (
-          <p className="text-sm break-all" style={{ color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}>
+          <p className="text-sm break-all" style={{ color: TEXT, fontFamily: "var(--font-chu)" }}>
             {giaTri}
           </p>
         )}
@@ -61,7 +61,7 @@ export default async function TrangLienHe() {
     <div className="max-w-xl mx-auto px-6 py-10" style={{ color: TEXT }}>
       <div className="flex items-center gap-2 mb-1">
         <Mail size={20} color={PRIMARY} strokeWidth={2} aria-hidden="true" />
-        <h1 className="text-2xl" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+        <h1 className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
           Liên hệ
         </h1>
       </div>
@@ -84,7 +84,7 @@ export default async function TrangLienHe() {
                 <p className="text-[11px] uppercase tracking-wide" style={{ color: MUTED }}>
                   Ủng hộ qua ngân hàng
                 </p>
-                <p className="text-sm" style={{ color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}>
+                <p className="text-sm" style={{ color: TEXT, fontFamily: "var(--font-chu)" }}>
                   {tt.ngan_hang ? `${tt.ngan_hang} — ` : ""}
                   {tt.so_tk}
                   {tt.chu_tk ? ` (${tt.chu_tk})` : ""}

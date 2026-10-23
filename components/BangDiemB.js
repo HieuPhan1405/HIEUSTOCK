@@ -15,8 +15,8 @@ const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
 const PRIMARY = "#6C5CE7";
-const sans = { fontFamily: "'Inter', sans-serif" };
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
+const sans = { fontFamily: "var(--font-chu)" };
+const mono = { fontFamily: "var(--font-chu)" };
 const MAU_KQ = { tot: XANH, xau: DO, cho: VANG };
 
 const ngayVN = (s) => String(s).slice(0, 10).split("-").reverse().join("/");

@@ -113,7 +113,7 @@ export default function HieuQuaDauTu() {
   if (!du) {
     return (
       <div className="mb-8 rounded-2xl border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <p className="text-base mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+        <p className="text-base mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
           Hiệu quả đầu tư
         </p>
         <div className="h-[200px] flex items-center justify-center text-sm" style={{ color: MUTED }}>
@@ -125,7 +125,7 @@ export default function HieuQuaDauTu() {
   if (!du.coDuLieu) {
     return (
       <div className="mb-8 rounded-2xl border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <p className="text-base mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+        <p className="text-base mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
           Hiệu quả đầu tư
         </p>
         <p className="text-sm py-6" style={{ color: MUTED }}>
@@ -152,20 +152,20 @@ export default function HieuQuaDauTu() {
 
   return (
     <div className="mb-8 rounded-2xl border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-base mb-2" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <p className="text-base mb-2" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Hiệu quả đầu tư
       </p>
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-1 mb-3 text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-1 mb-3 text-xs" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded-sm" style={{ background: MAU_VN }} />
-          VN-Index <b style={{ color: mauSo(cuoi.vn), fontFamily: "'JetBrains Mono', monospace" }}>{dau(cuoi.vn)}</b>
+          VN-Index <b style={{ color: mauSo(cuoi.vn), fontFamily: "var(--font-chu)" }}>{dau(cuoi.vn)}</b>
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded-sm" style={{ background: MAU_TSSL }} />
-          Tỷ suất sinh lời (TSSL) <b style={{ color: mauSo(cuoi.tssl), fontFamily: "'JetBrains Mono', monospace" }}>{dau(cuoi.tssl)}</b>
+          Tỷ suất sinh lời (TSSL) <b style={{ color: mauSo(cuoi.tssl), fontFamily: "var(--font-chu)" }}>{dau(cuoi.tssl)}</b>
         </span>
         <span>
-          {chenh >= 0 ? "Vượt" : "Thua"} VN-Index <b style={{ color: mauSo(chenh), fontFamily: "'JetBrains Mono', monospace" }}>{dau(chenh)}</b>
+          {chenh >= 0 ? "Vượt" : "Thua"} VN-Index <b style={{ color: mauSo(chenh), fontFamily: "var(--font-chu)" }}>{dau(chenh)}</b>
         </span>
       </div>
 
@@ -187,7 +187,7 @@ export default function HieuQuaDauTu() {
         ))}
       </div>
 
-      <p className="text-xs mb-1 min-h-[16px]" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+      <p className="text-xs mb-1 min-h-[16px]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
         {dHover ? (
           <>
             {ngayVN(dHover.ngay)} · TSSL <b style={{ color: mauSo(dHover.tssl) }}>{dau(dHover.tssl)}</b> · VN-Index <b style={{ color: mauSo(dHover.vn) }}>{dau(dHover.vn)}</b> · chênh{" "}
@@ -204,13 +204,13 @@ export default function HieuQuaDauTu() {
             {hinhHoc.moc.map((v) => (
               <g key={v}>
                 <line x1={0} x2={rongVe} y1={y(v)} y2={y(v)} stroke={v === 0 ? "var(--vien-dam)" : VIEN} />
-                <text x={-8} y={y(v) + 3} textAnchor="end" fontSize="10" fill={MUTED} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+                <text x={-8} y={y(v) + 3} textAnchor="end" fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                   {v.toLocaleString("vi-VN")} %
                 </text>
               </g>
             ))}
             {nhanTrucX.map((i) => (
-              <text key={i} x={x(i)} y={caoVe + 16} textAnchor={i === 0 ? "start" : i === diem.length - 1 ? "end" : "middle"} fontSize="10" fill={MUTED} style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+              <text key={i} x={x(i)} y={caoVe + 16} textAnchor={i === 0 ? "start" : i === diem.length - 1 ? "end" : "middle"} fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                 {ngayVN(diem[i].ngay).slice(0, 5)}
               </text>
             ))}

@@ -119,7 +119,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
   if (nguoiDung && thanhDau) {
     const ten = nguoiDung.ten || nguoiDung.sdt;
     return (
-      <div ref={goc} className="relative" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <div ref={goc} className="relative" style={{ fontFamily: "var(--font-chu)" }}>
         <button
           type="button"
           onClick={() => setMoMenu((v) => !v)}
@@ -153,7 +153,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
                   </button>
                 </div>
               )}
-              <p className="text-[11px] mt-0.5" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+              <p className="text-[11px] mt-0.5" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                 {nguoiDung.sdt}
               </p>
               {(nguoiDung.la_admin || !nguoiDung.da_duyet) && (
@@ -187,7 +187,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
 
   if (nguoiDung) {
     return (
-      <div className="flex items-center gap-2 text-xs" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <div className="flex items-center gap-2 text-xs" style={{ fontFamily: "var(--font-chu)" }}>
         {dangSuaTen ? (
           <FormDoiTen tenMoi={tenMoi} setTenMoi={setTenMoi} dangLuu={dangLuu} onLuu={luuTen} onHuy={() => setDangSuaTen(false)} />
         ) : (
@@ -217,7 +217,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
         onClick={() => setMoModal(true)}
         aria-label={thanhDau ? "Đăng ký / Đăng nhập" : undefined}
         className={`flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${thanhDau ? "h-9 w-9 sm:w-auto sm:px-3" : "px-3 py-2"} ${compact || thanhDau ? "" : "w-full"}`}
-        style={{ background: PRIMARY, color: "#FFFFFF", fontFamily: "'Inter', sans-serif" }}
+        style={{ background: PRIMARY, color: "#FFFFFF", fontFamily: "var(--font-chu)" }}
       >
         <UserRound size={14} strokeWidth={2.5} />
         {thanhDau ? (

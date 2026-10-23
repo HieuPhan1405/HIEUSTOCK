@@ -59,7 +59,7 @@ const COT_RIENG = {
     hien: (row, ctx) => (
       <div className="flex flex-col min-w-0">
         <div className="flex items-center gap-1.5">
-          <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             {row.ma}
           </Link>
           {row.mat_than && (
@@ -79,7 +79,7 @@ const COT_RIENG = {
         {row.ten_ngan && (
           <span
             className="block max-w-[190px] truncate text-[10px] font-normal leading-tight mt-0.5"
-            style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}
+            style={{ color: MUTED, fontFamily: "var(--font-chu)" }}
             title={row.ten_cong_ty}
           >
             {row.ten_ngan}
@@ -359,7 +359,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
       {/* THANH THONG KE NHANH */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }}>
+          <p className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             {duLieu.length}
           </p>
           <p className="text-xs mt-1" style={{ color: MUTED }}>
@@ -367,7 +367,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
           </p>
         </div>
         <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: XANH }}>
+          <p className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: XANH }}>
             {soTang}
           </p>
           <p className="text-xs mt-1" style={{ color: MUTED }}>
@@ -375,7 +375,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
           </p>
         </div>
         <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <p className="text-2xl" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: DO }}>
+          <p className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: DO }}>
             {soGiam}
           </p>
           <p className="text-xs mt-1" style={{ color: MUTED }}>
@@ -408,7 +408,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
               type="button"
               onClick={() => setMoModalTK(true)}
               className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg"
-              style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: MUTED, fontFamily: "'Inter', sans-serif" }}
+              style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: MUTED, fontFamily: "var(--font-chu)" }}
             >
               <Lock size={13} />
               Tất cả tín hiệu
@@ -460,9 +460,9 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
       {/* BANG */}
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+          <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
             <thead>
-              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "var(--font-chu)" }}>
                 {dsCot.map((k) => {
                   const c = COT[k];
                   return (
@@ -511,7 +511,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
               ))}
               {daLoc.length === 0 && (
                 <tr>
-                  <td colSpan={dsCot.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                  <td colSpan={dsCot.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                     Không tìm thấy mã nào khớp bộ lọc hiện tại.
                   </td>
                 </tr>
@@ -519,7 +519,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
               {daLoc.length > soDong && (
                 <tr ref={canCuoiRef}>
                   <td colSpan={dsCot.length} className="py-3 text-center">
-                    <button type="button" onClick={veThem} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: PRIMARY, fontFamily: "'Inter', sans-serif" }}>
+                    <button type="button" onClick={veThem} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: PRIMARY, fontFamily: "var(--font-chu)" }}>
                       Hiện thêm ({Math.min(SO_DONG_THEM, daLoc.length - soDong)} / còn {daLoc.length - soDong} mã)
                     </button>
                   </td>

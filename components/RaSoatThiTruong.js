@@ -16,8 +16,8 @@ const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
 
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
-const sans = { fontFamily: "'Inter', sans-serif" };
+const mono = { fontFamily: "var(--font-chu)" };
+const sans = { fontFamily: "var(--font-chu)" };
 
 function The({ tieuDe, phu, children }) {
   return (

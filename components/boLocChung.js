@@ -80,7 +80,7 @@ export function OSelect({ value, onChange, options, placeholder }) {
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="px-3 py-2 text-sm rounded-lg outline-none"
-      style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
+      style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
     >
       <option value="">{placeholder}</option>
       {options.map(([v, nhan]) => (
@@ -114,7 +114,7 @@ export function HangBoLocChung({ loc, datLoc, truocChon, sauChon, coBoLoc, onXoa
           onChange={(e) => dat("timKiem")(e.target.value)}
           placeholder="Tìm mã cổ phiếu..."
           className="w-full pl-9 pr-3 py-2 text-sm rounded-lg outline-none"
-          style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}
+          style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
         />
       </div>
       {truocChon}
@@ -267,7 +267,7 @@ export function ChonCotHienThi({ cot, dsKhoa, dangChon, onBat, onHienTatCa, onMa
         type="button"
         onClick={() => setMo((v) => !v)}
         className="flex items-center gap-1.5 px-3 py-2 text-sm rounded-lg"
-        style={{ background: NEN_CARD, border: `1px solid ${mo ? PRIMARY : VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
+        style={{ background: NEN_CARD, border: `1px solid ${mo ? PRIMARY : VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
       >
         <Columns3 size={14} />
         Cột hiển thị ({dsKhoa.filter((k) => dangChon.has(k)).length}/{dsKhoa.length})

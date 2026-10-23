@@ -56,7 +56,7 @@ function OKichBan({ r, k }) {
       <span className="text-[11px] ml-1" style={{ color: MUTED }}>
         ({ngayNgan(r[`${k}_ngay`])}, giá {fmt(r[`${k}_gia`])})
       </span>
-      <div className="text-[11px]" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+      <div className="text-[11px]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
         Điểm {soVN(r[`${k}_diem`], 2, true)} · {chuoiThayDoi(r, k)}
         {doi != null && doi < phien && <> · đủ điểm từ +{doi}, chờ xác nhận</>}
       </div>
@@ -126,7 +126,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
               borderColor: nhom === g.khoa ? PRIMARY : VIEN,
               background: nhom === g.khoa ? nhe(PRIMARY, 18) : NEN_CARD,
               color: nhom === g.khoa ? TEXT : MUTED,
-              fontFamily: "'Inter', sans-serif",
+              fontFamily: "var(--font-chu)",
               fontWeight: nhom === g.khoa ? 700 : 500,
             }}
           >
@@ -143,7 +143,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
             onChange={(e) => setTimKiem(e.target.value)}
             placeholder="Tìm mã cổ phiếu..."
             className="w-full pl-9 pr-3 py-2 text-sm rounded-lg outline-none"
-            style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}
+            style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -157,7 +157,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
                 borderColor: loc === l.khoa ? PRIMARY : VIEN,
                 background: loc === l.khoa ? nhe(PRIMARY, 16) : "transparent",
                 color: loc === l.khoa ? TEXT : MUTED,
-                fontFamily: "'Inter', sans-serif",
+                fontFamily: "var(--font-chu)",
                 fontWeight: loc === l.khoa ? 700 : 500,
               }}
             >
@@ -173,9 +173,9 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+          <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
             <thead>
-              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "var(--font-chu)" }}>
                 {cacCot.map((c) => (
                   <th key={c.khoa} className={`py-3 px-3 font-normal cursor-pointer select-none whitespace-nowrap ${c.canPhai ? "text-right" : "text-left"}`} onClick={() => doiSapXep(c.khoa)}>
                     <span className="inline-flex items-center gap-1">
@@ -199,7 +199,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
               {daLoc.map((r, i) => (
                 <tr key={r.ma} className={i > 0 ? "border-t align-top" : "align-top"} style={{ borderColor: "var(--vien-nhe)" }}>
                   <td className="py-2.5 px-3">
-                    <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+                    <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
                       {r.ma}
                     </Link>
                   </td>
@@ -208,7 +208,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
                     <td className="py-2.5 px-3 text-right">
                       {fmt(r.gia_mua)}
                       {r.gia_mua > 0 && r.gia > 0 && (
-                        <div className="text-[10px]" style={{ color: r.gia >= r.gia_mua ? XANH : DO, fontFamily: "'Inter', sans-serif" }}>
+                        <div className="text-[10px]" style={{ color: r.gia >= r.gia_mua ? XANH : DO, fontFamily: "var(--font-chu)" }}>
                           {r.gia >= r.gia_mua ? "+" : ""}
                           {soVN((r.gia / r.gia_mua - 1) * 100, 1)}%
                         </div>
@@ -217,7 +217,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
                   )}
                   <td className="py-2.5 px-3 text-right">
                     <span style={{ color: r.diem >= 1.25 ? XANH : TEXT }}>{soVN(r.diem, 2, true)}</span>
-                    <div className="text-[10px]" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                    <div className="text-[10px]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                       XH {so1(r.trend)} · ĐL {so1(r.mom)} · DT {so1(r.dt)}
                     </div>
                   </td>
@@ -240,7 +240,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
               ))}
               {daLoc.length === 0 && (
                 <tr>
-                  <td colSpan={cacCot.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                  <td colSpan={cacCot.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                     Chưa có dữ liệu phù hợp.
                   </td>
                 </tr>
@@ -250,7 +250,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
         </div>
       </div>
 
-      <div className="text-[11px] mt-3 space-y-1" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+      <div className="text-[11px] mt-3 space-y-1" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
         <p>
           <b style={{ color: VANG }}>Cách đọc:</b> &quot;Hôm nay&quot; là khoảng giá đóng cửa của phiên hôm nay (trong biên độ ±7%) mà hệ thống sẽ ra tín hiệu MUA. Ba cột kịch bản cho biết nếu giá giữ nguyên /
           tăng đều 1% / giảm đều 1% mỗi phiên thì sau bao nhiêu phiên mã đủ điều kiện MUA (tối đa 10 phiên), kèm điểm lúc đó và thành phần nào thay đổi (XH = xu hướng, ĐL = động lượng, DT = dòng tiền).

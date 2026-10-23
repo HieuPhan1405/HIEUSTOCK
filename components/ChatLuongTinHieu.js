@@ -10,7 +10,7 @@ const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
 const NGOC = "var(--cyan)";
-const CHU_SO = "'JetBrains Mono', monospace";
+const CHU_SO = "var(--font-chu)";
 
 const TEN_LOAI = { goc: "Mua", giua: "Mua mới", moi: "Mua mới (sau TP3)" };
 const ngayVN = (s) => (s ? String(s).slice(0, 10).split("-").reverse().join("/") : "—");
@@ -50,7 +50,7 @@ export default function ChatLuongTinHieu({ rows = [], ngayHomNay, loi }) {
   const ganNhat = rows.slice(0, 25);
   return (
     <section className="mt-10">
-      <h2 className="text-lg mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <h2 className="text-lg mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         <span data-may="gia-thuc-te">Giá thực tế lúc tín hiệu hiện</span>
       </h2>
       <GiaiThichThem className="mb-4" tomTat="Giá lúc tín hiệu hiện lần đầu so với mốc, và các tín hiệu vượt giả (hiện rồi mất trước khi đóng cửa).">
@@ -96,7 +96,7 @@ export default function ChatLuongTinHieu({ rows = [], ngayHomNay, loi }) {
           <div className="overflow-x-auto">
             <table className="w-full text-xs" style={{ fontFamily: CHU_SO }}>
               <thead>
-                <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "var(--font-chu)" }}>
                   <th className="py-2.5 px-3 font-normal">Mã</th>
                   <th className="py-2.5 px-3 font-normal">Ngày tín hiệu</th>
                   <th className="py-2.5 px-3 font-normal text-right">Giá hệ thống</th>
@@ -113,7 +113,7 @@ export default function ChatLuongTinHieu({ rows = [], ngayHomNay, loi }) {
                   const [tt, mauTT] = trangThai(r, ngayHomNay);
                   return (
                     <tr key={`${r.ma}|${r.loai}|${r.ngay_mua}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
-                      <td className="py-2 px-3" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      <td className="py-2 px-3" style={{ fontFamily: "var(--font-chu)" }}>
                         <b>{r.ma}</b>
                         <span className="ml-1.5 text-[10px] font-bold" style={{ color: r.loai === "goc" ? MUTED : NGOC }}>
                           {TEN_LOAI[r.loai]}
@@ -137,7 +137,7 @@ export default function ChatLuongTinHieu({ rows = [], ngayHomNay, loi }) {
                           "—"
                         )}
                       </td>
-                      <td className="py-2 px-3 text-[11px]" style={{ color: mauTT, fontFamily: "'Inter', sans-serif" }}>
+                      <td className="py-2 px-3 text-[11px]" style={{ color: mauTT, fontFamily: "var(--font-chu)" }}>
                         {tt}
                       </td>
                     </tr>

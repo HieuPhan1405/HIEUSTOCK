@@ -7,7 +7,7 @@ const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
+const mono = { fontFamily: "var(--font-chu)" };
 
 const tyDong = (v) => `${v > 0 ? "+" : ""}${Math.round(v).toLocaleString("vi-VN")} tỷ`;
 
@@ -56,7 +56,7 @@ export default function KhoiNgoaiThiTruong({ ngoai }) {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
           Khối ngoại (nhà đầu tư nước ngoài)
         </p>
         <p className="text-[11px]" style={{ color: MUTED }}>

@@ -59,7 +59,7 @@ export default function FormGuiTinNhan() {
           onChange={(e) => setHoTen(e.target.value)}
           placeholder="Nguyễn Văn A"
           className="w-full px-3 py-2.5 text-sm rounded-lg outline-none"
-          style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
+          style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
         />
       </div>
 
@@ -72,7 +72,7 @@ export default function FormGuiTinNhan() {
           onChange={(e) => setLienLac(e.target.value)}
           placeholder="ban@email.com hoặc 09xx xxx xxx"
           className="w-full px-3 py-2.5 text-sm rounded-lg outline-none"
-          style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'JetBrains Mono', monospace" }}
+          style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
         />
       </div>
 
@@ -86,7 +86,7 @@ export default function FormGuiTinNhan() {
           placeholder="Bạn muốn góp ý hay hỏi điều gì?"
           rows={5}
           className="w-full px-3 py-2.5 text-sm rounded-lg outline-none resize-none"
-          style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
+          style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
         />
       </div>
 

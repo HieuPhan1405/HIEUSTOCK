@@ -5,10 +5,10 @@ export const metadata = { title: "Không tìm thấy trang" };
 export default function NotFound() {
   return (
     <div className="max-w-5xl mx-auto px-6 py-24 text-center" style={{ color: "var(--chu)" }}>
-      <p className="text-5xl mb-3" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "#6C5CE7" }}>
+      <p className="text-5xl mb-3" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: "#6C5CE7" }}>
         404
       </p>
-      <h1 className="text-xl mb-2" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <h1 className="text-xl mb-2" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Không tìm thấy trang này
       </h1>
       <p className="text-sm mb-6" style={{ color: "var(--mo)" }}>

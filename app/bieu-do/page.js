@@ -53,7 +53,7 @@ export default async function TrangBieuDo({ searchParams }) {
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
-      <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Biểu đồ kỹ thuật
       </h1>
       <p className="text-sm mb-5" style={{ color: MUTED }}>
@@ -70,7 +70,7 @@ export default async function TrangBieuDo({ searchParams }) {
           placeholder="Nhập mã (ví dụ: VCB, VNINDEX)"
           aria-label="Mã cổ phiếu"
           className="px-3 py-2 text-sm flex-1 outline-none rounded-lg"
-          style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'JetBrains Mono', monospace", textTransform: "uppercase" }}
+          style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)", textTransform: "uppercase" }}
         />
         <button
           type="submit"
@@ -87,7 +87,7 @@ export default async function TrangBieuDo({ searchParams }) {
             key={g}
             href={`/bieu-do?ma=${g}`}
             className="px-2 py-1 rounded-md border hover:text-[color:var(--chu)]"
-            style={{ borderColor: g === ma ? PRIMARY : VIEN, color: g === ma ? TEXT : MUTED, fontFamily: "'JetBrains Mono', monospace" }}
+            style={{ borderColor: g === ma ? PRIMARY : VIEN, color: g === ma ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
           >
             {g}
           </Link>

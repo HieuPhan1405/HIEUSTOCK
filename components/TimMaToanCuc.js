@@ -163,11 +163,11 @@ export default function TimMaToanCuc({ className = "" }) {
           aria-label="Tìm mã cổ phiếu hoặc tên công ty"
           placeholder={hep ? "Tìm mã…" : "Tìm mã hoặc tên công ty…"}
           className="w-full h-9 pl-9 pr-3 md:pr-9 text-base sm:text-sm outline-none rounded-lg truncate"
-          style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" }}
+          style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
         />
         <kbd
           className="hidden md:block absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] px-1.5 py-0.5 rounded pointer-events-none"
-          style={{ border: `1px solid ${VIEN}`, color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}
+          style={{ border: `1px solid ${VIEN}`, color: MUTED, fontFamily: "var(--font-chu)" }}
         >
           /
         </kbd>
@@ -181,7 +181,7 @@ export default function TimMaToanCuc({ className = "" }) {
           style={{ background: NEN_CARD, border: `1px solid ${VIEN}` }}
         >
           {goiY.length === 0 ? (
-            <li className="px-3 py-3 text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+            <li className="px-3 py-3 text-xs" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
               {du ? `Không thấy mã hay công ty nào khớp "${q.trim()}".` : "Đang tải danh sách mã…"}
             </li>
           ) : (
@@ -195,13 +195,13 @@ export default function TimMaToanCuc({ className = "" }) {
                   className="w-full flex items-center gap-3 px-3 py-2 text-left cursor-pointer"
                   style={{ background: i === chon ? "rgba(108,92,231,0.16)" : "transparent" }}
                 >
-                  <span className="shrink-0 w-[68px] text-sm" style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: TEXT }}>
+                  <span className="shrink-0 w-[68px] text-sm" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: TEXT }}>
                     {x.ma}
                   </span>
-                  <span className="min-w-0 flex-1 truncate text-xs" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
+                  <span className="min-w-0 flex-1 truncate text-xs" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                     {x.ten}
                   </span>
-                  <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded" style={{ color: PRIMARY, background: "rgba(108,92,231,0.14)", fontFamily: "'Inter', sans-serif" }}>
+                  <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded" style={{ color: PRIMARY, background: "rgba(108,92,231,0.14)", fontFamily: "var(--font-chu)" }}>
                     {x.san}
                   </span>
                 </button>

@@ -72,7 +72,7 @@ function CardDinhGia({ dinhGia }) {
       <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
         Khuyến nghị công ty chứng khoán
       </p>
-      <table className="w-full text-sm" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+      <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
         <thead>
           <tr className="text-left" style={{ color: "var(--mo)" }}>
             <th className="font-normal pb-1">Công ty CK</th>
@@ -164,7 +164,7 @@ function TagInfo({ nhan, giaTri, mau }) {
   return (
     <span
       className="px-2.5 py-1 text-xs rounded-full border"
-      style={{ borderColor: mau || VIEN, color: mau || "var(--mo-2)", fontFamily: "'JetBrains Mono', monospace" }}
+      style={{ borderColor: mau || VIEN, color: mau || "var(--mo-2)", fontFamily: "var(--font-chu)" }}
     >
       {nhan}: <strong>{giaTri}</strong>
     </span>
@@ -182,7 +182,7 @@ function ThanhDiem({ nhan, giaTri, mucMax }) {
         <span>{nhan}</span>
         <span
           style={{
-            fontFamily: "'JetBrains Mono', monospace",
+            fontFamily: "var(--font-chu)",
             color: gt === null ? "var(--mo)" : duong ? "var(--xanh)" : "var(--do)",
           }}
         >
@@ -214,7 +214,7 @@ function ThanhMotChieu({ nhan, giaTri, mucMax, hauTo = "" }) {
     <div className="mb-3">
       <div className="flex justify-between text-xs mb-1" style={{ color: "var(--mo-2)" }}>
         <span>{nhan}</span>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace" }}>
+        <span style={{ fontFamily: "var(--font-chu)" }}>
           {gt === null ? "—" : `${soAn(gt, 1)}${hauTo} / ${soAn(mucMax, 0)}${hauTo}`}
         </span>
       </div>
@@ -311,15 +311,15 @@ function ThanhChonLenh({ cacLenh, chon, datChon }) {
               className="shrink-0 text-left rounded-xl border px-3 py-2"
               style={dangChon ? { borderColor: "#6C5CE7", background: "rgba(108,92,231,0.15)" } : { borderColor: VIEN, background: "transparent" }}
             >
-              <span className="block text-sm font-bold" style={{ fontFamily: "'Inter', sans-serif" }}>
+              <span className="block text-sm font-bold" style={{ fontFamily: "var(--font-chu)" }}>
                 {l.ten_lenh}
                 {l.la_lenh_moi ? <span style={{ color: "var(--cyan)" }}> · Mua mới</span> : ""}
                 {l.lenh_web === true ? <span style={{ color: "var(--vang)" }}> · Web giữ</span> : ""}
               </span>
-              <span className="block text-[11px]" style={{ color: "var(--mo)", fontFamily: "'JetBrains Mono', monospace" }}>
+              <span className="block text-[11px]" style={{ color: "var(--mo)", fontFamily: "var(--font-chu)" }}>
                 mua {ngayNgan(l.ngay_mua)} · giá {fmt(l.gia_mua)}
               </span>
-              <span className="block text-xs font-bold" style={{ fontFamily: "'JetBrains Mono', monospace", color: l.lai_lo_pct >= 0 ? "var(--xanh)" : "var(--do)" }}>
+              <span className="block text-xs font-bold" style={{ fontFamily: "var(--font-chu)", color: l.lai_lo_pct >= 0 ? "var(--xanh)" : "var(--do)" }}>
                 {pct(l.lai_lo_pct, 2)}
               </span>
             </button>
@@ -349,18 +349,18 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         <Link
           href="/lenh-mo"
           className="inline-flex items-center gap-1 text-xs"
-          style={{ color: "var(--mo-2)", fontFamily: "'JetBrains Mono', monospace" }}
+          style={{ color: "var(--mo-2)", fontFamily: "var(--font-chu)" }}
         >
           <ArrowLeft size={13} /> quay lại lệnh đang mở
         </Link>
-        <span className="text-xs" style={{ color: "var(--mo)", fontFamily: "'JetBrains Mono', monospace" }}>
+        <span className="text-xs" style={{ color: "var(--mo)", fontFamily: "var(--font-chu)" }}>
           {row.cap_nhat_luc ? `cập nhật lúc ${new Date(row.cap_nhat_luc).toLocaleString("vi-VN")}` : "dữ liệu mẫu"}
         </span>
       </div>
 
       {row.ten_cong_ty && (
         <div className="mb-5">
-          <h1 className="text-xl leading-snug" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <h1 className="text-xl leading-snug" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             {row.ma} <span style={{ fontWeight: 400, color: "var(--mo-2)" }}>— {row.ten_cong_ty}</span>
           </h1>
           {row.san && (
@@ -378,11 +378,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         <Card className="flex flex-col items-start">
           <div
             className="border rounded px-3 py-1.5 mb-4"
-            style={{ borderColor: VIEN, fontFamily: "'Inter', sans-serif", fontWeight: 700, fontSize: "20px", color: "var(--chu)" }}
+            style={{ borderColor: VIEN, fontFamily: "var(--font-chu)", fontWeight: 700, fontSize: "20px", color: "var(--chu)" }}
           >
             {row.ma}
           </div>
-          <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: mauDiem, fontSize: "40px", lineHeight: 1 }}>
+          <p style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mauDiem, fontSize: "40px", lineHeight: 1 }}>
             {soAn(row.diem)}
           </p>
           <p className="text-xs mt-1 mb-3" style={{ color: "var(--mo)" }} data-may="diem">
@@ -425,10 +425,10 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
             </span>
           )}
           <div className="mt-4 pt-4 border-t w-full" style={{ borderColor: VIEN }}>
-            <p style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--xanh)" }} className="text-base">
+            <p style={{ fontFamily: "var(--font-chu)", color: "var(--xanh)" }} className="text-base">
               {fmt(row.gia)}
             </p>
-            <p style={{ fontFamily: "'JetBrains Mono', monospace", color: row.doi >= 0 ? "var(--xanh)" : "var(--do)" }} className="text-xs">
+            <p style={{ fontFamily: "var(--font-chu)", color: row.doi >= 0 ? "var(--xanh)" : "var(--do)" }} className="text-xs">
               {pct(row.doi, 2)}
             </p>
             <p className="text-[11px] mt-1" style={{ color: "var(--mo)" }}>
@@ -459,7 +459,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               </p>
               <p
                 className="text-sm font-bold"
-                style={{ fontFamily: "'JetBrains Mono', monospace", color: vt.lai_lo_pct >= 0 ? "var(--xanh)" : "var(--do)" }}
+                style={{ fontFamily: "var(--font-chu)", color: vt.lai_lo_pct >= 0 ? "var(--xanh)" : "var(--do)" }}
               >
                 {pct(vt.lai_lo_pct, 2)}
               </p>
@@ -601,10 +601,10 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               <p className="text-[10px] uppercase mb-1" style={{ color: "var(--mo)" }}>
                 Hỗ trợ
               </p>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-sm">
+              <p style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }} className="text-sm">
                 {fmt(vungGia.hoTro1)}
               </p>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--mo)" }} className="text-xs">
+              <p style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: "var(--mo)" }} className="text-xs">
                 {fmt(vungGia.hoTro2)}
               </p>
             </div>
@@ -612,7 +612,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               <p className="text-[10px] uppercase mb-1" style={{ color: "var(--mo)" }}>
                 Giá hiện tại
               </p>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--xanh)" }} className="text-sm">
+              <p style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: "var(--xanh)" }} className="text-sm">
                 {fmt(row.gia)}
               </p>
             </div>
@@ -620,10 +620,10 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               <p className="text-[10px] uppercase mb-1" style={{ color: "var(--mo)" }}>
                 Kháng cự
               </p>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-sm">
+              <p style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }} className="text-sm">
                 {fmt(vungGia.khangCu1)}
               </p>
-              <p style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--mo)" }} className="text-xs">
+              <p style={{ fontFamily: "var(--font-chu)", color: "var(--mo)" }} className="text-xs">
                 {fmt(vungGia.khangCu2)}
               </p>
             </div>
@@ -639,7 +639,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 <span className="text-xs" style={{ color: "var(--do-chu)" }} data-may="cat-lo">
                   {vungLenh?.sl ? (vungLenh.sl.xa ? "Vùng cắt lỗ lúc mua (tham khảo)" : "Vùng cắt lỗ") : "Mức cắt lỗ (nếu đang giữ)"}
                 </span>
-                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, color: "var(--do)" }} className="text-sm">
+                <span style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: "var(--do)" }} className="text-sm">
                   {vungLenh?.sl ? chuoiVung(vungLenh.sl.tu, vungLenh.sl.den) : fmt(vt.stop_loss)}
                   <span className="text-[11px] ml-1" style={{ color: "var(--do-chu-2)" }}>
                     ({pct(khoangCach(vt.stop_loss), 2)})
@@ -675,11 +675,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
             <div className="mb-3 rounded p-2" style={{ background: "var(--nen)" }}>
               <p className="text-xs" style={{ color: "var(--mo-2)" }}>
                 Vùng chốt lời gần (TP1–TP2):{" "}
-                <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--xanh)" }}>{chuoiVung(vungLenh.tp.gan.tu, vungLenh.tp.gan.den)}</strong>
+                <strong style={{ fontFamily: "var(--font-chu)", color: "var(--xanh)" }}>{chuoiVung(vungLenh.tp.gan.tu, vungLenh.tp.gan.den)}</strong>
               </p>
               <p className="text-xs" style={{ color: "var(--mo-2)" }}>
                 Mốc xa (TP3):{" "}
-                <strong style={{ fontFamily: "'JetBrains Mono', monospace", color: "var(--xanh)" }}>{fmt(vungLenh.tp.xa)}</strong>
+                <strong style={{ fontFamily: "var(--font-chu)", color: "var(--xanh)" }}>{fmt(vungLenh.tp.xa)}</strong>
               </p>
               <p className="text-[10px] leading-snug mt-1" style={{ color: "var(--mo)" }}>
                 Tỷ lệ chốt: {VUNG.tyLeChot.tp1}% ở TP1, {VUNG.tyLeChot.tp2}% ở TP2, {VUNG.tyLeChot.giu}% còn lại giữ đến khi hệ thống báo BÁN (TP3 chỉ là mốc tham khảo). Sau TP2, mức cắt lỗ của phần còn lại dời về giá mua.
@@ -705,7 +705,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                       </span>
                     )}
                   </span>
-                  <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700 }} className="text-sm">
+                  <span style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }} className="text-sm">
                     {fmt(gia)}
                     {gia !== null && gia !== undefined && (
                       <span className="text-[11px] ml-1" style={{ color: "var(--mo)" }}>

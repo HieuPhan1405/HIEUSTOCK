@@ -11,8 +11,8 @@ const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
 const CYAN = "var(--cyan)";
-const sans = { fontFamily: "'Inter', sans-serif" };
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
+const sans = { fontFamily: "var(--font-chu)" };
+const mono = { fontFamily: "var(--font-chu)" };
 
 // "Top cơ hội đáng chú ý" ở dạng LÀM MỜ cho khách chưa đăng nhập / chưa được duyệt (2026-10-13): khung 4 ô giống thật (Mua | Bán | Mua mới | Bán bớt) với DỮ LIỆU GIẢ cố định
 // (không có mã thật, không có số thật - làm mờ bằng CSS nên người xem không thể lấy ra được thông tin gì) + khung mời đăng nhập ở giữa.

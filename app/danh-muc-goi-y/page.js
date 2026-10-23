@@ -15,7 +15,7 @@ export const metadata = {
 
 const MUTED = "var(--mo)";
 const DO = "var(--do)";
-const sans = { fontFamily: "'Inter', sans-serif" };
+const sans = { fontFamily: "var(--font-chu)" };
 
 export default async function TrangDanhMucGoiY() {
   const nguoiDung = await layNguoiDungHienTai();

@@ -7,8 +7,8 @@ const MUTED = "var(--mo)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
-const sans = { fontFamily: "'Inter', sans-serif" };
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
+const sans = { fontFamily: "var(--font-chu)" };
+const mono = { fontFamily: "var(--font-chu)" };
 const MAU_NHAN = { uu: XANH, yeu: VANG };
 
 const ngayLai = (cach) => (cach === 0 ? "hôm nay" : `${cach} phiên trước`);

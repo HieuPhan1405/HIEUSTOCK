@@ -45,7 +45,7 @@ export default async function TrangChiTietMa({ params }) {
     if (t) {
       return (
         <div className="max-w-5xl mx-auto px-6 pt-8 pb-16" style={{ color: "var(--chu)" }}>
-          <h1 className="text-xl leading-snug mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <h1 className="text-xl leading-snug mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             {ma.toUpperCase()} <span style={{ fontWeight: 400, color: "var(--mo-2)" }}>— {t.ten}</span>
           </h1>
           <p className="text-xs mb-1" style={{ color: "var(--mo)" }}>

@@ -332,7 +332,7 @@ export default function TrangQuanTri() {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-10" style={{ color: "var(--chu)" }}>
-      <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 600 }}>
+      <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 600 }}>
         Quản trị nội dung
       </h1>
       <p className="text-sm mb-6" style={{ color: "var(--mo)" }}>
@@ -495,9 +495,9 @@ export default function TrangQuanTri() {
           {dsNguoiDung.map((nd) => (
             <div key={nd.id} className="flex items-center justify-between py-2 border-b text-sm gap-2" style={{ borderColor: "var(--vien-nhe)" }}>
               <span>
-                <strong style={{ fontFamily: "'JetBrains Mono', monospace" }}>{nd.sdt}</strong>
+                <strong style={{ fontFamily: "var(--font-chu)" }}>{nd.sdt}</strong>
                 {nd.ten && <span style={{ color: "var(--mo)" }}> — {nd.ten}</span>}
-                {nd.email && <span style={{ color: "var(--mo)", fontFamily: "'JetBrains Mono', monospace", fontSize: 12 }}> · {nd.email}</span>}
+                {nd.email && <span style={{ color: "var(--mo)", fontFamily: "var(--font-chu)", fontSize: 12 }}> · {nd.email}</span>}
                 {nd.la_admin && (
                   <span
                     className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded"
@@ -617,7 +617,7 @@ export default function TrangQuanTri() {
           onChange={(e) => setMa(e.target.value)}
           placeholder="Nhập mã cổ phiếu (ví dụ: FPT)"
           className="px-3 py-2 text-sm flex-1 outline-none"
-          style={{ background: "var(--card)", border: `1px solid ${VIEN}`, color: "var(--chu)", fontFamily: "'JetBrains Mono', monospace" }}
+          style={{ background: "var(--card)", border: `1px solid ${VIEN}`, color: "var(--chu)", fontFamily: "var(--font-chu)" }}
         />
         <button
           type="submit"

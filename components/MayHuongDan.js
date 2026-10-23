@@ -174,7 +174,7 @@ export default function MayHuongDan() {
       {chaoHienTai && (
         <div
           className="may-bong-chao fixed z-[60] flex items-start gap-1 rounded-2xl border pl-3 pr-1 py-2 shadow-xl"
-          style={{ background: "var(--panel-tim)", borderColor: "rgba(167,139,250,0.55)", color: TEXT, fontFamily: "'Inter', sans-serif" }}
+          style={{ background: "var(--panel-tim)", borderColor: "rgba(167,139,250,0.55)", color: TEXT, fontFamily: "var(--font-chu)" }}
           role="status"
           aria-live="polite"
         >
@@ -193,11 +193,11 @@ export default function MayHuongDan() {
           role="dialog"
           aria-label="Mây hướng dẫn"
           className="may-khung fixed z-[60] rounded-2xl border p-4 shadow-2xl"
-          style={{ background: "var(--card)", borderColor: "rgba(167,139,250,0.45)", color: TEXT, fontFamily: "'Inter', sans-serif" }}
+          style={{ background: "var(--card)", borderColor: "rgba(167,139,250,0.45)", color: TEXT, fontFamily: "var(--font-chu)" }}
         >
           <div className="flex items-start justify-between gap-3 mb-3">
             <div>
-              <p className="text-[11px] uppercase tracking-wide" style={{ color: TIM, fontFamily: "'JetBrains Mono', monospace" }}>
+              <p className="text-[11px] uppercase tracking-wide" style={{ color: TIM, fontFamily: "var(--font-chu)" }}>
                 Mây hướng dẫn
               </p>
               <p className="text-base font-bold">{gioiThieu.ten}</p>

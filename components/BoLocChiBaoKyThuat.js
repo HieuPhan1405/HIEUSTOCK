@@ -14,7 +14,7 @@ const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const VANG = "var(--vang)";
 
-const kieuO = { background: NEN_O, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "'Inter', sans-serif" };
+const kieuO = { background: NEN_O, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" };
 
 // Khung BO LOC CHI BAO KY THUAT rieng (kieu TradingView): bam "Them bo loc" -> chon chi bao -> chon dieu kien co san hoac nhap khoang tu - den. Nhieu bo loc xep chong (AND).
 // dsLoc: [{ id, chiBao, dieuKien, tu, den }] (state o BangBoLoc). duLieu: toan bo ma (de dem so ma khop tung bo loc). luc: lan cap nhat chi bao gan nhat.
@@ -42,7 +42,7 @@ export default function BoLocChiBaoKyThuat({ dsLoc, datDsLoc, duLieu, luc }) {
   return (
     <section className="rounded-2xl border mb-4" style={{ borderColor: dsLoc.length > 0 ? PRIMARY : VIEN, background: NEN_CARD }} aria-label="Bộ lọc chỉ báo kỹ thuật">
       <div className="flex flex-wrap items-center gap-2 px-4 py-3">
-        <button type="button" onClick={() => setMo((v) => !v)} className="flex items-center gap-2 text-sm font-bold" style={{ color: TEXT, fontFamily: "'Inter', sans-serif" }} aria-expanded={mo}>
+        <button type="button" onClick={() => setMo((v) => !v)} className="flex items-center gap-2 text-sm font-bold" style={{ color: TEXT, fontFamily: "var(--font-chu)" }} aria-expanded={mo}>
           <SlidersHorizontal size={15} color={PRIMARY} aria-hidden="true" />
           Bộ lọc chỉ báo kỹ thuật
           {dsLoc.length > 0 && (
@@ -67,7 +67,7 @@ export default function BoLocChiBaoKyThuat({ dsLoc, datDsLoc, duLieu, luc }) {
             type="button"
             onClick={() => them("rsi")}
             className="flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
-            style={{ background: PRIMARY, color: "#fff", fontFamily: "'Inter', sans-serif" }}
+            style={{ background: PRIMARY, color: "#fff", fontFamily: "var(--font-chu)" }}
           >
             <Plus size={13} aria-hidden="true" />
             Thêm bộ lọc
@@ -133,7 +133,7 @@ export default function BoLocChiBaoKyThuat({ dsLoc, datDsLoc, duLieu, luc }) {
                           placeholder="Từ"
                           aria-label="Từ"
                           className="w-20 px-2 py-2 text-sm rounded-lg outline-none text-right"
-                          style={{ ...kieuO, fontFamily: "'JetBrains Mono', monospace" }}
+                          style={{ ...kieuO, fontFamily: "var(--font-chu)" }}
                         />
                         <span className="text-xs" style={{ color: MUTED }}>
                           –
@@ -145,7 +145,7 @@ export default function BoLocChiBaoKyThuat({ dsLoc, datDsLoc, duLieu, luc }) {
                           placeholder="Đến"
                           aria-label="Đến"
                           className="w-20 px-2 py-2 text-sm rounded-lg outline-none text-right"
-                          style={{ ...kieuO, fontFamily: "'JetBrains Mono', monospace" }}
+                          style={{ ...kieuO, fontFamily: "var(--font-chu)" }}
                         />
                         {d.donVi && (
                           <span className="text-xs" style={{ color: MUTED }}>

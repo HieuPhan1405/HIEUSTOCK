@@ -6,7 +6,7 @@ import Link from "next/link";
 export default function LoiTrang({ retry }) {
   return (
     <div className="max-w-5xl mx-auto px-6 py-24 text-center" style={{ color: "var(--chu)" }}>
-      <h1 className="text-xl mb-2" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+      <h1 className="text-xl mb-2" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Trang gặp lỗi khi tải
       </h1>
       <p className="text-sm mb-6" style={{ color: "var(--mo)" }}>

@@ -15,7 +15,7 @@ const PRIMARY = "#6C5CE7";
 const DO = "var(--do)";
 const XANH = "var(--xanh)";
 const VANG = "var(--vang)";
-const sans = { fontFamily: "'Inter', sans-serif" };
+const sans = { fontFamily: "var(--font-chu)" };
 
 const CHU_KY_MS = 3 * 60 * 1000;
 const KHOA_XEM_KHACH = "cs_tb_xem_luc";
@@ -350,7 +350,7 @@ export default function ChuongThongBao() {
                             </span>
                             {/* Gio web thay su kien - chi hien khi cung ngay voi phien (nap lai sau phien thi an, tranh nham gio). */}
                             {ngayVN(t.tao_luc) === n.ngay && (
-                              <span className="ml-auto text-[10px] shrink-0" style={{ color: MUTED, fontFamily: "'JetBrains Mono', monospace" }}>
+                              <span className="ml-auto text-[10px] shrink-0" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                                 {gioVN(t.tao_luc)}
                               </span>
                             )}

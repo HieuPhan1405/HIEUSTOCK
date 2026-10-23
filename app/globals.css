@@ -1,8 +1,13 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-chu);
+  --font-mono: var(--font-chu);
+}
+
+/* PHONG CHU CHUNG: moi cho (chu va so) dung 1 bien, doi phong chi sua day + next/font o app/layout.js. */
+:root {
+  --font-chu: var(--font-chu-tai), "Plus Jakarta Sans", system-ui, "Segoe UI", Roboto, sans-serif;
 }
 
 /* ---------- CHE DO SANG / TOI ----------
@@ -108,7 +113,9 @@ html[data-theme="light"] {
 body {
   background: var(--nen);
   color: var(--chu);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-chu);
+  font-variant-numeric: tabular-nums; /* so rong deu nhau: cot so thang hang du khong dung phong chu dong deu */
+  letter-spacing: -0.003em;
 }
 
 html {

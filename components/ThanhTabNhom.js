@@ -25,7 +25,7 @@ export default function ThanhTabNhom() {
               href={t.href}
               aria-current={chon ? "page" : undefined}
               className="px-3 py-2.5 text-sm whitespace-nowrap border-b-2 transition-colors hover:text-[color:var(--chu)]"
-              style={{ borderColor: chon ? PRIMARY : "transparent", color: chon ? TEXT : MUTED, fontFamily: "'Inter', sans-serif", fontWeight: chon ? 600 : 500 }}
+              style={{ borderColor: chon ? PRIMARY : "transparent", color: chon ? TEXT : MUTED, fontFamily: "var(--font-chu)", fontWeight: chon ? 600 : 500 }}
             >
               {t.nhan}
             </Link>

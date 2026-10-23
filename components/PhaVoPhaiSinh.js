@@ -14,7 +14,7 @@ const MUTED = "var(--mo)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "#F6C544";
-const mono = { fontFamily: "'JetBrains Mono', monospace" };
+const mono = { fontFamily: "var(--font-chu)" };
 const d1 = (v) => soVN(v, 1, true);
 const diemCoDau = (v) => `${v > 0 ? "+" : ""}${soVN(v, 1, true)}`;
 const trieu = (diem) => `${diem > 0 ? "+" : ""}${soVN(diem * 0.1, 2, true)} triệu`;
@@ -86,7 +86,7 @@ function The({ tieuDe, moTa, trangThai, children }) {
   return (
     <div className="rounded-2xl border p-4 sm:p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-        <h2 className="text-base font-bold" style={{ color: TEXT, fontFamily: "'Inter', sans-serif" }}>
+        <h2 className="text-base font-bold" style={{ color: TEXT, fontFamily: "var(--font-chu)" }}>
           {tieuDe}
         </h2>
         <span className="px-2.5 py-1 rounded-md text-xs font-bold" style={{ color: tt.mau, border: `1px solid ${tt.mau}` }}>
@@ -120,7 +120,7 @@ function BieuDoTrongNgay({ du }) {
     const m = mauBieuDo();
     const chart = createChart(khung.current, {
       autoSize: true,
-      layout: { background: { type: "solid", color: m.nen }, textColor: m.mo, fontFamily: "'JetBrains Mono', monospace", fontSize: 11 },
+      layout: { background: { type: "solid", color: m.nen }, textColor: m.mo, fontFamily: "var(--font-chu)", fontSize: 11 },
       grid: { vertLines: { color: m.luoi }, horzLines: { color: m.luoi } },
       rightPriceScale: { borderColor: m.vien },
       timeScale: { borderColor: m.vien, timeVisible: true, secondsVisible: false, rightOffset: 3 },
@@ -319,7 +319,7 @@ export default function PhaVoPhaiSinh() {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: TEXT }}>
       <div className="flex flex-wrap items-end justify-between gap-3 mb-4">
         <div>
-          <h1 className="text-2xl mb-1" style={{ fontFamily: "'Inter', sans-serif", fontWeight: 700 }}>
+          <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
             Phá vỡ trong ngày · VN30F1M
           </h1>
           <p className="text-sm" style={{ color: MUTED }}>
