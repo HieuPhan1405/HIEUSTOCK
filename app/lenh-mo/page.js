@@ -34,20 +34,16 @@ export default async function TrangLenhMo({ searchParams }) {
     );
   }
 
+  // Tin hieu (DB) va lich su dong cua VNINDEX (nguon gia ngoai) doc SONG SONG. VNINDEX dung de (1) so sanh hieu suat cac lenh dang mo voi thi truong cung ky,
+  // (2) lich phien de dem so phien giu cua lenh mua moi - loi nguon gia khong duoc lam hong trang.
   let tatCa = [];
   let loi = null;
-  try {
-    tatCa = await layTatCaTinHieu();
-  } catch (e) {
-    loi = thongBaoLoi(e);
-  }
-
-  // Lich su dong cua VNINDEX: (1) so sanh hieu suat cac lenh dang mo voi thi truong cung ky, (2) lich phien de dem so phien giu cua lenh mua moi (loi nguon gia khong duoc lam hong trang).
-  let vnindex = null;
-  try {
-    const nen = await layLichSuGia("VNINDEX", 400);
-    vnindex = { nen: nen.map((b) => ({ t: b.t, c: b.c })) };
-  } catch {}
+  const [kqTinHieu, vnindex] = await Promise.all([
+    layTatCaTinHieu().then((v) => ({ v }), (e) => ({ e })),
+    layLichSuGia("VNINDEX", 400).then((nen) => ({ nen: nen.map((b) => ({ t: b.t, c: b.c })) }), () => null),
+  ]);
+  if (kqTinHieu.e) loi = thongBaoLoi(kqTinHieu.e);
+  else tatCa = kqTinHieu.v;
 
   // "Dang mo" = MOI LENH la 1 dong rieng (gia mua, Stop-loss, TP, lai/lo rieng): lenh dau cua ma dang MUA/NAM GIU + cac lenh MUA MOI (dot sau) dang giu - xem lenhDangMo; ma co nhieu
   // lenh thi danh so (1), (2). Cach 2 TP + giu den BAN: lenh cham TP1/TP2 van con phan giu nen van nam o day cho toi khi he thong bao BAN; TP3 chi la moc tham khao.

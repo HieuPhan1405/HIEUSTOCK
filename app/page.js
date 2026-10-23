@@ -185,40 +185,38 @@ function BieuDoTronDoRong({ soXanh, soSideway, soDo, tong }) {
 }
 
 export default async function TrangTongQuan() {
+  // Nguoi dung va du lieu thi truong doc SONG SONG (khong doi nhau): truoc day doc lan luot nen cong don do tre toi DB.
+  const duLieuCho = Promise.all([layTatCaTinHieu(), layChiSoVNIndex()]).then((v) => ({ v }), (e) => ({ e }));
   const nguoiDung = await layNguoiDungHienTai().catch(() => null);
   const { xemTinHieu, choDuyet } = quyenTrangChu(nguoiDung); // khach chua dang nhap / chua duyet: khoa tin hieu (lib/khoaTrangChu.js)
   let tatCa = [];
   let chiSoVNIndex = null;
   let loi = null;
-  try {
-    [tatCa, chiSoVNIndex] = await Promise.all([layTatCaTinHieu(), layChiSoVNIndex()]);
-  } catch (e) {
-    loi = thongBaoLoi(e);
+  {
+    const kq = await duLieuCho;
+    if (kq.e) loi = thongBaoLoi(kq.e);
+    else [tatCa, chiSoVNIndex] = kq.v;
   }
 
   // Phien giao dich cua du lieu moi nhat + nhat ky lenh co su kien trong phien do (chot TP / dong lenh) cho o "Top co hoi dang chu y" - loi o day khong lam hong trang.
   const capNhat = capNhatMoiNhat(tatCa);
   const ngayPhien = capNhat ? ngayGiaoDichVN(new Date(capNhat)) : null;
+  // 3 nguon phu doc SONG SONG, loi nguon nao thi nguon do de rong (khong lam hong trang):
+  //  - nhat ky lenh co su kien trong phien: o Ban / Ban bot (rong thi van hien tu tin hieu);
+  //  - o "Mua phuc hoi (diem B)": tu bang chi_bao_ky_thuat (cot pb_*);
+  //  - diem B gan day (45 ngay) de danh dau diem MUA co so da co diem mua phuc hoi truoc do.
   let dongLenh = [];
-  try {
-    if (xemTinHieu) dongLenh = await layLenhCoSuKienNgay(ngayPhien);
-  } catch {
-    // giu rong - o Ban / Ban bot van hien tu tin hieu
-  }
-  // O "Mua phuc hoi (diem B)": tu bang chi_bao_ky_thuat (cot pb_*) - loi / chua co du lieu thi o rong, khong lam hong trang.
   let muaPhucHoi = [];
-  try {
-    if (xemTinHieu) muaPhucHoi = dungMuaPhucHoi({ hang: (await layChiBaoKyThuat()).hang, tatCa });
-  } catch {
-    // giu rong
-  }
-
-  // Diem B gan day (45 ngay) de danh dau diem MUA co so da co diem mua phuc hoi truoc do - loi thi bo nhan, khong lam hong trang.
   let diemBGanDay = {};
-  try {
-    if (xemTinHieu) diemBGanDay = Object.fromEntries((await layDiemBGanDay()).map((d) => [d.ma, d]));
-  } catch {
-    // giu rong
+  if (xemTinHieu) {
+    const [a, b, c] = await Promise.all([
+      layLenhCoSuKienNgay(ngayPhien).catch(() => []),
+      layChiBaoKyThuat().then((x) => dungMuaPhucHoi({ hang: x.hang, tatCa })).catch(() => []),
+      layDiemBGanDay().then((x) => Object.fromEntries(x.map((d) => [d.ma, d]))).catch(() => ({})),
+    ]);
+    dongLenh = a;
+    muaPhucHoi = b;
+    diemBGanDay = c;
   }
 
   const nhanDinh = sinhNhanDinh(tatCa, xemTinHieu);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowUpDown, ArrowUp, ArrowDown, Lock } from "lucide-react";
@@ -222,6 +222,8 @@ const DS_KHOA_CHON = THU_TU_COT.filter((k) => k !== "ma" && k !== "tin");
 // Cot lo ra ma nao DANG GIU (gia mua/lai lo/stop-loss/TP chi co gia tri voi ma
 // dang MUA/NAM GIU) - chi hien khi da dang nhap, neu khong khach chua dang ky
 // se suy ra duoc cot Tin hieu dang bi lam mo.
+const SO_DONG_DAU = 60;
+const SO_DONG_THEM = 80;
 const COT_CAN_DANG_NHAP = new Set(["gia_mua", "ngay_mua", "so_phien_giu", "lai_lo_pct", "gia_kich_hoat", "vung_mua", "vung_sl", "vung_tp", "stop_loss", "tp1", "tp2", "tp3", "chot_loi"]);
 
 export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
@@ -302,6 +304,21 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
       return sapXep.chieu === "asc" ? so : -so;
     });
   }, [duLieu, loc, sapXep, nguoiDung, coDuLieuMoc, locChiBao]);
+
+  // VE DAN: bang ~390 dong x hon chuc cot = gan 30.000 phan tu DOM, nang tren dien thoai. Ve 60 dong dau, cuon toi gan cuoi (hoac bam "Hien them") thi ve them 80 dong.
+  // So dong duoc ghi gan voi `daLoc` hien tai: doi bo loc / sap xep thi quay ve 60 dong dau.
+  const [veDan, setVeDan] = useState({ ds: null, n: SO_DONG_DAU });
+  const soDong = veDan.ds === daLoc ? veDan.n : SO_DONG_DAU;
+  const veThem = useCallback(() => setVeDan({ ds: daLoc, n: soDong + SO_DONG_THEM }), [daLoc, soDong]);
+  const canCuoiRef = useCallback(
+    (el) => {
+      if (!el || typeof IntersectionObserver === "undefined") return;
+      const io = new IntersectionObserver((es) => es[0]?.isIntersecting && veThem(), { rootMargin: "600px" });
+      io.observe(el);
+      return () => io.disconnect();
+    },
+    [veThem]
+  );
 
   function doiSapXep(khoa) {
     if (!COT[khoa]?.lay) return;
@@ -476,7 +493,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
               </tr>
             </thead>
             <tbody>
-              {daLoc.map((row, i) => (
+              {daLoc.slice(0, soDong).map((row, i) => (
                 <tr key={row.ma} className={`hover:bg-[color:var(--hover-nhe)] transition-colors ${i > 0 ? "border-t" : ""}`} style={{ borderColor: "var(--vien-nhe)" }}>
                   {dsCot.map((k) => {
                     const c = COT[k];
@@ -496,6 +513,15 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
                 <tr>
                   <td colSpan={dsCot.length} className="py-6 text-center text-sm" style={{ color: MUTED, fontFamily: "'Inter', sans-serif" }}>
                     Không tìm thấy mã nào khớp bộ lọc hiện tại.
+                  </td>
+                </tr>
+              )}
+              {daLoc.length > soDong && (
+                <tr ref={canCuoiRef}>
+                  <td colSpan={dsCot.length} className="py-3 text-center">
+                    <button type="button" onClick={veThem} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: PRIMARY, fontFamily: "'Inter', sans-serif" }}>
+                      Hiện thêm ({Math.min(SO_DONG_THEM, daLoc.length - soDong)} / còn {daLoc.length - soDong} mã)
+                    </button>
                   </td>
                 </tr>
               )}

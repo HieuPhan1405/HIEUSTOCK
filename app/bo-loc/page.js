@@ -19,25 +19,33 @@ export default async function TrangBoLoc() {
   let tatCa = [];
   let loi = null;
   let chiBaoLuc = null;
-  try {
-    tatCa = await layTatCaTinHieu();
-  } catch (e) {
-    loi = thongBaoLoi(e);
-  }
+  // Tin hieu, nguoi dung va chi bao ky thuat doc SONG SONG (truoc day lan luot 3 lan di-ve toi DB).
+  const [kqTinHieu, nguoiDung, kqChiBao] = await Promise.all([
+    layTatCaTinHieu().then((v) => ({ v }), (e) => ({ e })),
+    layNguoiDungHienTai().catch(() => null),
+    layChiBaoKyThuat().then((v) => ({ v }), () => null),
+  ]);
+  if (kqTinHieu.e) loi = thongBaoLoi(kqTinHieu.e);
+  else tatCa = kqTinHieu.v;
   // KHOA THONG TIN QUAN TRONG (2026-10-09): khach chua dang nhap / chua duoc duyet khong nhan tin hieu va thong tin vi the trong du lieu trang (truoc day chi bi lam mo o giao dien,
   // van doc duoc trong ma nguon trang). Cot Tin hieu cua khach da la chu mau mo co dinh nen dung gia tri gia dinh TRUNG LAP.
-  if (!loi) {
-    const nguoiDung = await layNguoiDungHienTai().catch(() => null);
-    if (!nguoiDung?.da_duyet) tatCa = lamSachChoKhach(tatCa, { tinGiaDinh: "AN" });
-  }
+  if (!loi && !nguoiDung?.da_duyet) tatCa = lamSachChoKhach(tatCa, { tinGiaDinh: "AN" });
   // Chi bao ky thuat (RSI, MACD, MA...) gop vao tung ma - loi o day khong duoc lam mat bang chinh, chi mat bo loc chi bao.
-  if (!loi) {
+  if (!loi && kqChiBao) {
     try {
-      const { hang, capNhatLuc } = await layChiBaoKyThuat();
+      const { hang, capNhatLuc } = kqChiBao.v;
       const theoMa = new Map(hang.map((h) => [h.ma, h]));
+      // Du lieu nay duoc gui nguyen xuong trinh duyet (~390 ma x hon 100 cot): BO cot khong co gia tri (null ~ nua so cot) va lam tron so thap phan dai (7 chu so co nghia) de trang nhe di rat nhieu.
+      // Cot thieu duoc doc nhu null o moi noi (bo loc / cot hien thi deu dung kiem tra so huu han).
       tatCa = tatCa.map((r) => {
         const h = theoMa.get(r.ma);
-        return h ? { ...r, ...Object.fromEntries(COT_CHI_BAO.map((k) => [k, h[k]])) } : r;
+        if (!h) return r;
+        const o = { ...r };
+        for (const k of COT_CHI_BAO) {
+          const v = h[k];
+          if (v != null) o[k] = typeof v === "number" && !Number.isInteger(v) ? Number(v.toPrecision(7)) : v;
+        }
+        return o;
       });
       chiBaoLuc = capNhatLuc;
     } catch {}

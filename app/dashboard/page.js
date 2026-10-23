@@ -25,22 +25,22 @@ export default async function TrangDashboard() {
   let tatCa = [];
   let chiSoVNIndex = null;
   let loi = null;
-  try {
-    [tatCa, chiSoVNIndex] = await Promise.all([layTatCaTinHieu(), layChiSoVNIndex()]);
-  } catch (e) {
-    loi = thongBaoLoi(e);
-  }
-
-  // Khoi ngoai: nguon ben ngoai, cho toi da 4 giay de khong lam cham trang.
-  const ngoai = await Promise.race([layDongTienNuocNgoai().catch(() => null), new Promise((r) => setTimeout(() => r(null), 4000))]);
-
-  // VN-Index so voi vung gia tri 60 phien (Volume Profile): nguon gia ben ngoai, cho toi da 4 giay; loi thi bo qua the nay.
-  const vungGiaTri = await Promise.race([
-    layLichSuGia("VNINDEX", 200)
-      .then((nen) => viTriTheoVungGiaTri(nen))
-      .catch(() => null),
-    new Promise((r) => setTimeout(() => r(null), 4000)),
+  // 3 nguon doc SONG SONG (truoc day lan luot: toi da 4 + 4 giay cong don khi nguon ngoai cham):
+  //  - tin hieu + VN-Index tu DB;
+  //  - khoi ngoai: nguon ben ngoai, cho toi da 4 giay de khong lam cham trang;
+  //  - VN-Index so voi vung gia tri 60 phien (Volume Profile): nguon gia ben ngoai, cho toi da 4 giay; loi thi bo qua the nay.
+  const [kqDb, ngoai, vungGiaTri] = await Promise.all([
+    Promise.all([layTatCaTinHieu(), layChiSoVNIndex()]).then((v) => ({ v }), (e) => ({ e })),
+    Promise.race([layDongTienNuocNgoai().catch(() => null), new Promise((r) => setTimeout(() => r(null), 4000))]),
+    Promise.race([
+      layLichSuGia("VNINDEX", 200)
+        .then((nen) => viTriTheoVungGiaTri(nen))
+        .catch(() => null),
+      new Promise((r) => setTimeout(() => r(null), 4000)),
+    ]),
   ]);
+  if (kqDb.e) loi = thongBaoLoi(kqDb.e);
+  else [tatCa, chiSoVNIndex] = kqDb.v;
 
   return (
     <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
