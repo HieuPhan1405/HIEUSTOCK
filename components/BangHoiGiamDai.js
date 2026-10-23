@@ -33,7 +33,7 @@ function Khung({ tieuDe, moTa, soLuong, mau, children }) {
         </div>
         <p className="text-[11px] mt-0.5 leading-snug" style={{ color: MUTED }}>{moTa}</p>
       </div>
-      <div className="overflow-x-auto">{children}</div>
+      <div className="overflow-x-auto bang-cuon">{children}</div>
     </section>
   );
 }

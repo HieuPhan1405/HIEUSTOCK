@@ -3,6 +3,7 @@ import { Lock } from "lucide-react";
 import Image from "next/image";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import CoHoiHomNay from "@/components/CoHoiHomNay";
+import XuatAnh from "@/components/XuatAnh";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { dungMuaPhucHoi } from "@/lib/muaPhucHoi";
 import { layDiemBGanDay } from "@/lib/diemB";
@@ -299,6 +300,7 @@ export default async function TrangTongQuan() {
             <Link href="/bieu-do" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
               Xem biểu đồ kỹ thuật
             </Link>
+            <XuatAnh nhan="Chụp ảnh thị trường" muc="#chup-thi-truong" tenFile={`CloudStock-thi-truong-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tổng quan thị trường" />
           </div>
         </div>
         <div
@@ -308,7 +310,7 @@ export default async function TrangTongQuan() {
         />
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <div id="chup-thi-truong" className="max-w-6xl mx-auto px-6 py-10">
         {loi && (
           <p className="text-sm mb-6" style={{ color: DO }}>
             Lỗi tải dữ liệu: {loi}

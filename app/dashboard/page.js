@@ -1,3 +1,4 @@
+import XuatAnh from "@/components/XuatAnh";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import { layDongTienNuocNgoai } from "@/lib/thiTruong";
 import { TongQuanThiTruong } from "@/components/RaSoatThiTruong";
@@ -43,10 +44,13 @@ export default async function TrangDashboard() {
   else [tatCa, chiSoVNIndex] = kqDb.v;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
-      <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
-        Dashboard thị trường
-      </h1>
+    <div id="chup-dashboard" className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
+        <h1 className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+          Dashboard thị trường
+        </h1>
+        <XuatAnh nhan="Chụp ảnh dashboard" muc="#chup-dashboard" kieu="nho" tenFile="CloudStock-dashboard-thi-truong.png" tieuDe="Dashboard thị trường" />
+      </div>
       <p className="text-sm mb-5" style={{ color: MUTED }}>
         Tổng quan, độ rộng, bản đồ nhiệt theo ngành và thanh khoản — tách riêng khỏi trang Tổng quan (trang đó chỉ tập trung vào hướng đi lệnh/vị thế).
       </p>

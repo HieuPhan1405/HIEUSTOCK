@@ -288,3 +288,16 @@ body.may-mo [data-may].may-dang-xem {
     animation: none;
   }
 }
+
+/* BANG DAI: dau cot GHIM o tren khi cuon xuong (de biet moi cot la gi). Bang cuon trong khung cao ~ 1 man hinh; cot dau (ma) da ghim ben trai o tung bang. */
+.bang-cuon {
+  max-height: calc(100vh - 160px);
+  overflow: auto;
+}
+.bang-cuon thead th {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--card);
+  box-shadow: 0 1px 0 var(--vien);
+}

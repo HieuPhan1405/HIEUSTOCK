@@ -316,7 +316,7 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai 
       </p>
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto bang-cuon">
           <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
             <thead>
               <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "var(--font-chu)" }}>

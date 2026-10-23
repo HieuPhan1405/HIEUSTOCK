@@ -6,6 +6,8 @@ import { ArrowLeft, TriangleAlert } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import NhatKyGiaoDich from "@/components/NhatKyGiaoDich";
+import XuatAnh from "@/components/XuatAnh";
+import TheChiaSeMa from "@/components/TheChiaSeMa";
 import { lenhDangMo, ngayChuoi } from "@/lib/muaThemTinhToan";
 import {
   fmt,
@@ -353,8 +355,18 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         >
           <ArrowLeft size={13} /> quay lại lệnh đang mở
         </Link>
-        <span className="text-xs" style={{ color: "var(--mo)", fontFamily: "var(--font-chu)" }}>
-          {row.cap_nhat_luc ? `cập nhật lúc ${new Date(row.cap_nhat_luc).toLocaleString("vi-VN")}` : "dữ liệu mẫu"}
+        <span className="flex items-center gap-3">
+          <span className="text-xs" style={{ color: "var(--mo)", fontFamily: "var(--font-chu)" }}>
+            {row.cap_nhat_luc ? `cập nhật lúc ${new Date(row.cap_nhat_luc).toLocaleString("vi-VN")}` : "dữ liệu mẫu"}
+          </span>
+          {/* XUAT THONG TIN: tao anh day du thong tin cua ma (gia, tin hieu, lenh dang mo + lai/lo, diem mua - ban da qua, chi bao) de gui cho khach */}
+          <XuatAnh
+            nhan="Xuất thông tin"
+            kieu="nho"
+            tenFile={`CloudStock-${row.ma}-${new Date().toISOString().slice(0, 10)}.png`}
+            tieuDe={`${row.ma} · CloudStock`}
+            the={<TheChiaSeMa row={row} cacLenh={cacLenh} lichSuDaDong={lichSuDaDong} ketLuan={ketLuanTuDong(row)} vungGia={vungGia} tag={tag} />}
+          />
         </span>
       </div>
 

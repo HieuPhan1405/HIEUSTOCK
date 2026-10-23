@@ -136,7 +136,7 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
       </div>
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto bang-cuon">
           <table className="w-full text-sm" style={mono}>
             <thead>
               <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, ...sans }}>
