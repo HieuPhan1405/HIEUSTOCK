@@ -10,7 +10,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -169,7 +169,8 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
                       fontWeight: 800,
                       ...sans,
                       color: "#fff",
-                      background: VANG,
+                      background: `linear-gradient(135deg, ${VANG}, ${CAM})`,
+                      boxShadow: "0 0 0 2px color-mix(in srgb, var(--vang) 25%, transparent), 0 4px 10px -3px rgba(245, 158, 11, 0.55)",
                     }}
                     title={`Đã có điểm mua phục hồi (điểm B) ngày ${ngayNgan(b.ngay)} (${b.soNgay === 0 ? "cùng phiên" : `${b.soNgay} ngày trước`}), giá B ${fmt(b.giaB)}${b.giam != null ? `, đã giảm ${fmt(b.giam)}%` : ""}${b.daCatLo ? ", lệnh B đã chạm cắt lỗ" : ""}`}
                     aria-label="Có điểm mua phục hồi trước đó"

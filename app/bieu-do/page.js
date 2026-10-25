@@ -17,7 +17,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const GOI_Y = ["VNINDEX", "VN30", "VCB", "FPT", "HPG", "SSI", "STB"];
 
 export default async function TrangBieuDo({ searchParams }) {
@@ -75,7 +75,7 @@ export default async function TrangBieuDo({ searchParams }) {
         <button
           type="submit"
           className="px-4 py-2 text-sm flex items-center gap-2 shrink-0 rounded-lg cursor-pointer"
-          style={{ background: "#2F6FBF", color: "#FFFFFF", fontWeight: 600 }}
+          style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}
         >
           <Search size={15} aria-hidden="true" /> Xem
         </button>

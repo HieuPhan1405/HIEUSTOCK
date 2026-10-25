@@ -12,7 +12,7 @@ const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const DO = "var(--do)";
 const XANH = "var(--xanh)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const TIM = "var(--tim-nhat)";
 
 function The({ so, mau, nhan, phu, mauPhu }) {
@@ -95,7 +95,7 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
             aria-selected={tab === k}
             onClick={() => chonTab(k)}
             className="px-4 py-2 rounded-lg text-sm whitespace-nowrap flex items-center gap-2"
-            style={tab === k ? { background: "#2F6FBF", color: "#fff", fontWeight: 700 } : { color: MUTED }}
+            style={tab === k ? { background: "#6C5CE7", color: "#fff", fontWeight: 700 } : { color: MUTED }}
           >
             {nhan}
             {dem != null && (

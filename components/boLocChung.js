@@ -14,7 +14,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 
 // Gia tri "nganh" AFL xuat ra KHONG dau (quy uoc chung toan he thong) - map
 // sang nhan co dau de hien thi dep hon trong dropdown, nhung filter van so

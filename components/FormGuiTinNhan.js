@@ -6,7 +6,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 
@@ -102,7 +102,7 @@ export default function FormGuiTinNhan() {
         type="submit"
         disabled={dangGui}
         className="px-4 py-2.5 text-sm rounded-lg"
-        style={{ background: "#2F6FBF", color: "#FFFFFF", fontWeight: 600, opacity: dangGui ? 0.6 : 1 }}
+        style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600, opacity: dangGui ? 0.6 : 1 }}
       >
         {dangGui ? "Đang gửi..." : "Gửi liên hệ"}
       </button>

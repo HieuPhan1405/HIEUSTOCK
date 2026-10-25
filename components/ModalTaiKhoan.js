@@ -8,7 +8,7 @@ import { kiemTraTen, kiemTraEmail, kiemTraMatKhau, doManhMatKhau, MK_TOI_THIEU }
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const NEN_O = "var(--nen)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
 const DO = "var(--do)";
@@ -21,7 +21,7 @@ function OTab({ active, onClick, children }) {
       onClick={onClick}
       className="flex-1 py-2 text-sm font-medium rounded-lg transition-colors"
       style={{
-        background: active ? "rgba(74,138,214,0.16)" : "transparent",
+        background: active ? "rgba(108,92,231,0.16)" : "transparent",
         color: active ? PRIMARY : MUTED,
         fontFamily: "var(--font-chu)",
       }}
@@ -166,7 +166,7 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
         </div>
 
         {tieuDeGoiY && (
-          <p className="text-xs my-3 px-3 py-2 rounded-lg" style={{ color: "var(--tim-chu)", background: "rgba(74,138,214,0.12)", fontFamily: "var(--font-chu)" }}>
+          <p className="text-xs my-3 px-3 py-2 rounded-lg" style={{ color: "var(--tim-chu)", background: "rgba(108,92,231,0.12)", fontFamily: "var(--font-chu)" }}>
             {tieuDeGoiY}
           </p>
         )}
@@ -292,7 +292,7 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
             type="submit"
             disabled={dangXuLy}
             className="px-3 py-3 text-sm font-semibold rounded-lg mt-1 transition-opacity"
-            style={{ background: "#2F6FBF", color: "#FFFFFF", opacity: dangXuLy ? 0.6 : 1, cursor: dangXuLy ? "wait" : "pointer" }}
+            style={{ background: "#6C5CE7", color: "#FFFFFF", opacity: dangXuLy ? 0.6 : 1, cursor: dangXuLy ? "wait" : "pointer" }}
           >
             {dangXuLy ? "Đang xử lý..." : laDangKy ? "Tạo tài khoản" : "Đăng nhập"}
           </button>

@@ -9,7 +9,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -170,7 +170,7 @@ function NoiDung({ tatCa = [], muaPhucHoi = [] }) {
           ))}
         </div>
         <div className="flex gap-2 mt-3">
-          <button type="button" onClick={() => setHang((x) => (x.length < 40 ? [...x, { ma: "", giaVon: "" }] : x))} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: "#2F6FBF", color: "#fff", ...sans, fontWeight: 600 }}>
+          <button type="button" onClick={() => setHang((x) => (x.length < 40 ? [...x, { ma: "", giaVon: "" }] : x))} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: "#6C5CE7", color: "#fff", ...sans, fontWeight: 600 }}>
             + Thêm mã
           </button>
           <button type="button" onClick={() => { setHang([{ ma: "", giaVon: "" }]); setNganhChon([]); }} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: MUTED, ...sans }}>

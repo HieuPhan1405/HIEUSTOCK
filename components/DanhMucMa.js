@@ -17,7 +17,7 @@ const DO = "var(--do)";
 const VANG = "var(--vang)";
 const NGOC = "var(--cyan)";
 const TIM = "var(--tim-nhat)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const CHU_THAN = "var(--font-chu)";
 const CHU_SO = "var(--font-chu)";
 
@@ -190,7 +190,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                 className="text-xs px-3 py-1.5 rounded-lg border"
                 style={
                   dangChon
-                    ? { borderColor: PRIMARY, background: "rgba(74,138,214,0.15)", color: "var(--chu)", fontFamily: CHU_THAN, fontWeight: 700 }
+                    ? { borderColor: PRIMARY, background: "rgba(108,92,231,0.15)", color: "var(--chu)", fontFamily: CHU_THAN, fontWeight: 700 }
                     : { borderColor: VIEN, color: "var(--mo-2)", fontFamily: CHU_THAN }
                 }
               >

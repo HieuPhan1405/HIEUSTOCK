@@ -13,7 +13,7 @@ const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 
 // 3 kich ban gia cac phien sau (engine/dich-vu/kichBanMua.mjs). So phien toi da engine xet: 10.
 const KICH_BAN = [

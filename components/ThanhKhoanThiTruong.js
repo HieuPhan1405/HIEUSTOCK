@@ -9,7 +9,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -191,7 +191,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
             aria-selected={tab === k}
             onClick={() => setTab(k)}
             className="px-3 py-1.5 rounded-lg"
-            style={tab === k ? { background: "#2F6FBF", color: "#fff", fontWeight: 700 } : { color: MUTED }}
+            style={tab === k ? { background: "#6C5CE7", color: "#fff", fontWeight: 700 } : { color: MUTED }}
           >
             {nhan}
           </button>

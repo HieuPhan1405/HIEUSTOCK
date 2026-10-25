@@ -9,7 +9,7 @@ const VIEN = "var(--vien)";
 const NEN = "var(--nen-sau)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 
 const CONG_CU = [
   { href: "/", nhan: "Tổng quan thị trường" },

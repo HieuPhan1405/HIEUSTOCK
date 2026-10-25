@@ -11,7 +11,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const DO = "var(--do)";
 const XANH = "var(--xanh)";
 const VANG = "var(--vang)";
@@ -225,7 +225,7 @@ export default function ChuongThongBao() {
             {!nd ? (
               <div className="flex items-center justify-between gap-3">
                 <span>Đăng ký hoặc đăng nhập để nhận thông báo về máy — cả khi đã đóng web.</span>
-                <button type="button" onClick={() => setMoDangNhap(true)} className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "#2F6FBF", color: "#FFFFFF" }}>
+                <button type="button" onClick={() => setMoDangNhap(true)} className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "#6C5CE7", color: "#FFFFFF" }}>
                   Đăng ký
                 </button>
               </div>
@@ -258,7 +258,7 @@ export default function ChuongThongBao() {
             ) : (
               <div className="flex items-center justify-between gap-3">
                 <span>Nhận thông báo về máy ngay khi có tín hiệu — cả khi đã đóng web.</span>
-                <button type="button" disabled={dangLam} onClick={bat} className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "#2F6FBF", color: "#FFFFFF" }}>
+                <button type="button" disabled={dangLam} onClick={bat} className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "#6C5CE7", color: "#FFFFFF" }}>
                   {dangLam ? "Đang bật…" : "Bật thông báo"}
                 </button>
               </div>
@@ -279,7 +279,7 @@ export default function ChuongThongBao() {
                         disabled={dangLam}
                         onClick={() => !chon && doiPhamVi(k)}
                         className="px-2.5 py-1 rounded-full border text-[11px]"
-                        style={{ borderColor: chon ? PRIMARY : VIEN, background: chon ? "rgba(74,138,214,0.16)" : "transparent", color: chon ? TEXT : MUTED, fontWeight: chon ? 600 : 500 }}
+                        style={{ borderColor: chon ? PRIMARY : VIEN, background: chon ? "rgba(108,92,231,0.16)" : "transparent", color: chon ? TEXT : MUTED, fontWeight: chon ? 600 : 500 }}
                       >
                         {nhan}
                       </button>
@@ -340,7 +340,7 @@ export default function ChuongThongBao() {
                         href={t.duong_dan || "/"}
                         onClick={() => setMo(false)}
                         className="flex gap-3 px-4 py-2.5 transition-colors hover:bg-[color:var(--hover-nhe)]"
-                        style={{ background: moi ? "rgba(74,138,214,0.08)" : undefined }}
+                        style={{ background: moi ? "rgba(108,92,231,0.08)" : undefined }}
                       >
                         <span className="mt-1.5 w-2 h-2 rounded-full shrink-0" style={{ background: loai.mau }} aria-hidden="true" />
                         <span className="min-w-0 flex-1">

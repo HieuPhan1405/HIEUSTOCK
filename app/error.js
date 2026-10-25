@@ -13,7 +13,7 @@ export default function LoiTrang({ retry }) {
         Có thể do kết nối dữ liệu tạm thời gián đoạn. Bạn thử tải lại, nếu vẫn lỗi hãy quay lại sau ít phút.
       </p>
       <div className="flex flex-wrap justify-center gap-3 text-sm">
-        <button type="button" onClick={() => retry()} className="px-4 py-2 rounded-lg cursor-pointer" style={{ background: "#2F6FBF", color: "#FFFFFF" }}>
+        <button type="button" onClick={() => retry()} className="px-4 py-2 rounded-lg cursor-pointer" style={{ background: "#6C5CE7", color: "#FFFFFF" }}>
           Thử lại
         </button>
         <Link href="/" className="px-4 py-2 rounded-lg border" style={{ borderColor: "var(--vien)", color: "var(--chu)" }}>

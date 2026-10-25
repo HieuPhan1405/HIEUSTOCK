@@ -12,7 +12,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 
 function thoiGianTuongDoi(ngayISO) {
   if (!ngayISO) return "";

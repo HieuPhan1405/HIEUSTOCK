@@ -8,7 +8,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const MAU_TSSL = "var(--vang-2)"; // vang - Ty suat sinh loi cua he thong
@@ -180,7 +180,7 @@ export default function HieuQuaDauTu() {
               setHover(null);
             }}
             className="py-2 rounded-lg text-sm"
-            style={tab === t ? { background: "#2F6FBF", color: "#fff", fontWeight: 700 } : { color: MUTED }}
+            style={tab === t ? { background: "#6C5CE7", color: "#fff", fontWeight: 700 } : { color: MUTED }}
           >
             {t}
           </button>

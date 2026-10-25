@@ -25,7 +25,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const DO = "var(--do)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const CAM = "var(--cam)";
 const NGOC = "var(--cyan)";
 const ngayVN = (s) => (s ? String(s).split("-").reverse().join("/") : "—");

@@ -104,7 +104,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         {moTa ?? (
           <>
             Kết quả các lệnh đã bán, đã thoát vị thế hoặc đã chốt lời từng phần (TP1 / TP2 / TP3) kể từ khi web bắt đầu ghi nhận. Lệnh đang giữ xem ở{" "}
-            <Link href="/lenh-mo" className="underline" style={{ color: "#4A8AD6" }}>
+            <Link href="/lenh-mo" className="underline" style={{ color: "#6C5CE7" }}>
               Sổ lệnh đang mở
             </Link>
             .

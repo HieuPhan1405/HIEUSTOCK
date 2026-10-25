@@ -6,14 +6,14 @@ import DongHoGiaoDich from "@/components/DongHoGiaoDich";
 import ChuongThongBao from "@/components/ChuongThongBao";
 import NutGiaoDien from "@/components/NutGiaoDien";
 
-const BG = "var(--nen-sau)";
+const BG = "color-mix(in srgb, var(--nen-sau) 80%, transparent)";
 const VIEN = "var(--vien)";
 
 // Thanh dau trang co dinh o MOI trang: logo (bam vao ve trang gioi thieu) + o tim ma co phieu + dong ho khung vao lenh + chuong thong bao + tai khoan.
 // Ban "-toi" cua logo (sang hon) dung tren nen toi. Dien thoai: logo chi con bieu tuong, dong ho / tai khoan chi con bieu tuong (moi nut 36px) de o tim kiem du rong.
 export default function ThanhDau() {
   return (
-    <header className="sticky top-0 z-30" style={{ background: BG, borderBottom: `1px solid ${VIEN}` }}>
+    <header className="sticky top-0 z-30 backdrop-blur-xl" style={{ background: BG, borderBottom: `1px solid ${VIEN}` }}>
       <div className="h-14 px-3 md:px-6 flex items-center gap-2 md:gap-3">
         <Link href="/gioi-thieu" aria-label="CloudStock - về trang giới thiệu" className="flex items-center gap-2 shrink-0 md:mr-3">
           <Image src="/logo-bieu-tuong-toi.png" alt="" width={260} height={176} priority className="chi-toi h-7 md:h-9 w-auto" />

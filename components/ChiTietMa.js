@@ -222,7 +222,7 @@ function ThanhMotChieu({ nhan, giaTri, mucMax, hauTo = "" }) {
         </span>
       </div>
       <div className="h-1.5 rounded-sm overflow-hidden" style={{ background: "var(--vien-nhe)" }}>
-        <div className="h-full" style={{ width: `${rong}%`, background: "#4A8AD6" }} />
+        <div className="h-full" style={{ width: `${rong}%`, background: "#6C5CE7" }} />
       </div>
     </div>
   );
@@ -312,7 +312,7 @@ function ThanhChonLenh({ cacLenh, chon, datChon }) {
               aria-selected={dangChon}
               onClick={() => datChon(i)}
               className="shrink-0 text-left rounded-xl border px-3 py-2"
-              style={dangChon ? { borderColor: "#4A8AD6", background: "rgba(74,138,214,0.15)" } : { borderColor: VIEN, background: "transparent" }}
+              style={dangChon ? { borderColor: "#6C5CE7", background: "rgba(108,92,231,0.15)" } : { borderColor: VIEN, background: "transparent" }}
             >
               <span className="block text-sm font-bold" style={{ fontFamily: "var(--font-chu)" }}>
                 {l.ten_lenh}
@@ -518,7 +518,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         </Card>
 
         <Card>
-          <p className="text-xs  mb-2" style={{ color: "#4A8AD6" }}>
+          <p className="text-xs  mb-2" style={{ color: "#6C5CE7" }}>
             Kết luận {row.ma}
           </p>
           <p className="text-base font-semibold leading-snug mb-2" style={{ color: mauDiem }}>

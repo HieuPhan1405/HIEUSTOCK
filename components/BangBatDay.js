@@ -14,7 +14,7 @@ const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 
 // Ket qua bat day - CHI xet dc khi da co du du lieu gia sau 20 phien (con
 // qua moi, chua du 20 phien thi la "Dang theo doi", KHONG tinh la that bai.

@@ -108,7 +108,7 @@ function ThanhChonNhatKy({ lenh, khoaChon, datKhoa }) {
         aria-selected={dangChon}
         onClick={() => datKhoa(khoa)}
         className="shrink-0 text-left rounded-xl border px-3 py-2"
-        style={dangChon ? { borderColor: "#4A8AD6", background: "rgba(74,138,214,0.15)" } : { borderColor: VIEN, background: "transparent" }}
+        style={dangChon ? { borderColor: "#6C5CE7", background: "rgba(108,92,231,0.15)" } : { borderColor: VIEN, background: "transparent" }}
       >
         {noiDung}
       </button>
@@ -227,7 +227,7 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], cacLenh = [] }) 
 
   return (
     <div className="rounded-2xl border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-xs  mb-1" style={{ color: "#4A8AD6", fontFamily: "var(--font-chu)" }}>
+      <p className="text-xs  mb-1" style={{ color: "#6C5CE7", fontFamily: "var(--font-chu)" }}>
         <span data-may="nhat-ky">★ Nhật ký giao dịch {ma}</span>
       </p>
       <p className="text-[11px] mb-3" style={{ color: MUTED }}>

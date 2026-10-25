@@ -21,7 +21,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 
 const TINH_NANG = [
@@ -70,7 +70,7 @@ const TINH_NANG = [
 function TheTinhNang({ Icon, tieuDe, mo }) {
   return (
     <div className="rounded-2xl border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(74,138,214,0.15)" }}>
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(108,92,231,0.15)" }}>
         <Icon size={20} color={PRIMARY} strokeWidth={2} aria-hidden="true" />
       </div>
       <h3 className="text-base mb-1.5" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
@@ -101,14 +101,19 @@ export default function TrangGioiThieu() {
     <div style={{ color: TEXT }}>
       {/* HERO */}
       <div className="relative overflow-hidden border-b" style={{ borderColor: VIEN }}>
+        <div aria-hidden="true" className="cs-aurora" />
+        <div aria-hidden="true" className="cs-luoi" />
         <div className="relative max-w-4xl mx-auto px-6 pt-20 pb-16 text-center">
-          <p className="text-xs  mb-4" style={{ color: PRIMARY, fontFamily: "var(--font-chu)", fontWeight: 700 }}>
-            Hệ thống hỗ trợ đầu tư · quét toàn bộ thị trường
-          </p>
+          <div className="mb-5">
+            <span className="cs-nhan-hero" style={{ fontFamily: "var(--font-chu)" }}>
+              <span className="cs-nhip" aria-hidden="true" />
+              Hệ thống hỗ trợ đầu tư · quét toàn bộ thị trường
+            </span>
+          </div>
           <h1 className="text-4xl md:text-5xl mb-5" style={{ fontFamily: "var(--font-chu)", fontWeight: 800, lineHeight: 1.15 }}>
             Tổng quan thị trường,
             <br />
-            đọc trong 5 giây.
+            <span className="cs-chu-mau">đọc trong 5 giây.</span>
           </h1>
           <p className="text-base md:text-lg mb-8 max-w-2xl mx-auto" style={{ color: MUTED }}>
             Điểm hợp lưu Trend · Động lượng · Dòng tiền, kiểm chứng backtest 12 năm trên VN100. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc biểu đồ
@@ -118,7 +123,7 @@ export default function TrangGioiThieu() {
             <Link
               href="/"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold"
-              style={{ background: "#2F6FBF", color: "#FFFFFF" }}
+              style={{ background: "#6C5CE7", color: "#FFFFFF" }}
             >
               Vào Dashboard <ArrowRight size={16} aria-hidden="true" />
             </Link>

@@ -6,7 +6,7 @@ import { thongKeMang } from "@/lib/tinhDinhGia";
 const VIEN = "var(--vien)";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -172,7 +172,7 @@ export default function DinhGiaThiTruong() {
             ["pe", "PE"],
             ["pb", "PB"],
           ].map(([k, n]) => (
-            <button key={k} onClick={() => setChiSo(k)} className="px-2.5 py-1 rounded-lg" style={chiSo === k ? { background: "#2F6FBF", color: "#fff", fontWeight: 700 } : { color: MUTED, border: `1px solid ${VIEN}` }}>
+            <button key={k} onClick={() => setChiSo(k)} className="px-2.5 py-1 rounded-lg" style={chiSo === k ? { background: "#6C5CE7", color: "#fff", fontWeight: 700 } : { color: MUTED, border: `1px solid ${VIEN}` }}>
               {n}
             </button>
           ))}

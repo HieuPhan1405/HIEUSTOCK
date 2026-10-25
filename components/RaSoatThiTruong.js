@@ -3,6 +3,7 @@ import { CalendarDays } from "lucide-react";
 import { tinhTongQuanThiTruong, nhanTamLy } from "@/lib/thiTruong";
 import { tenCongTy } from "@/lib/tenMa";
 import { fmt, pct, capNhatMoiNhat, nhe } from "@/components/dungChung";
+import SoChay from "@/components/SoChay";
 
 // Khoi "Ra soat thi truong" dung o trang Dashboard: 3 the tong hop (xu huong, tam ly, muc giu lenh) va RA SOAT NHANH (do rong, top tang/giam, nganh, khoi ngoai...). Tinh tren cac ma he thong
 // dang theo doi, khong phai toan thi truong.
@@ -11,7 +12,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -55,8 +56,8 @@ function DongHoTamLy({ diem }) {
   return (
     <svg viewBox="0 0 200 118" className="w-full max-w-[230px] mx-auto" role="img" aria-label={`Thang tâm lý thị trường: ${diem ?? "chưa có"} trên 100`}>
       <path d={cung(0.4, 99.6)} stroke="var(--vien-dam)" strokeWidth="14" fill="none" strokeLinecap="butt" />
-      {diemHopLe > 1 && <path d={cung(0.4, diemHopLe)} stroke={nhanTamLy(diem).mau} strokeWidth="14" fill="none" strokeLinecap="butt" />}
-      <g transform={`rotate(${goc} ${cx} ${cy})`}>
+      {diemHopLe > 1 && <path d={cung(0.4, diemHopLe)} pathLength="100" className="cs-cung" stroke={nhanTamLy(diem).mau} strokeWidth="14" fill="none" strokeLinecap="butt" />}
+      <g className="cs-kim" style={{ transform: `rotate(${goc}deg)`, transformOrigin: `${cx}px ${cy}px` }}>
         <line x1={cx} y1={cy} x2={cx} y2={cy - 66} stroke="var(--chu)" strokeWidth="3" strokeLinecap="round" />
       </g>
       <circle cx={cx} cy={cy} r="7" fill="var(--chu)" />
@@ -111,7 +112,7 @@ function HangRaSoat({ so, nhan, mauNhan = XANH, nhan2, mauNhan2 = DO, children, 
   return (
     <div className="grid md:grid-cols-[250px_1fr] gap-x-6 gap-y-2 py-4 border-b last:border-b-0" style={{ borderColor: "var(--vien-nhe)" }}>
       <div className="flex gap-3">
-        <span className="shrink-0 w-6 h-6 rounded-md text-[11px] flex items-center justify-center" style={{ background: "rgba(74,138,214,0.2)", color: "var(--tim-chu)", fontWeight: 700, ...mono }}>
+        <span className="shrink-0 w-6 h-6 rounded-md text-[11px] flex items-center justify-center" style={{ background: "rgba(108,92,231,0.2)", color: "var(--tim-chu)", fontWeight: 700, ...mono }}>
           {so}
         </span>
         <div className="text-sm leading-snug" style={{ ...sans, fontWeight: 600 }}>
@@ -134,7 +135,7 @@ function HangRaSoat({ so, nhan, mauNhan = XANH, nhan2, mauNhan2 = DO, children, 
 function ThanhTyLe({ ty, mau }) {
   return (
     <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--vien)" }}>
-      <div className="h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, ty))}%`, background: mau }} />
+      <div className="h-full rounded-full cs-vach" style={{ width: `${Math.max(0, Math.min(100, ty))}%`, background: mau }} />
     </div>
   );
 }
@@ -197,10 +198,10 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
                 {tq.xuHuong.nhan}
               </span>
               <p className="text-3xl" style={{ ...mono, fontWeight: 700 }}>
-                {fmt(vnindex.gia)}
+                <SoChay gia={vnindex.gia} chuSo={2} coDinh={false} />
               </p>
               <p className="text-sm" style={{ color: mauDoi(vnindex.doi), ...mono }}>
-                {pct(vnindex.doi, 2)}
+                <SoChay gia={vnindex.doi} chuSo={2} kieu="pct" />
               </p>
             </div>
           ) : (
@@ -214,7 +215,7 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
           <DongHoTamLy diem={tq.tamLy} />
           <p className="text-center -mt-1">
             <span className="text-2xl" style={{ ...mono, fontWeight: 700 }}>
-              {tq.tamLy ?? "—"}
+              {tq.tamLy == null ? "—" : <SoChay gia={tq.tamLy} />}
             </span>{" "}
             <span className="text-sm" style={{ color: tamLy.mau, fontWeight: 600 }}>
               {tamLy.nhan}
@@ -224,7 +225,7 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
 
         <The tieuDe="Mức giữ lệnh của hệ thống" phu="Số mã đang MUA hoặc NẮM GIỮ trên tổng số mã hệ thống theo dõi. Chỉ là thống kê, không phải khuyến nghị tỷ trọng.">
           <p className="text-center text-4xl mb-1" style={{ ...mono, fontWeight: 700, color: PRIMARY }}>
-            {tq.tyLeDangGiu == null ? "—" : `${tq.tyLeDangGiu.toFixed(0)}%`}
+            {tq.tyLeDangGiu == null ? "—" : <SoChay gia={Math.round(tq.tyLeDangGiu)} hau="%" />}
           </p>
           <p className="text-center text-xs mb-4" style={{ color: MUTED }}>
             {tq.dangGiu}/{tq.tong} mã đang giữ lệnh
@@ -256,7 +257,7 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
                 (tăng mạnh &gt;3%: {tq.doRong.tangManh} · tăng nhẹ: {tq.doRong.tangNhe} · giảm nhẹ: {tq.doRong.giamNhe} · giảm mạnh &lt;−3%: {tq.doRong.giamManh})
               </span>
             </p>
-            <div className="flex h-2.5 rounded-full overflow-hidden" style={{ background: "var(--vien)" }} aria-hidden="true">
+            <div className="flex h-2.5 rounded-full overflow-hidden cs-vach" style={{ background: "var(--vien)" }} aria-hidden="true">
               {[
                 [tq.doRong.tangManh, "var(--xanh-dam)"],
                 [tq.doRong.tangNhe, "var(--xanh-nhat)"],

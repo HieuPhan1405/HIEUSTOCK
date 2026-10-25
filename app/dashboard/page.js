@@ -1,5 +1,7 @@
 import { Suspense } from "react";
 import XuatAnh from "@/components/XuatAnh";
+import TheThiTruong from "@/components/TheThiTruong";
+import { capNhatMoiNhat } from "@/components/dungChung";
 import DongTienThiTruong from "@/components/DongTienThiTruong";
 import { layCoDem } from "@/lib/boNhoMem";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
@@ -53,13 +55,25 @@ export default async function TrangDashboard() {
     loi = thongBaoLoi(e);
   }
 
+  const capNhat = capNhatMoiNhat(tatCa);
+  const ngayHienThi = capNhat ? new Date(capNhat).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "numeric", month: "numeric", year: "numeric" }) : "";
+
   return (
     <div id="chup-dashboard" className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
         <h1 className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
           Dashboard thị trường
         </h1>
-        <XuatAnh nhan="Chụp ảnh dashboard" muc="#chup-dashboard" kieu="nho" tenFile="CloudStock-dashboard-thi-truong.png" tieuDe="Dashboard thị trường" />
+        {/* the chia se thi truong rieng (720px, chu to, doc duoc tren Zalo) thay cho chup nguyen trang rong ~1200px */}
+        {tatCa.length > 0 && (
+          <XuatAnh
+            nhan="Chụp ảnh dashboard"
+            kieu="nho"
+            tenFile={`CloudStock-thi-truong-${new Date().toISOString().slice(0, 10)}.png`}
+            tieuDe="Dashboard thị trường"
+            the={<TheThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} ngay={ngayHienThi} />}
+          />
+        )}
       </div>
       <p className="text-sm mb-5" style={{ color: MUTED }}>
         Tổng quan, độ rộng, bản đồ nhiệt theo ngành và thanh khoản — tách riêng khỏi trang Tổng quan (trang đó chỉ tập trung vào hướng đi lệnh/vị thế).

@@ -8,7 +8,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 
 const CHI_SO = new Set(["VNINDEX", "VN30", "HNXINDEX", "UPCOMINDEX"]);
 
@@ -193,7 +193,7 @@ export default function TimMaToanCuc({ className = "" }) {
                   onClick={() => den(x.ma)}
                   onMouseEnter={() => setChon(i)}
                   className="w-full flex items-center gap-3 px-3 py-2 text-left cursor-pointer"
-                  style={{ background: i === chon ? "rgba(74,138,214,0.16)" : "transparent" }}
+                  style={{ background: i === chon ? "rgba(108,92,231,0.16)" : "transparent" }}
                 >
                   <span className="shrink-0 w-[68px] text-sm" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: TEXT }}>
                     {x.ma}
@@ -201,7 +201,7 @@ export default function TimMaToanCuc({ className = "" }) {
                   <span className="min-w-0 flex-1 truncate text-xs" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                     {x.ten}
                   </span>
-                  <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded" style={{ color: PRIMARY, background: "rgba(74,138,214,0.14)", fontFamily: "var(--font-chu)" }}>
+                  <span className="shrink-0 text-[11px] px-1.5 py-0.5 rounded" style={{ color: PRIMARY, background: "rgba(108,92,231,0.14)", fontFamily: "var(--font-chu)" }}>
                     {x.san}
                   </span>
                 </button>

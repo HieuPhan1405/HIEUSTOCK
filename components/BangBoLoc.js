@@ -31,7 +31,7 @@ const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 
 // Bo loc "MA THEO DOI" gom 2 nhom: (1) da DAT DIEM MUA nhung dang doi phien sau (laChoPhienSau) va
 // (2) chi ma sap cham moc tinh diem +: ma chua co lenh, gia

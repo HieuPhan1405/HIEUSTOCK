@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Lock } from "lucide-react";
+import { Lock, ArrowRight } from "lucide-react";
 import Image from "next/image";
+import SoChay from "@/components/SoChay";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import CoHoiHomNay from "@/components/CoHoiHomNay";
 import XuatAnh from "@/components/XuatAnh";
@@ -23,7 +24,7 @@ const NEN_CARD = "var(--card)";
 const NEN_INSET = "var(--vien-nhe)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#4A8AD6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const VANG = "var(--vang)";
 const DO = "var(--do)";
@@ -96,14 +97,19 @@ function phanLoaiTrend(trend) {
 // (mo phong hieu ung "glow" cua dashboard fintech hien dai).
 // href tuy chon - neu co, ca the tro thanh 1 link bam duoc dan sang Bo loc
 // co phieu voi dung bo loc tuong ung (vd Xu huong tang -> ?xuhuong=xanh).
-function TheKPI({ nhan, giaTri, phu, mau, href, may, mo = false }) {
+function TheKPI({ nhan, giaTri, phu, mau, href, may, mo = false, hau = "" }) {
   const noiDung = (
     <>
-      <p className="text-xs  mb-2 relative" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} data-may={may}>
+      <div
+        aria-hidden="true"
+        className="absolute -right-8 -top-8 w-28 h-28 rounded-full blur-3xl opacity-25 pointer-events-none"
+        style={{ background: mau || PRIMARY }}
+      />
+      <p className="text-xs mb-2 relative" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} data-may={may}>
         {nhan}
       </p>
       <p className="text-3xl relative" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mau || TEXT, ...(mo ? { filter: "blur(7px)", userSelect: "none" } : {}) }}>
-        {giaTri}
+        {typeof giaTri === "number" && !mo ? <SoChay gia={giaTri} hau={hau} /> : giaTri}
       </p>
       {mo && <Lock size={15} color={MUTED} strokeWidth={2} className="absolute right-4 top-4" aria-hidden="true" />}
       {phu && (
@@ -241,6 +247,8 @@ export default async function TrangTongQuan() {
     <div style={{ color: TEXT }}>
       {/* HERO */}
       <div className="relative overflow-hidden border-b" style={{ borderColor: VIEN }}>
+        <div aria-hidden="true" className="cs-aurora" />
+        <div aria-hidden="true" className="cs-luoi" />
         <Image
           src="/logo-bieu-tuong-toi.png"
           alt=""
@@ -257,21 +265,28 @@ export default async function TrangTongQuan() {
           height={176}
           className="chi-sang hidden md:block absolute right-10 top-6 w-[330px] h-auto opacity-[0.09] pointer-events-none select-none"
         />
-        <div className="relative max-w-6xl mx-auto px-6 pt-14 pb-10">
+        <div className="relative max-w-6xl mx-auto px-6 pt-14 pb-12">
+          <div className="mb-5">
+            <span className="cs-nhan-hero" style={{ fontFamily: "var(--font-chu)" }}>
+              <span className="cs-nhip" aria-hidden="true" />
+              Cập nhật sau mỗi phiên · Quét toàn bộ thị trường
+            </span>
+          </div>
           <h1
             className="text-[28px] sm:text-4xl leading-[1.15] mb-4"
             style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}
           >
             Tổng quan thị trường,<br />
-            <span>đọc trong 5 giây.</span>
+            <span className="cs-chu-mau">đọc trong 5 giây.</span>
           </h1>
           <p className="max-w-xl" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             Điểm hợp lưu Xu hướng · Động lượng · Dòng tiền cho {tong > 0 ? tong : "gần 400"} cổ phiếu HOSE, HNX, UPCOM, kiểm chứng
             bằng backtest 11 năm với giá vào lệnh thực tế. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc thị trường nhanh hơn.
           </p>
           <div className="flex flex-wrap gap-3 mt-6 text-sm" style={{ fontFamily: "var(--font-chu)" }}>
-            <Link href="/bo-loc" className="px-4 py-2.5 rounded-lg font-semibold" style={{ background: "#2F6FBF", color: "#FFFFFF" }}>
+            <Link href="/bo-loc" className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold" style={{ background: "#6C5CE7", color: "#FFFFFF" }}>
               Mở Bộ lọc cổ phiếu
+              <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
             </Link>
             <Link href="/bieu-do" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
               Xem biểu đồ kỹ thuật
@@ -410,7 +425,7 @@ export default async function TrangTongQuan() {
         {/* HANG KPI */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
           <TheKPI nhan="Mã đang theo dõi" giaTri={tong} mau={TEXT} href="/bo-loc" />
-          <TheKPI nhan="Xu hướng tăng" giaTri={`${pctXanh.toFixed(0)}%`} phu={`${soXanh} mã`} mau={XANH} href="/bo-loc?xuhuong=xanh" />
+          <TheKPI nhan="Xu hướng tăng" giaTri={Math.round(pctXanh)} hau="%" phu={`${soXanh} mã`} mau={XANH} href="/bo-loc?xuhuong=xanh" />
           {xemTinHieu ? (
             <>
               <TheKPI nhan="Tín hiệu MUA" giaTri={soMua} phu="hôm nay" mau={PRIMARY} href="/bo-loc?tin=MUA" />
