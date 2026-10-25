@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Briefcase, ListFilter, TrendingDown, BookOpen, CandlestickChart, Wallet, Mail } from "lucide-react";
+import { LayoutGrid, Briefcase, ListFilter, TrendingDown, BookOpen, CandlestickChart, Wallet, Mail, Ellipsis } from "lucide-react";
 import { MENU, mucDangMo } from "@/lib/menu";
 
 const ICON = { "/": LayoutGrid, "/bo-loc": ListFilter, "/bieu-do": CandlestickChart, "/lenh-mo": Briefcase, "/danh-muc": Wallet, "/bat-day": TrendingDown, "/huong-dan": BookOpen };
@@ -18,6 +19,10 @@ const MUTED = "var(--mo)";
 export default function Sidebar() {
   const pathname = usePathname();
   const dangMo = mucDangMo(pathname);
+  const [moTai, setMoTai] = useState(null); // duong dan luc mo ngan "Them" (doi trang thi tu dong)
+  const MENU_CHINH = MENU.slice(0, 4);
+  const MENU_PHU = MENU.slice(4);
+  const dangTrongPhu = MENU_PHU.some((m) => dangMo?.href === m.href) || pathname === "/lien-he";
 
   return (
     <>
@@ -63,32 +68,53 @@ export default function Sidebar() {
         </div>
       </aside>
 
-      {/* Mobile: thanh ngang tren cung (<768px) */}
-      <div className="md:hidden sticky top-14 z-20" style={{ background: BG, borderBottom: `1px solid ${VIEN}` }}>
-        <div className="px-4 flex items-center gap-2 overflow-x-auto">
-          {MENU.map(({ href, nhanNgan }) => {
-            const active = dangMo?.href === href;
-            const Icon = ICON[href];
-            return (
-              <Link
-                key={href}
-                href={href}
-                aria-current={active ? "page" : undefined}
-                className="flex items-center gap-1.5 py-3 px-2 text-xs whitespace-nowrap border-b-2 transition-colors"
-                style={{
-                  borderColor: active ? PRIMARY : "transparent",
-                  color: active ? TEXT : MUTED,
-                  fontFamily: "var(--font-chu)",
-                  fontWeight: active ? 600 : 500,
-                }}
-              >
-                <Icon size={14} />
-                {nhanNgan}
-              </Link>
-            );
-          })}
+      {/* Mobile (<768px): THANH DIEU HUONG O DAY MAN HINH (than quen cua ung dung dien thoai, ngon cai bam toi): 4 muc chinh + "Them" mo ngan keo cac muc con lai */}
+      {moTai === pathname && (
+        <div className="md:hidden fixed inset-0 z-40" onClick={() => setMoTai(null)} role="presentation" style={{ background: "rgba(5,5,10,0.55)" }}>
+          <div
+            role="dialog"
+            aria-label="Các mục khác"
+            className="cs-ngan-keo absolute left-3 right-3 rounded-2xl border p-2"
+            style={{ bottom: "calc(64px + env(safe-area-inset-bottom, 0px))", background: "var(--card)", borderColor: VIEN, boxShadow: "0 -12px 40px -12px rgba(108,92,231,0.45)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {MENU_PHU.map(({ href, nhan }) => {
+              const active = dangMo?.href === href;
+              const Icon = ICON[href];
+              return (
+                <Link key={href} href={href} onClick={() => setMoTai(null)} aria-current={active ? "page" : undefined} className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm" style={{ color: active ? "var(--tim-chu)" : TEXT, background: active ? "rgba(108,92,231,0.18)" : undefined, fontFamily: "var(--font-chu)", fontWeight: active ? 700 : 500 }}>
+                  <Icon size={19} strokeWidth={2} />
+                  {nhan}
+                </Link>
+              );
+            })}
+            <Link href="/lien-he" onClick={() => setMoTai(null)} className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm" style={{ color: pathname === "/lien-he" ? "var(--tim-chu)" : TEXT, fontFamily: "var(--font-chu)" }}>
+              <Mail size={19} strokeWidth={2} />
+              Liên hệ
+            </Link>
+          </div>
         </div>
-      </div>
+      )}
+      <nav aria-label="Điều hướng chính" className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex items-stretch" style={{ background: "color-mix(in srgb, var(--nen-sau) 97%, transparent)", borderTop: `1px solid ${VIEN}`, paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+        {MENU_CHINH.map(({ href, nhanNgan }) => {
+          const active = dangMo?.href === href;
+          const Icon = ICON[href];
+          return (
+            <Link key={href} href={href} onClick={() => setMoTai(null)} aria-current={active ? "page" : undefined} className="cs-tab-day flex-1 flex flex-col items-center justify-center gap-1 pt-2 pb-1.5 text-[11px] min-h-[56px]" style={{ color: active ? "var(--tim-chu)" : MUTED, fontFamily: "var(--font-chu)", fontWeight: active ? 700 : 500 }}>
+              <span className="cs-tab-bieu-tuong" data-active={active ? "1" : undefined}>
+                <Icon size={21} strokeWidth={active ? 2.4 : 2} />
+              </span>
+              {nhanNgan}
+            </Link>
+          );
+        })}
+        <button type="button" onClick={() => setMoTai(moTai === pathname ? null : pathname)} aria-expanded={moTai === pathname} aria-haspopup="dialog" className="cs-tab-day flex-1 flex flex-col items-center justify-center gap-1 pt-2 pb-1.5 text-[11px] min-h-[56px]" style={{ color: dangTrongPhu || moTai === pathname ? "var(--tim-chu)" : MUTED, fontFamily: "var(--font-chu)", fontWeight: dangTrongPhu ? 700 : 500 }}>
+          <span className="cs-tab-bieu-tuong" data-active={dangTrongPhu ? "1" : undefined}>
+            <Ellipsis size={21} strokeWidth={2} />
+          </span>
+          Thêm
+        </button>
+      </nav>
     </>
   );
 }

@@ -18,6 +18,9 @@ const phongChu = Open_Sans({
 // Chan trang doc thong tin lien he tu DB o moi request - khong de Next dong cung luc build (vd /quan-tri, 404).
 export const dynamic = "force-dynamic";
 
+// Dien thoai: phu kin man hinh (tai tho / khong co), de thanh dieu huong day man hinh dung vung an toan (env(safe-area-inset-bottom)); mau thanh trinh duyet theo nen toi.
+export const viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#0B0B10" };
+
 export const metadata = {
   metadataBase: new URL("https://www.cloudstock.id.vn"),
   title: { default: "CloudStock — Hệ thống hỗ trợ đầu tư", template: "%s | CloudStock" },
@@ -46,7 +49,7 @@ export default function RootLayout({ children }) {
           <ThanhDau />
           <Sidebar />
           <MayHuongDan />
-          <div className="md:pl-60 flex flex-col flex-1">
+          <div className="md:pl-60 md:pb-0 pb-[calc(56px+env(safe-area-inset-bottom,0px))] flex flex-col flex-1">
             <ThanhTabNhom />
             <main className="flex-1">{children}</main>
             <ChanTrang />
