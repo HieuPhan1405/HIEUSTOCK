@@ -101,7 +101,7 @@ export default function DongTienThiTruong() {
   return (
     <section className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD, color: TEXT }} aria-label="Dòng tiền thời gian thực">
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
-        <h2 className="text-lg" style={{ ...sans, fontWeight: 700 }}>Dòng tiền thời gian thực</h2>
+        <h2 className="text-lg" style={{ ...sans, fontWeight: 700 }} data-may="dong-tien-tt">Dòng tiền thời gian thực</h2>
         {du && (
           <span className="text-xs" style={{ color: MUTED }}>
             Phiên {ngayVN(du.ngay)} · cập nhật {gio(du.luc ?? du.capNhat)}

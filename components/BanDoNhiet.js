@@ -69,7 +69,7 @@ export default function BanDoNhiet({ tatCa }) {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <p className="text-xs " style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+        <p className="text-xs" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} data-may="ban-do-nhiet">
           Bản đồ nhiệt theo ngành
         </p>
         <p className="text-[11px]" style={{ color: MUTED }}>

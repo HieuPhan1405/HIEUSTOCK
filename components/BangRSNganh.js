@@ -119,7 +119,7 @@ export default function BangRSNganh({ hang }) {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <p className="text-xs " style={{ color: MUTED, ...sans }}>
+        <p className="text-xs" style={{ color: MUTED, ...sans }} data-may="rs-nganh">
           Xếp hạng sức mạnh ngành (RS)
         </p>
         <p className="text-[11px]" style={{ color: MUTED }}>

@@ -876,6 +876,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             type="button"
             onClick={() => setToanMH((v) => !v)}
             aria-pressed={toanMH}
+            data-may="toan-man-hinh"
             title={toanMH ? "Thu nhỏ (Esc)" : "Xem biểu đồ toàn màn hình"}
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs cursor-pointer"
             style={{ border: `1px solid ${toanMH ? PRIMARY : VIEN}`, background: toanMH ? "rgba(108,92,231,0.18)" : "transparent", color: toanMH ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}

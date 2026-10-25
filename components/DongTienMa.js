@@ -142,7 +142,7 @@ export default function DongTienMa({ ma }) {
   return (
     <section className="rounded-2xl border p-5 mb-4" style={{ borderColor: VIEN, background: NEN_CARD, color: TEXT }} aria-label={`Dòng tiền trong phiên của ${ma}`}>
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
-        <h2 className="text-lg" style={{ ...sans, fontWeight: 700 }}>Dòng tiền trong phiên</h2>
+        <h2 className="text-lg" style={{ ...sans, fontWeight: 700 }} data-may="dong-tien-tt">Dòng tiền trong phiên</h2>
         {du && <span className="text-xs" style={{ color: MUTED }}>Phiên {ngayVN(du.ngay)} · cập nhật {gio(du.capNhat)}</span>}
       </div>
       {d.trangThai === "khoa" && <p className="text-sm" style={{ color: MUTED }}>Đăng nhập tài khoản đã được duyệt để xem dòng tiền thời gian thực của mã này.</p>}

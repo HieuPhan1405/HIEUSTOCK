@@ -126,6 +126,7 @@ export default function XuatAnh({ nhan = "Chụp ảnh", tenFile = "cloudstock.p
       <button
         type="button"
         data-khong-chup
+        data-may="xuat-anh"
         onClick={() => {
           setThongBao("");
           setLoi("");

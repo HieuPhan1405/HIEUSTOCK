@@ -20,10 +20,10 @@ const VANG = "var(--vang)";
 const mono = { fontFamily: "var(--font-chu)" };
 const sans = { fontFamily: "var(--font-chu)" };
 
-function The({ tieuDe, phu, children }) {
+function The({ tieuDe, phu, children, may }) {
   return (
     <div className="rounded-2xl border p-5 flex flex-col" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-xs " style={{ color: MUTED, ...mono }}>
+      <p className="text-xs" style={{ color: MUTED, ...mono }} data-may={may}>
         {tieuDe}
       </p>
       <div className="flex-1 flex flex-col justify-center py-3">{children}</div>
@@ -191,7 +191,7 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
 
       {/* 3 THE TONG HOP */}
       <div className="grid md:grid-cols-3 gap-4 mb-6">
-        <The tieuDe="Xu hướng thị trường" phu="Theo điểm Trend của chính VN-Index (Ichimoku + đường cân bằng dài hạn).">
+        <The may="xu-huong-tt" tieuDe="Xu hướng thị trường" phu="Theo điểm Trend của chính VN-Index (Ichimoku + đường cân bằng dài hạn).">
           {vnindex ? (
             <div className="text-center">
               <span className="inline-block px-4 py-1.5 rounded-full text-sm mb-3" style={{ background: nhe(tq.xuHuong.mau, 13), color: tq.xuHuong.mau, border: `1px solid ${nhe(tq.xuHuong.mau, 33)}`, fontWeight: 700 }}>
@@ -211,7 +211,7 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
           )}
         </The>
 
-        <The tieuDe="Tâm lý thị trường" phu="Trung bình 4 tỷ lệ: mã tăng giá, mã trên Kijun, mã trên đường cân bằng dài hạn, mã đạt điểm MUA (tự tính, không phải chỉ báo chuẩn).">
+        <The may="tam-ly" tieuDe="Tâm lý thị trường" phu="Trung bình 4 tỷ lệ: mã tăng giá, mã trên Kijun, mã trên đường cân bằng dài hạn, mã đạt điểm MUA (tự tính, không phải chỉ báo chuẩn).">
           <DongHoTamLy diem={tq.tamLy} />
           <p className="text-center -mt-1">
             <span className="text-2xl" style={{ ...mono, fontWeight: 700 }}>
@@ -223,7 +223,7 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
           </p>
         </The>
 
-        <The tieuDe="Mức giữ lệnh của hệ thống" phu="Số mã đang MUA hoặc NẮM GIỮ trên tổng số mã hệ thống theo dõi. Chỉ là thống kê, không phải khuyến nghị tỷ trọng.">
+        <The may="muc-giu-lenh" tieuDe="Mức giữ lệnh của hệ thống" phu="Số mã đang MUA hoặc NẮM GIỮ trên tổng số mã hệ thống theo dõi. Chỉ là thống kê, không phải khuyến nghị tỷ trọng.">
           <p className="text-center text-4xl mb-1" style={{ ...mono, fontWeight: 700, color: PRIMARY }}>
             {tq.tyLeDangGiu == null ? "—" : <SoChay gia={Math.round(tq.tyLeDangGiu)} hau="%" />}
           </p>
