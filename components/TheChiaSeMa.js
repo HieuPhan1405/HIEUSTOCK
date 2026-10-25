@@ -4,8 +4,8 @@ import { fmt, pct, fmtTy, chuoiVung, chamTPCaoNhat, nhanLyDoBan, tinhVungLenh } 
 import { gomTheoLenh, thongKeLenhDaDong } from "@/lib/thongKeLenh";
 import { gioChupVN } from "@/lib/xuatAnh";
 
-const C = { nen: "#0E0F1C", card: "#181A2E", vien: "#2A2D48", chu: "#F4F5FB", mo: "#9A9DBB", xanh: "#4ADE80", do: "#F87171", vang: "#FBBF24", tim: "#8B7CF6", cyan: "#5EEAD4" };
-const FONT = "var(--font-chu), 'Plus Jakarta Sans', system-ui, sans-serif";
+const C = { nen: "#111113", card: "#1A1A1D", vien: "#2E2E32", chu: "#F4F4F5", mo: "#A0A0A6", xanh: "#4ADE80", do: "#F87171", vang: "#FBBF24", tim: "#7FB0EE", cyan: "#5EEAD4" };
+const FONT = "var(--font-chu), 'Open Sans', system-ui, sans-serif";
 
 const mauLai = (v) => (v == null ? C.mo : v >= 0 ? C.xanh : C.do);
 const ngayVN = (s) => (s ? String(s).slice(0, 10).split("-").reverse().join("/") : "—");
@@ -98,7 +98,7 @@ export default function TheChiaSeMa({ row, cacLenh = [], lichSuDaDong = [], ketL
       </div>
 
       {/* MA + GIA + TIN HIEU */}
-      <div style={{ background: `linear-gradient(135deg, ${C.card}, #20213A)`, border: `1px solid ${C.vien}`, borderRadius: 20, padding: "26px 30px", marginBottom: 18, display: "grid", gridTemplateColumns: "1fr auto", gap: 24, alignItems: "center" }}>
+      <div style={{ background: C.card, border: `1px solid ${C.vien}`, borderRadius: 20, padding: "26px 30px", marginBottom: 18, display: "grid", gridTemplateColumns: "1fr auto", gap: 24, alignItems: "center" }}>
         <div style={{ minWidth: 0 }}>
           <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1 }}>{row.ma}</div>
           <div style={{ fontSize: 17, color: C.chu, marginTop: 8 }}>{row.ten_cong_ty ?? ""}</div>

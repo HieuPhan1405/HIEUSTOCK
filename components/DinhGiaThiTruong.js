@@ -6,7 +6,7 @@ import { thongKeMang } from "@/lib/tinhDinhGia";
 const VIEN = "var(--vien)";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -37,7 +37,7 @@ function TheChiSo({ ten, hienTai, lichSu, doLech, tbLichSu, tuNgay }) {
   return (
     <div className="rounded-xl border p-4" style={{ borderColor: VIEN }}>
       <div className="flex items-baseline justify-between">
-        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED }}>
+        <p className="text-xs " style={{ color: MUTED }}>
           {ten} thị trường (HOSE)
         </p>
         {nd && (
@@ -164,7 +164,7 @@ export default function DinhGiaThiTruong() {
       </div>
 
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED }}>
+        <p className="text-xs " style={{ color: MUTED }}>
           {nhan} thị trường theo tháng (từ {thangNam(diem[0].ngay)})
         </p>
         <div className="flex gap-1 text-xs">
@@ -187,19 +187,19 @@ export default function DinhGiaThiTruong() {
             {[tk.tb + tk.doLech, tk.tb, tk.tb - tk.doLech].map((v, i) => (
               <g key={i}>
                 <line x1={0} x2={rongVe} y1={y(v)} y2={y(v)} stroke={i === 1 ? VANG : MUTED} strokeDasharray={i === 1 ? "5,4" : "2,4"} opacity={i === 1 ? 0.8 : 0.45} />
-                <text x={-6} y={y(v) + 3} textAnchor="end" fontSize="9" fill={i === 1 ? VANG : MUTED} style={{ fontFamily: "var(--font-chu)" }}>
+                <text x={-6} y={y(v) + 3} textAnchor="end" fontSize="11" fill={i === 1 ? VANG : MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                   {so(v, dp)}
                 </text>
               </g>
             ))}
-            <text x={rongVe} y={y(tk.tb) - 4} textAnchor="end" fontSize="10" fill={VANG} style={{ fontFamily: "var(--font-chu)" }}>
+            <text x={rongVe} y={y(tk.tb) - 4} textAnchor="end" fontSize="11" fill={VANG} style={{ fontFamily: "var(--font-chu)" }}>
               TB {so(tk.tb, dp)} (±1 độ lệch chuẩn: {so(tk.tb - tk.doLech, dp)} – {so(tk.tb + tk.doLech, dp)})
             </text>
             <path d={duong} fill="none" stroke={PRIMARY} strokeWidth="2" />
             {nam.map((n) => {
               const i = diem.findIndex((d) => d.ngay.startsWith(n));
               return i >= 0 ? (
-                <text key={n} x={x(i)} y={caoVe + 16} fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
+                <text key={n} x={x(i)} y={caoVe + 16} fontSize="11" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                   {n}
                 </text>
               ) : null;
@@ -232,7 +232,7 @@ export default function DinhGiaThiTruong() {
 
       {du.theoNganh?.length > 0 && (
         <div className="mt-5">
-          <p className="text-xs uppercase tracking-wide mb-2" style={{ color: MUTED }}>
+          <p className="text-xs  mb-2" style={{ color: MUTED }}>
             PE / PB theo ngành (so với toàn thị trường: PE {so(du.pe.hienTai, 1)} · PB {so(du.pb.hienTai, 2)})
           </p>
           <div className="overflow-x-auto">

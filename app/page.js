@@ -23,7 +23,7 @@ const NEN_CARD = "var(--card)";
 const NEN_INSET = "var(--vien-nhe)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const XANH = "var(--xanh)";
 const VANG = "var(--vang)";
 const DO = "var(--do)";
@@ -99,12 +99,7 @@ function phanLoaiTrend(trend) {
 function TheKPI({ nhan, giaTri, phu, mau, href, may, mo = false }) {
   const noiDung = (
     <>
-      <div
-        aria-hidden="true"
-        className="absolute -right-8 -top-8 w-28 h-28 rounded-full blur-3xl opacity-25 pointer-events-none"
-        style={{ background: mau || PRIMARY }}
-      />
-      <p className="text-xs uppercase tracking-wide mb-2 relative" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} data-may={may}>
+      <p className="text-xs  mb-2 relative" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} data-may={may}>
         {nhan}
       </p>
       <p className="text-3xl relative" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mau || TEXT, ...(mo ? { filter: "blur(7px)", userSelect: "none" } : {}) }}>
@@ -178,7 +173,7 @@ function BieuDoTronDoRong({ soXanh, soSideway, soDo, tong }) {
       <text x={tam} y={tam - 3} textAnchor="middle" fontSize="26" fontWeight="700" fill={TEXT} style={{ fontFamily: "var(--font-chu)" }}>
         {tong ? Math.round((soXanh / tong) * 100) : 0}%
       </text>
-      <text x={tam} y={tam + 16} textAnchor="middle" fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
+      <text x={tam} y={tam + 16} textAnchor="middle" fontSize="11" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
         mã xanh
       </text>
     </svg>
@@ -246,17 +241,6 @@ export default async function TrangTongQuan() {
     <div style={{ color: TEXT }}>
       {/* HERO */}
       <div className="relative overflow-hidden border-b" style={{ borderColor: VIEN }}>
-        {/* Nen luoi mo tan dan xuong duoi + bieu tuong logo lam hinh nen (bo cuc hoc tu trang nghien cuu) */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: "linear-gradient(var(--phu) 1px, transparent 1px), linear-gradient(90deg, var(--phu) 1px, transparent 1px)",
-            backgroundSize: "44px 44px",
-            maskImage: "linear-gradient(to bottom, black 20%, transparent 100%)",
-            WebkitMaskImage: "linear-gradient(to bottom, black 20%, transparent 100%)",
-          }}
-        />
         <Image
           src="/logo-bieu-tuong-toi.png"
           alt=""
@@ -274,20 +258,12 @@ export default async function TrangTongQuan() {
           className="chi-sang hidden md:block absolute right-10 top-6 w-[330px] h-auto opacity-[0.09] pointer-events-none select-none"
         />
         <div className="relative max-w-6xl mx-auto px-6 pt-14 pb-10">
-          <p
-            className="text-xs tracking-[0.25em] uppercase mb-3"
-            style={{ color: PRIMARY, fontFamily: "var(--font-chu)" }}
-          >
-            Hệ thống hỗ trợ đầu tư · Quét toàn bộ thị trường
-          </p>
           <h1
             className="text-4xl sm:text-5xl leading-[1.05] mb-4"
             style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}
           >
             Tổng quan thị trường,<br />
-            <span style={{ background: "linear-gradient(90deg, var(--tim-chu), #6C5CE7)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>
-              đọc trong 5 giây.
-            </span>
+            <span>đọc trong 5 giây.</span>
           </h1>
           <p className="max-w-xl" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             Điểm hợp lưu Xu hướng · Động lượng · Dòng tiền cho {tong > 0 ? tong : "gần 400"} cổ phiếu HOSE, HNX, UPCOM, kiểm chứng
@@ -303,11 +279,6 @@ export default async function TrangTongQuan() {
             <XuatAnh nhan="Chụp ảnh thị trường" muc="#chup-thi-truong" tenFile={`CloudStock-thi-truong-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tổng quan thị trường" />
           </div>
         </div>
-        <div
-          aria-hidden="true"
-          className="absolute -right-24 -top-24 w-72 h-72 rounded-full blur-3xl opacity-20 pointer-events-none"
-          style={{ background: PRIMARY }}
-        />
       </div>
 
       <div id="chup-thi-truong" className="max-w-6xl mx-auto px-6 py-10">
@@ -323,13 +294,8 @@ export default async function TrangTongQuan() {
             className="rounded-2xl border p-6 mb-6 relative overflow-hidden"
             style={{ borderColor: VIEN, background: NEN_CARD }}
           >
-            <div
-              aria-hidden="true"
-              className="absolute -left-10 -bottom-16 w-56 h-56 rounded-full blur-3xl opacity-20 pointer-events-none"
-              style={{ background: nhanDinh.mau }}
-            />
             <div className="flex items-center gap-2 mb-3 relative">
-              <span className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+              <span className="text-xs " style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                 Nhận định nhanh
               </span>
               <span
@@ -353,7 +319,7 @@ export default async function TrangTongQuan() {
           <div className="rounded-2xl border p-6 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
             <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
               <div>
-                <p className="text-xs uppercase tracking-wide mb-1" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+                <p className="text-xs  mb-1" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                   PTKT VNINDEX
                 </p>
                 <div className="flex items-baseline gap-3">
@@ -467,7 +433,7 @@ export default async function TrangTongQuan() {
           <div className="rounded-2xl border p-6 flex items-center gap-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
             <BieuDoTronDoRong soXanh={soXanh} soSideway={soSideway} soDo={soDo} tong={tong} />
             <div>
-              <p className="text-xs uppercase tracking-wide mb-2" style={{ color: MUTED }}>
+              <p className="text-xs  mb-2" style={{ color: MUTED }}>
                 Kết luận thị trường
               </p>
               <p className="text-base mb-3" style={{ fontFamily: "var(--font-chu)", fontWeight: 600 }}>
@@ -482,7 +448,7 @@ export default async function TrangTongQuan() {
           </div>
 
           <div className="rounded-2xl border p-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-            <p className="text-xs uppercase tracking-wide mb-4" style={{ color: MUTED }}>
+            <p className="text-xs  mb-4" style={{ color: MUTED }}>
               Độ rộng theo vốn hoá
             </p>
             {doRongVonHoa.map(([nhan, { tong: tongNhom, xanh, pctXanh: pctXanhNhom }]) => (

@@ -14,7 +14,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 
 // Gia tri "nganh" AFL xuat ra KHONG dau (quy uoc chung toan he thong) - map
 // sang nhan co dau de hien thi dep hon trong dropdown, nhung filter van so
@@ -295,7 +295,7 @@ export function ChonCotHienThi({ cot, dsKhoa, dangChon, onBat, onHienTatCa, onMa
             if (dsNhom.length === 0) return null;
             return (
               <div key={nhom} className="mb-3 last:mb-0">
-                <p className="text-[11px] uppercase tracking-wide mb-1.5" style={{ color: MUTED }}>
+                <p className="text-[11px]  mb-1.5" style={{ color: MUTED }}>
                   {nhom}
                 </p>
                 <div className="grid grid-cols-2 gap-x-2 gap-y-1.5">

@@ -306,7 +306,7 @@ export class LopVe {
   }
   _rongChu(h) {
     const ctx = this.canvas.getContext("2d");
-    ctx.font = "600 13px 'Plus Jakarta Sans', sans-serif";
+    ctx.font = "600 13px 'Open Sans', sans-serif";
     return ctx.measureText(h.chu || "").width;
   }
   // doan song song thu 2 cua kenh: tra ve { a2, b2 } theo px
@@ -653,7 +653,7 @@ export class LopVe {
   // thanh nho canh hinh dang chon
   _taoThanh() {
     const t = document.createElement("div");
-    Object.assign(t.style, { position: "absolute", zIndex: "6", display: "none", gap: "2px", padding: "3px", borderRadius: "8px", font: "600 11px 'Plus Jakarta Sans', sans-serif", userSelect: "none", boxShadow: "0 4px 14px rgba(0,0,0,0.35)" });
+    Object.assign(t.style, { position: "absolute", zIndex: "6", display: "none", gap: "2px", padding: "3px", borderRadius: "8px", font: "600 11px 'Open Sans', sans-serif", userSelect: "none", boxShadow: "0 4px 14px rgba(0,0,0,0.35)" });
     const nut = (nhan, tieuDe, fn, doNguyHiem) => {
       const b = document.createElement("button");
       b.type = "button";
@@ -763,7 +763,7 @@ export class LopVe {
       ctx.lineTo(xDuong2, y);
       ctx.stroke();
       ctx.setLineDash([]);
-      ctx.font = "10px 'Plus Jakarta Sans', sans-serif";
+      ctx.font = "10px 'Open Sans', sans-serif";
       ctx.textBaseline = "middle";
       const chu = `${nhan} ${soVN(gia, 2, true)}`;
       const w = ctx.measureText(chu).width;
@@ -800,7 +800,7 @@ export class LopVe {
       this._veHoSo(ctx, this.hoSo, { xGoc: W, rongToiDa, neoPhai: true, xDuong1: 0, xDuong2: W });
       // ghi nguon du lieu (trung thuc: day la uoc luong, khong phai du lieu khop lenh tung muc gia)
       const chu = this.hoSo.nguon === "gio" ? "KL theo giá · nến 1 giờ" : this.hoSo.nguon === "ghep" ? "KL theo giá · nến 1 giờ + nến biểu đồ" : "KL theo giá · ước lượng từ nến biểu đồ";
-      ctx.font = "10px 'Plus Jakarta Sans', sans-serif";
+      ctx.font = "10px 'Open Sans', sans-serif";
       ctx.textBaseline = "middle";
       const w = ctx.measureText(chu).width;
       ctx.fillStyle = this.mauNen;
@@ -823,7 +823,7 @@ export class LopVe {
     const y = this._y(h.p1.p);
     if (y == null) return;
     const chu = soVN(h.p1.p, 2, true);
-    ctx.font = "11px 'Plus Jakarta Sans', sans-serif";
+    ctx.font = "11px 'Open Sans', sans-serif";
     const w = ctx.measureText(chu).width + 10;
     ctx.fillStyle = h.mau;
     ctx.fillRect(W + 1, y - 9, Math.min(w, this.rong - W - 1), 18);
@@ -841,7 +841,7 @@ export class LopVe {
     ctx.fillStyle = h.mau;
     ctx.setLineDash([]);
     ctx.textBaseline = "middle";
-    ctx.font = "11px 'Plus Jakarta Sans', sans-serif";
+    ctx.font = "11px 'Open Sans', sans-serif";
     const diem = (p) => {
       ctx.beginPath();
       ctx.arc(p.x, p.y, 4.5, 0, Math.PI * 2);
@@ -871,7 +871,7 @@ export class LopVe {
       return;
     }
     if (h.loai === "chu") {
-      ctx.font = "600 13px 'Plus Jakarta Sans', sans-serif";
+      ctx.font = "600 13px 'Open Sans', sans-serif";
       ctx.fillStyle = h.mau;
       ctx.fillText(h.chu || "", a.x, a.y);
       if (chon) {
@@ -905,7 +905,7 @@ export class LopVe {
       if (k.hs) this._veHoSo(ctx, k.hs, { xGoc: k.x1, rongToiDa: Math.max(30, rong * 0.85), neoPhai: false, xDuong1: k.x1, xDuong2: Math.max(k.x2, k.x1 + 30), nhanTrai: k.x1 + 4 });
       else if (!h.tam) {
         ctx.fillStyle = this.mauChu;
-        ctx.font = "11px 'Plus Jakarta Sans', sans-serif";
+        ctx.font = "11px 'Open Sans', sans-serif";
         ctx.fillText("Không đủ dữ liệu khối lượng", k.x1 + 6, k.yGiua);
       }
       if (chon || h.tam) {

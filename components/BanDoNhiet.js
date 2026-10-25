@@ -69,7 +69,7 @@ export default function BanDoNhiet({ tatCa }) {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+        <p className="text-xs " style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
           Bản đồ nhiệt theo ngành
         </p>
         <p className="text-[11px]" style={{ color: MUTED }}>
@@ -113,14 +113,14 @@ export default function BanDoNhiet({ tatCa }) {
                       <text x={la.x0 + w / 2} y={la.y0 + h / 2 - 3} textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--nhiet-chu)" style={{ pointerEvents: "none", fontFamily: "var(--font-chu)" }}>
                         {la.data.ma}
                       </text>
-                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 11} textAnchor="middle" fontSize="10" fill="var(--nhiet-chu-2)" style={{ pointerEvents: "none", fontFamily: "var(--font-chu)" }}>
+                      <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 11} textAnchor="middle" fontSize="11" fill="var(--nhiet-chu-2)" style={{ pointerEvents: "none", fontFamily: "var(--font-chu)" }}>
                         {la.data.doi >= 0 ? "+" : ""}
                         {soVN(la.data.doi, 1, true)}%
                       </text>
                     </>
                   )}
                   {hienMa && (
-                    <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 4} textAnchor="middle" fontSize="10" fontWeight="700" fill="var(--nhiet-chu)" style={{ pointerEvents: "none", fontFamily: "var(--font-chu)" }}>
+                    <text x={la.x0 + w / 2} y={la.y0 + h / 2 + 4} textAnchor="middle" fontSize="11" fontWeight="700" fill="var(--nhiet-chu)" style={{ pointerEvents: "none", fontFamily: "var(--font-chu)" }}>
                       {la.data.ma}
                     </text>
                   )}

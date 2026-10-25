@@ -76,7 +76,7 @@ function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri, nhanLenh }) {
           </p>
         )}
         {nhanLenh && (
-          <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[10px]" style={{ background: "var(--vien-nhe)", color: "var(--mo-2)", fontFamily: "var(--font-chu)" }}>
+          <span className="inline-block mt-1 px-1.5 py-0.5 rounded text-[11px]" style={{ background: "var(--vien-nhe)", color: "var(--mo-2)", fontFamily: "var(--font-chu)" }}>
             {nhanLenh}
           </span>
         )}
@@ -86,7 +86,7 @@ function Dong({ icon: Icon, mau, ngay, chinh, phu, giaTri, nhanLenh }) {
           <p className="text-sm font-bold" style={{ color: giaTri.mau }}>
             {giaTri.hien}
           </p>
-          <p className="text-[10px]" style={{ color: MUTED }}>
+          <p className="text-[11px]" style={{ color: MUTED }}>
             {giaTri.nhan}
           </p>
         </div>
@@ -108,7 +108,7 @@ function ThanhChonNhatKy({ lenh, khoaChon, datKhoa }) {
         aria-selected={dangChon}
         onClick={() => datKhoa(khoa)}
         className="shrink-0 text-left rounded-xl border px-3 py-2"
-        style={dangChon ? { borderColor: "#6C5CE7", background: "rgba(108,92,231,0.15)" } : { borderColor: VIEN, background: "transparent" }}
+        style={dangChon ? { borderColor: "#4A8AD6", background: "rgba(74,138,214,0.15)" } : { borderColor: VIEN, background: "transparent" }}
       >
         {noiDung}
       </button>
@@ -183,7 +183,7 @@ function TomTatLenh({ l }) {
         <p className="text-sm font-bold" style={{ color: mauLaiLo(kq) }}>
           {kq == null ? "—" : `100 → ${so(100 + kq)}`}
         </p>
-        <p className="text-[10px]" style={{ color: MUTED }}>
+        <p className="text-[11px]" style={{ color: MUTED }}>
           {l.tamTinh ? "tạm tính · " : ""}
           {pct(kq, 2)} trên 100 vốn
         </p>
@@ -227,7 +227,7 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], cacLenh = [] }) 
 
   return (
     <div className="rounded-2xl border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-xs uppercase tracking-wide mb-1" style={{ color: "#6C5CE7", fontFamily: "var(--font-chu)" }}>
+      <p className="text-xs  mb-1" style={{ color: "#4A8AD6", fontFamily: "var(--font-chu)" }}>
         <span data-may="nhat-ky">★ Nhật ký giao dịch {ma}</span>
       </p>
       <p className="text-[11px] mb-3" style={{ color: MUTED }}>
@@ -242,7 +242,7 @@ export default function NhatKyGiaoDich({ ma, lichSuDaDong = [], cacLenh = [] }) 
           <Dong key={i} {...hienSuKien(s)} nhanLenh={!dangXem && nhieuLenh ? nhanLenh[s.khoaLenh] : null} />
         ))}
       </div>
-      <p className="text-[10px] mt-2" style={{ color: "var(--mo-3)" }}>
+      <p className="text-[11px] mt-2" style={{ color: "var(--mo-3)" }}>
         Lệnh chốt từng phần ghi phần vốn của mỗi lần chốt (vd 30 → 33: 30 vốn đã chốt thành 33), cộng các phần lại ra kết quả cả lệnh; lệnh đang giữ tính phần còn lại theo giá hiện tại
         (tạm tính). Lệnh đóng trước khi có tính năng này chỉ ghi mốc Mua và mốc Đóng. Số liệu tham khảo, không phải khuyến nghị đầu tư.
       </p>

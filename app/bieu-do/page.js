@@ -17,7 +17,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const GOI_Y = ["VNINDEX", "VN30", "VCB", "FPT", "HPG", "SSI", "STB"];
 
 export default async function TrangBieuDo({ searchParams }) {

@@ -63,7 +63,7 @@ export default async function TrangChiTietMa({ params }) {
         <p className="mb-4">
           Không tìm thấy mã <strong>{ma?.toUpperCase()}</strong> trong dữ liệu đã quét.
         </p>
-        <Link href="/lenh-mo" className="text-sm" style={{ color: "#6C5CE7" }}>
+        <Link href="/lenh-mo" className="text-sm" style={{ color: "#4A8AD6" }}>
           ← quay lại lệnh đang mở
         </Link>
       </div>

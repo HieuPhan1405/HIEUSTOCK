@@ -72,7 +72,7 @@ function mauKhuyenNghi(khuyenNghi) {
 function CardDinhGia({ dinhGia }) {
   return (
     <Card>
-      <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
+      <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
         Khuyến nghị công ty chứng khoán
       </p>
       <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
@@ -114,7 +114,7 @@ function CardCauChuyen({ cauChuyen }) {
   const nhan = { dong_luc: { chu: "Động lực", mau: "var(--xanh)" }, theo_doi: { chu: "Theo dõi", mau: "var(--vang)" }, rui_ro: { chu: "Rủi ro", mau: "var(--do)" } };
   return (
     <Card>
-      <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
+      <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
         Câu chuyện kỳ vọng
       </p>
       {["dong_luc", "theo_doi", "rui_ro"].map(
@@ -222,7 +222,7 @@ function ThanhMotChieu({ nhan, giaTri, mucMax, hauTo = "" }) {
         </span>
       </div>
       <div className="h-1.5 rounded-sm overflow-hidden" style={{ background: "var(--vien-nhe)" }}>
-        <div className="h-full" style={{ width: `${rong}%`, background: "#6C5CE7" }} />
+        <div className="h-full" style={{ width: `${rong}%`, background: "#4A8AD6" }} />
       </div>
     </div>
   );
@@ -298,7 +298,7 @@ function ThanhChonLenh({ cacLenh, chon, datChon }) {
   if (cacLenh.length < 2) return null;
   return (
     <div className="mb-4 rounded-2xl border p-3" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "var(--mo)" }} data-may="chon-lenh">
+      <p className="text-xs  mb-2" style={{ color: "var(--mo)" }} data-may="chon-lenh">
         Các lệnh đang mở của mã · chọn 1 lệnh để xem giá mua, cắt lỗ, chốt lời và lãi/lỗ theo đúng lệnh đó
       </p>
       <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Chọn lệnh của mã">
@@ -312,7 +312,7 @@ function ThanhChonLenh({ cacLenh, chon, datChon }) {
               aria-selected={dangChon}
               onClick={() => datChon(i)}
               className="shrink-0 text-left rounded-xl border px-3 py-2"
-              style={dangChon ? { borderColor: "#6C5CE7", background: "rgba(108,92,231,0.15)" } : { borderColor: VIEN, background: "transparent" }}
+              style={dangChon ? { borderColor: "#4A8AD6", background: "rgba(74,138,214,0.15)" } : { borderColor: VIEN, background: "transparent" }}
             >
               <span className="block text-sm font-bold" style={{ fontFamily: "var(--font-chu)" }}>
                 {l.ten_lenh}
@@ -477,13 +477,13 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 {pct(vt.lai_lo_pct, 2)}
               </p>
               {vt.gia_mua_ghi_nhan && (
-                <p className="text-[10px] leading-snug mt-1" style={{ color: "var(--mo)" }}>
+                <p className="text-[11px] leading-snug mt-1" style={{ color: "var(--mo)" }}>
                   Giá mua {fmt(vt.gia_mua)} ghi nhận lúc {gioGhiNhan(vt)}, lãi/lỗ tính từ giá này.
                   {vt.sl_tp_ghi_nhan && " Mức cắt lỗ và chốt lời cũng giữ theo lúc đó."}
                 </p>
               )}
               {vt.che_do_vao === "MOI" && (
-                <p className="text-[10px] leading-snug mt-1" style={{ color: "var(--mo)" }}>
+                <p className="text-[11px] leading-snug mt-1" style={{ color: "var(--mo)" }}>
                   Vào lệnh tại mốc chuyển mua, mức cắt lỗ đặt theo cấu trúc giá (dưới mây / đường cân bằng dài hạn / đáy nến / Kijun).
                 </p>
               )}
@@ -492,7 +492,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                   <p className="text-[11px]" style={{ color: "var(--mo)" }} data-may="vung-mua">
                     Vùng mua: <strong style={{ color: "var(--chu)" }}>{chuoiVung(vungLenh.mua.tu, vungLenh.mua.den)}</strong>
                   </p>
-                  <p className="text-[10px] leading-snug" style={{ color: "var(--mo)" }}>
+                  <p className="text-[11px] leading-snug" style={{ color: "var(--mo)" }}>
                     {vungLenh.mua.trangThai === "trong"
                       ? "Giá hiện tại đang trong vùng mua"
                       : vungLenh.mua.trangThai === "tren"
@@ -506,7 +506,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                   <p className="text-[11px]" style={{ color: "var(--mo)" }}>
                     Mốc chuyển mua: {fmt(mocKichHoat(vt).gia)}
                   </p>
-                  <p className="text-[10px] leading-snug" style={{ color: "var(--mo)" }}>
+                  <p className="text-[11px] leading-snug" style={{ color: "var(--mo)" }}>
                     {mocKichHoat(vt).nhan}
                     {mocKichHoat(vt).chenhPct != null &&
                       ` · giá mua ${mocKichHoat(vt).chenhPct >= 0 ? "cao" : "thấp"} hơn mốc ${soAn(Math.abs(mocKichHoat(vt).chenhPct), 1)}%`}
@@ -518,7 +518,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         </Card>
 
         <Card>
-          <p className="text-xs uppercase tracking-wide mb-2" style={{ color: "#6C5CE7" }}>
+          <p className="text-xs  mb-2" style={{ color: "#4A8AD6" }}>
             ★ Kết luận {row.ma}
           </p>
           <p className="text-base font-semibold leading-snug mb-2" style={{ color: mauDiem }}>
@@ -576,14 +576,14 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 <TagInfo nhan="Confidence" giaTri={`${soAn(row.diem_confidence, 0)}/100`} mau="var(--mo-2)" />
               )}
             </div>
-            <p className="text-[10px] mt-2 leading-snug" style={{ color: "var(--mo-3)" }}>
+            <p className="text-[11px] mt-2 leading-snug" style={{ color: "var(--mo-3)" }}>
               Các điểm phụ không dùng để ra lệnh. Backtest 11 năm cho thấy chúng không phân biệt rõ lệnh tốt và lệnh xấu, nên chỉ để tham khảo.
             </p>
           </details>
         </Card>
 
         <Card>
-          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
+          <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
             Vì sao {row.ma} {row.diem >= 0 ? "được" : "bị trừ"} {soAn(row.diem)} điểm?
           </p>
           <ThanhDiem nhan="Xu hướng (Trend)" giaTri={row.trend} mucMax={TREND_MAX} />
@@ -609,12 +609,12 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
       {/* VUNG GIA + STOP-LOSS - 3 MOC CHOT LOI */}
       <div className="grid sm:grid-cols-2 gap-4 mb-4">
         <Card>
-          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
+          <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
             Vùng giá quan trọng
           </p>
           <div className="grid grid-cols-3 gap-2 text-center mb-3">
             <div className="rounded p-2" style={{ background: "var(--nen)" }}>
-              <p className="text-[10px] uppercase mb-1" style={{ color: "var(--mo)" }}>
+              <p className="text-[11px] mb-1" style={{ color: "var(--mo)" }}>
                 Hỗ trợ
               </p>
               <p style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }} className="text-sm">
@@ -625,7 +625,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               </p>
             </div>
             <div className="rounded p-2" style={{ background: "var(--nen)" }}>
-              <p className="text-[10px] uppercase mb-1" style={{ color: "var(--mo)" }}>
+              <p className="text-[11px] mb-1" style={{ color: "var(--mo)" }}>
                 Giá hiện tại
               </p>
               <p style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: "var(--xanh)" }} className="text-sm">
@@ -633,7 +633,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               </p>
             </div>
             <div className="rounded p-2" style={{ background: "var(--nen)" }}>
-              <p className="text-[10px] uppercase mb-1" style={{ color: "var(--mo)" }}>
+              <p className="text-[11px] mb-1" style={{ color: "var(--mo)" }}>
                 Kháng cự
               </p>
               <p style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }} className="text-sm">
@@ -663,19 +663,19 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 </span>
               </div>
               {vungLenh?.sl && (
-                <p className="text-[10px] leading-snug mt-1" style={{ color: "var(--do-chu-2)" }}>
+                <p className="text-[11px] leading-snug mt-1" style={{ color: "var(--do-chu-2)" }}>
                   {vungLenh.sl.xa
                     ? "Mức này đã cách giá hiện tại rất xa nên chỉ còn mang tính tham khảo — thoát lệnh thật theo tín hiệu BÁN của hệ thống."
                     : `Đáy vùng ${fmt(vungLenh.sl.tu)} là mức cắt dứt khoát; đỉnh vùng là đường hỗ trợ gần nhất phía trên — giá rơi vào vùng này là lúc cần theo dõi sát.`}
                 </p>
               )}
               {vungLenh?.hoaVon && (
-                <p className="text-[10px] leading-snug mt-1 font-bold" style={{ color: "var(--vang)" }}>
+                <p className="text-[11px] leading-snug mt-1 font-bold" style={{ color: "var(--vang)" }}>
                   Đã chạm TP2 → nên dời mức cắt lỗ của phần còn lại về giá mua ({fmt(vungLenh.hoaVon)}) để không còn rủi ro lỗ.
                 </p>
               )}
               {vungLenh?.sl?.xa && vungLenh.sl.canhBao != null && (
-                <p className="text-[10px] leading-snug mt-1" style={{ color: "var(--do-chu-2)" }}>
+                <p className="text-[11px] leading-snug mt-1" style={{ color: "var(--do-chu-2)" }}>
                   Mức cảnh báo bảo vệ lãi (chỉ để theo dõi, không phải lệnh cắt): Kijun {fmt(vungLenh.sl.canhBao)} ({pct(khoangCach(vungLenh.sl.canhBao), 2)}).
                 </p>
               )}
@@ -684,7 +684,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         </Card>
 
         <Card>
-          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }} data-may="tp">
+          <p className="text-xs  mb-3" style={{ color: "var(--mo)" }} data-may="tp">
             3 mốc chốt lời từng phần
           </p>
           {vungLenh?.tp && (
@@ -697,7 +697,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 Mốc xa (TP3):{" "}
                 <strong style={{ fontFamily: "var(--font-chu)", color: "var(--xanh)" }}>{fmt(vungLenh.tp.xa)}</strong>
               </p>
-              <p className="text-[10px] leading-snug mt-1" style={{ color: "var(--mo)" }}>
+              <p className="text-[11px] leading-snug mt-1" style={{ color: "var(--mo)" }}>
                 Tỷ lệ chốt: {VUNG.tyLeChot.tp1}% ở TP1, {VUNG.tyLeChot.tp2}% ở TP2, {VUNG.tyLeChot.giu}% còn lại giữ đến khi hệ thống báo BÁN (TP3 chỉ là mốc tham khảo). Sau TP2, mức cắt lỗ của phần còn lại dời về giá mua.
               </p>
             </div>
@@ -716,7 +716,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                   <span className="text-xs flex items-center gap-1.5" style={{ color: "var(--mo-2)" }}>
                     {nhan}
                     {daCham && (
-                      <span className="px-1.5 py-0.5 text-[10px] font-bold rounded" style={{ background: nhe("var(--xanh)", 13), color: "var(--xanh)" }}>
+                      <span className="px-1.5 py-0.5 text-[11px] font-bold rounded" style={{ background: nhe("var(--xanh)", 13), color: "var(--xanh)" }}>
                         ✓ Đã chạm
                       </span>
                     )}

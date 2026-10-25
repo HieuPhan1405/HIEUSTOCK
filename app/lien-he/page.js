@@ -13,7 +13,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 
 function DongKenh({ Icon, nhan, giaTri, laLink }) {
   if (!giaTri) return null;
@@ -23,7 +23,7 @@ function DongKenh({ Icon, nhan, giaTri, laLink }) {
         <Icon size={16} color={PRIMARY} strokeWidth={2} aria-hidden="true" />
       </div>
       <div className="min-w-0">
-        <p className="text-[11px] uppercase tracking-wide" style={{ color: MUTED }}>
+        <p className="text-[11px] " style={{ color: MUTED }}>
           {nhan}
         </p>
         {laLink ? (
@@ -81,7 +81,7 @@ export default async function TrangLienHe() {
                 <Landmark size={16} color={PRIMARY} strokeWidth={2} aria-hidden="true" />
               </div>
               <div className="min-w-0">
-                <p className="text-[11px] uppercase tracking-wide" style={{ color: MUTED }}>
+                <p className="text-[11px] " style={{ color: MUTED }}>
                   Ủng hộ qua ngân hàng
                 </p>
                 <p className="text-sm" style={{ color: TEXT, fontFamily: "var(--font-chu)" }}>

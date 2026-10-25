@@ -97,7 +97,7 @@ export default function AnhHuongIndex() {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
-        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+        <p className="text-xs " style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
           Ảnh hưởng tới VN-Index {du ? (du.laHomNay ? "hôm nay" : `phiên ${ngayVN(du.ngay).slice(0, 5)}`) : ""}
         </p>
         {du && (

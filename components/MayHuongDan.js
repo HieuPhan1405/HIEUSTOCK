@@ -197,7 +197,7 @@ export default function MayHuongDan() {
         >
           <div className="flex items-start justify-between gap-3 mb-3">
             <div>
-              <p className="text-[11px] uppercase tracking-wide" style={{ color: TIM, fontFamily: "var(--font-chu)" }}>
+              <p className="text-[11px] " style={{ color: TIM, fontFamily: "var(--font-chu)" }}>
                 Mây hướng dẫn
               </p>
               <p className="text-base font-bold">{gioiThieu.ten}</p>

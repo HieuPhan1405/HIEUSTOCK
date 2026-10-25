@@ -14,9 +14,9 @@ function O({ nhan, children }) {
   return (
     <div
       className="rounded-lg border px-3 py-2 text-center flex flex-col items-center justify-between min-w-[78px]"
-      style={{ borderColor: VIEN, background: "color-mix(in srgb, var(--card) 90%, transparent)", backdropFilter: "blur(6px)" }}
+      style={{ borderColor: VIEN, background: "var(--card)" }}
     >
-      <p className="text-[10px] mb-1.5 whitespace-nowrap" style={{ color: MUTED, fontFamily: "var(--font-chu)", fontWeight: 600 }}>
+      <p className="text-[11px] mb-1.5 whitespace-nowrap" style={{ color: MUTED, fontFamily: "var(--font-chu)", fontWeight: 600 }}>
         {nhan}
       </p>
       <div className="text-sm font-bold whitespace-nowrap leading-5" style={{ fontFamily: "var(--font-chu)", color: TEXT }}>

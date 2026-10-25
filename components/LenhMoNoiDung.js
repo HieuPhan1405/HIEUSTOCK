@@ -12,7 +12,7 @@ const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const DO = "var(--do)";
 const XANH = "var(--xanh)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const TIM = "var(--tim-nhat)";
 
 function The({ so, mau, nhan, phu, mauPhu }) {
@@ -144,7 +144,7 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
       )}
 
       <div className="mt-8 max-w-md rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <p className="text-xs uppercase tracking-wide mb-2" style={{ color: MUTED }}>
+        <p className="text-xs  mb-2" style={{ color: MUTED }}>
           Tra cứu mã khác
         </p>
         <TraCuuMa />

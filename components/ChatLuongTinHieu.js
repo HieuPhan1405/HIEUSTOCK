@@ -28,7 +28,7 @@ function O({ nhan, giaTri, phu, mau }) {
         {giaTri}
       </p>
       {phu && (
-        <p className="text-[10px]" style={{ color: MUTED }}>
+        <p className="text-[11px]" style={{ color: MUTED }}>
           {phu}
         </p>
       )}
@@ -70,7 +70,7 @@ export default function ChatLuongTinHieu({ rows = [], ngayHomNay, loi }) {
       )}
       {Object.entries(tk).map(([loai, t]) => (
         <div key={loai} className="mb-4">
-          <p className="text-xs uppercase tracking-wide mb-2" style={{ color: loai === "goc" ? XANH : NGOC, fontFamily: CHU_SO }}>
+          <p className="text-xs  mb-2" style={{ color: loai === "goc" ? XANH : NGOC, fontFamily: CHU_SO }}>
             {TEN_LOAI[loai]} · {t.soTinHieu} tín hiệu ({t.soTrongPhien} hiện trong phiên)
           </p>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
@@ -115,7 +115,7 @@ export default function ChatLuongTinHieu({ rows = [], ngayHomNay, loi }) {
                     <tr key={`${r.ma}|${r.loai}|${r.ngay_mua}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                       <td className="py-2 px-3" style={{ fontFamily: "var(--font-chu)" }}>
                         <b>{r.ma}</b>
-                        <span className="ml-1.5 text-[10px] font-bold" style={{ color: r.loai === "goc" ? MUTED : NGOC }}>
+                        <span className="ml-1.5 text-[11px] font-bold" style={{ color: r.loai === "goc" ? MUTED : NGOC }}>
                           {TEN_LOAI[r.loai]}
                         </span>
                       </td>

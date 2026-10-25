@@ -78,7 +78,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
 
   return (
     <div className="mb-8 rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-xs uppercase tracking-wide mb-1" style={{ color: MUTED }}>
+      <p className="text-xs  mb-1" style={{ color: MUTED }}>
         So sánh với VNINDEX (cùng kỳ, tính từ ngày mua)
       </p>
       {!tk ? (
@@ -118,7 +118,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
               {[cao, 0, thap].map((v, i) => (
                 <g key={i}>
                   <line x1={TRAI} x2={W - 6} y1={y(v)} y2={y(v)} stroke={v === 0 ? "var(--vien-dam)" : VIEN} strokeDasharray={v === 0 ? undefined : "3 4"} />
-                  <text x={TRAI - 6} y={y(v) + 3} textAnchor="end" fontSize="9" fill={MUTED}>
+                  <text x={TRAI - 6} y={y(v) + 3} textAnchor="end" fontSize="11" fill={MUTED}>
                     {v === 0 ? "0" : `${v > 0 ? "+" : ""}${v.toFixed(0)}%`}
                   </text>
                 </g>
@@ -137,7 +137,7 @@ export default function HieuSuatVsVnindex({ ds, vnindex }) {
                       x={x0 + w / 2}
                       y={H - DUOI + 10}
                       textAnchor="end"
-                      fontSize="9"
+                      fontSize="11"
                       fill={laChon ? TEXT : MUTED}
                       transform={`rotate(-60 ${x0 + w / 2} ${H - DUOI + 10})`}
                       style={{ fontFamily: "var(--font-chu)", fontWeight: laChon ? 700 : 400 }}

@@ -6,7 +6,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 
@@ -51,7 +51,7 @@ export default function FormGuiTinNhan() {
   return (
     <form onSubmit={guiForm} className="rounded-2xl border p-6 flex flex-col gap-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div>
-        <label className="text-xs uppercase tracking-wide block mb-1.5" style={{ color: MUTED }}>
+        <label className="text-xs  block mb-1.5" style={{ color: MUTED }}>
           Họ tên
         </label>
         <input
@@ -64,7 +64,7 @@ export default function FormGuiTinNhan() {
       </div>
 
       <div>
-        <label className="text-xs uppercase tracking-wide block mb-1.5" style={{ color: MUTED }}>
+        <label className="text-xs  block mb-1.5" style={{ color: MUTED }}>
           Email hoặc số điện thoại
         </label>
         <input
@@ -77,7 +77,7 @@ export default function FormGuiTinNhan() {
       </div>
 
       <div>
-        <label className="text-xs uppercase tracking-wide block mb-1.5" style={{ color: MUTED }}>
+        <label className="text-xs  block mb-1.5" style={{ color: MUTED }}>
           Nội dung
         </label>
         <textarea

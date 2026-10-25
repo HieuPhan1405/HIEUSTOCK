@@ -181,7 +181,7 @@ function OKetQua({ x }) {
       <b style={{ color: x.phia > 0 ? XANH : DO }}>{x.phia > 0 ? "Mua" : "Bán"}</b> {d1(x.vao)} <span style={{ color: MUTED }}>{x.gioVao}</span> → {x.ra != null ? d1(x.ra) : "…"}{" "}
       <span style={{ color: MUTED }}>{x.lyDo === "catLo" ? "cắt lỗ" : x.lyDo === "cuoiPhien" ? "14:29" : "đang giữ"}</span>
       {NHAN_VUNG[x.viTri] && (
-        <span className="ml-2 text-[10px]" style={{ color: NHAN_VUNG[x.viTri].mau }} title={`Giá vào ${NHAN_VUNG[x.viTri].chu}`}>
+        <span className="ml-2 text-[11px]" style={{ color: NHAN_VUNG[x.viTri].mau }} title={`Giá vào ${NHAN_VUNG[x.viTri].chu}`}>
           {NHAN_VUNG[x.viTri].gon}
         </span>
       )}
@@ -430,7 +430,7 @@ export default function PhaVoPhaiSinh() {
 
       {suKien.length > 0 && (
         <div className="rounded-2xl border p-3 mb-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <p className="text-xs uppercase tracking-wide mb-1.5" style={{ color: MUTED }}>
+          <p className="text-xs  mb-1.5" style={{ color: MUTED }}>
             Diễn biến từ lúc mở trang
           </p>
           {suKien.map((t, i) => (

@@ -21,7 +21,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 
@@ -274,10 +274,10 @@ function Chip({ bat, onClick, children, mau }) {
       aria-pressed={bat}
       className="px-2.5 py-1 rounded-md text-xs cursor-pointer transition-colors flex items-center gap-1.5"
       style={{
-        background: bat ? "rgba(108,92,231,0.18)" : "transparent",
+        background: bat ? "rgba(74,138,214,0.18)" : "transparent",
         border: `1px solid ${bat ? PRIMARY : VIEN}`,
         color: bat ? TEXT : MUTED,
-        fontFamily: "'Plus Jakarta Sans', sans-serif",
+        fontFamily: "'Open Sans', sans-serif",
         fontWeight: 500,
       }}
     >
@@ -368,7 +368,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     const m = mauTheoGiaoDien();
     const chart = createChart(khungRef.current, {
       autoSize: true,
-      layout: { background: { type: "solid", color: m.nen }, textColor: m.mo, fontFamily: "'Plus Jakarta Sans', sans-serif", fontSize: 11 },
+      layout: { background: { type: "solid", color: m.nen }, textColor: m.mo, fontFamily: "'Open Sans', sans-serif", fontSize: 11 },
       grid: { vertLines: { color: m.luoi }, horzLines: { color: m.luoi } },
       crosshair: { mode: CrosshairMode.Normal },
       rightPriceScale: { borderColor: m.vien, scaleMargins: { top: 0.06, bottom: 0.22 } },
@@ -878,7 +878,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             aria-pressed={toanMH}
             title={toanMH ? "Thu nhỏ (Esc)" : "Xem biểu đồ toàn màn hình"}
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs cursor-pointer"
-            style={{ border: `1px solid ${toanMH ? PRIMARY : VIEN}`, background: toanMH ? "rgba(108,92,231,0.18)" : "transparent", color: toanMH ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
+            style={{ border: `1px solid ${toanMH ? PRIMARY : VIEN}`, background: toanMH ? "rgba(74,138,214,0.18)" : "transparent", color: toanMH ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
           >
             {toanMH ? <Minimize2 size={13} strokeWidth={2} /> : <Maximize2 size={13} strokeWidth={2} />}
             {toanMH ? "Thu nhỏ" : "Toàn màn hình"}
@@ -889,7 +889,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
               type="button"
               onClick={() => datKhoang(k.nen)}
               className="px-2 py-1 rounded text-xs cursor-pointer hover:text-[color:var(--chu)]"
-              style={{ color: MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+              style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}
             >
               {k.nhan}
             </button>
@@ -899,7 +899,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
 
       {bat.nenNhat && (
         <div className="px-3 py-2 border-b" style={{ borderColor: VIEN }} data-may="mau-hinh-nen" aria-label="Mẫu hình nến Nhật">
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]" style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: MUTED }}>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px]" style={{ fontFamily: "'Open Sans', sans-serif", color: MUTED }}>
             <span style={{ color: TEXT, fontWeight: 600 }}>Mẫu hình nến ({dsNenNhat.length} trên 120 nến gần nhất)</span>
             <span style={{ color: XANH }}>▲ đảo chiều tăng</span>
             <span style={{ color: DO }}>▼ đảo chiều giảm</span>
@@ -912,7 +912,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
               );
             })}
           </div>
-          <p className="text-[10px] mt-1" style={{ color: MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <p className="text-[11px] mt-1" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}>
             Mẫu hình đảo chiều chỉ tính sau nhịp giảm (tăng) hoặc nhịp tăng (giảm). Thống kê 11 năm trên ~390 mã: hầu hết mẫu hình nến <b>không hơn</b> việc mua / bán ngẫu nhiên (chỉ &quot;Búa ngược&quot; và &quot;Ba chàng lính&quot; nhỉnh hơn) — dùng để xác nhận cùng các tín hiệu khác, không phải tín hiệu mua bán riêng.
           </p>
         </div>
@@ -921,7 +921,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       {bat.mauHinh && (
         <div className="px-3 py-2 border-b" style={{ borderColor: VIEN }} data-may="mau-hinh" aria-label="Nhận diện mẫu hình giá">
           <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[11px] mr-1" style={{ color: MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <span className="text-[11px] mr-1" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}>
               Mẫu hình ({khungTG === "W" ? "khung tuần" : noiNgay ? `khung ${KHUNG_CHON.find((k) => k.khoa === khungTG).nhan.toLowerCase()}` : "khung ngày"}) — ⏳ đang hình thành · ▲▼ đã phá vỡ. Bấm để vẽ lên hình:
             </span>
             {dsMauHinh.length === 0 && (
@@ -940,7 +940,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
                   onClick={() => setChonMH({ khoa, idx: chon ? -1 : k })}
                   aria-pressed={chon}
                   className="px-2.5 py-1 rounded-md text-xs cursor-pointer"
-                  style={{ background: chon ? "rgba(246,197,68,0.16)" : "transparent", border: `1px ${dangHT ? "dashed" : "solid"} ${chon ? "#F6C544" : VIEN}`, color: chon ? TEXT : MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+                  style={{ background: chon ? "rgba(246,197,68,0.16)" : "transparent", border: `1px ${dangHT ? "dashed" : "solid"} ${chon ? "#F6C544" : VIEN}`, color: chon ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
                 >
                   {dangHT ? <span>⏳</span> : <span style={{ color: mau }}>{m.huong > 0 ? "▲" : "▼"}</span>} {m.ten} ·{" "}
                   {dangHT ? `cách mức phá vỡ ${soVN(m.cachPhaVoPct, 1)}%` : m.cach === 0 ? (khungTG === "W" ? "tuần này" : noiNgay ? "nến này" : "hôm nay") : `${m.cach} ${khungTG === "W" ? "tuần" : noiNgay ? "nến" : "phiên"} trước`}
@@ -949,7 +949,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             })}
           </div>
           {mauHinhVe && mauHinhVe.trangThai === "dang_hinh_thanh" && (
-            <div className="mt-2 text-xs leading-relaxed" style={{ color: MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <div className="mt-2 text-xs leading-relaxed" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}>
               <span style={{ color: TEXT, fontWeight: 600 }}>⏳ {mauHinhVe.ten} (đang hình thành, chưa phá vỡ)</span> — {mauHinhVe.ghiChu}. Giá hiện tại {soVN(mauHinhVe.gia, 2, true)}.{" "}
               {mauHinhVe.kichBan.map((k) => (
                 <span key={k.huong} className="mr-2">
@@ -962,7 +962,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             </div>
           )}
           {mauHinhVe && mauHinhVe.trangThai !== "dang_hinh_thanh" && (
-            <div className="mt-2 text-xs leading-relaxed" style={{ color: MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            <div className="mt-2 text-xs leading-relaxed" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}>
               <span style={{ color: TEXT, fontWeight: 600 }}>{mauHinhVe.ten}</span> — phá vỡ {nhanThoiGian(mauHinhVe.t)} tại {soVN(mauHinhVe.gia, 2, true)}; mục tiêu đo từ mẫu hình{" "}
               <span style={{ color: XANH }}>{soVN(mauHinhVe.mucTieu, 2, true)}</span>, cắt lỗ theo mẫu hình <span style={{ color: DO }}>{soVN(mauHinhVe.catLo, 2, true)}</span> (lãi/lỗ tiềm năng{" "}
               {(((mauHinhVe.huong > 0 ? mauHinhVe.mucTieu - mauHinhVe.gia : mauHinhVe.gia - mauHinhVe.mucTieu) / Math.abs(mauHinhVe.gia - mauHinhVe.catLo)) || 0).toFixed(1).replace(".", ",")}R).{" "}
@@ -983,7 +983,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
 
       {/* THANH CONG CU KE VE: chon cong cu roi bam / bam hai lan len bieu do; bam vao hinh de chon, keo diem dau mut de sua, Delete de xoa; Esc huy. */}
       <div className={`flex items-center gap-x-1.5 gap-y-1.5 px-3 py-2 border-b ${toanMH ? "shrink-0 overflow-x-auto flex-nowrap [&>*]:shrink-0" : "flex-wrap"}`} style={{ borderColor: VIEN }} data-may="cong-cu-ve">
-        <span className="text-[11px] mr-1 hidden sm:inline" style={{ color: MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+        <span className="text-[11px] mr-1 hidden sm:inline" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}>
           Công cụ vẽ
         </span>
         <button
@@ -992,7 +992,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           aria-pressed={congCu === null}
           title="Con trỏ: kéo, thu phóng biểu đồ; bấm vào hình vẽ để chọn"
           className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-          style={{ background: congCu === null ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === null ? PRIMARY : VIEN}`, color: congCu === null ? TEXT : MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          style={{ background: congCu === null ? "rgba(74,138,214,0.18)" : "transparent", border: `1px solid ${congCu === null ? PRIMARY : VIEN}`, color: congCu === null ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
         >
           <MousePointer2 size={13} strokeWidth={2} />
           Con trỏ
@@ -1005,9 +1005,9 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             aria-pressed={congCu === k}
             title={`${nhan}: bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ`}
             className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-            style={{ background: congCu === k ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === k ? PRIMARY : VIEN}`, color: congCu === k ? TEXT : MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+            style={{ background: congCu === k ? "rgba(74,138,214,0.18)" : "transparent", border: `1px solid ${congCu === k ? PRIMARY : VIEN}`, color: congCu === k ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
           >
-            {Icon ? <Icon size={13} strokeWidth={2} /> : <span className="text-[10px] font-bold leading-none">Fib</span>}
+            {Icon ? <Icon size={13} strokeWidth={2} /> : <span className="text-[11px] font-bold leading-none">Fib</span>}
             {nhan}
           </button>
         ))}
@@ -1031,7 +1031,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           aria-pressed={giuCongCu}
           title="Giữ công cụ: vẽ xong vẫn giữ công cụ đang chọn để vẽ tiếp (Esc để thoát)"
           className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-          style={{ background: giuCongCu ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${giuCongCu ? PRIMARY : VIEN}`, color: giuCongCu ? TEXT : MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          style={{ background: giuCongCu ? "rgba(74,138,214,0.18)" : "transparent", border: `1px solid ${giuCongCu ? PRIMARY : VIEN}`, color: giuCongCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
         >
           {giuCongCu ? <Lock size={13} strokeWidth={2} /> : <LockOpen size={13} strokeWidth={2} />}
           Giữ công cụ
@@ -1042,7 +1042,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           aria-pressed={hitGia}
           title="Hít giá: điểm vẽ tự bám vào Mở / Cao / Thấp / Đóng của nến gần nhất"
           className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-          style={{ background: hitGia ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${hitGia ? PRIMARY : VIEN}`, color: hitGia ? TEXT : MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          style={{ background: hitGia ? "rgba(74,138,214,0.18)" : "transparent", border: `1px solid ${hitGia ? PRIMARY : VIEN}`, color: hitGia ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
         >
           <Magnet size={13} strokeWidth={2} />
           Hít giá
@@ -1053,7 +1053,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           onClick={() => veRef.current?.lopVe.hoanTac()}
           title="Hoàn tác (Ctrl+Z)"
           className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
-          style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: lichSuVe.coHoanTac ? 1 : 0.45, cursor: lichSuVe.coHoanTac ? "pointer" : "default", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: lichSuVe.coHoanTac ? 1 : 0.45, cursor: lichSuVe.coHoanTac ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
         >
           <Undo2 size={13} strokeWidth={2} />
           Hoàn tác
@@ -1064,7 +1064,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           onClick={() => veRef.current?.lopVe.lamLai()}
           title="Làm lại (Ctrl+Y hoặc Ctrl+Shift+Z)"
           className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
-          style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: lichSuVe.coLamLai ? 1 : 0.45, cursor: lichSuVe.coLamLai ? "pointer" : "default", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: lichSuVe.coLamLai ? 1 : 0.45, cursor: lichSuVe.coLamLai ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
         >
           <Redo2 size={13} strokeWidth={2} />
           Làm lại
@@ -1075,7 +1075,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           onClick={() => veRef.current?.lopVe.xoaChon()}
           title="Xóa hình đang chọn (phím Delete)"
           className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
-          style={{ border: `1px solid ${VIEN}`, color: chonVe ? DO : MUTED, opacity: chonVe ? 1 : 0.45, cursor: chonVe ? "pointer" : "default", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          style={{ border: `1px solid ${VIEN}`, color: chonVe ? DO : MUTED, opacity: chonVe ? 1 : 0.45, cursor: chonVe ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
         >
           <Trash2 size={13} strokeWidth={2} />
           Xóa hình
@@ -1088,7 +1088,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           }}
           title="Xóa tất cả hình vẽ của mã này"
           className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
-          style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: soHinhVe > 0 ? 1 : 0.45, cursor: soHinhVe > 0 ? "pointer" : "default", fontFamily: "'Plus Jakarta Sans', sans-serif" }}
+          style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: soHinhVe > 0 ? 1 : 0.45, cursor: soHinhVe > 0 ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
         >
           <PenLine size={13} strokeWidth={2} />
           Xóa hết{soHinhVe > 0 ? ` (${soHinhVe})` : ""}
@@ -1096,7 +1096,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       </div>
 
       {/* Dong goi y luon hien, cao co dinh: neu chi hien khi chon cong cu thi bieu do bi day xuong, lech vi tri con tro */}
-      <div className="px-3 h-7 flex items-center text-[11px] border-b truncate" style={{ borderColor: VIEN, color: congCu ? TEXT : MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+      <div className="px-3 h-7 flex items-center text-[11px] border-b truncate" style={{ borderColor: VIEN, color: congCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}>
         {congCu ? (
           <span>
             {congCu === "gapKhuc" ? (
@@ -1129,10 +1129,10 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         )}
         {hienTai && (
           <div
-            className="absolute left-3 top-2 z-10 pointer-events-none text-[11px] leading-5 flex flex-wrap gap-x-3"
-            style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: MUTED, textShadow: `0 0 4px ${NEN_CARD}, 0 0 4px ${NEN_CARD}` }}
+            className="absolute left-3 top-2 z-10 pointer-events-none text-[11px] leading-5 flex flex-wrap gap-x-3 rounded px-1.5"
+            style={{ fontFamily: "'Open Sans', sans-serif", color: MUTED, background: `color-mix(in srgb, ${NEN_CARD} 78%, transparent)` }}
           >
-            <b style={{ color: TEXT, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>{ma}</b>
+            <b style={{ color: TEXT, fontFamily: "'Open Sans', sans-serif" }}>{ma}</b>
             <span>{nhanThoiGian(hienTai.t)}</span>
             <span>
               M <b style={{ color: TEXT }}>{fmt(hienTai.o)}</b>
@@ -1189,19 +1189,19 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           )}
           {thongTin && (
             <div>
-              <p className="text-[11px] mb-1.5 uppercase tracking-wide" style={{ color: MUTED }}>Tín hiệu hệ thống</p>
+              <p className="text-[11px] mb-1.5 " style={{ color: MUTED }}>Tín hiệu hệ thống</p>
               <BangThongTinBieuDo tt={thongTin} />
             </div>
           )}
           {conVung && (
             <div className="text-xs" style={{ fontFamily: "var(--font-chu)" }}>
-              <p className="text-[11px] mb-1.5 uppercase tracking-wide" style={{ color: MUTED }}>Vùng lệnh</p>
+              <p className="text-[11px] mb-1.5 " style={{ color: MUTED }}>Vùng lệnh</p>
               {daiTuVung(vung).map((d) => (
                 <div key={d.nhan} className="flex justify-between py-0.5"><span style={{ color: `rgb(${d.mau})` }}>{d.nhan}</span><b>{d.tu === d.den ? fmt(d.tu) : `${fmt(d.tu)} – ${fmt(d.den)}`}</b></div>
               ))}
             </div>
           )}
-          <p className="text-[10px] leading-relaxed" style={{ color: MUTED }}>Esc: thu nhỏ. Chỉ để tham khảo, không phải khuyến nghị mua bán.</p>
+          <p className="text-[11px] leading-relaxed" style={{ color: MUTED }}>Esc: thu nhỏ. Chỉ để tham khảo, không phải khuyến nghị mua bán.</p>
         </aside>
       )}
       </div>

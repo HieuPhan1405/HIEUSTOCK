@@ -17,7 +17,7 @@ function NhanNganh({ x }) {
   if (!x.nhanNganh.nhan) return null;
   const mau = MAU_NHAN[x.nhanNganh.loai];
   return (
-    <span className="ml-2 px-1.5 py-0.5 text-[10px] rounded-sm whitespace-nowrap" style={{ background: nhe(mau, 13), color: mau, ...sans }} title={x.nhanNganh.ghiChu}>
+    <span className="ml-2 px-1.5 py-0.5 text-[11px] rounded-sm whitespace-nowrap" style={{ background: nhe(mau, 13), color: mau, ...sans }} title={x.nhanNganh.ghiChu}>
       {x.nhanNganh.nhan}
     </span>
   );
@@ -43,7 +43,7 @@ const Ma = ({ x }) => (
   <td className="py-2.5 px-3">
     <Link href={`/ma/${x.ma}`} className="hover:underline" style={{ ...sans, fontWeight: 700 }}>{x.ma}</Link>
     <NhanNganh x={x} />
-    {x.nganh && <span className="block text-[10px]" style={{ color: MUTED, ...sans }}>{x.nganh}</span>}
+    {x.nganh && <span className="block text-[11px]" style={{ color: MUTED, ...sans }}>{x.nganh}</span>}
   </td>
 );
 

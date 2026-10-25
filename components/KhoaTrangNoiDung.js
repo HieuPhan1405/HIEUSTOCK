@@ -18,9 +18,9 @@ export default function KhoaTrangNoiDung({ tieuDe, moTa, choDuyet = false }) {
       <div className="max-w-md mx-auto rounded-2xl border p-8 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <div
           className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4"
-          style={{ background: choDuyet ? "rgba(251,191,36,0.16)" : "rgba(108,92,231,0.16)" }}
+          style={{ background: choDuyet ? "rgba(251,191,36,0.16)" : "rgba(74,138,214,0.16)" }}
         >
-          {choDuyet ? <Clock size={22} color={VANG} strokeWidth={2} /> : <Lock size={22} color="#6C5CE7" strokeWidth={2} />}
+          {choDuyet ? <Clock size={22} color={VANG} strokeWidth={2} /> : <Lock size={22} color="#4A8AD6" strokeWidth={2} />}
         </div>
         <p className="text-lg mb-2" style={{ color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 700 }}>
           {choDuyet ? "Tài khoản đang chờ duyệt" : tieuDe}

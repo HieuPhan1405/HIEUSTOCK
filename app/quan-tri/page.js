@@ -340,7 +340,7 @@ export default function TrangQuanTri() {
       </p>
 
       <div className="rounded-lg border p-4 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <label className="text-xs uppercase tracking-wide block mb-1" style={{ color: "var(--mo)" }}>
+        <label className="text-xs  block mb-1" style={{ color: "var(--mo)" }}>
           Mật khẩu (API key)
         </label>
         <input
@@ -359,7 +359,7 @@ export default function TrangQuanTri() {
       {/* THONG TIN GIOI THIEU / KENH LIEN HE - hien cong khai o trang /lien-he */}
       {apiKey && (
         <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
+          <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
             Thông tin liên hệ (hiện công khai ở /lien-he)
           </p>
           <form onSubmit={luuThongTinLienHe} className="grid sm:grid-cols-2 gap-2">
@@ -416,7 +416,7 @@ export default function TrangQuanTri() {
               type="submit"
               disabled={dangLuuTT}
               className="px-3 py-1.5 text-sm font-medium sm:col-span-2"
-              style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600, opacity: dangLuuTT ? 0.6 : 1 }}
+              style={{ background: "#4A8AD6", color: "#FFFFFF", fontWeight: 600, opacity: dangLuuTT ? 0.6 : 1 }}
             >
               {dangLuuTT ? "Đang lưu..." : "Lưu thông tin"}
             </button>
@@ -433,10 +433,10 @@ export default function TrangQuanTri() {
       {apiKey && (
         <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wide" style={{ color: "var(--mo)" }}>
+            <p className="text-xs " style={{ color: "var(--mo)" }}>
               Tin nhắn liên hệ ({dsLienHe.length})
             </p>
-            <button onClick={() => taiLienHe(apiKey)} className="text-xs" style={{ color: "#6C5CE7" }}>
+            <button onClick={() => taiLienHe(apiKey)} className="text-xs" style={{ color: "#4A8AD6" }}>
               {dangTaiLienHe ? "Đang tải..." : "Tải lại"}
             </button>
           </div>
@@ -477,13 +477,13 @@ export default function TrangQuanTri() {
       {apiKey && (
         <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs uppercase tracking-wide" style={{ color: "var(--mo)" }}>
+            <p className="text-xs " style={{ color: "var(--mo)" }}>
               Số điện thoại đã đăng ký ({dsNguoiDung.length})
               {dsNguoiDung.some((nd) => !nd.da_duyet) && (
                 <span style={{ color: "var(--vang)" }}> · {dsNguoiDung.filter((nd) => !nd.da_duyet).length} chờ duyệt</span>
               )}
             </p>
-            <button onClick={() => taiNguoiDung(apiKey)} className="text-xs" style={{ color: "#6C5CE7" }}>
+            <button onClick={() => taiNguoiDung(apiKey)} className="text-xs" style={{ color: "#4A8AD6" }}>
               {dangTaiNguoiDung ? "Đang tải..." : "Tải lại"}
             </button>
           </div>
@@ -500,7 +500,7 @@ export default function TrangQuanTri() {
                 {nd.email && <span style={{ color: "var(--mo)", fontFamily: "var(--font-chu)", fontSize: 12 }}> · {nd.email}</span>}
                 {nd.la_admin && (
                   <span
-                    className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded"
+                    className="ml-2 px-1.5 py-0.5 text-[11px] font-bold rounded"
                     style={{ background: "var(--xanh)", color: "var(--nen)" }}
                   >
                     ADMIN
@@ -508,7 +508,7 @@ export default function TrangQuanTri() {
                 )}
                 {!nd.da_duyet && (
                   <span
-                    className="ml-2 px-1.5 py-0.5 text-[10px] font-bold rounded"
+                    className="ml-2 px-1.5 py-0.5 text-[11px] font-bold rounded"
                     style={{ background: "var(--vang)", color: "var(--nen)" }}
                   >
                     CHỜ DUYỆT
@@ -522,7 +522,7 @@ export default function TrangQuanTri() {
                 <button onClick={() => datDuyet(nd.id, !nd.da_duyet)} className="text-xs font-semibold" style={{ color: nd.da_duyet ? "var(--do)" : "var(--xanh)" }}>
                   {nd.da_duyet ? "Bỏ duyệt" : "Duyệt"}
                 </button>
-                <button onClick={() => datAdmin(nd.id, !nd.la_admin)} className="text-xs" style={{ color: nd.la_admin ? "var(--do)" : "#6C5CE7" }}>
+                <button onClick={() => datAdmin(nd.id, !nd.la_admin)} className="text-xs" style={{ color: nd.la_admin ? "var(--do)" : "#4A8AD6" }}>
                   {nd.la_admin ? "Bỏ Admin" : "Đặt Admin"}
                 </button>
               </div>
@@ -534,7 +534,7 @@ export default function TrangQuanTri() {
       {/* BAO TIN HIEU MUA QUA ZALO OA */}
       {apiKey && (
         <div className="rounded-lg border p-5 mb-8" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
+          <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
             Báo tín hiệu MUA qua Zalo
           </p>
 
@@ -572,7 +572,7 @@ export default function TrangQuanTri() {
               type="submit"
               disabled={dangXuLyZalo}
               className="px-3 py-1.5 text-sm font-medium"
-              style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600, opacity: dangXuLyZalo ? 0.6 : 1 }}
+              style={{ background: "#4A8AD6", color: "#FFFFFF", fontWeight: 600, opacity: dangXuLyZalo ? 0.6 : 1 }}
             >
               Lưu &amp; Kết nối Zalo
             </button>
@@ -622,7 +622,7 @@ export default function TrangQuanTri() {
         <button
           type="submit"
           className="px-4 py-2 text-sm font-medium"
-          style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}
+          style={{ background: "#4A8AD6", color: "#FFFFFF", fontWeight: 600 }}
         >
           Tải dữ liệu
         </button>
@@ -638,7 +638,7 @@ export default function TrangQuanTri() {
         <>
           {/* DINH GIA */}
           <div className="rounded-lg border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-            <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
+            <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
               Khuyến nghị CTCK — {ma.trim().toUpperCase()}
             </p>
 
@@ -690,7 +690,7 @@ export default function TrangQuanTri() {
                 className="px-2 py-1.5 text-sm outline-none"
                 style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
               />
-              <button type="submit" className="px-3 py-1.5 text-sm font-medium" style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}>
+              <button type="submit" className="px-3 py-1.5 text-sm font-medium" style={{ background: "#4A8AD6", color: "#FFFFFF", fontWeight: 600 }}>
                 Thêm
               </button>
             </form>
@@ -698,7 +698,7 @@ export default function TrangQuanTri() {
 
           {/* CAU CHUYEN */}
           <div className="rounded-lg border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
-            <p className="text-xs uppercase tracking-wide mb-3" style={{ color: "var(--mo)" }}>
+            <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
               Câu chuyện kỳ vọng — {ma.trim().toUpperCase()}
             </p>
 
@@ -750,7 +750,7 @@ export default function TrangQuanTri() {
               <button
                 type="submit"
                 className="px-3 py-1.5 text-sm font-medium sm:col-span-4"
-                style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}
+                style={{ background: "#4A8AD6", color: "#FFFFFF", fontWeight: 600 }}
               >
                 Thêm
               </button>

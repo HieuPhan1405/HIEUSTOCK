@@ -11,7 +11,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -22,7 +22,7 @@ const sans = { fontFamily: "var(--font-chu)" };
 function The({ tieuDe, phu, children }) {
   return (
     <div className="rounded-2xl border p-5 flex flex-col" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, ...mono }}>
+      <p className="text-xs " style={{ color: MUTED, ...mono }}>
         {tieuDe}
       </p>
       <div className="flex-1 flex flex-col justify-center py-3">{children}</div>
@@ -57,10 +57,10 @@ function DongHoTamLy({ diem }) {
         <line x1={cx} y1={cy} x2={cx} y2={cy - 66} stroke="var(--chu)" strokeWidth="3" strokeLinecap="round" />
       </g>
       <circle cx={cx} cy={cy} r="7" fill="var(--chu)" />
-      <text x="16" y="116" fill={MUTED} fontSize="9" style={mono}>
+      <text x="16" y="116" fill={MUTED} fontSize="11" style={mono}>
         0
       </text>
-      <text x="176" y="116" fill={MUTED} fontSize="9" style={mono}>
+      <text x="176" y="116" fill={MUTED} fontSize="11" style={mono}>
         100
       </text>
     </svg>
@@ -82,7 +82,7 @@ function DanhSachMa({ ds, mau, hienThi, trong = "Không có mã nào" }) {
             style={{ background: nhe(mau, 12), color: mau, border: `1px solid ${nhe(mau, 20)}` }}
           >
             <b style={{ ...mono, fontWeight: 700 }}>{r.ten_lenh ?? r.ma}</b>
-            {hienThi && <span style={{ ...mono, opacity: 0.85, fontSize: 10 }}>{hienThi(r)}</span>}
+            {hienThi && <span style={{ ...mono, opacity: 0.85, fontSize: 11 }}>{hienThi(r)}</span>}
           </Link>
         );
       })}
@@ -96,7 +96,7 @@ function DanhSachNganh({ ds, mau }) {
       {ds.map((n) => (
         <span key={n.khoa} className="inline-flex items-baseline gap-1.5 px-2 py-1 rounded-md text-xs" style={{ background: nhe(mau, 12), color: mau, border: `1px solid ${nhe(mau, 20)}` }}>
           <b style={{ ...sans, fontWeight: 600 }}>{n.nhan}</b>
-          <span style={{ ...mono, opacity: 0.85, fontSize: 10 }}>{pct(n.tb, 2)}</span>
+          <span style={{ ...mono, opacity: 0.85, fontSize: 11 }}>{pct(n.tb, 2)}</span>
         </span>
       ))}
     </div>
@@ -108,7 +108,7 @@ function HangRaSoat({ so, nhan, mauNhan = XANH, nhan2, mauNhan2 = DO, children, 
   return (
     <div className="grid md:grid-cols-[250px_1fr] gap-x-6 gap-y-2 py-4 border-b last:border-b-0" style={{ borderColor: "var(--vien-nhe)" }}>
       <div className="flex gap-3">
-        <span className="shrink-0 w-6 h-6 rounded-md text-[11px] flex items-center justify-center" style={{ background: "rgba(108,92,231,0.2)", color: "var(--tim-chu)", fontWeight: 700, ...mono }}>
+        <span className="shrink-0 w-6 h-6 rounded-md text-[11px] flex items-center justify-center" style={{ background: "rgba(74,138,214,0.2)", color: "var(--tim-chu)", fontWeight: 700, ...mono }}>
           {so}
         </span>
         <div className="text-sm leading-snug" style={{ ...sans, fontWeight: 600 }}>
@@ -227,7 +227,7 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
             {tq.dangGiu}/{tq.tong} mã đang giữ lệnh
           </p>
           <ThanhTyLe ty={tq.tyLeDangGiu ?? 0} mau={PRIMARY} />
-          <div className="flex justify-between text-[10px] mt-1" style={{ color: MUTED, ...mono }}>
+          <div className="flex justify-between text-[11px] mt-1" style={{ color: MUTED, ...mono }}>
             <span>0%</span>
             <span>50%</span>
             <span>100%</span>

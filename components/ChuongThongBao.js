@@ -11,7 +11,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const DO = "var(--do)";
 const XANH = "var(--xanh)";
 const VANG = "var(--vang)";
@@ -196,7 +196,7 @@ export default function ChuongThongBao() {
         {chuaXem ? <BellRing size={17} strokeWidth={2} aria-hidden="true" /> : <Bell size={17} strokeWidth={2} aria-hidden="true" />}
         {chuaXem > 0 && (
           <span
-            className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold flex items-center justify-center"
+            className="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 rounded-full text-[11px] font-bold flex items-center justify-center"
             style={{ background: DO, color: "#FFFFFF", ...sans, border: "2px solid var(--nen)" }}
           >
             {chuaXem > 9 ? "9+" : chuaXem}
@@ -279,7 +279,7 @@ export default function ChuongThongBao() {
                         disabled={dangLam}
                         onClick={() => !chon && doiPhamVi(k)}
                         className="px-2.5 py-1 rounded-full border text-[11px]"
-                        style={{ borderColor: chon ? PRIMARY : VIEN, background: chon ? "rgba(108,92,231,0.16)" : "transparent", color: chon ? TEXT : MUTED, fontWeight: chon ? 600 : 500 }}
+                        style={{ borderColor: chon ? PRIMARY : VIEN, background: chon ? "rgba(74,138,214,0.16)" : "transparent", color: chon ? TEXT : MUTED, fontWeight: chon ? 600 : 500 }}
                       >
                         {nhan}
                       </button>
@@ -328,7 +328,7 @@ export default function ChuongThongBao() {
             ) : (
               nhom.map((n) => (
                 <div key={n.ngay}>
-                  <p className="px-4 pt-2.5 pb-1 text-[10px] uppercase tracking-wide font-semibold" style={{ color: MUTED }}>
+                  <p className="px-4 pt-2.5 pb-1 text-[11px]  font-semibold" style={{ color: MUTED }}>
                     {nhanNgay(n.ngay)}
                   </p>
                   {n.ds.map((t) => {
@@ -340,7 +340,7 @@ export default function ChuongThongBao() {
                         href={t.duong_dan || "/"}
                         onClick={() => setMo(false)}
                         className="flex gap-3 px-4 py-2.5 transition-colors hover:bg-[color:var(--hover-nhe)]"
-                        style={{ background: moi ? "rgba(108,92,231,0.08)" : undefined }}
+                        style={{ background: moi ? "rgba(74,138,214,0.08)" : undefined }}
                       >
                         <span className="mt-1.5 w-2 h-2 rounded-full shrink-0" style={{ background: loai.mau }} aria-hidden="true" />
                         <span className="min-w-0 flex-1">
@@ -350,7 +350,7 @@ export default function ChuongThongBao() {
                             </span>
                             {/* Gio web thay su kien - chi hien khi cung ngay voi phien (nap lai sau phien thi an, tranh nham gio). */}
                             {ngayVN(t.tao_luc) === n.ngay && (
-                              <span className="ml-auto text-[10px] shrink-0" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+                              <span className="ml-auto text-[11px] shrink-0" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                                 {gioVN(t.tao_luc)}
                               </span>
                             )}
@@ -369,7 +369,7 @@ export default function ChuongThongBao() {
             )}
           </div>
 
-          <p className="px-4 py-2 border-t text-[10px]" style={{ borderColor: VIEN, color: MUTED }}>
+          <p className="px-4 py-2 border-t text-[11px]" style={{ borderColor: VIEN, color: MUTED }}>
             Tín hiệu chỉ để tham khảo, không phải khuyến nghị đầu tư. Tín hiệu trong phiên có thể đổi trước khi đóng cửa.
           </p>
         </div>

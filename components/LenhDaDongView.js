@@ -104,7 +104,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         {moTa ?? (
           <>
             Kết quả các lệnh đã bán, đã thoát vị thế hoặc đã chốt lời từng phần (TP1 / TP2 / TP3) kể từ khi web bắt đầu ghi nhận. Lệnh đang giữ xem ở{" "}
-            <Link href="/lenh-mo" className="underline" style={{ color: "#6C5CE7" }}>
+            <Link href="/lenh-mo" className="underline" style={{ color: "#4A8AD6" }}>
               Sổ lệnh đang mở
             </Link>
             .
@@ -191,12 +191,12 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
                       {x.ma}
                     </Link>
                     {MUA_THEM[x.vong] && (
-                      <span className="block text-[10px] font-bold tracking-wide leading-tight mt-0.5" style={{ color: MUA_THEM[x.vong].mau, fontFamily: "var(--font-chu)" }}>
+                      <span className="block text-[11px] font-bold tracking-wide leading-tight mt-0.5" style={{ color: MUA_THEM[x.vong].mau, fontFamily: "var(--font-chu)" }}>
                         {MUA_THEM[x.vong].nhan}
                       </span>
                     )}
                     {tenCongTy(x.ma) && (
-                      <span className="block max-w-[190px] truncate text-[10px] leading-tight" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} title={tenCongTy(x.ma).ten}>
+                      <span className="block max-w-[190px] truncate text-[11px] leading-tight" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} title={tenCongTy(x.ma).ten}>
                         {tenCongTy(x.ma).ngan}
                       </span>
                     )}

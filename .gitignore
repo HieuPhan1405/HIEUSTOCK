@@ -44,3 +44,4 @@ __pycache__/
 
 # engine: CSV tin hieu do chayPipelineDayDu.mjs ghi ra cuc bo - du lieu thi truong, khong commit
 /engine/output/
+.taste-skill/

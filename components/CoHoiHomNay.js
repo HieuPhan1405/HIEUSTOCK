@@ -10,7 +10,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -78,12 +78,12 @@ function Dong({ ma, ten, nhan, mauNhan, children, phai, the = null, bieuTuong = 
           {ten ?? ma}
         </span>
         {nhan ? (
-          <span className="block text-[10px] font-bold" style={{ ...sans, color: mauNhan }} data-may={nhan === "Mua mới" ? "mua-moi" : undefined}>
+          <span className="block text-[11px] font-bold" style={{ ...sans, color: mauNhan }} data-may={nhan === "Mua mới" ? "mua-moi" : undefined}>
             {nhan}
           </span>
         ) : (
           t?.ngan && (
-            <span className="block truncate text-[10px]" style={{ ...sans, color: MUTED }} title={t.ten}>
+            <span className="block truncate text-[11px]" style={{ ...sans, color: MUTED }} title={t.ten}>
               {t.ngan}
             </span>
           )
@@ -108,7 +108,7 @@ function VungLenh({ row }) {
   return (
     <>
       <span data-may="vung-mua">Mua</span> <b style={{ color: TEXT }}>{chuoiVung(v.mua.tu, v.mua.den)}</b>{" "}
-      <span style={{ color: ttMau, fontWeight: 700, ...sans, fontSize: 10 }} data-may="vung-mua">
+      <span style={{ color: ttMau, fontWeight: 700, ...sans, fontSize: 11 }} data-may="vung-mua">
         · {ttNhan}
       </span>
       <br />
@@ -164,13 +164,12 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
                     style={{
                       width: 17,
                       height: 17,
-                      fontSize: 10,
+                      fontSize: 11,
                       lineHeight: 1,
                       fontWeight: 800,
                       ...sans,
                       color: "#fff",
-                      background: `linear-gradient(135deg, ${VANG}, ${CAM})`,
-                      boxShadow: "0 0 0 2px color-mix(in srgb, var(--vang) 25%, transparent)",
+                      background: VANG,
                     }}
                     title={`Đã có điểm mua phục hồi (điểm B) ngày ${ngayNgan(b.ngay)} (${b.soNgay === 0 ? "cùng phiên" : `${b.soNgay} ngày trước`}), giá B ${fmt(b.giaB)}${b.giam != null ? `, đã giảm ${fmt(b.giam)}%` : ""}${b.daCatLo ? ", lệnh B đã chạm cắt lỗ" : ""}`}
                     aria-label="Có điểm mua phục hồi trước đó"
@@ -226,7 +225,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
                   <span className="font-bold" style={{ color: mauLai(b.ketQuaPct) }}>
                     {pct(b.ketQuaPct, 2)}
                   </span>
-                  <span className="block text-[10px]" style={{ color: MUTED, ...sans }} data-may="ket-qua-ca-lenh">
+                  <span className="block text-[11px]" style={{ color: MUTED, ...sans }} data-may="ket-qua-ca-lenh">
                     {b.theoDoi ? "tạm tính" : "cả lệnh"}
                   </span>
                 </>
@@ -290,7 +289,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
                     <span className="font-bold" style={{ color: mauLai(x.laiPct) }}>
                       {pct(x.laiPct, 2)}
                     </span>
-                    <span className="block text-[10px]" style={{ color: MUTED, ...sans }}>
+                    <span className="block text-[11px]" style={{ color: MUTED, ...sans }}>
                       phần chốt
                     </span>
                   </>
@@ -309,7 +308,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
                 phai={
                   <>
                     <span style={{ color: mauLai(x.laiPct) }}>{pct(x.laiPct, 2)}</span>
-                    <span className="block text-[10px]" style={{ color: MUTED, ...sans }}>
+                    <span className="block text-[11px]" style={{ color: MUTED, ...sans }}>
                       đang lãi/lỗ
                     </span>
                   </>
@@ -346,7 +345,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
                     <span className="block text-[11px]" style={{ color: mauLai(x.laiPct) }} title="Lãi / lỗ hiện tại so với giá vào (mở cửa phiên sau điểm B; chưa có thì lấy giá B), chưa trừ phí">
                       {pct(x.laiPct, 2)}
                     </span>
-                    <span className="block text-[9px]" style={{ color: MUTED, ...sans }}>
+                    <span className="block text-[11px]" style={{ color: MUTED, ...sans }}>
                       lãi/lỗ hiện tại
                     </span>
                   </>

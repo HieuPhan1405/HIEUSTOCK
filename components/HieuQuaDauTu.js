@@ -8,7 +8,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const MAU_TSSL = "var(--vang-2)"; // vang - Ty suat sinh loi cua he thong
@@ -204,13 +204,13 @@ export default function HieuQuaDauTu() {
             {hinhHoc.moc.map((v) => (
               <g key={v}>
                 <line x1={0} x2={rongVe} y1={y(v)} y2={y(v)} stroke={v === 0 ? "var(--vien-dam)" : VIEN} />
-                <text x={-8} y={y(v) + 3} textAnchor="end" fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
+                <text x={-8} y={y(v) + 3} textAnchor="end" fontSize="11" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                   {v.toLocaleString("vi-VN")} %
                 </text>
               </g>
             ))}
             {nhanTrucX.map((i) => (
-              <text key={i} x={x(i)} y={caoVe + 16} textAnchor={i === 0 ? "start" : i === diem.length - 1 ? "end" : "middle"} fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
+              <text key={i} x={x(i)} y={caoVe + 16} textAnchor={i === 0 ? "start" : i === diem.length - 1 ? "end" : "middle"} fontSize="11" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                 {ngayVN(diem[i].ngay).slice(0, 5)}
               </text>
             ))}

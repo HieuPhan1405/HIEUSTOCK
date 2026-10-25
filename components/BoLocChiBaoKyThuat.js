@@ -10,7 +10,7 @@ const NEN_CARD = "var(--card)";
 const NEN_O = "var(--nen-phu)";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const XANH = "var(--xanh)";
 const VANG = "var(--vang)";
 
@@ -46,7 +46,7 @@ export default function BoLocChiBaoKyThuat({ dsLoc, datDsLoc, duLieu, luc }) {
           <SlidersHorizontal size={15} color={PRIMARY} aria-hidden="true" />
           Bộ lọc chỉ báo kỹ thuật
           {dsLoc.length > 0 && (
-            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(108,92,231,0.18)", color: "var(--tim-chu)" }}>
+            <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ background: "rgba(74,138,214,0.18)", color: "var(--tim-chu)" }}>
               {dsLoc.length} bộ lọc · {soKhopTatCa} mã
             </span>
           )}
@@ -161,7 +161,7 @@ export default function BoLocChiBaoKyThuat({ dsLoc, datDsLoc, duLieu, luc }) {
                       <X size={15} aria-hidden="true" />
                     </button>
                     {dsLoc.length > 1 && i < dsLoc.length - 1 && (
-                      <span className="text-[10px] uppercase tracking-wide w-full sm:w-auto" style={{ color: MUTED }}>
+                      <span className="text-[11px]  w-full sm:w-auto" style={{ color: MUTED }}>
                         và
                       </span>
                     )}

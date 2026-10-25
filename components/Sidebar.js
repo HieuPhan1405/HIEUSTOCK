@@ -9,7 +9,7 @@ const ICON = { "/": LayoutGrid, "/bo-loc": ListFilter, "/bieu-do": CandlestickCh
 
 const BG = "var(--nen-sau)";
 const VIEN = "var(--vien)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
 
@@ -37,8 +37,8 @@ export default function Sidebar() {
                 aria-current={active ? "page" : undefined}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors hover:bg-[color:var(--hover-nhe)]"
                 style={{
-                  background: active ? "rgba(108,92,231,0.16)" : undefined,
-                  color: active ? PRIMARY : MUTED,
+                  background: active ? "var(--hover-dam)" : undefined,
+                  color: active ? TEXT : MUTED,
                   fontFamily: "var(--font-chu)",
                   fontWeight: active ? 600 : 500,
                 }}

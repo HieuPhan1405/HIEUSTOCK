@@ -6,7 +6,7 @@ import { UserRound, Pencil, Check, X as HuyIcon, ChevronDown, LogOut, Wallet, Sh
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import { tatDay } from "@/lib/dayTrinhDuyet";
 
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
@@ -38,7 +38,7 @@ function FormDoiTen({ tenMoi, setTenMoi, dangLuu, onLuu, onHuy, rong = 140 }) {
 }
 
 const TheNho = ({ mau, children, title }) => (
-  <span className="px-1.5 py-0.5 text-[10px] font-bold rounded" style={{ background: mau, color: "var(--nen)" }} title={title}>
+  <span className="px-1.5 py-0.5 text-[11px] font-bold rounded" style={{ background: mau, color: "var(--nen)" }} title={title}>
     {children}
   </span>
 );
@@ -128,7 +128,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
           className="flex items-center gap-2 h-9 pl-1 pr-1 sm:pr-2 rounded-lg border transition-colors hover:bg-[color:var(--hover-nhe)]"
           style={{ borderColor: moMenu ? PRIMARY : VIEN, background: NEN_CARD }}
         >
-          <span className="relative w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold" style={{ background: "rgba(108,92,231,0.22)", color: "var(--tim-chu)" }}>
+          <span className="relative w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold" style={{ background: "rgba(74,138,214,0.22)", color: "var(--tim-chu)" }}>
             {String(ten).trim().charAt(0).toUpperCase() || "?"}
             {!nguoiDung.da_duyet && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full" style={{ background: VANG, border: "2px solid var(--nen)" }} aria-hidden="true" />}
           </span>

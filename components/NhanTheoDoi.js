@@ -17,7 +17,7 @@ export default function NhanTheoDoi({ loai, tu = null }) {
   return (
     <span
       data-may={mua ? "tin-THEO DOI MUA" : "tin-THEO DOI BAN"}
-      className="inline-flex flex-col mt-0.5 px-1.5 py-px rounded-sm text-[10px] leading-tight font-bold max-w-full"
+      className="inline-flex flex-col mt-0.5 px-1.5 py-px rounded-sm text-[11px] leading-tight font-bold max-w-full"
       style={{ color: mau, border: `1px dashed ${mau}`, background: mua ? "rgba(34,197,94,0.1)" : "rgba(239,68,68,0.1)", fontFamily: "var(--font-chu)" }}
       title={
         mua

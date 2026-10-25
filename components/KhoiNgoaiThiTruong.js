@@ -26,7 +26,7 @@ function DanhSachMa({ ds, mau }) {
             style={{ background: nhe(mau, 12), color: mau, border: `1px solid ${nhe(mau, 20)}` }}
           >
             <b style={{ ...mono, fontWeight: 700 }}>{r.ma}</b>
-            <span style={{ ...mono, opacity: 0.85, fontSize: 10 }}>{tyDong(r.tyDong)}</span>
+            <span style={{ ...mono, opacity: 0.85, fontSize: 11 }}>{tyDong(r.tyDong)}</span>
           </Link>
         );
       })}
@@ -56,7 +56,7 @@ export default function KhoiNgoaiThiTruong({ ngoai }) {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+        <p className="text-xs " style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
           Khối ngoại (nhà đầu tư nước ngoài)
         </p>
         <p className="text-[11px]" style={{ color: MUTED }}>
@@ -85,7 +85,7 @@ export default function KhoiNgoaiThiTruong({ ngoai }) {
           <div className="absolute top-0 bottom-0 right-1/2 rounded-l-full" style={{ width: `${tyLeRong}%`, background: DO }} />
         )}
       </div>
-      <div className="flex justify-between text-[10px] mb-4" style={{ color: MUTED }}>
+      <div className="flex justify-between text-[11px] mb-4" style={{ color: MUTED }}>
         <span>← Bán ròng</span>
         <span>Mua ròng →</span>
       </div>

@@ -9,7 +9,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -248,13 +248,13 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
                     {trucY.map((v) => (
                       <g key={v}>
                         <line x1={0} x2={rongVe} y1={y(v)} y2={y(v)} stroke={VIEN} />
-                        <text x={-8} y={y(v) + 3} textAnchor="end" fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
+                        <text x={-8} y={y(v) + 3} textAnchor="end" fontSize="11" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                           {so(v)}
                         </text>
                       </g>
                     ))}
                     {trucX.map((p) => (
-                      <text key={p} x={x(p)} y={caoVe + 16} textAnchor="middle" fontSize="10" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
+                      <text key={p} x={x(p)} y={caoVe + 16} textAnchor="middle" fontSize="11" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
                         {gioPhut(p)}
                       </text>
                     ))}
@@ -269,7 +269,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
                     {m.tb20 != null && (
                       <>
                         <line x1={0} y1={y(m.tb20)} x2={rongVe} y2={y(m.tb20)} stroke={VANG} strokeWidth="1.2" strokeDasharray="5,4" opacity={0.85} />
-                        <text x={4} y={y(m.tb20) - 4} textAnchor="start" fontSize="10" fill={VANG} style={{ fontFamily: "var(--font-chu)" }}>
+                        <text x={4} y={y(m.tb20) - 4} textAnchor="start" fontSize="11" fill={VANG} style={{ fontFamily: "var(--font-chu)" }}>
                           TB20 phiên: {so(m.tb20)} tỷ
                         </text>
                       </>
@@ -333,7 +333,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-wide mb-2" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+              <p className="text-xs  mb-2" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                 Top GTGD {du.laHomNay ? "hôm nay" : `phiên ${ngayVN(m.a.ngay).slice(0, 5)}`}
               </p>
               <ul className="text-sm" style={{ fontFamily: "var(--font-chu)" }}>

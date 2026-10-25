@@ -58,7 +58,7 @@ function BieuDoDelta({ phut }) {
       {nhan.map((p) => {
         const i = d.indexOf(p);
         return (
-          <text key={p.k} x={x(i)} y={H - 5} fontSize="9" fill={MUTED} textAnchor="middle">{p.k}</text>
+          <text key={p.k} x={x(i)} y={H - 5} fontSize="11" fill={MUTED} textAnchor="middle">{p.k}</text>
         );
       })}
     </svg>
@@ -86,12 +86,12 @@ function VolumeProfile({ profile, gia }) {
         return (
           <g key={r.g}>
             {trongVA && <rect x={0} y={y0 - 1} width={W} height={RH} fill={VANG} opacity="0.08" />}
-            <text x={LBL - 4} y={y0 + 10} fontSize="9.5" textAnchor="end" fill={r === gan ? TEXT : MUTED} fontWeight={r === gan ? 700 : 400}>{soVN(r.g, 2)}</text>
+            <text x={LBL - 4} y={y0 + 10} fontSize="11" textAnchor="end" fill={r === gan ? TEXT : MUTED} fontWeight={r === gan ? 700 : 400}>{soVN(r.g, 2)}</text>
             <rect x={xm} y={y0} width={dai(r.m)} height={RH - 3} fill={XANH} opacity="0.85" />
             <rect x={xm + dai(r.m)} y={y0} width={dai(r.b)} height={RH - 3} fill={DO} opacity="0.85" />
-            {va && i === va.poc && <text x={xm + dai(r.t) + 4} y={y0 + 10} fontSize="9" fill={VANG} fontWeight="700">POC</text>}
-            {r.k > 0 && <text x={W - 2} y={y0 + 10} fontSize="8.5" textAnchor="end" fill={MUTED}>ATO/ATC {soVN(r.k, 0)}</text>}
-            {r === gan && <text x={xm + dai(r.t) + (va && i === va.poc ? 30 : 4)} y={y0 + 10} fontSize="9" fill={TEXT}>◀ giá hiện tại</text>}
+            {va && i === va.poc && <text x={xm + dai(r.t) + 4} y={y0 + 10} fontSize="11" fill={VANG} fontWeight="700">POC</text>}
+            {r.k > 0 && <text x={W - 2} y={y0 + 10} fontSize="11" textAnchor="end" fill={MUTED}>ATO/ATC {soVN(r.k, 0)}</text>}
+            {r === gan && <text x={xm + dai(r.t) + (va && i === va.poc ? 30 : 4)} y={y0 + 10} fontSize="11" fill={TEXT}>◀ giá hiện tại</text>}
           </g>
         );
       })}
@@ -103,7 +103,7 @@ function CoLenh({ ten, g, mo }) {
   const ron = (g?.mua ?? 0) - (g?.ban ?? 0);
   return (
     <tr className="border-t" style={{ borderColor: "var(--vien-nhe)" }}>
-      <td className="py-1.5 pr-2">{ten}<span className="block text-[10px]" style={{ color: MUTED }}>{mo}</span></td>
+      <td className="py-1.5 pr-2">{ten}<span className="block text-[11px]" style={{ color: MUTED }}>{mo}</span></td>
       <td className="py-1.5 px-2 text-right" style={{ color: XANH }}>{ty(g?.mua)}</td>
       <td className="py-1.5 px-2 text-right" style={{ color: DO }}>{ty(g?.ban)}</td>
       <td className="py-1.5 px-2 text-right" style={{ color: mau(ron), fontWeight: 700 }}>{dau(ron)}</td>

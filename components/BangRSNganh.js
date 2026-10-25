@@ -92,7 +92,7 @@ function XepHangMa({ cacMa }) {
           </Link>
         ))}
       </div>
-      <p className="text-[10px] mt-2" style={{ color: MUTED }}>
+      <p className="text-[11px] mt-2" style={{ color: MUTED }}>
         Mỗi dòng: hạng · mã · giá hôm nay · RS 20 phiên · RS 60 phiên (so với VN-Index, điểm %).
       </p>
     </div>
@@ -119,7 +119,7 @@ export default function BangRSNganh({ hang }) {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <p className="text-xs uppercase tracking-wide" style={{ color: MUTED, ...sans }}>
+        <p className="text-xs " style={{ color: MUTED, ...sans }}>
           Xếp hạng sức mạnh ngành (RS)
         </p>
         <p className="text-[11px]" style={{ color: MUTED }}>
@@ -142,7 +142,7 @@ export default function BangRSNganh({ hang }) {
                     {c.nhan}
                     {mui(c.khoa)}
                   </span>
-                  <span className="block text-[10px] opacity-70">{c.phu}</span>
+                  <span className="block text-[11px] opacity-70">{c.phu}</span>
                 </th>
               ))}
             </tr>
@@ -159,11 +159,11 @@ export default function BangRSNganh({ hang }) {
                         {sapXep.khoa === "rs20" && sapXep.chieu < 0 ? i + 1 : h.hang}
                       </span>
                       {h.nhan}
-                      <span className="ml-1 text-[10px]" style={{ color: MUTED }}>
+                      <span className="ml-1 text-[11px]" style={{ color: MUTED }}>
                         {dangMo ? "▲" : "▼"}
                       </span>
                       {dan.length > 0 && (
-                        <span className="block text-[10px] font-normal pl-5" style={{ color: MUTED, ...mono }}>
+                        <span className="block text-[11px] font-normal pl-5" style={{ color: MUTED, ...mono }}>
                           Mạnh nhất: {dan.map((m) => m.ma).join(", ")}
                         </span>
                       )}

@@ -1,4 +1,4 @@
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Open_Sans } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/Sidebar";
 import ThanhDau from "@/components/ThanhDau";
@@ -8,8 +8,8 @@ import TuDongLamMoi from "@/components/TuDongLamMoi";
 import MayHuongDan from "@/components/MayHuongDan";
 import ThanhTabNhom from "@/components/ThanhTabNhom";
 
-// Plus Jakarta Sans (co dau tieng Viet, so deu hang nho font-variant-numeric: tabular-nums o globals.css): thay Inter + JetBrains Mono (vuong vuc). Phan biet --font-chu-tai (next/font) voi --font-chu (ngan xep du phong).
-const phongChu = Plus_Jakarta_Sans({
+// Open Sans (co dau tieng Viet, so deu hang nho font-variant-numeric: tabular-nums o globals.css; Hieu chon 2026-10-26). Phan biet --font-chu-tai (next/font) voi --font-chu (ngan xep du phong).
+const phongChu = Open_Sans({
   variable: "--font-chu-tai",
   subsets: ["latin", "vietnamese"],
   display: "swap",

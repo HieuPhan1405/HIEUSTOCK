@@ -9,7 +9,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -203,7 +203,7 @@ function NoiDung({ tatCa = [], muaPhucHoi = [] }) {
                     <span className="block text-[11px]" style={{ color: mauLai(x.laiVonPct) }}>
                       {x.laiVonPct != null ? pct(x.laiVonPct, 1) : "—"}
                     </span>
-                    <span className="block text-[9px]" style={{ color: MUTED, ...sans }}>
+                    <span className="block text-[11px]" style={{ color: MUTED, ...sans }}>
                       so với giá vốn {x.giaVon != null ? fmt(x.giaVon) : "?"}
                     </span>
                   </span>
@@ -235,7 +235,7 @@ function NoiDung({ tatCa = [], muaPhucHoi = [] }) {
               <Link key={t.ma} href={`/ma/${t.ma}`} className="grid grid-cols-[64px_1fr_auto] gap-3 px-3 py-3 border-b last:border-b-0 items-start" style={{ borderColor: "var(--vien-nhe)" }}>
                 <span>
                   <span className="block" style={{ ...sans, fontWeight: 700, fontSize: 15 }}>{t.ma}</span>
-                  <span className="block text-[10px] font-bold" style={{ color: t.loai === "B" ? VANG : XANH, ...sans }}>
+                  <span className="block text-[11px] font-bold" style={{ color: t.loai === "B" ? VANG : XANH, ...sans }}>
                     {t.loai === "B" ? "Điểm B" : "MUA"}
                   </span>
                 </span>
@@ -247,9 +247,9 @@ function NoiDung({ tatCa = [], muaPhucHoi = [] }) {
                 </span>
                 <span className="text-right" style={{ ...mono, fontSize: 13 }}>
                   {phanTram(t.tyTrong)}
-                  <span className="block text-[10px]" style={{ color: MUTED, ...sans }}>tỷ trọng</span>
+                  <span className="block text-[11px]" style={{ color: MUTED, ...sans }}>tỷ trọng</span>
                   {t.soCp != null && (
-                    <span className="block text-[10px]" style={{ color: MUTED, ...sans }}>
+                    <span className="block text-[11px]" style={{ color: MUTED, ...sans }}>
                       {tien(t.soTien)} · ~{t.soCp.toLocaleString("vi-VN")} cp
                     </span>
                   )}

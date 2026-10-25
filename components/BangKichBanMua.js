@@ -13,7 +13,7 @@ const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 
 // 3 kich ban gia cac phien sau (engine/dich-vu/kichBanMua.mjs). So phien toi da engine xet: 10.
 const KICH_BAN = [
@@ -181,7 +181,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
                     <span className="inline-flex items-center gap-1">
                       {c.nhan}
                       {c.phu && (
-                        <span className="text-[10px]" style={{ opacity: 0.7 }}>
+                        <span className="text-[11px]" style={{ opacity: 0.7 }}>
                           ({c.phu})
                         </span>
                       )}
@@ -208,7 +208,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
                     <td className="py-2.5 px-3 text-right">
                       {fmt(r.gia_mua)}
                       {r.gia_mua > 0 && r.gia > 0 && (
-                        <div className="text-[10px]" style={{ color: r.gia >= r.gia_mua ? XANH : DO, fontFamily: "var(--font-chu)" }}>
+                        <div className="text-[11px]" style={{ color: r.gia >= r.gia_mua ? XANH : DO, fontFamily: "var(--font-chu)" }}>
                           {r.gia >= r.gia_mua ? "+" : ""}
                           {soVN((r.gia / r.gia_mua - 1) * 100, 1)}%
                         </div>
@@ -217,7 +217,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
                   )}
                   <td className="py-2.5 px-3 text-right">
                     <span style={{ color: r.diem >= 1.25 ? XANH : TEXT }}>{soVN(r.diem, 2, true)}</span>
-                    <div className="text-[10px]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+                    <div className="text-[11px]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                       XH {so1(r.trend)} · ĐL {so1(r.mom)} · DT {so1(r.dt)}
                     </div>
                   </td>

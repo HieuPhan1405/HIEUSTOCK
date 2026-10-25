@@ -6,7 +6,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -95,7 +95,7 @@ export default function KhoaTinHieuTrangChu({ choDuyet = false }) {
           >
             <div
               className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
-              style={{ background: choDuyet ? "rgba(251,191,36,0.16)" : "rgba(108,92,231,0.18)" }}
+              style={{ background: choDuyet ? "rgba(251,191,36,0.16)" : "rgba(74,138,214,0.18)" }}
             >
               {choDuyet ? <Clock size={22} color={VANG} strokeWidth={2} /> : <Lock size={22} color={PRIMARY} strokeWidth={2} />}
             </div>

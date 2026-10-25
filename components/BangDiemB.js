@@ -14,7 +14,7 @@ const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const sans = { fontFamily: "var(--font-chu)" };
 const mono = { fontFamily: "var(--font-chu)" };
 const MAU_KQ = { tot: XANH, xau: DO, cho: VANG };
@@ -41,7 +41,7 @@ function The({ nhan, giaTri, phu, mau }) {
     <div className="rounded-2xl border p-3 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <p className="text-xl" style={{ ...mono, fontWeight: 700, color: mau || TEXT }}>{giaTri}</p>
       <p className="text-[11px] mt-0.5" style={{ color: MUTED }}>{nhan}</p>
-      {phu && <p className="text-[10px]" style={{ color: MUTED }}>{phu}</p>}
+      {phu && <p className="text-[11px]" style={{ color: MUTED }}>{phu}</p>}
     </div>
   );
 }
@@ -161,21 +161,21 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
                     <td className="py-2.5 px-3 whitespace-nowrap">
                       <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ ...sans, fontWeight: 700 }}>{r.ma}</Link>
                       {r.ng_so_ma >= 1 && (
-                        <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(PRIMARY, 13), color: PRIMARY, ...sans }} title={`${r.ng_so_ma} mã khác cùng ngành cũng có điểm B trong 7 ngày (~5 phiên) — càng nhiều mã càng là cả ngành cùng hồi`}>
+                        <span className="ml-1.5 px-1 text-[11px] rounded-sm" style={{ background: nhe(PRIMARY, 13), color: PRIMARY, ...sans }} title={`${r.ng_so_ma} mã khác cùng ngành cũng có điểm B trong 7 ngày (~5 phiên) — càng nhiều mã càng là cả ngành cùng hồi`}>
                           ngành hồi ({r.ng_so_ma})
                         </span>
                       )}
                       {laKhuyenNghi(r) && (
-                        <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(XANH, 13), color: XANH, ...sans }} title="Giảm từ 20% + KL đáy ≥ 2× + thị trường yếu lúc đó">
+                        <span className="ml-1.5 px-1 text-[11px] rounded-sm" style={{ background: nhe(XANH, 13), color: XANH, ...sans }} title="Giảm từ 20% + KL đáy ≥ 2× + thị trường yếu lúc đó">
                           ⭐ khuyến nghị
                         </span>
                       )}
                       {r.co_mua_thuong_truoc && (
-                        <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(DO, 13), color: DO, ...sans }} title="Web đã ghi nhận lệnh MUA của hệ thống trong 60 ngày trước điểm B — nhóm này có kết quả lịch sử kém hơn">
+                        <span className="ml-1.5 px-1 text-[11px] rounded-sm" style={{ background: nhe(DO, 13), color: DO, ...sans }} title="Web đã ghi nhận lệnh MUA của hệ thống trong 60 ngày trước điểm B — nhóm này có kết quả lịch sử kém hơn">
                           đã có lệnh MUA
                         </span>
                       )}
-                      {r.nganh && <span className="block text-[10px]" style={{ color: MUTED, ...sans }}>{r.nganh}</span>}
+                      {r.nganh && <span className="block text-[11px]" style={{ color: MUTED, ...sans }}>{r.nganh}</span>}
                     </td>
                     <td className="py-2.5 px-3 text-xs" style={{ color: MUTED }}>{ngayVN(r.ngay)}</td>
                     <td className="py-2.5 px-3 text-right">{fmt(r.gia_vao)}</td>
@@ -185,13 +185,13 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
                     <td className="py-2.5 px-3 text-right text-xs" style={{ color: XANH }}>{fmt(r.tp1)} / {fmt(r.tp2)}</td>
                     <td className="py-2.5 px-3 text-right font-bold whitespace-nowrap" style={{ color: catLo ? MUTED : mauPct(hien) }} title={catLo ? `Đã chạm cắt lỗ ngày ${ngayVN(r.ngay_cat_lo)} — lỗ ước tính tại mốc cắt lỗ` : undefined}>
                       {hien == null ? "—" : pct(hien, 1)}
-                      {catLo && <span className="block text-[10px] font-normal" style={{ color: MUTED, ...sans }}>cắt lỗ {ngayVN(r.ngay_cat_lo).slice(0, 5)}</span>}
+                      {catLo && <span className="block text-[11px] font-normal" style={{ color: MUTED, ...sans }}>cắt lỗ {ngayVN(r.ngay_cat_lo).slice(0, 5)}</span>}
                     </td>
                     <td className="py-2.5 px-3 text-right" style={{ color: mauPct(r.pct_sau_5) }}>{r.pct_sau_5 == null ? "—" : pct(r.pct_sau_5, 1)}</td>
                     <td className="py-2.5 px-3 text-xs whitespace-nowrap" style={{ color: r.vni_yeu ? VANG : MUTED, ...sans }}>{r.vni_yeu === true ? "yếu" : r.vni_yeu === false ? "bình thường" : "—"}</td>
                     <td className="py-2.5 px-3">
                       <span className="px-2 py-0.5 text-xs font-bold rounded-sm whitespace-nowrap" style={{ background: nhe(MAU_KQ[kq.loai], 13), color: MAU_KQ[kq.loai], ...sans }}>{kq.nhan}</span>
-                      {r.tp_cham >= 1 && !catLo && <span className="ml-1 text-[10px]" style={{ color: XANH, ...sans }} title="Giá đã chạm mốc chốt lời kể từ khi vào lệnh">TP{r.tp_cham}</span>}
+                      {r.tp_cham >= 1 && !catLo && <span className="ml-1 text-[11px]" style={{ color: XANH, ...sans }} title="Giá đã chạm mốc chốt lời kể từ khi vào lệnh">TP{r.tp_cham}</span>}
                     </td>
                   </tr>
                 );

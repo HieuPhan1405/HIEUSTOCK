@@ -13,7 +13,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const NHAT = "var(--mo-2)";
 const XANH = "var(--xanh)";
 
@@ -338,7 +338,7 @@ export default async function TrangHuongDan() {
         <NguyenTac />
       ) : (
         <div className="rounded-2xl border p-8 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(108,92,231,0.16)" }}>
+          <div className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: "rgba(74,138,214,0.16)" }}>
             <Lock size={22} color={PRIMARY} strokeWidth={2} />
           </div>
           <p className="text-base mb-2" style={{ color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 700 }}>

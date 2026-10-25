@@ -25,7 +25,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const DO = "var(--do)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const CAM = "var(--cam)";
 const NGOC = "var(--cyan)";
 const ngayVN = (s) => (s ? String(s).split("-").reverse().join("/") : "—");
@@ -55,18 +55,18 @@ const COT_RIENG = {
           )}
         </div>
         {row.la_lenh_moi && (
-          <span className="text-[10px] font-bold tracking-wide mt-0.5" data-may="mua-moi" style={{ color: NGOC, fontFamily: "var(--font-chu)" }} title="Lệnh mua mới (đợt sau): có giá mua, mức cắt lỗ, chốt lời và lãi/lỗ tính riêng">
+          <span className="text-[11px] font-bold tracking-wide mt-0.5" data-may="mua-moi" style={{ color: NGOC, fontFamily: "var(--font-chu)" }} title="Lệnh mua mới (đợt sau): có giá mua, mức cắt lỗ, chốt lời và lãi/lỗ tính riêng">
             Mua mới{row.mua_moi_hom_nay ? " · hôm nay" : ""}
           </span>
         )}
         {nhanLenhWeb(row) && (
-          <span className="text-[10px] font-bold tracking-wide mt-0.5" data-may="lenh-web" style={{ color: nhanLenhWeb(row).mau, fontFamily: "var(--font-chu)" }} title={nhanLenhWeb(row).moTa}>
+          <span className="text-[11px] font-bold tracking-wide mt-0.5" data-may="lenh-web" style={{ color: nhanLenhWeb(row).mau, fontFamily: "var(--font-chu)" }} title={nhanLenhWeb(row).moTa}>
             {nhanLenhWeb(row).nhan}
           </span>
         )}
         {row.ten_ngan && (
           <span
-            className="block max-w-[190px] truncate text-[10px] font-normal leading-tight mt-0.5"
+            className="block max-w-[190px] truncate text-[11px] font-normal leading-tight mt-0.5"
             style={{ color: MUTED, fontFamily: "var(--font-chu)" }}
             title={row.ten_cong_ty}
           >
@@ -84,32 +84,32 @@ const COT_RIENG = {
       <div className="flex flex-col items-end gap-1">
         <SignalPill tin={row.tin} banTheoDoiTu={row.ban_theo_doi ? row.ban_theo_doi_tu : null} webGiu={Array.isArray(row.lenh_web) && row.lenh_web.length > 0} muaTheoDoiTu={row.mua_theo_doi_tu ?? null} daChotMua={row.da_chot_mua === true} />
         {nhanChoHoi(row) && (
-          <span className="text-[10px] font-bold tracking-wide" style={{ color: nhanChoHoi(row).mau }} title={nhanChoHoi(row).moTa} data-may="vung-mua">
+          <span className="text-[11px] font-bold tracking-wide" style={{ color: nhanChoHoi(row).mau }} title={nhanChoHoi(row).moTa} data-may="vung-mua">
             ⏳ Chờ hồi
           </span>
         )}
         {nhanGiaiNgan(row) && (
-          <span className="text-[10px] font-bold tracking-wide" style={{ color: nhanGiaiNgan(row).mau }} title={nhanGiaiNgan(row).moTa}>
+          <span className="text-[11px] font-bold tracking-wide" style={{ color: nhanGiaiNgan(row).mau }} title={nhanGiaiNgan(row).moTa}>
             ◐ {nhanGiaiNgan(row).nhan}
           </span>
         )}
         {nhanBaoVeLai(row) && (
-          <span className="text-[10px] font-bold tracking-wide" style={{ color: nhanBaoVeLai(row).mau }} title={nhanBaoVeLai(row).moTa}>
+          <span className="text-[11px] font-bold tracking-wide" style={{ color: nhanBaoVeLai(row).mau }} title={nhanBaoVeLai(row).moTa}>
             🛡 {nhanBaoVeLai(row).nhan}
           </span>
         )}
         {nhanLoaiVao(row) && (
-          <span className="text-[10px] font-bold tracking-wide" style={{ color: nhanLoaiVao(row).mau }} title={nhanLoaiVao(row).moTa}>
+          <span className="text-[11px] font-bold tracking-wide" style={{ color: nhanLoaiVao(row).mau }} title={nhanLoaiVao(row).moTa}>
             ↺ {nhanLoaiVao(row).nhan}
           </span>
         )}
         {canhBaoVaoLenh(row).map((c) => (
-          <span key={c.khoa} className="text-[10px] font-bold tracking-wide" style={{ color: CAM }} title={c.moTa} data-may="canh-bao-vao-lenh">
+          <span key={c.khoa} className="text-[11px] font-bold tracking-wide" style={{ color: CAM }} title={c.moTa} data-may="canh-bao-vao-lenh">
             ⚠ {c.nhan}
           </span>
         ))}
         {row.ban_bot && (
-          <span className="text-[10px] font-bold tracking-wide" style={{ color: CAM }}>
+          <span className="text-[11px] font-bold tracking-wide" style={{ color: CAM }}>
             ⚠ Bán bớt
           </span>
         )}

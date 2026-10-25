@@ -31,7 +31,7 @@ const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 
 // Bo loc "MA THEO DOI" gom 2 nhom: (1) da DAT DIEM MUA nhung dang doi phien sau (laChoPhienSau) va
 // (2) chi ma sap cham moc tinh diem +: ma chua co lenh, gia
@@ -63,7 +63,7 @@ const COT_RIENG = {
             {row.ma}
           </Link>
           {row.mat_than && (
-            <span className="text-[10px] font-bold" style={{ color: DO }}>
+            <span className="text-[11px] font-bold" style={{ color: DO }}>
               ⚠
             </span>
           )}
@@ -78,7 +78,7 @@ const COT_RIENG = {
         </div>
         {row.ten_ngan && (
           <span
-            className="block max-w-[190px] truncate text-[10px] font-normal leading-tight mt-0.5"
+            className="block max-w-[190px] truncate text-[11px] font-normal leading-tight mt-0.5"
             style={{ color: MUTED, fontFamily: "var(--font-chu)" }}
             title={row.ten_cong_ty}
           >
@@ -101,38 +101,38 @@ const COT_RIENG = {
             <>
               <SignalPill tin={row.tin} banTheoDoiTu={row.ban_theo_doi ? row.ban_theo_doi_tu : null} webGiu={Array.isArray(row.lenh_web) && row.lenh_web.length > 0} muaTheoDoiTu={row.mua_theo_doi_tu ?? null} daChotMua={row.da_chot_mua === true} />
               {nhanChoHoi(row) && (
-                <span className="text-[10px] font-bold" style={{ color: nhanChoHoi(row).mau }} title={nhanChoHoi(row).moTa} data-may="vung-mua">
+                <span className="text-[11px] font-bold" style={{ color: nhanChoHoi(row).mau }} title={nhanChoHoi(row).moTa} data-may="vung-mua">
                   ⏳ Chờ hồi
                 </span>
               )}
               {nhanLyDoBan(row) && (
-                <span className="text-[10px] font-bold" style={{ color: nhanLyDoBan(row).mau }} title={nhanLyDoBan(row).moTa}>
+                <span className="text-[11px] font-bold" style={{ color: nhanLyDoBan(row).mau }} title={nhanLyDoBan(row).moTa}>
                   {nhanLyDoBan(row).nhan}
                 </span>
               )}
               {nhanGiaiNgan(row) && (
-                <span className="text-[10px] font-bold" style={{ color: nhanGiaiNgan(row).mau }} title={nhanGiaiNgan(row).moTa}>
+                <span className="text-[11px] font-bold" style={{ color: nhanGiaiNgan(row).mau }} title={nhanGiaiNgan(row).moTa}>
                   ◐ {nhanGiaiNgan(row).nhan}
                 </span>
               )}
               {nhanLoaiVao(row) && (
-                <span className="text-[10px] font-bold" style={{ color: nhanLoaiVao(row).mau }} title={nhanLoaiVao(row).moTa}>
+                <span className="text-[11px] font-bold" style={{ color: nhanLoaiVao(row).mau }} title={nhanLoaiVao(row).moTa}>
                   ↺ {nhanLoaiVao(row).nhan}
                 </span>
               )}
               {nhanMuaMoi(row) && (
-                <span className="text-[10px] font-bold" style={{ color: nhanMuaMoi(row).mau }} title={nhanMuaMoi(row).moTa}>
+                <span className="text-[11px] font-bold" style={{ color: nhanMuaMoi(row).mau }} title={nhanMuaMoi(row).moTa}>
                   ➕ {nhanMuaMoi(row).nhan}
                 </span>
               )}
               {nhanBaoVeLai(row) && (
-                <span className="text-[10px] font-bold" style={{ color: nhanBaoVeLai(row).mau }} title={nhanBaoVeLai(row).moTa}>
+                <span className="text-[11px] font-bold" style={{ color: nhanBaoVeLai(row).mau }} title={nhanBaoVeLai(row).moTa}>
                   🛡 {nhanBaoVeLai(row).nhan}
                 </span>
               )}
               {laChoPhienSau(row) && (
                 <span
-                  className="text-[10px] font-bold"
+                  className="text-[11px] font-bold"
                   style={{ color: "var(--vang)" }}
                   title="Đã đạt điểm MUA nhưng phiên đầu chưa đủ khối lượng xác nhận. Nếu phiên sau vẫn trên ngưỡng điểm thì sẽ MUA."
                 >
@@ -153,12 +153,12 @@ const COT_RIENG = {
             </button>
           )}
           {tp && (
-            <span className="text-[10px] font-bold" style={{ color: "var(--vang)" }}>
+            <span className="text-[11px] font-bold" style={{ color: "var(--vang)" }}>
               🎯 {tp}
             </span>
           )}
           {row.ban_bot && (
-            <span className="text-[10px] font-bold" style={{ color: "var(--cam)" }}>
+            <span className="text-[11px] font-bold" style={{ color: "var(--cam)" }}>
               ⚠ Bán bớt
             </span>
           )}

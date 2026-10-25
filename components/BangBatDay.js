@@ -14,7 +14,7 @@ const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 
 // Ket qua bat day - CHI xet dc khi da co du du lieu gia sau 20 phien (con
 // qua moi, chua du 20 phien thi la "Dang theo doi", KHONG tinh la that bai.
@@ -185,7 +185,7 @@ export default function BangBatDay({ duLieu }) {
                         {row.ma}
                       </Link>
                       {row.vn100 === false && (
-                        <span className="ml-1.5 px-1 text-[9px] rounded-sm" style={{ background: nhe(MUTED, 15), color: MUTED, fontFamily: "var(--font-chu)" }} title="Ngoài VN100 (GTGD TB20 ≥ 3 tỷ)">
+                        <span className="ml-1.5 px-1 text-[11px] rounded-sm" style={{ background: nhe(MUTED, 15), color: MUTED, fontFamily: "var(--font-chu)" }} title="Ngoài VN100 (GTGD TB20 ≥ 3 tỷ)">
                           khác
                         </span>
                       )}

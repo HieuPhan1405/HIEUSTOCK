@@ -161,7 +161,7 @@ export const CAC_COT = {
       return (
         <div className="flex flex-col items-end leading-tight" title={`Vượt ${m.loai} thì được cộng điểm Xu hướng`}>
           <span>{fmt(m.gia)}</span>
-          <span className="text-[10px]" style={{ color: m.cachPct <= 3 ? VANG : MUTED }}>
+          <span className="text-[11px]" style={{ color: m.cachPct <= 3 ? VANG : MUTED }}>
             {m.loai} · cách {soAn(m.cachPct, 1)}%
           </span>
         </div>
@@ -288,7 +288,7 @@ export const CAC_COT = {
         <div className="flex flex-col items-end leading-tight" title={`${m.nhan}. Giá mua trên hệ thống là giá đóng cửa phiên có tín hiệu.`}>
           <span>{fmt(m.gia)}</span>
           {m.chenhPct != null && (
-            <span className="text-[10px]" style={{ color: m.chenhPct > 3 ? VANG : MUTED }}>
+            <span className="text-[11px]" style={{ color: m.chenhPct > 3 ? VANG : MUTED }}>
               mua {m.chenhPct >= 0 ? "cao" : "thấp"} hơn {soAn(Math.abs(m.chenhPct), 1)}%
             </span>
           )}
@@ -312,7 +312,7 @@ export const CAC_COT = {
           title={v.mua.coMoc ? `Từ mốc chuyển mua đến giá mua cao hơn tối đa ${VUNG.tranDuoiPct}% (cao hơn nữa là đuổi giá)` : `Từ giá mua đến cao hơn tối đa ${VUNG.tranDuoiPct}% (cao hơn nữa là đuổi giá)`}
         >
           <span>{chuoiVung(v.mua.tu, v.mua.den)}</span>
-          <span className="text-[10px]" style={{ color: tt[1] }}>
+          <span className="text-[11px]" style={{ color: tt[1] }}>
             giá {tt[0]}
           </span>
         </div>
@@ -341,7 +341,7 @@ export const CAC_COT = {
           }
         >
           <span style={{ color: v.xa ? MUTED : DO }}>{chuoiVung(v.tu, v.den)}</span>
-          <span className="text-[10px]" style={{ color: hoaVon ? VANG : v.xa ? MUTED : tt[1] }}>
+          <span className="text-[11px]" style={{ color: hoaVon ? VANG : v.xa ? MUTED : tt[1] }}>
             {hoaVon ? `nên dời về hòa vốn ${fmt(hoaVon)}` : v.xa ? "chỉ tham khảo (đã cách xa)" : tt[0]}
           </span>
         </div>
@@ -363,13 +363,13 @@ export const CAC_COT = {
           title={`Tỷ lệ chốt: ${c.tp1}% ở TP1, ${c.tp2}% ở TP2, ${c.giu}% còn lại giữ đến tín hiệu BÁN (TP3 chỉ là mốc tham khảo)`}
         >
           <span style={{ color: v.daCham >= 2 ? XANH : undefined }}>
-            <span className="text-[10px]" style={{ color: MUTED }}>
+            <span className="text-[11px]" style={{ color: MUTED }}>
               gần{" "}
             </span>
             {chuoiVung(v.gan.tu, v.gan.den)}
           </span>
           <span style={{ color: v.daCham >= 3 ? XANH : undefined }}>
-            <span className="text-[10px]" style={{ color: MUTED }}>
+            <span className="text-[11px]" style={{ color: MUTED }}>
               xa{" "}
             </span>
             {fmt(v.xa)}

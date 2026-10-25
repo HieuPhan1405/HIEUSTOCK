@@ -17,7 +17,7 @@ const DO = "var(--do)";
 const VANG = "var(--vang)";
 const NGOC = "var(--cyan)";
 const TIM = "var(--tim-nhat)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#4A8AD6";
 const CHU_THAN = "var(--font-chu)";
 const CHU_SO = "var(--font-chu)";
 
@@ -92,27 +92,27 @@ function BangViThe({ m, hien }) {
                       <span className="font-bold text-sm" data-may={nhieu ? "danh-so" : undefined}>
                         {l.ten_lenh}
                       </span>
-                      <span className="text-[10px] font-bold" style={{ color: l.la_lenh_moi ? NGOC : MUTED }} data-may={l.la_lenh_moi ? "mua-moi" : "lenh-dau"}>
+                      <span className="text-[11px] font-bold" style={{ color: l.la_lenh_moi ? NGOC : MUTED }} data-may={l.la_lenh_moi ? "mua-moi" : "lenh-dau"}>
                         {l.la_lenh_moi ? "Mua mới" : "Lệnh đầu"}
                         {l.mua_moi_hom_nay ? " · hôm nay" : ""}
                       </span>
                       {l.lenh_web === true && (
-                        <span className="text-[10px] font-bold" style={{ color: VANG }} data-may="lenh-web" title="Đã mua trong khung giờ nhưng tín hiệu mất trong phiên — web tự giữ lệnh">
+                        <span className="text-[11px] font-bold" style={{ color: VANG }} data-may="lenh-web" title="Đã mua trong khung giờ nhưng tín hiệu mất trong phiên — web tự giữ lệnh">
                           Web giữ lệnh
                         </span>
                       )}
                       {l === totNhat && (
-                        <span className="text-[10px] font-bold px-1 rounded" style={{ background: "rgba(251,191,36,0.15)", color: VANG }} title="Vị thế đang lãi nhiều nhất của mã này" data-may="vi-the-tot">
+                        <span className="text-[11px] font-bold px-1 rounded" style={{ background: "rgba(251,191,36,0.15)", color: VANG }} title="Vị thế đang lãi nhiều nhất của mã này" data-may="vi-the-tot">
                           ★ Tốt nhất
                         </span>
                       )}
                       {l === viTheSau && (
-                        <span className="text-[10px] font-bold px-1 rounded" style={{ background: "rgba(167,139,250,0.15)", color: TIM }} title="Vị thế mở gần nhất của mã này" data-may="vi-the-sau">
+                        <span className="text-[11px] font-bold px-1 rounded" style={{ background: "rgba(167,139,250,0.15)", color: TIM }} title="Vị thế mở gần nhất của mã này" data-may="vi-the-sau">
                           Vị thế sau
                         </span>
                       )}
                     </div>
-                    <span className="block text-[10px]" style={{ color: MUTED, fontFamily: CHU_THAN }}>
+                    <span className="block text-[11px]" style={{ color: MUTED, fontFamily: CHU_THAN }}>
                       Mở {truocKhiTheoDoi ? "trước" : "sau"} khi bạn theo dõi mã · mua {ngayVN(l.ngay_mua)}
                     </span>
                   </td>
@@ -190,7 +190,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                 className="text-xs px-3 py-1.5 rounded-lg border"
                 style={
                   dangChon
-                    ? { borderColor: PRIMARY, background: "rgba(108,92,231,0.15)", color: "var(--chu)", fontFamily: CHU_THAN, fontWeight: 700 }
+                    ? { borderColor: PRIMARY, background: "rgba(74,138,214,0.15)", color: "var(--chu)", fontFamily: CHU_THAN, fontWeight: 700 }
                     : { borderColor: VIEN, color: "var(--mo-2)", fontFamily: CHU_THAN }
                 }
               >
@@ -282,7 +282,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                           />
                         </div>
                         {m.tenNgan && (
-                          <span className="block max-w-[190px] truncate text-[10px] leading-tight" style={{ color: MUTED, fontFamily: CHU_THAN }} title={m.tenCongTy ?? undefined}>
+                          <span className="block max-w-[190px] truncate text-[11px] leading-tight" style={{ color: MUTED, fontFamily: CHU_THAN }} title={m.tenCongTy ?? undefined}>
                             {m.tenNgan}
                           </span>
                         )}
@@ -296,14 +296,14 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                             {coViThe ? (
                               <button type="button" onClick={() => doi(m.ma)} className="text-left">
                                 <span className="font-bold">{biLoc ? `${hien.length}/${m.lenh.length} vị thế` : `${m.lenh.length} vị thế`}</span>
-                                <span className="block text-[10px]" style={{ color: MUTED }}>
+                                <span className="block text-[11px]" style={{ color: MUTED }}>
                                   {hien.length - soMoi > 0 ? `${hien.length - soMoi} lệnh đầu` : ""}
                                   {hien.length - soMoi > 0 && soMoi > 0 ? " · " : ""}
                                   {soMoi > 0 ? `${soMoi} mua mới` : ""}
                                   {biLoc ? ` · ${NHAN_TB[loc]}` : ""}
                                 </span>
                                 {moiHomNay && (
-                                  <span className="block text-[10px] font-bold" style={{ color: NGOC }}>
+                                  <span className="block text-[11px] font-bold" style={{ color: NGOC }}>
                                     Mua mới hôm nay
                                   </span>
                                 )}
@@ -324,7 +324,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                                   {pct(laiTB, 2)}
                                 </span>
                                 {(biLoc || hien.length > 1) && (
-                                  <span className="block text-[10px]" style={{ color: MUTED, fontFamily: CHU_THAN }}>
+                                  <span className="block text-[11px]" style={{ color: MUTED, fontFamily: CHU_THAN }}>
                                     {NHAN_TB[loc]}
                                   </span>
                                 )}
