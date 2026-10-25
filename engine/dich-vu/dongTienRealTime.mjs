@@ -83,7 +83,11 @@ export function khoiDongDongTien({ apiKey, apiSecret, dsMa, upload = null, kichT
   // nhat ky suc khoe 5 phut / lan: so ban tin theo loai (te = tick co chieu, f = khoi ngoai, mi = chi so), so chieu khop la
   const hen3 = setInterval(() => {
     if (chiTrongGio && !trongGioDongTien()) return;
-    log(`suc khoe: ban tin ${JSON.stringify(demLoai)} | ngay ${bo.ngay} | ${bo.ma.size} ma | chieu la ${bo.demChieuLa}`);
+    // KIEM TRA DON VI KL: tong KL tick (da nhan he so 10) / tong KL ca 3 san theo chi so (VNINDEX + HNX + UPCOM, so co phieu that) phai ~ 0,85-1,0 (thieu phan thoa thuan / lo le); ~0,1 hoac ~10 = sai he so
+    let klTick = 0;
+    for (const s of bo.ma.values()) klTick += s.kl;
+    const klSan = ["VNINDEX", "HNX", "UPCOM"].reduce((t, k) => t + (bo.chiSo.get(k)?.kl ?? 0), 0);
+    log(`suc khoe: ban tin ${JSON.stringify(demLoai)} | ngay ${bo.ngay} | ${bo.ma.size} ma | chieu la ${bo.demChieuLa} | KL tick/KL san = ${klSan > 0 ? (klTick / klSan).toFixed(2) : "?"}`);
   }, 5 * 60_000);
 
   return {

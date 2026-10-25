@@ -58,7 +58,7 @@ ok("da upload 1 goi", nhan.length === 1);
 const g = nhan[0].goi;
 ok("header: x-api-key va gzip", nhan[0].headers["x-api-key"] === "khoa-thu" && nhan[0].headers["content-encoding"] === "gzip");
 ok("goi: ngay, chiTiet = true, nguong, thiTruong, ma", g.ngay === "2026-10-23" && g.chiTiet === true && g.nguong.lonTrieu === 500 && g.thiTruong.tong && g.ma.M001);
-ok("ma M001: mua 720 tr (lon, 1 lenh), ban 24 tr, khoi ngoai ron 3 ty = 3.000 tr", Math.abs(g.ma.M001.mua - 720) < 0.1 && Math.abs(g.ma.M001.ban - 24) < 0.1 && g.ma.M001.lon.soLenh === 1 && Math.abs(g.ma.M001.nn.rong - 3000) < 0.1, JSON.stringify(g.ma.M001));
+ok("ma M001 (matchQtty theo don vi 10 cp): mua 7.200 tr (lon, 1 lenh), ban 240 tr, khoi ngoai ron 3 ty = 3.000 tr", Math.abs(g.ma.M001.mua - 7200) < 0.1 && Math.abs(g.ma.M001.ban - 240) < 0.1 && g.ma.M001.lon.soLenh === 1 && Math.abs(g.ma.M001.nn.rong - 3000) < 0.1, JSON.stringify(g.ma.M001));
 ok("chi tiet: chuoi theo phut + volume profile", g.ma.M001.chiTiet.phut.length === 1 && g.ma.M001.chiTiet.profile.length === 1);
 ok("thiTruong co top mua, theo nganh (mang) va chi so", Array.isArray(g.thiTruong.topMua) && g.thiTruong.topMua[0].ma === "M001" && Array.isArray(g.thiTruong.nganh) && g.thiTruong.chiSo.VNINDEX.tang === 137);
 

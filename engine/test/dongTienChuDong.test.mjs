@@ -20,9 +20,17 @@ ok("pha: ATO / LT / ATC (ke ca 14:45:05)", phaGiaoDich("09:10:00") === "ATO" && 
 
 const tick = (symbol, time, gia, q, side, boardId = "G1") => ({ symbol, boardId, matchPrice: gia, matchQtty: q, side, time });
 
+// 0) he so khoi luong mac dinh: DNSE bao matchQtty theo don vi 10 co phieu -> nhan 10 (500 -> 5.000 cp; 24 x 5.000 / 1000 = 120 trieu)
+{
+  const b = new BoGopDongTien();
+  b.nhanTick(tick("ZZZ", "2026-10-23 10:00:00.000", 24, 500, "BUY"));
+  const v = b.chupAnh({ chiTiet: true }).ma.ZZZ;
+  ok("he so KL mac dinh = 10: 500 -> 5.000 cp, 120 trieu, profile theo co phieu that", v.kl === 5000 && gan(v.mua, 120) && v.chiTiet.profile[0][1] === 5000, JSON.stringify(v));
+}
+
 // 1) mua / ban chu dong + gop lenh + co lenh
 {
-  const b = new BoGopDongTien({ vn30: new Set(["VPB"]) });
+  const b = new BoGopDongTien({ vn30: new Set(["VPB"]), heSoKl: 1 });
   // lenh mua chu dong 1: 3 lan khop cach 1ms -> gop 1 lenh ~2.160 trieu (lon: >= 500)
   b.nhanTick(tick("VPB", "2026-10-23 10:00:00.100", 24, 10000, "BUY"));
   b.nhanTick(tick("VPB", "2026-10-23 10:00:00.101", 24, 20000, "BUY"));
@@ -43,7 +51,7 @@ const tick = (symbol, time, gia, q, side, boardId = "G1") => ({ symbol, boardId,
 
 // 2) 2 lenh cung chieu cach xa > 3ms la 2 lenh; lenh khac chieu cat dut
 {
-  const b = new BoGopDongTien();
+  const b = new BoGopDongTien({ heSoKl: 1 });
   b.nhanTick(tick("AAA", "2026-10-23 10:00:00.000", 10, 30000, "BUY")); // 300 trieu (vua)
   b.nhanTick(tick("AAA", "2026-10-23 10:00:00.100", 10, 30000, "BUY")); // lenh moi
   b.nhanTick(tick("AAA", "2026-10-23 10:00:00.101", 10, 1000, "SELL")); // lenh ban nho, cat
@@ -53,7 +61,7 @@ const tick = (symbol, time, gia, q, side, boardId = "G1") => ({ symbol, boardId,
 
 // 3) ATO / ATC khong tinh vao dong tien chu dong; bang T khong phai G1 bi bo
 {
-  const b = new BoGopDongTien();
+  const b = new BoGopDongTien({ heSoKl: 1 });
   b.nhanTick(tick("BBB", "2026-10-23 09:00:10.000", 20, 1000, "BUY"));
   b.nhanTick(tick("BBB", "2026-10-23 14:45:05.817", 20, 5000, "BUY"));
   b.nhanTick(tick("BBB", "2026-10-23 14:31:00.000", 20, 700, "BUY"));
@@ -61,12 +69,12 @@ const tick = (symbol, time, gia, q, side, boardId = "G1") => ({ symbol, boardId,
   const v = b.chupAnh({ chiTiet: true }).ma.BBB;
   ok("ATO / ATC chi vao KL ato / atc va profile 'khac', khong vao mua/ban", v.mua === 0 && v.ban === 0 && v.ato === 1000 && v.atc === 5700 && v.kl === 6700, JSON.stringify(v));
   ok("profile: toan bo la khac (k)", v.chiTiet.profile.every((r) => r[1] === 0 && r[2] === 0 && r[3] > 0), JSON.stringify(v.chiTiet.profile));
-  ok("chieu la trong phien lien tuc -> dem chieu la, khong tinh mua/ban", (() => { const c = new BoGopDongTien(); c.nhanTick(tick("C", "2026-10-23 10:00:00.000", 5, 100, "??")); return c.demChieuLa === 1 && c.chupAnh().ma.C.mua === 0; })());
+  ok("chieu la trong phien lien tuc -> dem chieu la, khong tinh mua/ban", (() => { const c = new BoGopDongTien({ heSoKl: 1 }); c.nhanTick(tick("C", "2026-10-23 10:00:00.000", 5, 100, "??")); return c.demChieuLa === 1 && c.chupAnh().ma.C.mua === 0; })());
 }
 
 // 3b) ATO ghi o 09:15:01 (du lieu that VPB 23/10): cum dau tien cung gia -> ATO; khop sau 3 giay -> khop lien tuc
 {
-  const b = new BoGopDongTien();
+  const b = new BoGopDongTien({ heSoKl: 1 });
   b.nhanTick(tick("VPB", "2026-10-23 09:15:01.870", 23.85, 10, "BUY"));
   b.nhanTick(tick("VPB", "2026-10-23 09:15:01.871", 23.85, 170, "BUY"));
   b.nhanTick(tick("VPB", "2026-10-23 09:15:05.000", 23.85, 40, "SELL"));
@@ -77,14 +85,14 @@ const tick = (symbol, time, gia, q, side, boardId = "G1") => ({ symbol, boardId,
 
 // 4) chuoi theo phut + volume profile + gop muc gia
 {
-  const b = new BoGopDongTien();
+  const b = new BoGopDongTien({ heSoKl: 1 });
   b.nhanTick(tick("DDD", "2026-10-23 09:20:10.000", 10, 1000, "BUY"));
   b.nhanTick(tick("DDD", "2026-10-23 09:20:50.000", 10.05, 2000, "SELL"));
   b.nhanTick(tick("DDD", "2026-10-23 09:21:05.000", 10.05, 3000, "BUY"));
   const ct = b.chupAnh({ chiTiet: true }).ma.DDD.chiTiet;
   ok("chuoi phut: 09:20 va 09:21; 09:20 co mua 10 tr, ban 20,1 tr", ct.phut.length === 2 && ct.phut[0][0] === "09:20" && gan(ct.phut[0][1], 10) && gan(ct.phut[0][2], 20.1) && ct.phut[1][0] === "09:21");
   ok("profile 2 muc gia: 10 (mua 1000) va 10,05 (ban 2000, mua 3000)", ct.profile.length === 2 && ct.profile[0][0] === 10 && ct.profile[0][1] === 1000 && ct.profile[1][0] === 10.05 && ct.profile[1][1] === 3000 && ct.profile[1][2] === 2000, JSON.stringify(ct.profile));
-  const c = new BoGopDongTien();
+  const c = new BoGopDongTien({ heSoKl: 1 });
   for (let i = 0; i < 200; i++) c.nhanTick(tick("EEE", `2026-10-23 10:00:${String(i % 60).padStart(2, "0")}.000`, 10 + i * 0.05, 100, "BUY"));
   const p = c.chupAnh({ chiTiet: true }).ma.EEE.chiTiet.profile;
   ok("hon 60 muc gia -> gop ve <= 60, giu tong KL", p.length <= 60 && p.reduce((s, r) => s + r[1] + r[2] + r[3], 0) === 200 * 100, p.length);
@@ -92,7 +100,7 @@ const tick = (symbol, time, gia, q, side, boardId = "G1") => ({ symbol, boardId,
 
 // 5) khoi ngoai (VND -> trieu), chi so, sang ngay moi
 {
-  const b = new BoGopDongTien();
+  const b = new BoGopDongTien({ heSoKl: 1 });
   b.nhanNuocNgoai({ symbol: "VPB", boardId: "G1", totalBuyTradedAmount: 27031660000, totalSellTradedAmount: 24054767500, totalBuyVolume: 1130500, totalSellVolume: 1006995, foreignerBuyPossibleQuantity: 2380177080, transactTime: "2026-10-22 14:59:27.135" });
   const nn = b.chupAnh().ma.VPB.nn;
   ok("khoi ngoai: 27.031,7 tr mua, 24.054,8 tr ban, rong 2.976,9 tr", gan(nn.mua, 27031.7, 0.06) && gan(nn.ban, 24054.8, 0.06) && gan(nn.rong, 2976.9, 0.11) && nn.klMua === 1130500, JSON.stringify(nn));

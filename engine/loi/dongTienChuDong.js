@@ -9,6 +9,9 @@
 export const NGUONG_VUA_TRIEU = 100;
 export const NGUONG_LON_TRIEU = 500;
 export const GOP_LENH_MS = 3;
+// DNSE bao so luong cua tung lan khop (matchQtty) va totalVolumeTraded theo DON VI 10 CO PHIEU (kiem chung 23/10/2026: tong matchQtty cua 10 ma = 1/10,00-1/10,06 KL ngay cua nen OHLC; phan thieu <= 0,6% la khop > 1000 ban ghi / giay).
+// KL khoi ngoai (foreign) va chi so (market_index) thi dung so co phieu that.
+export const HE_SO_KL = 10;
 export const SO_MUC_GIA_TOI_DA = 60;
 
 // "BUY" | "SELL" | 1 | 2 | "B" | "S" | "M"(mua) | "1" | "2" -> "m" (mua chu dong) | "b" (ban chu dong) | null
@@ -46,8 +49,9 @@ const moiMa = () => ({
 });
 
 export class BoGopDongTien {
-  constructor({ vn30 = new Set() } = {}) {
+  constructor({ vn30 = new Set(), heSoKl = HE_SO_KL } = {}) {
     this.vn30 = vn30;
+    this.heSoKl = heSoKl;
     this.ngay = null;
     this.ma = new Map();
     this.chiSo = new Map();
@@ -83,7 +87,7 @@ export class BoGopDongTien {
   // tick_extra: { symbol, boardId, matchPrice, matchQtty, side, time }
   nhanTick(m) {
     if (!m?.symbol || (m.boardId && m.boardId !== "G1")) return false;
-    const gia = Number(m.matchPrice), q = Number(m.matchQtty);
+    const gia = Number(m.matchPrice), q = Number(m.matchQtty) * this.heSoKl;
     const tp = phanTichThoiGian(m.time);
     if (!tp || !(gia > 0) || !(q > 0)) return false;
     if (!this.kiemTraNgay(tp.ngay)) return false; // ban tin cu cua ngay truoc
