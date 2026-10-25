@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createChart, createSeriesMarkers, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
-import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal } from "lucide-react";
+import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2 } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { phanKyRSI } from "@/lib/phanKyRSI";
@@ -290,7 +290,7 @@ function Chip({ bat, onClick, children, mau }) {
 // Bieu do ky thuat kieu FireAnt/TradingView: nen Nhat + khoi luong + Ichimoku (9-17-33, may) + duong can bang dai han (65/129) + MA,
 // ve them vung mua / cat lo / chot loi cua he thong (neu ma dang giu lenh). Cong thuc chi bao giong het AFL.
 // Gia = gia DA DIEU CHINH co tuc/thuong CP (giong du lieu AmiBroker) de chi bao khop tin hieu; nguon qua /api/gia-lich-su.
-export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null }) {
+export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false }) {
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
@@ -301,6 +301,9 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const [giuCongCu, setGiuCongCu] = useState(false);
   const [lichSuVe, setLichSuVe] = useState({ coHoanTac: false, coLamLai: false });
   const rootRef = useRef(null);
+  // CHE DO TOAN MAN HINH (kieu TradingView): bieu do chiem het cua so, thanh cong cu gon 1 hang cuon ngang, bang thong tin o cot phai. Esc (khi khong dang chon cong cu ve) de thoat.
+  const [toanMH, setToanMH] = useState(false);
+  const [caoManHinh, setCaoManHinh] = useState(900);
   // Volume Profile: nen 1 gio (tai khi can), co hinh "frvp" hay khong, va cac tham chieu de ham tinh ho so luon doc du lieu moi nhat
   const [nenGio, setNenGio] = useState({ ma: "", nen: null });
   const [coFrvp, setCoFrvp] = useState(false);
@@ -336,8 +339,29 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const idxMH = chonMH.khoa === khoa ? chonMH.idx : 0; // doi ma / khung -> ve lai mau hinh moi nhat
   const mauHinhVe = bat.mauHinh && idxMH >= 0 && idxMH < dsMauHinh.length ? dsMauHinh[idxMH] : null;
   const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0);
-  const chieuCaoTong = chieuCao + soPhu * CHIEU_CAO_PHU;
   khoaVeRef.current = khoaLuu(ma, khungTG);
+  const caoGoc = layDayManHinh ? Math.max(chieuCao, caoManHinh - 330) : chieuCao; // trang Bieu do: bieu do cao toi sat day man hinh thay vi co dinh
+  const chieuCaoTong = caoGoc + soPhu * CHIEU_CAO_PHU;
+
+  useEffect(() => {
+    const doi = () => setCaoManHinh(window.innerHeight);
+    doi();
+    window.addEventListener("resize", doi);
+    return () => window.removeEventListener("resize", doi);
+  }, []);
+  useEffect(() => {
+    if (!toanMH) return;
+    const truoc = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const phim = (e) => {
+      if (e.key === "Escape" && congCu === null) setToanMH(false);
+    };
+    window.addEventListener("keydown", phim);
+    return () => {
+      document.body.style.overflow = truoc;
+      window.removeEventListener("keydown", phim);
+    };
+  }, [toanMH, congCu]);
 
   // 1. Tao bieu do 1 lan.
   useEffect(() => {
@@ -810,8 +834,8 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const mauDoi = doiPct == null ? MUTED : doiPct >= 0 ? XANH : DO;
 
   return (
-    <div ref={rootRef} className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-3 py-2.5 border-b" style={{ borderColor: VIEN }}>
+    <div ref={rootRef} className={toanMH ? "fixed inset-0 z-[300] flex flex-col overflow-hidden" : "rounded-2xl border overflow-hidden"} style={{ borderColor: VIEN, background: NEN_CARD }}>
+      <div className={`flex items-center gap-x-4 gap-y-2 px-3 py-2.5 border-b ${toanMH ? "shrink-0 overflow-x-auto flex-nowrap [&>*]:shrink-0" : "flex-wrap"}`} style={{ borderColor: VIEN }}>
         <div className="flex items-center gap-1.5">
           {KHUNG_CHON.map((k) => (
             <Chip key={k.khoa} bat={khungTG === k.khoa} onClick={() => setKhungTG(k.khoa)}>
@@ -848,6 +872,17 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           </Chip>
         </div>
         <div className="flex items-center gap-1 ml-auto">
+          <button
+            type="button"
+            onClick={() => setToanMH((v) => !v)}
+            aria-pressed={toanMH}
+            title={toanMH ? "Thu nhỏ (Esc)" : "Xem biểu đồ toàn màn hình"}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs cursor-pointer"
+            style={{ border: `1px solid ${toanMH ? PRIMARY : VIEN}`, background: toanMH ? "rgba(108,92,231,0.18)" : "transparent", color: toanMH ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
+          >
+            {toanMH ? <Minimize2 size={13} strokeWidth={2} /> : <Maximize2 size={13} strokeWidth={2} />}
+            {toanMH ? "Thu nhỏ" : "Toàn màn hình"}
+          </button>
           {(noiNgay ? khoangNoiNgay(khungTG) : KHOANG).map((k) => (
             <button
               key={k.nhan}
@@ -947,7 +982,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       )}
 
       {/* THANH CONG CU KE VE: chon cong cu roi bam / bam hai lan len bieu do; bam vao hinh de chon, keo diem dau mut de sua, Delete de xoa; Esc huy. */}
-      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1.5 px-3 py-2 border-b" style={{ borderColor: VIEN }} data-may="cong-cu-ve">
+      <div className={`flex items-center gap-x-1.5 gap-y-1.5 px-3 py-2 border-b ${toanMH ? "shrink-0 overflow-x-auto flex-nowrap [&>*]:shrink-0" : "flex-wrap"}`} style={{ borderColor: VIEN }} data-may="cong-cu-ve">
         <span className="text-[11px] mr-1 hidden sm:inline" style={{ color: MUTED, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
           Công cụ vẽ
         </span>
@@ -1079,14 +1114,15 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           </span>
         )}
       </div>
-      {thongTin && (
+      {thongTin && !toanMH && (
         <div className="min-[1340px]:hidden px-3 py-2 border-b" style={{ borderColor: VIEN }}>
           <BangThongTinBieuDo tt={thongTin} />
         </div>
       )}
-      <div className="relative" style={{ height: chieuCaoTong }}>
+      <div className={toanMH ? "flex flex-1 min-h-0" : ""}>
+      <div className={toanMH ? "relative flex-1 min-w-0" : "relative"} style={toanMH ? undefined : { height: chieuCaoTong }}>
         <div ref={khungRef} className="absolute inset-0" />
-        {thongTin && (
+        {thongTin && !toanMH && (
           <div className="hidden min-[1340px]:block absolute right-[76px] top-2 z-10 pointer-events-none">
             <BangThongTinBieuDo tt={thongTin} />
           </div>
@@ -1135,11 +1171,47 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           </div>
         )}
       </div>
+      {toanMH && (
+        <aside className="hidden md:flex w-[300px] shrink-0 flex-col gap-3 overflow-y-auto border-l p-3" style={{ borderColor: VIEN }} aria-label="Thông tin mã">
+          {hienTai && (
+            <div>
+              <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 800 }}>{ma}</p>
+              <p className="text-3xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 800, color: mauDoi }}>{fmt(hienTai.c)}</p>
+              {doiPct != null && <p className="text-sm font-bold" style={{ color: mauDoi }}>{pctVN(doiPct, 2)}</p>}
+              <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs" style={{ fontFamily: "var(--font-chu)" }}>
+                {[["Mở", hienTai.o], ["Cao", hienTai.h], ["Thấp", hienTai.l], ["Tham chiếu", truoc]].map(([k, v]) => (
+                  <div key={k} className="flex justify-between"><dt style={{ color: MUTED }}>{k}</dt><dd style={{ color: TEXT, fontWeight: 600 }}>{v != null ? fmt(v) : "—"}</dd></div>
+                ))}
+                <div className="flex justify-between col-span-2"><dt style={{ color: MUTED }}>KL</dt><dd style={{ color: TEXT, fontWeight: 600 }}>{chuoiKL(hienTai.v)}</dd></div>
+                <div className="flex justify-between col-span-2"><dt style={{ color: MUTED }}>Nến</dt><dd style={{ color: TEXT, fontWeight: 600 }}>{nhanThoiGian(hienTai.t)}</dd></div>
+              </dl>
+            </div>
+          )}
+          {thongTin && (
+            <div>
+              <p className="text-[11px] mb-1.5 uppercase tracking-wide" style={{ color: MUTED }}>Tín hiệu hệ thống</p>
+              <BangThongTinBieuDo tt={thongTin} />
+            </div>
+          )}
+          {conVung && (
+            <div className="text-xs" style={{ fontFamily: "var(--font-chu)" }}>
+              <p className="text-[11px] mb-1.5 uppercase tracking-wide" style={{ color: MUTED }}>Vùng lệnh</p>
+              {daiTuVung(vung).map((d) => (
+                <div key={d.nhan} className="flex justify-between py-0.5"><span style={{ color: `rgb(${d.mau})` }}>{d.nhan}</span><b>{d.tu === d.den ? fmt(d.tu) : `${fmt(d.tu)} – ${fmt(d.den)}`}</b></div>
+              ))}
+            </div>
+          )}
+          <p className="text-[10px] leading-relaxed" style={{ color: MUTED }}>Esc: thu nhỏ. Chỉ để tham khảo, không phải khuyến nghị mua bán.</p>
+        </aside>
+      )}
+      </div>
 
+      {!toanMH && (
       <p className="px-3 py-2 text-[11px] border-t" style={{ borderColor: VIEN, color: MUTED }}>
         Giá đã điều chỉnh cổ tức/thưởng cổ phiếu (giống dữ liệu AmiBroker), khối lượng khớp lệnh; chỉ báo tính giống hệ thống tín hiệu (Ichimoku 9-17-33, mây dịch 26
         phiên, đường cân bằng dài hạn 65/129); EMA, Bollinger, RSI, MACD, Stochastic là chỉ báo tham khảo thông dụng. RSI phân kỳ (PK↑ đáy sau thấp hơn nhưng RSI cao hơn; PK↓ đỉnh sau cao hơn nhưng RSI thấp hơn) chỉ xác nhận sau 3 nến và chỉ là điều kiện tham khảo, không phải tín hiệu mua bán: thống kê 390 mã cho thấy không có lợi thế riêng lẻ. Volume Profile là ước lượng: khối lượng mỗi nến chia đều theo khoảng giá của nến đó (dùng nến 1 giờ khi có, từ khoảng 10/2023; trước đó dùng nến của biểu đồ), không phải dữ liệu khớp lệnh theo từng mức giá. Hỗ trợ / Kháng cự (KL) là các vùng giá có khối lượng giao dịch lớn trong khoảng 6 tháng gần nhất (nét đậm = vùng lớn), chỉ để tham khảo: kiểm tra lịch sử cho thấy giá giữ được ở các mức này khoảng một nửa số lần. Hình vẽ lưu trên trình duyệt này theo từng mã và khung thời gian. Trong phiên, nến hôm nay cập nhật theo giá khớp thực tế, web tự làm mới mỗi 30 giây, không dùng để đặt lệnh khớp từng giây.
       </p>
+      )}
     </div>
   );
 }

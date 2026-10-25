@@ -108,7 +108,7 @@ export default async function TrangBieuDo({ searchParams }) {
         </div>
       )}
 
-      <BieuDoKyThuat ma={ma} vung={vung} ngayMua={vung ? row.ngay_mua : null} chieuCao={620} thongTin={thongTin} />
+      <BieuDoKyThuat ma={ma} vung={vung} ngayMua={vung ? row.ngay_mua : null} chieuCao={620} layDayManHinh thongTin={thongTin} />
     </div>
   );
 }
