@@ -4,6 +4,7 @@
 import { fmt, pct, fmtTy, chuoiVung, chamTPCaoNhat, nhanLyDoBan, tinhVungLenh } from "@/components/dungChung";
 import { gomTheoLenh, thongKeLenhDaDong } from "@/lib/thongKeLenh";
 import { gioChupVN } from "@/lib/xuatAnh";
+import { NGANH_NHAN } from "@/lib/nganh";
 
 export const RONG_THE = 720;
 const C = { nen: "#0E0F1C", card: "#181A2E", the2: "#1E2140", vien: "#2A2D48", chu: "#F4F5FB", mo: "#A3A6C4", xanh: "#4ADE80", do: "#F87171", vang: "#FBBF24", tim: "#8B7CF6", timNhat: "#C9BEFF", cyan: "#5EEAD4" };
@@ -135,7 +136,7 @@ export default function TheChiaSeMa({ row, cacLenh = [], lichSuDaDong = [], ketL
           <div style={{ minWidth: 0, flex: 1 }}>
             <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1, letterSpacing: -1 }}>{row.ma}</div>
             <div style={{ fontSize: 17, color: C.chu, marginTop: 10, lineHeight: 1.3 }}>{row.ten_cong_ty ?? ""}</div>
-            <div style={{ fontSize: 14, color: C.mo, marginTop: 4 }}>{[row.san ? `Sàn ${row.san}` : null, row.nganh, row.von_hoa].filter(Boolean).join(" · ")}</div>
+            <div style={{ fontSize: 14, color: C.mo, marginTop: 4 }}>{[row.san ? `Sàn ${row.san}` : null, NGANH_NHAN[row.nganh] || row.nganh, row.von_hoa].filter(Boolean).join(" · ")}</div>
           </div>
           <div style={{ textAlign: "right", flexShrink: 0 }}>
             <div style={{ fontSize: 46, fontWeight: 800, lineHeight: 1 }}>{fmt(row.gia)}</div>
