@@ -236,8 +236,8 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
             {m.a.thoaThuanTy > 0 && <> · trong đó thoả thuận {so(m.a.thoaThuanTy)} tỷ</>}
           </p>
 
-          <div className="grid gap-4 lg:grid-cols-[1fr_210px]">
-            <div>
+          <div className="grid gap-4 grid-cols-[minmax(0,1fr)] lg:grid-cols-[minmax(0,1fr)_210px]">
+            <div className="min-w-0">
               <div ref={hopRef} className="w-full relative" style={{ height: CHIEU_CAO }}>
                 <svg width={rongVe + LE_TRAI + 12} height={CHIEU_CAO} style={{ display: "block" }} role="img" aria-label="Thanh khoản tích luỹ trong phiên: hôm nay so với hôm qua và TB20">
                   <g transform={`translate(${LE_TRAI},${LE_TREN})`}>
