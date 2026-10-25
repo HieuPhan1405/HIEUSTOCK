@@ -259,7 +259,7 @@ export default async function TrangTongQuan() {
         />
         <div className="relative max-w-6xl mx-auto px-6 pt-14 pb-10">
           <h1
-            className="text-4xl sm:text-5xl leading-[1.05] mb-4"
+            className="text-[28px] sm:text-4xl leading-[1.15] mb-4"
             style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}
           >
             Tổng quan thị trường,<br />

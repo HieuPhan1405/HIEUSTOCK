@@ -519,7 +519,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
 
         <Card>
           <p className="text-xs  mb-2" style={{ color: "#4A8AD6" }}>
-            ★ Kết luận {row.ma}
+            Kết luận {row.ma}
           </p>
           <p className="text-base font-semibold leading-snug mb-2" style={{ color: mauDiem }}>
             Có điểm hợp lưu {soAn(row.diem)}
@@ -717,7 +717,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                     {nhan}
                     {daCham && (
                       <span className="px-1.5 py-0.5 text-[11px] font-bold rounded" style={{ background: nhe("var(--xanh)", 13), color: "var(--xanh)" }}>
-                        ✓ Đã chạm
+                        Đã chạm
                       </span>
                     )}
                   </span>
