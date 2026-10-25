@@ -72,7 +72,7 @@ function mauKhuyenNghi(khuyenNghi) {
 function CardDinhGia({ dinhGia }) {
   return (
     <Card>
-      <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
+      <p className="text-xs  mb-3" style={{ color: "var(--mo)" }} data-may="khuyen-nghi-ck">
         Khuyến nghị công ty chứng khoán
       </p>
       <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
@@ -114,7 +114,7 @@ function CardCauChuyen({ cauChuyen }) {
   const nhan = { dong_luc: { chu: "Động lực", mau: "var(--xanh)" }, theo_doi: { chu: "Theo dõi", mau: "var(--vang)" }, rui_ro: { chu: "Rủi ro", mau: "var(--do)" } };
   return (
     <Card>
-      <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
+      <p className="text-xs  mb-3" style={{ color: "var(--mo)" }} data-may="cau-chuyen">
         Câu chuyện kỳ vọng
       </p>
       {["dong_luc", "theo_doi", "rui_ro"].map(
@@ -166,6 +166,7 @@ function BannerMatThan() {
 function TagInfo({ nhan, giaTri, mau }) {
   return (
     <span
+      data-may={`tag-${nhan}`}
       className="px-2.5 py-1 text-xs rounded-full border"
       style={{ borderColor: mau || VIEN, color: mau || "var(--mo-2)", fontFamily: "var(--font-chu)" }}
     >
@@ -175,12 +176,15 @@ function TagInfo({ nhan, giaTri, mau }) {
 }
 
 // Thanh diem 2 chieu (am/duong quanh 0) - dung cho Trend/Momentum/Dong tien/RS
+const MAY_THANH = { "Xu hướng (Trend)": "bd-trend", "Động lượng (Momentum)": "bd-mom", "Dòng tiền": "bd-dt", "ADX (sức mạnh xu hướng)": "bd-adx", "Breadth ngành (%)": "bd-breadth" };
+const mayThanh = (nhan) => MAY_THANH[nhan] ?? (nhan.startsWith("RS so với VNI") ? "rs" : undefined);
+
 function ThanhDiem({ nhan, giaTri, mucMax }) {
   const gt = giaTri === null || giaTri === undefined ? null : Number(giaTri);
   const duong = gt !== null && gt >= 0;
   const rongNua = gt === null ? 0 : Math.min(50, (Math.abs(gt) / mucMax) * 50);
   return (
-    <div className="mb-3">
+    <div className="mb-3" data-may={mayThanh(nhan)}>
       <div className="flex justify-between text-xs mb-1" style={{ color: "var(--mo-2)" }}>
         <span>{nhan}</span>
         <span
@@ -214,7 +218,7 @@ function ThanhMotChieu({ nhan, giaTri, mucMax, hauTo = "" }) {
   const gt = giaTri === null || giaTri === undefined ? null : Number(giaTri);
   const rong = gt === null ? 0 : Math.min(100, Math.max(0, (gt / mucMax) * 100));
   return (
-    <div className="mb-3">
+    <div className="mb-3" data-may={mayThanh(nhan)}>
       <div className="flex justify-between text-xs mb-1" style={{ color: "var(--mo-2)" }}>
         <span>{nhan}</span>
         <span style={{ fontFamily: "var(--font-chu)" }}>
@@ -518,7 +522,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         </Card>
 
         <Card>
-          <p className="text-xs  mb-2" style={{ color: "#6C5CE7" }}>
+          <p className="text-xs  mb-2" style={{ color: "#6C5CE7" }} data-may="ket-luan">
             Kết luận {row.ma}
           </p>
           <p className="text-base font-semibold leading-snug mb-2" style={{ color: mauDiem }}>
@@ -531,6 +535,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           {nhanGiaiNgan(row) && (
             <p
               className="text-xs leading-relaxed mb-4 rounded-lg p-3"
+              data-may="giai-ngan"
               style={{ color: nhanGiaiNgan(row).mau, background: "var(--phu)", border: `1px solid ${nhe(nhanGiaiNgan(row).mau, 33)}` }}
             >
               <b>{nhanGiaiNgan(row).nhan}:</b> {nhanGiaiNgan(row).moTa}
@@ -553,7 +558,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           </div>
           {/* Diem phu: khong dung de ra lenh, backtest khong thay phan biet ro lenh tot / xau -> thu gon, bam moi mo. */}
           <details className="group mt-3">
-            <summary className="cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden text-[11px] underline decoration-dotted underline-offset-2" style={{ color: "var(--mo-2)" }}>
+            <summary data-may="xem-diem-phu" className="cursor-pointer select-none list-none [&::-webkit-details-marker]:hidden text-[11px] underline decoration-dotted underline-offset-2" style={{ color: "var(--mo-2)" }}>
               <span className="group-open:hidden">Xem điểm phụ (tham khảo)</span>
               <span className="hidden group-open:inline">Thu gọn điểm phụ</span>
             </summary>
@@ -583,7 +588,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         </Card>
 
         <Card>
-          <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
+          <p className="text-xs  mb-3" style={{ color: "var(--mo)" }} data-may="vi-sao-diem">
             Vì sao {row.ma} {row.diem >= 0 ? "được" : "bị trừ"} {soAn(row.diem)} điểm?
           </p>
           <ThanhDiem nhan="Xu hướng (Trend)" giaTri={row.trend} mucMax={TREND_MAX} />
@@ -609,7 +614,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
       {/* VUNG GIA + STOP-LOSS - 3 MOC CHOT LOI */}
       <div className="grid sm:grid-cols-2 gap-4 mb-4">
         <Card>
-          <p className="text-xs  mb-3" style={{ color: "var(--mo)" }}>
+          <p className="text-xs  mb-3" style={{ color: "var(--mo)" }} data-may="vung-gia-qt">
             Vùng giá quan trọng
           </p>
           <div className="grid grid-cols-3 gap-2 text-center mb-3">

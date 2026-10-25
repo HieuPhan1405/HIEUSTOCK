@@ -141,7 +141,7 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
             <thead>
               <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, ...sans }}>
                 {COT.map((c) => (
-                  <th key={c.khoa} className={`py-3 px-3 font-normal cursor-pointer select-none whitespace-nowrap ${c.canPhai ? "text-right" : "text-left"}`} onClick={() => doiSapXep(c.khoa)}>
+                  <th key={c.khoa} data-may={`diemb-${c.khoa}`} className={`py-3 px-3 font-normal cursor-pointer select-none whitespace-nowrap ${c.canPhai ? "text-right" : "text-left"}`} onClick={() => doiSapXep(c.khoa)}>
                     <span className="inline-flex items-center gap-1">
                       {c.nhan}
                       {sapXep.khoa === c.khoa ? sapXep.chieu === "desc" ? <ArrowDown size={12} color={PRIMARY} /> : <ArrowUp size={12} color={PRIMARY} /> : <ArrowUpDown size={12} opacity={0.4} />}

@@ -266,10 +266,11 @@ function timNenTruoc(nen, ngay) {
 const chuoiThoiGian = (t) => (typeof t === "object" && t ? `${t.year}-${String(t.month).padStart(2, "0")}-${String(t.day).padStart(2, "0")}` : typeof t === "number" ? t : String(t));
 const chuoiKL = (v) => (v >= 1e6 ? `${soVN(v / 1e6, 2, true)} tr` : v >= 1e3 ? `${soVN(v / 1e3, 0)} nghìn` : soVN(v ?? 0, 0));
 
-function Chip({ bat, onClick, children, mau }) {
+function Chip({ bat, onClick, children, mau, may }) {
   return (
     <button
       type="button"
+      data-may={may}
       onClick={onClick}
       aria-pressed={bat}
       className="px-2.5 py-1 rounded-md text-xs cursor-pointer transition-colors flex items-center gap-1.5"
@@ -845,29 +846,29 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
           {CONG_TAT.filter((c) => !(noiNgay && (c.khoa === "vp" || c.khoa === "htkc"))).map((c) => (
-            <Chip key={c.khoa} bat={bat[c.khoa]} mau={c.mau} onClick={() => setBat((b) => ({ ...b, [c.khoa]: !b[c.khoa] }))}>
+            <Chip key={c.khoa} may={`chip-${c.khoa}`} bat={bat[c.khoa]} mau={c.mau} onClick={() => setBat((b) => ({ ...b, [c.khoa]: !b[c.khoa] }))}>
               {c.nhan}
             </Chip>
           ))}
           {conVung && (
-            <Chip bat={bat.vung} mau={XANH} onClick={() => setBat((b) => ({ ...b, vung: !b.vung }))}>
+            <Chip may="chip-vung" bat={bat.vung} mau={XANH} onClick={() => setBat((b) => ({ ...b, vung: !b.vung }))}>
               Vùng lệnh
             </Chip>
           )}
           <span className="w-px h-4 mx-1" style={{ background: VIEN }} aria-hidden="true" />
           {CHI_BAO_PHU.map((c) => (
-            <Chip key={c.khoa} bat={bat[c.khoa]} mau={c.mau} onClick={() => setBat((b) => ({ ...b, [c.khoa]: !b[c.khoa] }))}>
+            <Chip key={c.khoa} may={`chip-${c.khoa}`} bat={bat[c.khoa]} mau={c.mau} onClick={() => setBat((b) => ({ ...b, [c.khoa]: !b[c.khoa] }))}>
               {c.nhan}
             </Chip>
           ))}
           <span className="w-px h-4 mx-1" style={{ background: VIEN }} aria-hidden="true" />
-          <Chip bat={bat.mauHinh} mau="#F6C544" onClick={() => setBat((b) => ({ ...b, mauHinh: !b.mauHinh }))}>
+          <Chip may="mau-hinh" bat={bat.mauHinh} mau="#F6C544" onClick={() => setBat((b) => ({ ...b, mauHinh: !b.mauHinh }))}>
             Mẫu hình
           </Chip>
-          <Chip bat={bat.nenNhat} mau="#38BDF8" onClick={() => setBat((b) => ({ ...b, nenNhat: !b.nenNhat }))}>
+          <Chip may="mau-hinh-nen" bat={bat.nenNhat} mau="#38BDF8" onClick={() => setBat((b) => ({ ...b, nenNhat: !b.nenNhat }))}>
             Mẫu hình nến
           </Chip>
-          <Chip bat={bat.phanKy} mau={CHI_BAO_PK.mau} onClick={() => setBat((b) => ({ ...b, phanKy: !b.phanKy, rsi: !b.phanKy ? true : b.rsi }))}>
+          <Chip may="chip-phanKy" bat={bat.phanKy} mau={CHI_BAO_PK.mau} onClick={() => setBat((b) => ({ ...b, phanKy: !b.phanKy, rsi: !b.phanKy ? true : b.rsi }))}>
             {CHI_BAO_PK.nhan}
           </Chip>
         </div>
