@@ -29,7 +29,7 @@ export function taoMarketData({ apiKey, apiSecret, baseUrl = URL_GOC_REST } = {}
     } catch {
       /* khong phai JSON */
     }
-    return { status: res.status, json, text };
+    return { status: res.status, json, text, headers: Object.fromEntries(res.headers.entries()) };
   }
   return {
     get,

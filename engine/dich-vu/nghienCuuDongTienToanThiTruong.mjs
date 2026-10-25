@@ -78,12 +78,13 @@ function nguPhanVi(tenNhom, loc, ngayDung) {
       chuoi.r1.push(tb(q(4).map((x) => x.r1)) - tb(q(0).map((x) => x.r1)));
       if (idx % 5 === 0) chuoi.r5.push(tb(q(4).map((x) => x.r5)) - tb(q(0).map((x) => x.r5)));
     });
-    if (chuoi.r1.length < 20) { console.log(`   ${ten.padEnd(46)} | (it ngay: ${chuoi.r1.length})`); continue; }
+    if (chuoi.r1.length < 5) { console.log(`   ${ten.padEnd(46)} | (it ngay: ${chuoi.r1.length})`); continue; }
     const t = (a) => tb(a) / (sd(a) / Math.sqrt(a.length));
     console.log(`   ${ten.padEnd(46)} | ${nhomTB.map((a) => bps(tb(a))).join(" ")}      | ${bps(tb(chuoi.r1))} (${f(t(chuoi.r1), 1).padStart(5)}) | ${bps(tb(chuoi.r5))} (${f(t(chuoi.r5), 1).padStart(5)})  [${chuoi.r1.length} ngay]`);
   }
 }
 const giua = ngay[Math.floor(ngay.length / 2)];
+if (ngay.length < 40) console.log(`CANH BAO: chi co ${ngay.length} ngay du lieu - ket qua chi mang tinh tham khao (so ngay it nen t khong dang tin).`);
 nguPhanVi("TOAN BO mau (GTGD TB20 >= 5 ty)", () => true, () => true);
 nguPhanVi("MA THANH KHOAN CAO (GTGD TB20 >= 30 ty)", (x) => x.g >= 30, () => true);
 nguPhanVi("NUA DAU cua mau", () => true, (d) => d < giua);
