@@ -31,7 +31,7 @@ export default function TraCuuMa() {
       <button
         type="submit"
         className="px-4 py-2 text-sm font-medium flex items-center gap-2 shrink-0"
-        style={{ background: "#4A8AD6", color: "#FFFFFF", fontWeight: 600 }}
+        style={{ background: "#2F6FBF", color: "#FFFFFF", fontWeight: 600 }}
       >
         <Search size={15} /> Tra cứu
       </button>

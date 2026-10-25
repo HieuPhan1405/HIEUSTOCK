@@ -95,7 +95,7 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
             aria-selected={tab === k}
             onClick={() => chonTab(k)}
             className="px-4 py-2 rounded-lg text-sm whitespace-nowrap flex items-center gap-2"
-            style={tab === k ? { background: PRIMARY, color: "#fff", fontWeight: 700 } : { color: MUTED }}
+            style={tab === k ? { background: "#2F6FBF", color: "#fff", fontWeight: 700 } : { color: MUTED }}
           >
             {nhan}
             {dem != null && (

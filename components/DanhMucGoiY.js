@@ -170,7 +170,7 @@ function NoiDung({ tatCa = [], muaPhucHoi = [] }) {
           ))}
         </div>
         <div className="flex gap-2 mt-3">
-          <button type="button" onClick={() => setHang((x) => (x.length < 40 ? [...x, { ma: "", giaVon: "" }] : x))} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: PRIMARY, color: "#fff", ...sans, fontWeight: 600 }}>
+          <button type="button" onClick={() => setHang((x) => (x.length < 40 ? [...x, { ma: "", giaVon: "" }] : x))} className="text-xs px-3 py-1.5 rounded-lg" style={{ background: "#2F6FBF", color: "#fff", ...sans, fontWeight: 600 }}>
             + Thêm mã
           </button>
           <button type="button" onClick={() => { setHang([{ ma: "", giaVon: "" }]); setNganhChon([]); }} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: MUTED, ...sans }}>

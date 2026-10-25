@@ -292,7 +292,7 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
             type="submit"
             disabled={dangXuLy}
             className="px-3 py-3 text-sm font-semibold rounded-lg mt-1 transition-opacity"
-            style={{ background: PRIMARY, color: "#FFFFFF", opacity: dangXuLy ? 0.6 : 1, cursor: dangXuLy ? "wait" : "pointer" }}
+            style={{ background: "#2F6FBF", color: "#FFFFFF", opacity: dangXuLy ? 0.6 : 1, cursor: dangXuLy ? "wait" : "pointer" }}
           >
             {dangXuLy ? "Đang xử lý..." : laDangKy ? "Tạo tài khoản" : "Đăng nhập"}
           </button>

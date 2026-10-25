@@ -145,7 +145,7 @@ export default async function TrangDanhMuc() {
             Vào Bộ lọc hoặc Sổ lệnh, bấm nút tham gia cạnh mã bạn đã vào lệnh (hoặc muốn theo dõi sát). Lệnh của mã đó sẽ tự hiện ở đây.
           </p>
           <div className="flex flex-wrap justify-center gap-3 text-sm">
-            <Link href="/lenh-mo" className="px-4 py-2 rounded-lg" style={{ background: PRIMARY, color: "#FFFFFF" }}>
+            <Link href="/lenh-mo" className="px-4 py-2 rounded-lg" style={{ background: "#2F6FBF", color: "#FFFFFF" }}>
               Mở Sổ lệnh đang mở
             </Link>
             <Link href="/bo-loc" className="px-4 py-2 rounded-lg border" style={{ borderColor: VIEN, color: TEXT }}>

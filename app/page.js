@@ -270,7 +270,7 @@ export default async function TrangTongQuan() {
             bằng backtest 11 năm với giá vào lệnh thực tế. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc thị trường nhanh hơn.
           </p>
           <div className="flex flex-wrap gap-3 mt-6 text-sm" style={{ fontFamily: "var(--font-chu)" }}>
-            <Link href="/bo-loc" className="px-4 py-2.5 rounded-lg font-semibold" style={{ background: PRIMARY, color: "#FFFFFF" }}>
+            <Link href="/bo-loc" className="px-4 py-2.5 rounded-lg font-semibold" style={{ background: "#2F6FBF", color: "#FFFFFF" }}>
               Mở Bộ lọc cổ phiếu
             </Link>
             <Link href="/bieu-do" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>

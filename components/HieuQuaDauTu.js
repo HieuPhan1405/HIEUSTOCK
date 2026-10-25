@@ -180,7 +180,7 @@ export default function HieuQuaDauTu() {
               setHover(null);
             }}
             className="py-2 rounded-lg text-sm"
-            style={tab === t ? { background: PRIMARY, color: "#fff", fontWeight: 700 } : { color: MUTED }}
+            style={tab === t ? { background: "#2F6FBF", color: "#fff", fontWeight: 700 } : { color: MUTED }}
           >
             {t}
           </button>

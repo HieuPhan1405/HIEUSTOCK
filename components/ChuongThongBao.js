@@ -225,7 +225,7 @@ export default function ChuongThongBao() {
             {!nd ? (
               <div className="flex items-center justify-between gap-3">
                 <span>Đăng ký hoặc đăng nhập để nhận thông báo về máy — cả khi đã đóng web.</span>
-                <button type="button" onClick={() => setMoDangNhap(true)} className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: PRIMARY, color: "#FFFFFF" }}>
+                <button type="button" onClick={() => setMoDangNhap(true)} className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "#2F6FBF", color: "#FFFFFF" }}>
                   Đăng ký
                 </button>
               </div>
@@ -258,7 +258,7 @@ export default function ChuongThongBao() {
             ) : (
               <div className="flex items-center justify-between gap-3">
                 <span>Nhận thông báo về máy ngay khi có tín hiệu — cả khi đã đóng web.</span>
-                <button type="button" disabled={dangLam} onClick={bat} className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: PRIMARY, color: "#FFFFFF" }}>
+                <button type="button" disabled={dangLam} onClick={bat} className="shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold" style={{ background: "#2F6FBF", color: "#FFFFFF" }}>
                   {dangLam ? "Đang bật…" : "Bật thông báo"}
                 </button>
               </div>

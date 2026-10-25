@@ -67,7 +67,7 @@ export default function BoLocChiBaoKyThuat({ dsLoc, datDsLoc, duLieu, luc }) {
             type="button"
             onClick={() => them("rsi")}
             className="flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg"
-            style={{ background: PRIMARY, color: "#fff", fontFamily: "var(--font-chu)" }}
+            style={{ background: "#2F6FBF", color: "#fff", fontFamily: "var(--font-chu)" }}
           >
             <Plus size={13} aria-hidden="true" />
             Thêm bộ lọc

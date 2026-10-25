@@ -75,7 +75,7 @@ export default async function TrangBieuDo({ searchParams }) {
         <button
           type="submit"
           className="px-4 py-2 text-sm flex items-center gap-2 shrink-0 rounded-lg cursor-pointer"
-          style={{ background: PRIMARY, color: "#FFFFFF", fontWeight: 600 }}
+          style={{ background: "#2F6FBF", color: "#FFFFFF", fontWeight: 600 }}
         >
           <Search size={15} aria-hidden="true" /> Xem
         </button>

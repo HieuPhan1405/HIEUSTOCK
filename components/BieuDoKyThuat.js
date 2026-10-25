@@ -1162,7 +1162,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
                   type="button"
                   onClick={() => setLanThu((x) => x + 1)}
                   className="px-3 py-1.5 rounded-md text-xs cursor-pointer"
-                  style={{ background: PRIMARY, color: "#FFFFFF" }}
+                  style={{ background: "#2F6FBF", color: "#FFFFFF" }}
                 >
                   Thử lại
                 </button>

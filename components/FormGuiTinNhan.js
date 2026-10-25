@@ -102,7 +102,7 @@ export default function FormGuiTinNhan() {
         type="submit"
         disabled={dangGui}
         className="px-4 py-2.5 text-sm rounded-lg"
-        style={{ background: PRIMARY, color: "#FFFFFF", fontWeight: 600, opacity: dangGui ? 0.6 : 1 }}
+        style={{ background: "#2F6FBF", color: "#FFFFFF", fontWeight: 600, opacity: dangGui ? 0.6 : 1 }}
       >
         {dangGui ? "Đang gửi..." : "Gửi liên hệ"}
       </button>

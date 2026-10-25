@@ -118,7 +118,7 @@ export default function TrangGioiThieu() {
             <Link
               href="/"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold"
-              style={{ background: PRIMARY, color: "#FFFFFF" }}
+              style={{ background: "#2F6FBF", color: "#FFFFFF" }}
             >
               Vào Dashboard <ArrowRight size={16} aria-hidden="true" />
             </Link>

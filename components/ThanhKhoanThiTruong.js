@@ -68,6 +68,8 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
   const hopRef = useRef(null);
   const [rong, setRong] = useState(720);
   const coDuLieuRef = useRef(false);
+  // khung ve chi xuat hien sau khi co du lieu: phai gan lai bo quan sat kich thuoc luc do (neu khong, ve mai o 720px va tran khung o man hinh hep)
+  const coDu = du !== null;
 
   useEffect(() => {
     if (tab !== "tk" || !hopRef.current) return;
@@ -77,7 +79,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
     });
     quanSat.observe(hopRef.current);
     return () => quanSat.disconnect();
-  }, [tab]);
+  }, [tab, coDu]);
 
   useEffect(() => {
     let huy = false;
@@ -189,7 +191,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
             aria-selected={tab === k}
             onClick={() => setTab(k)}
             className="px-3 py-1.5 rounded-lg"
-            style={tab === k ? { background: PRIMARY, color: "#fff", fontWeight: 700 } : { color: MUTED }}
+            style={tab === k ? { background: "#2F6FBF", color: "#fff", fontWeight: 700 } : { color: MUTED }}
           >
             {nhan}
           </button>

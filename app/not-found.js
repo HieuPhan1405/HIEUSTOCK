@@ -15,7 +15,7 @@ export default function NotFound() {
         Đường dẫn có thể đã đổi hoặc không tồn tại.
       </p>
       <div className="flex flex-wrap justify-center gap-3 text-sm">
-        <Link href="/" className="px-4 py-2 rounded-lg" style={{ background: "#4A8AD6", color: "#FFFFFF" }}>
+        <Link href="/" className="px-4 py-2 rounded-lg" style={{ background: "#2F6FBF", color: "#FFFFFF" }}>
           Về tổng quan
         </Link>
         <Link href="/bo-loc" className="px-4 py-2 rounded-lg border" style={{ borderColor: "var(--vien)", color: "var(--chu)" }}>

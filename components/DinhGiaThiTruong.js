@@ -172,7 +172,7 @@ export default function DinhGiaThiTruong() {
             ["pe", "PE"],
             ["pb", "PB"],
           ].map(([k, n]) => (
-            <button key={k} onClick={() => setChiSo(k)} className="px-2.5 py-1 rounded-lg" style={chiSo === k ? { background: PRIMARY, color: "#fff", fontWeight: 700 } : { color: MUTED, border: `1px solid ${VIEN}` }}>
+            <button key={k} onClick={() => setChiSo(k)} className="px-2.5 py-1 rounded-lg" style={chiSo === k ? { background: "#2F6FBF", color: "#fff", fontWeight: 700 } : { color: MUTED, border: `1px solid ${VIEN}` }}>
               {n}
             </button>
           ))}

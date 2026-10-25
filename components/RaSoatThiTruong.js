@@ -35,7 +35,7 @@ function The({ tieuDe, phu, children }) {
   );
 }
 
-// Dong ho do tam ly 0-100: cung tron chia 5 doan do -> xanh, kim chi theo gia tri.
+// Dong ho do tam ly 0-100: nen cung xam, phan da lap mang mau theo nhan tam ly, kim chi theo gia tri.
 function DongHoTamLy({ diem }) {
   const goc = diem == null ? -90 : -90 + (Math.max(0, Math.min(100, diem)) / 100) * 180;
   const cx = 100;
@@ -45,14 +45,17 @@ function DongHoTamLy({ diem }) {
     const a = Math.PI * (1 - phanTram / 100);
     return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
   };
-  const cacDoan = ["var(--do)", "var(--cam)", "var(--vang)", "var(--chanh)", "var(--xanh)"].map((mau, i) => {
-    const [x1, y1] = diemTrenCung(i * 20 + 0.8);
-    const [x2, y2] = diemTrenCung((i + 1) * 20 - 0.8);
-    return <path key={mau} d={`M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`} stroke={mau} strokeWidth="14" fill="none" strokeLinecap="butt" />;
-  });
+  // nen cung xam trung tinh; phan da lap tu 0 toi kim mang 1 mau theo nhan tam ly (khong ve du 5 mau cau vong)
+  const cung = (tu, den) => {
+    const [x1, y1] = diemTrenCung(tu);
+    const [x2, y2] = diemTrenCung(den);
+    return `M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`;
+  };
+  const diemHopLe = diem == null ? 0 : Math.max(0, Math.min(100, diem));
   return (
     <svg viewBox="0 0 200 118" className="w-full max-w-[230px] mx-auto" role="img" aria-label={`Thang tâm lý thị trường: ${diem ?? "chưa có"} trên 100`}>
-      {cacDoan}
+      <path d={cung(0.4, 99.6)} stroke="var(--vien-dam)" strokeWidth="14" fill="none" strokeLinecap="butt" />
+      {diemHopLe > 1 && <path d={cung(0.4, diemHopLe)} stroke={nhanTamLy(diem).mau} strokeWidth="14" fill="none" strokeLinecap="butt" />}
       <g transform={`rotate(${goc} ${cx} ${cy})`}>
         <line x1={cx} y1={cy} x2={cx} y2={cy - 66} stroke="var(--chu)" strokeWidth="3" strokeLinecap="round" />
       </g>
