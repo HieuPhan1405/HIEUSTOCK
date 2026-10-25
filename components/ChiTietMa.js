@@ -8,6 +8,7 @@ import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import NhatKyGiaoDich from "@/components/NhatKyGiaoDich";
 import XuatAnh from "@/components/XuatAnh";
 import TheChiaSeMa from "@/components/TheChiaSeMa";
+import DongTienMa from "@/components/DongTienMa";
 import { lenhDangMo, ngayChuoi } from "@/lib/muaThemTinhToan";
 import {
   fmt,
@@ -601,6 +602,9 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
       <div className="mb-4">
         <BieuDoKyThuat ma={row.ma} vung={vungLenh} ngayMua={vt.ngay_mua} />
       </div>
+
+      {/* DONG TIEN TRONG PHIEN (DNSE): mua / ban chu dong, co lenh, khoi ngoai, delta theo phut, volume profile */}
+      <DongTienMa ma={row.ma} />
 
       {/* VUNG GIA + STOP-LOSS - 3 MOC CHOT LOI */}
       <div className="grid sm:grid-cols-2 gap-4 mb-4">

@@ -28,6 +28,7 @@ import { tinhChecklistBatDayToanBo, xayDungCsvBatDay } from "../loi/checklistBat
 import { tinhLichSuDiemBToanBo, xayDungCsvDiemB } from "../loi/lichSuDiemB.js";
 import { tinhChiBaoLocToanBo, xayDungCsvChiBao } from "../loi/chiBaoLoc.js";
 import { dangTrongPhienDinhKyMoCua } from "../../lib/khungGioVaoLenh.js";
+import { khoiDongDongTien } from "./dongTienRealTime.mjs";
 
 const apiKey = process.env.DNSE_API_KEY;
 const apiSecret = process.env.DNSE_API_SECRET;
@@ -271,7 +272,7 @@ async function main() {
   // xac nhan qua loi that SUBSCRIBE_FAILED/MAX_CHANNELS_EXCEEDED khi thu nhet het ~390 ma vao 1 ket
   // noi duy nhat) - chia nho danh sach ma, moi lo mo 1 ket noi WebSocket rieng (tai lieu cho phep
   // toi da 10 ket noi/tai khoan, du du cho vai lo).
-  const KICH_THUOC_KENH_TOI_DA = 190;
+  const KICH_THUOC_KENH_TOI_DA = 196; // 196 (truoc 190): 392 ma vao 2 ket noi thay vi 3 -> nhuong cho 5 ket noi dong tien (dongTienRealTime.mjs), tong 9 / 10
   const toanBoMaCanTheoDoi = [...dsMa, "VNINDEX"];
   const nhomMa = chiaNhoMang(toanBoMaCanTheoDoi, KICH_THUOC_KENH_TOI_DA);
   console.log(`\nDang ket noi WebSocket (${nhomMa.length} ket noi, toi da ${KICH_THUOC_KENH_TOI_DA} ma/ket noi do gioi han tier tai khoan)...`);
@@ -314,6 +315,16 @@ async function main() {
       }
     )
   );
+
+  // DONG TIEN THOI GIAN THUC (tick co chieu, khoi ngoai, do rong chi so -> /api/upload-dong-tien): loi o day khong anh huong tin hieu chinh; tat bang --khong-dong-tien.
+  let dongTien = null;
+  if (!process.argv.includes("--khong-dong-tien")) {
+    try {
+      dongTien = khoiDongDongTien({ apiKey, apiSecret, dsMa, upload: uploadDuocPhep ? { goc: process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn", key: uploadKey } : null });
+    } catch (loiDt) {
+      console.log(`[dong-tien] KHONG khoi dong duoc: ${loiDt.message}`);
+    }
+  }
 
   await tinhLaiVaGhi(); // tinh ngay lan dau voi du lieu REST vua tai, khong doi tick WebSocket
   const henGio = setInterval(tinhLaiVaGhi, CHU_KY_TINH_LAI_MS);
@@ -358,6 +369,10 @@ async function main() {
       clearInterval(henGioChiBao);
       clearInterval(henGioKichBan);
       clearInterval(henGioRsiH1);
+      try {
+        await dongTien?.chotCuoiNgay();
+      } catch {}
+      dongTien?.dong();
       dsKetNoi.forEach((k) => k.dong());
       dsKetNoiTopGia.forEach((k) => k.dong());
       process.exit(3);
@@ -370,6 +385,7 @@ async function main() {
     clearInterval(henGioChiBao);
     clearInterval(henGioKichBan);
     clearInterval(henGioRsiH1);
+    dongTien?.dong();
     dsKetNoi.forEach((k) => k.dong());
       dsKetNoiTopGia.forEach((k) => k.dong());
     process.exit(0);

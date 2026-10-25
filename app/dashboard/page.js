@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import XuatAnh from "@/components/XuatAnh";
+import DongTienThiTruong from "@/components/DongTienThiTruong";
 import { layCoDem } from "@/lib/boNhoMem";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import { layDongTienNuocNgoai } from "@/lib/thiTruong";
@@ -71,6 +72,7 @@ export default async function TrangDashboard() {
       )}
 
       <TongQuanThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} />
+      <DongTienThiTruong />
       <Suspense fallback={<TheCho tieuDe="Vị trí VN-Index so với vùng giá trị" />}>
         <TheVungGiaTri />
       </Suspense>
