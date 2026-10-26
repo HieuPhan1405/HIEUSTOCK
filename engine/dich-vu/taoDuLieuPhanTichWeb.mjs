@@ -6,13 +6,14 @@
 //   Co tuc     = hang ty suat co tuc tien mat 4 quy (co tuc + LN da tra o LCTT / von hoa; 0 neu khong tra; bo qua voi ngan hang/CK/BH)
 // Xep loai theo diem TB: >=6,5 Tot, >=5 Kha, >=3,5 Trung binh, con lai Yeu.
 import { readFileSync, writeFileSync } from "node:fs";
+import { docNenMoiNhat } from "./docNenMoiNhat.mjs";
 import { NGANH_NHAN } from "../../lib/nganh.js";
 
 const doc = (f) => JSON.parse(readFileSync(new URL(`../output/${f}`, import.meta.url), "utf8"));
 const rrg = doc("rrg_nganh.json");
 const pt = doc("phan_tich_co_ban.json");
-const nen = doc("nen_dai.json");
-const QUY = ["2026-03-31", "2026-06-30", "2026-09-30"];
+const nen = docNenMoiNhat();
+const QUY = ["2026-03-31", "2026-06-30", "2026-09-30", "2026-12-31", "2027-03-31", "2027-06-30", "2027-09-30", "2027-12-31"]; // quy nao chua co bao cao thi tu bo qua
 const r1 = (x) => (Number.isFinite(x) ? +x.toFixed(1) : null);
 
 // moi ma: quy moi nhat + gia

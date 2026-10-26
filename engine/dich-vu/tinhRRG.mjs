@@ -5,9 +5,10 @@
 // DONG TIEN: GTGD tuan gan nhat / TB 10 tuan truoc (do nong cua dong tien) va "tien rong uoc tinh" = tong(GTGD * (2*dong-thap-cao)/(cao-thap)) 5 phien / tong GTGD 20 phien (thuoc do vi tri dong cua, khong phai mua-ban chu dong).
 // Chay: node engine/dich-vu/tinhRRG.mjs [--json]
 import { readFileSync, writeFileSync } from "node:fs";
+import { docNenMoiNhat } from "./docNenMoiNhat.mjs";
 
 const doc = (f) => JSON.parse(readFileSync(new URL(`../output/${f}`, import.meta.url), "utf8"));
-const nen = doc("nen_dai.json");
+const nen = docNenMoiNhat();
 const nganh = doc("nganh_map.json");
 const vni = doc("vnindex_dai.json");
 const TUAN = 10, MOM = 4, LAM_MUOT = 3, DUOI = 8;

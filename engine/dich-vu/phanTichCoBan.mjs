@@ -7,14 +7,15 @@
 // Z va F CHI hop le voi doanh nghiep phi tai chinh. Ngan hang / chung khoan / bao hiem: chi DuPont + "diem sinh loi" 0-5 (ROA>0, ROA tang, ROE>=10%, LNST TTM tang, khong phat hanh them CP).
 // Chay: node engine/dich-vu/phanTichCoBan.mjs
 import { readFileSync, writeFileSync } from "node:fs";
+import { docNenMoiNhat } from "./docNenMoiNhat.mjs";
 
 const doc = (f) => JSON.parse(readFileSync(new URL(`../output/${f}`, import.meta.url), "utf8"));
 const bctc = doc("bctc.json");
 const nganh = doc("nganh_map.json");
-const nen = doc("nen_dai.json");
+const nen = docNenMoiNhat();
 const sh = doc("free_float.json");
-const QUY_2026 = ["2025-12-31", "2026-03-31", "2026-06-30", "2026-09-30"];
 const dsQuy = [...new Set(Object.values(bctc).flatMap((x) => Object.keys(x.q)))].sort();
+const QUY_2026 = dsQuy.filter((q) => q >= "2025-12-31"); // moi quy co bao cao tu cuoi 2025 (tu dong them Q3, Q4... khi VNDirect co du lieu)
 const lui = (q, k) => dsQuy[dsQuy.indexOf(q) - k];
 
 const v = (b, q, it) => b.q[q]?.[it];

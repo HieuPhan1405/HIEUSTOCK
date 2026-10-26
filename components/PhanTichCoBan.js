@@ -19,7 +19,8 @@ const TRU = [
   ["sucKhoe", "Sức khoẻ tài chính", "Điểm Z″ và điểm F (doanh nghiệp thường); ngân hàng/chứng khoán/bảo hiểm dùng điểm sinh lời và ROA."],
   ["coTuc", "Cổ tức", "Tỷ suất cổ tức tiền mặt 4 quý gần nhất / vốn hoá."],
 ];
-const TEN_QUY = { "2026-03-31": "Quý 1/2026", "2026-06-30": "Quý 2/2026", "2026-09-30": "Quý 3/2026" };
+// "2026-09-30" -> "Quý 3/2026"
+const tenQuy = (q) => (/^\d{4}-\d{2}-\d{2}$/.test(q) ? `Quý ${Math.ceil(Number(q.slice(5, 7)) / 3)}/${q.slice(0, 4)}` : q);
 const TIEU_CHI_F = ["ROA > 0", "Dòng tiền kinh doanh > 0", "ROA tăng", "Dòng tiền kinh doanh > lợi nhuận", "Đòn bẩy giảm", "Thanh toán hiện hành tăng", "Không phát hành thêm cổ phiếu", "Biên lãi gộp tăng", "Vòng quay tài sản tăng"];
 
 const f = (x, d = 1) => (x == null || !Number.isFinite(x) ? "—" : soVN(x, d, true));
@@ -151,7 +152,7 @@ export default function PhanTichCoBan({ du, ma }) {
               {cacQuy.map((q) => (
                 <th key={q} className="py-1.5 px-2 font-normal">
                   <button type="button" onClick={() => datQuy(q)} className="px-2 py-0.5 rounded-full border" style={{ borderColor: q === quy ? "var(--tim-nhat)" : VIEN, color: q === quy ? "var(--chu)" : MUTED, background: q === quy ? "var(--vien-nhe)" : "transparent" }}>
-                    {TEN_QUY[q] ?? q}
+                    {tenQuy(q)}
                   </button>
                 </th>
               ))}
@@ -189,7 +190,7 @@ export default function PhanTichCoBan({ du, ma }) {
 
       <div className="rounded-xl border p-3 text-sm" style={{ borderColor: VIEN, background: "var(--vien-nhe)" }}>
         <div className="mb-2" style={{ fontWeight: 700, ...sans }}>
-          Chi tiết {TEN_QUY[quy] ?? quy}
+          Chi tiết {tenQuy(quy)}
         </div>
         <p className="mb-1.5">
           <b>DuPont:</b> ROE {f(x.roe)}% (cùng kỳ năm trước {f(x.roe0)}%){x.chuDao ? <> — thay đổi chủ yếu do <b>{x.chuDao}</b></> : ""}.

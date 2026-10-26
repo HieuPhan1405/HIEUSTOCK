@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import XuatAnh from "@/components/XuatAnh";
 import TheThiTruong from "@/components/TheThiTruong";
 import { capNhatMoiNhat } from "@/components/dungChung";
@@ -7,11 +8,6 @@ import { layCoDem } from "@/lib/boNhoMem";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import { layDongTienNuocNgoai } from "@/lib/thiTruong";
 import { TongQuanThiTruong } from "@/components/RaSoatThiTruong";
-import BanDoNhiet from "@/components/BanDoNhiet";
-import BangRSNganh from "@/components/BangRSNganh";
-import RRGNganh from "@/components/RRGNganh";
-import { layRRGNganh } from "@/lib/phanTichCoBanDb";
-import { tinhRSNganh } from "@/lib/rsNganh";
 import ThanhKhoanThiTruong from "@/components/ThanhKhoanThiTruong";
 import AnhHuongIndex from "@/components/AnhHuongIndex";
 import KhoiNgoaiThiTruong from "@/components/KhoiNgoaiThiTruong";
@@ -23,7 +19,7 @@ import { thongBaoLoi } from "@/lib/loiAnToan";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Dashboard thị trường",
-  description: "Bản đồ nhiệt theo ngành, thanh khoản, ảnh hưởng tới VN-Index, định giá PE/PB và các chỉ số tổng quan thị trường.",
+  description: "Độ rộng thị trường, dòng tiền chủ động, thanh khoản, ảnh hưởng tới VN-Index, định giá PE/PB và các chỉ số tổng quan.",
 };
 
 const TEXT = "var(--chu)";
@@ -78,7 +74,7 @@ export default async function TrangDashboard() {
         )}
       </div>
       <p className="text-sm mb-5" style={{ color: MUTED }}>
-        Tổng quan, độ rộng, bản đồ nhiệt theo ngành và thanh khoản — tách riêng khỏi trang Tổng quan (trang đó chỉ tập trung vào hướng đi lệnh/vị thế).
+        Tổng quan, độ rộng, dòng tiền, vùng giá trị và thanh khoản (phần ngành nằm ở trang Ngành) — tách riêng khỏi trang Tổng quan (trang đó chỉ tập trung vào hướng đi lệnh/vị thế).
       </p>
 
       {loi && (
@@ -92,9 +88,12 @@ export default async function TrangDashboard() {
       <Suspense fallback={<TheCho tieuDe="Vị trí VN-Index so với vùng giá trị" />}>
         <TheVungGiaTri />
       </Suspense>
-      <BangRSNganh hang={tinhRSNganh(tatCa)} />
-      <RRGNganh du={{ rrg: await layRRGNganh().catch(() => null) }} />
-      <BanDoNhiet tatCa={tatCa} />
+      <Link href="/nganh" className="flex items-center justify-between gap-3 rounded-2xl border p-4 mb-6 text-sm hover:opacity-90" style={{ borderColor: "var(--vien)", background: "var(--card)", color: TEXT }}>
+        <span>
+          <b style={{ fontFamily: "var(--font-chu)" }}>Phân tích ngành</b> — RRG ngành đang dẫn dắt, xếp hạng RS và bản đồ nhiệt
+        </span>
+        <span style={{ color: "var(--tim-nhat)" }}>Xem →</span>
+      </Link>
       <ThanhKhoanThiTruong ma="VNINDEX" />
       <AnhHuongIndex />
       <Suspense fallback={<TheCho tieuDe="Dòng tiền khối ngoại" />}>

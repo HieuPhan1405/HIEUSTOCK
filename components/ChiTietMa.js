@@ -10,6 +10,7 @@ import XuatAnh from "@/components/XuatAnh";
 import TheChiaSeMa from "@/components/TheChiaSeMa";
 import DongTienMa from "@/components/DongTienMa";
 import PhanTichCoBan from "@/components/PhanTichCoBan";
+import ThanhMucTrang from "@/components/ThanhMucTrang";
 import { lenhDangMo, ngayChuoi } from "@/lib/muaThemTinhToan";
 import {
   fmt,
@@ -340,6 +341,16 @@ function ThanhChonLenh({ cacLenh, chon, datChon }) {
   );
 }
 
+// cac khoi cua trang ma theo thu tu doc: vung gia/cat lo/chot loi -> bieu do -> dong tien -> nhat ky -> co ban -> khuyen nghi CTCK
+const MUC_TRANG = [
+  { id: "muc-vung-gia", nhan: "Vùng giá & TP/SL" },
+  { id: "muc-bieu-do", nhan: "Biểu đồ" },
+  { id: "muc-dong-tien", nhan: "Dòng tiền" },
+  { id: "muc-nhat-ky", nhan: "Nhật ký lệnh" },
+  { id: "muc-co-ban", nhan: "Phân tích cơ bản" },
+  { id: "muc-khuyen-nghi", nhan: "Khuyến nghị" },
+];
+
 export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaDong = [], lichPhien = [], phanTich = null }) {
   // Cac LENH DANG MO cua ma: moi lenh 1 dong rieng (gia mua, Stop-loss, TP, lai/lo rieng), danh so (1), (2) neu co nhieu lenh - xem lenhDangMo. Chon 1 lenh o thanh ngang de xem
   // moi thu theo lenh do. vt = lenh dang xem (hoac chinh dong tin hieu khi ma khong giu lenh nao); row van la du lieu chung cua ma (diem, xu huong, trang thai...).
@@ -615,19 +626,13 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         </Card>
       </div>
 
+      <ThanhMucTrang muc={MUC_TRANG} />
+
       {/* THANH CHON LENH: ma co nhieu lenh dang mo (lenh dau + cac lenh Mua moi) thi chon lenh de xem gia mua / SL / TP / lai lo / bieu do theo dung lenh do */}
       <ThanhChonLenh cacLenh={cacLenh} chon={Math.min(chon, Math.max(cacLenh.length - 1, 0))} datChon={setChon} />
 
-      {/* BIEU DO KY THUAT */}
-      <div className="mb-4">
-        <BieuDoKyThuat ma={row.ma} vung={vungLenh} ngayMua={vt.ngay_mua} />
-      </div>
-
-      {/* DONG TIEN TRONG PHIEN (DNSE): mua / ban chu dong, co lenh, khoi ngoai, delta theo phut, volume profile */}
-      <DongTienMa ma={row.ma} />
-
       {/* VUNG GIA + STOP-LOSS - 3 MOC CHOT LOI */}
-      <div className="grid sm:grid-cols-2 gap-4 mb-4">
+      <div id="muc-vung-gia" className="grid sm:grid-cols-2 gap-4 mb-4 scroll-mt-28">
         <Card>
           <p className="text-xs  mb-3" style={{ color: "var(--mo)" }} data-may="vung-gia-qt">
             Vùng giá quan trọng
@@ -760,17 +765,31 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         </Card>
       </div>
 
+      {/* BIEU DO KY THUAT */}
+      <div id="muc-bieu-do" className="mb-4 scroll-mt-28">
+        <BieuDoKyThuat ma={row.ma} vung={vungLenh} ngayMua={vt.ngay_mua} />
+      </div>
+
+      {/* DONG TIEN TRONG PHIEN (DNSE): mua / ban chu dong, co lenh, khoi ngoai, delta theo phut, volume profile */}
+      <div id="muc-dong-tien" className="scroll-mt-28">
+        <DongTienMa ma={row.ma} />
+      </div>
+
       {/* NHAT KY GIAO DICH */}
-      <div className="mb-4">
+      <div id="muc-nhat-ky" className="mb-4 scroll-mt-28">
         <NhatKyGiaoDich ma={row.ma} lichSuDaDong={lichSuDaDong} cacLenh={cacLenh} />
       </div>
 
       {/* PHAN TICH CO BAN: Danh gia 360, dinh gia, diem Z/F, DuPont theo quy (lib/phanTichCoBanDb.js) */}
-      {phanTich && <PhanTichCoBan du={phanTich} ma={row.ma} />}
+      {phanTich && (
+        <div id="muc-co-ban" className="scroll-mt-28">
+          <PhanTichCoBan du={phanTich} ma={row.ma} />
+        </div>
+      )}
 
       {/* Khuyen nghi CTCK / cau chuyen ky vong: chi hien khi co du lieu (khong de o "Dang cap nhat..." trong). */}
       {(dinhGia.length > 0 || cauChuyen.length > 0) && (
-        <div className={`grid gap-4 mb-10 ${dinhGia.length > 0 && cauChuyen.length > 0 ? "sm:grid-cols-2" : ""}`}>
+        <div id="muc-khuyen-nghi" className={`scroll-mt-28 grid gap-4 mb-10 ${dinhGia.length > 0 && cauChuyen.length > 0 ? "sm:grid-cols-2" : ""}`}>
           {dinhGia.length > 0 && <CardDinhGia dinhGia={dinhGia} />}
           {cauChuyen.length > 0 && <CardCauChuyen cauChuyen={cauChuyen} />}
         </div>

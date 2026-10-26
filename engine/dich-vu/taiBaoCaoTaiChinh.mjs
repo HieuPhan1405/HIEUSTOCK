@@ -5,7 +5,7 @@
 //   KQKD 21001 DT thuan, 22100 gia von, 23100 LN gop, 22510 lai vay, 23800 LNTT, 22070 thue, 23003 LNST, 23000 LNST cong ty me, 22200 CP QLDN, 22110 CP ban hang; LCTT 32000 CFO, 22230 khau hao, 33600 co tuc + loi nhuan da tra (LCTT);
 //   ngan hang 421701 tong thu nhap hoat dong; chung khoan 21000 tong doanh thu hoat dong.
 // Chay: node engine/dich-vu/taiBaoCaoTaiChinh.mjs
-import { readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 const nganh = JSON.parse(readFileSync(new URL("../output/nganh_map.json", import.meta.url), "utf8"));
 const MA_CHI_TIEU = [11000, 11100, 11300, 11400, 12000, 12200, 12700, 13000, 13100, 13300, 13110, 13340, 14000, 15000, 14110, 14200, 21001, 22100, 23100, 22510, 23800, 22070, 23003, 23000, 22200, 22110, 32000, 22230, 33600, 421701, 21000];
@@ -24,6 +24,8 @@ async function lay(ma) {
   }
   return null;
 }
+const FILE = new URL("../output/bctc.json", import.meta.url);
+const cu = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")) : {}; // ma tai loi giu du lieu cu
 const kq = {};
 const hang = Object.keys(nganh);
 let xong = 0, loi = 0;
@@ -44,6 +46,10 @@ async function tho() {
   }
 }
 await Promise.all(Array.from({ length: 6 }, tho));
-writeFileSync(new URL("../output/bctc.json", import.meta.url), JSON.stringify(kq));
+if (loi > Object.keys(nganh).length * 0.05) {
+  console.error(`Loi ${loi} ma (> 5%) - bo qua, giu nguyen bctc.json cu`);
+  process.exit(1);
+}
+writeFileSync(FILE, JSON.stringify({ ...cu, ...kq }));
 const co = Object.values(kq).filter((x) => Object.keys(x.q).length).length;
 console.log(`Xong: ${Object.keys(kq).length} ma (${co} co du lieu), loi ${loi}`);
