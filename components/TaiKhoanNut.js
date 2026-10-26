@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import { UserRound, Pencil, Check, X as HuyIcon, ChevronDown, LogOut, Wallet, ShieldCheck } from "lucide-react";
+import { UserRound, Pencil, Check, X as HuyIcon, ChevronDown, KeyRound, LogOut, Wallet, ShieldCheck } from "lucide-react";
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
+import DoiMatKhau from "@/components/DoiMatKhau";
 import { tatDay } from "@/lib/dayTrinhDuyet";
 
 const PRIMARY = "#6C5CE7";
@@ -47,6 +48,7 @@ const TheNho = ({ mau, children, title }) => (
 export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
   const [nguoiDung, setNguoiDung] = useState(undefined); // undefined = dang tai, null = chua dang nhap
   const [moModal, setMoModal] = useState(false);
+  const [moDoiMk, setMoDoiMk] = useState(false);
   const [dangSuaTen, setDangSuaTen] = useState(false);
   const [tenMoi, setTenMoi] = useState("");
   const [dangLuu, setDangLuu] = useState(false);
@@ -120,6 +122,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
     const ten = nguoiDung.ten || nguoiDung.sdt;
     return (
       <div ref={goc} className="relative" style={{ fontFamily: "var(--font-chu)" }}>
+        <DoiMatKhau mo={moDoiMk} onDong={() => setMoDoiMk(false)} />
         <button
           type="button"
           onClick={() => setMoMenu((v) => !v)}
@@ -176,6 +179,9 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
                 <ShieldCheck size={15} color={MUTED} aria-hidden="true" /> Trang quản trị
               </Link>
             )}
+            <button type="button" onClick={() => { setMoMenu(false); setMoDoiMk(true); }} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[color:var(--hover-nhe)] text-left" style={{ color: TEXT }}>
+              <KeyRound size={15} color={MUTED} aria-hidden="true" /> Đổi mật khẩu
+            </button>
             <button type="button" onClick={dangXuat} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[color:var(--hover-nhe)] text-left" style={{ color: PRIMARY }}>
               <LogOut size={15} aria-hidden="true" /> Đăng xuất
             </button>
