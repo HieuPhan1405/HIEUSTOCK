@@ -9,6 +9,8 @@ import { layDongTienNuocNgoai } from "@/lib/thiTruong";
 import { TongQuanThiTruong } from "@/components/RaSoatThiTruong";
 import BanDoNhiet from "@/components/BanDoNhiet";
 import BangRSNganh from "@/components/BangRSNganh";
+import RRGNganh from "@/components/RRGNganh";
+import { layRRGNganh } from "@/lib/phanTichCoBanDb";
 import { tinhRSNganh } from "@/lib/rsNganh";
 import ThanhKhoanThiTruong from "@/components/ThanhKhoanThiTruong";
 import AnhHuongIndex from "@/components/AnhHuongIndex";
@@ -91,6 +93,7 @@ export default async function TrangDashboard() {
         <TheVungGiaTri />
       </Suspense>
       <BangRSNganh hang={tinhRSNganh(tatCa)} />
+      <RRGNganh du={{ rrg: await layRRGNganh().catch(() => null) }} />
       <BanDoNhiet tatCa={tatCa} />
       <ThanhKhoanThiTruong ma="VNINDEX" />
       <AnhHuongIndex />

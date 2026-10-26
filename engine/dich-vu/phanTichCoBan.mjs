@@ -27,6 +27,12 @@ const ttm = (b, q, it) => {
   }
   return s;
 };
+// tong 4 quy, thieu quy nao coi la 0 (chi tieu khong phat sinh thi VNDirect khong tra dong)
+const ttm0 = (b, q, it) => {
+  let s = 0;
+  for (let k = 0; k < 4; k++) s += Number(v(b, lui(q, k), it)) || 0;
+  return s;
+};
 const coPhieu = (ma, q) => {
   let kq = null;
   for (const x of sh[ma] ?? []) {
@@ -58,7 +64,7 @@ function goc(b, q) {
   return {
     TS, VCSH, No, TSNH: v(b, q, 11000), NoNH: v(b, q, 13100),
     DT: ttm(b, q, maDT(b)), LNST: ttm(b, q, 23003), LNTT, EBIT: LNTT + (Number.isFinite(Lai) ? Lai : 0),
-    LNgop: ttm(b, q, 23100), CFO: ttm(b, q, 32000), RE: v(b, q, 14200),
+    LNgop: ttm(b, q, 23100), CFO: ttm(b, q, 32000), RE: v(b, q, 14200), CT: Math.abs(ttm0(b, q, 33600)),
   };
 }
 function duPont(g) {
@@ -98,6 +104,11 @@ for (const [ma, b] of Object.entries(bctc)) {
       lnQuy: Number.isFinite(ln) ? r(ln / 1e9, 0) : null,
       lnQuyYoY: lnCu > 0 && Number.isFinite(ln) ? r((ln / lnCu - 1) * 100, 0) : null,
       lnTTMYoY: g0.LNST > 0 ? r((g.LNST / g0.LNST - 1) * 100, 0) : null,
+      dtTTMYoY: g0.DT > 0 ? r((g.DT / g0.DT - 1) * 100, 0) : null,
+      lnTTM: r(g.LNST / 1e9, 0),
+      vcsh: r(g.VCSH / 1e9, 0),
+      coTucTTM: b.loai === "pi" ? r(g.CT / 1e9, 0) : null,
+      coPhieu: Number.isFinite(cp) ? cp : null,
       ...duPont(g),
       roe0: duPont(g0).roe,
       chuDao: nhanToChuDao(g, g0),

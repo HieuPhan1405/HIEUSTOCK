@@ -9,6 +9,7 @@ import NhatKyGiaoDich from "@/components/NhatKyGiaoDich";
 import XuatAnh from "@/components/XuatAnh";
 import TheChiaSeMa from "@/components/TheChiaSeMa";
 import DongTienMa from "@/components/DongTienMa";
+import PhanTichCoBan from "@/components/PhanTichCoBan";
 import { lenhDangMo, ngayChuoi } from "@/lib/muaThemTinhToan";
 import {
   fmt,
@@ -339,7 +340,7 @@ function ThanhChonLenh({ cacLenh, chon, datChon }) {
   );
 }
 
-export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaDong = [], lichPhien = [] }) {
+export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaDong = [], lichPhien = [], phanTich = null }) {
   // Cac LENH DANG MO cua ma: moi lenh 1 dong rieng (gia mua, Stop-loss, TP, lai/lo rieng), danh so (1), (2) neu co nhieu lenh - xem lenhDangMo. Chon 1 lenh o thanh ngang de xem
   // moi thu theo lenh do. vt = lenh dang xem (hoac chinh dong tin hieu khi ma khong giu lenh nao); row van la du lieu chung cua ma (diem, xu huong, trang thai...).
   const cacLenh = useMemo(() => lenhDangMo([row], lichPhien), [row, lichPhien]);
@@ -763,6 +764,9 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
       <div className="mb-4">
         <NhatKyGiaoDich ma={row.ma} lichSuDaDong={lichSuDaDong} cacLenh={cacLenh} />
       </div>
+
+      {/* PHAN TICH CO BAN: Danh gia 360, dinh gia, diem Z/F, DuPont theo quy (lib/phanTichCoBanDb.js) */}
+      {phanTich && <PhanTichCoBan du={phanTich} ma={row.ma} />}
 
       {/* Khuyen nghi CTCK / cau chuyen ky vong: chi hien khi co du lieu (khong de o "Dang cap nhat..." trong). */}
       {(dinhGia.length > 0 || cauChuyen.length > 0) && (

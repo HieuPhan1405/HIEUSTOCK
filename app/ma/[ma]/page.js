@@ -4,6 +4,8 @@ import { layDinhGia, layCauChuyen } from "@/lib/noiDung";
 import { layLichSuGiaoDichMa } from "@/lib/lenhDaDong";
 import { layLichPhien } from "@/lib/lichSuGia";
 import ChiTietMa from "@/components/ChiTietMa";
+import PhanTichCoBan from "@/components/PhanTichCoBan";
+import { layPhanTichMa } from "@/lib/phanTichCoBanDb";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import { tenCongTy } from "@/lib/tenMa";
 import { thongBaoLoi } from "@/lib/loiAnToan";
@@ -25,12 +27,15 @@ export default async function TrangChiTietMa({ params }) {
 
   let row = null;
   let loi = null;
+  // phan tich co ban la du lieu bo sung: loi / chua co thi bo qua, khong lam sap trang
+  const dangTaiPhanTich = layPhanTichMa(ma).catch(() => null);
   try {
     row = await layTinHieuTheoMa(ma);
   } catch (e) {
     loi = thongBaoLoi(e);
   }
 
+  const phanTichCB = await dangTaiPhanTich;
   if (loi) {
     return (
       <div className="max-w-5xl mx-auto px-6 py-16" style={{ color: "var(--chu)" }}>
@@ -55,6 +60,11 @@ export default async function TrangChiTietMa({ params }) {
             Mã này chưa nằm trong danh sách hệ thống quét tín hiệu nên chưa có điểm, vùng mua, cắt lỗ và chốt lời. Bạn vẫn xem được biểu đồ giá bên dưới.
           </p>
           <BieuDoKyThuat ma={ma.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12)} />
+          {phanTichCB && (
+            <div className="mt-6">
+              <PhanTichCoBan du={phanTichCB} ma={ma.toUpperCase()} />
+            </div>
+          )}
         </div>
       );
     }
@@ -82,5 +92,5 @@ export default async function TrangChiTietMa({ params }) {
     // giu mang rong, ChiTietMa se tu hien "Dang cap nhat..."
   }
 
-  return <ChiTietMa row={row} dinhGia={dinhGia} cauChuyen={cauChuyen} lichSuDaDong={lichSuDaDong} lichPhien={lichPhien} />;
+  return <ChiTietMa row={row} dinhGia={dinhGia} cauChuyen={cauChuyen} lichSuDaDong={lichSuDaDong} lichPhien={lichPhien} phanTich={phanTichCB} />;
 }

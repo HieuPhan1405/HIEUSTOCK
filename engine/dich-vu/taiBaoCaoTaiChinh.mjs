@@ -2,13 +2,13 @@
 // { MA: { loai: "pi" | "nh" | "ck" | "bh", q: { "2026-06-30": { "<itemCode>": gia tri (dong) } } } }
 // Quy tu 2024-03-31 (de co 8 quy tinh TTM va so sanh cung ky nam truoc cho F-score). KQKD va luu chuyen tien te VNDirect da tach theo tung quy (khong cong don).
 // Ma chi tieu: BCDKT 11000 TS ngan han, 11100 tien, 11300 phai thu NH, 11400 hang ton kho, 12000 TS dai han, 12200 TSCD, 12700 TONG TS, 13000 no phai tra, 13100 no NH, 13300 no DH, 13110 vay NH, 13340 vay DH, 14000 von CSH, 15000 loi ich CDTS, 14110 von gop, 14200 LNST chua phan phoi;
-//   KQKD 21001 DT thuan, 22100 gia von, 23100 LN gop, 22510 lai vay, 23800 LNTT, 22070 thue, 23003 LNST, 23000 LNST cong ty me, 22200 CP QLDN, 22110 CP ban hang; LCTT 32000 CFO, 22230 khau hao;
+//   KQKD 21001 DT thuan, 22100 gia von, 23100 LN gop, 22510 lai vay, 23800 LNTT, 22070 thue, 23003 LNST, 23000 LNST cong ty me, 22200 CP QLDN, 22110 CP ban hang; LCTT 32000 CFO, 22230 khau hao, 33600 co tuc + loi nhuan da tra (LCTT);
 //   ngan hang 421701 tong thu nhap hoat dong; chung khoan 21000 tong doanh thu hoat dong.
 // Chay: node engine/dich-vu/taiBaoCaoTaiChinh.mjs
 import { readFileSync, writeFileSync } from "node:fs";
 
 const nganh = JSON.parse(readFileSync(new URL("../output/nganh_map.json", import.meta.url), "utf8"));
-const MA_CHI_TIEU = [11000, 11100, 11300, 11400, 12000, 12200, 12700, 13000, 13100, 13300, 13110, 13340, 14000, 15000, 14110, 14200, 21001, 22100, 23100, 22510, 23800, 22070, 23003, 23000, 22200, 22110, 32000, 22230, 421701, 21000];
+const MA_CHI_TIEU = [11000, 11100, 11300, 11400, 12000, 12200, 12700, 13000, 13100, 13300, 13110, 13340, 14000, 15000, 14110, 14200, 21001, 22100, 23100, 22510, 23800, 22070, 23003, 23000, 22200, 22110, 32000, 22230, 33600, 421701, 21000];
 const MODEL = { pi: [1, 2, 3], nh: [101, 102, 103], ck: [89, 90, 91], bh: [411, 412, 413] };
 const loaiCua = (ma) => {
   const n = nganh[ma];
