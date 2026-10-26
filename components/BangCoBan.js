@@ -45,7 +45,7 @@ function So({ nhan, gt, dat, buoc = 1, don = "" }) {
     <label className="flex flex-col gap-0.5 text-[11px]" style={{ color: MUTED }}>
       {nhan}
       <span className="flex items-center gap-1">
-        <input type="number" inputMode="decimal" step={buoc} value={gt} onChange={(e) => dat(e.target.value)} placeholder="—" aria-label={nhan} className="w-20 px-2 py-1 rounded-lg border" style={{ borderColor: VIEN, background: "transparent", color: "var(--chu)", fontSize: 16, ...sans }} />
+        <input type="number" inputMode="decimal" step={buoc} value={gt} onChange={(e) => dat(e.target.value)} placeholder="—" aria-label={nhan} className="w-20 px-2 py-1 rounded-lg border" style={{ borderColor: VIEN, background: "transparent", color: "var(--chu)", ...sans }} />
         {don && <span>{don}</span>}
       </span>
     </label>
@@ -158,7 +158,7 @@ export default function BangCoBan({ hang, capNhat }) {
           placeholder="Tìm mã…"
           aria-label="Tìm mã"
           className="px-3 py-1.5 rounded-full text-xs border"
-          style={{ borderColor: VIEN, background: "transparent", color: "var(--chu)", width: 110, fontSize: 16, ...sans }}
+          style={{ borderColor: VIEN, background: "transparent", color: "var(--chu)", width: 110, ...sans }}
         />
         <select
           value={nganh}

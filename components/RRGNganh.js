@@ -24,6 +24,8 @@ const MAC_DINH = { W: { cuaSo: 10, duoi: 8 }, D: { cuaSo: 30, duoi: 20 } };
 const TOI_DA_MA = 8;
 const MA_HOP_LE = /^[A-Z0-9]{2,12}$/;
 
+// ten ngan tren bieu do: bo phan sau " - ", BDS khu cong nghiep -> BDS KCN
+const nganGon = (n) => n.replace("BĐS khu công nghiệp", "BĐS KCN").replace("Vật liệu xây dựng", "VLXD").replace("Bất động sản", "BĐS").split(" - ")[0];
 const f1 = (x, d = 1) => (x == null || !Number.isFinite(x) ? "—" : soVN(x, d, true));
 const dau = (x, d = 1) => (x == null || !Number.isFinite(x) ? "—" : `${x > 0 ? "+" : ""}${f1(x, d)}`);
 const mau = (v, nguong = 0) => (v == null ? MUTED : v > nguong ? XANH : v < -nguong ? DO : "var(--chu)");
@@ -56,33 +58,40 @@ function Nhom({ ten, children }) {
 
 function BieuDo({ ds, chon, datChon }) {
   const { X, Y } = useMemo(() => {
-    // khung theo vi tri HIEN TAI (duoi di xa hon thi bi cat o vien, khong keo gian ca bieu do)
+    // khung theo vi tri HIEN TAI; phan duoi vuot khung bi cat (clipPath) de khong keo gian ca bieu do
     const xs = ds.map((r) => r.pts.at(-1).ratio);
     const ys = ds.map((r) => r.pts.at(-1).mom);
     const dx = Math.max(3, ...xs.map((x) => Math.abs(x - 100)), 0) + 1;
     const dy = Math.max(3, ...ys.map((y) => Math.abs(y - 100)), 0) + 1;
-    const kep = (v, d) => Math.min(100 + d, Math.max(100 - d, v));
     return {
-      X: (v) => LE + ((kep(v, dx) - (100 - dx)) / (2 * dx)) * (W - 2 * LE),
-      Y: (v) => H - LE - ((kep(v, dy) - (100 - dy)) / (2 * dy)) * (H - 2 * LE),
+      X: (v) => LE + ((v - (100 - dx)) / (2 * dx)) * (W - 2 * LE),
+      Y: (v) => H - LE - ((v - (100 - dy)) / (2 * dy)) * (H - 2 * LE),
     };
   }, [ds]);
   // dat nhan ten tranh de len nhau: xep theo y, nhan nao cham nhan da dat thi day xuong den khi het cham
   const viTriNhan = useMemo(() => {
+    // nhan nganh dung sat nhau: thu lan luot ben phai diem (lech doc 0, +13, -13, +26, -26...) roi ben trai diem, lay cho dau tien khong cham nhan da dat (~7px/ky tu)
     const dat = [];
     const kq = {};
+    const THU = [0, 13, -13, 26, -26, 39, -39, 52, -52];
     [...ds]
-      .map((r) => ({ r, x: X(r.pts.at(-1).ratio) + 9, y: Y(r.pts.at(-1).mom) + 4, w: r.nhan.length * 6 }))
+      .map((r) => ({ r, px: X(r.pts.at(-1).ratio), y: Y(r.pts.at(-1).mom) + 4, w: r.nhanNgan.length * 7 + 4 }))
       .sort((a, b) => a.y - b.y)
       .forEach((n) => {
-        let y = n.y;
-        for (let lan = 0; lan < 40; lan++) {
-          const va = dat.find((d) => Math.abs(d.y - y) < 12 && d.x < n.x + n.w && n.x < d.x + d.w);
-          if (!va) break;
-          y = va.y + 12;
+        let chon = { y: n.y, trai: false, x: n.px + 10 };
+        tim: for (const trai of [false, true]) {
+          const x = trai ? n.px - 10 - n.w : n.px + 10;
+          for (const lech of THU) {
+            const y = n.y + lech;
+            if (y < LE + 14 || y > H - LE - 4) continue;
+            if (!dat.some((d) => Math.abs(d.y - y) < 13 && d.x < x + n.w && x < d.x + d.w)) {
+              chon = { y, trai, x };
+              break tim;
+            }
+          }
         }
-        dat.push({ x: n.x, y, w: n.w });
-        kq[n.id] = y;
+        dat.push({ x: chon.x, y: chon.y, w: n.w });
+        kq[n.r.id] = chon;
       });
     return kq;
   }, [ds, X, Y]);
@@ -93,6 +102,11 @@ function BieuDo({ ds, chon, datChon }) {
   );
   return (
     <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", overflow: "visible" }} role="img" aria-label="Biểu đồ RRG">
+      <defs>
+        <clipPath id="rrg-khung">
+          <rect x={LE} y={LE} width={W - 2 * LE} height={H - 2 * LE} />
+        </clipPath>
+      </defs>
       <rect x={LE} y={LE} width={W - 2 * LE} height={H - 2 * LE} fill="none" stroke="var(--vien)" />
       <rect x={X(100)} y={LE} width={W - LE - X(100)} height={Y(100) - LE} fill="var(--xanh)" opacity="0.05" />
       <rect x={LE} y={Y(100)} width={X(100) - LE} height={H - LE - Y(100)} fill="var(--do)" opacity="0.05" />
@@ -114,13 +128,14 @@ function BieuDo({ ds, chon, datChon }) {
         const sang = !chon || chon === r.id;
         return (
           <g key={r.id} opacity={sang ? 1 : 0.18} style={{ cursor: "pointer" }} onClick={() => datChon(chon === r.id ? null : r.id)}>
-            <polyline points={r.pts.map((d) => `${X(d.ratio)},${Y(d.mom)}`).join(" ")} fill="none" stroke={c} strokeWidth="1.8" opacity="0.6" strokeDasharray={r.loai === "ma" ? "4 3" : undefined} />
-            {r.pts.slice(0, -1).map((d) => (
-              <circle key={d.t} cx={X(d.ratio)} cy={Y(d.mom)} r="2.2" fill={c} opacity="0.55" />
-            ))}
+            <g clipPath="url(#rrg-khung)">
+              {r.pts.slice(0, -1).map((d, i) => (
+                <line key={d.t} x1={X(d.ratio)} y1={Y(d.mom)} x2={X(r.pts[i + 1].ratio)} y2={Y(r.pts[i + 1].mom)} stroke={c} strokeWidth="2" strokeLinecap="round" opacity={0.12 + 0.55 * ((i + 1) / (r.pts.length - 1))} strokeDasharray={r.loai === "ma" ? "4 3" : undefined} />
+              ))}
+            </g>
             {r.loai === "ma" ? <rect x={X(l.ratio) - 5.5} y={Y(l.mom) - 5.5} width="11" height="11" fill={c} stroke="var(--chu)" strokeWidth="1.2" transform={`rotate(45 ${X(l.ratio)} ${Y(l.mom)})`} /> : <circle cx={X(l.ratio)} cy={Y(l.mom)} r="6" fill={c} />}
-            <text x={X(l.ratio) + 9} y={viTriNhan[r.id]} fontSize="11.5" fill="var(--chu)" style={sans} fontWeight={r.loai === "ma" || chon === r.id ? 700 : 500}>
-              {r.nhan}
+            <text x={viTriNhan[r.id].trai ? X(l.ratio) - 10 : X(l.ratio) + 10} y={viTriNhan[r.id].y} textAnchor={viTriNhan[r.id].trai ? "end" : "start"} fontSize="12" fill="var(--chu)" stroke="var(--card)" strokeWidth="3.5" paintOrder="stroke" strokeLinejoin="round" style={sans} fontWeight={r.loai === "ma" || chon === r.id ? 700 : 600}>
+              {r.nhanNgan}
             </text>
           </g>
         );
@@ -187,12 +202,12 @@ export default function RRGNganh({ du }) {
     for (const r of ketQua) {
       if (tat.has(r.nganh) || !chuoi.nganh[r.nganh]) continue;
       const pts = tinhRRG(chuoi.ngay, chuoi.nganh[r.nganh], mocSoSanh, tham);
-      if (pts.length >= 2) ra.push({ id: r.nganh, loai: "nganh", nhan: r.nhan ?? r.nganh, soMa: r.soMa, pts, goc: gocRRG(pts.at(-1).ratio, pts.at(-1).mom), goc0: r });
+      if (pts.length >= 2) ra.push({ id: r.nganh, loai: "nganh", nhan: r.nhan ?? r.nganh, nhanNgan: nganGon(r.nhan ?? r.nganh), soMa: r.soMa, pts, goc: gocRRG(pts.at(-1).ratio, pts.at(-1).mom), goc0: r });
     }
     for (const m of maCK) {
       if (!m.gia) continue;
       const pts = tinhRRG(chuoi.ngay, m.gia, mocSoSanh, tham);
-      if (pts.length >= 2) ra.push({ id: `ma:${m.ma}`, loai: "ma", nhan: m.ma, pts, goc: gocRRG(pts.at(-1).ratio, pts.at(-1).mom) });
+      if (pts.length >= 2) ra.push({ id: `ma:${m.ma}`, loai: "ma", nhan: m.ma, nhanNgan: m.ma, pts, goc: gocRRG(pts.at(-1).ratio, pts.at(-1).mom) });
     }
     return ra;
   }, [chuoi, ketQua, khung, cuaSo, duoi, bench, tat, maCK]);
@@ -289,11 +304,11 @@ export default function RRGNganh({ du }) {
               <input
                 value={nhapMa}
                 onChange={(e) => datNhapMa(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12))}
-                placeholder={maCK.length >= TOI_DA_MA ? `Tối đa ${TOI_DA_MA} mã` : "+ Thêm mã (VD: HPG) rồi Enter"}
+                placeholder={maCK.length >= TOI_DA_MA ? `Tối đa ${TOI_DA_MA} mã` : "+ Thêm mã, Enter"}
                 disabled={maCK.length >= TOI_DA_MA}
                 aria-label="Thêm mã cổ phiếu vào RRG"
                 className="px-3 py-1 rounded-full text-xs border"
-                style={{ borderColor: VIEN, background: "transparent", color: "var(--chu)", width: 210, fontSize: 16, ...sans }}
+                style={{ borderColor: VIEN, background: "transparent", color: "var(--chu)", width: 170, ...sans }}
               />
             </form>
             {maLoi.length > 0 && (
@@ -324,7 +339,7 @@ export default function RRGNganh({ du }) {
                   <th className="py-1.5 px-2 font-normal text-right">Momentum</th>
                   <th className="py-1.5 px-2 font-normal text-right" data-may="rrg-nong">Nóng</th>
                   <th className="py-1.5 px-2 font-normal text-right" data-may="rrg-tien-rong">Tiền ròng ước tính</th>
-                  {dongTien && <th className="py-1.5 pl-2 font-normal text-right">Ròng chủ động hôm nay</th>}
+                  {dongTien && <th className="py-1.5 pl-2 font-normal text-right" title="Mua chủ động trừ bán chủ động hôm nay (DNSE, thành viên đã duyệt)">Ròng chủ động</th>}
                 </tr>
               </thead>
               <tbody>
