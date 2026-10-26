@@ -14,7 +14,7 @@ ok("trang dau -> Thi truong", mucDangMo("/")?.nhan === "Thị trường");
 ok("/dashboard, /nganh, /thi-truong thuoc Thi truong", mucDangMo("/dashboard")?.href === "/" && mucDangMo("/nganh")?.href === "/" && mucDangMo("/thi-truong")?.href === "/");
 ok("/lenh-da-dong thuoc So lenh", mucDangMo("/lenh-da-dong")?.href === "/lenh-mo");
 ok("/lenh-mo khong nham voi /lenh-da-dong", tabCuaTrang("/lenh-mo")?.dangChon === "/lenh-mo" && tabCuaTrang("/lenh-da-dong")?.dangChon === "/lenh-da-dong");
-ok("/bo-loc va /kich-ban-mua chung muc Bo loc (co tab)", mucDangMo("/bo-loc")?.nhan === "Bộ lọc cổ phiếu" && mucDangMo("/kich-ban-mua")?.nhan === "Bộ lọc cổ phiếu" && tabCuaTrang("/kich-ban-mua")?.dangChon === "/kich-ban-mua" && tabCuaTrang("/bo-loc")?.tab.length === 2);
+ok("/bo-loc va /kich-ban-mua chung muc Bo loc (co tab)", mucDangMo("/bo-loc")?.nhan === "Bộ lọc cổ phiếu" && mucDangMo("/kich-ban-mua")?.nhan === "Bộ lọc cổ phiếu" && tabCuaTrang("/kich-ban-mua")?.dangChon === "/kich-ban-mua" && tabCuaTrang("/bo-loc")?.tab.length === 3 && mucDangMo("/co-ban")?.nhan === "Bộ lọc cổ phiếu" && tabCuaTrang("/co-ban")?.dangChon === "/co-ban");
 ok("/ma/VPB, /lien-he khong thuoc menu", mucDangMo("/ma/VPB") === null && mucDangMo("/lien-he") === null);
 ok("tab trang dau: 4 tab (Tong quan, Dashboard, Nganh, Tin tuc), dang chon Tong quan", tabCuaTrang("/")?.tab.length === 4 && tabCuaTrang("/")?.dangChon === "/");
 ok("/bat-day va /hoi-giam-dai chung muc Bat day (co tab)", mucDangMo("/hoi-giam-dai")?.href === "/bat-day" && tabCuaTrang("/hoi-giam-dai")?.dangChon === "/hoi-giam-dai" && tabCuaTrang("/bat-day")?.tab.length === 3 && mucDangMo("/mua-phuc-hoi")?.href === "/bat-day");
