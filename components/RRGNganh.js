@@ -152,7 +152,8 @@ export default function RRGNganh({ du }) {
   const [cuaSo, datCuaSo] = useState(MAC_DINH.W.cuaSo);
   const [duoi, datDuoi] = useState(MAC_DINH.W.duoi);
   const [bench, datBench] = useState("tb"); // tb = trung binh deu | vni = VN-Index
-  const [tat, datTat] = useState(() => new Set()); // nganh bi bo khoi bieu do
+  const [xem, datXem] = useState(() => new Set()); // nganh DUOC CHON de xem (rong = xem tat ca)
+  const [chiMa, datChiMa] = useState(false); // chi ve cac ma da them, khong ve nganh
   const [maCK, datMaCK] = useState([]); // [{ ma, gia: [..] | null, loi, dangTai }]
   const [nhapMa, datNhapMa] = useState("");
   const [chon, datChon] = useState(null);
@@ -194,30 +195,43 @@ export default function RRGNganh({ du }) {
     }
   }
 
-  const bieuDo = useMemo(() => {
+  const mocSoSanh = chuoi ? (bench === "vni" ? chuoi.vni : chuoi.tb) : null;
+  // RRG cua TAT CA nganh theo bo loc khung / chu ky / duoi / benchmark (de chon nhanh "Dan dat" va to mau nut ngành)
+  const nganhTatCa = useMemo(() => {
     if (!chuoi) return [];
-    const mocSoSanh = bench === "vni" ? chuoi.vni : chuoi.tb;
-    const tham = { khung, cuaSo, duoi };
     const ra = [];
     for (const r of ketQua) {
-      if (tat.has(r.nganh) || !chuoi.nganh[r.nganh]) continue;
-      const pts = tinhRRG(chuoi.ngay, chuoi.nganh[r.nganh], mocSoSanh, tham);
+      if (!chuoi.nganh[r.nganh]) continue;
+      const pts = tinhRRG(chuoi.ngay, chuoi.nganh[r.nganh], mocSoSanh, { khung, cuaSo, duoi });
       if (pts.length >= 2) ra.push({ id: r.nganh, loai: "nganh", nhan: r.nhan ?? r.nganh, nhanNgan: nganGon(r.nhan ?? r.nganh), soMa: r.soMa, pts, goc: gocRRG(pts.at(-1).ratio, pts.at(-1).mom), goc0: r });
     }
+    return ra;
+  }, [chuoi, ketQua, khung, cuaSo, duoi, mocSoSanh]);
+  const bieuDo = useMemo(() => {
+    if (!chuoi) return [];
+    const ra = chiMa ? [] : nganhTatCa.filter((r) => xem.size === 0 || xem.has(r.id));
     for (const m of maCK) {
       if (!m.gia) continue;
-      const pts = tinhRRG(chuoi.ngay, m.gia, mocSoSanh, tham);
+      const pts = tinhRRG(chuoi.ngay, m.gia, mocSoSanh, { khung, cuaSo, duoi });
       if (pts.length >= 2) ra.push({ id: `ma:${m.ma}`, loai: "ma", nhan: m.ma, nhanNgan: m.ma, pts, goc: gocRRG(pts.at(-1).ratio, pts.at(-1).mom) });
     }
     return ra;
-  }, [chuoi, ketQua, khung, cuaSo, duoi, bench, tat, maCK]);
+  }, [chuoi, nganhTatCa, xem, chiMa, maCK, khung, cuaSo, duoi, mocSoSanh]);
 
   if (!ketQua.length) return null;
   const rongCua = (r) => (dongTien && r.goc0 ? dongTien[r.nhan] ?? dongTien[r.id] ?? null : null);
   const sx = [...bieuDo].sort((a, b) => b.pts.at(-1).ratio - a.pts.at(-1).ratio);
   const dan = bieuDo.filter((r) => r.loai === "nganh" && r.goc === "Leading").length;
   const ngayVN = rrg.ngay ? rrg.ngay.split("-").reverse().join("/") : "";
-  const dangTat = ketQua.filter((r) => tat.has(r.nganh));
+  const doiXem = (id) => {
+    datChiMa(false);
+    datXem((c) => {
+      const n = new Set(c);
+      if (n.has(id)) n.delete(id);
+      else n.add(id);
+      return n;
+    });
+  };
   const maLoi = maCK.filter((m) => m.loi);
   const donVi = khung === "W" ? "tuần" : "phiên";
   return (
@@ -258,34 +272,19 @@ export default function RRGNganh({ du }) {
             <Chip bat={bench === "vni"} onClick={() => datBench("vni")} title="VN-Index (tính theo vốn hoá)">VN-Index</Chip>
           </Nhom>
           <Nhom ten="Ngành">
-            {dangTat.length > 0 ? (
-              <>
-                <span className="text-[11px]" style={{ color: MUTED }}>Đã ẩn:</span>
-                {dangTat.map((r) => (
-                  <The key={r.nganh} onBo={() => datTat((s) => new Set([...s].filter((x) => x !== r.nganh)))}>
-                    {r.nhan}
-                  </The>
-                ))}
-                <Chip bat={false} onClick={() => datTat(new Set())}>Hiện tất cả</Chip>
-              </>
-            ) : (
-              <span className="text-[11px]" style={{ color: MUTED }}>Đang hiện tất cả {ketQua.length} ngành</span>
-            )}
-            <select
-              aria-label="Ẩn ngành"
-              value=""
-              onChange={(e) => e.target.value && datTat((s) => new Set([...s, e.target.value]))}
-              className="px-2 py-1 rounded-full text-xs border"
-              style={{ borderColor: VIEN, background: "transparent", color: MUTED, ...sans }}
-            >
-              <option value="">+ Ẩn ngành…</option>
-              {ketQua.filter((r) => !tat.has(r.nganh)).map((r) => (
-                <option key={r.nganh} value={r.nganh} style={{ color: "#000" }}>
-                  {r.nhan}
-                </option>
-              ))}
-            </select>
-            <Chip bat={false} onClick={() => datTat(new Set(ketQua.map((r) => r.nganh)))}>Chỉ xem mã</Chip>
+            <Chip bat={xem.size === 0 && !chiMa} onClick={() => { datXem(new Set()); datChiMa(false); }}>Tất cả</Chip>
+            <Chip bat={false} onClick={() => { datChiMa(false); datXem(new Set(nganhTatCa.filter((r) => r.goc === "Leading").map((r) => r.id))); }} title="Chọn các ngành đang ở góc Dẫn dắt">Đang dẫn dắt</Chip>
+            {maCK.some((m) => m.gia) && <Chip bat={chiMa} onClick={() => datChiMa((c) => !c)} title="Chỉ vẽ các mã bạn đã thêm">Chỉ mã</Chip>}
+            <span className="w-full" />
+            {nganhTatCa.map((r) => (
+              <Chip key={r.id} bat={!chiMa && xem.has(r.id)} onClick={() => doiXem(r.id)} title={`${NHAN_GOC[r.goc]}${r.nhan ? ` · ${r.nhan}` : ""}`}>
+                <span style={{ display: "inline-block", width: 7, height: 7, borderRadius: 99, background: MAU_GOC[r.goc], marginRight: 5 }} />
+                {r.nhanNgan}
+              </Chip>
+            ))}
+            <span className="text-[11px] w-full" style={{ color: MUTED }}>
+              {xem.size === 0 ? "Đang xem tất cả ngành — bấm vào ngành để chỉ xem ngành đó." : `Đang xem ${xem.size} ngành đã chọn.`}
+            </span>
           </Nhom>
           <Nhom ten="Mã CK">
             {maCK.map((m) => (
