@@ -24,7 +24,7 @@ import {
   useCotHienThi,
   ChonCotHienThi,
 } from "@/components/boLocChung";
-import { chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, nhanMuaMoi, nhanLyDoBan, nhanChoHoi, nhanBaoVeLai, datChuanUuTien, sapChamMoc, laChoPhienSau, laDangGiu, NGUONG_DIEM_MUA } from "@/components/dungChung";
+import { chamTPCaoNhat, nhanGiaiNgan, nhanLoaiVao, nhanMuaMoi, nhanLyDoBan, nhanChoHoi, nhanBaoVeLai, datChuanUuTien, sapChamMoc, laChoPhienSau, laDangGiu, lyDoChuaCoDiemMua, NGUONG_DIEM_MUA } from "@/components/dungChung";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -235,6 +235,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
     ...docLocChungTuUrl(searchParams),
     tin: searchParams.get("tin") || "",
     chiGanDiemMua: searchParams.get("gandiemmua") === "1",
+    chiDuDiemChuaMua: searchParams.get("duDiemChuaMua") === "1",
     bienMoc: 3,
   }));
   const cotHienThi = useCotHienThi("cs_cot_boloc_v1", DS_KHOA_CHON, MAC_DINH);
@@ -284,10 +285,13 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
   const coDuLieuMoc = useMemo(() => duLieu.some((r) => r.moc_cach_pct != null), [duLieu]);
   const soTheoDoi = useMemo(() => duLieu.filter((r) => laMaTheoDoi(r, coDuLieuMoc, loc.bienMoc)).length, [duLieu, coDuLieuMoc, loc.bienMoc]);
 
+  const soDuDiemChuaMua = useMemo(() => duLieu.filter((r) => lyDoChuaCoDiemMua(r)).length, [duLieu]);
+
   const daLoc = useMemo(() => {
     let ds = locChung(duLieu, loc);
     if (loc.tin && nguoiDung) ds = ds.filter((r) => r.tin === loc.tin);
     if (loc.chiGanDiemMua) ds = ds.filter((r) => laMaTheoDoi(r, coDuLieuMoc, loc.bienMoc));
+    if (loc.chiDuDiemChuaMua) ds = ds.filter((r) => lyDoChuaCoDiemMua(r));
     ds = locTheoChiBao(ds, locChiBao);
 
     const lay = COT[sapXep.khoa]?.lay;
@@ -333,11 +337,11 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
   }
 
   function xoaBoLoc() {
-    datLoc({ ...LOC_TRONG, tin: "", chiGanDiemMua: false, bienMoc: 3 });
+    datLoc({ ...LOC_TRONG, tin: "", chiGanDiemMua: false, chiDuDiemChuaMua: false, bienMoc: 3 });
     datLocChiBao([]);
   }
 
-  const coBoLoc = coLocChung(loc) || loc.tin || loc.chiGanDiemMua || locChiBao.length > 0;
+  const coBoLoc = coLocChung(loc) || loc.tin || loc.chiGanDiemMua || loc.chiDuDiemChuaMua || locChiBao.length > 0;
   const duocXemCot = (k) => !!nguoiDung || !COT_CAN_DANG_NHAP.has(k);
   const dsKhoaChon = DS_KHOA_CHON.filter(duocXemCot);
   // Dang loc "ma theo doi" thi tu hien 2 cot moc can vuot + diem neu vuot.
@@ -441,6 +445,17 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
         >
           <span title="Mã chưa có lệnh và (1) đã đạt điểm MUA nhưng đang đợi phiên sau xác nhận khối lượng, hoặc (2) giá đang sát một mốc (mây / đường cân bằng dài hạn) mà vượt qua thì được cộng điểm và đủ điểm MUA">
             Mã theo dõi: đạt điểm chờ phiên sau + sắp chạm mốc tính điểm +<b style={{ color: "var(--xanh)" }}> · {soTheoDoi} mã</b>
+          </span>
+        </OTich>
+        <OTich
+          checked={loc.chiDuDiemChuaMua}
+          onChange={(v) => {
+            datLoc((cu) => ({ ...cu, chiDuDiemChuaMua: v }));
+            if (v) setSapXep({ khoa: "diem", chieu: "desc" });
+          }}
+        >
+          <span title="Mã không có lệnh, điểm hợp lưu đã đạt ngưỡng mua nhưng hệ thống chưa báo MUA. Mở trang mã để xem lý do cụ thể (chờ khối lượng, thanh khoản, ADX, đợt đã báo...).">
+            Đủ điểm nhưng chưa có điểm mua<b style={{ color: "var(--vang)" }}> · {soDuDiemChuaMua} mã</b>
           </span>
         </OTich>
         {loc.chiGanDiemMua && coDuLieuMoc && (

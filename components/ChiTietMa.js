@@ -35,6 +35,8 @@ import {
   DT_MAX,
   RS_MAX,
   nhe,
+  lyDoChuaCoDiemMua,
+  NGUONG_DIEM_MUA,
 } from "@/components/dungChung";
 
 // Lich su giao dich + thong ke hieu suat tung ma: TAM THOI BO KHOI WEB theo
@@ -540,6 +542,18 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
             >
               <b>{nhanGiaiNgan(row).nhan}:</b> {nhanGiaiNgan(row).moTa}
             </p>
+          )}
+          {lyDoChuaCoDiemMua(row) && (
+            <div className="text-xs leading-relaxed mb-4 rounded-lg p-3" data-may="chua-co-diem-mua" style={{ background: "var(--vang-nen)", border: "1px solid var(--vang-vien)", color: "var(--chu-2)" }}>
+              <p className="font-bold mb-1" style={{ color: "var(--vang)" }}>
+                {lyDoChuaCoDiemMua(row).nhan} (điểm {soAn(row.diem)} ≥ ngưỡng {NGUONG_DIEM_MUA})
+              </p>
+              <ul className="list-disc pl-4 space-y-1">
+                {lyDoChuaCoDiemMua(row).lyDo.map((t) => (
+                  <li key={t}>{t}</li>
+                ))}
+              </ul>
+            </div>
           )}
           <div className="flex flex-wrap gap-2">
             <TagInfo nhan="Vùng" giaTri={tag.vung.nhan} mau={tag.vung.mau} />

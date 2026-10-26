@@ -155,6 +155,34 @@ export function laChoPhienSau(row) {
   return row?.tin === "TRUNG LAP" && row?.cho_phien_sau === true;
 }
 
+// MA DU DIEM MA CHUA CO DIEM MUA (Hieu 26/10/2026): diem hop luu da >= nguong MUA nhung ma van TRUNG LAP (khong co lenh, khong cho vao). Tra ve { nhan, lyDo: [chuoi] } hoac null.
+// Cac cong cua engine (engine/tinhTinHieuChoMa.js + engine/loi/tinHieuTho.js): gia >= 10 (nghin dong), KL TB20 >= 100.000 cp, ADX >= 18 (hoac diem >= 2), phien dau tren nguong du khoi luong xac nhan,
+// vung FVG / breakout, va moi DOT diem tren nguong chi bao MUA 1 LAN. Cac cong ma web co du lieu thi neu dung ly do; con lai (FVG / da bao trong dot) ghi la nguyen nhan co the.
+export function lyDoChuaCoDiemMua(row) {
+  if (!row || row.tin !== "TRUNG LAP" || row.diem == null || Number(row.diem) < NGUONG_DIEM_MUA) return null;
+  if (Array.isArray(row.lenh_web) && row.lenh_web.length > 0) return null;
+  const ly = [];
+  if (row.ket_thuc_tp3) {
+    ly.push("Lệnh trước đã chạm TP3 và kết thúc. Mã chỉ có điểm mua mới khi điểm tụt xuống dưới ngưỡng rồi vượt lên lại (hoặc có tín hiệu mua mới sau TP3).");
+  }
+  if (row.cho_phien_sau === true) {
+    ly.push("Phiên đầu tiên trên ngưỡng chưa đủ khối lượng xác nhận (khối lượng chưa vượt trung bình 20 phiên +50%, chưa vượt hôm trước +30% hoặc chưa vượt khối lượng các phiên giảm gần đây). Chờ phiên sau: nếu điểm còn giữ và khối lượng đủ thì sẽ báo MUA.");
+  }
+  if (row.gia != null && Number(row.gia) > 0 && Number(row.gia) < 10) {
+    ly.push(`Giá ${fmt(row.gia)} nghìn đồng, dưới mức tối thiểu 10 nghìn đồng (hệ thống loại cổ phiếu giá quá thấp).`);
+  }
+  if (row.khoi_luong_tb20 != null && Number(row.khoi_luong_tb20) > 0 && Number(row.khoi_luong_tb20) < 100000) {
+    ly.push(`Thanh khoản thấp: khối lượng trung bình 20 phiên chỉ ${fmt(row.khoi_luong_tb20)} cp, dưới mức tối thiểu 100.000 cp/phiên.`);
+  }
+  if (row.adx != null && Number(row.adx) < 18 && Number(row.diem) < 2) {
+    ly.push(`ADX ${fmt(row.adx)} dưới 18: xu hướng chưa đủ mạnh. Cổng ADX chỉ bỏ qua khi điểm từ 2 trở lên (hiện ${fmt(row.diem)}).`);
+  }
+  if (ly.length === 0) {
+    ly.push("Đã qua các cổng giá, thanh khoản và ADX nhưng chưa có điểm mua. Thường do (1) đợt điểm trên ngưỡng này đã báo MUA trước đó: mỗi đợt chỉ báo một lần, cần điểm tụt dưới ngưỡng rồi vượt lên lại; hoặc (2) phiên đầu tiên trên ngưỡng giá chưa nằm trong vùng giá phù hợp (FVG / breakout đủ mạnh) hoặc chưa đủ khối lượng.");
+  }
+  return { nhan: "Đủ điểm nhưng chưa có điểm mua", lyDo: ly };
+}
+
 export function sapChamMoc(row, bienPct) {
   const m = mocTiepTheo(row);
   if (!m || row.tin !== "TRUNG LAP") return false;
