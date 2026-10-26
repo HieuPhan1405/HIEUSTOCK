@@ -501,7 +501,8 @@ export default function TrangQuanTri() {
             </button>
           </div>
           {mkTam && (
-            <div className="rounded-lg border p-4 mb-3" style={{ borderColor: mkTam.loi ? "var(--do)" : "var(--vang)", background: "var(--phu)" }} role="status">
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" style={{ background: "rgba(0,0,0,0.7)" }} onClick={() => setMkTam(null)}>
+            <div className="rounded-xl border p-5 w-full max-w-md" style={{ borderColor: mkTam.loi ? "var(--do)" : "var(--vang)", background: "var(--card)" }} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
               {mkTam.loi ? (
                 <p className="text-sm" style={{ color: "var(--do)" }}>{mkTam.loi}</p>
               ) : (
@@ -524,6 +525,7 @@ export default function TrangQuanTri() {
               <button type="button" className="text-xs" style={{ color: "var(--mo)" }} onClick={() => setMkTam(null)}>
                 Đóng
               </button>
+            </div>
             </div>
           )}
           {dsNguoiDung.length === 0 && !dangTaiNguoiDung && (
