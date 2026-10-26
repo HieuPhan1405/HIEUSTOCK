@@ -1049,6 +1049,7 @@ export class LopVe {
           dong.push(`Free float ${soVN(tk.ff * 100, 0)}% = ${tr(tk.troi)} → đã quay ${soVN(tk.F, 2)} lần`);
           mau = tk.F >= 1 ? "#22C55E" : tk.F >= 0.5 ? "#F6C544" : "#9CA3AF";
           dong.push(tk.F >= 1 ? "Đã quay hết lượng trôi nổi" : tk.F >= 0.5 ? "Gần quay hết lượng trôi nổi" : "Chưa quay hết lượng trôi nổi");
+          dong.push("Free float theo VNDirect (quý) - mã Nhà nước / cổ đông lớn nắm nhiều có thể sai");
         }
         ctx.save();
         ctx.font = "600 11px 'Open Sans', sans-serif";
@@ -1067,7 +1068,7 @@ export class LopVe {
         ctx.lineWidth = 1;
         ctx.strokeRect(bx + 0.5, by + 0.5, rong - 1, cao - 1);
         dong.forEach((t, k) => {
-          ctx.fillStyle = k === dong.length - 1 && tk.F != null ? mau : this.mauChu;
+          ctx.fillStyle = k === dong.length - 2 && tk.F != null ? mau : this.mauChu;
           ctx.fillText(t, bx + 6, by + 3 + k * 15 + 7.5);
         });
         ctx.restore();
