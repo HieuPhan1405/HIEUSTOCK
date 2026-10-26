@@ -97,8 +97,32 @@ for (const ng of dsNganh) {
     duoi, gtTuan: +g5.toFixed(0), nongDongTien: +(g5 / gTruoc).toFixed(2), tienRong5p: +((clvTong / gtTong) * 100).toFixed(1), rs20: +rs20.toFixed(1),
   });
 }
+
+// CHUOI NGAY (520 phien gan nhat) de WEB tu tinh RRG theo khung / chu ky / benchmark nguoi dung chon (lib/rrgTinh.js): chi so tung nganh, trung binh deu ca tap ma, VN-Index.
+function chuoiNgay() {
+  const ngay = nen.VCB.slice(-521).map((x) => x.t);
+  const gia = Object.fromEntries(Object.entries(ma).map(([k, v]) => [k, new Map(v.ds.map((x) => [x.t, x.c]))]));
+  const dayChiSo = (dsMa) => {
+    let idx = 100;
+    return ngay.slice(1).map((t, i) => {
+      const r = [];
+      for (const k of dsMa) { const a = gia[k].get(ngay[i]), b = gia[k].get(t); if (a > 0 && b > 0) r.push(b / a - 1); }
+      if (r.length) idx *= 1 + r.reduce((s, x) => s + x, 0) / r.length;
+      return +idx.toFixed(3);
+    });
+  };
+  const nganhMa = {};
+  for (const [k] of Object.entries(ma)) (nganhMa[nganh[k]] ??= []).push(k);
+  const vniMap = new Map(vni.map((x) => [x.t, x.c]));
+  return {
+    ngay: ngay.slice(1),
+    tb: dayChiSo(Object.keys(ma)),
+    vni: ngay.slice(1).map((t) => +(vniMap.get(t) ?? NaN).toFixed(2)),
+    nganh: Object.fromEntries(Object.entries(nganhMa).filter(([, v]) => v.length >= 3).map(([g, v]) => [g, dayChiSo(v)])),
+  };
+}
 ketQua.sort((a, b) => b.ratio - a.ratio);
-if (process.argv.includes("--json")) writeFileSync(new URL("../output/rrg_nganh.json", import.meta.url), JSON.stringify({ ngay: nen.VCB.at(-1).t, tuanCuoi: cacTuan.at(-1), ketQua }));
+if (process.argv.includes("--json")) writeFileSync(new URL("../output/rrg_nganh.json", import.meta.url), JSON.stringify({ ngay: nen.VCB.at(-1).t, tuanCuoi: cacTuan.at(-1), ketQua, chuoi: chuoiNgay() }));
 console.log(`RRG nganh den tuan ${cacTuan.at(-1)} (du lieu den ${nen.VCB.at(-1).t}); ratio/mom: >100 la tot`);
 console.log("nganh".padEnd(34), "goc".padEnd(10), "ratio".padStart(7), "mom".padStart(7), "RS20".padStart(6), "GTGD5p(ty)".padStart(11), "nong".padStart(6), "tienRong%".padStart(10), "  duoi 8 tuan (ratio)");
 for (const k of ketQua) console.log(k.nganh.padEnd(34), k.goc.padEnd(10), String(k.ratio).padStart(7), String(k.mom).padStart(7), String(k.rs20).padStart(6), String(k.gtTuan).padStart(11), String(k.nongDongTien).padStart(6), String(k.tienRong5p).padStart(10), " ", k.duoi.map((d) => d.ratio.toFixed(1)).join(" "));

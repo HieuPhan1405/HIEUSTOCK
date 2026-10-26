@@ -109,7 +109,7 @@ for (const d of ds) {
 }
 const du = {
   ngay: rrg.ngay,
-  rrg: { ngay: rrg.ngay, tuanCuoi: rrg.tuanCuoi, ketQua: rrg.ketQua.map((k) => ({ ...k, nhan: NGANH_NHAN[k.nganh] || k.nganh })) },
+  rrg: { ngay: rrg.ngay, tuanCuoi: rrg.tuanCuoi, chuoi: rrg.chuoi, ketQua: rrg.ketQua.map((k) => ({ ...k, nhan: NGANH_NHAN[k.nganh] || k.nganh })) },
   ma,
 };
 writeFileSync(new URL("../output/phan_tich_web.json", import.meta.url), JSON.stringify(du));

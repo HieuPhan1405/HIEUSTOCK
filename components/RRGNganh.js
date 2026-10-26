@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { soVN } from "@/lib/soVN";
+import { tinhRRG, gocRRG } from "@/lib/rrgTinh";
 
-// RRG (Relative Rotation Graph) NGANH tren Dashboard: engine/dich-vu/tinhRRG.mjs tinh tu nen tuan ~390 ma so voi chi so trung binh deu, dua len qua /api/upload-phan-tich-co-ban.
-// Cot "Rong chu dong hom nay" lay them tu /api/dong-tien (DNSE thoi gian thuc, chi thanh vien da duyet) - khong co thi an cot.
+// RRG (Relative Rotation Graph) tren Dashboard. Chuoi gia ngay cua tung nganh + benchmark do engine/dich-vu/tinhRRG.mjs dua len (/api/upload-phan-tich-co-ban),
+// trinh duyet tu tinh lai theo bo loc: khung ngay/tuan, chu ky RS, do dai duoi, benchmark, chon nganh, them ma co phieu (gia lay tu /api/gia-lich-su).
+// Cot "Nong" / "Tien rong uoc tinh" cua nganh la so engine tinh san (khung tuan); "Rong chu dong hom nay" lay tu /api/dong-tien (chi thanh vien da duyet).
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
@@ -16,32 +18,61 @@ const NHAN_GOC = { Leading: "Dẫn dắt", Improving: "Cải thiện", Weakening
 const W = 640;
 const H = 560;
 const LE = 46;
+const CHU_KY = [10, 15, 30, 35, 50];
+const DUOI = { W: [4, 8, 12, 20], D: [10, 20, 30, 50, 90] };
+const MAC_DINH = { W: { cuaSo: 10, duoi: 8 }, D: { cuaSo: 30, duoi: 20 } };
+const TOI_DA_MA = 8;
+const MA_HOP_LE = /^[A-Z0-9]{2,12}$/;
 
 const f1 = (x, d = 1) => (x == null || !Number.isFinite(x) ? "—" : soVN(x, d, true));
 const dau = (x, d = 1) => (x == null || !Number.isFinite(x) ? "—" : `${x > 0 ? "+" : ""}${f1(x, d)}`);
 const mau = (v, nguong = 0) => (v == null ? MUTED : v > nguong ? XANH : v < -nguong ? DO : "var(--chu)");
 
+function Chip({ bat, onClick, children, title }) {
+  return (
+    <button type="button" onClick={onClick} title={title} className="px-2.5 py-1 rounded-full text-xs border" style={{ borderColor: bat ? "var(--tim-nhat)" : VIEN, color: bat ? "var(--chu)" : MUTED, background: bat ? "var(--vien-nhe)" : "transparent", ...sans, fontWeight: bat ? 700 : 500 }}>
+      {children}
+    </button>
+  );
+}
+function The({ children, onBo }) {
+  return (
+    <span className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-1 rounded-full text-xs border" style={{ borderColor: VIEN, background: "var(--vien-nhe)", ...sans }}>
+      {children}
+      <button type="button" onClick={onBo} aria-label="Bỏ" className="px-1 leading-none" style={{ color: MUTED }}>
+        ✕
+      </button>
+    </span>
+  );
+}
+function Nhom({ ten, children }) {
+  return (
+    <div className="flex flex-wrap items-center gap-1.5">
+      <span className="text-[11px] mr-1" style={{ color: MUTED, minWidth: 54 }}>{ten}</span>
+      {children}
+    </div>
+  );
+}
+
 function BieuDo({ ds, chon, datChon }) {
-  const { X, Y, dx, dy } = useMemo(() => {
-    // khung theo vi tri HIEN TAI cua cac nganh (duoi di xa hon thi bi cat o vien, khong keo gian ca bieu do)
-    const xs = ds.map((r) => r.duoi.at(-1).ratio);
-    const ys = ds.map((r) => r.duoi.at(-1).mom);
-    const dx = Math.max(3, Math.max(...xs.map((x) => Math.abs(x - 100))) + 1);
-    const dy = Math.max(3, Math.max(...ys.map((y) => Math.abs(y - 100))) + 1);
+  const { X, Y } = useMemo(() => {
+    // khung theo vi tri HIEN TAI (duoi di xa hon thi bi cat o vien, khong keo gian ca bieu do)
+    const xs = ds.map((r) => r.pts.at(-1).ratio);
+    const ys = ds.map((r) => r.pts.at(-1).mom);
+    const dx = Math.max(3, ...xs.map((x) => Math.abs(x - 100)), 0) + 1;
+    const dy = Math.max(3, ...ys.map((y) => Math.abs(y - 100)), 0) + 1;
     const kep = (v, d) => Math.min(100 + d, Math.max(100 - d, v));
     return {
-      dx,
-      dy,
       X: (v) => LE + ((kep(v, dx) - (100 - dx)) / (2 * dx)) * (W - 2 * LE),
       Y: (v) => H - LE - ((kep(v, dy) - (100 - dy)) / (2 * dy)) * (H - 2 * LE),
     };
   }, [ds]);
-  // dat nhan ten nganh tranh de len nhau: xep theo y, nhan nao cham nhan da dat thi day xuong den khi het cham
+  // dat nhan ten tranh de len nhau: xep theo y, nhan nao cham nhan da dat thi day xuong den khi het cham
   const viTriNhan = useMemo(() => {
     const dat = [];
     const kq = {};
     [...ds]
-      .map((r) => ({ r, x: X(r.duoi.at(-1).ratio) + 9, y: Y(r.duoi.at(-1).mom) + 4, w: r.nhan.length * 6 }))
+      .map((r) => ({ r, x: X(r.pts.at(-1).ratio) + 9, y: Y(r.pts.at(-1).mom) + 4, w: r.nhan.length * 6 }))
       .sort((a, b) => a.y - b.y)
       .forEach((n) => {
         let y = n.y;
@@ -51,7 +82,7 @@ function BieuDo({ ds, chon, datChon }) {
           y = va.y + 12;
         }
         dat.push({ x: n.x, y, w: n.w });
-        kq[n.r.nganh] = y;
+        kq[n.id] = y;
       });
     return kq;
   }, [ds, X, Y]);
@@ -61,7 +92,7 @@ function BieuDo({ ds, chon, datChon }) {
     </text>
   );
   return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", overflow: "visible" }} role="img" aria-label="Biểu đồ RRG các ngành">
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: "100%", height: "auto", overflow: "visible" }} role="img" aria-label="Biểu đồ RRG">
       <rect x={LE} y={LE} width={W - 2 * LE} height={H - 2 * LE} fill="none" stroke="var(--vien)" />
       <rect x={X(100)} y={LE} width={W - LE - X(100)} height={Y(100) - LE} fill="var(--xanh)" opacity="0.05" />
       <rect x={LE} y={Y(100)} width={X(100) - LE} height={H - LE - Y(100)} fill="var(--do)" opacity="0.05" />
@@ -72,23 +103,23 @@ function BieuDo({ ds, chon, datChon }) {
       {nhanGoc(LE + 8, H - LE - 10, "TỤT HẬU", "start", "Lagging")}
       {nhanGoc(LE + 8, LE + 18, "CẢI THIỆN", "start", "Improving")}
       <text x={W / 2} y={H - 10} textAnchor="middle" fontSize="11" fill={MUTED} style={sans}>
-        RS-Ratio: sức mạnh so với thị trường (&gt; 100 = hơn) →
+        RS-Ratio: sức mạnh so với mốc so sánh (&gt; 100 = hơn) →
       </text>
       <text transform={`translate(13 ${H / 2}) rotate(-90)`} textAnchor="middle" fontSize="11" fill={MUTED} style={sans}>
         RS-Momentum: đang tăng tốc (&gt; 100) →
       </text>
       {ds.map((r) => {
         const c = MAU_GOC[r.goc];
-        const l = r.duoi.at(-1);
-        const sang = !chon || chon === r.nganh;
+        const l = r.pts.at(-1);
+        const sang = !chon || chon === r.id;
         return (
-          <g key={r.nganh} opacity={sang ? 1 : 0.18} style={{ cursor: "pointer" }} onClick={() => datChon(chon === r.nganh ? null : r.nganh)}>
-            <polyline points={r.duoi.map((d) => `${X(d.ratio)},${Y(d.mom)}`).join(" ")} fill="none" stroke={c} strokeWidth="1.8" opacity="0.6" />
-            {r.duoi.slice(0, -1).map((d) => (
-              <circle key={d.tuan} cx={X(d.ratio)} cy={Y(d.mom)} r="2.2" fill={c} opacity="0.55" />
+          <g key={r.id} opacity={sang ? 1 : 0.18} style={{ cursor: "pointer" }} onClick={() => datChon(chon === r.id ? null : r.id)}>
+            <polyline points={r.pts.map((d) => `${X(d.ratio)},${Y(d.mom)}`).join(" ")} fill="none" stroke={c} strokeWidth="1.8" opacity="0.6" strokeDasharray={r.loai === "ma" ? "4 3" : undefined} />
+            {r.pts.slice(0, -1).map((d) => (
+              <circle key={d.t} cx={X(d.ratio)} cy={Y(d.mom)} r="2.2" fill={c} opacity="0.55" />
             ))}
-            <circle cx={X(l.ratio)} cy={Y(l.mom)} r="6" fill={c} />
-            <text x={X(l.ratio) + 9} y={viTriNhan[r.nganh]} fontSize="11.5" fill="var(--chu)" style={sans} fontWeight={chon === r.nganh ? 700 : 500}>
+            {r.loai === "ma" ? <rect x={X(l.ratio) - 5.5} y={Y(l.mom) - 5.5} width="11" height="11" fill={c} stroke="var(--chu)" strokeWidth="1.2" transform={`rotate(45 ${X(l.ratio)} ${Y(l.mom)})`} /> : <circle cx={X(l.ratio)} cy={Y(l.mom)} r="6" fill={c} />}
+            <text x={X(l.ratio) + 9} y={viTriNhan[r.id]} fontSize="11.5" fill="var(--chu)" style={sans} fontWeight={r.loai === "ma" || chon === r.id ? 700 : 500}>
               {r.nhan}
             </text>
           </g>
@@ -99,9 +130,19 @@ function BieuDo({ ds, chon, datChon }) {
 }
 
 export default function RRGNganh({ du }) {
+  const rrg = du?.rrg;
+  const ketQua = useMemo(() => rrg?.ketQua ?? [], [rrg]);
+  const chuoi = rrg?.chuoi;
+  const [khung, datKhung] = useState("W");
+  const [cuaSo, datCuaSo] = useState(MAC_DINH.W.cuaSo);
+  const [duoi, datDuoi] = useState(MAC_DINH.W.duoi);
+  const [bench, datBench] = useState("tb"); // tb = trung binh deu | vni = VN-Index
+  const [tat, datTat] = useState(() => new Set()); // nganh bi bo khoi bieu do
+  const [maCK, datMaCK] = useState([]); // [{ ma, gia: [..] | null, loi, dangTai }]
+  const [nhapMa, datNhapMa] = useState("");
   const [chon, datChon] = useState(null);
   const [dongTien, setDongTien] = useState(null); // { ten -> rong (trieu dong) } hoac null
-  const ds = du?.rrg?.ketQua ?? [];
+
   useEffect(() => {
     let dung = false;
     fetch("/api/dong-tien", { cache: "no-store" })
@@ -115,11 +156,55 @@ export default function RRGNganh({ du }) {
       dung = true;
     };
   }, []);
-  if (!ds.length) return null;
-  const rongCua = (r) => (dongTien ? dongTien[r.nhan] ?? dongTien[r.nganh] ?? null : null);
-  const sx = [...ds].sort((a, b) => b.ratio - a.ratio);
-  const dan = ds.filter((r) => r.goc === "Leading").length;
-  const ngayVN = du.rrg.ngay ? du.rrg.ngay.split("-").reverse().join("/") : "";
+
+  const doiKhung = (k) => {
+    datKhung(k);
+    datCuaSo(MAC_DINH[k].cuaSo);
+    datDuoi(MAC_DINH[k].duoi);
+  };
+
+  async function themMa(ma) {
+    const m = ma.trim().toUpperCase();
+    datNhapMa("");
+    if (!MA_HOP_LE.test(m) || maCK.some((x) => x.ma === m) || maCK.length >= TOI_DA_MA || !chuoi) return;
+    datMaCK((c) => [...c, { ma: m, gia: null, loi: null, dangTai: true }]);
+    try {
+      const r = await fetch(`/api/gia-lich-su?ma=${m}&kt=D`);
+      const j = await r.json();
+      if (!r.ok || !j.nen?.length) throw new Error(j.thongBao || "Không có dữ liệu giá");
+      const theoNgay = new Map(j.nen.map((b) => [b.t, b.c]));
+      datMaCK((c) => c.map((x) => (x.ma === m ? { ma: m, gia: chuoi.ngay.map((t) => theoNgay.get(t) ?? null), loi: null, dangTai: false } : x)));
+    } catch (e) {
+      datMaCK((c) => c.map((x) => (x.ma === m ? { ma: m, gia: null, loi: e.message || "Lỗi tải giá", dangTai: false } : x)));
+    }
+  }
+
+  const bieuDo = useMemo(() => {
+    if (!chuoi) return [];
+    const mocSoSanh = bench === "vni" ? chuoi.vni : chuoi.tb;
+    const tham = { khung, cuaSo, duoi };
+    const ra = [];
+    for (const r of ketQua) {
+      if (tat.has(r.nganh) || !chuoi.nganh[r.nganh]) continue;
+      const pts = tinhRRG(chuoi.ngay, chuoi.nganh[r.nganh], mocSoSanh, tham);
+      if (pts.length >= 2) ra.push({ id: r.nganh, loai: "nganh", nhan: r.nhan ?? r.nganh, soMa: r.soMa, pts, goc: gocRRG(pts.at(-1).ratio, pts.at(-1).mom), goc0: r });
+    }
+    for (const m of maCK) {
+      if (!m.gia) continue;
+      const pts = tinhRRG(chuoi.ngay, m.gia, mocSoSanh, tham);
+      if (pts.length >= 2) ra.push({ id: `ma:${m.ma}`, loai: "ma", nhan: m.ma, pts, goc: gocRRG(pts.at(-1).ratio, pts.at(-1).mom) });
+    }
+    return ra;
+  }, [chuoi, ketQua, khung, cuaSo, duoi, bench, tat, maCK]);
+
+  if (!ketQua.length) return null;
+  const rongCua = (r) => (dongTien && r.goc0 ? dongTien[r.nhan] ?? dongTien[r.id] ?? null : null);
+  const sx = [...bieuDo].sort((a, b) => b.pts.at(-1).ratio - a.pts.at(-1).ratio);
+  const dan = bieuDo.filter((r) => r.loai === "nganh" && r.goc === "Leading").length;
+  const ngayVN = rrg.ngay ? rrg.ngay.split("-").reverse().join("/") : "";
+  const dangTat = ketQua.filter((r) => tat.has(r.nganh));
+  const maLoi = maCK.filter((m) => m.loi);
+  const donVi = khung === "W" ? "tuần" : "phiên";
   return (
     <section className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }} aria-label="RRG ngành">
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
@@ -131,55 +216,151 @@ export default function RRGNganh({ du }) {
         </span>
       </div>
       <p className="text-xs mb-3" style={{ color: MUTED }}>
-        Mỗi ngành là một chấm: càng sang phải càng mạnh hơn thị trường chung, càng lên cao càng đang tăng tốc. Đuôi là 8 tuần gần nhất — ngành thường quay vòng Cải thiện → Dẫn dắt → Yếu dần → Tụt hậu. Bấm vào chấm để làm nổi bật ngành.
+        Mỗi ngành (hoặc mã) là một chấm: càng sang phải càng mạnh hơn mốc so sánh, càng lên cao càng đang tăng tốc. Đuôi là {duoi} {donVi} gần nhất — thường quay vòng Cải thiện → Dẫn dắt → Yếu dần → Tụt hậu. Bấm vào chấm để làm nổi bật.
       </p>
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
-        <div>
-          <BieuDo ds={ds} chon={chon} datChon={datChon} />
+
+      {/* BO LOC */}
+      {chuoi && (
+        <div className="grid gap-2 mb-4 rounded-xl border p-3" style={{ borderColor: VIEN }} data-may="rrg-bo-loc">
+          <Nhom ten="Khung">
+            <Chip bat={khung === "W"} onClick={() => doiKhung("W")}>Tuần</Chip>
+            <Chip bat={khung === "D"} onClick={() => doiKhung("D")}>Ngày</Chip>
+            <span className="ml-3 text-[11px]" style={{ color: MUTED }}>Chu kỳ RS ({donVi})</span>
+            {CHU_KY.map((n) => (
+              <Chip key={n} bat={cuaSo === n} onClick={() => datCuaSo(n)} title="Số nến lấy trung bình để so sánh sức mạnh tương đối (RS-Ratio)">
+                {n}
+              </Chip>
+            ))}
+          </Nhom>
+          <Nhom ten="Đuôi">
+            {DUOI[khung].map((n) => (
+              <Chip key={n} bat={duoi === n} onClick={() => datDuoi(n)}>
+                {n}
+              </Chip>
+            ))}
+            <span className="ml-3 text-[11px]" style={{ color: MUTED }}>So với</span>
+            <Chip bat={bench === "tb"} onClick={() => datBench("tb")} title="Chỉ số trung bình đều các mã thanh khoản ≥ 2 tỷ/phiên">Trung bình đều</Chip>
+            <Chip bat={bench === "vni"} onClick={() => datBench("vni")} title="VN-Index (tính theo vốn hoá)">VN-Index</Chip>
+          </Nhom>
+          <Nhom ten="Ngành">
+            {dangTat.length > 0 ? (
+              <>
+                <span className="text-[11px]" style={{ color: MUTED }}>Đã ẩn:</span>
+                {dangTat.map((r) => (
+                  <The key={r.nganh} onBo={() => datTat((s) => new Set([...s].filter((x) => x !== r.nganh)))}>
+                    {r.nhan}
+                  </The>
+                ))}
+                <Chip bat={false} onClick={() => datTat(new Set())}>Hiện tất cả</Chip>
+              </>
+            ) : (
+              <span className="text-[11px]" style={{ color: MUTED }}>Đang hiện tất cả {ketQua.length} ngành</span>
+            )}
+            <select
+              aria-label="Ẩn ngành"
+              value=""
+              onChange={(e) => e.target.value && datTat((s) => new Set([...s, e.target.value]))}
+              className="px-2 py-1 rounded-full text-xs border"
+              style={{ borderColor: VIEN, background: "transparent", color: MUTED, ...sans }}
+            >
+              <option value="">+ Ẩn ngành…</option>
+              {ketQua.filter((r) => !tat.has(r.nganh)).map((r) => (
+                <option key={r.nganh} value={r.nganh} style={{ color: "#000" }}>
+                  {r.nhan}
+                </option>
+              ))}
+            </select>
+            <Chip bat={false} onClick={() => datTat(new Set(ketQua.map((r) => r.nganh)))}>Chỉ xem mã</Chip>
+          </Nhom>
+          <Nhom ten="Mã CK">
+            {maCK.map((m) => (
+              <The key={m.ma} onBo={() => datMaCK((c) => c.filter((x) => x.ma !== m.ma))}>
+                {m.ma}
+                {m.dangTai ? "…" : m.loi ? " ⚠" : ""}
+              </The>
+            ))}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                themMa(nhapMa);
+              }}
+              className="inline-flex items-center"
+            >
+              <input
+                value={nhapMa}
+                onChange={(e) => datNhapMa(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12))}
+                placeholder={maCK.length >= TOI_DA_MA ? `Tối đa ${TOI_DA_MA} mã` : "+ Thêm mã (VD: HPG) rồi Enter"}
+                disabled={maCK.length >= TOI_DA_MA}
+                aria-label="Thêm mã cổ phiếu vào RRG"
+                className="px-3 py-1 rounded-full text-xs border"
+                style={{ borderColor: VIEN, background: "transparent", color: "var(--chu)", width: 210, fontSize: 16, ...sans }}
+              />
+            </form>
+            {maLoi.length > 0 && (
+              <span className="text-[11px]" style={{ color: DO }}>
+                {maLoi.map((m) => `${m.ma}: ${m.loi}`).join(" · ")}
+              </span>
+            )}
+          </Nhom>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-xs" style={{ color: MUTED }}>
-                <th className="py-1.5 pr-2 font-normal">Ngành</th>
-                <th className="py-1.5 px-2 font-normal">Góc</th>
-                <th className="py-1.5 px-2 font-normal text-right">RS-Ratio</th>
-                <th className="py-1.5 px-2 font-normal text-right" data-may="rrg-nong">Nóng</th>
-                <th className="py-1.5 px-2 font-normal text-right" data-may="rrg-tien-rong">Tiền ròng ước tính</th>
-                {dongTien && <th className="py-1.5 pl-2 font-normal text-right">Ròng chủ động hôm nay</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {sx.map((r) => {
-                const rong = rongCua(r);
-                return (
-                  <tr key={r.nganh} className="border-t cursor-pointer" style={{ borderColor: "var(--vien-nhe)", opacity: !chon || chon === r.nganh ? 1 : 0.4 }} onClick={() => datChon(chon === r.nganh ? null : r.nganh)}>
-                    <td className="py-1.5 pr-2">
-                      {r.nhan} <span className="text-[11px]" style={{ color: MUTED }}>({r.soMa})</span>
-                    </td>
-                    <td className="py-1.5 px-2">
-                      <span className="text-[11px] px-2 py-0.5 rounded-full border whitespace-nowrap" style={{ color: MAU_GOC[r.goc], borderColor: MAU_GOC[r.goc] }}>
-                        {NHAN_GOC[r.goc]}
-                      </span>
-                    </td>
-                    <td className="py-1.5 px-2 text-right" style={{ fontWeight: 600 }}>{f1(r.ratio)}</td>
-                    <td className="py-1.5 px-2 text-right" style={{ color: r.nongDongTien >= 1.1 ? XANH : r.nongDongTien < 0.8 ? DO : "var(--chu)" }}>{f1(r.nongDongTien, 2)}×</td>
-                    <td className="py-1.5 px-2 text-right" style={{ color: mau(r.tienRong5p, 5) }}>{dau(r.tienRong5p)}%</td>
-                    {dongTien && (
-                      <td className="py-1.5 pl-2 text-right" style={{ color: mau(rong) }}>
-                        {rong == null ? "—" : `${dau(rong / 1000, 0)} tỷ`}
+      )}
+
+      {bieuDo.length === 0 ? (
+        <p className="text-sm py-8 text-center" style={{ color: MUTED }}>
+          Không có đủ dữ liệu với bộ lọc này (chu kỳ RS dài hơn lịch sử) — chọn chu kỳ ngắn hơn hoặc khung Ngày.
+        </p>
+      ) : (
+        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+          <div>
+            <BieuDo ds={bieuDo} chon={chon} datChon={datChon} />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs" style={{ color: MUTED }}>
+                  <th className="py-1.5 pr-2 font-normal">Ngành / mã</th>
+                  <th className="py-1.5 px-2 font-normal">Góc</th>
+                  <th className="py-1.5 px-2 font-normal text-right">RS-Ratio</th>
+                  <th className="py-1.5 px-2 font-normal text-right">Momentum</th>
+                  <th className="py-1.5 px-2 font-normal text-right" data-may="rrg-nong">Nóng</th>
+                  <th className="py-1.5 px-2 font-normal text-right" data-may="rrg-tien-rong">Tiền ròng ước tính</th>
+                  {dongTien && <th className="py-1.5 pl-2 font-normal text-right">Ròng chủ động hôm nay</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {sx.map((r) => {
+                  const l = r.pts.at(-1);
+                  const rong = rongCua(r);
+                  return (
+                    <tr key={r.id} className="border-t cursor-pointer" style={{ borderColor: "var(--vien-nhe)", opacity: !chon || chon === r.id ? 1 : 0.4 }} onClick={() => datChon(chon === r.id ? null : r.id)}>
+                      <td className="py-1.5 pr-2">
+                        {r.loai === "ma" ? <b>{r.nhan}</b> : r.nhan} <span className="text-[11px]" style={{ color: MUTED }}>{r.loai === "ma" ? "(mã)" : `(${r.soMa})`}</span>
                       </td>
-                    )}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      <td className="py-1.5 px-2">
+                        <span className="text-[11px] px-2 py-0.5 rounded-full border whitespace-nowrap" style={{ color: MAU_GOC[r.goc], borderColor: MAU_GOC[r.goc] }}>
+                          {NHAN_GOC[r.goc]}
+                        </span>
+                      </td>
+                      <td className="py-1.5 px-2 text-right" style={{ fontWeight: 600 }}>{f1(l.ratio)}</td>
+                      <td className="py-1.5 px-2 text-right" style={{ color: mau(l.mom - 100, 0) }}>{f1(l.mom)}</td>
+                      <td className="py-1.5 px-2 text-right" style={{ color: r.goc0 ? (r.goc0.nongDongTien >= 1.1 ? XANH : r.goc0.nongDongTien < 0.8 ? DO : "var(--chu)") : MUTED }}>{r.goc0 ? `${f1(r.goc0.nongDongTien, 2)}×` : "—"}</td>
+                      <td className="py-1.5 px-2 text-right" style={{ color: r.goc0 ? mau(r.goc0.tienRong5p, 5) : MUTED }}>{r.goc0 ? `${dau(r.goc0.tienRong5p)}%` : "—"}</td>
+                      {dongTien && (
+                        <td className="py-1.5 pl-2 text-right" style={{ color: mau(rong) }}>
+                          {rong == null ? "—" : `${dau(rong / 1000, 0)} tỷ`}
+                        </td>
+                      )}
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
-      </div>
+      )}
       <p className="text-[11px] mt-3" style={{ color: MUTED }}>
-        Mốc so sánh là chỉ số trung bình đều các mã thanh khoản ≥ 2 tỷ/phiên (VN-Index tính theo vốn hoá nên VIC, VHM, ngân hàng kéo, ngành nào cũng “thắng” nó). <b>Nóng</b> = giá trị giao dịch 5 phiên / mức thường lệ 10 tuần trước.{" "}
-        <b>Tiền ròng ước tính</b> chỉ đo giá đóng cửa nghiêng về đầu cao hay đầu thấp của nến theo giá trị giao dịch, không phải mua/bán chủ động thật. Ngành dưới 3 mã đủ thanh khoản không được vẽ. Không phải khuyến nghị đầu tư.
+        Mốc so sánh mặc định là chỉ số trung bình đều các mã thanh khoản ≥ 2 tỷ/phiên (VN-Index tính theo vốn hoá nên VIC, VHM, ngân hàng kéo, ngành nào cũng “thắng” nó). Chu kỳ RS càng ngắn đồ thị càng nhạy nhưng nhiễu hơn. <b>Nóng</b> = giá trị giao dịch 5 phiên / mức thường lệ 10 tuần trước.{" "}
+        <b>Tiền ròng ước tính</b> chỉ đo giá đóng cửa nghiêng về đầu cao hay đầu thấp của nến theo giá trị giao dịch, không phải mua/bán chủ động thật; hai cột này chỉ có cho ngành. Ngành dưới 3 mã đủ thanh khoản không được vẽ. Mã cổ phiếu hình thoi, nét đứt. Không phải khuyến nghị đầu tư.
       </p>
     </section>
   );
