@@ -14,6 +14,7 @@ ok("chieu: BUY/SELL/1/2/B/S, la -> null", chuanHoaChieu("BUY") === "m" && chuanH
 {
   const t = phanTichThoiGian("2026-10-23 14:45:05.817");
   ok("thoi gian: ngay, gio, phut, ms", t.ngay === "2026-10-23" && t.gio === "14:45:05" && t.phut === "14:45" && t.ms === ((14 * 60 + 45) * 60 + 5) * 1000 + 817, JSON.stringify(t));
+  { const w = phanTichThoiGian({ Seconds: 1792994614, Nanos: 198000000 }); ok("thoi gian: dang WebSocket {Seconds,Nanos} -> gio VN", w?.ngay === "2026-10-26" && w.gio === "13:03:34" && w.ms % 1000 === 198, JSON.stringify(w)); }
   ok("thoi gian: khong ms / sai dinh dang", phanTichThoiGian("2026-10-23 09:15:00").ms === (9 * 60 + 15) * 60000 && phanTichThoiGian("abc") === null && phanTichThoiGian(undefined) === null);
 }
 ok("pha: ATO / LT / ATC (ke ca 14:45:05)", phaGiaoDich("09:10:00") === "ATO" && phaGiaoDich("09:15:00") === "LT" && phaGiaoDich("14:29:59") === "LT" && phaGiaoDich("14:30:00") === "ATC" && phaGiaoDich("14:45:05") === "ATC");

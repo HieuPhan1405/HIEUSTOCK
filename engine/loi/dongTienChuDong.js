@@ -22,7 +22,15 @@ export function chuanHoaChieu(side) {
 }
 
 // "2026-10-23 14:45:05.817" -> { ngay, gio, phut, ms } (ms = so mili-giay ke tu 00:00)
+// WebSocket DNSE gui thoi gian dang { Seconds, Nanos } (epoch UTC) - doi sang gio Viet Nam (UTC+7) roi di tiep nhu chuoi (Hieu 26/10/2026: truoc do chi hieu chuoi nen KHONG nhan tick nao tu WebSocket that).
 export function phanTichThoiGian(s) {
+  if (s && typeof s === "object" && Number.isFinite(Number(s.Seconds))) {
+    const d = new Date(Number(s.Seconds) * 1000 + (Number(s.Nanos) || 0) / 1e6 + 7 * 3600e3);
+    const p2 = (n) => String(n).padStart(2, "0");
+    s = `${d.getUTCFullYear()}-${p2(d.getUTCMonth() + 1)}-${p2(d.getUTCDate())} ${p2(d.getUTCHours())}:${p2(d.getUTCMinutes())}:${p2(d.getUTCSeconds())}.${String(d.getUTCMilliseconds()).padStart(3, "0")}`;
+  } else if (typeof s === "number" && Number.isFinite(s)) {
+    return phanTichThoiGian({ Seconds: s > 1e11 ? s / 1000 : s, Nanos: 0 });
+  }
   const m = /^(\d{4}-\d{2}-\d{2})[ T](\d{2}):(\d{2}):(\d{2})(?:\.(\d{1,3}))?/.exec(String(s ?? ""));
   if (!m) return null;
   const [, ngay, hh, mm, ss, f] = m;
