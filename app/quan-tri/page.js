@@ -48,6 +48,7 @@ export default function TrangQuanTri() {
   const [dangTaiLienHe, setDangTaiLienHe] = useState(false);
 
   const [dsNguoiDung, setDsNguoiDung] = useState([]);
+  const [mkTam, setMkTam] = useState(null); // { sdt, ten, mk } hoac { loi } - ket qua dat lai mat khau khach
   const [dangTaiNguoiDung, setDangTaiNguoiDung] = useState(false);
 
   const [zaloAppId, setZaloAppId] = useState("");
@@ -145,6 +146,18 @@ export default function TrangQuanTri() {
       body: JSON.stringify({ id, laAdmin }),
     });
     taiNguoiDung(apiKey);
+  }
+
+  // Khach quen mat khau: mat khau cu khong xem duoc (luu bam 1 chieu) -> tao mat khau tam, hien 1 lan de admin gui khach.
+  async function datLaiMatKhau(nd) {
+    if (!window.confirm(`Đặt lại mật khẩu cho ${nd.sdt}${nd.ten ? ` (${nd.ten})` : ""}? Mật khẩu cũ sẽ mất hiệu lực và khách bị đăng xuất.`)) return;
+    try {
+      const res = await fetch("/api/dat-lai-mat-khau", { method: "POST", headers: { "Content-Type": "application/json", "x-api-key": apiKey }, body: JSON.stringify({ id: nd.id }) });
+      const d = await res.json();
+      setMkTam(res.ok && d.matKhauTam ? { sdt: d.sdt, ten: d.ten, mk: d.matKhauTam } : { loi: d.thongBao || d.loi || "Không đặt lại được." });
+    } catch {
+      setMkTam({ loi: "Không kết nối được máy chủ." });
+    }
   }
 
   async function datDuyet(id, daDuyet) {
@@ -487,6 +500,32 @@ export default function TrangQuanTri() {
               {dangTaiNguoiDung ? "Đang tải..." : "Tải lại"}
             </button>
           </div>
+          {mkTam && (
+            <div className="rounded-lg border p-4 mb-3" style={{ borderColor: mkTam.loi ? "var(--do)" : "var(--vang)", background: "var(--phu)" }} role="status">
+              {mkTam.loi ? (
+                <p className="text-sm" style={{ color: "var(--do)" }}>{mkTam.loi}</p>
+              ) : (
+                <>
+                  <p className="text-sm mb-2">
+                    Mật khẩu tạm của <strong>{mkTam.sdt}</strong>
+                    {mkTam.ten ? ` (${mkTam.ten})` : ""} — chỉ hiện một lần, hãy gửi cho khách rồi bảo khách đăng nhập và đổi lại:
+                  </p>
+                  <p className="text-xl font-bold select-all mb-2" style={{ fontFamily: "var(--font-chu)", letterSpacing: 1 }}>{mkTam.mk}</p>
+                  <button
+                    type="button"
+                    className="text-xs font-semibold mr-4"
+                    style={{ color: "#6C5CE7" }}
+                    onClick={() => navigator.clipboard?.writeText(`Mật khẩu tạm của bạn: ${mkTam.mk} — bạn đăng nhập bằng số điện thoại ${mkTam.sdt} rồi đổi lại mật khẩu nhé.`)}
+                  >
+                    Sao chép tin nhắn gửi khách
+                  </button>
+                </>
+              )}
+              <button type="button" className="text-xs" style={{ color: "var(--mo)" }} onClick={() => setMkTam(null)}>
+                Đóng
+              </button>
+            </div>
+          )}
           {dsNguoiDung.length === 0 && !dangTaiNguoiDung && (
             <p className="text-xs py-2" style={{ color: "var(--mo)" }}>
               Chưa có ai đăng ký.
@@ -521,6 +560,9 @@ export default function TrangQuanTri() {
                 </span>
                 <button onClick={() => datDuyet(nd.id, !nd.da_duyet)} className="text-xs font-semibold" style={{ color: nd.da_duyet ? "var(--do)" : "var(--xanh)" }}>
                   {nd.da_duyet ? "Bỏ duyệt" : "Duyệt"}
+                </button>
+                <button onClick={() => datLaiMatKhau(nd)} className="text-xs" style={{ color: "var(--vang)" }} title="Khách quên mật khẩu: tạo mật khẩu tạm">
+                  Đặt lại MK
                 </button>
                 <button onClick={() => datAdmin(nd.id, !nd.la_admin)} className="text-xs" style={{ color: nd.la_admin ? "var(--do)" : "#6C5CE7" }}>
                   {nd.la_admin ? "Bỏ Admin" : "Đặt Admin"}
