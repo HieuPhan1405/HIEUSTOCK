@@ -133,7 +133,7 @@ const CONG_CU_VE = [
   { khoa: "tia", nhan: "Tia", Icon: MoveUpRight },
   { khoa: "ngang", nhan: "Ngang", Icon: Minus },
   { khoa: "doc", nhan: "Dọc", Icon: SeparatorVertical },
-  { khoa: "chuNhat", nhan: "Chữ nhật", Icon: Square },
+  { khoa: "chuNhat", nhan: "Chữ nhật (vòng quay free float)", Icon: Square },
   { khoa: "fib", nhan: "Fibonacci", Icon: null },
   { khoa: "thuoc", nhan: "Thước đo", Icon: Ruler },
   { khoa: "gapKhuc", nhan: "Đường dẫn", Icon: Spline },
@@ -642,6 +642,21 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.lopVe.datNen(nen);
     s.chart.timeScale().setVisibleLogicalRange({ from: Math.max(-2, chiBao.n - 150), to: chiBao.n + THAM_SO_MAC_DINH.dichMay + SO_BUOC_TUONG_LAI.spanB + 2 });
   }, [chiBao, nen]);
+
+  // 3a. Free float theo quy (VNDirect) cho nhan "vong quay co phieu troi noi" cua cong cu Chu nhat; loi mang / ma khong co du lieu thi nhan chi hien khoi luong.
+  useEffect(() => {
+    if (!ma) return undefined;
+    let huy = false;
+    fetch(`/api/free-float?ma=${encodeURIComponent(ma)}`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (!huy) veRef.current?.lopVe.datFreeFloat(j?.trangThai === "ok" ? j.ds : []);
+      })
+      .catch(() => {});
+    return () => {
+      huy = true;
+    };
+  }, [ma]);
 
   // 3b. Chi bao phu tren cung cua so gia: EMA 9/21, Bollinger.
   useEffect(() => {
