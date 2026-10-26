@@ -56,7 +56,6 @@ export class LopVe {
     this.vt = 0;
     // VOLUME PROFILE: hoSo = ho so cua vung dang xem (React tinh roi dua vao); nguonHoSo(i1, i2) = ham tinh ho so cho hinh "frvp" (vung chon)
     this.hoSo = null;
-    this.ff = []; // lich su free float theo quy [{ d, ff, sh }] (app/api/free-float) - cho nhan "vong quay co phieu troi noi" cua hinh chu nhat
     this.nguonHoSo = null;
     this.pbHoSo = 0;
     this.boNhoHoSo = new Map();
@@ -119,37 +118,6 @@ export class LopVe {
     this.pbHoSo++;
     this.boNhoHoSo.clear();
     this._ve(true);
-  }
-  datFreeFloat(ds) {
-    this.ff = Array.isArray(ds) ? ds : [];
-    this._ve(true);
-  }
-  // Thong ke cua hinh chu nhat: khoi luong trong vung (khoi luong moi nen chia deu theo khoang low-high, chi tinh phan roi vao khoang gia) / so co phieu tu do chuyen nhuong.
-  _thongKeVung(h) {
-    const n = this.nen.length;
-    if (!n || !h.p1 || !h.p2) return null;
-    const i1 = Math.max(0, Math.round(Math.min(h.p1.i, h.p2.i)));
-    const i2 = Math.min(n - 1, Math.round(Math.max(h.p1.i, h.p2.i)));
-    const lo = Math.min(h.p1.p, h.p2.p);
-    const hi = Math.max(h.p1.p, h.p2.p);
-    if (i2 < i1 || !(hi > lo)) return null;
-    let kl = 0;
-    for (let j = i1; j <= i2; j++) {
-      const b = this.nen[j];
-      if (!b || !(b.v > 0) || b.h <= lo || b.l >= hi) continue;
-      kl += b.h === b.l ? b.v : (b.v * (Math.min(b.h, hi) - Math.max(b.l, lo))) / (b.h - b.l);
-    }
-    const t = this.nen[i2]?.t;
-    let rec = null;
-    if (typeof t === "string" && this.ff.length) {
-      for (const x of this.ff) {
-        if (x.d <= t) rec = x;
-        else break;
-      }
-      rec ??= this.ff[0];
-    }
-    const troi = rec ? rec.ff * rec.sh : null;
-    return { kl, nen: i2 - i1 + 1, ff: rec?.ff ?? null, troi, F: troi ? kl / troi : null };
   }
   datCongCu(c) {
     this.congCu = c || null;
@@ -1039,40 +1007,6 @@ export class LopVe {
       ctx.fillRect(x1, y1, w, hh);
       ctx.globalAlpha = 1;
       ctx.strokeRect(x1, y1, w, hh);
-      // NHAN VONG QUAY CO PHIEU TROI NOI: khoi luong da giao dich trong vung / so co phieu tu do chuyen nhuong (chi mo ta, khong phai tin hieu - nghien cuu 26/10/2026 khong co loi the)
-      const tk = this._thongKeVung(h);
-      if (tk && tk.kl > 0 && w > 70 && hh > 24) {
-        const tr = (v) => `${soVN(v / 1e6, v >= 1e8 ? 0 : 1)} tr cp`;
-        const dong = [`KL trong vùng: ${tr(tk.kl)} · ${tk.nen} nến`];
-        let mau = h.mau;
-        if (tk.F != null) {
-          dong.push(`Free float ${soVN(tk.ff * 100, 0)}% = ${tr(tk.troi)} → đã quay ${soVN(tk.F, 2)} lần`);
-          mau = tk.F >= 1 ? "#22C55E" : tk.F >= 0.5 ? "#F6C544" : "#9CA3AF";
-          dong.push(tk.F >= 1 ? "Đã quay hết lượng trôi nổi" : tk.F >= 0.5 ? "Gần quay hết lượng trôi nổi" : "Chưa quay hết lượng trôi nổi");
-          dong.push("Free float theo VNDirect (quý) - mã Nhà nước / cổ đông lớn nắm nhiều có thể sai");
-        }
-        ctx.save();
-        ctx.font = "600 11px 'Open Sans', sans-serif";
-        ctx.textBaseline = "middle";
-        ctx.textAlign = "left";
-        const rong = Math.max(...dong.map((t) => ctx.measureText(t).width)) + 12;
-        const cao = dong.length * 15 + 6;
-        let bx = x1 + 6;
-        if (bx + rong > W - 4) bx = Math.max(4, W - rong - 4);
-        const by = hh >= cao + 12 ? y1 + 6 : Math.max(4, y1 - cao - 4);
-        ctx.fillStyle = this.mauNen;
-        ctx.globalAlpha = 0.86;
-        ctx.fillRect(bx, by, rong, cao);
-        ctx.globalAlpha = 1;
-        ctx.strokeStyle = mau;
-        ctx.lineWidth = 1;
-        ctx.strokeRect(bx + 0.5, by + 0.5, rong - 1, cao - 1);
-        dong.forEach((t, k) => {
-          ctx.fillStyle = k === dong.length - 2 && tk.F != null ? mau : this.mauChu;
-          ctx.fillText(t, bx + 6, by + 3 + k * 15 + 7.5);
-        });
-        ctx.restore();
-      }
       dauCham(a, b);
       return;
     }
