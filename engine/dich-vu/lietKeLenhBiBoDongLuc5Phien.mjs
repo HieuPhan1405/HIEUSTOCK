@@ -7,7 +7,7 @@ const TU = process.env.TU ?? "2026-06-01";
 const NGUONG = Number(process.env.NGUONG ?? 1);
 const cache = docJson("nen_dai.json");
 const vni = docJson("vnindex_dai.json");
-const { lenh: tatCa } = chayEngine({ cache, vni });
+const { lenh: tatCa } = chayEngine({ cache, vni, giuLenhDangMo: true });
 const lenh = tatCa.filter((t) => t.loai === 1 && t.ngay >= TU);
 const chiSo = new Map(vni.map((b, i) => [b.t, i]));
 const vc = vni.map((b) => b.c);
@@ -16,7 +16,7 @@ const T40 = process.env.CACH === "T40" ? { moc: [{ w: 0.4, i: 0 }, { w: 0.4, i: 
 const QUY_UOC = [["THUC TE", (t) => ({ vao: t.iv + 1, banTu: t.iv + 3 })], ["LY TUONG", (t) => ({ E: t.E, vao: t.iv + 1, banTu: t.iv + 1 })]];
 console.log(`Tu ${TU}: ${lenh.length} lenh Mua thuong; nguong d5 > ${NGUONG}%`);
 for (const [ten, cv] of QUY_UOC) {
-  const kq = lenh.map((t) => mp(t, { ...T40, ...cv(t) }));
+  const kq = lenh.map((t) => mp(t, { ...T40, danhGiaCuoi: true, ...cv(t) }));
   const giu = [], bo = [];
   lenh.forEach((t, i) => { if (!kq[i]) return; ((t.d5 != null && t.d5 > NGUONG) ? giu : bo).push({ t, k: kq[i] }); });
   const kg = thongKe(giu.map((x) => x.k)), kb = thongKe(bo.map((x) => x.k));
@@ -24,7 +24,7 @@ for (const [ten, cv] of QUY_UOC) {
   console.log(`GIU: n ${kg.n}, lai TB ${f(kg.tb)}%, thang ${f(kg.thang, 0)}%, tong ${f(giu.reduce((s, x) => s + x.k.ret, 0), 0)} diem % | BO: n ${kb.n}, lai TB ${f(kb.tb)}%, thang ${f(kb.thang, 0)}%, tong ${f(bo.reduce((s, x) => s + x.k.ret, 0), 0)} diem %`);
   const sap = [...bo].sort((a, b) => b.k.ret - a.k.ret);
   console.log("  Lenh BI BO lai nhat:");
-  for (const x of sap.slice(0, 20)) console.log(`   ${x.t.ngay} ${x.t.ma.padEnd(5)} d5 ${f(x.t.d5).padStart(5)}%  lai ${f(x.k.ret).padStart(6)}%  giu ${f(x.k.phien, 1)} phien`);
+  for (const x of sap.slice(0, 20)) console.log(`   ${x.t.ngay} ${x.t.ma.padEnd(5)} d5 ${f(x.t.d5).padStart(5)}%  lai ${f(x.k.ret).padStart(6)}%  giu ${f(x.k.phien, 1)} phien${x.k.dangMo ? "  (DANG MO)" : ""}`);
   console.log("  Lenh BI BO lo nhat:");
   for (const x of sap.slice(-12).reverse()) console.log(`   ${x.t.ngay} ${x.t.ma.padEnd(5)} d5 ${f(x.t.d5).padStart(5)}%  lai ${f(x.k.ret).padStart(6)}%`);
   const bucket = (arr, lo, hi) => arr.filter((x) => x.k.ret >= lo && x.k.ret < hi).length;
