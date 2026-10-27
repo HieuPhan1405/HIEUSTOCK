@@ -4,9 +4,10 @@
 import { docJson, chayEngine, danhMucNhieuLan, tb, f } from "./backtestChung.mjs";
 import { mp, HAI_TP } from "./moPhongTK.mjs";
 
+const DANG_MO = !process.env.KHONG_DANG_MO; // mac dinh TINH ca lenh engine chua dong o cuoi du lieu (theo gia dong cua cuoi); KHONG_DANG_MO=1 de bo nhu truoc 27/10
 const cache = docJson("nen_dai.json");
 const vni = docJson("vnindex_dai.json");
-const { lenh: tatCa } = chayEngine({ cache, vni });
+const { lenh: tatCa } = chayEngine({ cache, vni, giuLenhDangMo: DANG_MO });
 const chiSo = new Map(vni.map((b, i) => [b.t, i]));
 const vc = vni.map((b) => b.c);
 const CACH = { HT: { moc: HAI_TP, baoVe: true, theoSell: true }, KIJ: { moc: [], baoVe: false, theoSell: false, tk: "kijun" } };
@@ -14,7 +15,7 @@ const D = [];
 for (const t of tatCa.filter((x) => x.loai === 1)) {
   const i = chiSo.get(t.ngay);
   if (i == null || i < 6 || t.iv < 120) continue;
-  const a = mp(t, { ...CACH.HT, vao: t.iv + 1, banTu: t.iv + 3 }), b = mp(t, { ...CACH.KIJ, vao: t.iv + 1, banTu: t.iv + 3 });
+  const a = mp(t, { ...CACH.HT, danhGiaCuoi: DANG_MO, vao: t.iv + 1, banTu: t.iv + 3 }), b = mp(t, { ...CACH.KIJ, danhGiaCuoi: DANG_MO, vao: t.iv + 1, banTu: t.iv + 3 });
   if (!a || !b) continue;
   let mn = Infinity, mx = -Infinity;
   for (let k = t.iv - 119; k <= t.iv; k++) { mn = Math.min(mn, t.low[k]); mx = Math.max(mx, t.high[k]); }
@@ -37,7 +38,7 @@ function boot(all, giuSet, c, B = 2000) {
 }
 const dm = (arr, c) => {
   const cfg = CACH[c];
-  const ds = arr.map((x) => x.t), kq = arr.map((x) => mp(x.t, { ...cfg, vao: x.t.iv + 1, banTu: x.t.iv + 3 }));
+  const ds = arr.map((x) => x.t), kq = arr.map((x) => mp(x.t, { ...cfg, danhGiaCuoi: DANG_MO, vao: x.t.iv + 1, banTu: x.t.iv + 3 }));
   return [10, 20].map((K) => danhMucNhieuLan(kq, ds, K, 20, {}));
 };
 console.log(`${ok.length} lenh | HT ${f(m(ok, "HT"))} | KIJ ${f(m(ok, "KIJ"))} | trung vi pos ${f([...ok.map((x) => x.pos)].sort((a, b) => a - b)[Math.floor(ok.length / 2)], 2)}`);

@@ -8,9 +8,10 @@
 import { docJson, chayEngine, thongKe, danhMucNhieuLan, tb, f } from "./backtestChung.mjs";
 import { mp, HAI_TP } from "./moPhongTK.mjs";
 
+const DANG_MO = !process.env.KHONG_DANG_MO; // mac dinh TINH ca lenh engine chua dong o cuoi du lieu (theo gia dong cua cuoi); KHONG_DANG_MO=1 de bo nhu truoc 27/10
 const cache = docJson("nen_dai.json");
 const vni = docJson("vnindex_dai.json");
-const { lenh: tatCa } = chayEngine({ cache, vni });
+const { lenh: tatCa } = chayEngine({ cache, vni, giuLenhDangMo: DANG_MO });
 const lenhGoc = tatCa.filter((t) => t.loai === 1);
 const chiSo = new Map(vni.map((b, i) => [b.t, i]));
 const vc = vni.map((b) => b.c);
@@ -19,7 +20,7 @@ const D = [];
 for (const t of lenhGoc) {
   const i = chiSo.get(t.ngay);
   if (i == null || i < 6) continue;
-  const r = mp(t, { ...HT, vao: t.iv + 1, banTu: t.iv + 3 });
+  const r = mp(t, { ...HT, danhGiaCuoi: DANG_MO, vao: t.iv + 1, banTu: t.iv + 3 });
   if (!r) continue;
   D.push({ t, ret: r.ret, ngay: t.ngay, nam: t.ngay.slice(0, 4), d5: (vc[i] / vc[i - 5] - 1) * 100, d5pre: (vc[i - 1] / vc[i - 6] - 1) * 100 });
 }
@@ -60,7 +61,7 @@ const dm = (arr) => { const kq = arr.map((x) => ({ ret: x.ret, phien: 0 })); voi
 void dm;
 function danhMucTu(arr) {
   const ds = arr.map((x) => x.t);
-  const r = arr.map((x) => mp(x.t, { ...HT, vao: x.t.iv + 1, banTu: x.t.iv + 3 }));
+  const r = arr.map((x) => mp(x.t, { ...HT, danhGiaCuoi: DANG_MO, vao: x.t.iv + 1, banTu: x.t.iv + 3 }));
   return [10, 20].map((K) => danhMucNhieuLan(r, ds, K, 20, {}));
 }
 
