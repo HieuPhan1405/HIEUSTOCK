@@ -66,6 +66,9 @@ const CACH = [
   { ten: "TK1  chi Tenkan ban 1/2 + Kijun ban not (cat lo S)", cfg: { moc: [], baoVe: false, theoSell: false, tk: "nua" } },
   { ten: "TK2  TK1 + thoat het khi co tin hieu BAN", cfg: { moc: [], baoVe: false, theoSell: true, tk: "nua" } },
   { ten: "TK3  30% TP1 + 30% TP2, con lai: Tenkan 1/2 + Kijun not (+ BAN)", cfg: { moc: HAI_TP, baoVe: true, theoSell: true, tk: "nua" } },
+  { ten: "TK4  30% TP1 + 30% TP2, con lai: thung Tenkan ban HET (+ BAN)", cfg: { moc: HAI_TP, baoVe: true, theoSell: true, tk: "tenkan" } },
+  { ten: "TK4b nhu TK4 nhung KHONG theo tin hieu BAN", cfg: { moc: HAI_TP, baoVe: true, theoSell: false, tk: "tenkan" } },
+  { ten: "TK5  30% TP1 + 30% TP2, con lai: thung Kijun ban HET (+ BAN)", cfg: { moc: HAI_TP, baoVe: true, theoSell: true, tk: "kijun" } },
   { ten: "TEN  thung Tenkan ban het (cat lo S)", cfg: { moc: [], baoVe: false, theoSell: false, tk: "tenkan" } },
   { ten: "KIJ  thung Kijun ban het (cat lo S)", cfg: { moc: [], baoVe: false, theoSell: false, tk: "kijun" } },
 ];
