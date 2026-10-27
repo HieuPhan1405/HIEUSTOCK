@@ -14,7 +14,7 @@ const DO = "var(--do)";
 const VANG = "var(--vang)";
 const sans = { fontFamily: "var(--font-chu)" };
 const SO_DONG = 100;
-const LOC_RONG = { f: "", roe: "", pe: "", pb: "", coTuc: "", ln: "", d360: "", gtgd: "10", vonHoa: "" };
+const LOC_RONG = { f: "", roe: "", pe: "", pb: "", coTuc: "", ln: "", d360: "", gtgd: "2", vonHoa: "" };
 
 const f1 = (x, d = 1) => (x == null || !Number.isFinite(x) ? "—" : soVN(x, d, true));
 const pc = (x) => (x == null ? "—" : `${x > 0 ? "+" : ""}${soVN(x, 0)}%`);

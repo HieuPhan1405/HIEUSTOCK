@@ -47,7 +47,7 @@ tr.ct-dong{cursor:pointer}tr.ct-dong:hover td{background:#1f1f33}.chi td{backgro
 
 <h2>1. RRG ngành — ngành nào đang dẫn dắt và có dòng tiền</h2>
 <div class="luoi"><div class="the"><svg id="rrg" viewBox="0 0 640 520" style="width:100%;height:auto"></svg>
-<div class="ghi">Trục ngang RS-Ratio (sức mạnh tương đối, &gt;100 = hơn thị trường), trục dọc RS-Momentum (&gt;100 = đang tăng tốc). Đuôi = 8 tuần gần nhất, chấm to = tuần này. Benchmark = chỉ số trung bình đều các mã thanh khoản ≥ 2 tỷ/phiên (VN-Index tính theo vốn hoá nên VIC/VHM/ngân hàng kéo, gần như ngành nào cũng “thắng” nó). Ngành có &lt; 3 mã đủ thanh khoản (Bảo hiểm, Y tế - Dược, Du lịch - Giải trí) không vẽ.</div></div>
+<div class="ghi">Trục ngang RS-Ratio (sức mạnh tương đối, &gt;100 = hơn thị trường), trục dọc RS-Momentum (&gt;100 = đang tăng tốc). Đuôi = 8 tuần gần nhất, chấm to = tuần này. Benchmark = chỉ số trung bình đều các mã thanh khoản ≥ 0,3 tỷ/phiên (VN-Index tính theo vốn hoá nên VIC/VHM/ngân hàng kéo, gần như ngành nào cũng “thắng” nó). Ngành có &lt; 3 mã đủ thanh khoản (Bảo hiểm, Y tế - Dược, Du lịch - Giải trí) không vẽ.</div></div>
 <div class="the"><div class="cuon" style="max-height:520px"><table id="bangRrg"></table></div>
 <div class="ghi"><b>Nóng</b> = GTGD 5 phiên gần nhất / TB các đợt 5 phiên trong 10 tuần trước (&gt;1 = tiền vào nhiều hơn thường lệ). <b>Tiền ròng ước tính</b> = Σ(GTGD × vị trí giá đóng cửa trong nến) / Σ GTGD 5 phiên — đo mức đóng cửa nghiêng về đầu cao hay thấp của nến, KHÔNG phải mua/bán chủ động thật (số thật nằm ở trang Thị trường của web, dữ liệu DNSE theo thời gian thực).</div></div></div>
 

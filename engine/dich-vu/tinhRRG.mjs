@@ -1,5 +1,5 @@
 // RRG (Relative Rotation Graph) theo NGANH so voi VN-Index, tinh tu nen tuan cua ~390 ma (engine/output/nen_dai.json + nganh_map.json).
-// Chi so nganh = trung binh DEU loi suat tuan cua cac ma co GTGD TB20 >= 2 ty (loai ma ma thanh khoan thap lam nhieu). RS = chi so nganh / BENCHMARK. Benchmark mac dinh = chi so TRUNG BINH DEU cua cung tap ma (VN-Index tinh theo von hoa nen bi VIC/VHM/ngan hang keo, gan nhu moi nganh deu 'thang' no); them --vni de dung VN-Index.
+// Chi so nganh = trung binh DEU loi suat tuan cua cac ma co GTGD TB20 >= 0,3 ty (~300 trieu/phien; loai ma gan nhu khong giao dich, giu duoc nhieu ma hon muc 2 ty cu: 192 -> ~280 ma). RS = chi so nganh / BENCHMARK. Benchmark mac dinh = chi so TRUNG BINH DEU cua cung tap ma (VN-Index tinh theo von hoa nen bi VIC/VHM/ngan hang keo, gan nhu moi nganh deu 'thang' no); them --vni de dung VN-Index.
 // RS-Ratio = 100 + 100*(RS/SMA(RS,10 tuan) - 1) lam muot 3 tuan (>100 = manh hon thi truong); RS-Momentum = 100 + 100*(Ratio/Ratio 4 tuan truoc - 1) (>100 = dang tang toc).
 // Goc: Leading (ratio>100, mom>100) / Weakening (ratio>100, mom<100) / Lagging (<100,<100) / Improving (ratio<100, mom>100).
 // DONG TIEN: GTGD tuan gan nhat / TB 10 tuan truoc (do nong cua dong tien) va "tien rong uoc tinh" = tong(GTGD * (2*dong-thap-cao)/(cao-thap)) 5 phien / tong GTGD 20 phien (thuoc do vi tri dong cua, khong phai mua-ban chu dong).
@@ -33,7 +33,7 @@ for (const [k, ds] of Object.entries(nen)) {
   if (n < 80 || !nganh[k]) continue;
   let gt = 0;
   for (let j = n - 20; j < n; j++) gt += ds[j].c * ds[j].v;
-  if (gt / 20 / 1e6 < 2) continue; // gia nghin dong * KL = nghin dong -> /1e6 = ty
+  if (gt / 20 / 1e6 < 0.3) continue; // gia nghin dong * KL = nghin dong -> /1e6 = ty
   ma[k] = { ds, tuan: nenTuan(ds) };
 }
 
@@ -48,6 +48,8 @@ if (!DUNG_VNI) {
     bVni.set(cacTuan[w], idx);
   }
 }
+const dsNganh0 = {};
+for (const k of Object.keys(nen)) if (nganh[k]) dsNganh0[nganh[k]] = (dsNganh0[nganh[k]] ?? 0) + 1;
 const ketQua = [];
 const dsNganh = [...new Set(Object.values(nganh))];
 for (const ng of dsNganh) {
@@ -93,7 +95,7 @@ for (const ng of dsNganh) {
     return trungVi - vv;
   })();
   ketQua.push({
-    nganh: ng, soMa: cac.length, ratio: +r.toFixed(2), mom: +m.toFixed(2),
+    nganh: ng, soMa: cac.length, tongMa: dsNganh0[ng], ratio: +r.toFixed(2), mom: +m.toFixed(2),
     goc: r >= 100 ? (m >= 100 ? "Leading" : "Weakening") : m >= 100 ? "Improving" : "Lagging",
     duoi, gtTuan: +g5.toFixed(0), nongDongTien: +(g5 / gTruoc).toFixed(2), tienRong5p: +((clvTong / gtTong) * 100).toFixed(1), rs20: +rs20.toFixed(1),
   });

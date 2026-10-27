@@ -268,7 +268,7 @@ export default function RRGNganh({ du }) {
               </Chip>
             ))}
             <span className="ml-3 text-[11px]" style={{ color: MUTED }}>So với</span>
-            <Chip bat={bench === "tb"} onClick={() => datBench("tb")} title="Chỉ số trung bình đều các mã thanh khoản ≥ 2 tỷ/phiên">Trung bình đều</Chip>
+            <Chip bat={bench === "tb"} onClick={() => datBench("tb")} title="Chỉ số trung bình đều các mã thanh khoản ≥ 0,3 tỷ/phiên">Trung bình đều</Chip>
             <Chip bat={bench === "vni"} onClick={() => datBench("vni")} title="VN-Index (tính theo vốn hoá)">VN-Index</Chip>
           </Nhom>
           <Nhom ten="Ngành">
@@ -348,7 +348,7 @@ export default function RRGNganh({ du }) {
                   return (
                     <tr key={r.id} className="border-t cursor-pointer" style={{ borderColor: "var(--vien-nhe)", opacity: !chon || chon === r.id ? 1 : 0.4 }} onClick={() => datChon(chon === r.id ? null : r.id)}>
                       <td className="py-1.5 pr-2">
-                        {r.loai === "ma" ? <b>{r.nhan}</b> : r.nhan} <span className="text-[11px]" style={{ color: MUTED }}>{r.loai === "ma" ? "(mã)" : `(${r.soMa})`}</span>
+                        {r.loai === "ma" ? <b>{r.nhan}</b> : r.nhan} <span className="text-[11px]" style={{ color: MUTED }}>{r.loai === "ma" ? "(mã)" : `(${r.soMa}${r.goc0?.tongMa ? `/${r.goc0.tongMa}` : ""})`}</span>
                       </td>
                       <td className="py-1.5 px-2">
                         <span className="text-[11px] px-2 py-0.5 rounded-full border whitespace-nowrap" style={{ color: MAU_GOC[r.goc], borderColor: MAU_GOC[r.goc] }}>
@@ -373,8 +373,8 @@ export default function RRGNganh({ du }) {
         </div>
       )}
       <p className="text-[11px] mt-3" style={{ color: MUTED }}>
-        Mốc so sánh mặc định là chỉ số trung bình đều các mã thanh khoản ≥ 2 tỷ/phiên (VN-Index tính theo vốn hoá nên VIC, VHM, ngân hàng kéo, ngành nào cũng “thắng” nó). Chu kỳ RS càng ngắn đồ thị càng nhạy nhưng nhiễu hơn. <b>Nóng</b> = giá trị giao dịch 5 phiên / mức thường lệ 10 tuần trước.{" "}
-        <b>Tiền ròng ước tính</b> chỉ đo giá đóng cửa nghiêng về đầu cao hay đầu thấp của nến theo giá trị giao dịch, không phải mua/bán chủ động thật; hai cột này chỉ có cho ngành. Ngành dưới 3 mã đủ thanh khoản không được vẽ. Mã cổ phiếu hình thoi, nét đứt. Không phải khuyến nghị đầu tư.
+        Mốc so sánh mặc định là chỉ số trung bình đều các mã thanh khoản ≥ 0,3 tỷ/phiên (VN-Index tính theo vốn hoá nên VIC, VHM, ngân hàng kéo, ngành nào cũng “thắng” nó). Chu kỳ RS càng ngắn đồ thị càng nhạy nhưng nhiễu hơn. <b>Nóng</b> = giá trị giao dịch 5 phiên / mức thường lệ 10 tuần trước.{" "}
+        <b>Tiền ròng ước tính</b> chỉ đo giá đóng cửa nghiêng về đầu cao hay đầu thấp của nến theo giá trị giao dịch, không phải mua/bán chủ động thật; hai cột này chỉ có cho ngành. Mỗi ngành tính trên các mã hệ thống đang quét (số trong ngoặc: mã đủ thanh khoản/tổng mã của ngành); ngành dưới 3 mã đủ thanh khoản không được vẽ. Mã cổ phiếu hình thoi, nét đứt. Không phải khuyến nghị đầu tư.
       </p>
     </section>
   );
