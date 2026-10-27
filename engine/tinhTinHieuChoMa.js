@@ -147,8 +147,9 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   const cuoi = n - 1;
 
   // ---- Phase 1: chi bao ----
-  const { tenkan, kijun, cloudTop, cloudBot, senkouAGoc, senkouBGoc } = tinhIchimoku({ high, low });
-  const { cbTop, cbBot } = tinhDuongCanBangDaiHan({ high, low });
+  // kieuTenkanKijun / kieuMay / kieuCanBang: CHI NGHIEN CUU (mac dinh "donchian" = nhu AFL); "sma" | "ema" thay duong Ichimoku bang trung binh dong (xem loi/ichimoku.js).
+  const { tenkan, kijun, cloudTop, cloudBot, senkouAGoc, senkouBGoc } = tinhIchimoku({ high, low, close }, { kieuTenkanKijun: p.kieuTenkanKijun ?? "donchian", kieuMay: p.kieuMay ?? "donchian" });
+  const { cbTop, cbBot } = tinhDuongCanBangDaiHan({ high, low, close }, { kieu: p.kieuCanBang ?? "donchian" });
   const atrArr = tinhATR({ high, low, close });
   const { adx, diPlus, diMinus } = adxHeThong({ high, low, close });
   const rsiArr = tinhRSI({ close });
