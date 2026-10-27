@@ -22,7 +22,7 @@ import { breadthCuaMa } from "./loi/breadth.js";
 import { tinhMocTiepTheo } from "./loi/mocTiepTheo.js";
 import { phanLoaiVonHoa } from "./danh-sach/vonHoa.js";
 import { nganhCuaMa } from "./danh-sach/nganh.js";
-import { hhv, sma, ref, valueWhen, barsSince, highestSince } from "./loi/mang.js";
+import { hhv, llv, sma, ref, valueWhen, barsSince, highestSince } from "./loi/mang.js";
 
 // Tat ca gia tri MAC DINH khop DUNG cac Param()/ParamToggle()/ParamList() hien tai trong
 // amibroker/7_Export_LenWeb.afl (kem trang thai BAT/TAT hien dang chay production, khong phai
@@ -401,6 +401,9 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   const gtgdTB20Cuoi = gtgdTB20Tho == null ? null : gtgdTB20Tho / 1e6;
   const khoiLuongTB20Cuoi = sma(volume, 20)[cuoi];
   const dinh52TCuoi = hhv(high, 252)[cuoi];
+  // VI TRI GIA TRONG BIEN DO 120 PHIEN (0 = day, 1 = dinh): (dong cua - thap nhat 120) / (cao nhat 120 - thap nhat 120). Chi hien thi nhan thong tin, KHONG tham gia tin hieu (nghien cuu 27/10/2026).
+  const dinh120 = hhv(high, 120)[cuoi], day120 = llv(low, 120)[cuoi];
+  const viTri120 = dinh120 != null && day120 != null && dinh120 > day120 ? (close[cuoi] - day120) / (dinh120 - day120) : null;
 
   let kumoTwistCuoi = "";
   if (cuoi > 0 && senkouAGoc[cuoi] != null && senkouBGoc[cuoi] != null && senkouAGoc[cuoi - 1] != null && senkouBGoc[cuoi - 1] != null) {
@@ -437,6 +440,7 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
     gg_top: cbTop[cuoi],
     gg_bot: cbBot[cuoi],
     dinh_52t: dinh52TCuoi,
+    vi_tri_120: viTri120,
     stop_loss: stopTaiMua[cuoi],
     mat_than: matThan[cuoi],
     tp1: tp1TaiMua[cuoi],

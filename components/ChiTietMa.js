@@ -11,6 +11,7 @@ import TheChiaSeMa from "@/components/TheChiaSeMa";
 import DongTienMa from "@/components/DongTienMa";
 import PhanTichCoBan from "@/components/PhanTichCoBan";
 import ThanhMucTrang from "@/components/ThanhMucTrang";
+import NhanViTri120 from "@/components/NhanViTri120";
 import { lenhDangMo, ngayChuoi } from "@/lib/muaThemTinhToan";
 import {
   fmt,
@@ -455,6 +456,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               ↺ {nhanLoaiVao(row).nhan}
             </span>
           )}
+          <NhanViTri120 row={row} className="mt-2 text-[11px] font-bold" />
           <div className="mt-4 pt-4 border-t w-full" style={{ borderColor: VIEN }}>
             <p style={{ fontFamily: "var(--font-chu)", color: "var(--xanh)" }} className="text-base">
               {fmt(row.gia)}

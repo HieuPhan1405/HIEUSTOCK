@@ -11,6 +11,7 @@ import { CAC_COT } from "@/components/cotChung";
 import { COT_CHI_BAO_HIEN, THU_TU_COT_CHI_BAO } from "@/components/cotChiBao";
 import BoLocChiBaoKyThuat from "@/components/BoLocChiBaoKyThuat";
 import { locTheoChiBao, cotChoBoLoc } from "@/lib/boLocChiBao";
+import NhanViTri120 from "@/components/NhanViTri120";
 import {
   NGANH_NHAN,
   LOC_TRONG,
@@ -120,6 +121,7 @@ const COT_RIENG = {
                   ↺ {nhanLoaiVao(row).nhan}
                 </span>
               )}
+              <NhanViTri120 row={row} className="text-[11px] font-bold" />
               {nhanMuaMoi(row) && (
                 <span className="text-[11px] font-bold" style={{ color: nhanMuaMoi(row).mau }} title={nhanMuaMoi(row).moTa}>
                   ➕ {nhanMuaMoi(row).nhan}

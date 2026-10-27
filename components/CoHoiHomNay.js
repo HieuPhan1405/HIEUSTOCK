@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { fmt, pct, tinhVungLenh, chuoiVung, nhanGiaiNgan, nhanLoaiVao, nhanLenhWeb } from "@/components/dungChung";
+import NhanViTri120 from "@/components/NhanViTri120";
+import { nhanViTri120 } from "@/lib/nhanTinHieu";
 import { dungCoHoiHomNay } from "@/lib/coHoiHomNay";
 import { nhanDiemBTruoc } from "@/lib/muaPhucHoi";
 import { tenCongTy } from "@/lib/tenMa";
@@ -190,6 +192,12 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
               }
             >
               <VungLenh row={r} />
+              {nhanViTri120(r) && (
+                <>
+                  <br />
+                  <NhanViTri120 row={r} className="font-bold" style={sans} />
+                </>
+              )}
               {b && (
                 <>
                   <br />

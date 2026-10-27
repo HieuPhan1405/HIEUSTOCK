@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Lock, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import SoChay from "@/components/SoChay";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import CoHoiHomNay from "@/components/CoHoiHomNay";
+import NhanThiTruong5Phien from "@/components/NhanThiTruong5Phien";
 import XuatAnh from "@/components/XuatAnh";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { dungMuaPhucHoi } from "@/lib/muaPhucHoi";
@@ -416,7 +418,12 @@ export default async function TrangTongQuan() {
           )
         )}
 
-        <NhanCapNhat luc={capNhat} className="mb-6" />
+        <NhanCapNhat luc={capNhat} className={xemTinHieu ? "mb-2" : "mb-6"} />
+        {xemTinHieu && (
+          <Suspense fallback={null}>
+            <NhanThiTruong5Phien className="mb-6" />
+          </Suspense>
+        )}
 
         {/* TOP CO HOI DANG CHU Y: 4 o lenh CUA PHIEN HOM NAY - hang tren Mua | Ban, hang duoi Mua moi | Ban bot. Tong quan/Ra soat nhanh
             (breadth, top nganh, khoi ngoai...) o trang /dashboard rieng. */}

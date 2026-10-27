@@ -188,6 +188,14 @@ export const CAC_COT = {
   adx: { nhan: "ADX", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.adx, hien: (r) => so1So(r.adx) },
   rs_vni: { nhan: "RS/VNI", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.rs_vni, hien: (r) => pct(r.rs_vni, 1) },
   rs_vni_60: { nhan: "RS/VNI 60 phiên", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.rs_vni_60, hien: (r) => pct(r.rs_vni_60, 1) },
+  // Vi tri gia trong bien do 120 phien (0% = day, 100% = dinh) - thong tin tham khao, xem lib/nhanTinHieu.js.
+  vi_tri_120: {
+    nhan: "Vị trí trong biên độ 6 tháng",
+    nhom: "Điểm & chỉ báo",
+    canPhai: true,
+    lay: (r) => (r.vi_tri_120 == null || r.vi_tri_120 === "" ? null : Number(r.vi_tri_120) * 100),
+    hien: (r) => (r.vi_tri_120 == null || r.vi_tri_120 === "" ? Trong : <span title="0% = giá đang ở đáy biên độ ~6 tháng, 100% = đang ở đỉnh">{soAn(Number(r.vi_tri_120) * 100, 0)}%</span>),
+  },
   sanyaku: {
     nhan: "Độ tin cậy",
     nhom: "Điểm & chỉ báo",

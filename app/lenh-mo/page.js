@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import { TriangleAlert } from "lucide-react";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import LenhMoNoiDung from "@/components/LenhMoNoiDung";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import NhanCapNhat from "@/components/NhanCapNhat";
+import NhanThiTruong5Phien from "@/components/NhanThiTruong5Phien";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import { capNhatMoiNhat } from "@/components/dungChung";
 import { layLichSuGia } from "@/lib/lichSuGia";
@@ -69,7 +71,10 @@ export default async function TrangLenhMo({ searchParams }) {
       )}
       {soCanhBao === 0 && <div className="mb-6" />}
 
-      <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
+      <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-2" />
+      <Suspense fallback={null}>
+        <NhanThiTruong5Phien className="mb-6" />
+      </Suspense>
 
       {loi && (
         <p className="text-sm mb-6" style={{ color: DO }}>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { TriangleAlert, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import { canhBaoVaoLenh } from "@/lib/canhBaoVaoLenh";
+import NhanViTri120 from "@/components/NhanViTri120";
 import NutThamGia from "@/components/NutThamGia";
 import { CAC_COT } from "@/components/cotChung";
 import {
@@ -103,6 +104,7 @@ const COT_RIENG = {
             ↺ {nhanLoaiVao(row).nhan}
           </span>
         )}
+        <NhanViTri120 row={row} />
         {canhBaoVaoLenh(row).map((c) => (
           <span key={c.khoa} className="text-[11px] font-bold tracking-wide" style={{ color: CAM }} title={c.moTa} data-may="canh-bao-vao-lenh">
             ⚠ {c.nhan}

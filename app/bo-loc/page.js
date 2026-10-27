@@ -4,6 +4,7 @@ import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { COT_CHI_BAO } from "@/lib/cotChiBaoKyThuat";
 import BangBoLoc from "@/components/BangBoLoc";
 import NhanCapNhat from "@/components/NhanCapNhat";
+import NhanThiTruong5Phien from "@/components/NhanThiTruong5Phien";
 import { capNhatMoiNhat } from "@/components/dungChung";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
@@ -59,7 +60,10 @@ export default async function TrangBoLoc() {
       <p className="text-sm mb-4" style={{ color: "var(--mo)" }}>
         Lọc và sắp xếp toàn bộ {tatCa.length} cổ phiếu đang theo dõi (HOSE, HNX, UPCOM) theo nhiều tiêu chí.
       </p>
-      <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-6" />
+      <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-2" />
+      <Suspense fallback={null}>
+        <NhanThiTruong5Phien className="mb-6" />
+      </Suspense>
 
       {loi ? (
         <p className="text-sm" style={{ color: "var(--do)" }}>
