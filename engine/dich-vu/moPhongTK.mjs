@@ -1,14 +1,15 @@
 // MO PHONG 1 LENH he thong voi cac cach ra TP1/TP2 + Tenkan/Kijun (dung chung cho backtestThoatTenkanKijunHeThong.mjs va backtestMuaKhongCanMay.mjs).
 // Quy uoc nhu moPhongThucTe (backtestChung.mjs): vao = chi so nen mua (mo cua), banTu = nen dau tien duoc ban (vao + 2 = chieu T+2); truoc banTu cham cat lo S / co tin hieu BAN thi ban o gia mo cua banTu.
-// cfg: { vao, banTu, E?, tkKhongCanLen (Tenkan co hieu luc ngay, khong can tung dong cua tren), tk: ... | "tenkan2" | "tenkanCham", moc: [{ w, i }] (TP theo t.tp[i]), baoVe (hoa von sau khi cham muc TP2), theoSell, tk: "nua" (Tenkan ban 1/2 phan con, Kijun ban not) | "tenkan" | "kijun" }.
+// cfg: { vao, banTu, E?, catLoToiDaPct (cat lo toi da x% so voi gia vao thuc), tkKhongCanLen (Tenkan co hieu luc ngay, khong can tung dong cua tren), tk: ... | "tenkan2" | "tenkanCham", moc: [{ w, i }] (TP theo t.tp[i]), baoVe (hoa von sau khi cham muc TP2), theoSell, tk: "nua" (Tenkan ban 1/2 phan con, Kijun ban not) | "tenkan" | "kijun" }.
 // "Thung" = DONG CUA duoi duong, chi tinh sau khi gia tung dong cua tren duong do ke tu luc mua.
 import { CHI_PHI } from "./backtestChung.mjs";
 
 export const HAI_TP = [{ w: 0.3, i: 0 }, { w: 0.3, i: 1 }];
 export function mp(t, cfg) {
-  const { S, tp, open, high, low, close, sell, n, tenkan, kijun } = t;
+  const { S: S0, tp, open, high, low, close, sell, n, tenkan, kijun } = t;
   const { vao, banTu } = cfg;
   const E = cfg.E ?? open[vao];
+  const S = cfg.catLoToiDaPct != null && E > 0 ? Math.max(S0, E * (1 - cfg.catLoToiDaPct / 100)) : S0; // catLoToiDaPct: cat lo khong xa qua x% so voi GIA VAO THUC (mac dinh: cat lo cua engine tinh tu moc E)
   if (!(E > 0) || !(S < E) || vao >= n) return null;
   const cacMoc = (cfg.moc ?? []).map((m) => ({ w: m.w, gia: m.pct != null ? E * (1 + m.pct / 100) : m.r != null ? E + m.r * (E - S) : m.atr != null ? E + m.atr * t.atr[t.iv] : tp[m.i], xong: false })); // moc: { w, i } = TP thu i cua engine | { w, pct } = chot o gia vao + pct% | { w, r } = gia vao + r x khoang cach cat lo (E - S) | { w, atr } = gia vao + k x ATR14 luc tin hieu
   let conLai = 1, thu = 0, phienW = 0, choBan = false, dinhTruoc = -Infinity, daTP2 = false, lenT = !!cfg.tkKhongCanLen, lenK = false, daNua = false, daNuaK = false, daMau = false, duoiTenkan = 0, duLai = null;
