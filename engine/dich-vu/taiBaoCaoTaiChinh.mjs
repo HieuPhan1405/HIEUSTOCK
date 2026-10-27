@@ -8,6 +8,10 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 
 const nganh = JSON.parse(readFileSync(new URL("../output/nganh_map.json", import.meta.url), "utf8"));
+// Tham so: --tu=YYYY-MM-DD (quy som nhat, mac dinh 2024-03-31) --ra=ten_file.json (mac dinh bctc.json; vd --tu=2020-12-31 --ra=bctc_dai.json cho nghien cuu lich su)
+const THAM_SO = Object.fromEntries(process.argv.slice(2).filter((a) => a.startsWith("--") && a.includes("=")).map((a) => a.slice(2).split("=")));
+const TU_QUY = THAM_SO.tu ?? "2024-03-31";
+const FILE_RA = THAM_SO.ra ?? "bctc.json";
 const MA_CHI_TIEU = [11000, 11100, 11300, 11400, 12000, 12200, 12700, 13000, 13100, 13300, 13110, 13340, 14000, 15000, 14110, 14200, 21001, 22100, 23100, 22510, 23800, 22070, 23003, 23000, 22200, 22110, 32000, 22230, 33600, 421701, 21000];
 const MODEL = { pi: [1, 2, 3], nh: [101, 102, 103], ck: [89, 90, 91], bh: [411, 412, 413] };
 const loaiCua = (ma) => {
@@ -15,7 +19,7 @@ const loaiCua = (ma) => {
   return n === "Ngan hang" ? "nh" : n === "Chung khoan" ? "ck" : n === "Bao hiem" ? "bh" : "pi";
 };
 async function lay(ma) {
-  const url = `https://api-finfo.vndirect.com.vn/v4/financial_statements?q=code:${ma}~reportType:QUARTER~itemCode:${MA_CHI_TIEU.join(",")}~fiscalDate:gte:2024-03-31&sort=fiscalDate:desc&size=2000`;
+  const url = `https://api-finfo.vndirect.com.vn/v4/financial_statements?q=code:${ma}~reportType:QUARTER~itemCode:${MA_CHI_TIEU.join(",")}~fiscalDate:gte:${TU_QUY}&sort=fiscalDate:desc&size=2000`;
   for (let lan = 0; lan < 3; lan++) {
     try {
       const r = await fetch(url, { signal: AbortSignal.timeout(25000) });
@@ -24,7 +28,7 @@ async function lay(ma) {
   }
   return null;
 }
-const FILE = new URL("../output/bctc.json", import.meta.url);
+const FILE = new URL(`../output/${FILE_RA}`, import.meta.url);
 const cu = existsSync(FILE) ? JSON.parse(readFileSync(FILE, "utf8")) : {}; // ma tai loi giu du lieu cu
 const kq = {};
 const hang = Object.keys(nganh);
