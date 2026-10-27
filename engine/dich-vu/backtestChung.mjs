@@ -330,7 +330,7 @@ export function taoNgauNhien(seed) {
   };
 }
 
-// kqs[i] = ket qua mo phong cua ds[i] (hoac null). tuyChon: { loc: (t) => bool (lenh bi loai thi bo), xepHang: (t) => so (cao hon = uu tien truoc khi nhieu lenh cung ngay) }
+// kqs[i] = ket qua mo phong cua ds[i] (hoac null). tuyChon: { loc: (t) => bool (lenh bi loai thi bo), trongSo: (t) => w (von lenh = von/K x w; w <= 0 bo lenh), choTheoVon: true (so cho tinh theo tong trong so <= K thay vi dem lenh), xepHang: (t) => so (cao hon = uu tien truoc khi nhieu lenh cung ngay) }
 // Von chia deu 1/K luc vao; lenh moi luc het cho bi bo; lai/lo tinh 1 lan luc thoat cuoi (theo so phien TB co trong so) - xap xi de so sanh.
 export function danhMuc(kqs, ds, K, seed = 1, tuyChon = {}) {
   const rng = taoNgauNhien(seed);
@@ -354,10 +354,12 @@ export function danhMuc(kqs, ds, K, seed = 1, tuyChon = {}) {
   let dinh = 1;
   let sut = 0;
   const dangGiu = [];
+  let dung = 0;
   const dongDen = (d) => {
     dangGiu.sort((a, b) => (a.ngayRa < b.ngayRa ? -1 : 1));
     while (dangGiu.length && dangGiu[0].ngayRa <= d) {
       const a = dangGiu.shift();
+      dung -= a.w;
       von += a.size * (a.ret / 100);
       dinh = Math.max(dinh, von);
       sut = Math.max(sut, 1 - von / dinh);
@@ -367,8 +369,11 @@ export function danhMuc(kqs, ds, K, seed = 1, tuyChon = {}) {
   const layRet = [];
   for (const m of muc) {
     dongDen(m.ngayVao);
-    if (dangGiu.length >= K) continue;
-    dangGiu.push({ ngayRa: m.ngayRa, size: (von / K) * (m.w ?? 1), ret: m.ret });
+    const w = m.w ?? 1;
+    if (w <= 0) continue; // trong so 0 = bo lenh (khong chiem cho)
+    if (tuyChon.choTheoVon ? dung + w > K + 1e-9 : dangGiu.length >= K) continue; // choTheoVon: cho tinh theo tong trong so (von), mac dinh dem so lenh
+    dung += w;
+    dangGiu.push({ ngayRa: m.ngayRa, size: (von / K) * w, ret: m.ret, w });
     layRet.push(m.ret);
     lay++;
   }
