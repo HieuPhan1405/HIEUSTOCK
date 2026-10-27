@@ -1,6 +1,6 @@
 // MO PHONG 1 LENH he thong voi cac cach ra TP1/TP2 + Tenkan/Kijun (dung chung cho backtestThoatTenkanKijunHeThong.mjs va backtestMuaKhongCanMay.mjs).
 // Quy uoc nhu moPhongThucTe (backtestChung.mjs): vao = chi so nen mua (mo cua), banTu = nen dau tien duoc ban (vao + 2 = chieu T+2); truoc banTu cham cat lo S / co tin hieu BAN thi ban o gia mo cua banTu.
-// cfg: { vao, banTu, E?, catLoToiDaPct (cat lo toi da x% so voi gia vao thuc), tkKhongCanLen (Tenkan co hieu luc ngay, khong can tung dong cua tren), tk: ... | "tenkan2" | "tenkanCham", moc: [{ w, i }] (TP theo t.tp[i]), baoVe (hoa von sau khi cham muc TP2), theoSell, tk: "nua" (Tenkan ban 1/2 phan con, Kijun ban not) | "tenkan" | "kijun" }.
+// cfg: { vao, banTu, E?, danhGiaCuoi (lenh chua dong -> tinh gia dong cua cuoi du lieu thay vi bo), catLoToiDaPct (cat lo toi da x% so voi gia vao thuc), tkKhongCanLen (Tenkan co hieu luc ngay, khong can tung dong cua tren), tk: ... | "tenkan2" | "tenkanCham", moc: [{ w, i }] (TP theo t.tp[i]), baoVe (hoa von sau khi cham muc TP2), theoSell, tk: "nua" (Tenkan ban 1/2 phan con, Kijun ban not) | "tenkan" | "kijun" }.
 // "Thung" = DONG CUA duoi duong, chi tinh sau khi gia tung dong cua tren duong do ke tu luc mua.
 import { CHI_PHI } from "./backtestChung.mjs";
 
@@ -64,5 +64,6 @@ export function mp(t, cfg) {
     if (tenkan[i] != null && close[i] > tenkan[i]) lenT = true;
     if (kijun[i] != null && close[i] > kijun[i]) lenK = true;
   }
+  if (cfg.danhGiaCuoi && n - 1 >= vao) { if (conLai > 1e-12) ban(conLai, close[n - 1], n - 1); return { ...ketQua(n - 1), dangMo: true }; } // danhGiaCuoi: lenh chua dong tinh theo gia dong cua cuoi du lieu (mark-to-market)
   return null;
 }

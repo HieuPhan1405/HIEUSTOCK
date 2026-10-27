@@ -44,7 +44,7 @@ export function thongKe(kqs) {
 // cache: { MA: [{t,o,h,l,c,v}] }; vni: [{t,c,h,l}] VNINDEX tang dan. Tra ve { lenh, lenhMuaMoi, soMa, thiTruong(ngay) }.
 // lenh: cac lan vao lenh GOC (loai 1 Mua thuong / 2 Mua lai / 3 Mua muon). lenhMuaMoi: cac lenh MUA MOI (dot sau, gia hoi ve Kijun roi bat len - muaGiua trong mayTrangThai):
 // gia vao = dong cua phien tin hieu, Stop-loss / TP rieng, jGoc = nen lenh dau dong (lenh mua moi dong CUNG luc - xem mayTrangThai).
-export function chayEngine({ cache, vni, soNenToiThieu = 300, thamSoThem = {} }) {
+export function chayEngine({ cache, vni, soNenToiThieu = 300, thamSoThem = {}, giuLenhDangMo = false }) { // giuLenhDangMo: giu ca lenh CHUA DONG o cuoi du lieu (dangMo = true, jEng = cuoi); mac dinh bo (lam mat cac lenh thang dang chay)
   const vniMap = new Map(vni.map((b) => [b.t, b.c]));
   const ketQuaBreadth = { theoNganh: new Map([...NGANH.keys()].map((k) => [k, 50])), trungBinh: 50 };
   const breadth50 = new Map(); // ngay -> { tren, tong } (ma co dong cua > SMA50)
@@ -125,8 +125,9 @@ export function chayEngine({ cache, vni, soNenToiThieu = 300, thamSoThem = {} })
           jEng = j;
           break;
         }
-      if (jEng < 0) continue;
-      lenh.push({ ...chung, ngay: ngayArr[iv], iv, jEng, E, S, tp, loai: kq.loaiVaoLenh[iv], dacTrung: dacTrungTai(iv, E, S, tp) });
+      let dangMo = false;
+      if (jEng < 0) { if (!giuLenhDangMo) continue; jEng = n - 1; dangMo = true; }
+      lenh.push({ ...chung, dangMo, ngay: ngayArr[iv], iv, jEng, E, S, tp, loai: kq.loaiVaoLenh[iv], dacTrung: dacTrungTai(iv, E, S, tp) });
     }
   }
 
