@@ -11,7 +11,7 @@ export function mp(t, cfg) {
   const E = cfg.E ?? open[vao];
   if (!(E > 0) || !(S < E) || vao >= n) return null;
   const cacMoc = (cfg.moc ?? []).map((m) => ({ w: m.w, gia: m.pct != null ? E * (1 + m.pct / 100) : m.r != null ? E + m.r * (E - S) : m.atr != null ? E + m.atr * t.atr[t.iv] : tp[m.i], xong: false })); // moc: { w, i } = TP thu i cua engine | { w, pct } = chot o gia vao + pct% | { w, r } = gia vao + r x khoang cach cat lo (E - S) | { w, atr } = gia vao + k x ATR14 luc tin hieu
-  let conLai = 1, thu = 0, phienW = 0, choBan = false, dinhTruoc = -Infinity, daTP2 = false, lenT = !!cfg.tkKhongCanLen, lenK = false, daNua = false, daMau = false, duoiTenkan = 0;
+  let conLai = 1, thu = 0, phienW = 0, choBan = false, dinhTruoc = -Infinity, daTP2 = false, lenT = !!cfg.tkKhongCanLen, lenK = false, daNua = false, daNuaK = false, daMau = false, duoiTenkan = 0;
   const ban = (w, g, i) => { w = Math.min(w, conLai); if (!(w > 0)) return; thu += w * (g / E); phienW += w * (i - t.iv); conLai -= w; }; // khong ban qua phan con lai (truoc 27/10: mau ban 1/2 + TP1 + TP2 co the ban > 100% vi the -> thoi phong lai)
   const ketQua = (jThoat) => ({ ret: (thu - 1) * 100 - CHI_PHI, phien: phienW, jThoat });
   const coSell = (i) => cfg.theoSell && sell[i];
@@ -43,6 +43,9 @@ export function mp(t, cfg) {
     if (cfg.tk === "nua") {
       if (!daNua && lenT && tenkan[i] != null && close[i] < tenkan[i]) { ban(conLai * 0.5, close[i], i); daNua = true; }
       if (lenK && kijun[i] != null && close[i] < kijun[i]) { ban(conLai, close[i], i); return ketQua(i); }
+    } else if (cfg.tk === "nuaNua") { // thung Tenkan ban 1/2 phan con lai, thung Kijun ban tiep 1/2 phan con lai luc do; phan cuoi cho tin hieu BAN / cat lo / hoa von
+      if (!daNua && lenT && tenkan[i] != null && close[i] < tenkan[i]) { ban(conLai * 0.5, close[i], i); daNua = true; }
+      if (!daNuaK && lenK && kijun[i] != null && close[i] < kijun[i]) { ban(conLai * 0.5, close[i], i); daNuaK = true; }
     } else if (cfg.tk === "tenkan") {
       if (lenT && tenkan[i] != null && close[i] < tenkan[i]) { ban(conLai, close[i], i); return ketQua(i); }
     } else if (cfg.tk === "tenkan2") { // thung Tenkan 2 phien dong cua lien tiep thi ban het (o dong cua phien thu 2)
