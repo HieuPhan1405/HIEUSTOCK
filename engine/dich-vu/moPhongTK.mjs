@@ -10,8 +10,8 @@ export function mp(t, cfg) {
   const { vao, banTu } = cfg;
   const E = cfg.E ?? open[vao];
   if (!(E > 0) || !(S < E) || vao >= n) return null;
-  const cacMoc = (cfg.moc ?? []).map((m) => ({ w: m.w, gia: tp[m.i], xong: false }));
-  let conLai = 1, thu = 0, phienW = 0, choBan = false, dinhTruoc = -Infinity, daTP2 = false, lenT = false, lenK = false, daNua = false;
+  const cacMoc = (cfg.moc ?? []).map((m) => ({ w: m.w, gia: m.pct != null ? E * (1 + m.pct / 100) : tp[m.i], xong: false })); // moc: { w, i } = TP thu i cua engine | { w, pct } = chot o gia vao + pct%
+  let conLai = 1, thu = 0, phienW = 0, choBan = false, dinhTruoc = -Infinity, daTP2 = false, lenT = false, lenK = false, daNua = false, daMau = false;
   const ban = (w, g, i) => { thu += w * (g / E); phienW += w * (i - t.iv); conLai -= w; };
   const ketQua = (jThoat) => ({ ret: (thu - 1) * 100 - CHI_PHI, phien: phienW, jThoat });
   const coSell = (i) => cfg.theoSell && sell[i];
@@ -34,6 +34,12 @@ export function mp(t, cfg) {
     if (g != null) { if (conLai > 1e-12) ban(conLai, g, i); return ketQua(i); }
     for (const m of cacMoc) if (!m.xong && high[i] >= m.gia) { ban(m.w, m.gia, i); m.xong = true; }
     if (conLai <= 1e-12) return ketQua(i);
+    // MAU CHOT LOI: ham cfg.mau(t, i) bao nen i co mau (vd nen dao chieu giam); chi xet khi dang lai >= cfg.mauNguong % so voi gia vao; ban cfg.mauTyLe (mac dinh het) phan con lai o gia dong cua, 1 lan
+    if (cfg.mau && !daMau && close[i] >= E * (1 + (cfg.mauNguong ?? 0) / 100) && cfg.mau(t, i)) {
+      ban(conLai * (cfg.mauTyLe ?? 1), close[i], i);
+      daMau = true;
+      if (conLai <= 1e-9) return ketQua(i);
+    }
     if (cfg.tk === "nua") {
       if (!daNua && lenT && tenkan[i] != null && close[i] < tenkan[i]) { ban(conLai * 0.5, close[i], i); daNua = true; }
       if (lenK && kijun[i] != null && close[i] < kijun[i]) { ban(conLai, close[i], i); return ketQua(i); }
