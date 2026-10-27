@@ -347,7 +347,7 @@ export function danhMuc(kqs, ds, K, seed = 1, tuyChon = {}) {
     if (ngayRa > cuoi) cuoi = ngayRa;
     if (tuyChon.loc && !tuyChon.loc(t)) return;
     const diem = tuyChon.xepHang ? tuyChon.xepHang(t) : 0;
-    muc.push({ ma: t.ma, ngayVao: t.ngay, ngayRa, ret: r.ret, diem: Number.isFinite(diem) ? diem : -Infinity, khoa: rng() });
+    muc.push({ ma: t.ma, ngayVao: t.ngay, ngayRa, ret: r.ret, w: tuyChon.trongSo ? tuyChon.trongSo(t) : 1, diem: Number.isFinite(diem) ? diem : -Infinity, khoa: rng() });
   });
   muc.sort((a, b) => (a.ngayVao < b.ngayVao ? -1 : a.ngayVao > b.ngayVao ? 1 : b.diem - a.diem || a.khoa - b.khoa));
   let von = 1;
@@ -368,7 +368,7 @@ export function danhMuc(kqs, ds, K, seed = 1, tuyChon = {}) {
   for (const m of muc) {
     dongDen(m.ngayVao);
     if (dangGiu.length >= K) continue;
-    dangGiu.push({ ngayRa: m.ngayRa, size: von / K, ret: m.ret });
+    dangGiu.push({ ngayRa: m.ngayRa, size: (von / K) * (m.w ?? 1), ret: m.ret });
     layRet.push(m.ret);
     lay++;
   }

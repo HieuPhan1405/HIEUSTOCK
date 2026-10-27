@@ -94,6 +94,8 @@ const MAC_DINH = {
   // NGHIEN CUU (21/10/2026, backtestBoQuaMay.mjs, mac dinh TAT): boQuaMay = diem xu huong khong tinh vi tri gia so voi may Ichimoku; yeuCauGiaTenkanKijun = chi MUA khi dong cua > Tenkan va Tenkan > Kijun.
   boQuaMay: false,
   yeuCauGiaTenkanKijun: false,
+  // NGHIEN CUU (27/10/2026, backtestMuaKhongCanMay.mjs, mac dinh TAT): yeuCauGiaTrenTenkanKijun = chi MUA khi dong cua > Tenkan VA dong cua > Kijun (khong can Tenkan > Kijun, khong can qua may).
+  yeuCauGiaTrenTenkanKijun: false,
   locVolChinhVao: false,
   volChinhNguongVao: 1.2,
   soNenDinhVolChinh: 20,
@@ -260,7 +262,8 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   // Luat VAO: bo lenh Mua thuong khi vol nhip chinh >= nguong. CHI loc buy dua vao may trang thai - buyTho goc van dung cho SellTinHieu / dot bo lo (lenh bi bo coi nhu da qua dot, khong mua lai cung dot).
   const volChinhTruoc = p.locVolChinhVao ? tinhVolNhipChinhTruoc({ high, relVol }, { soNen: p.soNenDinhVolChinh }) : null;
   const buyLocVol = volChinhTruoc ? buyTho.map((b, i) => b && !(volChinhTruoc[i] != null && volChinhTruoc[i] >= p.volChinhNguongVao)) : buyTho;
-  const buyVaoMayTrangThai = p.yeuCauGiaTenkanKijun ? buyLocVol.map((b, i) => b && tenkan[i] != null && kijun[i] != null && close[i] > tenkan[i] && tenkan[i] > kijun[i]) : buyLocVol;
+  const buyLocTK = p.yeuCauGiaTenkanKijun ? buyLocVol.map((b, i) => b && tenkan[i] != null && kijun[i] != null && close[i] > tenkan[i] && tenkan[i] > kijun[i]) : buyLocVol;
+  const buyVaoMayTrangThai = p.yeuCauGiaTrenTenkanKijun ? buyLocTK.map((b, i) => b && tenkan[i] != null && kijun[i] != null && close[i] > tenkan[i] && close[i] > kijun[i]) : buyLocTK;
   const kq = chayMayTrangThai({
     close,
     open,

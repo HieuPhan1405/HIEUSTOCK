@@ -66,6 +66,11 @@ const CACH = [
   { ten: "TK1  chi Tenkan ban 1/2 + Kijun ban not (cat lo S)", cfg: { moc: [], baoVe: false, theoSell: false, tk: "nua" } },
   { ten: "TK2  TK1 + thoat het khi co tin hieu BAN", cfg: { moc: [], baoVe: false, theoSell: true, tk: "nua" } },
   { ten: "TK3  30% TP1 + 30% TP2, con lai: Tenkan 1/2 + Kijun not (+ BAN)", cfg: { moc: HAI_TP, baoVe: true, theoSell: true, tk: "nua" } },
+  { ten: "Q1   50% TP1 + 30% TP2, con 20%: Tenkan 1/2 + Kijun not (+ BAN)", cfg: { moc: [{ w: 0.5, i: 0 }, { w: 0.3, i: 1 }], baoVe: true, theoSell: true, tk: "nua" } },
+  { ten: "Q2   50% TP1 + 30% TP2, con 20% theo tin hieu BAN (nhu hien tai)", cfg: { moc: [{ w: 0.5, i: 0 }, { w: 0.3, i: 1 }], baoVe: true, theoSell: true } },
+  { ten: "Q3   50% TP1 + 20% TP2, con 30%: Tenkan 1/2 + Kijun not (+ BAN)", cfg: { moc: [{ w: 0.5, i: 0 }, { w: 0.2, i: 1 }], baoVe: true, theoSell: true, tk: "nua" } },
+  { ten: "Q4   40% TP1 + 30% TP2, con 30%: Tenkan 1/2 + Kijun not (+ BAN)", cfg: { moc: [{ w: 0.4, i: 0 }, { w: 0.3, i: 1 }], baoVe: true, theoSell: true, tk: "nua" } },
+  { ten: "Q5   50% TP1 + 30% TP2, con 20%: thung Kijun ban het (+ BAN)", cfg: { moc: [{ w: 0.5, i: 0 }, { w: 0.3, i: 1 }], baoVe: true, theoSell: true, tk: "kijun" } },
   { ten: "P1a  CHI 30% TP1 (bo TP2), con lai theo tin hieu BAN (khong hoa von)", cfg: { moc: [{ w: 0.3, i: 0 }], baoVe: false, theoSell: true } },
   { ten: "P1b  CHI 30% TP1, con lai: Tenkan 1/2 + Kijun not (+ BAN)", cfg: { moc: [{ w: 0.3, i: 0 }], baoVe: false, theoSell: true, tk: "nua" } },
   { ten: "P1c  nhu P1b + hoa von khi gia cham muc TP2 (khong ban o TP2)", cfg: { moc: [{ w: 0.3, i: 0 }], baoVe: true, theoSell: true, tk: "nua" } },
@@ -141,5 +146,30 @@ for (const [tenTap, loc] of [["Toan bo giai doan", () => true], ["Tu 2022.5", (t
     const k = thongKe(ok);
     const d10 = danhMucNhieuLan(kqs, ds, 10, SO_LAN, {});
     console.log("  ", c.ten.padEnd(66), "lai TB", f(k.tb).padStart(6), "thang", f(k.thang, 0).padStart(3) + "%", "PF", f(k.pf).padStart(5), "phien", f(k.phienTB, 1).padStart(5), `| DM K=10 ${f(d10.cagr, 1)}%/${f(d10.sut, 0)}%`);
+  }
+}
+
+const QUY_UOC = [["THUC TE (mua mo cua phien sau, ban tu chieu T+2)", (t) => ({ vao: t.iv + 1, banTu: t.iv + 3 })], ["LY TUONG (gia vao = E engine, ban tu phien sau)", (t) => ({ E: t.E, vao: t.iv + 1, banTu: t.iv + 1 })]];
+const TAP_GRID = [["Toan bo giai doan", () => true], ["Tu 2022.5", (t) => t.ngay >= "2022-05-01"]];
+// ---------- LUOI TRONG SO TP1 / TP2 (phan con lai Tenkan 1/2 + Kijun not, + BAN): xem be mat co tron hay "got nhon" (GRID=1) ----------
+if (process.env.GRID) {
+  console.log("\n=========== LUOI TRONG SO: lai TB (DM K=10 lai/nam, sut) theo (w TP1, w TP2) ===========");
+  for (const [tenQU, cfgVao] of QUY_UOC) {
+    for (const [tenTap, loc] of TAP_GRID) {
+      const ds = lenh.filter(loc);
+      console.log(`\n${tenQU} | ${tenTap}`);
+      console.log("   w TP1 \\ w TP2   ", [0.2, 0.3, 0.4].map((w2) => `${(w2 * 100).toFixed(0)}%`.padStart(22)).join(""));
+      for (const w1 of [0.2, 0.3, 0.4, 0.5]) {
+        const cells = [];
+        for (const w2 of [0.2, 0.3, 0.4]) {
+          if (w1 + w2 > 0.9) { cells.push("-".padStart(22)); continue; }
+          const kqs = ds.map((t) => mp(t, { moc: [{ w: w1, i: 0 }, { w: w2, i: 1 }], baoVe: true, theoSell: true, tk: "nua", ...cfgVao(t) }));
+          const k = thongKe(kqs.filter(Boolean));
+          const d = danhMucNhieuLan(kqs, ds, 10, 20, {});
+          cells.push(`${f(k.tb)} (${f(d.cagr, 1)}%/${f(d.sut, 0)}%)`.padStart(22));
+        }
+        console.log(`   ${(w1 * 100).toFixed(0)}%`.padEnd(18), cells.join(""));
+      }
+    }
   }
 }
