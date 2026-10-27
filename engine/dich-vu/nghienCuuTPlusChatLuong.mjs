@@ -5,13 +5,14 @@
 // Du lieu: engine/output/nen_dai.json (gia dieu chinh), vnindex_dai.json, bctc_dai.json (taiBaoCaoTaiChinh.mjs --tu=2020-12-31 --ra=bctc_dai.json). Giai doan kiem tra 2022-04 -> nay.
 // Chay: node engine/dich-vu/nghienCuuTPlusChatLuong.mjs
 import { readFileSync } from "node:fs";
+import { docNenMoiNhat } from "./docNenMoiNhat.mjs";
 
 const doc = (f) => JSON.parse(readFileSync(new URL(`../output/${f}`, import.meta.url), "utf8"));
-const nen = doc("nen_dai.json");
+const nen = docNenMoiNhat();
 const vni = doc("vnindex_dai.json");
 const bctc = doc("bctc_dai.json");
 const nganh = doc("nganh_map.json");
-const TU = "2022-04-01";
+const TU = process.env.TU ?? "2022-04-01"; // dat TU=2026-01-01 de chi xem tu 2026
 const PHI = 0.4;
 const KY_HAN = [3, 5];
 const THANH_KHOAN = 5; // ty/phien
@@ -174,3 +175,18 @@ for (const ph of [0.2, 0.4, 0.6, 0.8, 1.0]) console.log(`  phi+truot ${ph}%/vong
 const hang = new Map();
 for (const x of A) hang.set(x.tv, (hang.get(x.tv) ?? 0) + 1);
 console.log("\nSo lenh/ngay (4a): TB", p(tb([...hang.values()])), "; ngay co >=5 lenh:", [...hang.values()].filter((v) => v >= 5).length, "/", soNgay);
+
+// ---------- THEO TUNG DOT (kieu 5: qua ban + VN-Index giam > 3%/5 phien) - cac ngay co tin hieu, gop theo ngay vao lenh
+if (process.env.DOT) {
+  const K5 = lenh.filter((x) => x.kieu.startsWith("5"));
+  const theoNgay = new Map();
+  for (const e of K5) (theoNgay.get(e.tv) ?? theoNgay.set(e.tv, []).get(e.tv)).push(e);
+  console.log("\n=== Tung ngay co tin hieu kieu 5 (ngay vao lenh | so ma | lai TB T+3 sau phi | thang) ===");
+  let cum = 0;
+  for (const [d, a] of [...theoNgay.entries()].sort()) {
+    const m = tb(a.map((x) => x.r3));
+    cum += m;
+    console.log(" ", d, String(a.length).padStart(3), p(m).padStart(6), (p((a.filter((x) => x.r3 > 0).length / a.length) * 100, 0) + "%").padStart(5), "| vuot TT", p(tb(a.map((x) => x.v3))).padStart(5));
+  }
+  console.log("  tong lai TB cac ngay:", p(cum), "tren", theoNgay.size, "ngay vao lenh");
+}

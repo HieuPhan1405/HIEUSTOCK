@@ -6,6 +6,7 @@ import { readFileSync } from "node:fs";
 
 const j = JSON.parse(readFileSync(new URL("../output/nen_1h.json", import.meta.url), "utf8"));
 const PHI = 0.4;
+const TU = process.env.TU ?? "0000"; // TU=2026-01-01 de chi xem tu 2026 (nen 1 gio co tu 10/2023)
 const gio = (s) => { const d = new Date((s + 7 * 3600) * 1000); return { ngay: d.toISOString().slice(0, 10), h: d.getUTCHours() }; };
 const tb = (a) => (a.length ? a.reduce((s, x) => s + x, 0) / a.length : NaN);
 const p = (x, d = 2) => (Number.isFinite(x) ? x.toFixed(d) : "—");
@@ -29,6 +30,7 @@ const KIEU_VAO = { c11: 11, c13: 13, c14: 14 };
 for (const [ma, ds] of Object.entries(theoMa)) {
   for (let i = 21; i < ds.length - 3; i++) {
     const e = ds[i], prev = ds[i - 1].c[14], ra = ds[i + 2].c[14];
+    if (e.d < TU) continue;
     // chi lay khi 3 phien lien tiep (khong thieu ngay)
     let gtri = 0;
     for (let k = i - 19; k <= i; k++) gtri += ds[k].c[14] * ds[k].v;

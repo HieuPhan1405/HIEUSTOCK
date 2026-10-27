@@ -2,9 +2,10 @@
 // Y nghia cho nguoi DA CO HANG (T+ ban): ban luc mo cua hay dong cua phien sau? Khong tinh phi (chi so sanh 2 chan).
 // Chay: node engine/dich-vu/nghienCuuDemVaTrongNgay.mjs
 import { readFileSync } from "node:fs";
+import { docNenMoiNhat } from "./docNenMoiNhat.mjs";
 
-const nen = JSON.parse(readFileSync(new URL("../output/nen_dai.json", import.meta.url), "utf8"));
-const TU = "2022-04-01";
+const nen = docNenMoiNhat();
+const TU = process.env.TU ?? "2022-04-01"; // dat TU=2026-01-01 de chi xem tu 2026
 const nhom = [["<= -5%", -1e9, -5], ["-5..-2%", -5, -2], ["-2..0%", -2, 0], ["0..2%", 0, 2], ["2..5%", 2, 5], [">= 5%", 5, 1e9]];
 const tb = (a) => (a.length ? a.reduce((s, x) => s + x, 0) / a.length : NaN);
 const p = (x, d = 2) => (Number.isFinite(x) ? x.toFixed(d) : "—");

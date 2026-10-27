@@ -5,9 +5,10 @@
 // "vuot" = tru lai trung binh deu cua moi ma thanh khoan cung ngay vao lenh / cung ky han. Giai doan 2022-04 -> nay, thanh khoan TB20 >= 5 ty, 1 lenh / 5 phien / ma / kieu.
 // Chay: node engine/dich-vu/nghienCuuTPlusDemGio.mjs
 import { readFileSync } from "node:fs";
+import { docNenMoiNhat } from "./docNenMoiNhat.mjs";
 
-const nen = JSON.parse(readFileSync(new URL("../output/nen_dai.json", import.meta.url), "utf8"));
-const TU = "2022-04-01";
+const nen = docNenMoiNhat();
+const TU = process.env.TU ?? "2022-04-01"; // dat TU=2026-01-01 de chi xem tu 2026
 const THANH_KHOAN = 5;
 const PHI = 0.4;
 
