@@ -21,7 +21,7 @@ function mp(t, cfg) {
   const lenLine = { tenkan: false, kijun: false, sma20: false, sma50: false, cld: false };
   const dem = { a: 0, b: 0 };
   let conLai = 1, thu = 0, phienW = 0, choBan = false, daHV = false, dinhClose = close[vao], dinhCaoHV = -Infinity, daNua = false;
-  const ban = (w, g, i) => { thu += w * (g / E); phienW += w * (i - t.iv); conLai -= w; };
+  const ban = (w, g, i) => { w = Math.min(w, conLai); if (!(w > 0)) return; thu += w * (g / E); phienW += w * (i - t.iv); conLai -= w; }; // khong ban qua phan con lai (sua 27/10: truoc do Tenkan 1/2 truoc TP1 roi TP1/TP2 co the ban > 100%)
   const ketQua = () => ({ ret: (thu - 1) * 100 - CHI_PHI });
   const ketQua2 = (i) => ({ ret: (thu - 1) * 100 - CHI_PHI, phien: phienW, jThoat: i });
   const cap = (i) => { for (const k of Object.keys(lenLine)) if (duong[k][i] != null && close[i] > duong[k][i]) lenLine[k] = true; };

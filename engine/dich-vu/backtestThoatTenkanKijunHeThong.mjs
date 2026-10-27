@@ -24,7 +24,7 @@ function mp(t, cfg) {
   if (!(E > 0) || !(S < E) || vao >= n) return null;
   const cacMoc = (cfg.moc ?? []).map((m) => ({ w: m.w, gia: tp[m.i], xong: false }));
   let conLai = 1, thu = 0, phienW = 0, choBan = false, dinhTruoc = -Infinity, daTP2 = false, lenT = false, lenK = false, daNua = false;
-  const ban = (w, g, i) => { thu += w * (g / E); phienW += w * (i - t.iv); conLai -= w; };
+  const ban = (w, g, i) => { w = Math.min(w, conLai); if (!(w > 0)) return; thu += w * (g / E); phienW += w * (i - t.iv); conLai -= w; }; // khong ban qua phan con lai (sua 27/10: truoc do Tenkan 1/2 truoc TP1 roi TP1/TP2 co the ban > 100%)
   const ketQua = (jThoat) => ({ ret: (thu - 1) * 100 - CHI_PHI, phien: phienW, jThoat });
   const coSell = (i) => cfg.theoSell && sell[i];
   for (let i = vao; i < n; i++) {
