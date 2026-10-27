@@ -14,7 +14,10 @@ const TU_QUY = THAM_SO.tu ?? "2024-03-31";
 const FILE_RA = THAM_SO.ra ?? "bctc.json";
 const MA_CHI_TIEU = [11000, 11100, 11300, 11400, 12000, 12200, 12700, 13000, 13100, 13300, 13110, 13340, 14000, 15000, 14110, 14200, 21001, 22100, 23100, 22510, 23800, 22070, 23003, 23000, 22200, 22110, 32000, 22230, 33600, 421701, 21000];
 const MODEL = { pi: [1, 2, 3], nh: [101, 102, 103], ck: [89, 90, 91], bh: [411, 412, 413] };
+// Cong ty TAI CHINH khong phai ngan hang / chung khoan / bao hiem nhung VNDirect bao cao theo mo hinh NGAN HANG (101-103): EVF (EVN Finance, nganh.js xep "Chung khoan" nhung khong co du lieu mo hinh 89-91). 28/10/2026.
+const LOAI_NGOAI_LE = { EVF: "nh" };
 const loaiCua = (ma) => {
+  if (LOAI_NGOAI_LE[ma]) return LOAI_NGOAI_LE[ma];
   const n = nganh[ma];
   return n === "Ngan hang" ? "nh" : n === "Chung khoan" ? "ck" : n === "Bao hiem" ? "bh" : "pi";
 };

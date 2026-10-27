@@ -12,6 +12,7 @@ const boQuaBctc = process.argv.includes("--bo-qua-bctc");
 const BUOC = [
   ["Nen 700 phien", "taiNenGanDay.mjs"],
   ["VN-Index", "taiVniDai.mjs"],
+  ["Nganh map", "taoNganhMap.mjs"],
   ...(boQuaBctc ? [] : [["So co phieu luu hanh", "taiFreeFloat.mjs"], ["Bao cao tai chinh", "taiBaoCaoTaiChinh.mjs"]]),
   ["Phan tich co ban", "phanTichCoBan.mjs"],
   ["RRG nganh", "tinhRRG.mjs", "--json"],
