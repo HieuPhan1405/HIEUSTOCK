@@ -1,5 +1,6 @@
 // BACKTEST "THUNG TENKAN BAN NUA, THUNG KIJUN BAN NUA CUA PHAN CON LAI CHUA CHOT TP" (Hieu 27/10/2026). Lenh Mua thuong cua engine; moi lan thung (dong cua duoi duong, sau khi tung dong cua tren) ban 1/2 PHAN CON LAI luc do:
 // thung Tenkan -> ban 1/2 phan con lai; thung Kijun -> ban tiep 1/2 phan con lai; phan cuoi (khoang 25% neu khong TP) cho tin hieu BAN / cat lo S / hoa von (chi khi co TP2). Cach ra trong mp: tk "nuaNua" (da sua loi ban > 100%).
+//  N4 = TP1 30% + TP2 30% (lenh van cho) + CHI PHAN DU 40% quan ly: thung Tenkan ban 1/2 phan du (20% von), thung Kijun ban tiep 1/2 phan du con lai (10%), 10% cuoi cho BAN / cat lo / hoa von (mp tk "nuaNuaDu"); N5 = N4 khong hoa von sau TP2.
 //  N1 = TP1 30% + TP2 30% (engine) + thung Tenkan 1/2 + thung Kijun 1/2 (phan con)      N2 = KHONG TP, chi thung Tenkan 1/2 + thung Kijun 1/2 (phan con)     N3 = N2 nhung khong theo tin hieu BAN (phan cuoi chi cat lo S)
 // Doi chieu: HT (30/30 + BAN), TK3 (30/30 + Tenkan 1/2 + Kijun ban not), KIJ (thung Kijun ban het). Co / khong loc d5 VN-Index (dong cua T) > 1%. Quy uoc THUC TE (mua mo cua phien sau, ban tu T+2) va LY TUONG; phi 0,4%.
 // Chay: node engine/dich-vu/backtestTenkanKijunBanNuaNua.mjs
@@ -20,6 +21,8 @@ const CACH = [
   ["N1 30/30 + Tenkan 1/2 + Kijun 1/2 (con lai)", { moc: HAI_TP, baoVe: true, theoSell: true, tk: "nuaNua" }],
   ["N2 KHONG TP: Tenkan 1/2 + Kijun 1/2 + BAN", { moc: [], baoVe: false, theoSell: true, tk: "nuaNua" }],
   ["N3 KHONG TP: Tenkan 1/2 + Kijun 1/2, ko BAN", { moc: [], baoVe: false, theoSell: false, tk: "nuaNua" }],
+  ["N4 30/30 + PHAN DU 40%: Tenkan 1/2 + Kijun 1/2 + BAN", { moc: HAI_TP, baoVe: true, theoSell: true, tk: "nuaNuaDu" }],
+  ["N5 30/30 + PHAN DU, ko hoa von sau TP2", { moc: HAI_TP, baoVe: false, theoSell: true, tk: "nuaNuaDu" }],
 ];
 const QUY_UOC = [["THUC TE", (t) => ({ vao: t.iv + 1, banTu: t.iv + 3 })], ["LY TUONG", (t) => ({ E: t.E, vao: t.iv + 1, banTu: t.iv + 1 })]];
 const SO_LAN = 20;
