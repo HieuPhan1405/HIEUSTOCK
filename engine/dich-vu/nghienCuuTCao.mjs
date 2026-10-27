@@ -29,7 +29,37 @@ const rollMin = (a, n) => a.map((_, i) => (i < n - 1 ? NaN : Math.min(...a.slice
 const vniMap = new Map(vni.map((x, i) => [x.t, i > 5 ? (x.c / vni[i - 5].c - 1) * 100 : NaN]));
 
 // ---- cach ra: tra ve { ret (% truoc phi), giu (so phien sau phien mua) }
+function raTK(d, e, sch) {
+  // Tenkan/Kijun: chi "thung" khi truoc do gia da tung dong cua TREN duong do (tu luc mua tro di) - ma vao luc dang duoi duong thi cho gia len tren truoc.
+  // Ban 1/2 khi dong cua < Tenkan, ban not (phan con lai) khi dong cua < Kijun; tu phien e+2 (chieu T+2). Het han (toi da sch.max phien) ban not o dong cua. sl: cat lo cung (% so voi gia mua, tu phien e+3 theo gia thap nhat trong ngay).
+  const vao = d.o[e];
+  const n = d.c.length;
+  const gioiHan = Math.min(n - 1, e + sch.max);
+  let lenT = false, lenK = false, daBanNua = false, giaNua = 0, tong = 0;
+  for (let k = 0; e + k <= gioiHan; k++) {
+    const j = e + k;
+    if (d.c[j] > d.tenkan[j]) lenT = true;
+    if (d.c[j] > d.kijun[j]) lenK = true;
+    if (k < 2) continue;
+    if (sch.sl && k >= 3 && d.l[j] <= vao * (1 - sch.sl / 100)) {
+      const gia = Math.min(d.o[j], vao * (1 - sch.sl / 100));
+      const r = daBanNua ? 0.5 * giaNua + 0.5 * (gia / vao - 1) * 100 : (gia / vao - 1) * 100;
+      return { ret: r, giu: k };
+    }
+    if (!daBanNua && lenT && d.c[j] < d.tenkan[j]) { daBanNua = true; giaNua = (d.c[j] / vao - 1) * 100; tong = k; }
+    if (lenK && d.c[j] < d.kijun[j]) {
+      const gia = (d.c[j] / vao - 1) * 100;
+      return { ret: daBanNua ? 0.5 * giaNua + 0.5 * gia : gia, giu: daBanNua ? (tong + k) / 2 : k };
+    }
+    if (e + k === gioiHan) {
+      const gia = (d.c[j] / vao - 1) * 100;
+      return { ret: daBanNua ? 0.5 * giaNua + 0.5 * gia : gia, giu: daBanNua ? (tong + k) / 2 : k };
+    }
+  }
+  return null;
+}
 function ra(d, e, sch) {
+  if (sch.kieu === "TK") return raTK(d, e, sch);
   const vao = d.o[e];
   const n = d.c.length;
   const gioiHan = Math.min(n - 1, e + (sch.max ?? sch.n));
@@ -72,6 +102,8 @@ const SCH = [
   { ten: "H15 giu 15", kieu: "H", n: 15 },
   { ten: "S10 giu 20, cat lo -10%", kieu: "TPSL", tp: 1000, sl: 10, max: 20 },
   { ten: "S7  giu 20, cat lo -7%", kieu: "TPSL", tp: 1000, sl: 7, max: 20 },
+  { ten: "TK  ban 1/2 thung Tenkan, not thung Kijun (toi da 40)", kieu: "TK", max: 40 },
+  { ten: "TKS TK + cat lo -10%", kieu: "TK", max: 40, sl: 10 },
   { ten: "TP8/SL5  (toi da 20)", kieu: "TPSL", tp: 8, sl: 5, max: 20 },
   { ten: "TP12/SL6 (toi da 30)", kieu: "TPSL", tp: 12, sl: 6, max: 30 },
   { ten: "TR7  trailing 7% (toi da 30)", kieu: "TR", pct: 7, max: MAX },
@@ -88,6 +120,9 @@ const KIEU = {
   "6 Qua ban + VN-Index giam >3%/5 phien": (d, i) => d.rsi[i] < 30 && d.c[i] < d.bbLo[i] && vniMap.get(d.t[i]) < -3,
   "6b Qua ban + VN-Index giam >3%/5p + VN-Index TREN MA200": (d, i) => d.rsi[i] < 30 && d.c[i] < d.bbLo[i] && vniMap.get(d.t[i]) < -3 && vniMa200.get(d.t[i]) === true,
   "6c Qua ban + VN-Index giam >3%/5p + VN-Index DUOI MA200 (thi truong gau)": (d, i) => d.rsi[i] < 30 && d.c[i] < d.bbLo[i] && vniMap.get(d.t[i]) < -3 && vniMa200.get(d.t[i]) === false,
+  "9 Cham Tenkan bat len (xu huong tang: Tenkan>Kijun, Kijun dang len; hom truoc tren Tenkan, nen xanh dong tren Tenkan)": (d, i) => d.tenkan[i] > d.kijun[i] && d.c[i] > d.kijun[i] && d.kijun[i] > d.kijun[i - 5] && d.c[i - 1] > d.tenkan[i - 1] && d.l[i] <= d.tenkan[i] * 1.003 && d.c[i] > d.tenkan[i] && d.c[i] > d.o[i],
+  "10 Cham Tenkan bat len + dong cua o nua tren nen + KL >= TB20": (d, i) => d.tenkan[i] > d.kijun[i] && d.c[i] > d.kijun[i] && d.kijun[i] > d.kijun[i - 5] && d.c[i - 1] > d.tenkan[i - 1] && d.l[i] <= d.tenkan[i] * 1.003 && d.c[i] > d.tenkan[i] && d.c[i] > d.o[i] && d.h[i] > d.l[i] && (d.c[i] - d.l[i]) / (d.h[i] - d.l[i]) >= 0.5 && d.v[i] >= d.vTB[i],
+  "11 Cham Kijun bat len (xu huong tang: Tenkan>Kijun, Kijun dang len, nen xanh dong tren Kijun)": (d, i) => d.tenkan[i] > d.kijun[i] && d.kijun[i] > d.kijun[i - 5] && d.l[i] <= d.kijun[i] * 1.003 && d.c[i] > d.kijun[i] && d.c[i] > d.o[i] && d.c[i - 1] > d.kijun[i - 1],
   "7 Tang >=5% + KL>=1,5x (dong luong)": (d, i) => d.c[i] / d.c[i - 1] - 1 >= 0.05 && d.v[i] >= 1.5 * d.vTB[i],
   "8 Cat len tren MA20 sau >=5 phien duoi MA20, MA50 dang len": (d, i) => d.c[i] > d.ma20[i] && d.c[i - 1] <= d.ma20[i - 1] && d.c[i - 2] <= d.ma20[i - 2] && d.c[i - 3] <= d.ma20[i - 3] && d.c[i - 4] <= d.ma20[i - 4] && d.c[i - 5] <= d.ma20[i - 5] && d.ma50[i] > d.ma50[i - 10],
 };
