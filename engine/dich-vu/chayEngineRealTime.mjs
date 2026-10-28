@@ -11,6 +11,7 @@
 //
 // AN TOAN - giong het chayPipelineDayDu.mjs: MAC DINH CHI ghi CSV cuc bo, KHONG tu POST len web.
 // Muon POST that (SAU KHI da doi chieu on dinh voi AmiBroker - xem Giai doan 5) thi chay voi flag
+// --mot-lan: day MOT LAN roi thoat (xem DAY_LEN_WEB_ENGINE.bat).
 // --upload + 2 bien moi truong CS_UPLOAD_API_KEY + CS_XAC_NHAN_UPLOAD=DONG_Y.
 //
 // CACH CHAY (can DNSE_API_KEY/DNSE_API_SECRET trong .env.dnse.local):
@@ -318,7 +319,7 @@ async function main() {
 
   // DONG TIEN THOI GIAN THUC (tick co chieu, khoi ngoai, do rong chi so -> /api/upload-dong-tien): loi o day khong anh huong tin hieu chinh; tat bang --khong-dong-tien.
   let dongTien = null;
-  if (!process.argv.includes("--khong-dong-tien")) {
+  if (!process.argv.includes("--khong-dong-tien") && !process.argv.includes("--mot-lan")) {
     try {
       dongTien = khoiDongDongTien({ apiKey, apiSecret, dsMa, upload: uploadDuocPhep ? { goc: process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn", key: uploadKey } : null });
     } catch (loiDt) {
@@ -334,6 +335,21 @@ async function main() {
   const henGioKichBan = setInterval(chayKichBanMua, CHU_KY_KICH_BAN_MS);
   chayRsiH1();
   const henGioRsiH1 = setInterval(chayRsiH1, CHU_KY_RSI_H1_MS);
+
+  // --mot-lan (28/10/2026): DAY MOT LAN roi thoat (nut bam 1 cai tren Desktop - DAY_LEN_WEB_ENGINE.bat): tin hieu + checklist bat day + diem B + chi bao + kich ban mua + RSI 1H da duoc tinh/day o tren,
+  // doi cac tien trinh con (kich ban mua, RSI 1H) xong roi dong ket noi va thoat (ma 0). Khong chay dong tien thoi gian thuc / khong tu dung 15h30.
+  if (process.argv.includes("--mot-lan")) {
+    clearInterval(henGio);
+    clearInterval(henGioChiBao);
+    clearInterval(henGioKichBan);
+    clearInterval(henGioRsiH1);
+    console.log("[mot lan] Da tinh + day tin hieu, checklist, diem B, chi bao. Doi kich ban mua / RSI 1H (neu dang chay) roi thoat...");
+    for (let i = 0; i < 360 && (dangChayKichBan || dangChayRsiH1); i++) await new Promise((r) => setTimeout(r, 1000));
+    dsKetNoi.forEach((k) => k.dong());
+    dsKetNoiTopGia.forEach((k) => k.dong());
+    console.log("[mot lan] XONG.");
+    process.exit(0);
+  }
 
   // TU DUNG 15h30 (2026-10-12): engine khoi dong TRUOC 15h30 vao ngay lam viec (T2-T6, gio VN) thi tinh + day lan cuoi luc 15h30 roi tu thoat voi ma 3 -
   // CHAY_REALTIME_UPLOAD.bat thay ma 3 thi KHONG khoi dong lai. Khoi dong sau 15h30 (chay tay buoi toi / cuoi tuan) thi chay den khi dong cua so.
