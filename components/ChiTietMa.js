@@ -9,6 +9,7 @@ import NhatKyGiaoDich from "@/components/NhatKyGiaoDich";
 import XuatAnh from "@/components/XuatAnh";
 import TheChiaSeMa from "@/components/TheChiaSeMa";
 import DongTienMa from "@/components/DongTienMa";
+import KhoiNgoaiMa from "@/components/KhoiNgoaiMa";
 import PhanTichCoBan from "@/components/PhanTichCoBan";
 import ThanhMucTrang from "@/components/ThanhMucTrang";
 import NhanViTri120 from "@/components/NhanViTri120";
@@ -770,6 +771,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
       {/* BIEU DO KY THUAT */}
       <div id="muc-bieu-do" className="mb-4 scroll-mt-28">
         <BieuDoKyThuat ma={row.ma} vung={vungLenh} ngayMua={vt.ngay_mua} />
+      </div>
+
+      {/* KHOI NGOAI mua / ban rong 10 phien (VNDirect, cong khai) */}
+      <div id="muc-khoi-ngoai" className="scroll-mt-28">
+        <KhoiNgoaiMa ma={row.ma} />
       </div>
 
       {/* DONG TIEN TRONG PHIEN (DNSE): mua / ban chu dong, co lenh, khoi ngoai, delta theo phut, volume profile */}
