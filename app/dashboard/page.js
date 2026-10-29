@@ -35,11 +35,11 @@ function TheCho({ tieuDe }) {
   );
 }
 async function TheKhoiNgoai() {
-  const ngoai = await layCoDem("khoi-ngoai", 300_000, layDongTienNuocNgoai, { choToiDaMs: 8000 });
+  const ngoai = await layCoDem("khoi-ngoai", 300_000, layDongTienNuocNgoai, { choToiDaMs: 4000 });
   return <KhoiNgoaiThiTruong ngoai={ngoai} />;
 }
 async function TheVungGiaTri() {
-  const vt = await layCoDem("vung-gia-tri-vnindex", 120_000, () => layLichSuGia("VNINDEX", 200).then((nen) => viTriTheoVungGiaTri(nen)), { choToiDaMs: 8000 });
+  const vt = await layCoDem("vung-gia-tri-vnindex", 120_000, () => layLichSuGia("VNINDEX", 200).then((nen) => viTriTheoVungGiaTri(nen)), { choToiDaMs: 4000 });
   return <VungGiaTriChiSo vt={vt} />;
 }
 

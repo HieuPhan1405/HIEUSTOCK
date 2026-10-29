@@ -105,7 +105,19 @@ export default async function TrangDanhMuc() {
   const capNhatPhien = capNhatMoiNhat(tatCa);
   const ngayPhien = capNhatPhien ? ngayGiaoDichVN(new Date(capNhatPhien)) : null;
   // Dong tien (mua / ban chu dong, khoi ngoai trong phien - DB, nho 10 giay) va khoi ngoai theo phien (VNDirect) de canh bao ngoai ban nhieu, ban chu dong nhieu...: nguon nao loi thi bo qua nguon do.
-  const theoMa = (fn) => Promise.all(cuaToi.map((r) => fn(r.ma).then((v) => [r.ma, v]).catch(() => [r.ma, null]))).then((a) => new Map(a));
+  // Chong lag (29/10/2026): moi nguon phu co HAN TOI DA (qua han thi bo qua, trang van hien du) va chay toi da 6 ma cung luc (truoc day tat ca ma x 3 nguon cung luc -> nghen khi theo doi nhieu ma).
+  const theoMa = (fn, hanMs = 4000, song = 6) => {
+    const kq = new Map();
+    let i = 0;
+    const chayMot = async () => {
+      while (i < cuaToi.length) {
+        const ma = cuaToi[i++].ma;
+        const v = await Promise.race([fn(ma).catch(() => null), new Promise((r) => setTimeout(() => r(null), hanMs))]);
+        kq.set(ma, v);
+      }
+    };
+    return Promise.all(Array.from({ length: Math.min(song, cuaToi.length) }, chayMot)).then(() => kq);
+  };
   const [barsTheoMa, lenhNgay, dongTienTheoMa, ngoaiTheoMa] = await Promise.all([
     theoMa((ma) => layLichSuGia(ma, 300)),
     layLenhCoSuKienNgay(ngayPhien).catch(() => []),
