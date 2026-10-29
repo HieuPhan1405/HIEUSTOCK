@@ -7,7 +7,8 @@ import { layLichPhien, layLichSuGia } from "@/lib/lichSuGia";
 import { chuYTrongPhien } from "@/lib/chuYTrongPhien";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { canhBaoDangCo } from "@/lib/canhBaoDanhMuc";
-import { canhBaoDongTien, gopCanhBao } from "@/lib/canhBaoDongTien";
+import { canhBaoDongTien, canhBaoFreeFloat, gopCanhBao } from "@/lib/canhBaoDongTien";
+import { freeFloatCuaMa } from "@/lib/freeFloat";
 import { layDongTienMa } from "@/lib/dongTien";
 import { layKhoiNgoaiMa } from "@/lib/khoiNgoaiMa";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
@@ -128,7 +129,11 @@ export default async function TrangDanhMuc() {
       rsi: hang.rsi14,
       giu: r.tin === "MUA" || r.tin === "NAM GIU",
     });
-    return { ...gopCanhBao(co.cacCanhBao, dongTien, 5), canGanNhat: co.canGanNhat };
+    // Free float (DNSE): thap -> de bien dong manh; vong quay trong phien cao (KL phien cuoi / co phieu tu do) - chi tinh khi nen cuoi la phien hien tai.
+    const ff = freeFloatCuaMa(ma);
+    const nenCuoi = Array.isArray(bars) && bars.length ? bars[bars.length - 1] : null;
+    const freeFloat = canhBaoFreeFloat({ freeFloatPct: ff?.pct, coPhieuTuDo: ff?.coPhieuTuDo, klPhien: nenCuoi && nenCuoi.t === ngayPhien ? nenCuoi.v : null });
+    return { ...gopCanhBao(co.cacCanhBao, dongTien, freeFloat, 5), canGanNhat: co.canGanNhat };
   };
   const dsMa = thamGia
     .map((t) => {

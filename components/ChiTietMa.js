@@ -478,6 +478,11 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
                 Vốn hoá: {fmtTy(row.von_hoa_ty)} tỷ
               </p>
             )}
+            {row.free_float != null && (
+              <p className="text-[11px]" style={{ color: "var(--mo)" }} title="Tỷ lệ cổ phiếu tự do chuyển nhượng, nguồn DNSE, làm tròn 5%">
+                Free float: {row.free_float}%{row.von_hoa_tu_do_ty != null ? " (≈ " + fmtTy(row.von_hoa_tu_do_ty) + " tỷ)" : ""}
+              </p>
+            )}
           </div>
           {lenh && (
             <div className="mt-3 pt-3 border-t w-full" style={{ borderColor: VIEN }}>

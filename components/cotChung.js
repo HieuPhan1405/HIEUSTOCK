@@ -219,6 +219,21 @@ export const CAC_COT = {
     lay: (r) => r.von_hoa_ty,
     hien: (r) => fmtTy(r.von_hoa_ty),
   },
+  // Free float (ty le co phieu tu do chuyen nhuong, nguon DNSE, lam tron 5% - lib/freeFloat.js); thieu thi de trong.
+  free_float: {
+    nhan: "Free float (%)",
+    nhom: "Thanh khoản & vốn hoá",
+    canPhai: true,
+    lay: (r) => (r.free_float == null ? null : r.free_float),
+    hien: (r) => (r.free_float == null ? Trong : <span title="Tỷ lệ cổ phiếu tự do chuyển nhượng (nguồn DNSE, làm tròn 5%). Thấp thì giá dễ biến động mạnh, khó mua bán.">{soAn(r.free_float, 0)}%</span>),
+  },
+  von_hoa_tu_do_ty: {
+    nhan: "Vốn hoá free float (tỷ)",
+    nhom: "Thanh khoản & vốn hoá",
+    canPhai: true,
+    lay: (r) => r.von_hoa_tu_do_ty,
+    hien: (r) => (r.von_hoa_tu_do_ty == null ? Trong : fmtTy(r.von_hoa_tu_do_ty)),
+  },
   khoi_luong_tb20: {
     nhan: "KL TB20",
     nhom: "Thanh khoản & vốn hoá",

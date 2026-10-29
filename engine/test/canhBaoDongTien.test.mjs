@@ -1,5 +1,5 @@
 // Test tay: node engine/test/canhBaoDongTien.test.mjs
-import { canhBaoDongTien, gopCanhBao } from "../../lib/canhBaoDongTien.js";
+import { canhBaoDongTien, gopCanhBao, canhBaoFreeFloat } from "../../lib/canhBaoDongTien.js";
 
 let loi = 0;
 const dat = (ten, dk, them = "") => {
@@ -48,6 +48,13 @@ dat("rong -> rong", canhBaoDongTien().length === 0 && canhBaoDongTien({ tomTat: 
 // gop
 const g = gopCanhBao([{ khoa: "a", muc: 2 }, { khoa: "b", muc: 0 }], [{ khoa: "c", muc: 1 }, { khoa: "d", muc: 0 }], 3);
 dat("gop: nang truoc, cat 3, con lai 1", g.cacCanhBao.map((x) => x.khoa).join() === "b,d,c" && g.them === 1, JSON.stringify(g));
+
+// free float
+const ffTest = canhBaoFreeFloat({ freeFloatPct: 8, coPhieuTuDo: 401000000, klPhien: 5000000 });
+dat("free float 8% -> canh bao thap, ghi so cp tu do", ffTest.length === 1 && ffTest[0].khoa === "free_float_thap" && ffTest[0].nhan === "Free float chỉ 8% (khoảng 401 triệu cổ phiếu tự do) — ít cổ phiếu giao dịch tự do, giá dễ biến động mạnh và khó mua bán", ffTest[0]?.nhan);
+dat("free float 60% khong canh bao", canhBaoFreeFloat({ freeFloatPct: 60, coPhieuTuDo: 1e9, klPhien: 1e6 }).length === 0);
+dat("vong quay 4% so cp tu do -> nong", canhBaoFreeFloat({ freeFloatPct: 60, coPhieuTuDo: 100e6, klPhien: 4e6 }).some((x) => x.khoa === "vong_quay_nong"));
+dat("thieu du lieu -> rong", canhBaoFreeFloat().length === 0 && canhBaoFreeFloat({ freeFloatPct: null }).length === 0);
 
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

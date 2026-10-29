@@ -147,6 +147,8 @@ const THU_TU_COT = [
   "san",
   "von_hoa",
   "von_hoa_ty",
+  "free_float",
+  "von_hoa_tu_do_ty",
   "nganh",
   "diem",
   "diem_rank",
