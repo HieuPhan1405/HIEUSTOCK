@@ -1,6 +1,7 @@
 "use client";
 
 import { NGANH_NHAN } from "@/lib/nganh";
+import { NHOM_CHU_DE, DS_CHU_DE } from "@/lib/nhomChuDe";
 
 // Phan bo loc + chon cot DUNG CHUNG cho bang Bo loc co phieu va bang So lenh
 // dang mo (2 bang cung nhom bo loc: tim ma, von hoa, xu huong, san, nganh, canh
@@ -30,6 +31,7 @@ export const LOC_TRONG = {
   xuHuong: "",
   san: "",
   nganh: "",
+  chuDe: "", // nhom chu de (lib/nhomChuDe.js), vd "dau_tu_cong"
   freeFloat: "", // free float TOI THIEU (%), nguoi dung tu go (nguon DNSE)
   freeFloatMax: "", // free float TOI DA (%)
   chiMatThan: false,
@@ -49,6 +51,7 @@ export function docLocChungTuUrl(searchParams) {
     xuHuong: searchParams.get("xuhuong") || "",
     san: searchParams.get("san") || "",
     nganh: searchParams.get("nganh") || "",
+    chuDe: searchParams.get("chude") || "",
     freeFloat: searchParams.get("ff") || "",
     freeFloatMax: searchParams.get("ffmax") || "",
     chiMatThan: searchParams.get("matthan") === "1",
@@ -67,6 +70,7 @@ export function locChung(ds, loc) {
       (!loc.xuHuong || phanLoaiXuHuong(r) === loc.xuHuong) &&
       (!loc.san || (r.san || "HOSE") === loc.san) &&
       (!loc.nganh || (r.nganh || "Khac") === loc.nganh) &&
+      (!loc.chuDe || (Array.isArray(r.chu_de) && r.chu_de.includes(loc.chuDe))) &&
       // Free float toi thieu: ma khong co du lieu free float (khong thuoc ro chi so nao cua DNSE) khong dat.
       (!loc.freeFloat || (r.free_float != null && r.free_float >= Number(loc.freeFloat))) &&
       (!loc.freeFloatMax || (r.free_float != null && r.free_float <= Number(loc.freeFloatMax))) &&
@@ -79,7 +83,7 @@ export function locChung(ds, loc) {
 }
 
 export function coLocChung(loc) {
-  return !!(loc.timKiem || loc.vonHoa || loc.xuHuong || loc.san || loc.nganh || loc.freeFloat || loc.freeFloatMax || loc.chiMatThan || loc.chiChotLoi || loc.chiBanBot || loc.chiUuTien);
+  return !!(loc.timKiem || loc.vonHoa || loc.xuHuong || loc.san || loc.nganh || loc.chuDe || loc.freeFloat || loc.freeFloatMax || loc.chiMatThan || loc.chiChotLoi || loc.chiBanBot || loc.chiUuTien);
 }
 
 export function OSelect({ value, onChange, options, placeholder }) {
@@ -176,6 +180,7 @@ export function HangBoLocChung({ loc, datLoc, truocChon, sauChon, coBoLoc, onXoa
         ]}
       />
       <OSelect value={loc.nganh} onChange={dat("nganh")} placeholder="Tất cả ngành" options={DS_NGANH.map((n) => [n, NGANH_NHAN[n]])} />
+      <OSelect value={loc.chuDe} onChange={dat("chuDe")} placeholder="Mọi nhóm chủ đề" options={DS_CHU_DE.map((k) => [k, NHOM_CHU_DE[k].nhan])} />
       <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm" style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }} title="Free float: tỷ lệ cổ phiếu tự do chuyển nhượng (nguồn DNSE, làm tròn 5%). Tự gõ mốc từ – đến.">
         <span style={{ color: MUTED }}>Free float</span>
         <OSo value={loc.freeFloat} onChange={dat("freeFloat")} placeholder="từ" />

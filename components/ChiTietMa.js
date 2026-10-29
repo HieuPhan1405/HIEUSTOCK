@@ -581,6 +581,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
             <TagInfo nhan="Dòng tiền" giaTri={tag.dongTien.nhan} mau={tag.dongTien.mau} />
             <TagInfo nhan="Sức mạnh ADX" giaTri={tag.adxSucManh.nhan} mau={tag.adxSucManh.mau} />
             {row.von_hoa && <TagInfo nhan="Vốn hoá" giaTri={row.von_hoa} mau="var(--xanh)" />}
+            {Array.isArray(row.chu_de) && row.chu_de.includes("dau_tu_cong") && <TagInfo nhan="Chủ đề" giaTri="Đầu tư công" mau="var(--cyan)" />}
             {row.kumo_twist && (
               <TagInfo
                 nhan="Mây tương lai"
