@@ -42,7 +42,6 @@ export default async function TrangNganh() {
           Lỗi tải dữ liệu: {loi}
         </p>
       )}
-      {/* Bang nhom chu de (components/NhomChuDeNganh.js) dang TAT theo yeu cau; ma nguon giu lai de bat lai bang cach render <NhomChuDeNganh /> trong <Suspense>. */}
       {rrg && (
         <Suspense fallback={<RRGNganh du={{ rrg }} />}>
           <RRGNganhCoChuDe rrg={rrg} />
