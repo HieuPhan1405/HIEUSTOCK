@@ -2,8 +2,9 @@ import Link from "next/link";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import { layThamGiaCuaToi } from "@/lib/thamGia";
-import { layLenhDaDong } from "@/lib/lenhDaDong";
-import { layLichPhien } from "@/lib/lichSuGia";
+import { layLenhDaDong, layLenhCoSuKienNgay, ngayGiaoDichVN } from "@/lib/lenhDaDong";
+import { layLichPhien, layLichSuGia } from "@/lib/lichSuGia";
+import { chuYTrongPhien } from "@/lib/chuYTrongPhien";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { ghiChuTuDong } from "@/lib/ghiChuTuDong";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
@@ -96,6 +97,13 @@ export default async function TrangDanhMuc() {
     lenhTheoMa.get(l.ma).push(l);
   }
   const tinHieuTheoMa = new Map(cuaToi.map((r) => [r.ma, r]));
+  // CHU Y TRONG PHIEN: gia (nen ngay, ke ca nen dang chay) vuot / thung Tenkan, Kijun, may, can bang...; he thong cham TP, cat lo, MUA, BAN trong phien. Moi nguon loi chi lam trong cot do (khong lam hong bang).
+  const capNhatPhien = capNhatMoiNhat(tatCa);
+  const ngayPhien = capNhatPhien ? ngayGiaoDichVN(new Date(capNhatPhien)) : null;
+  const [barsTheoMa, lenhNgay] = await Promise.all([
+    Promise.all(cuaToi.map((r) => layLichSuGia(r.ma, 300).then((bars) => [r.ma, bars]).catch(() => [r.ma, null]))).then((a) => new Map(a)),
+    layLenhCoSuKienNgay(ngayPhien).catch(() => []),
+  ]);
   const dsMa = thamGia
     .map((t) => {
       const r = tinHieuTheoMa.get(t.ma);
@@ -113,8 +121,17 @@ export default async function TrangDanhMuc() {
         da_chot_mua: r?.da_chot_mua === true,
         gia: r?.gia ?? null,
         diem: r?.diem ?? null,
-        // Ghi chu tu dong: KC / HT gan nhat, duoi Tenkan / Kijun / may (lib/ghiChuTuDong.js) - chi nhan thong tin
-        ghiChu: r ? ghiChuTuDong({ ...r, ...pick(chiBaoTheoMa.get(t.ma)) }) : [],
+        // Chu y TRONG PHIEN: nhung gi da xay ra (lib/chuYTrongPhien.js); trang thai hien tai: KC / HT gan nhat, duoi Tenkan / Kijun / may (lib/ghiChuTuDong.js). Chi la nhan thong tin.
+        chuY: r
+          ? chuYTrongPhien({
+              bars: barsTheoMa.get(t.ma),
+              row: r,
+              dongLenhNgay: lenhNgay.filter((d) => d.ma === t.ma && d.ngay_ban === ngayPhien),
+              ngay: ngayPhien,
+            })
+          : { cacSuKien: [], them: 0 },
+        trangThai: r ? ghiChuTuDong({ ...r, ...pick(chiBaoTheoMa.get(t.ma)) }) : [],
+        ghiChuRieng: t.ghi_chu ?? "",
         lenh: lenhTheoMa.get(t.ma) ?? [],
       };
     })

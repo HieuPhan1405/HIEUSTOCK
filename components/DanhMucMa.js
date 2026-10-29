@@ -1,8 +1,8 @@
 "use client";
 
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Pencil } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
 import NutThamGia from "@/components/NutThamGia";
 import { CAC_COT } from "@/components/cotChung";
@@ -43,6 +43,138 @@ const COT_VI_THE = [
   ["so_phien_giu", "Số phiên", true],
   ["chot_loi", "Chốt lời", true],
 ];
+
+// Cot "Chu y trong phien": nhung gi DA XAY RA trong phien (tu dong, canh bao xau len truoc) + 1-2 dong trang thai hien tai (duoi / tren Tenkan, Kijun, may; KC / HT gan nhat). Rong thi ghi "chua co".
+function ChuYTrongPhien({ chuY, trangThai }) {
+  const sk = chuY?.cacSuKien ?? [];
+  const viTri = (trangThai ?? []).filter((c) => c.khoa !== "khang_cu" && c.khoa !== "ho_tro");
+  const kcht = (trangThai ?? []).filter((c) => c.khoa === "khang_cu" || c.khoa === "ho_tro");
+  return (
+    <div>
+      {sk.length > 0 ? (
+        <ul className="space-y-1">
+          {sk.map((e) => (
+            <li key={e.khoa} className="flex items-start gap-1.5 text-[12px] leading-snug">
+              <span aria-hidden="true" className="mt-[5px] inline-block rounded-full shrink-0" style={{ width: 6, height: 6, background: e.mau }} />
+              <span style={{ color: e.mau, fontWeight: 600 }}>{e.nhan}</span>
+            </li>
+          ))}
+          {chuY.them > 0 && (
+            <li className="text-[11px]" style={{ color: MUTED }}>
+              + {chuY.them} chú ý khác
+            </li>
+          )}
+        </ul>
+      ) : (
+        <span className="text-[12px]" style={{ color: MUTED }}>
+          Chưa có biến động đáng chú ý
+        </span>
+      )}
+      {(viTri.length > 0 || kcht.length > 0) && (
+        <div className="mt-1.5 pt-1.5 border-t text-[11px] leading-relaxed" style={{ borderColor: "var(--vien-nhe)", color: MUTED }}>
+          {viTri.length > 0 && <div>{viTri.map((c) => c.nhan).join(" · ")}</div>}
+          {kcht.map((c) => (
+            <div key={c.khoa} style={{ color: c.manh ? c.mau : MUTED, fontWeight: c.manh ? 700 : 400 }}>
+              {c.nhan}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Cot "Ghi chu": ghi chu RIENG cua nguoi dung cho tung ma (bam de sua, Enter / bam ra ngoai de luu, Esc de huy) - luu o DB qua PATCH /api/tham-gia.
+function GhiChuSua({ ma, dau }) {
+  const [giaTri, setGiaTri] = useState(dau || "");
+  const [sua, setSua] = useState(false);
+  const [nhap, setNhap] = useState("");
+  const [dangLuu, setDangLuu] = useState(false);
+  const [loi, setLoi] = useState(null);
+  const huy = useRef(false);
+
+  async function luu() {
+    setSua(false);
+    if (huy.current) {
+      huy.current = false;
+      return;
+    }
+    const moi = nhap.replace(/s+/g, " ").trim();
+    if (moi === giaTri) return;
+    setDangLuu(true);
+    setLoi(null);
+    try {
+      const r = await fetch("/api/tham-gia", { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ma, ghiChu: moi }) });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || j.trangThai !== "ok") throw new Error(j.loi || j.thongBao || "Không lưu được");
+      setGiaTri(j.ghiChu || "");
+    } catch (e) {
+      setLoi(e.message || "Không lưu được");
+    } finally {
+      setDangLuu(false);
+    }
+  }
+
+  if (sua) {
+    return (
+      <textarea
+        autoFocus
+        rows={2}
+        maxLength={300}
+        value={nhap}
+        onChange={(e) => setNhap(e.target.value)}
+        onBlur={luu}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !e.shiftKey) {
+            e.preventDefault();
+            e.currentTarget.blur();
+          } else if (e.key === "Escape") {
+            huy.current = true;
+            e.currentTarget.blur();
+          }
+        }}
+        placeholder="Ví dụ: Kháng cự mạnh vùng 14,5"
+        aria-label={"Ghi chú cho " + ma}
+        className="w-[240px] rounded-lg border px-2 py-1.5 text-sm leading-snug outline-none"
+        style={{ borderColor: PRIMARY, background: "var(--nen-phu)", color: "var(--chu)", fontFamily: CHU_THAN, resize: "none" }}
+      />
+    );
+  }
+  return (
+    <div className="min-w-[160px] max-w-[260px]">
+      <button
+        type="button"
+        onClick={() => {
+          setNhap(giaTri);
+          setSua(true);
+        }}
+        className="group flex items-start gap-1.5 text-left w-full"
+        aria-label={"Sửa ghi chú cho " + ma}
+      >
+        {giaTri ? (
+          <span className="text-sm leading-snug" style={{ color: "var(--chu)" }}>
+            {giaTri}
+          </span>
+        ) : (
+          <span className="text-[12px]" style={{ color: MUTED }}>
+            + Thêm ghi chú
+          </span>
+        )}
+        <Pencil size={12} className="mt-1 shrink-0 opacity-40 group-hover:opacity-100" aria-hidden="true" />
+      </button>
+      {dangLuu && (
+        <span className="block text-[11px]" style={{ color: MUTED }}>
+          Đang lưu…
+        </span>
+      )}
+      {loi && (
+        <span className="block text-[11px]" style={{ color: DO }}>
+          {loi}
+        </span>
+      )}
+    </div>
+  );
+}
 
 function The({ so, nhan, phu, mau, may }) {
   return (
@@ -241,6 +373,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                 <th className="py-3 px-3 font-normal text-right">Giá</th>
                 <th className="py-3 px-3 font-normal text-right">Lãi/lỗ</th>
                 <th className="py-3 px-3 font-normal text-right">Điểm</th>
+                <th className="py-3 px-3 font-normal">Chú ý trong phiên</th>
                 <th className="py-3 px-3 font-normal">Ghi chú</th>
                 <th className="py-3 px-3 font-normal text-right">Theo dõi từ</th>
               </tr>
@@ -333,26 +466,15 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                             )}
                           </td>
                           <td className="py-2.5 px-3 text-right align-top">{fmt(m.diem)}</td>
-                          <td className="py-2.5 px-3 align-top" style={{ fontFamily: CHU_THAN }} data-may="ghi-chu-tu-dong">
-                            {m.ghiChu?.length ? (
-                              <div className="flex flex-wrap gap-1 max-w-[320px]">
-                                {m.ghiChu.map((c) => (
-                                  <span
-                                    key={c.khoa}
-                                    className="text-[11px] rounded-md px-1.5 py-0.5 whitespace-nowrap"
-                                    style={{ color: c.mau, border: `1px solid ${c.mau}`, fontWeight: c.manh ? 700 : 400, background: c.manh ? "color-mix(in srgb, currentColor 10%, transparent)" : "transparent" }}
-                                  >
-                                    {c.nhan}
-                                  </span>
-                                ))}
-                              </div>
-                            ) : (
-                              <span style={{ color: MUTED }}>—</span>
-                            )}
+                          <td className="py-2.5 px-3 align-top min-w-[210px] max-w-[300px]" style={{ fontFamily: CHU_THAN }} data-may="chu-y-trong-phien">
+                            <ChuYTrongPhien chuY={m.chuY} trangThai={m.trangThai} />
+                          </td>
+                          <td className="py-2.5 px-3 align-top" style={{ fontFamily: CHU_THAN }} data-may="ghi-chu-rieng">
+                            <GhiChuSua ma={m.ma} dau={m.ghiChuRieng} />
                           </td>
                         </>
                       ) : (
-                        <td className="py-2.5 px-3 text-xs align-top" colSpan={6} style={{ color: MUTED, fontFamily: CHU_THAN }}>
+                        <td className="py-2.5 px-3 text-xs align-top" colSpan={7} style={{ color: MUTED, fontFamily: CHU_THAN }}>
                           Chưa có dữ liệu tín hiệu cho mã này
                         </td>
                       )}
@@ -362,7 +484,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                     </tr>
                     {mo && (
                       <tr style={{ background: "var(--nen-phu)" }}>
-                        <td colSpan={9} className="p-0">
+                        <td colSpan={10} className="p-0">
                           <BangViThe m={m} hien={hien} />
                         </td>
                       </tr>
