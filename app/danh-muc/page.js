@@ -7,6 +7,9 @@ import { layLichPhien, layLichSuGia } from "@/lib/lichSuGia";
 import { chuYTrongPhien } from "@/lib/chuYTrongPhien";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { canhBaoDangCo } from "@/lib/canhBaoDanhMuc";
+import { canhBaoDongTien, gopCanhBao } from "@/lib/canhBaoDongTien";
+import { layDongTienMa } from "@/lib/dongTien";
+import { layKhoiNgoaiMa } from "@/lib/khoiNgoaiMa";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import DanhMucMa from "@/components/DanhMucMa";
 import LenhDaDongView from "@/components/LenhDaDongView";
@@ -30,7 +33,7 @@ const PRIMARY = "#6C5CE7";
 const DO = "var(--do)";
 
 // Chi cac cot chi bao dung cho ghi chu (khong de de len cot cua dong tin hieu).
-const COT_GHI_CHU = ["cach_tenkan_pct", "cach_kijun_pct", "gia_so_may"];
+const COT_GHI_CHU = ["cach_tenkan_pct", "cach_kijun_pct", "gia_so_may", "rsi14", "kl_ty_le"];
 const pick = (h) => (h ? Object.fromEntries(COT_GHI_CHU.filter((k) => h[k] != null).map((k) => [k, h[k]])) : {});
 
 function TieuDeMuc({ children, phu }) {
@@ -100,10 +103,33 @@ export default async function TrangDanhMuc() {
   // CHU Y TRONG PHIEN: gia (nen ngay, ke ca nen dang chay) vuot / thung Tenkan, Kijun, may, can bang...; he thong cham TP, cat lo, MUA, BAN trong phien. Moi nguon loi chi lam trong cot do (khong lam hong bang).
   const capNhatPhien = capNhatMoiNhat(tatCa);
   const ngayPhien = capNhatPhien ? ngayGiaoDichVN(new Date(capNhatPhien)) : null;
-  const [barsTheoMa, lenhNgay] = await Promise.all([
-    Promise.all(cuaToi.map((r) => layLichSuGia(r.ma, 300).then((bars) => [r.ma, bars]).catch(() => [r.ma, null]))).then((a) => new Map(a)),
+  // Dong tien (mua / ban chu dong, khoi ngoai trong phien - DB, nho 10 giay) va khoi ngoai theo phien (VNDirect) de canh bao ngoai ban nhieu, ban chu dong nhieu...: nguon nao loi thi bo qua nguon do.
+  const theoMa = (fn) => Promise.all(cuaToi.map((r) => fn(r.ma).then((v) => [r.ma, v]).catch(() => [r.ma, null]))).then((a) => new Map(a));
+  const [barsTheoMa, lenhNgay, dongTienTheoMa, ngoaiTheoMa] = await Promise.all([
+    theoMa((ma) => layLichSuGia(ma, 300)),
     layLenhCoSuKienNgay(ngayPhien).catch(() => []),
+    theoMa((ma) => layDongTienMa(ma)),
+    theoMa((ma) => layKhoiNgoaiMa(ma, 10)),
   ]);
+  const taoCanhBao = (r, ma) => {
+    const cb = chiBaoTheoMa.get(ma);
+    const hang = { ...r, ...pick(cb) };
+    const co = canhBaoDangCo(hang, 99);
+    const bars = barsTheoMa.get(ma);
+    const doiPhienPct = Array.isArray(bars) && bars.length > 1 ? (bars[bars.length - 1].c / bars[bars.length - 2].c - 1) * 100 : null;
+    const dt = dongTienTheoMa.get(ma);
+    const dongTien = canhBaoDongTien({
+      tomTat: dt?.tomTat ?? null,
+      ngayDuLieu: dt?.ngay ?? null,
+      ngayPhien,
+      nnLichSu: ngoaiTheoMa.get(ma),
+      klTyLe: hang.kl_ty_le,
+      doiPhienPct,
+      rsi: hang.rsi14,
+      giu: r.tin === "MUA" || r.tin === "NAM GIU",
+    });
+    return { ...gopCanhBao(co.cacCanhBao, dongTien, 5), canGanNhat: co.canGanNhat };
+  };
   const dsMa = thamGia
     .map((t) => {
       const r = tinHieuTheoMa.get(t.ma);
@@ -131,7 +157,7 @@ export default async function TrangDanhMuc() {
             })
           : { cacSuKien: [], them: 0 },
         // Canh bao DANG / SAP xay ra (loi de hieu): sap toi moc chot loi / vung can, gia duoi Tenkan / Kijun / may, Ban bot, Mat Than... (lib/canhBaoDanhMuc.js)
-        canhBao: r ? canhBaoDangCo({ ...r, ...pick(chiBaoTheoMa.get(t.ma)) }) : { cacCanhBao: [], them: 0, canGanNhat: { tren: null, duoi: null } },
+        canhBao: r ? taoCanhBao(r, t.ma) : { cacCanhBao: [], them: 0, canGanNhat: { tren: null, duoi: null } },
         lenh: lenhTheoMa.get(t.ma) ?? [],
       };
     })
