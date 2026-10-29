@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
 import { mauNenTheoDoi, dinhDangKL } from "@/lib/bangNhomChuDe";
 import { fmt } from "@/components/dungChung";
 
@@ -19,6 +19,7 @@ const pctChuoi = (v) => (v == null ? "—" : `${Math.abs(v) < 0.005 ? "" : v > 0
 export default function BangNhomChuDe({ nhan, moTa, hang, trungBinhPct, ngayPhien }) {
   const [khoa, setKhoa] = useState("kl");
   const [giam, setGiam] = useState(true);
+  const [mo, setMo] = useState(false); // mac dinh GON: chi tieu de + % trung binh, bam de xem tung ma
   const doiKhoa = (k) => {
     if (k === khoa) setGiam((g) => !g);
     else {
@@ -50,10 +51,13 @@ export default function BangNhomChuDe({ nhan, moTa, hang, trungBinhPct, ngayPhie
 
   return (
     <section className="rounded-2xl border overflow-hidden w-full max-w-[340px]" style={{ borderColor: VIEN, background: NEN_CARD, color: TEXT }} aria-label={`Nhóm ${nhan}`}>
-      <div className="px-3 pt-3 pb-2 text-center" title={moTa}>
-        <span className="text-base" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>{nhan}</span>{" "}
+      <button type="button" onClick={() => setMo((v) => !v)} aria-expanded={mo} title={moTa} className="w-full px-3 py-3 flex items-center justify-center gap-2">
+        <span className="text-base" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>{nhan}</span>
         <span className="text-sm" style={{ color: trungBinhPct == null ? MUTED : trungBinhPct >= 0 ? XANH : DO, fontWeight: 700 }}>{pctChuoi(trungBinhPct)}</span>
-      </div>
+        <span className="text-[11px]" style={{ color: MUTED }}>{mo ? "Thu gọn" : `Xem ${hang.length} mã`}</span>
+        <ChevronDown size={14} aria-hidden="true" style={{ color: MUTED, transform: mo ? "rotate(180deg)" : "none" }} />
+      </button>
+      {mo && (<>
       <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
         <thead>
           <tr style={{ borderBottom: `1px solid ${VIEN}` }}>
@@ -79,6 +83,7 @@ export default function BangNhomChuDe({ nhan, moTa, hang, trungBinhPct, ngayPhie
       <p className="px-3 py-2 text-[11px]" style={{ color: MUTED }}>
         {ngayPhien ? `Phiên ${ngayPhien.split("-").reverse().join("/")}` : ""} · giá nghìn đồng, KL cổ phiếu; % trung bình đều các mã trong nhóm (mã không giao dịch tính 0%). Nguồn giá DNSE.
       </p>
+      </>)}
     </section>
   );
 }
