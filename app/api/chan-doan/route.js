@@ -1,4 +1,10 @@
 import { withDb } from "@/lib/db";
+import { layTatCaTinHieu, layTinHieuTheoMa } from "@/lib/tinHieu";
+import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
+import { layDinhGia, layCauChuyen } from "@/lib/noiDung";
+import { layLichSuGiaoDichMa } from "@/lib/lenhDaDong";
+import { layLichSuGia, layLichPhien } from "@/lib/lichSuGia";
+import { layPhanTichMa } from "@/lib/phanTichCoBanDb";
 
 // Chan doan toc do (can header x-api-key): vung chay cua ham, vung cua DB (chi lay phan vung trong ten host, KHONG lo mat khau/host day du),
 // thoi gian mo ket noi va 1 vong di-ve toi DB. Dung de chon dung "Function Region" tren Vercel gan DB.
@@ -18,6 +24,31 @@ export async function GET(request) {
   const cs = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRISMA_URL || process.env.POSTGRES_URL_NON_POOLING || "";
   const host = (/@([^/:?]+)/.exec(cs) || [])[1] || "";
   const vungDb = (/\.([a-z]{2}-[a-z]+-\d)\.(?:aws|azure)\.neon\.tech/.exec(host) || [])[1] || null;
+
+  // ?trang=1: do TUNG buoc du lieu ma trang Bo loc va trang chi tiet ma phai cho (ms, loi neu co) de tim buoc cham.
+  if (new URL(request.url).searchParams.get("trang")) {
+    const ma = (new URL(request.url).searchParams.get("ma") || "VCB").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
+    const buoc = {};
+    const do1 = async (ten, fn) => {
+      const t0 = performance.now();
+      try {
+        await fn();
+        buoc[ten] = Math.round(performance.now() - t0);
+      } catch (e) {
+        buoc[ten] = { ms: Math.round(performance.now() - t0), loi: String(e?.message || e).slice(0, 120) };
+      }
+    };
+    await do1("layTatCaTinHieu", () => layTatCaTinHieu());
+    await do1("layChiBaoKyThuat", () => layChiBaoKyThuat());
+    await do1("layTinHieuTheoMa", () => layTinHieuTheoMa(ma));
+    await do1("layDinhGia", () => layDinhGia(ma));
+    await do1("layCauChuyen", () => layCauChuyen(ma));
+    await do1("layLichSuGiaoDichMa", () => layLichSuGiaoDichMa(ma));
+    await do1("layLichPhien", () => layLichPhien());
+    await do1("layPhanTichMa", () => layPhanTichMa(ma));
+    await do1("layLichSuGiaVNINDEX50", () => layLichSuGia("VNINDEX", 50));
+    return Response.json({ trangThai: "ok", ma, vungHam: process.env.VERCEL_REGION || null, ms: buoc });
+  }
 
   try {
     const lanDau = await dangDo(() => withDb(async (c) => c.query("SELECT 1")));
