@@ -353,7 +353,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
   // Dang loc "ma theo doi" thi tu hien 2 cot moc can vuot + diem neu vuot.
   const hienCotTheoDoi = loc.chiGanDiemMua && coDuLieuMoc;
   // Dang loc theo chi bao nao thi tu hien cot cua chi bao do de xem gia tri.
-  const cotTuHien = [...cotChoBoLoc(locChiBao), ...(loc.freeFloat ? ["free_float"] : [])]; // loc free float thi tu hien cot de xem gia tri
+  const cotTuHien = [...cotChoBoLoc(locChiBao), ...(loc.freeFloat || loc.freeFloatMax ? ["free_float"] : [])]; // loc free float thi tu hien cot de xem gia tri
   const dsCot = THU_TU_COT.filter(
     (k) =>
       COT[k] && (k === "ma" || k === "tin" || ((cotHienThi.dangChon.has(k) || cotTuHien.includes(k) || (hienCotTheoDoi && COT_THEO_DOI.includes(k))) && duocXemCot(k)))

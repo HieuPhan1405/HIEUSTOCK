@@ -2,7 +2,8 @@
 import { DS_CHI_BAO_LOC, CHI_BAO_LOC, NHOM_CHI_BAO_LOC, GOI_Y_NHANH, KHOANG, giaiMaCat, taoBoLocChiBao, soNhap, khopChiBao, locTheoChiBao, cotChoBoLoc, coDuLieuChiBao } from "../../lib/boLocChiBao.js";
 import { COT_CHI_BAO } from "../../lib/cotChiBaoKyThuat.js";
 import { KHOA_MAU_HINH as KHOA_MH } from "../../lib/mauHinh.js";
-const COT_TONG_HOP = new Set(["mh_ngay", "mh_tuan", "pb", "nen"]);
+// free_float / von_hoa_tu_do_ty: cot suy ra tu lib/freeFloat.js tren dong tin hieu (lib/tinHieu.js), khong phai cot cua bang chi_bao_ky_thuat
+const COT_TONG_HOP = new Set(["mh_ngay", "mh_tuan", "pb", "nen", "free_float", "von_hoa_tu_do_ty"]);
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -40,6 +41,17 @@ const ok = (ten, dk, them = "") => {
   ok("nen giam khong tinh la nen tang", !khopChiBao({ nen_sao_bang: 0 }, bo("tang_3")) && khopChiBao({ nen_sao_bang: 0 }, bo("giam_hom_nay")));
   ok("doji (trung tinh) khong tinh vao tang / giam", !khopChiBao({ nen_doji: 0 }, bo("tang_3")) && !khopChiBao({ nen_doji: 0 }, bo("giam_3")) && khopChiBao({ nen_doji: 1 }, bo("doji")));
   ok("tung mau hinh: sao mai trong 3 phien", khopChiBao({ nen_sao_mai: 1 }, bo("sao_mai")) && !khopChiBao({ nen_sao_mai: null }, bo("sao_mai")));
+}
+
+// Free float (cot suy ra): loc theo dieu kien va khoang tu go
+{
+  const ff = (v) => ({ ma: "X", free_float: v });
+  const loc = (chiBao, dieuKien, tu = "", den = "") => ({ id: "t", chiBao, dieuKien, tu, den });
+  ok("free float thap (<=15) khop 8, khong khop 60", khopChiBao(ff(8), loc("free_float", "thap")) === true && khopChiBao(ff(60), loc("free_float", "thap")) === false);
+  ok("free float cao (>=50) khop 60 va 50", khopChiBao(ff(60), loc("free_float", "cao")) && khopChiBao(ff(50), loc("free_float", "cao")));
+  ok("tu go khoang 30 - 70: 55 khop, 20 va 85 khong", khopChiBao(ff(55), loc("free_float", "khoang", "30", "70")) && !khopChiBao(ff(20), loc("free_float", "khoang", "30", "70")) && !khopChiBao(ff(85), loc("free_float", "khoang", "30", "70")));
+  ok("ma khong co free float (null) khong khop bo loc nao", khopChiBao({ ma: "Y" }, loc("free_float", "khoang", "0", "100")) === false && khopChiBao({ ma: "Y" }, loc("free_float", "thap")) === false);
+  ok("von hoa free float > 5.000 ty", khopChiBao({ von_hoa_tu_do_ty: 8000 }, loc("von_hoa_free_float", "lon")) === true);
 }
 
 // ---- Cau truc dinh nghia ----
