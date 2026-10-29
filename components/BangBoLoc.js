@@ -222,7 +222,7 @@ const THU_TU_COT = [
   ...THU_TU_COT_CHI_BAO,
   "tin",
 ];
-const MAC_DINH = ["ma", "san", "von_hoa", "von_hoa_ty", "nganh", "gia", "doi", "diem", "trend", "adx", "rs_vni", "khoi_luong_tb20", "gtgd_tb20", "tin"];
+const MAC_DINH = ["ma", "san", "von_hoa", "von_hoa_ty", "free_float", "nganh", "gia", "doi", "diem", "trend", "adx", "rs_vni", "khoi_luong_tb20", "gtgd_tb20", "tin"];
 const DS_KHOA_CHON = THU_TU_COT.filter((k) => k !== "ma" && k !== "tin");
 
 // Cot lo ra ma nao DANG GIU (gia mua/lai lo/stop-loss/TP chi co gia tri voi ma
@@ -353,7 +353,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
   // Dang loc "ma theo doi" thi tu hien 2 cot moc can vuot + diem neu vuot.
   const hienCotTheoDoi = loc.chiGanDiemMua && coDuLieuMoc;
   // Dang loc theo chi bao nao thi tu hien cot cua chi bao do de xem gia tri.
-  const cotTuHien = cotChoBoLoc(locChiBao);
+  const cotTuHien = [...cotChoBoLoc(locChiBao), ...(loc.freeFloat ? ["free_float"] : [])]; // loc free float thi tu hien cot de xem gia tri
   const dsCot = THU_TU_COT.filter(
     (k) =>
       COT[k] && (k === "ma" || k === "tin" || ((cotHienThi.dangChon.has(k) || cotTuHien.includes(k) || (hienCotTheoDoi && COT_THEO_DOI.includes(k))) && duocXemCot(k)))

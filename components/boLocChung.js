@@ -30,6 +30,7 @@ export const LOC_TRONG = {
   xuHuong: "",
   san: "",
   nganh: "",
+  freeFloat: "", // free float toi thieu (%), nguon DNSE: "" | "15" | "30" | "50"
   chiMatThan: false,
   chiChotLoi: false,
   chiBanBot: false,
@@ -47,6 +48,7 @@ export function docLocChungTuUrl(searchParams) {
     xuHuong: searchParams.get("xuhuong") || "",
     san: searchParams.get("san") || "",
     nganh: searchParams.get("nganh") || "",
+    freeFloat: searchParams.get("ff") || "",
     chiMatThan: searchParams.get("matthan") === "1",
     chiChotLoi: searchParams.get("chotloi") === "1",
     chiBanBot: searchParams.get("banbot") === "1",
@@ -63,6 +65,8 @@ export function locChung(ds, loc) {
       (!loc.xuHuong || phanLoaiXuHuong(r) === loc.xuHuong) &&
       (!loc.san || (r.san || "HOSE") === loc.san) &&
       (!loc.nganh || (r.nganh || "Khac") === loc.nganh) &&
+      // Free float toi thieu: ma khong co du lieu free float (khong thuoc ro chi so nao cua DNSE) khong dat.
+      (!loc.freeFloat || (r.free_float != null && r.free_float >= Number(loc.freeFloat))) &&
       (!loc.chiMatThan || r.mat_than) &&
       // tp_da_cham cua ma KHONG con giu chi la lich su lan mua gan nhat - chi tinh ma dang giu.
       (!loc.chiChotLoi || (laDangGiu(r) && chamTPCaoNhat(r))) &&
@@ -72,7 +76,7 @@ export function locChung(ds, loc) {
 }
 
 export function coLocChung(loc) {
-  return !!(loc.timKiem || loc.vonHoa || loc.xuHuong || loc.san || loc.nganh || loc.chiMatThan || loc.chiChotLoi || loc.chiBanBot || loc.chiUuTien);
+  return !!(loc.timKiem || loc.vonHoa || loc.xuHuong || loc.san || loc.nganh || loc.freeFloat || loc.chiMatThan || loc.chiChotLoi || loc.chiBanBot || loc.chiUuTien);
 }
 
 export function OSelect({ value, onChange, options, placeholder }) {
@@ -150,6 +154,16 @@ export function HangBoLocChung({ loc, datLoc, truocChon, sauChon, coBoLoc, onXoa
         ]}
       />
       <OSelect value={loc.nganh} onChange={dat("nganh")} placeholder="Tất cả ngành" options={DS_NGANH.map((n) => [n, NGANH_NHAN[n]])} />
+      <OSelect
+        value={loc.freeFloat}
+        onChange={dat("freeFloat")}
+        placeholder="Mọi free float"
+        options={[
+          ["15", "Free float từ 15%"],
+          ["30", "Free float từ 30%"],
+          ["50", "Free float từ 50%"],
+        ]}
+      />
       {sauChon}
       {coBoLoc && (
         <button onClick={onXoa} className="text-xs px-3 py-2 rounded-lg" style={{ color: PRIMARY, border: `1px solid ${VIEN}` }}>

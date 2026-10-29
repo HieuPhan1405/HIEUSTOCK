@@ -266,7 +266,7 @@ export default function BangLenhMo({ duLieu, loc: locNgoai, datLoc: datLocNgoai 
   }
 
   const coBoLoc = coLocChung(loc) || loc.tin || loc.laiLo || loc.chiGiaiNgan;
-  const dsCot = THU_TU_COT.filter((k) => k === "ma" || k === "tin" || cotHienThi.dangChon.has(k));
+  const dsCot = THU_TU_COT.filter((k) => k === "ma" || k === "tin" || cotHienThi.dangChon.has(k) || (k === "free_float" && loc.freeFloat));
   const ctx = { nhanNganh: NGANH_NHAN, banDoThamGia, doiTrangThaiThamGia };
 
   return (
