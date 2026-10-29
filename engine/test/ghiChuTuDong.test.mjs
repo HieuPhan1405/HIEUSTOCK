@@ -19,10 +19,9 @@ dat("ban_bot san co van tinh", coCanhBaoBanBot({ tin: "NAM GIU", ban_bot: true, 
 dat("khong giu (TRUNG LAP) co ban_bot -> khong canh bao", coCanhBaoBanBot({ tin: "TRUNG LAP", ban_bot: true }) === false);
 dat("khong ban_bot, tren Tenkan -> khong", coCanhBaoBanBot({ tin: "NAM GIU", ban_bot: false, cach_tenkan_pct: 2 }) === false);
 
-// muc tham chieu: Tenkan tu cach_tenkan_pct (gia 11, cach -10% -> Tenkan ~12,22)
-const m = cacMucThamChieu({ gia: 11, cach_tenkan_pct: -10, kijun: 10.5, cach_ma50_pct: 5 });
-dat("Tenkan = gia / (1 + cach)", Math.abs(m.find((x) => x.ten === "Tenkan").gia - 11 / 0.9) < 1e-9);
-dat("MA50 = gia / 1,05", Math.abs(m.find((x) => x.ten === "MA50").gia - 11 / 1.05) < 1e-9);
+// muc tham chieu: chi Kijun, can bang dai han, dinh 52 tuan (khong MA, khong Tenkan)
+const m = cacMucThamChieu({ gia: 11, cach_tenkan_pct: -10, kijun: 10.5, cach_ma50_pct: 5, gg_top: 12, gg_bot: 9, dinh_52t: 15 });
+dat("4 duong cua he thong, khong co MA / Tenkan", m.map((x) => x.ten).join() === "Kijun,cân bằng dài hạn,cân bằng dài hạn,đỉnh 52 tuần");
 dat("khong co gia -> rong", cacMucThamChieu({ kijun: 10 }).length === 0 && ghiChuTuDong({ kijun: 10 }).length === 0);
 
 // ghi chu day du
@@ -31,11 +30,11 @@ const k = khoa(g);
 dat("co chip Duoi Tenkan truoc tien", k[0] === "duoi_tenkan");
 dat("tren may -> Tren may, khong phai Duoi kijun", k.includes("tren_may") && !k.includes("duoi_kijun"));
 const kc = ghiChuTuDong(g).find((c) => c.khoa === "khang_cu");
-dat("KC gan nhat phia tren la Tenkan 13,91 (cach +1,5%) vi gia dang duoi Tenkan", kc && kc.nhan.startsWith("KC 13,91") && kc.nhan.includes("Tenkan") && kc.nhan.includes("+1,5%"));
-dat("KC cach 1,5% (<= 3%) in dam", kc && kc.manh === true);
-dat("KC cach 5,8% (can bang dai han 14,5, khi bo Tenkan) khong in dam", (() => { const x = ghiChuTuDong({ ...g, cach_tenkan_pct: 2, cach_ma200_pct: null }).find((c) => c.khoa === "khang_cu"); return x && x.nhan.startsWith("KC 14,50") && x.nhan.includes("+5,8%") && x.manh === false; })());
+dat("KC gan nhat phia tren la can bang dai han 14,50 (+5,8%), khong dung Tenkan / MA", kc && kc.nhan.startsWith("KC 14,50") && kc.nhan.includes("cân bằng dài hạn") && kc.nhan.includes("+5,8%"));
+dat("KC cach 5,8% khong in dam", kc && kc.manh === false);
 const ht = ghiChuTuDong(g).find((c) => c.khoa === "ho_tro");
-dat("HT gan nhat phia duoi la MA20 (13,30) , khong phai Kijun 13,0", ht && ht.nhan.includes("MA20") && ht.nhan.includes("−2,9%"));
+dat("HT gan nhat phia duoi la Kijun 13,00 (−5,1%)", ht && ht.nhan.startsWith("HT 13,00") && ht.nhan.includes("Kijun") && ht.nhan.includes("−5,1%"));
+dat("KC cach 2,9% in dam", (() => { const x = ghiChuTuDong({ ...g, gg_top: 14.1 }).find((c) => c.khoa === "khang_cu"); return x && x.manh === true; })());
 dat("sat cat lo: gia 13,7 > 12,3 x 1,03 -> khong chip", !k.includes("gan_cat_lo"));
 dat("sat cat lo khi gia 12,5", khoa({ ...g, gia: 12.5, cach_tenkan_pct: -1 }).includes("gan_cat_lo"));
 dat("KC xa hon 10% khong ghi", !khoa({ tin: "NAM GIU", gia: 10, dinh_52t: 20 }).includes("khang_cu"));

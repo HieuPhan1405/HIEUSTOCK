@@ -29,7 +29,7 @@ const PRIMARY = "#6C5CE7";
 const DO = "var(--do)";
 
 // Chi cac cot chi bao dung cho ghi chu (khong de de len cot cua dong tin hieu).
-const COT_GHI_CHU = ["cach_tenkan_pct", "cach_kijun_pct", "gia_so_may", "cach_ma20_pct", "cach_ma50_pct", "cach_ma200_pct"];
+const COT_GHI_CHU = ["cach_tenkan_pct", "cach_kijun_pct", "gia_so_may"];
 const pick = (h) => (h ? Object.fromEntries(COT_GHI_CHU.filter((k) => h[k] != null).map((k) => [k, h[k]])) : {});
 
 function TieuDeMuc({ children, phu }) {
