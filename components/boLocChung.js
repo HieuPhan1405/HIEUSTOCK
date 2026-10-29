@@ -9,6 +9,7 @@ import { useState, useEffect, useRef, useMemo, useSyncExternalStore } from "reac
 import { Search, Columns3 } from "lucide-react";
 import { phanLoaiXuHuong, chamTPCaoNhat, laDangGiu, datChuanUuTien } from "@/components/dungChung";
 import { NHOM_COT } from "@/components/cotChung";
+import { coCanhBaoBanBot } from "@/lib/ghiChuTuDong";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -65,7 +66,7 @@ export function locChung(ds, loc) {
       (!loc.chiMatThan || r.mat_than) &&
       // tp_da_cham cua ma KHONG con giu chi la lich su lan mua gan nhat - chi tinh ma dang giu.
       (!loc.chiChotLoi || (laDangGiu(r) && chamTPCaoNhat(r))) &&
-      (!loc.chiBanBot || r.ban_bot) &&
+      (!loc.chiBanBot || coCanhBaoBanBot(r)) &&
       (!loc.chiUuTien || datChuanUuTien(r))
   );
 }

@@ -241,6 +241,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                 <th className="py-3 px-3 font-normal text-right">Giá</th>
                 <th className="py-3 px-3 font-normal text-right">Lãi/lỗ</th>
                 <th className="py-3 px-3 font-normal text-right">Điểm</th>
+                <th className="py-3 px-3 font-normal">Ghi chú</th>
                 <th className="py-3 px-3 font-normal text-right">Theo dõi từ</th>
               </tr>
             </thead>
@@ -332,9 +333,26 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                             )}
                           </td>
                           <td className="py-2.5 px-3 text-right align-top">{fmt(m.diem)}</td>
+                          <td className="py-2.5 px-3 align-top" style={{ fontFamily: CHU_THAN }} data-may="ghi-chu-tu-dong">
+                            {m.ghiChu?.length ? (
+                              <div className="flex flex-wrap gap-1 max-w-[320px]">
+                                {m.ghiChu.map((c) => (
+                                  <span
+                                    key={c.khoa}
+                                    className="text-[11px] rounded-md px-1.5 py-0.5 whitespace-nowrap"
+                                    style={{ color: c.mau, border: `1px solid ${c.mau}`, fontWeight: c.manh ? 700 : 400, background: c.manh ? "color-mix(in srgb, currentColor 10%, transparent)" : "transparent" }}
+                                  >
+                                    {c.nhan}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : (
+                              <span style={{ color: MUTED }}>—</span>
+                            )}
+                          </td>
                         </>
                       ) : (
-                        <td className="py-2.5 px-3 text-xs align-top" colSpan={5} style={{ color: MUTED, fontFamily: CHU_THAN }}>
+                        <td className="py-2.5 px-3 text-xs align-top" colSpan={6} style={{ color: MUTED, fontFamily: CHU_THAN }}>
                           Chưa có dữ liệu tín hiệu cho mã này
                         </td>
                       )}
@@ -344,7 +362,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
                     </tr>
                     {mo && (
                       <tr style={{ background: "var(--nen-phu)" }}>
-                        <td colSpan={8} className="p-0">
+                        <td colSpan={9} className="p-0">
                           <BangViThe m={m} hien={hien} />
                         </td>
                       </tr>

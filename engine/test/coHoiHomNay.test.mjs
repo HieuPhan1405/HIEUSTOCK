@@ -67,6 +67,22 @@ ok("dong TP3 (lenh cu 85%) khong hien o Ban bot", dungCoHoiHomNay({ ngay: NGAY, 
   });
   ok("ban theo doi tu phien truoc van hien, co co theoDoi", r.ban.length === 1 && r.ban[0].theoDoi === true && r.ban[0].theoDoiTu === "2026-09-25T07:50:00Z");
 }
+// Duoi Tenkan (29/10/2026): dang giu + gia duoi Tenkan -> canh bao Ban bot, co ly do rieng; ma tren Tenkan hoac khong giu thi khong.
+{
+  const r = dungCoHoiHomNay({
+    ngay: NGAY,
+    tatCa: [
+      { ma: "TK1", tin: "NAM GIU", diem: 2, gia: 10, lai_lo_pct: 4, ngay_mua: "2026-09-01", cach_tenkan_pct: -1.2 },
+      { ma: "TK2", tin: "NAM GIU", diem: 2, gia: 10, lai_lo_pct: 4, ngay_mua: "2026-09-01", cach_tenkan_pct: 1.5 },
+      { ma: "TK3", tin: "TRUNG LAP", diem: 0, gia: 10, cach_tenkan_pct: -3 },
+      { ma: "TK4", tin: "NAM GIU", diem: -1.5, ban_bot: true, gia: 10, lai_lo_pct: -2, ngay_mua: "2026-09-01", cach_tenkan_pct: -0.5 },
+    ],
+  });
+  const cb = Object.fromEntries(r.banBot.map((b) => [b.ma, b]));
+  ok("Duoi Tenkan: chi TK1 va TK4 canh bao (TK2 tren Tenkan, TK3 khong giu)", r.banBot.length === 2 && cb.TK1 && cb.TK4);
+  ok("TK1: chi theo Tenkan (khong theoDiem), duoi 1,2%", cb.TK1.theoDiem === false && cb.TK1.duoiTenkanPct === -1.2);
+  ok("TK4: ca hai ly do", cb.TK4.theoDiem === true && cb.TK4.duoiTenkanPct === -0.5);
+}
 ok("rong -> rong", (() => { const r = dungCoHoiHomNay({ ngay: NGAY }); return !r.mua.length && !r.ban.length && !r.muaMoi.length && !r.banBot.length; })());
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);

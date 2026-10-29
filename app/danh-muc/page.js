@@ -4,6 +4,8 @@ import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import { layThamGiaCuaToi } from "@/lib/thamGia";
 import { layLenhDaDong } from "@/lib/lenhDaDong";
 import { layLichPhien } from "@/lib/lichSuGia";
+import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
+import { ghiChuTuDong } from "@/lib/ghiChuTuDong";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import DanhMucMa from "@/components/DanhMucMa";
 import LenhDaDongView from "@/components/LenhDaDongView";
@@ -25,6 +27,10 @@ const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
 const DO = "var(--do)";
+
+// Chi cac cot chi bao dung cho ghi chu (khong de de len cot cua dong tin hieu).
+const COT_GHI_CHU = ["cach_tenkan_pct", "cach_kijun_pct", "gia_so_may", "cach_ma20_pct", "cach_ma50_pct", "cach_ma200_pct"];
+const pick = (h) => (h ? Object.fromEntries(COT_GHI_CHU.filter((k) => h[k] != null).map((k) => [k, h[k]])) : {});
 
 function TieuDeMuc({ children, phu }) {
   return (
@@ -56,8 +62,13 @@ export default async function TrangDanhMuc() {
   let thamGia = [];
   let tatCa = [];
   let loi = null;
+  // Chi bao ky thuat (Tenkan, Kijun, may, MA) chi de tao Ghi chu tu dong: loi o day khong lam mat bang.
+  let chiBaoTheoMa = new Map();
   try {
-    [thamGia, tatCa] = await Promise.all([layThamGiaCuaToi(nguoiDung.id), layTatCaTinHieu()]);
+    const [a, b, cb] = await Promise.all([layThamGiaCuaToi(nguoiDung.id), layTatCaTinHieu(), layChiBaoKyThuat().catch(() => null)]);
+    thamGia = a;
+    tatCa = b;
+    if (cb?.hang) chiBaoTheoMa = new Map(cb.hang.map((h) => [h.ma, h]));
   } catch (e) {
     loi = thongBaoLoi(e);
   }
@@ -102,6 +113,8 @@ export default async function TrangDanhMuc() {
         da_chot_mua: r?.da_chot_mua === true,
         gia: r?.gia ?? null,
         diem: r?.diem ?? null,
+        // Ghi chu tu dong: KC / HT gan nhat, duoi Tenkan / Kijun / may (lib/ghiChuTuDong.js) - chi nhan thong tin
+        ghiChu: r ? ghiChuTuDong({ ...r, ...pick(chiBaoTheoMa.get(t.ma)) }) : [],
         lenh: lenhTheoMa.get(t.ma) ?? [],
       };
     })

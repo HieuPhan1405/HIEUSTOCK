@@ -9,6 +9,7 @@ import NhanThiTruong5Phien from "@/components/NhanThiTruong5Phien";
 import XuatAnh from "@/components/XuatAnh";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { dungMuaPhucHoi } from "@/lib/muaPhucHoi";
+import { coCanhBaoBanBot } from "@/lib/ghiChuTuDong";
 import { layDiemBGanDay } from "@/lib/diemB";
 import { layLenhCoSuKienNgay, ngayGiaoDichVN } from "@/lib/lenhDaDong";
 import { fmt, pct, phanLoaiXuHuong, capNhatMoiNhat, chamTPCaoNhat, nhe } from "@/components/dungChung";
@@ -213,13 +214,22 @@ export default async function TrangTongQuan() {
   let muaPhucHoi = [];
   let diemBGanDay = {};
   if (xemTinHieu) {
-    const [a, b, c] = await Promise.all([
+    const [a, cb, c] = await Promise.all([
       layLenhCoSuKienNgay(ngayPhien).catch(() => []),
-      layChiBaoKyThuat().then((x) => dungMuaPhucHoi({ hang: x.hang, tatCa })).catch(() => []),
+      layChiBaoKyThuat().catch(() => null),
       layDiemBGanDay().then((x) => Object.fromEntries(x.map((d) => [d.ma, d]))).catch(() => ({})),
     ]);
     dongLenh = a;
-    muaPhucHoi = b;
+    try {
+      muaPhucHoi = cb ? dungMuaPhucHoi({ hang: cb.hang, tatCa }) : [];
+    } catch {
+      muaPhucHoi = [];
+    }
+    // Gop khoang cach toi Tenkan (chi bao ky thuat) vao tung ma: de canh bao "Ban bot" khi dang giu ma gia dong cua duoi Tenkan (nhan tren web, khong doi tin hieu engine).
+    if (cb?.hang) {
+      const tenkanTheoMa = new Map(cb.hang.map((h) => [h.ma, h.cach_tenkan_pct]));
+      tatCa = tatCa.map((r) => (tenkanTheoMa.get(r.ma) != null ? { ...r, cach_tenkan_pct: tenkanTheoMa.get(r.ma) } : r));
+    }
     diemBGanDay = c;
   }
 
@@ -237,7 +247,7 @@ export default async function TrangTongQuan() {
   // dung tin hieu MUA/BAN moi phat sinh hom nay) - Chot loi va Ban bot la
   // trang thai cua vi the DANG giu, khac ban chat.
   const soChotLoi = tatCa.filter((r) => r.tin === "NAM GIU" && chamTPCaoNhat(r)).length;
-  const soBanBot = tatCa.filter((r) => r.ban_bot).length;
+  const soBanBot = tatCa.filter((r) => coCanhBaoBanBot(r)).length;
 
   const doRongVonHoa = [
     ["VN30", tinhDoRongNhom(tatCa, "VN30")],
@@ -438,7 +448,7 @@ export default async function TrangTongQuan() {
               <TheKPI nhan="Tín hiệu MUA" giaTri={soMua} phu="hôm nay" mau={PRIMARY} href="/bo-loc?tin=MUA" />
               <TheKPI may="mat-than" nhan="Cảnh báo Mắt Thần" giaTri={soMatThan} phu="rủi ro đảo chiều" mau={soMatThan > 0 ? DO : MUTED} href="/bo-loc?matthan=1" />
               <TheKPI nhan="Cơ hội chốt lời" giaTri={soChotLoi} phu="đã chạm TP" mau={soChotLoi > 0 ? "var(--vang)" : MUTED} href="/bo-loc?chotloi=1" />
-              <TheKPI nhan="Cảnh báo bán bớt" giaTri={soBanBot} phu="điểm dưới ngưỡng" mau={soBanBot > 0 ? "var(--cam)" : MUTED} href="/bo-loc?banbot=1" />
+              <TheKPI nhan="Cảnh báo bán bớt" giaTri={soBanBot} phu="điểm dưới ngưỡng hoặc dưới Tenkan" mau={soBanBot > 0 ? "var(--cam)" : MUTED} href="/bo-loc?banbot=1" />
             </>
           ) : (
             <>

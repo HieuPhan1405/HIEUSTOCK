@@ -327,7 +327,10 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
                   Cảnh báo giảm bớt
                 </span>
                 <br />
-                điểm {fmt(x.diem)} dưới ngưỡng, chưa đủ điều kiện BÁN
+                {x.theoDiem ? `điểm ${fmt(x.diem)} dưới ngưỡng` : null}
+                {x.theoDiem && x.duoiTenkanPct != null ? " · " : null}
+                {x.duoiTenkanPct != null ? `giá dưới Tenkan ${pct(x.duoiTenkanPct, 1)}` : null}
+                , chưa đủ điều kiện BÁN
               </Dong>
             )
           }

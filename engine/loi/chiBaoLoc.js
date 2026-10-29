@@ -202,6 +202,7 @@ export function tinhChiBaoLocChoMa(nen, ma = null) {
     gia_so_may: mayTren != null && mayDuoi != null ? (gia > mayTren ? 1 : gia < mayDuoi ? -1 : 0) : null,
     tenkan_tren_kijun: tenkan != null && kijun != null ? (tenkan > kijun ? 1 : 0) : null,
     cach_kijun_pct: pctCach(gia, kijun),
+    cach_tenkan_pct: pctCach(gia, tenkan), // gia so voi Tenkan (am = dong cua duoi Tenkan): web dung cho canh bao Ban bot va ghi chu Danh muc
   };
   // DIEM MUA PHUC HOI (diem B): giam sau roi dong cua lay lai Tenkan + Kijun; SL / TP1-3 theo cong thuc binh thuong cua he thong (engine/loi/diemMuaPhucHoi.js)
   {

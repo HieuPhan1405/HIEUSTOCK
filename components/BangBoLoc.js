@@ -12,6 +12,7 @@ import { COT_CHI_BAO_HIEN, THU_TU_COT_CHI_BAO } from "@/components/cotChiBao";
 import BoLocChiBaoKyThuat from "@/components/BoLocChiBaoKyThuat";
 import { locTheoChiBao, cotChoBoLoc } from "@/lib/boLocChiBao";
 import NhanViTri120 from "@/components/NhanViTri120";
+import { coCanhBaoBanBot } from "@/lib/ghiChuTuDong";
 import {
   NGANH_NHAN,
   LOC_TRONG,
@@ -159,9 +160,9 @@ const COT_RIENG = {
               🎯 {tp}
             </span>
           )}
-          {row.ban_bot && (
-            <span className="text-[11px] font-bold" style={{ color: "var(--cam)" }}>
-              ⚠ Bán bớt
+          {coCanhBaoBanBot(row) && (
+            <span className="text-[11px] font-bold" style={{ color: "var(--cam)" }} title={row.ban_bot ? undefined : "Giá đóng cửa đang dưới Tenkan (nhãn tham khảo trên web, chưa phải tín hiệu BÁN)"}>
+              ⚠ Bán bớt{row.ban_bot ? "" : " · dưới Tenkan"}
             </span>
           )}
         </div>
