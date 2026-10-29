@@ -44,17 +44,17 @@ dat("it nen -> rong", suKienGia([{ h: 2, l: 1, c: 1.5 }]).length === 0 && suKien
 
 // he thong
 const sk = suKienHeThong({ tin: "NAM GIU", ban_bot: true, mat_than: true }, [{ ly_do: "TP1", gia_ban: 13.9, phan_chot_pct: 30, vong: 5 }, { ly_do: "CAT_LO", gia_ban: 12, vong: 9 }], "2026-10-29");
-dat("TP1 chot 30% ghi gia", sk.some((x) => x.nhan === "Chạm TP1 ở 13,90 — chốt 30%" && x.loai === "tot"), JSON.stringify(sk.map((x) => x.nhan)));
-dat("cat lo, ban bot, mat than deu ghi", sk.some((x) => x.nhan.startsWith("Chạm mức cắt lỗ")) && sk.some((x) => x.khoa === "ban_bot") && sk.some((x) => x.khoa === "mat_than"));
+dat("TP1 ghi bang loi de hieu, co gia va phan chot", sk.some((x) => x.nhan === "Đã chạm mốc chốt lời TP1 ở 13,90, nên chốt 30% lệnh" && x.loai === "tot"), JSON.stringify(sk.map((x) => x.nhan)));
+dat("cat lo ghi, Ban bot / Mat Than KHONG ghi o day (nam o cot Canh bao)", sk.some((x) => x.nhan.startsWith("Đã chạm mức cắt lỗ")) && !sk.some((x) => x.khoa === "ban_bot" || x.khoa === "mat_than"));
 dat("MUA moi hom nay", suKienHeThong({ tin: "MUA", ngay_mua: "2026-10-29" }, [], "2026-10-29").some((x) => x.khoa === "mua_moi"));
 dat("MUA cu (ngay mua khac) khong ghi MUA moi", !suKienHeThong({ tin: "MUA", ngay_mua: "2026-10-20" }, [], "2026-10-29").some((x) => x.khoa === "mua_moi"));
 dat("khong co gi -> rong", suKienHeThong({ tin: "NAM GIU" }, [], "2026-10-29").length === 0);
 
 // gop + sap: xau truoc, tot sau, cat bot
 {
-  const r = chuYTrongPhien({ row: { tin: "NAM GIU", ban_bot: true, mat_than: true }, dongLenhNgay: [{ ly_do: "TP1", gia_ban: 13.9, phan_chot_pct: 30 }], ngay: "2026-10-29", toiDa: 2 });
+  const r = chuYTrongPhien({ row: { tin: "NAM GIU" }, dongLenhNgay: [{ ly_do: "TP1", gia_ban: 13.9, phan_chot_pct: 30 }, { ly_do: "CAT_LO", gia_ban: 12 }, { ly_do: "TP2", gia_ban: 14.5, phan_chot_pct: 30 }], ngay: "2026-10-29", toiDa: 2 });
   dat("toi da 2 dong, phan con lai dem vao them", r.cacSuKien.length === 2 && r.them === 1);
-  dat("canh bao xau len truoc (Mat Than)", r.cacSuKien[0].loai === "xau");
+  dat("canh bao xau (cat lo) len truoc", r.cacSuKien[0].loai === "xau");
 }
 
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);

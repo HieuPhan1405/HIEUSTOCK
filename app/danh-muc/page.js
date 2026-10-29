@@ -6,7 +6,7 @@ import { layLenhDaDong, layLenhCoSuKienNgay, ngayGiaoDichVN } from "@/lib/lenhDa
 import { layLichPhien, layLichSuGia } from "@/lib/lichSuGia";
 import { chuYTrongPhien } from "@/lib/chuYTrongPhien";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
-import { ghiChuTuDong } from "@/lib/ghiChuTuDong";
+import { canhBaoDangCo } from "@/lib/canhBaoDanhMuc";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import DanhMucMa from "@/components/DanhMucMa";
 import LenhDaDongView from "@/components/LenhDaDongView";
@@ -121,7 +121,7 @@ export default async function TrangDanhMuc() {
         da_chot_mua: r?.da_chot_mua === true,
         gia: r?.gia ?? null,
         diem: r?.diem ?? null,
-        // Chu y TRONG PHIEN: nhung gi da xay ra (lib/chuYTrongPhien.js); trang thai hien tai: KC / HT gan nhat, duoi Tenkan / Kijun / may (lib/ghiChuTuDong.js). Chi la nhan thong tin.
+        // DA DIEN RA trong phien (lib/chuYTrongPhien.js): gia vuot / thung cac duong, cham TP, cat lo, MUA, BAN. Chi la nhan thong tin.
         chuY: r
           ? chuYTrongPhien({
               bars: barsTheoMa.get(t.ma),
@@ -130,8 +130,8 @@ export default async function TrangDanhMuc() {
               ngay: ngayPhien,
             })
           : { cacSuKien: [], them: 0 },
-        trangThai: r ? ghiChuTuDong({ ...r, ...pick(chiBaoTheoMa.get(t.ma)) }) : [],
-        ghiChuRieng: t.ghi_chu ?? "",
+        // Canh bao DANG / SAP xay ra (loi de hieu): sap toi moc chot loi / vung can, gia duoi Tenkan / Kijun / may, Ban bot, Mat Than... (lib/canhBaoDanhMuc.js)
+        canhBao: r ? canhBaoDangCo({ ...r, ...pick(chiBaoTheoMa.get(t.ma)) }) : { cacCanhBao: [], them: 0, canGanNhat: { tren: null, duoi: null } },
         lenh: lenhTheoMa.get(t.ma) ?? [],
       };
     })
