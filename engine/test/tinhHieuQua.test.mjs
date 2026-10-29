@@ -1,5 +1,5 @@
 // Test tay cho lib/tinhHieuQua.js (ty suat sinh loi theo thoi gian so voi VN-Index). Chay: node engine/test/tinhHieuQua.test.mjs
-import { tinhHieuQua, cuaSoLuyKe, chiSoBatDauCuaSo, cacLatCat } from "../../lib/tinhHieuQua.js";
+import { tinhHieuQua, cuaSoLuyKe, chiSoBatDauCuaSo, cacLatCat, laiTrungBinhMoiLenh } from "../../lib/tinhHieuQua.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -133,6 +133,27 @@ ls = cacLatCat([], [{ ...mo, dang_giu_moi: true, gia_mua_moi: 25, ngay_mua_moi: 
 ok("lo mua them (sau TP3 + giua chung) dang giu: them 2 lat cat", ls.length === 3 && ls[1].giaVao === 25 && ls[2].giaVao === 23 && ls[2].ngayVao === "2026-09-15", JSON.stringify(ls));
 // Dong hong bi bo
 ok("dong thieu gia mua/ngay ban bi bo", cacLatCat([dong({ gia_mua: 0 }), dong({ ngay_ban: null })], []).length === 0);
+
+// ---- Lai trung binh moi lenh (cong don): dong + mo ----
+{
+  const ngay = ["2026-09-01", "2026-09-02", "2026-09-03", "2026-09-04", "2026-09-05"];
+  const g = (a, c) => new Map([["AAA", { close: a, adClose: a }], ["BBB", { close: c, adClose: c }]]);
+  const giaTheoNgay = [g(100, 50), g(110, 50), g(120, 55), g(115, 60), g(130, 45)];
+  const slices = [
+    { ma: "AAA", ngayVao: "2026-09-01", giaVao: 100, ngayRa: "2026-09-03", giaRa: 120, trongSo: 1 }, // dong: +20%, dong bang tu 3/9
+    { ma: "BBB", ngayVao: "2026-09-02", giaVao: 50, ngayRa: null, giaRa: null, trongSo: 1 }, // dang mo
+  ];
+  const r = laiTrungBinhMoiLenh({ slices, ngay, giaTheoNgay, tuChiSo: 0 });
+  ok("ngay 0: chi co lenh AAA, vua vao (close = gia vao) -> 0%", gan(r[0], 0), r[0]);
+  ok("ngay 1: AAA +10% (110/100), BBB vua vao (50/50) -> TB +5%", gan(r[1], 5), r[1]);
+  ok("ngay 2: AAA da ra +20% (dong bang), BBB +10% -> TB +15%", gan(r[2], 15), r[2]);
+  ok("ngay 3: AAA van +20% (dong bang, khong theo gia 115), BBB +20% -> TB +20%", gan(r[3], 20), r[3]);
+  ok("ngay 4: BBB -10%, AAA +20% -> TB +5% (lenh mo lo keo xuong, lenh dong giu nguyen)", gan(r[4], 5), r[4]);
+  // cua so bat dau tu ngay 2: AAA da ra ngay 2 (khong dong truoc cua so) nen van tinh, tinh tu gia dong cua ngay 2 = 120 (da ra)
+  const r2 = laiTrungBinhMoiLenh({ slices, ngay, giaTheoNgay, tuChiSo: 3 });
+  ok("cua so tu ngay 3: truoc cua so = null; AAA da dong truoc cua so bi bo; BBB tinh tu gia ngay 3 (60): ngay 4 = 45/60 - 1 = -25%", r2[2] === null && gan(r2[4], -25), JSON.stringify(r2));
+  ok("khong co lenh nao -> 0, khong loi", laiTrungBinhMoiLenh({ slices: [], ngay, giaTheoNgay, tuChiSo: 0 }).every((v) => v === 0));
+}
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

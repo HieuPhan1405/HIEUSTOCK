@@ -41,6 +41,7 @@ export default function HieuQuaDauTu() {
   const [du, setDu] = useState(null);
   const [loi, setLoi] = useState(null);
   const [tab, setTab] = useState("1M");
+  const [cach, setCach] = useState("tssl"); // "tssl" = theo thoi gian (can bang lai moi ngay) | "lenh" = lai trung binh moi lenh (dong + mo)
   const [hover, setHover] = useState(null);
   const hopRef = useRef(null);
   const [rong, setRong] = useState(720);
@@ -89,13 +90,14 @@ export default function HieuQuaDauTu() {
     const s = chiSoBatDauCuaSo(du.ngay, tab);
     const tssl = cuaSoLuyKe(du.tssl, s);
     const vn = cuaSoLuyKe(du.vn, s);
+    const lai = cach === "lenh" ? du.laiLenh?.[tab] : null; // lai trung binh moi lenh cua tab (da tinh san o may chu, 0% = dau cua so)
     const diem = [];
-    for (let k = s; k < du.ngay.length; k++) diem.push({ ngay: du.ngay[k], tssl: tssl[k], vn: vn[k] });
+    for (let k = s; k < du.ngay.length; k++) diem.push({ ngay: du.ngay[k], tssl: lai ? lai[k] ?? 0 : tssl[k], vn: vn[k] });
     // Cua so dai hon du lieu dang co (vd chon 6M nhung moi ghi nhan 2 tuan) -> hien toan bo tu ngay bat dau va ghi chu.
     const can = { "1M": 21, "3M": 63, "6M": 126, "1Y": 252 }[tab];
     const ngan = s === 0 && (can ? du.ngay.length - 1 < can : du.ngay[0].slice(5) > "01-10");
     return { diem, ngan };
-  }, [du, tab]);
+  }, [du, tab, cach]);
 
   const LE_TRAI = 46;
   const LE_DUOI = 24;
@@ -162,13 +164,22 @@ export default function HieuQuaDauTu() {
         </span>
         <span className="flex items-center gap-1.5">
           <span className="inline-block w-3 h-3 rounded-sm" style={{ background: MAU_TSSL }} />
-          Tỷ suất sinh lời (TSSL) <b style={{ color: mauSo(cuoi.tssl), fontFamily: "var(--font-chu)" }}>{dau(cuoi.tssl)}</b>
+          {cach === "lenh" ? "Lãi trung bình mỗi lệnh" : "Tỷ suất sinh lời (TSSL)"} <b style={{ color: mauSo(cuoi.tssl), fontFamily: "var(--font-chu)" }}>{dau(cuoi.tssl)}</b>
         </span>
-        <span>
-          {chenh >= 0 ? "Vượt" : "Thua"} VN-Index <b style={{ color: mauSo(chenh), fontFamily: "var(--font-chu)" }}>{dau(chenh)}</b>
-        </span>
+        {cach === "tssl" && (
+          <span>
+            {chenh >= 0 ? "Vượt" : "Thua"} VN-Index <b style={{ color: mauSo(chenh), fontFamily: "var(--font-chu)" }}>{dau(chenh)}</b>
+          </span>
+        )}
       </div>
 
+      <div className="flex flex-wrap gap-2 mb-2" role="group" aria-label="Cách tính">
+        {[["tssl", "Theo thời gian (cân bằng lại mỗi ngày)"], ["lenh", "Lãi trung bình mỗi lệnh (đã chốt + đang giữ)"]].map(([k, ten]) => (
+          <button key={k} type="button" aria-pressed={cach === k} onClick={() => { setCach(k); setHover(null); }} className="text-xs rounded-full px-3 py-1.5" style={cach === k ? { background: "#6C5CE7", color: "#fff", fontWeight: 700 } : { color: MUTED, border: `1px solid ${VIEN}` }}>
+            {ten}
+          </button>
+        ))}
+      </div>
       <div className="grid grid-cols-5 gap-1 rounded-xl p-1 mb-3" style={{ background: "var(--nen-phu)" }} role="tablist">
         {TABS.map((t) => (
           <button
@@ -228,6 +239,11 @@ export default function HieuQuaDauTu() {
         </svg>
       </div>
 
+      {cach === "lenh" && (
+        <p className="text-[11px] mt-2" style={{ color: MUTED }}>
+          <b>Lãi trung bình mỗi lệnh</b> = trung bình (theo tỷ trọng) lãi/lỗ của <b>mọi lệnh đã vào</b>: lệnh đã đóng tính theo giá ra (đã chốt), lệnh đang mở tính theo giá hiện tại (lãi/lỗ tạm tính). Không cân bằng lại mỗi ngày và không quy theo thời gian nắm giữ nên <b>không so trực tiếp với VN-Index</b>; đường VN-Index chỉ để tham chiếu. Lãi tạm tính của lệnh đang mở có thể mất đi nếu giá quay đầu.
+        </p>
+      )}
       <p className="text-[11px] mt-2" style={{ color: MUTED }}>
         TSSL = tỷ suất sinh lời theo thời gian của các lệnh do hệ thống phát (đã đóng + đang mở, mỗi lệnh một phần vốn như nhau, phần chốt lời từng phần tính theo tỷ lệ chốt), tính từ{" "}
         <b>{ngayVN(du.batDau)}</b> — ngày web bắt đầu ghi nhận lệnh đã đóng; trước ngày này chỉ biết các lệnh còn sống sót nên không đưa vào để tránh thổi phồng.
