@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
+import NhomChuDeNganh from "@/components/NhomChuDeNganh";
 import BanDoNhiet from "@/components/BanDoNhiet";
 import BangRSNganh from "@/components/BangRSNganh";
 import RRGNganh from "@/components/RRGNganh";
@@ -40,6 +42,9 @@ export default async function TrangNganh() {
           Lỗi tải dữ liệu: {loi}
         </p>
       )}
+      <Suspense fallback={<p className="text-sm mb-8" style={{ color: MUTED }}>Đang tải nhóm chủ đề…</p>}>
+        <NhomChuDeNganh />
+      </Suspense>
       {rrg && <RRGNganh du={{ rrg }} />}
       <BangRSNganh hang={tinhRSNganh(tatCa)} />
       <BanDoNhiet tatCa={tatCa} />
