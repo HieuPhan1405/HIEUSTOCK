@@ -1,5 +1,5 @@
 // Test tay: node engine/test/bangNhomChuDe.test.mjs
-import { tinhBangNhom, mauNenTheoDoi, dinhDangKL } from "../../lib/bangNhomChuDe.js";
+import { tinhBangNhom, mauNenTheoDoi, dinhDangKL, chiSoNhomTheoNgay } from "../../lib/bangNhomChuDe.js";
 let loi = 0;
 const dat = (ten, dk, them = "") => { if (dk) console.log("ok:", ten); else { console.log("SAI:", ten, them); loi++; } };
 const gan = (a, b, e = 1e-9) => Math.abs(a - b) <= e;
@@ -27,5 +27,19 @@ dat("khong co ma nao -> trungBinh null", tinhBangNhom(["X"], {}).trungBinhPct ==
 dat("mau: 0% vang, +5% xanh, -5% do, null trong suot", mauNenTheoDoi(0).startsWith("rgba(234,179,8") && mauNenTheoDoi(5).startsWith("rgba(34,197,94") && mauNenTheoDoi(-5).startsWith("rgba(239,68,68") && mauNenTheoDoi(null) === "transparent");
 dat("mau dam hon khi bien dong lon hon", Number(mauNenTheoDoi(6.9).split(",")[3].replace(")", "")) > Number(mauNenTheoDoi(1).split(",")[3].replace(")", "")));
 dat("dinh dang KL: 3300 -> 3,3k; 2.000.000 -> 2m; 100 -> 100; 6.445.100 -> 6,4m", dinhDangKL(3300) === "3,3k" && dinhDangKL(2_000_000) === "2m" && dinhDangKL(100) === "100" && dinhDangKL(6_445_100) === "6,4m" && dinhDangKL(0) === "0");
+// chi so nhom theo ngay
+{
+  const ngay = ["d1", "d2", "d3", "d4"];
+  const b = {
+    A: [{ t: "d1", c: 10 }, { t: "d2", c: 11 }, { t: "d3", c: 11 }, { t: "d4", c: 12.1 }], // +10%, 0, +10%
+    B: [{ t: "d2", c: 20 }, { t: "d3", c: 18 }, { t: "d4", c: 18 }], // khong co d1: d2 chi co A; d3 -10%; d4 0
+  };
+  const ci = chiSoNhomTheoNgay(ngay, ["A", "B", "ZZ"], b);
+  dat("chi so nhom: do dai bang so ngay, d1 = 100", ci.length === 4 && ci[0] === 100);
+  dat("d2: chi A co du 2 ngay -> +10% = 110", gan(ci[1], 110, 1e-6), ci[1]);
+  dat("d3: A 0%, B -10% -> trung binh -5% -> 104,5", gan(ci[2], 104.5, 1e-6), ci[2]);
+  dat("d4: A +10%, B 0% -> +5% -> 109,725", gan(ci[3], 109.725, 1e-3), ci[3]);
+  dat("khong ma nao co gia -> null", chiSoNhomTheoNgay(ngay, ["X"], {}) === null);
+}
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

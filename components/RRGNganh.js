@@ -130,10 +130,10 @@ function BieuDo({ ds, chon, datChon }) {
           <g key={r.id} opacity={sang ? 1 : 0.18} style={{ cursor: "pointer" }} onClick={() => datChon(chon === r.id ? null : r.id)}>
             <g clipPath="url(#rrg-khung)">
               {r.pts.slice(0, -1).map((d, i) => (
-                <line key={d.t} x1={X(d.ratio)} y1={Y(d.mom)} x2={X(r.pts[i + 1].ratio)} y2={Y(r.pts[i + 1].mom)} stroke={c} strokeWidth="2" strokeLinecap="round" opacity={0.12 + 0.55 * ((i + 1) / (r.pts.length - 1))} strokeDasharray={r.loai === "ma" ? "4 3" : undefined} />
+                <line key={d.t} x1={X(d.ratio)} y1={Y(d.mom)} x2={X(r.pts[i + 1].ratio)} y2={Y(r.pts[i + 1].mom)} stroke={c} strokeWidth="2" strokeLinecap="round" opacity={0.12 + 0.55 * ((i + 1) / (r.pts.length - 1))} strokeDasharray={r.loai === "ma" ? "4 3" : r.loai === "chude" ? "1 3" : undefined} />
               ))}
             </g>
-            {r.loai === "ma" ? <rect x={X(l.ratio) - 5.5} y={Y(l.mom) - 5.5} width="11" height="11" fill={c} stroke="var(--chu)" strokeWidth="1.2" transform={`rotate(45 ${X(l.ratio)} ${Y(l.mom)})`} /> : <circle cx={X(l.ratio)} cy={Y(l.mom)} r="6" fill={c} />}
+            {r.loai === "ma" ? <rect x={X(l.ratio) - 5.5} y={Y(l.mom) - 5.5} width="11" height="11" fill={c} stroke="var(--chu)" strokeWidth="1.2" transform={`rotate(45 ${X(l.ratio)} ${Y(l.mom)})`} /> : <circle cx={X(l.ratio)} cy={Y(l.mom)} r="6" fill={c} stroke={r.loai === "chude" ? "var(--chu)" : undefined} strokeWidth={r.loai === "chude" ? 1.6 : undefined} />}
             <text x={viTriNhan[r.id].trai ? X(l.ratio) - 10 : X(l.ratio) + 10} y={viTriNhan[r.id].y} textAnchor={viTriNhan[r.id].trai ? "end" : "start"} fontSize="12" fill="var(--chu)" stroke="var(--card)" strokeWidth="3.5" paintOrder="stroke" strokeLinejoin="round" style={sans} fontWeight={r.loai === "ma" || chon === r.id ? 700 : 600}>
               {r.nhanNgan}
             </text>
@@ -148,6 +148,7 @@ export default function RRGNganh({ du }) {
   const rrg = du?.rrg;
   const ketQua = useMemo(() => rrg?.ketQua ?? [], [rrg]);
   const chuoi = rrg?.chuoi;
+  const chuDe = useMemo(() => du?.chuDe ?? [], [du]); // nhom chu de (lib/nhomChuDe.js): [{ id, nhan, soMa, chiSo: [..] cung do dai chuoi.ngay }]
   const [khung, datKhung] = useState("W");
   const [cuaSo, datCuaSo] = useState(MAC_DINH.W.cuaSo);
   const [duoi, datDuoi] = useState(MAC_DINH.W.duoi);
@@ -205,8 +206,12 @@ export default function RRGNganh({ du }) {
       const pts = tinhRRG(chuoi.ngay, chuoi.nganh[r.nganh], mocSoSanh, { khung, cuaSo, duoi });
       if (pts.length >= 2) ra.push({ id: r.nganh, loai: "nganh", nhan: r.nhan ?? r.nganh, nhanNgan: nganGon(r.nhan ?? r.nganh), soMa: r.soMa, pts, goc: gocRRG(pts.at(-1).ratio, pts.at(-1).mom), goc0: r });
     }
+    for (const c of chuDe) {
+      const pts = tinhRRG(chuoi.ngay, c.chiSo, mocSoSanh, { khung, cuaSo, duoi });
+      if (pts.length >= 2) ra.push({ id: c.id, loai: "chude", nhan: c.nhan, nhanNgan: c.nhan, soMa: c.soMa, pts, goc: gocRRG(pts.at(-1).ratio, pts.at(-1).mom), goc0: null });
+    }
     return ra;
-  }, [chuoi, ketQua, khung, cuaSo, duoi, mocSoSanh]);
+  }, [chuoi, ketQua, chuDe, khung, cuaSo, duoi, mocSoSanh]);
   const bieuDo = useMemo(() => {
     if (!chuoi) return [];
     const ra = chiMa ? [] : nganhTatCa.filter((r) => xem.size === 0 || xem.has(r.id));
@@ -348,7 +353,7 @@ export default function RRGNganh({ du }) {
                   return (
                     <tr key={r.id} className="border-t cursor-pointer" style={{ borderColor: "var(--vien-nhe)", opacity: !chon || chon === r.id ? 1 : 0.4 }} onClick={() => datChon(chon === r.id ? null : r.id)}>
                       <td className="py-1.5 pr-2">
-                        {r.loai === "ma" ? <b>{r.nhan}</b> : r.nhan} <span className="text-[11px]" style={{ color: MUTED }}>{r.loai === "ma" ? "(mã)" : `(${r.soMa}${r.goc0?.tongMa ? `/${r.goc0.tongMa}` : ""})`}</span>
+                        {r.loai === "ma" ? <b>{r.nhan}</b> : r.nhan} <span className="text-[11px]" style={{ color: MUTED }}>{r.loai === "ma" ? "(mã)" : r.loai === "chude" ? `(chủ đề · ${r.soMa} mã)` : `(${r.soMa}${r.goc0?.tongMa ? `/${r.goc0.tongMa}` : ""})`}</span>
                       </td>
                       <td className="py-1.5 px-2">
                         <span className="text-[11px] px-2 py-0.5 rounded-full border whitespace-nowrap" style={{ color: MAU_GOC[r.goc], borderColor: MAU_GOC[r.goc] }}>
@@ -374,7 +379,7 @@ export default function RRGNganh({ du }) {
       )}
       <p className="text-[11px] mt-3" style={{ color: MUTED }}>
         Mốc so sánh mặc định là chỉ số trung bình đều các mã thanh khoản ≥ 0,3 tỷ/phiên (VN-Index tính theo vốn hoá nên VIC, VHM, ngân hàng kéo, ngành nào cũng “thắng” nó). Chu kỳ RS càng ngắn đồ thị càng nhạy nhưng nhiễu hơn. <b>Nóng</b> = giá trị giao dịch 5 phiên / mức thường lệ 10 tuần trước.{" "}
-        <b>Tiền ròng ước tính</b> chỉ đo giá đóng cửa nghiêng về đầu cao hay đầu thấp của nến theo giá trị giao dịch, không phải mua/bán chủ động thật; hai cột này chỉ có cho ngành. Mỗi ngành tính trên các mã hệ thống đang quét (số trong ngoặc: mã đủ thanh khoản/tổng mã của ngành); ngành dưới 3 mã đủ thanh khoản không được vẽ. Mã cổ phiếu hình thoi, nét đứt. Không phải khuyến nghị đầu tư.
+        <b>Tiền ròng ước tính</b> chỉ đo giá đóng cửa nghiêng về đầu cao hay đầu thấp của nến theo giá trị giao dịch, không phải mua/bán chủ động thật; hai cột này chỉ có cho ngành. Mỗi ngành tính trên các mã hệ thống đang quét (số trong ngoặc: mã đủ thanh khoản/tổng mã của ngành); ngành dưới 3 mã đủ thanh khoản không được vẽ. Mã cổ phiếu hình thoi, nét đứt. Nhóm chủ đề (vd Đầu tư công) là chấm viền sáng, đuôi chấm chấm: chỉ số nhóm = trung bình đều lợi suất ngày của MỌI mã trong nhóm (kể cả mã ít giao dịch), nên nhiễu hơn ngành; không có cột Nóng / Tiền ròng. Không phải khuyến nghị đầu tư.
       </p>
     </section>
   );

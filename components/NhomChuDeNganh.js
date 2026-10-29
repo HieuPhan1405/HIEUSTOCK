@@ -1,28 +1,14 @@
 import BangNhomChuDe from "@/components/BangNhomChuDe";
 import { NHOM_CHU_DE, DS_CHU_DE } from "@/lib/nhomChuDe";
 import { tinhBangNhom } from "@/lib/bangNhomChuDe";
-import { layLichSuGia } from "@/lib/lichSuGia";
+import { layNenNhom } from "@/lib/nhomChuDeDuLieu";
 
-// Cac bang NHOM CHU DE (lib/nhomChuDe.js) o trang Nganh - server component, dat trong <Suspense>. Gia lay RIENG tung ma tu DNSE (co ca ma ngoai danh sach web quet), chay toi da 6 ma cung luc,
-// moi ma co han 4 giay (qua han thi hien "—" cho ma do) de trang khong bi cham vi 1 nguon.
-async function layBars(dsMa) {
-  const kq = {};
-  let i = 0;
-  const chay = async () => {
-    while (i < dsMa.length) {
-      const ma = dsMa[i++];
-      kq[ma] = await Promise.race([layLichSuGia(ma, 60).catch(() => null), new Promise((r) => setTimeout(() => r(null), 4000))]);
-    }
-  };
-  await Promise.all(Array.from({ length: Math.min(6, dsMa.length) }, chay));
-  return kq;
-}
-
+// Cac bang NHOM CHU DE (lib/nhomChuDe.js) o trang Nganh - server component, dat trong <Suspense>.
 export default async function NhomChuDeNganh() {
   const bang = await Promise.all(
     DS_CHU_DE.map(async (k) => {
       const g = NHOM_CHU_DE[k];
-      const r = tinhBangNhom(g.ma, await layBars(g.ma));
+      const r = tinhBangNhom(g.ma, await layNenNhom(k, g.ma));
       return { khoa: k, nhan: g.nhan, moTa: g.moTa, ...r };
     })
   );

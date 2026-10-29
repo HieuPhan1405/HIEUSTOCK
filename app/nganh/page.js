@@ -4,6 +4,7 @@ import NhomChuDeNganh from "@/components/NhomChuDeNganh";
 import BanDoNhiet from "@/components/BanDoNhiet";
 import BangRSNganh from "@/components/BangRSNganh";
 import RRGNganh from "@/components/RRGNganh";
+import RRGNganhCoChuDe from "@/components/RRGNganhCoChuDe";
 import { tinhRSNganh } from "@/lib/rsNganh";
 import { layRRGNganh } from "@/lib/phanTichCoBanDb";
 import { capNhatMoiNhat } from "@/components/dungChung";
@@ -45,7 +46,11 @@ export default async function TrangNganh() {
       <Suspense fallback={<p className="text-sm mb-8" style={{ color: MUTED }}>Đang tải nhóm chủ đề…</p>}>
         <NhomChuDeNganh />
       </Suspense>
-      {rrg && <RRGNganh du={{ rrg }} />}
+      {rrg && (
+        <Suspense fallback={<RRGNganh du={{ rrg }} />}>
+          <RRGNganhCoChuDe rrg={rrg} />
+        </Suspense>
+      )}
       <BangRSNganh hang={tinhRSNganh(tatCa)} />
       <BanDoNhiet tatCa={tatCa} />
     </div>
