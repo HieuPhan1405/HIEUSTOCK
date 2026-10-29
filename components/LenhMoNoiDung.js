@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import TraCuuMa from "@/components/TraCuuMa";
 import BangLenhMo, { LOC_LENH_MO_TRONG, locLenhMo } from "@/components/BangLenhMo";
 import HieuSuatVsVnindex from "@/components/HieuSuatVsVnindex";
-import HieuQuaDauTu from "@/components/HieuQuaDauTu";
 import { pct, chamTPCaoNhat, pctChotLoi } from "@/components/dungChung";
 
 const VIEN = "var(--vien)";
@@ -37,20 +36,17 @@ function The({ so, mau, nhan, phu, mauPhu }) {
 // bam loc (vd "chi ma dat chuan") thi CA thong ke lan bieu do doi theo, khong chi bang.
 // MOT DANH SACH DUY NHAT: moi LENH la 1 dong rieng (lenhDangMo, tinh o trang cha): lenh dau + cac lenh MUA MOI (dot sau) cua ma; ma co nhieu lenh thi danh so (1), (2). Khong co "mua them"
 // / gia von trung binh - moi lenh co gia mua, SL, TP, lai/lo rieng.
-const CAC_TAB = ["lenh", "hieuQua", "tungMa"];
+// Khoi "Hieu qua dau tu" (components/HieuQuaDauTu.js, /api/hieu-qua-he-thong) da TAT khoi giao dien theo yeu cau cua Hieu 29/10/2026; ma nguon van con de bat lai.
+const CAC_TAB = ["lenh", "tungMa"];
 
-// tabDau: the mo san (lenh | hieuQua | tungMa).
+// tabDau: the mo san (lenh | tungMa).
 export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
   const tabBanDau = CAC_TAB.includes(tabDau) ? tabDau : "lenh";
   const [loc, datLoc] = useState(LOC_LENH_MO_TRONG);
   // THANH GAT (tab) gom cac khoi phu de trang khong roi: mac dinh chi hien danh sach lenh. Khoi Hieu qua chi tai du lieu khi mo lan dau, roi giu nguyen
   // (an di chu khong go bo) de khong tai lai.
   const [tab, setTab] = useState(tabBanDau);
-  const [daMoHieuQua, setDaMoHieuQua] = useState(tabBanDau === "hieuQua");
-  const chonTab = (t) => {
-    setTab(t);
-    if (t === "hieuQua") setDaMoHieuQua(true);
-  };
+  const chonTab = (t) => setTab(t);
   const lenhGop = lenhMo;
   const soMa = useMemo(() => new Set(lenhGop.map((r) => r.ma)).size, [lenhGop]);
   const soMuaMoiHomNay = useMemo(() => lenhGop.filter((r) => r.la_lenh_moi && r.mua_moi_hom_nay).length, [lenhGop]);
@@ -81,7 +77,6 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
 
   const TABS = [
     ["lenh", "Lệnh đang mở", lenhGop.length, soMuaMoiHomNay > 0 ? TIM : null],
-    ["hieuQua", "Hiệu quả", null, null],
     ["tungMa", "So sánh từng mã", null, null],
   ];
 
@@ -151,14 +146,6 @@ export default function LenhMoNoiDung({ lenhMo, vnindex, tabDau }) {
       </div>
       </div>
 
-      {/* TAB 2: HIEU QUA - duong TSSL cua he thong vs VN-Index theo thoi gian */}
-      {daMoHieuQua && (
-        <div className={tab === "hieuQua" ? "" : "hidden"}>
-          <HieuQuaDauTu />
-        </div>
-      )}
-
-      {/* TAB 3: SO SANH TUNG MA voi VN-Index cung ky (theo bo loc o tab Lenh dang mo) */}
       <div className={tab === "tungMa" ? "" : "hidden"}>
         {dangLoc && (
           <p className="text-xs mb-2" style={{ color: MUTED }}>
