@@ -118,7 +118,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         </p>
       )}
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-3">
+      <div className="grid grid-cols-2 gap-4 mb-3">
         <The
           so={tk.soLenh}
           nhan="Lệnh đã đóng"
@@ -129,20 +129,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
               : undefined
           }
         />
-        <The
-          so={tk.tyLeThangGomKhoaLai == null ? "—" : `${tk.tyLeThangGomKhoaLai.toFixed(0)}%`}
-          nhan="Tỷ lệ thắng"
-          may="ty-le-thang"
-          phu={
-            tk.soKhoaLai > 0
-              ? `gồm ${tk.soKhoaLai} lệnh đang giữ đã khóa lãi (chạm TP2) · chỉ lệnh đã đóng: ${tk.tyLeThang == null ? "—" : `${tk.tyLeThang.toFixed(0)}%`}`
-              : undefined
-          }
-          mau={tk.tyLeThangGomKhoaLai == null ? MUTED : tk.tyLeThangGomKhoaLai >= 50 ? XANH : DO}
-        />
-        <div className="col-span-2 lg:col-span-1">
-          <The so={tk.phienTB == null ? "—" : `${tk.phienTB.toFixed(0)} phiên`} nhan="Thời gian giữ trung bình" may="so-phien" />
-        </div>
+        <The so={tk.phienTB == null ? "—" : `${tk.phienTB.toFixed(0)} phiên`} nhan="Thời gian giữ trung bình" may="so-phien" />
       </div>
       {tk.soLenh > 0 && (
         <div className="grid grid-cols-2 gap-4 mb-3">
