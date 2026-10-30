@@ -134,6 +134,7 @@ const bo = (chiBao, dieuKien, them = {}) => ({ ...taoBoLocChiBao(chiBao, dieuKie
 {
   ok("gia tren / trong / duoi may", khopChiBao({ gia_so_may: 1 }, bo("may", "tren_may")) && khopChiBao({ gia_so_may: 0 }, bo("may", "trong_may")) && khopChiBao({ gia_so_may: -1 }, bo("may", "duoi_may")));
   ok("'trong may' (0) khong bi lan voi thieu du lieu (null)", !khopChiBao({ gia_so_may: null }, bo("may", "trong_may")));
+  ok("gia duoi Tenkan: -1,5% khop, +1% khong, thieu du lieu khong khop; gia tren Tenkan nguoc lai", khopChiBao({ cach_tenkan_pct: -1.5 }, bo("may", "duoi_tenkan")) && !khopChiBao({ cach_tenkan_pct: 1 }, bo("may", "duoi_tenkan")) && !khopChiBao({}, bo("may", "duoi_tenkan")) && khopChiBao({ cach_tenkan_pct: 1 }, bo("may", "tren_tenkan")) && !khopChiBao({ cach_tenkan_pct: -1 }, bo("may", "tren_tenkan")));
   ok("Tenkan duoi Kijun (0) khop, thieu du lieu khong khop", khopChiBao({ tenkan_tren_kijun: 0 }, bo("may", "tenkan_duoi")) && !khopChiBao({}, bo("may", "tenkan_duoi")));
 }
 

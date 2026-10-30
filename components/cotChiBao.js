@@ -205,6 +205,7 @@ export const COT_CHI_BAO_HIEN = {
     },
   },
   cach_kijun_pct: cotSo("cach_kijun_pct", "Giá vs Kijun", pct1, mauDau, "% giá cách Kijun"),
+  cach_tenkan_pct: cotSo("cach_tenkan_pct", "Giá vs Tenkan", pct1, mauDau, "% giá cách Tenkan (âm = giá dưới Tenkan)"),
   boll_pct_b: cotSo("boll_pct_b", "Bollinger %B", (v) => soAn(v, 2), (v) => (v <= 0.05 ? XANH : v >= 0.95 ? DO : undefined), "0 = dải dưới · 0,5 = đường giữa · 1 = dải trên"),
   boll_rong_pct: cotSo("boll_rong_pct", "Độ rộng Bollinger", (v) => `${soAn(v, 1)}%`, null, "(dải trên - dải dưới) / đường giữa"),
   cci20: cotSo("cci20", "CCI (20)", so1So, (v) => (v < -100 ? XANH : v > 100 ? DO : undefined), "Dưới -100 quá bán · trên 100 quá mua"),
