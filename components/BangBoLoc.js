@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, useCallback } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { ArrowUpDown, ArrowUp, ArrowDown, Lock } from "lucide-react";
+import NutXuatBang from "@/components/NutXuatBang";
 import SignalPill from "@/components/SignalPill";
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import NutThamGia from "@/components/NutThamGia";
@@ -476,9 +477,13 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
 
       <BoLocChiBaoKyThuat dsLoc={locChiBao} datDsLoc={datLocChiBao} duLieu={duLieu} luc={chiBaoLuc} />
 
-      <p className="text-xs mb-2" style={{ color: MUTED }}>
-        Hiển thị {daLoc.length} / {duLieu.length} mã · {soDung} mã đứng giá
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <p className="text-xs" style={{ color: MUTED }}>
+          Hiển thị {daLoc.length} / {duLieu.length} mã · {soDung} mã đứng giá
+        </p>
+        {/* cot "Tin hieu" chi xuat cho nguoi da dang nhap (khach chi thay ban lam mo) */}
+        <NutXuatBang cot={dsCot.filter((k) => k !== "tin" || nguoiDung).map((k) => ({ khoa: k, nhan: COT[k].nhan, lay: COT[k].lay }))} hang={daLoc} ctx={ctx} />
+      </div>
 
       {/* BANG */}
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
