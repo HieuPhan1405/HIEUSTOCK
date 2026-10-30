@@ -7,6 +7,9 @@ import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
 import CoHoiHomNay from "@/components/CoHoiHomNay";
 import NhanThiTruong5Phien from "@/components/NhanThiTruong5Phien";
 import XuatAnh from "@/components/XuatAnh";
+import TheThiTruong, { RONG_THE_THI_TRUONG } from "@/components/TheThiTruong";
+import TheTinHieu, { RONG_THE_TIN_HIEU } from "@/components/TheTinHieu";
+import { dungCoHoiHomNay } from "@/lib/coHoiHomNay";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { dungMuaPhucHoi } from "@/lib/muaPhucHoi";
 import { coCanhBaoBanBot } from "@/lib/ghiChuTuDong";
@@ -255,6 +258,10 @@ export default async function TrangTongQuan() {
     ["Smallcap", tinhDoRongNhom(tatCa, "Smallcap")],
   ];
 
+  // Du lieu cho 2 the anh chia se (Anh thi truong / Anh tin hieu)
+  const ngayAnh = capNhat ? new Date(capNhat).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "numeric", month: "numeric", year: "numeric" }) : "";
+  const cohoiAnh = xemTinHieu ? dungCoHoiHomNay({ tatCa, dongLenh, ngay: ngayPhien }) : null;
+
   return (
     <div style={{ color: TEXT }}>
       {/* HERO */}
@@ -303,7 +310,9 @@ export default async function TrangTongQuan() {
             <Link href="/bieu-do" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
               Xem biểu đồ kỹ thuật
             </Link>
-            <XuatAnh nhan="Chụp ảnh thị trường" muc="#chup-thi-truong" tenFile={`CloudStock-thi-truong-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tổng quan thị trường" />
+            {/* Anh chia nho (chup ca trang dai va bi cat o man hinh nho): the co dinh 720px, xem components/TheThiTruong.js / TheTinHieu.js */}
+            <XuatAnh nhan="Ảnh thị trường" the={<TheThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} ngay={ngayAnh} />} rong={RONG_THE_THI_TRUONG} tenFile={`CloudStock-thi-truong-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tổng quan thị trường" />
+            {xemTinHieu && <XuatAnh nhan="Ảnh tín hiệu" the={<TheTinHieu cohoi={cohoiAnh} ngay={ngayAnh} />} rong={RONG_THE_TIN_HIEU} tenFile={`CloudStock-tin-hieu-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tín hiệu trong phiên" />}
           </div>
         </div>
       </div>
