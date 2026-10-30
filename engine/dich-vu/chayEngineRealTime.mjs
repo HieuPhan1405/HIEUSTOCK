@@ -24,6 +24,7 @@ import { taoOpenApiClient } from "../dnse/openApiClient.js";
 import { ketNoiWebSocketDNSE } from "../dnse/wsClient.js";
 import { taiLichSuToanBo, tinhTinHieuToanBo, capNhatNenMoiNhat, chiaNhoMang } from "../loi/quetToanBo.js";
 import { xayDungCSV } from "../loi/csvDauRa.js";
+import { ghepNenHomNay } from "../loi/nenHomNay.js";
 import { tinhTiLeMua } from "../loi/topGia.js";
 import { tinhChecklistBatDayToanBo, xayDungCsvBatDay } from "../loi/checklistBatDay.js";
 import { tinhLichSuDiemBToanBo, xayDungCsvDiemB } from "../loi/lichSuDiemB.js";
@@ -60,6 +61,10 @@ async function main() {
   const { dsMa, vniNen, sanTheoMa, nenTheoMa, loiTheoMa } = await taiLichSuToanBo(client, {
     onTienDo: (chuoi) => console.log(chuoi),
   });
+
+  // Khoi dong giua phien / nghi trua: ghep nen hom nay tu nen phut DNSE de tin hieu khong nam o du lieu hom qua (xem loi/nenHomNay.js)
+  const gh = await ghepNenHomNay(nenTheoMa, vniNen).catch(() => ({ ghep: 0, loi: -1 }));
+  console.log(`Nen hom nay tu nen phut: ghep ${gh.ghep} ma, loi ${gh.loi}.`);
 
   if (loiTheoMa.length > 0) {
     console.log(`\nCANH BAO: ${loiTheoMa.length} ma khong lay duoc lich su luc khoi dong:`);
