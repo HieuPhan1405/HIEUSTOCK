@@ -3,7 +3,8 @@ import { layTatCaTinHieu, layTinHieuTheoMa } from "@/lib/tinHieu";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { layDinhGia, layCauChuyen } from "@/lib/noiDung";
 import { layLichSuGiaoDichMa } from "@/lib/lenhDaDong";
-import { layLichSuGia, layLichPhien } from "@/lib/lichSuGia";
+import { layLichSuGia, layLichPhien, layNenPhutHomNay } from "@/lib/lichSuGia";
+import { layKhoiNgoaiMa } from "@/lib/khoiNgoaiMa";
 import { layPhanTichMa } from "@/lib/phanTichCoBanDb";
 
 // Chan doan toc do (can header x-api-key): vung chay cua ham, vung cua DB (chi lay phan vung trong ten host, KHONG lo mat khau/host day du),
@@ -47,6 +48,11 @@ export async function GET(request) {
     await do1("layLichPhien", () => layLichPhien());
     await do1("layPhanTichMa", () => layPhanTichMa(ma));
     await do1("layLichSuGiaVNINDEX50", () => layLichSuGia("VNINDEX", 50));
+    await do1("layLichSuGiaMacDinh", () => layLichSuGia(ma));
+    await do1("layLichSuGia400", () => layLichSuGia(ma, 400));
+    await do1("layNenPhutHomNay", () => layNenPhutHomNay(ma));
+    await do1("layKhoiNgoaiMa", () => layKhoiNgoaiMa(ma));
+    await do1("songSong6Ma_400", () => Promise.all(["SD6", "C32", "BTS", "HOM", "THG", "DHA"].map((m) => layLichSuGia(m, 400))));
     return Response.json({ trangThai: "ok", ma, vungHam: process.env.VERCEL_REGION || null, ms: buoc });
   }
 
