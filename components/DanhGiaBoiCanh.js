@@ -3,6 +3,7 @@
 import { ExternalLink } from "lucide-react";
 import { Khoi, The, Thanh, TEXT, MUTED, XANH, DO, VANG, sans, dau } from "@/components/DanhGiaChung";
 import { fmt } from "@/components/dungChung";
+import BangNhietMuaVu from "@/components/BangNhietMuaVu";
 
 const GOC = { Leading: "Dẫn dắt", Improving: "Cải thiện", Weakening: "Yếu dần", Lagging: "Tụt hậu" };
 const ngayGio = (iso) => (iso ? new Date(iso).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }) : "");
@@ -16,7 +17,13 @@ export function trangThaiVni(v) {
 }
 
 export default function DanhGiaBoiCanh({ boiCanh, kq, gocNganh = {} }) {
-  if (!boiCanh) return <p className="text-sm mb-6" style={{ color: MUTED }}>Đang tải bối cảnh thị trường…</p>;
+  if (!boiCanh)
+    return (
+      <>
+        <p className="text-sm mb-6" style={{ color: MUTED }}>Đang tải bối cảnh thị trường…</p>
+        <BangNhietMuaVu nganhDanhMuc={kq?.pb?.nganh ?? []} />
+      </>
+    );
   const v = boiCanh.vni;
   const tt = trangThaiVni(v);
   const nganh = (kq?.pb?.nganh ?? []).filter((g) => g.ten !== "Khác");
@@ -43,6 +50,8 @@ export default function DanhGiaBoiCanh({ boiCanh, kq, gocNganh = {} }) {
         <The nhan="Ở ngành yếu dần / tụt hậu" mau={yeu > 0.5 ? VANG : TEXT}>{nganh.length ? `${Math.round(yeu * 100)}%` : "—"}</The>
       </div>
       {tt && <p className="text-sm mb-6" style={sans}><b>Thị trường: </b>{tt.noiDung}</p>}
+
+      <BangNhietMuaVu nganhDanhMuc={kq?.pb?.nganh ?? []} />
 
       <div className="grid gap-4 lg:grid-cols-2 mb-6">
         <Khoi tieuDe="Ngành trong danh mục" className="" phu="Tỷ trọng theo ngành và vị trí của ngành trên RRG (sức mạnh tương đối so với VN-Index).">
