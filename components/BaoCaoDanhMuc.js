@@ -56,8 +56,8 @@ const Bang = ({ cot, hang, phai = [] }) => (
   </table>
 );
 
-export default function BaoCaoDanhMuc({ mo, dong, kq, sau, hanhDongChon = [], du, gocNganh = {}, laThanhVien, baoCao = {}, setBaoCao, ngay, nhatKy = [], tenDanhMuc = "" }) {
-  const [tuyChon, setTuyChon] = useState({ anTien: false, keHoach: true, nhatKy: true, boiCanh: true });
+export default function BaoCaoDanhMuc({ mo, dong, kq, sau, hanhDongChon = [], du, gocNganh = {}, laThanhVien, baoCao = {}, setBaoCao, ngay, nhatKy = [], tenDanhMuc = "", goiY = null, goiYDu = null }) {
+  const [tuyChon, setTuyChon] = useState({ anTien: false, keHoach: true, goiY: true, nhatKy: true, boiCanh: true });
   useEffect(() => {
     if (!mo) return;
     const cu = document.body.style.overflow;
@@ -113,7 +113,7 @@ export default function BaoCaoDanhMuc({ mo, dong, kq, sau, hanhDongChon = [], du
             <div className="flex flex-wrap gap-4 mt-2 text-xs">
               {[
                 ["anTien", "Ẩn số tiền (chỉ hiện %)"],
-                ...(laThanhVien ? [["keHoach", "Gồm kế hoạch xử lý"]] : []),
+                ...(laThanhVien ? [["keHoach", "Gồm kế hoạch xử lý"], ["goiY", "Gồm mã gợi ý mua"]] : []),
                 ["nhatKy", "Gồm nhật ký giao dịch"],
                 ["boiCanh", "Gồm bối cảnh thị trường"],
               ].map(([k, t]) => (
@@ -291,6 +291,25 @@ export default function BaoCaoDanhMuc({ mo, dong, kq, sau, hanhDongChon = [], du
               phai={an ? [3, 4] : [3, 4, 5]}
               hang={[...nhatKy].sort((a, b) => String(b.ngay).localeCompare(String(a.ngay))).slice(0, 25).map((g) => [ngayVN(g.ngay), <b key="m">{g.ma}</b>, g.loai === "mua" ? "Mua" : "Bán", ...(an ? [] : [soVN(g.kl)]), g.gia != null ? fmt(g.gia) : "—", g.laiChotPct != null ? dau(g.laiChotPct) : ""])}
             />
+          </Muc>
+        )}
+
+        {laThanhVien && tuyChon.goiY && goiY && goiYDu && (
+          <Muc so={muc()} tieuDe="Mã gợi ý mua (bộ điều kiện đã kiểm chứng)">
+            <p className="text-[11.5px] mb-1.5">
+              Điều kiện: hệ thống báo MUA, giá trong vùng mua (≤ mốc +1%), không cao hơn SMA50 quá 3%, RSI14 ≤ 59, VN-Index 20 phiên tăng ≤ 5% (hiện {goiYDu.vni20 != null ? dau(goiYDu.vni20) : "—"}). Tối đa 6 mã, mỗi mã 1/6 tài sản, cắt lỗ ≤ 6%. Danh mục có {goiY.soMaHienCo} mã → còn {goiY.conCho} chỗ.
+            </p>
+            {goiY.goiY.filter((x) => x.trongCho).length === 0 ? (
+              <p className="text-[12px]">Chưa có mã nào đạt đủ điều kiện — giữ tiền mặt, chờ điểm mua, không mua đuổi.</p>
+            ) : (
+              <Bang
+                cot={["Mã", "Ngành", "Vùng mua", "Cắt lỗ", "TP1", ...(an ? [] : ["Số lượng", "Tiền"])]}
+                phai={an ? [2, 3, 4] : [2, 3, 4, 5, 6]}
+                hang={goiY.goiY.filter((x) => x.trongCho).map((x) => [<b key="m">{x.ma}</b>, x.nganh, `${fmt(x.moc)}–${fmt(x.moc * 1.01)}`, `${fmt(x.catLo)} (−${p1(x.catLoPct)}%)`, x.tp1 ? fmt(x.tp1) : "—", ...(an ? [] : [x.kl ? soVN(x.kl) : "—", x.kl ? tien(x.tien) : "—"])])}
+              />
+            )}
+            {goiYDu.cho?.length > 0 && <p className="text-[11px] mt-1.5" style={{ color: "#5A5A6E" }}>Đang chờ điểm mua: {goiYDu.cho.slice(0, 8).map((x) => `${x.ma} (ra MUA nếu đóng cửa ${fmt(x.muaTu)}–${fmt(x.muaDen)})`).join(", ")}.</p>}
+            <p className="text-[10.5px] mt-1.5" style={{ color: "#5A5A6E" }}>Kiểm chứng 2014–10/2026 (6 mã, chia đều): tích lũy ×3,61 so với VN-Index ×3,45; 2022 −7,7% (VN-Index −32,8%), 2018 −22,8% (−9,3%), 2017 +17,3% (+48%). Ngưỡng chọn sau khi xem dữ liệu đến 2023; chỉ 2024–2026 là kiểm tra thật.</p>
           </Muc>
         )}
 

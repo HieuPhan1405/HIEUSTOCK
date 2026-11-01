@@ -14,6 +14,10 @@ const HEADER_BAO_MAT = [
 const nextConfig = {
   // Khong khoe "X-Powered-By: Next.js" (giup ke xet web kho biet dung cong nghe gi).
   poweredByHeader: false,
+  // Trang "Danh muc goi y" da gop vao /danh-gia-danh-muc (tab "Goi y mua", 02/11/2026) - link cu chuyen sang trang moi.
+  async redirects() {
+    return [{ source: "/danh-muc-goi-y", destination: "/danh-gia-danh-muc", permanent: true }];
+  },
   async headers() {
     return [
       { source: "/:path*", headers: HEADER_BAO_MAT },

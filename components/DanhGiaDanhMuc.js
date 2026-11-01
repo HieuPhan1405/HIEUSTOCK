@@ -20,6 +20,8 @@ import DanhGiaDoanhNghiep from "@/components/DanhGiaDoanhNghiep";
 import DanhGiaBoiCanh from "@/components/DanhGiaBoiCanh";
 import DanhGiaNhatKy, { homNayVN } from "@/components/DanhGiaNhatKy";
 import BaoCaoDanhMuc from "@/components/BaoCaoDanhMuc";
+import DanhGiaGoiYMua from "@/components/DanhGiaGoiYMua";
+import { goiYTheoDanhMuc } from "@/lib/goiYMua";
 import { Khoi, The, Thanh, NhanXet, NhanTrangThai, VIEN, NEN_CARD, TEXT, MUTED, PRIMARY, XANH, DO, VANG, MAU_MUC, sans, soVN, p1, tien, mauLai } from "@/components/DanhGiaChung";
 
 const KHOA_LUU = "cs_danh_gia_danh_muc_v1";
@@ -47,6 +49,7 @@ const TABS = [
   ["rui_ro", "Rủi ro"],
   ["doanh_nghiep", "Doanh nghiệp"],
   ["boi_canh", "Bối cảnh"],
+  ["goi_y", "Gợi ý mua"],
   ["nhat_ky", "Nhật ký"],
   ["chi_tiet", "Chi tiết"],
 ];
@@ -147,6 +150,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
   const [tab, setTab] = useState("xu_ly");
   const [chonKH, setChonKH] = useState({});
   const [moBaoCao, setMoBaoCao] = useState(false);
+  const [goiYDu, setGoiYDu] = useState({ du: null, dangTai: true, loi: "" });
   const daLuuRef = useRef("");
   const henLuuRef = useRef(null);
 
@@ -306,6 +310,24 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
   }, [khoaMa]);
   const du = lichSu.khoa === khoaMa ? lichSu.du : null;
 
+  // MA GOI Y MUA (bo dieu kien da backtest, lib/goiYMua.js): 1 lan khi mo trang; thanh vien nhan danh sach, khach chi nhan so luong
+  useEffect(() => {
+    let huy = false;
+    (async () => {
+      try {
+        const r = await fetch("/api/goi-y-mua", { cache: "no-store" });
+        const j = await r.json();
+        if (!r.ok) throw new Error(j.loi || "Lỗi tải dữ liệu");
+        if (!huy) setGoiYDu({ du: j, dangTai: false, loi: "" });
+      } catch (e) {
+        if (!huy) setGoiYDu({ du: null, dangTai: false, loi: e.message || "Lỗi tải dữ liệu" });
+      }
+    })();
+    return () => {
+      huy = true;
+    };
+  }, []);
+
   // Ghep du lieu he thong voi du lieu tinh tu nen (ma ngoai danh sach web quet van danh gia duoc)
   const theoMa = useMemo(() => {
     const ra = { ...duLieu };
@@ -339,6 +361,14 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
     const kq2 = danhGiaToanBo({ vitri: ad.vitri, theoMa, du, von: { ...vonOpts, tienMat: ad.tienMat, no: ad.no }, gocNganh, phongCach, coTinHieu: laThanhVien });
     return kq2 ? { kq: kq2, ad } : null;
   }, [kq, hanhDongChon, theoMa, du, vonOpts, gocNganh, phongCach, laThanhVien]);
+  // goi y theo DANH MUC KHACH: bo ma dang cam, so cho con lai (toi da 6), trung nganh, so luong theo 1/6 tai san va tien mat (danh muc rong = khach moi: tai san = tien mat)
+  const goiY = useMemo(() => {
+    const d = goiYDu.du;
+    if (!d || d.khoa) return null;
+    const dangCam = kq ? kq.hangMa.map((h) => ({ ma: h.ma, nganh: h.nganh })) : vitri.map((v) => ({ ma: v.ma, nganh: theoMa[v.ma]?.nganh }));
+    const nav = kq ? kq.pb.taiSan.nav : (vonOpts.tienMat ?? 0) - (vonOpts.no ?? 0);
+    return goiYTheoDanhMuc((d.mua ?? []).filter((x) => x.dat), { dangCam, taiSan: { tienMat: vonOpts.tienMat, no: vonOpts.no, nav } });
+  }, [goiYDu.du, kq, vitri, theoMa, vonOpts]);
   const nxThe = useMemo(() => [...nhanXetRuiRo(rr, pb), ...(kq?.dn?.nhanXet ?? [])].sort((a, b) => a.muc - b.muc || a.uuTien - b.uuTien), [rr, pb, kq]);
   const theoMaRR = useMemo(() => Object.fromEntries((rr?.ma ?? []).map((x) => [x.ma, x])), [rr]);
   const thanhKhoanMa = useMemo(() => Object.fromEntries((rr?.thanhKhoan?.ds ?? []).map((x) => [x.ma, x.soPhien])), [rr]);
@@ -402,6 +432,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
   const oStyle = { borderColor: VIEN, background: "transparent", color: TEXT, ...sans };
   const nutPhu = "inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border font-semibold";
   const soCanXuLy = kq ? Object.values(kq.nhan).filter((n) => n.muc >= 2).length : 0;
+  const soGoiY = goiY ? goiY.goiY.filter((x) => x.trongCho).length : goiYDu.du?.khoa ? goiYDu.du.soDat ?? 0 : 0;
 
   return (
     <div>
@@ -484,7 +515,12 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
         </details>
       </Khoi>
 
-      {!pb && <p className="text-sm mb-6" style={{ color: MUTED }}>Nhập ít nhất một mã và số lượng (hoặc bấm “Thử với danh mục mẫu”) để xem đánh giá.</p>}
+      {!pb && (
+        <>
+          <p className="text-sm mb-4" style={{ color: MUTED }}>Nhập ít nhất một mã và số lượng (hoặc bấm “Thử với danh mục mẫu”) để xem đánh giá. Khách chưa có mã nào: nhập tiền mặt ở “Vốn & margin” để xem kế hoạch mua bên dưới.</p>
+          <DanhGiaGoiYMua du={goiYDu.du} dangTai={goiYDu.dangTai} loi={goiYDu.loi} goiY={goiY} laThanhVien={laThanhVien} phongCach={phongCach} onGhiNhatKy={daLamTheoKeHoach} />
+        </>
+      )}
 
       {pb && (
         <>
@@ -553,12 +589,14 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
               <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className="px-3.5 py-2 text-sm whitespace-nowrap -mb-px border-b-2" style={{ ...sans, fontWeight: tab === k ? 800 : 600, borderColor: tab === k ? PRIMARY : "transparent", color: tab === k ? TEXT : MUTED }}>
                 {t}
                 {k === "xu_ly" && soCanXuLy > 0 && <span className="ml-1.5 text-[11px] px-1.5 rounded-full" style={{ background: DO, color: "#fff" }}>{soCanXuLy}</span>}
+                {k === "goi_y" && soGoiY > 0 && <span className="ml-1.5 text-[11px] px-1.5 rounded-full" style={{ background: XANH, color: "#fff" }}>{soGoiY}</span>}
               </button>
             ))}
           </div>
 
           {tab === "xu_ly" && <DanhGiaXuLy kq={kq} keHoach={keHoach} chon={chonKH} setChon={setChonKH} sau={sau} laThanhVien={laThanhVien} lichSuNhan={lichSuNhan} coLuu={!!dm.id} onGhiNhatKy={daLamTheoKeHoach} theoMa={theoMa} />}
           {tab === "rui_ro" && <PhanRuiRo rr={rr} pb={pb} />}
+          {tab === "goi_y" && <DanhGiaGoiYMua du={goiYDu.du} dangTai={goiYDu.dangTai} loi={goiYDu.loi} goiY={goiY} laThanhVien={laThanhVien} phongCach={phongCach} onGhiNhatKy={daLamTheoKeHoach} />}
           {tab === "doanh_nghiep" && <DanhGiaDoanhNghiep kq={kq} coBan={du?.coBan ?? {}} thiTruong={du?.thiTruong} />}
           {tab === "boi_canh" && <DanhGiaBoiCanh boiCanh={du?.boiCanh} kq={kq} gocNganh={gocNganh} />}
           {tab === "nhat_ky" && <DanhGiaNhatKy nhatKy={nhatKy} phiPct={soNhap(von.phi) ?? 0} catLo={pc.catLo} giaTheoMa={giaTheoMa} onThem={themLenh} onXoa={(id) => setNhatKy((n) => n.filter((g) => g.id !== id))} tenDanhMuc={dm.ten} />}
@@ -630,7 +668,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
             </>
           )}
 
-          {!laThanhVien && tab !== "xu_ly" && (
+          {!laThanhVien && tab !== "xu_ly" && tab !== "goi_y" && (
             <div className="rounded-2xl border p-5 mb-6 flex flex-wrap items-center justify-between gap-4" style={{ borderColor: PRIMARY, background: "color-mix(in srgb, #6C5CE7 10%, var(--card))" }}>
               <div className="max-w-xl">
                 <p className="text-base mb-1" style={{ ...sans, fontWeight: 800 }}>Nên giữ hay bán từng mã? Có nên trung bình giá?</p>
@@ -640,7 +678,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
             </div>
           )}
 
-          <BaoCaoDanhMuc mo={moBaoCao} dong={() => setMoBaoCao(false)} kq={kq} sau={sau} hanhDongChon={hanhDongChon} du={du} gocNganh={gocNganh} laThanhVien={laThanhVien} baoCao={baoCao} setBaoCao={setBaoCao} ngay={ngay} nhatKy={nhatKy} tenDanhMuc={dm.ten} />
+          <BaoCaoDanhMuc mo={moBaoCao} dong={() => setMoBaoCao(false)} kq={kq} sau={sau} hanhDongChon={hanhDongChon} du={du} gocNganh={gocNganh} laThanhVien={laThanhVien} baoCao={baoCao} setBaoCao={setBaoCao} ngay={ngay} nhatKy={nhatKy} tenDanhMuc={dm.ten} goiY={goiY} goiYDu={goiYDu.du} />
         </>
       )}
 
