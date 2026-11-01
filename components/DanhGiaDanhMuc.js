@@ -326,10 +326,12 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
   const rr = kq?.rr ?? null;
   const suc = kq?.suc ?? null;
   const pc = PHONG_CACH[phongCach];
-  const keHoach = useMemo(
-    () => (kq ? goiYXuLy({ hang: kq.pb.hang, nhanTheoMa: kq.nhan, phongCach, taiSan: kq.pb.taiSan, margin: kq.pb.margin, nguong: kq.pb.nguong, cbTheoMa: du?.coBan ?? {}, rTheoMa: theoMa, coTinHieu: laThanhVien }) : null),
-    [kq, phongCach, du, theoMa, laThanhVien]
-  );
+  const keHoach = useMemo(() => {
+    if (!kq) return null;
+    const betaTheoMa = Object.fromEntries((kq.rr?.ma ?? []).map((x) => [x.ma, x.beta]));
+    const soPhienTheoMa = Object.fromEntries((kq.rr?.thanhKhoan?.ds ?? []).map((x) => [x.ma, x.soPhien]));
+    return goiYXuLy({ hang: kq.pb.hang, nhanTheoMa: kq.nhan, phongCach, taiSan: kq.pb.taiSan, margin: kq.pb.margin, nguong: kq.pb.nguong, cbTheoMa: du?.coBan ?? {}, rTheoMa: theoMa, lsTheoMa: du?.ma ?? {}, betaTheoMa, soPhienTheoMa, coTinHieu: laThanhVien });
+  }, [kq, phongCach, du, theoMa, laThanhVien]);
   const hanhDongChon = useMemo(() => (keHoach?.hanhDong ?? []).map((a) => ({ ...a, ...(chonKH[a.id] ?? {}) })).filter((a) => a.chon), [keHoach, chonKH]);
   const sau = useMemo(() => {
     if (!kq || !hanhDongChon.length) return null;
@@ -555,7 +557,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
             ))}
           </div>
 
-          {tab === "xu_ly" && <DanhGiaXuLy kq={kq} keHoach={keHoach} chon={chonKH} setChon={setChonKH} sau={sau} laThanhVien={laThanhVien} lichSuNhan={lichSuNhan} coLuu={!!dm.id} onGhiNhatKy={daLamTheoKeHoach} />}
+          {tab === "xu_ly" && <DanhGiaXuLy kq={kq} keHoach={keHoach} chon={chonKH} setChon={setChonKH} sau={sau} laThanhVien={laThanhVien} lichSuNhan={lichSuNhan} coLuu={!!dm.id} onGhiNhatKy={daLamTheoKeHoach} theoMa={theoMa} />}
           {tab === "rui_ro" && <PhanRuiRo rr={rr} pb={pb} />}
           {tab === "doanh_nghiep" && <DanhGiaDoanhNghiep kq={kq} coBan={du?.coBan ?? {}} thiTruong={du?.thiTruong} />}
           {tab === "boi_canh" && <DanhGiaBoiCanh boiCanh={du?.boiCanh} kq={kq} gocNganh={gocNganh} />}

@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Lock, NotebookPen, Bell } from "lucide-react";
 import { NHAN } from "@/lib/phongCachDauTu";
-import { giaVonSauMua, soCpDeVeGiaVon } from "@/lib/xuLyDanhMuc";
+import { giaVonSauMua, soCpDeVeGiaVon, maCungNganhKhoe, trungBinhGiaCoDieuKien } from "@/lib/xuLyDanhMuc";
 import { soNguyenNhap, soNhap } from "@/lib/danhGiaDanhMuc";
 import { fmt } from "@/components/dungChung";
 import TaiKhoanNut from "@/components/TaiKhoanNut";
@@ -176,7 +176,151 @@ export function MayTinh({ hangMa = [], nhan = {}, tongGiaTri = 0, laThanhVien })
   );
 }
 
-export default function DanhGiaXuLy({ kq, keHoach, chon, setChon, sau, laThanhVien, lichSuNhan = [], coLuu, onGhiNhatKy }) {
+// VI THE LON can thoat: chon Ban het ngay / Thoat 3 buoc + bang so sanh 3 cach (ban het, tung phan, giu nguyen) + ma cung nganh dang khoe de hoan doi
+function ThoatTungPhan({ a, cachThoat, setCach, maKhoe = [], nganh, onGhiNhatKy }) {
+  const tp = a.tungPhan;
+  const tungPhan = cachThoat === "tung_phan";
+  const o = (v, chu) => (v == null ? "—" : <span style={{ color: mauLai(v) }}>{chu ?? tien(v)}</span>);
+  return (
+    <div className="col-span-2 sm:col-span-3 rounded-lg border p-3 mt-1 text-sm" style={{ borderColor: "var(--vien-nhe)", background: "color-mix(in srgb, var(--vien-nhe) 35%, transparent)" }}>
+      <div className="flex flex-wrap items-center gap-2 mb-2.5">
+        <span className="text-xs" style={{ color: MUTED }}>Vị thế lớn — cách thoát:</span>
+        <div className="inline-flex rounded-lg border overflow-hidden" style={{ borderColor: VIEN }} role="radiogroup" aria-label={`Cách thoát ${a.ma}`}>
+          {[
+            ["ban_het", "Bán hết ngay"],
+            ["tung_phan", "Thoát 3 bước"],
+          ].map(([k, t]) => (
+            <button key={k} type="button" role="radio" aria-checked={cachThoat === k} onClick={() => setCach(k)} className="px-3 py-1 text-xs" style={{ fontWeight: 700, background: cachThoat === k ? PRIMARY : "transparent", color: cachThoat === k ? "#fff" : TEXT }}>
+              {t}
+            </button>
+          ))}
+        </div>
+      </div>
+      {tungPhan && (
+        <ol className="grid gap-1.5 mb-3">
+          {tp.buoc.map((b, i) => (
+            <li key={i} className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <b className="text-xs px-1.5 py-0.5 rounded" style={{ background: "var(--vien-nhe)" }}>B{i + 1}</b>
+              <span>
+                {b.moTa}: <b>{soVN(b.kl)} cp</b>
+                {i === 0 ? <> × {fmt(b.gia)} ≈ {tien(b.kl * b.gia * 1000)}{tp.banNgay.laiChot != null ? <> — chốt {o(tp.banNgay.laiChot)}</> : null}</> : null}
+              </span>
+              {i === 0 && onGhiNhatKy && (
+                <button type="button" onClick={() => onGhiNhatKy({ ma: a.ma, loai: "ban", kl: b.kl, gia: b.gia })} className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
+                  <NotebookPen size={11} /> Đã làm
+                </button>
+              )}
+            </li>
+          ))}
+          <li className="text-xs" style={{ color: DO }}>
+            Mức cắt cứng cho {soVN(tp.klCon)} cp còn lại: giá đóng cửa dưới <b>{fmt(tp.catCung)}</b> thì bán hết, không chờ hồi nữa.
+          </li>
+        </ol>
+      )}
+      <div className="overflow-x-auto">
+        <table className="w-full text-xs" style={sans}>
+          <thead>
+            <tr className="text-left" style={{ color: MUTED }}>
+              <th className="py-1 pr-2 font-normal">So sánh</th>
+              <th className="py-1 px-2 font-normal text-right">Chốt ngay</th>
+              <th className="py-1 px-2 font-normal text-right">Nếu giá hồi lên mức chờ</th>
+              <th className="py-1 pl-2 font-normal text-right">Nếu giá giảm tiếp</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="border-t" style={{ borderColor: "var(--vien-nhe)", fontWeight: cachThoat === "ban_het" ? 700 : 400 }}>
+              <td className="py-1.5 pr-2">Bán hết ngay</td>
+              <td className="py-1.5 px-2 text-right">{tp.banHet.laiChot != null ? o(tp.banHet.laiChot) : "100% vị thế"}</td>
+              <td className="py-1.5 px-2 text-right" style={{ color: MUTED }}>không hưởng</td>
+              <td className="py-1.5 pl-2 text-right" style={{ color: MUTED }}>không lỗ thêm</td>
+            </tr>
+            <tr className="border-t" style={{ borderColor: "var(--vien-nhe)", fontWeight: tungPhan ? 700 : 400 }}>
+              <td className="py-1.5 pr-2">Thoát 3 bước</td>
+              <td className="py-1.5 px-2 text-right">{tp.banNgay.laiChot != null ? o(tp.banNgay.laiChot) : `${soVN(tp.banNgay.kl)} cp`}</td>
+              <td className="py-1.5 px-2 text-right">{o(tp.soVoiBanHet.neuHoi, `đỡ ${tien(tp.soVoiBanHet.neuHoi)}`)}</td>
+              <td className="py-1.5 pl-2 text-right">{o(tp.soVoiBanHet.neuThung, `lỗ thêm tối đa ${tien(-tp.soVoiBanHet.neuThung)}`)}</td>
+            </tr>
+            <tr className="border-t" style={{ borderColor: "var(--vien-nhe)" }}>
+              <td className="py-1.5 pr-2">Giữ nguyên</td>
+              <td className="py-1.5 px-2 text-right" style={{ color: MUTED }}>0</td>
+              <td className="py-1.5 px-2 text-right" style={{ color: MUTED }}>đỡ nhiều hơn</td>
+              <td className="py-1.5 pl-2 text-right">{tp.giuNguyen ? o(tp.giuNguyen.vni10, `VN-Index −10% → lỗ thêm ~${tien(-tp.giuNguyen.vni10)}, không giới hạn`) : <span style={{ color: DO }}>không giới hạn</span>}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-[11px] mt-2" style={{ color: MUTED }}>
+        “Đỡ / lỗ thêm” tính so với bán hết ngay ở giá hiện tại. Thoát từng phần không chắc giảm được lỗ: nó đổi việc chốt cả vị thế ở giá hôm nay lấy cơ hội bán phần sau ở giá hồi, đổi lại phần còn lại có thể lỗ thêm (đã chặn bằng mức cắt cứng). Lỗ đã có từ lúc giá
+        giảm — bán hay giữ không làm nó mất đi, và ở Việt Nam bán lỗ cũng không được giảm thuế. Câu hỏi đúng: nếu hôm nay đang cầm tiền, bạn có mua mã này với tỷ trọng này không?
+      </p>
+      {maKhoe.length > 0 && (
+        <p className="text-xs mt-2">
+          <b>Muốn giữ tỷ trọng ngành {nganh}?</b> Hoán đổi sang mã cùng ngành hệ thống đang khỏe thay vì ôm mã yếu:{" "}
+          {maKhoe.map((m, i) => (
+            <span key={m.ma}>
+              {i > 0 && ", "}
+              <Link href={`/ma/${m.ma}`} className="font-bold hover:underline">{m.ma}</Link>
+              <span style={{ color: MUTED }}> ({m.tin === "MUA" ? "MUA" : "nắm giữ"}{m.diem != null ? `, điểm ${p1(m.diem)}` : ""})</span>
+            </span>
+          ))}
+          .
+        </p>
+      )}
+    </div>
+  );
+}
+
+// TRUNG BINH GIA CO DIEU KIEN (ma dang lo, thanh vien): chi mua them o diem mua cua he thong; so luong theo rui ro; ban khi ve hoa von
+function TrungBinhGia({ h, r, taiSan, tong, onGhiNhatKy }) {
+  const t = trungBinhGiaCoDieuKien(h, r ?? {}, { tienMat: taiSan.tienMat, no: taiSan.no, nav: taiSan.nav, tong });
+  if (!t) return null;
+  return (
+    <div className="col-span-2 sm:col-span-3 rounded-lg border p-3 mt-1 text-sm" style={{ borderColor: "var(--vien-nhe)" }}>
+      <div className="text-xs mb-1.5" style={{ fontWeight: 700 }}>Phương án trung bình giá (chỉ khi có điểm mua của hệ thống)</div>
+      {t.trangThai === "chua_co" ? (
+        <p className="text-xs" style={{ color: MUTED }}>
+          {h.ma} chưa có điểm mua nào của hệ thống (MUA, điểm B mua phục hồi, hay vùng mua) — <b style={{ color: TEXT }}>không mua thêm lúc này</b>: xu hướng đang gãy, mua thêm là bình quân giá khi giá còn có thể giảm tiếp. Hiện giá cần hồi{" "}
+          {p1(t.hoiCanTruoc)}% mới về giá vốn. Khi mã có điểm mua, phương án sẽ hiện ở đây (danh mục đã lưu vào tài khoản sẽ được báo về máy khi hệ thống báo MUA lại).
+        </p>
+      ) : (
+        <>
+          <p className="text-xs mb-1.5">
+            <span style={{ color: XANH, fontWeight: 700 }}>● {t.moTa}.</span>
+            {t.choXacNhan ? " Chỉ mua khi phiên đó thật sự đóng cửa trong vùng này (hệ thống ra MUA)." : ""}
+          </p>
+          {t.kl > 0 ? (
+            <ul className="grid gap-1 text-xs">
+              <li>
+                Mua thêm <b>{soVN(t.kl)} cp</b> ở ~{fmt(t.giaMua)} ≈ {tien(t.tien)} → giá vốn <b>{fmt(h.giaVon)} → {fmt(t.gvMoi)}</b>. Giá chỉ cần hồi <b>{p1(t.hoiCanSau)}%</b> từ giá mua để hòa vốn (thay vì {p1(t.hoiCanTruoc)}%).
+              </li>
+              <li>
+                Bán toàn bộ khi giá về {fmt(t.gvMoi)}. Cắt phần mua thêm nếu đóng cửa dưới <b>{fmt(t.catLo)}</b>: mất thêm {tien(t.loNeuCatLo)} (≈1% tài sản ròng) — và vị thế cũ cũng giảm thêm {tien(t.loViTheCuNeuCatLo)} tới mức đó.
+              </li>
+              {t.tyTrongSau != null && <li style={{ color: t.tyTrongSau > 0.35 ? DO : MUTED }}>Tỷ trọng mã sau khi mua: {p1(t.tyTrongSau * 100)}%{t.tyTrongSau > 0.35 ? " — rất tập trung, cân nhắc bán bớt phần vượt trước" : ""}.</li>}
+              {onGhiNhatKy && (
+                <li>
+                  <button type="button" onClick={() => onGhiNhatKy({ ma: h.ma, loai: "mua", kl: t.kl, gia: t.giaMua })} className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
+                    <NotebookPen size={11} /> Đã mua thêm
+                  </button>
+                </li>
+              )}
+            </ul>
+          ) : (
+            <p className="text-xs" style={{ color: MUTED }}>
+              {t.thieuTien === "margin" ? "Đang dùng margin — không trung bình giá bằng tiền vay; giảm nợ trước." : "Chưa có tiền mặt để mua thêm (nhập ở “Vốn & margin”), hoặc dùng máy tính bên dưới để thử số lượng."}
+            </p>
+          )}
+        </>
+      )}
+      <p className="text-[11px] mt-2" style={{ color: MUTED }}>
+        Kiểm chứng của web: mua theo tín hiệu MUA thông thường (vào lệnh thực tế) chỉ lãi bình quân ~0,3%/lệnh, từ giữa 2022 quanh 0; điểm B có khối lượng bán tháo ≥2 lần bình quân lãi 10 phiên +4,1%, 67% lệnh có lãi (329 lệnh từ giữa 2022). Trung bình giá
+        làm giá vốn thấp hơn nhưng cũng làm vị thế lớn hơn — chỉ đáng làm khi có điểm mua, có cắt lỗ cho phần mua thêm và không dùng margin.
+      </p>
+    </div>
+  );
+}
+
+export default function DanhGiaXuLy({ kq, keHoach, chon, setChon, sau, laThanhVien, lichSuNhan = [], coLuu, onGhiNhatKy, theoMa = {} }) {
   const pc = kq.phongCach;
   const dsNhan = kq.hangMa.filter((h) => kq.nhan[h.ma]).sort((a, b) => (kq.nhan[b.ma].muc - kq.nhan[a.ma].muc) || (b.tyTrong ?? 0) - (a.tyTrong ?? 0));
   const canXuLy = dsNhan.filter((h) => kq.nhan[h.ma].muc >= 2);
@@ -252,6 +396,8 @@ export default function DanhGiaXuLy({ kq, keHoach, chon, setChon, sau, laThanhVi
               const o = chon[a.id] ?? {};
               const dangChon = o.chon ?? a.chon;
               const kl = o.kl ?? a.kl;
+              const cachThoat = o.cachThoat ?? a.cachThoat;
+              const tungPhan = a.tungPhan && cachThoat === "tung_phan";
               return (
                 <li key={a.id} className="rounded-xl border p-3 grid gap-x-2.5 gap-y-2 grid-cols-[auto_1fr] sm:grid-cols-[auto_1fr_auto] items-start" style={{ borderColor: dangChon ? PRIMARY : VIEN, ...sans }}>
                   <input type="checkbox" checked={!!dangChon} onChange={(e) => setChon((c) => ({ ...c, [a.id]: { ...c[a.id], chon: e.target.checked } }))} className="mt-1" aria-label={`Đưa vào kế hoạch: ${a.tieuDe}`} />
@@ -266,6 +412,10 @@ export default function DanhGiaXuLy({ kq, keHoach, chon, setChon, sau, laThanhVi
                   <div className="col-span-2 sm:col-span-1 flex flex-wrap items-center gap-2 sm:justify-end text-sm">
                     {a.loai === "tra_no" ? (
                       <b>{tien(a.giaTri)}</b>
+                    ) : tungPhan ? (
+                      <span className="text-xs" style={{ color: MUTED }}>
+                        Bán ngay <b style={{ color: TEXT }}>{soVN(a.tungPhan.buoc[0].kl)}</b>/{soVN(a.kl)} cp ≈ <b style={{ color: TEXT }}>{tien(a.tungPhan.banNgay.tien)}</b>
+                      </span>
                     ) : (
                       <>
                         <input value={kl} onChange={(e) => setChon((c) => ({ ...c, [a.id]: { ...c[a.id], kl: soNguyenNhap(e.target.value) ?? 0 } }))} inputMode="numeric" className="px-2 py-1 rounded-lg border w-24 text-right" style={{ borderColor: VIEN, background: "transparent", color: TEXT }} aria-label="Số lượng" />
@@ -278,6 +428,20 @@ export default function DanhGiaXuLy({ kq, keHoach, chon, setChon, sau, laThanhVi
                       </>
                     )}
                   </div>
+                  {a.tungPhan && (
+                    <ThoatTungPhan
+                      a={a}
+                      cachThoat={cachThoat}
+                      setCach={(k) => setChon((c) => ({ ...c, [a.id]: { ...c[a.id], cachThoat: k } }))}
+                      maKhoe={maCungNganhKhoe(a.ma, theoMa, { boQua: kq.hangMa.map((h) => h.ma) })}
+                      nganh={theoMa[a.ma]?.nganh}
+                      onGhiNhatKy={onGhiNhatKy}
+                    />
+                  )}
+                  {(a.loai === "ban_het" || a.loai === "ban_bot") && (() => {
+                    const h = kq.hangMa.find((x) => x.ma === a.ma);
+                    return h ? <TrungBinhGia h={h} r={theoMa[a.ma]} taiSan={kq.pb.taiSan} tong={kq.pb.tongGiaTri} onGhiNhatKy={onGhiNhatKy} /> : null;
+                  })()}
                 </li>
               );
             })}
@@ -307,7 +471,13 @@ export default function DanhGiaXuLy({ kq, keHoach, chon, setChon, sau, laThanhVi
               <li key={i} className="flex flex-wrap items-center gap-2">
                 <span className="text-xs w-20 shrink-0" style={{ color: MUTED }}>{ngayVN(l.ngay)}</span>
                 <b>{l.ma}</b>
-                <NhanTrangThai nhan={l.tu} ten={NHAN[l.tu]?.ten ?? l.tu} />→<NhanTrangThai nhan={l.nhan} ten={NHAN[l.nhan]?.ten ?? l.nhan} />
+                {l.kieu === "diem_mua" ? (
+                  <NhanTrangThai nhan="giu" ten="Có điểm mua" />
+                ) : (
+                  <>
+                    <NhanTrangThai nhan={l.tu} ten={NHAN[l.tu]?.ten ?? l.tu} />→<NhanTrangThai nhan={l.nhan} ten={NHAN[l.nhan]?.ten ?? l.nhan} />
+                  </>
+                )}
                 <span className="text-xs" style={{ color: MUTED }}>{l.lyDo}</span>
               </li>
             ))}

@@ -257,12 +257,20 @@ export default function BaoCaoDanhMuc({ mo, dong, kq, sau, hanhDongChon = [], du
                 <Bang
                   cot={["Bước", "Việc", ...(an ? [] : ["Số lượng", "Giá"]), "Lý do"]}
                   phai={an ? [] : [2, 3]}
-                  hang={hanhDongChon.map((a, i) => [
-                    i + 1,
-                    <b key="t">{a.loai === "tra_no" ? `${LOAI_HD[a.loai]}${an ? "" : ` ${tien(a.giaTri)}`}` : `${LOAI_HD[a.loai]} ${a.ma}`}</b>,
-                    ...(an ? [] : [a.loai === "tra_no" ? "—" : soVN(a.kl), a.gia ? fmt(a.gia) : "—"]),
-                    <span key="l" className="text-[10.5px]">{a.lyDo}{a.ghiChu ? ` — ${a.ghiChu}` : ""}</span>,
-                  ])}
+                  hang={hanhDongChon.map((a, i) => {
+                    // thoat 3 buoc: B1 ban ngay, B2-B3 lenh cho hoi, muc cat cung cho phan con lai
+                    const tp = a.loai === "ban_het" && a.cachThoat === "tung_phan" ? a.tungPhan : null;
+                    return [
+                      i + 1,
+                      <b key="t">{a.loai === "tra_no" ? `${LOAI_HD[a.loai]}${an ? "" : ` ${tien(a.giaTri)}`}` : tp ? `Thoát 3 bước ${a.ma}` : `${LOAI_HD[a.loai]} ${a.ma}`}</b>,
+                      ...(an ? [] : [a.loai === "tra_no" ? "—" : soVN(tp ? tp.buoc[0].kl : a.kl), a.gia ? fmt(a.gia) : "—"]),
+                      <span key="l" className="text-[10.5px]">
+                        {a.lyDo}
+                        {a.ghiChu ? ` — ${a.ghiChu}` : ""}
+                        {tp ? ` — B1 bán ngay${an ? "" : ` ${soVN(tp.buoc[0].kl)} cp`}; ${tp.buoc.slice(1).map((b) => `chờ bán${an ? "" : ` ${soVN(b.kl)} cp`} khi hồi lên ${fmt(b.gia)}`).join("; ")}; cắt cứng phần còn lại nếu đóng cửa dưới ${fmt(tp.catCung)}.` : ""}
+                      </span>,
+                    ];
+                  })}
                 />
                 {sau && <div className="mt-3"><BangTruocSau truoc={kq} sau={sau.kq} ad={an ? null : sau.ad} /></div>}
               </>

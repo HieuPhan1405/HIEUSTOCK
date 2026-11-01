@@ -6,6 +6,8 @@ import { capNhatMoiNhat } from "@/components/dungChung";
 import { NGANH_NHAN } from "@/lib/nganh";
 import { layRRGNganh } from "@/lib/phanTichCoBanDb";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
+import { layKichBanMua } from "@/lib/kichBanMuaDb";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -23,17 +25,27 @@ export default async function TrangDanhGiaDanhMuc() {
   let loi = null;
   // RRG nganh la du lieu phu (khong co thi bo qua): goc Dan dat / Cai thien / Yeu dan / Tut hau tung nganh de nhan xet viec cam nhieu ma khi dang song nganh.
   let gocNganh = {};
+  // Thanh vien: them DIEM MUA cua he thong cho trung binh gia co dieu kien - diem B mua phuc hoi (chi_bao_ky_thuat pb_*) va vung mua (kich_ban_mua mua_tu..mua_den). Loi thi bo qua.
+  let pbTheoMa = new Map();
+  let vungMuaTheoMa = new Map();
   try {
-    const [a, rrg] = await Promise.all([layTatCaTinHieu(), layRRGNganh().catch(() => null)]);
+    const [a, rrg, cbk, kb] = await Promise.all([
+      layTatCaTinHieu(),
+      layRRGNganh().catch(() => null),
+      laThanhVien ? layChiBaoKyThuat().catch(() => null) : null,
+      laThanhVien ? layKichBanMua().catch(() => null) : null,
+    ]);
     tatCa = a;
     gocNganh = Object.fromEntries((rrg?.ketQua ?? []).map((k) => [NGANH_NHAN[k.nganh] || k.nganh, k.goc]));
+    pbTheoMa = new Map((cbk?.hang ?? []).filter((h) => h.pb_cach != null && h.pb_cach <= 2).map((h) => [h.ma, { pb_cach: h.pb_cach, pb_gia: h.pb_gia, pb_sl: h.pb_sl, pb_giam: h.pb_giam }]));
+    vungMuaTheoMa = new Map((kb?.hang ?? []).filter((h) => h.mua_tu > 0).map((h) => [h.ma, { mua_tu: h.mua_tu, mua_den: h.mua_den }]));
   } catch (e) {
     loi = thongBaoLoi(e);
   }
   const duLieu = Object.fromEntries(
     tatCa.map((r) => {
       const chung = { ma: r.ma, gia: r.gia, doi: r.doi, kijun: r.kijun, gg_bot: r.gg_bot, nganh: NGANH_NHAN[r.nganh] || r.nganh || "Khác", von_hoa: r.von_hoa };
-      return [r.ma, laThanhVien ? { ...chung, tin: r.tin, diem: r.diem, stop_loss: r.stop_loss, tp1: r.tp1, ban_bot: !!r.ban_bot } : chung];
+      return [r.ma, laThanhVien ? { ...chung, tin: r.tin, diem: r.diem, stop_loss: r.stop_loss, tp1: r.tp1, ban_bot: !!r.ban_bot, ...pbTheoMa.get(r.ma), ...vungMuaTheoMa.get(r.ma) } : chung];
     })
   );
   const luc = capNhatMoiNhat(tatCa);

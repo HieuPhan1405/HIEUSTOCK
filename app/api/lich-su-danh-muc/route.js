@@ -66,6 +66,7 @@ export async function GET(request) {
         kijun: ich.kijun[cuoi],
         gg_bot: cb.bot[cuoi],
         gg_top: cb.top[cuoi],
+        thap20: Math.min(...n20.map((b) => b.l).filter((x) => x > 0)), // day 20 phien - muc cat cung khi thoat tung phan
         ngayCuoi: nen[cuoi].t,
       };
     }
