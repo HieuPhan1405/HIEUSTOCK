@@ -28,14 +28,11 @@ function Cung({ diem }) {
   );
 }
 
-// suc = chamDiemSucKhoe, rr = phanTichRuiRo, pb = danhGiaDanhMuc, nhanXet = danh sach nhan xet (chi % - khong tien), anMa = an ten ma
-export default function TheDanhGiaDanhMuc({ suc, rr, pb, nhanXet = [], anMa = false, ngay = "" }) {
-  const TRU = [
-    ["Đa dạng hóa", suc?.tru.daDang],
-    ["Rủi ro", suc?.tru.ruiRo],
-    ["Xu hướng", suc?.tru.xuHuong],
-    ["Thanh khoản", suc?.tru.thanhKhoan],
-  ];
+const TEN_TRU = { daDang: "Đa dạng hóa", ruiRo: "Rủi ro", xuHuong: "Xu hướng", thanhKhoan: "Thanh khoản", doanhNghiep: "Doanh nghiệp" };
+
+// suc = chamDiemSucKhoe, rr = phanTichRuiRo, pb = danhGiaDanhMuc, nhanXet = danh sach nhan xet (chi % - khong tien), anMa = an ten ma, phongCach = ten phong cach cham diem
+export default function TheDanhGiaDanhMuc({ suc, rr, pb, nhanXet = [], anMa = false, ngay = "", phongCach = "" }) {
+  const TRU = Object.keys(suc?.tru ?? {}).map((k) => [TEN_TRU[k] ?? k, suc.tru[k], suc.toiDa?.[k] ?? 25]);
   const chiSo = rr?.dsMa?.length
     ? [
         ["Biến động năm", `${Math.round(rr.volP)}%`, `VN-Index ${Math.round(rr.volV)}%`],
@@ -64,19 +61,20 @@ export default function TheDanhGiaDanhMuc({ suc, rr, pb, nhanXet = [], anMa = fa
           <div style={{ fontSize: 12.5, color: C.mo }}>Điểm sức khỏe /100</div>
         </div>
         <div style={{ flex: 1 }}>
-          {TRU.map(([ten, v]) => (
-            <div key={ten} style={{ marginBottom: 10 }}>
+          {TRU.map(([ten, v, toiDa]) => (
+            <div key={ten} style={{ marginBottom: TRU.length > 4 ? 7 : 10 }}>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 14, marginBottom: 4 }}>
                 <span>{ten}</span>
                 <span style={{ color: C.mo }}>
-                  <b style={{ color: C.chu }}>{v ?? "—"}</b>/25
+                  <b style={{ color: C.chu }}>{v ?? "—"}</b>/{toiDa}
                 </span>
               </div>
               <div style={{ height: 8, borderRadius: 99, background: "#2F3256", overflow: "hidden" }}>
-                <div style={{ height: "100%", width: `${((v ?? 0) / 25) * 100}%`, background: C.tim, borderRadius: 99 }} />
+                <div style={{ height: "100%", width: `${((v ?? 0) / toiDa) * 100}%`, background: C.tim, borderRadius: 99 }} />
               </div>
             </div>
           ))}
+          {phongCach && <div style={{ fontSize: 12.5, color: C.mo, marginTop: 2 }}>Chấm theo phong cách: {phongCach}</div>}
         </div>
       </div>
 

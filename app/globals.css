@@ -670,3 +670,49 @@ html.cs-dang-chup .cs-cung {
     will-change: auto;
   }
 }
+
+/* BAO CAO DANH MUC (components/BaoCaoDanhMuc.js): khi in chi in trang bao cao (an moi thu khac cua web), kho A4, giu mau nen / thanh */
+.cs-in-bao-cao {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+@media print {
+  @page {
+    size: A4;
+    margin: 12mm 11mm;
+  }
+  html,
+  html[data-theme] {
+    color-scheme: light !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  body > *:not(.cs-in-bao-cao) {
+    display: none !important;
+  }
+  .cs-in-bao-cao {
+    position: static !important;
+    overflow: visible !important;
+    background: #fff !important;
+  }
+  .cs-in-bao-cao .cs-khong-in {
+    display: none !important;
+  }
+  .cs-in-bao-cao .cs-trang {
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+  }
+  .cs-bao-cao-khoi,
+  .cs-in-bao-cao tr {
+    break-inside: avoid;
+  }
+  .cs-bao-cao-tieu-de {
+    break-after: avoid;
+  }
+}

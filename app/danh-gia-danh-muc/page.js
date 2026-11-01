@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Đánh giá danh mục cổ phiếu miễn phí",
   description:
-    "Chấm điểm sức khỏe danh mục cổ phiếu như quỹ đầu tư: đa dạng hóa thật, rủi ro gánh của từng mã, beta, một phiên xấu, kiểm tra sức chịu đựng khi VN-Index giảm, margin và thanh khoản. Miễn phí, dữ liệu lưu trên máy bạn.",
+    "Chấm điểm danh mục cổ phiếu như quỹ đầu tư theo phong cách của bạn (lướt sóng, xu hướng, tăng trưởng, dài hạn): đa dạng hóa thật, rủi ro gánh từng mã, sức khỏe doanh nghiệp, kiểm tra sức chịu đựng, margin; gợi ý cắt lỗ / trung bình giá, nhật ký giao dịch và báo cáo PDF. Miễn phí.",
 };
 
 // MO CHO MOI NGUOI (cong cu quang ba web): phan phan tich rui ro chi dung du lieu gia cong khai. Tin hieu he thong (MUA / BAN, cat lo, chot loi) CHI gui cho thanh vien da duoc duyet -
@@ -43,8 +43,8 @@ export default async function TrangDanhGiaDanhMuc() {
         Đánh giá danh mục
       </h1>
       <p className="text-sm mb-4 max-w-3xl" style={{ color: "var(--mo)" }}>
-        Nhập các mã bạn đang cầm — web chấm điểm sức khỏe danh mục theo cách các quỹ đầu tư làm: danh mục <b>thật sự</b> đa dạng đến đâu, mã nào đang gánh phần lớn rủi ro, một phiên xấu mất bao nhiêu, VN-Index giảm 10–20% thì
-        tài sản và tỷ lệ ký quỹ ra sao, và cần bao lâu để bán hết. Miễn phí, dữ liệu danh mục chỉ lưu trên máy bạn.
+        Nhập các mã bạn đang cầm và chọn phong cách đầu tư — web chấm điểm danh mục theo cách các quỹ đầu tư làm: danh mục <b>thật sự</b> đa dạng đến đâu, mã nào gánh phần lớn rủi ro, doanh nghiệp khỏe hay yếu, VN-Index giảm
+        10–20% thì tài sản và tỷ lệ ký quỹ ra sao — rồi gợi ý nên giữ, cắt lỗ hay trung bình giá từng mã, kèm báo cáo PDF. Miễn phí.
       </p>
       <NhanCapNhat luc={luc} className="mb-4" />
       {loi ? (
@@ -52,7 +52,7 @@ export default async function TrangDanhGiaDanhMuc() {
           Lỗi tải dữ liệu: {loi}
         </p>
       ) : (
-        <DanhGiaDanhMuc duLieu={duLieu} gocNganh={gocNganh} laThanhVien={laThanhVien} ngay={luc ? new Date(luc).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : ""} />
+        <DanhGiaDanhMuc duLieu={duLieu} gocNganh={gocNganh} laThanhVien={laThanhVien} dangNhap={!!nguoiDung} ngay={luc ? new Date(luc).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : ""} />
       )}
     </div>
   );

@@ -1,28 +1,28 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Plus, Trash2, ClipboardPaste, Sparkles, Lock } from "lucide-react";
-import { danhGiaDanhMuc, docDanDanhMuc } from "@/lib/danhGiaDanhMuc";
-import { phanTichRuiRo, chamDiemSucKhoe, nhanXetRuiRo } from "@/lib/ruiRoDanhMuc";
+import { Plus, Trash2, ClipboardPaste, Sparkles, Lock, FileText } from "lucide-react";
+import { docDanDanhMuc, vitriTuNhap, soNhap } from "@/lib/danhGiaDanhMuc";
+import { nhanXetRuiRo } from "@/lib/ruiRoDanhMuc";
+import { danhGiaToanBo } from "@/lib/danhGiaToanBo";
+import { PHONG_CACH, PHONG_CACH_MAC_DINH, NHAN } from "@/lib/phongCachDauTu";
+import { goiYXuLy, apDungKeHoach } from "@/lib/xuLyDanhMuc";
+import { apDungGiaoDich } from "@/lib/nhatKyGiaoDich";
 import { fmt, pct } from "@/components/dungChung";
 import { DongHoDiem, TruDiem, BieuDoHieuSuat, VonVaRuiRo, MaTranTuongQuan } from "@/components/DanhGiaDanhMucBieuDo";
 import XuatAnh from "@/components/XuatAnh";
 import TheDanhGiaDanhMuc, { RONG_THE_DANH_GIA } from "@/components/TheDanhGiaDanhMuc";
 import TaiKhoanNut from "@/components/TaiKhoanNut";
+import DanhGiaLuuThanh from "@/components/DanhGiaLuuThanh";
+import DanhGiaXuLy from "@/components/DanhGiaXuLy";
+import DanhGiaDoanhNghiep from "@/components/DanhGiaDoanhNghiep";
+import DanhGiaBoiCanh from "@/components/DanhGiaBoiCanh";
+import DanhGiaNhatKy, { homNayVN } from "@/components/DanhGiaNhatKy";
+import BaoCaoDanhMuc from "@/components/BaoCaoDanhMuc";
+import { Khoi, The, Thanh, NhanXet, NhanTrangThai, VIEN, NEN_CARD, TEXT, MUTED, PRIMARY, XANH, DO, VANG, MAU_MUC, sans, soVN, p1, tien, mauLai } from "@/components/DanhGiaChung";
 
-const VIEN = "var(--vien)";
-const NEN_CARD = "var(--card)";
-const TEXT = "var(--chu)";
-const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
-const XANH = "var(--xanh)";
-const DO = "var(--do)";
-const VANG = "var(--vang)";
-const sans = { fontFamily: "var(--font-chu)" };
 const KHOA_LUU = "cs_danh_gia_danh_muc_v1";
-const MAU_MUC = [DO, VANG, XANH];
-const NHAN_MUC = ["Cần xử lý", "Chú ý", "Tốt"];
 const MAU_TIN = { MUA: XANH, "NAM GIU": "#5BA8FF", BAN: DO, "TRUNG LAP": MUTED };
 const NHAN_TIN = { MUA: "Mua", "NAM GIU": "Nắm giữ", BAN: "Bán", "TRUNG LAP": "Trung lập" };
 const MAU_THU = [
@@ -33,113 +33,258 @@ const MAU_THU = [
   { ma: "SSI", kl: "2000" },
   { ma: "DGC", kl: "400" },
 ];
+const VON_MAC_DINH = { tienMat: "", no: "", laiSuat: "", canhBao: "35", giaiChap: "30", phi: "" };
+const BAO_CAO_MAC_DINH = { khach: "", nguoiLap: "", lienHe: "", ghiChu: "" };
+const TRU = [
+  ["daDang", "Đa dạng hóa", "Số khoản đầu tư độc lập thật (theo tương quan), mức tập trung rủi ro vào 1 mã, tập trung ngành"],
+  ["ruiRo", "Rủi ro", "Biến động của danh mục so với VN-Index, độ dày đệm margin, đòn bẩy"],
+  ["xuHuong", "Xu hướng", "Tỷ trọng giá trị ở các mã còn xu hướng (trên Kijun và chưa báo bán; phong cách dài hạn: trên đường cân bằng dài hạn)"],
+  ["thanhKhoan", "Thanh khoản", "Tỷ trọng giá trị có thể bán hết trong 1 phiên (20% thanh khoản bình quân)"],
+  ["doanhNghiep", "Doanh nghiệp", "Chất lượng doanh nghiệp theo BCTC quý (thứ hạng so với mã cùng loại), chấm theo phong cách"],
+];
+const TABS = [
+  ["xu_ly", "Nên làm gì"],
+  ["rui_ro", "Rủi ro"],
+  ["doanh_nghiep", "Doanh nghiệp"],
+  ["boi_canh", "Bối cảnh"],
+  ["nhat_ky", "Nhật ký"],
+  ["chi_tiet", "Chi tiết"],
+];
 
-const soVN = (n, d = 0) => (Number.isFinite(n) ? n.toLocaleString("vi-VN", { maximumFractionDigits: d }) : "—");
-const p1 = (x) => (x == null || !Number.isFinite(x) ? "—" : x.toFixed(1).replace(".", ","));
-function tien(v) {
-  if (v == null || !Number.isFinite(v)) return "—";
-  const a = Math.abs(v);
-  if (a >= 1e9) return `${soVN(v / 1e9, 2)} tỷ`;
-  if (a >= 1e6) return `${soVN(v / 1e6, 1)} triệu`;
-  return `${soVN(v)} đ`;
-}
-const mauLai = (v) => (v == null ? MUTED : v > 0 ? XANH : v < 0 ? DO : TEXT);
-const so = (s) => {
-  const x = Number(String(s ?? "").replace(/\./g, (m, i, str) => (/,/.test(str) ? "" : m)).replace(",", "."));
-  return Number.isFinite(x) ? x : null;
-};
 let dem = 0;
 const moi = (o = {}) => ({ id: `h${Date.now()}${dem++}`, ma: "", kl: "", giaVon: "", ...o });
+const soO = (x) => (x == null ? "" : String(+Number(x).toFixed(3)).replace(".", ","));
+const trieu = (x) => (soNhap(x) > 0 ? soNhap(x) * 1e6 : 0);
+// so sanh du lieu khong phu thuoc thu tu khoa (JSONB tren may chu sap lai khoa)
+const chuan = (v) => (Array.isArray(v) ? v.map(chuan) : v && typeof v === "object" ? Object.fromEntries(Object.keys(v).sort().filter((k) => v[k] !== undefined).map((k) => [k, chuan(v[k])])) : v);
+const khoaSo = (v) => JSON.stringify(chuan(v));
 
-function Khoi({ tieuDe, phu, children, className = "mb-6", phai }) {
+// PHAN RUI RO (1 nam gia) - chuyen nguyen tu ban truoc
+function PhanRuiRo({ rr, pb }) {
+  if (!rr?.dsMa?.length) return <p className="text-sm mb-6" style={{ color: MUTED }}>{rr?.lichSuNgan?.length ? `Chưa đủ 120 phiên lịch sử để tính rủi ro cho: ${rr.lichSuNgan.join(", ")}.` : "Đang tải lịch sử giá 1 năm…"}</p>;
   return (
-    <section className={`rounded-2xl border p-4 sm:p-5 ${className}`} style={{ borderColor: VIEN, background: NEN_CARD }} aria-label={tieuDe}>
-      <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
-        <h2 className="text-lg" style={{ ...sans, fontWeight: 700 }}>{tieuDe}</h2>
-        {phai}
+    <>
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        <The nhan="Biến động năm" phu={`VN-Index ${Math.round(rr.volV)}%`} mau={rr.volP > rr.volV * 1.3 ? VANG : TEXT}>{Math.round(rr.volP)}%</The>
+        <The nhan="Beta" phu="VN-Index −10% → danh mục ≈" mau={rr.betaP > 1.3 ? VANG : TEXT}>
+          {rr.betaP.toFixed(2).replace(".", ",")} <span className="text-sm" style={{ color: MUTED }}>({p1(-rr.betaP * 10)}%)</span>
+        </The>
+        <The nhan="Khoản đầu tư độc lập" phu={`từ ${rr.ma.length} mã (tương quan TB ${rr.tqTrungBinh != null ? rr.tqTrungBinh.toFixed(2).replace(".", ",") : "—"})`} mau={rr.soCuocDocLap < 1.4 ? DO : rr.soCuocDocLap < 1.7 ? VANG : TEXT}>
+          ≈ {p1(rr.soCuocDocLap)}
+        </The>
+        <The nhan="Một phiên xấu (VaR 95%)" phu={`≈ ${tien(rr.var95Dong)} · tệ nhất ${p1(rr.phienXauNhat.pct)}%`}>−{p1(rr.var95)}%</The>
+        <The nhan="Sụt giảm tối đa 1 năm" phu={`VN-Index −${p1(Math.abs(rr.ddV))}%`} mau={Math.abs(rr.ddP.pct) > Math.abs(rr.ddV) * 1.3 ? VANG : TEXT}>−{p1(Math.abs(rr.ddP.pct))}%</The>
       </div>
-      {phu && <p className="text-xs -mt-2 mb-3" style={{ color: MUTED }}>{phu}</p>}
-      {children}
-    </section>
-  );
-}
-function The({ nhan, children, phu, mau }) {
-  return (
-    <div className="rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <div className="text-xs mb-1" style={{ color: MUTED }}>{nhan}</div>
-      <div className="text-xl sm:text-2xl" style={{ ...sans, fontWeight: 800, color: mau ?? TEXT }}>{children}</div>
-      {phu && <div className="text-[11px] mt-1" style={{ color: MUTED }}>{phu}</div>}
-    </div>
-  );
-}
-function Thanh({ ten, v, mau = "var(--bd-1)" }) {
-  return (
-    <div className="mb-2">
-      <div className="flex justify-between text-xs mb-1" style={sans}>
-        <span>{ten}</span>
-        <span style={{ color: MUTED }}>{(v * 100).toFixed(0)}%</span>
+      <Khoi tieuDe="Nếu cầm danh mục này 1 năm qua" phu={`Tỷ trọng hiện tại giữ nguyên, ${rr.soPhien} phiên từ ${rr.tuNgay.split("-").reverse().join("/")}. Quá khứ, không phải dự báo.`}>
+        <BieuDoHieuSuat chuoi={rr.chuoi} />
+      </Khoi>
+      <Khoi tieuDe="Kiểm tra sức chịu đựng" phu="Danh mục, tài sản ròng và tỷ lệ ký quỹ sẽ ra sao nếu thị trường giảm.">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm" style={sans}>
+            <thead>
+              <tr className="text-left text-xs" style={{ color: MUTED }}>
+                <th className="py-1.5 pr-2 font-normal">Kịch bản</th>
+                <th className="py-1.5 px-2 font-normal text-right">Danh mục</th>
+                <th className="py-1.5 px-2 font-normal text-right">Tài sản ròng</th>
+                {pb.margin && <th className="py-1.5 pl-2 font-normal text-right">Ký quỹ</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {rr.kichBan.map((k) => (
+                <tr key={k.ten} className="border-t" style={{ borderColor: "var(--vien-nhe)" }}>
+                  <td className="py-2 pr-2">
+                    {k.ten}
+                    <div className="text-[11px]" style={{ color: MUTED }}>{k.ghiChu}</div>
+                  </td>
+                  <td className="py-2 px-2 text-right" style={{ color: mauLai(k.portPct) }}>{p1(k.portPct)}%</td>
+                  <td className="py-2 px-2 text-right">
+                    {k.navPct != null ? `${p1(k.navPct)}%` : "—"}
+                    <div className="text-[11px]" style={{ color: MUTED }}>{tien(k.doiGiaTri)}</div>
+                  </td>
+                  {pb.margin && (
+                    <td className="py-2 pl-2 text-right whitespace-nowrap" style={{ color: k.chamGC ? DO : k.chamCB ? VANG : TEXT, fontWeight: k.chamCB ? 700 : 400 }}>
+                      {k.tyLeKyQuy != null ? `${Math.round(k.tyLeKyQuy)}%` : "—"}
+                      {k.chamGC ? " · giải chấp" : k.chamCB ? " · gọi ký quỹ" : ""}
+                    </td>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </Khoi>
+      <div className="grid gap-4 lg:grid-cols-2 mb-6">
+        <Khoi tieuDe="Vốn bỏ vào vs rủi ro gánh" className="" phu="Mã có thanh tím dài hơn thanh cam là mã đang gánh rủi ro nhiều hơn phần vốn của nó.">
+          <VonVaRuiRo ma={rr.ma} />
+        </Khoi>
+        <Khoi tieuDe="Các mã có thực sự khác nhau?" className="" phu="Tương quan lợi suất ngày trong 1 năm (tối đa 12 mã lớn nhất).">
+          {rr.ma.length >= 2 ? <MaTranTuongQuan rr={rr} /> : <p className="text-sm" style={{ color: MUTED }}>Cần ít nhất 2 mã.</p>}
+        </Khoi>
       </div>
-      <div className="h-2 rounded-full overflow-hidden" style={{ background: "var(--vien-nhe)" }}>
-        <div className="h-full rounded-full" style={{ width: `${Math.min(100, v * 100)}%`, background: mau }} />
-      </div>
-    </div>
-  );
-}
-function NhanXet({ x }) {
-  return (
-    <li className="flex gap-2.5 text-sm" style={sans}>
-      <span aria-hidden="true" className="mt-1.5 shrink-0 rounded-full" style={{ width: 9, height: 9, background: MAU_MUC[x.muc] }} />
-      <span>
-        <span className="sr-only">{NHAN_MUC[x.muc]}: </span>
-        {x.tieuDe && <b>{x.tieuDe}: </b>}
-        {x.noiDung}
-      </span>
-    </li>
+      {rr.lichSuNgan?.length > 0 && <p className="text-xs mb-4" style={{ color: VANG }}>Chưa đủ 120 phiên lịch sử nên chưa tính rủi ro cho: {rr.lichSuNgan.join(", ")}.</p>}
+    </>
   );
 }
 
 // duLieu: { MA: dong tin hieu rut gon } (khach chi co truong cong khai: gia, kijun, can bang, nganh...); laThanhVien: da duoc duyet -> co tin hieu / cat lo / chot loi he thong.
-export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laThanhVien = false }) {
+// dangNhap: co tai khoan -> luu nhieu danh muc len may chu (/api/danh-muc-luu) + canh bao.
+export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laThanhVien = false, dangNhap = false }) {
   const [ds, setDs] = useState([moi()]);
-  const [von, setVon] = useState({ tienMat: "", no: "", laiSuat: "", canhBao: "35", giaiChap: "30" });
+  const [von, setVon] = useState(VON_MAC_DINH);
+  const [phongCach, setPhongCach] = useState(PHONG_CACH_MAC_DINH);
+  const [nhatKy, setNhatKy] = useState([]);
+  const [baoCao, setBaoCao] = useState(BAO_CAO_MAC_DINH);
+  const [dm, setDm] = useState({ id: null, ten: "" });
+  const [dsLuu, setDsLuu] = useState([]);
+  const [trangThaiLuu, setTrangThaiLuu] = useState("");
+  const [lichSuNhan, setLichSuNhan] = useState([]);
   const [san, setSan] = useState(false);
   const [dan, setDan] = useState(false);
   const [vanBan, setVanBan] = useState("");
   const [thongBao, setThongBao] = useState("");
   const [lichSu, setLichSu] = useState({ khoa: "", du: null, dangTai: false, loi: "" });
   const [anMa, setAnMa] = useState(false);
+  const [tab, setTab] = useState("xu_ly");
+  const [chonKH, setChonKH] = useState({});
+  const [moBaoCao, setMoBaoCao] = useState(false);
+  const daLuuRef = useRef("");
+  const henLuuRef = useRef(null);
 
-  // doc danh muc da luu tren MAY nay (khong gui len may chu)
-  useEffect(() => {
-    const t = setTimeout(() => {
-      try {
-        const j = JSON.parse(localStorage.getItem(KHOA_LUU) || "null");
-        const dsLuu = Array.isArray(j) ? j : j?.ds;
-        if (Array.isArray(dsLuu) && dsLuu.length) setDs(dsLuu.map((x) => moi(x)));
-        if (j && !Array.isArray(j) && j.von) setVon((v) => ({ ...v, ...j.von }));
-      } catch {}
-      setSan(true);
-    }, 0);
-    return () => clearTimeout(t);
+  const anhChup = useCallback(() => ({ ds: ds.filter((x) => x.ma || x.kl || x.giaVon).map(({ ma, kl, giaVon }) => ({ ma, kl, giaVon })), von, phongCach, nhatKy, baoCao }), [ds, von, phongCach, nhatKy, baoCao]);
+  const apDung = useCallback((du, { id = null, ten = "", lichSuNhan: ls = [] } = {}) => {
+    setDs(du?.ds?.length ? du.ds.map((x) => moi(x)) : [moi()]);
+    setVon({ ...VON_MAC_DINH, ...(du?.von ?? {}) });
+    if (du?.phongCach && PHONG_CACH[du.phongCach]) setPhongCach(du.phongCach);
+    setNhatKy(Array.isArray(du?.nhatKy) ? du.nhatKy : []);
+    setBaoCao({ ...BAO_CAO_MAC_DINH, ...(du?.baoCao ?? {}) });
+    setDm({ id, ten });
+    setLichSuNhan(Array.isArray(ls) ? ls : []);
+    setChonKH({});
   }, []);
+
+  // doc danh muc dang mo tren MAY nay; co tai khoan thi tai danh sach da luu (danh muc dang chon / ?dm= lay ban tren may chu)
+  useEffect(() => {
+    let huy = false;
+    const t = setTimeout(async () => {
+      let local = null;
+      try {
+        local = JSON.parse(localStorage.getItem(KHOA_LUU) || "null");
+        if (Array.isArray(local)) local = { ds: local };
+      } catch {}
+      // ban tren may chi la nhap: chi gan lai voi danh muc da luu SAU KHI may chu tra ve (tranh ghi de ban moi hon sua o thiet bi khac)
+      if (local) apDung(local);
+      setSan(true);
+      if (!dangNhap) return;
+      try {
+        const r = await fetch("/api/danh-muc-luu", { cache: "no-store" });
+        const j = await r.json();
+        if (huy || !r.ok) return;
+        setDsLuu(j.ds ?? []);
+        const tuUrl = Number(new URLSearchParams(window.location.search).get("dm"));
+        const chon = (j.ds ?? []).find((d) => d.id === (tuUrl || local?.dmId));
+        if (chon) {
+          daLuuRef.current = khoaSo(chon.du_lieu);
+          apDung(chon.du_lieu, { id: chon.id, ten: chon.ten, lichSuNhan: chon.lich_su_nhan });
+          if (tuUrl) setTab("xu_ly");
+        }
+      } catch {}
+    }, 0);
+    return () => {
+      huy = true;
+      clearTimeout(t);
+    };
+  }, [dangNhap, apDung]);
   useEffect(() => {
     if (!san) return;
     try {
-      localStorage.setItem(KHOA_LUU, JSON.stringify({ ds: ds.filter((x) => x.ma || x.kl || x.giaVon).map(({ ma, kl, giaVon }) => ({ ma, kl, giaVon })), von }));
+      localStorage.setItem(KHOA_LUU, JSON.stringify({ ...anhChup(), dmId: dm.id, dmTen: dm.ten }));
     } catch {}
-  }, [ds, von, san]);
+  }, [anhChup, dm, san]);
 
-  const vitri = useMemo(
-    () =>
-      ds
-        .map((x) => ({ ma: x.ma.trim().toUpperCase(), kl: so(x.kl), giaVon: so(x.giaVon) }))
-        .filter((x) => /^[A-Z0-9]{2,12}$/.test(x.ma) && x.kl > 0)
-        .map((x) => ({ ...x, giaVon: x.giaVon > 0 ? x.giaVon : null })),
-    [ds]
+  const luuLen = useCallback(
+    async (id, ten, duLieu) => {
+      setTrangThaiLuu("Đang lưu…");
+      try {
+        const r = await fetch("/api/danh-muc-luu", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, ten, duLieu }) });
+        const j = await r.json();
+        if (!r.ok) throw new Error(j.loi || "Không lưu được");
+        daLuuRef.current = khoaSo(duLieu);
+        setDsLuu((c) => {
+          const co = c.some((d) => d.id === j.id);
+          const dong = { id: j.id, ten, du_lieu: duLieu, cap_nhat: j.cap_nhat, lich_su_nhan: c.find((d) => d.id === j.id)?.lich_su_nhan ?? [] };
+          return co ? c.map((d) => (d.id === j.id ? dong : d)) : [dong, ...c];
+        });
+        setTrangThaiLuu(`Đã lưu lúc ${new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" })}`);
+        return j.id;
+      } catch (e) {
+        setTrangThaiLuu(`Lỗi lưu: ${e.message}`);
+        return null;
+      }
+    },
+    []
   );
+  // danh muc da luu: tu luu 1,5 giay sau lan sua cuoi
+  useEffect(() => {
+    if (!san || !dm.id) return;
+    const du = anhChup();
+    if (khoaSo(du) === daLuuRef.current) return;
+    henLuuRef.current = setTimeout(() => {
+      henLuuRef.current = null;
+      luuLen(dm.id, dm.ten, du);
+    }, 1500);
+    return () => clearTimeout(henLuuRef.current);
+  }, [anhChup, dm, san, luuLen]);
+  const luuNgay = () => {
+    if (henLuuRef.current && dm.id) {
+      clearTimeout(henLuuRef.current);
+      henLuuRef.current = null;
+      luuLen(dm.id, dm.ten, anhChup());
+    }
+  };
+  const chonDanhMuc = (id) => {
+    luuNgay();
+    if (!id) {
+      setDm({ id: null, ten: "" });
+      setLichSuNhan([]);
+      return;
+    }
+    const d = dsLuu.find((x) => x.id === id);
+    if (!d) return;
+    daLuuRef.current = khoaSo(d.du_lieu);
+    apDung(d.du_lieu, { id: d.id, ten: d.ten, lichSuNhan: d.lich_su_nhan });
+    setTrangThaiLuu("");
+  };
+  const luuMoi = async (ten) => {
+    const id = await luuLen(null, ten, anhChup());
+    if (id) setDm({ id, ten });
+  };
+  const doiTen = (ten) => {
+    setDm((c) => ({ ...c, ten }));
+    luuLen(dm.id, ten, anhChup());
+  };
+  const xoaDanhMuc = async () => {
+    try {
+      const r = await fetch(`/api/danh-muc-luu?id=${dm.id}`, { method: "DELETE" });
+      const j = await r.json();
+      if (!r.ok) throw new Error(j.loi || "Không xóa được");
+      setDsLuu((c) => c.filter((d) => d.id !== dm.id));
+      setDm({ id: null, ten: "" });
+      setLichSuNhan([]);
+      setTrangThaiLuu("Đã xóa khỏi tài khoản");
+    } catch (e) {
+      setTrangThaiLuu(`Lỗi: ${e.message}`);
+    }
+  };
+  const danhMucMoi = () => {
+    luuNgay();
+    apDung(null);
+    setTrangThaiLuu("");
+  };
+
+  const vitri = useMemo(() => vitriTuNhap(ds), [ds]);
   const khoaMa = useMemo(() => [...new Set(vitri.map((x) => x.ma))].sort().join(","), [vitri]);
 
-  // LICH SU GIA 1 NAM (1 lan goi cho ca danh muc), cho nguoi dung go xong 0,7 giay moi tai
+  // LICH SU GIA 1 NAM + BCTC + boi canh (1 lan goi cho ca danh muc), cho nguoi dung go xong 0,7 giay moi tai
   useEffect(() => {
     if (!khoaMa) return;
     let huy = false;
@@ -159,6 +304,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
       clearTimeout(t);
     };
   }, [khoaMa]);
+  const du = lichSu.khoa === khoaMa ? lichSu.du : null;
 
   // Ghep du lieu he thong voi du lieu tinh tu nen (ma ngoai danh sach web quet van danh gia duoc)
   const theoMa = useMemo(() => {
@@ -171,30 +317,31 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
     return ra;
   }, [duLieu, lichSu.du]);
 
-  const trieu = (x) => (so(x) > 0 ? so(x) * 1e6 : 0);
-  const pb = useMemo(
-    () => (vitri.length ? danhGiaDanhMuc(vitri, theoMa, { tienMat: String(von.tienMat).trim() === "" ? null : trieu(von.tienMat), no: trieu(von.no), laiSuat: so(von.laiSuat), nguong: { canhBao: so(von.canhBao), giaiChap: so(von.giaiChap) }, gocNganh }) : null),
-    [vitri, theoMa, von, gocNganh]
+  const vonOpts = useMemo(
+    () => ({ tienMat: String(von.tienMat).trim() === "" ? null : trieu(von.tienMat), no: trieu(von.no), laiSuat: soNhap(von.laiSuat), nguong: { canhBao: soNhap(von.canhBao), giaiChap: soNhap(von.giaiChap) } }),
+    [von]
   );
-  const rr = useMemo(() => {
-    const du = lichSu.du;
-    if (!pb || !du?.ngay || lichSu.khoa !== khoaMa) return null;
-    const giaTri = {};
-    for (const h of pb.hang) if (h.giaTri > 0) giaTri[h.ma] = (giaTri[h.ma] ?? 0) + h.giaTri;
-    const gia = Object.fromEntries(Object.entries(du.ma).map(([m, x]) => [m, x.c]));
-    const gtgd = Object.fromEntries(Object.entries(du.ma).map(([m, x]) => [m, x.gtgd20]));
-    return phanTichRuiRo({ ngay: du.ngay, vni: du.vni, gia, giaTri, gtgd, tienMat: pb.taiSan.tienMat, no: pb.taiSan.no, nguongCB: pb.nguong.canhBao, nguongGC: pb.nguong.giaiChap });
-  }, [pb, lichSu, khoaMa]);
-  const suc = useMemo(() => chamDiemSucKhoe(pb, rr), [pb, rr]);
-  const nxRR = useMemo(() => nhanXetRuiRo(rr, pb), [rr, pb]);
-  const baoCao = useMemo(() => {
-    if (!pb) return [];
-    const tuPb = pb.nhanXet.map((x, k) => ({ muc: x.muc, uuTien: 3 + k * 0.1, tieuDe: null, noiDung: x.nhan }));
-    return [...nxRR, ...tuPb].sort((a, b) => a.muc - b.muc || a.uuTien - b.uuTien);
-  }, [pb, nxRR]);
+  const kq = useMemo(() => danhGiaToanBo({ vitri, theoMa, du, von: vonOpts, gocNganh, phongCach, coTinHieu: laThanhVien }), [vitri, theoMa, du, vonOpts, gocNganh, phongCach, laThanhVien]);
+  const pb = kq?.pb ?? null;
+  const rr = kq?.rr ?? null;
+  const suc = kq?.suc ?? null;
+  const pc = PHONG_CACH[phongCach];
+  const keHoach = useMemo(
+    () => (kq ? goiYXuLy({ hang: kq.pb.hang, nhanTheoMa: kq.nhan, phongCach, taiSan: kq.pb.taiSan, margin: kq.pb.margin, nguong: kq.pb.nguong, cbTheoMa: du?.coBan ?? {}, rTheoMa: theoMa, coTinHieu: laThanhVien }) : null),
+    [kq, phongCach, du, theoMa, laThanhVien]
+  );
+  const hanhDongChon = useMemo(() => (keHoach?.hanhDong ?? []).map((a) => ({ ...a, ...(chonKH[a.id] ?? {}) })).filter((a) => a.chon), [keHoach, chonKH]);
+  const sau = useMemo(() => {
+    if (!kq || !hanhDongChon.length) return null;
+    const ad = apDungKeHoach(kq.pb.hang, { tienMat: kq.pb.taiSan.tienMat, no: kq.pb.taiSan.no }, hanhDongChon);
+    const kq2 = danhGiaToanBo({ vitri: ad.vitri, theoMa, du, von: { ...vonOpts, tienMat: ad.tienMat, no: ad.no }, gocNganh, phongCach, coTinHieu: laThanhVien });
+    return kq2 ? { kq: kq2, ad } : null;
+  }, [kq, hanhDongChon, theoMa, du, vonOpts, gocNganh, phongCach, laThanhVien]);
+  const nxThe = useMemo(() => [...nhanXetRuiRo(rr, pb), ...(kq?.dn?.nhanXet ?? [])].sort((a, b) => a.muc - b.muc || a.uuTien - b.uuTien), [rr, pb, kq]);
   const theoMaRR = useMemo(() => Object.fromEntries((rr?.ma ?? []).map((x) => [x.ma, x])), [rr]);
   const thanhKhoanMa = useMemo(() => Object.fromEntries((rr?.thanhKhoan?.ds ?? []).map((x) => [x.ma, x.soPhien])), [rr]);
   const dsMa = useMemo(() => Object.keys(duLieu).sort(), [duLieu]);
+  const giaTheoMa = useMemo(() => Object.fromEntries(Object.entries(theoMa).map(([m, r]) => [m, r.gia])), [theoMa]);
 
   const sua = (id, k, v) => setDs((c) => c.map((x) => (x.id === id ? { ...x, [k]: v } : x)));
   const nhapDan = () => {
@@ -213,18 +360,53 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
     setVanBan("");
     setDan(false);
   };
+  // GHI LENH vao nhat ky + cap nhat vi the (giu thu tu dong; ma moi them cuoi; ban het thi bo dong)
+  const themLenh = (gd) => {
+    const r = apDungGiaoDich(vitri, { ...gd, ngay: gd.ngay || homNayVN(), id: `g${Date.now()}${dem++}` }, { phiPct: soNhap(von.phi) ?? 0 });
+    if (r.loi) return r.loi;
+    const moiMa = new Map(r.ds.map((x) => [x.ma, x]));
+    setDs((c) => {
+      const ra = [];
+      const daCo = new Set();
+      for (const x of c) {
+        const m = x.ma.trim().toUpperCase();
+        if (m !== r.ghi.ma) {
+          ra.push(x);
+          continue;
+        }
+        if (daCo.has(m)) continue;
+        daCo.add(m);
+        const n = moiMa.get(m);
+        if (n) ra.push({ ...x, ma: m, kl: String(n.kl), giaVon: soO(n.giaVon) });
+      }
+      if (!daCo.has(r.ghi.ma) && moiMa.get(r.ghi.ma)) {
+        const n = moiMa.get(r.ghi.ma);
+        const trong = ra.findIndex((x) => !x.ma && !x.kl);
+        const dong = moi({ ma: n.ma, kl: String(n.kl), giaVon: soO(n.giaVon) });
+        if (trong >= 0) ra[trong] = dong;
+        else ra.push(dong);
+      }
+      return ra.length ? ra : [moi()];
+    });
+    setNhatKy((n) => [...n, r.ghi]);
+    return null;
+  };
+  const daLamTheoKeHoach = (gd) => {
+    const loi = themLenh(gd);
+    setThongBao(loi ? loi : `Đã ghi ${gd.loai === "mua" ? "mua" : "bán"} ${gd.kl} ${gd.ma} vào nhật ký và cập nhật danh mục.`);
+  };
 
   const o = "px-2.5 py-1.5 rounded-lg text-sm border w-full";
   const oStyle = { borderColor: VIEN, background: "transparent", color: TEXT, ...sans };
   const nutPhu = "inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border font-semibold";
+  const soCanXuLy = kq ? Object.values(kq.nhan).filter((n) => n.muc >= 2).length : 0;
 
   return (
     <div>
+      <DanhGiaLuuThanh dangNhap={dangNhap} dsLuu={dsLuu} dmId={dm.id} ten={dm.ten} trangThai={trangThaiLuu} onChon={chonDanhMuc} onLuuMoi={luuMoi} onDoiTen={doiTen} onXoa={xoaDanhMuc} onMoi={danhMucMoi} />
+
       {/* NHAP DANH MUC */}
-      <Khoi
-        tieuDe="1. Danh mục của bạn"
-        phai={<span className="text-[11px]" style={{ color: MUTED }}>Lưu ngay trên máy bạn, không gửi lên máy chủ</span>}
-      >
+      <Khoi tieuDe="1. Danh mục" phai={<span className="text-[11px]" style={{ color: MUTED }}>{dm.id ? `Đang sửa “${dm.ten}” — tự lưu vào tài khoản` : "Lưu trên máy này"}</span>}>
         <datalist id="ds-ma-danh-gia">{dsMa.map((m) => <option key={m} value={m} />)}</datalist>
         <div className="grid grid-cols-[minmax(70px,1fr)_minmax(90px,1.2fr)_minmax(90px,1.2fr)_32px] gap-2 text-[11px] mb-1" style={{ color: MUTED }}>
           <span>Mã</span>
@@ -265,15 +447,30 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
           </div>
         )}
 
+        {/* PHONG CACH DAU TU */}
+        <div className="mt-5">
+          <div className="text-sm mb-2" style={{ ...sans, fontWeight: 700 }}>Phong cách đầu tư</div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2" role="radiogroup" aria-label="Phong cách đầu tư">
+            {Object.entries(PHONG_CACH).map(([k, p]) => (
+              <button key={k} type="button" role="radio" aria-checked={phongCach === k} onClick={() => { setPhongCach(k); setChonKH({}); }} className="text-left rounded-xl border px-3 py-2" style={{ borderColor: phongCach === k ? PRIMARY : VIEN, background: phongCach === k ? "color-mix(in srgb, #6C5CE7 12%, var(--card))" : "transparent", ...sans }}>
+                <div className="text-sm" style={{ fontWeight: 700 }}>{p.ten}</div>
+                <div className="text-[11px] hidden sm:block" style={{ color: MUTED }}>{k === "trung_han" ? "Theo hệ thống CloudStock" : `Tỷ trọng tối đa ${Math.round(p.tyTrongToiDa * 100)}%/mã${p.catLo != null ? `, cắt lỗ ${p.catLo}%` : ", không cắt lỗ theo giá"}`}</div>
+              </button>
+            ))}
+          </div>
+          <p className="text-[11px] mt-1.5" style={{ color: MUTED }}>{pc.moTa} Phong cách đổi trọng số điểm, cách gắn trạng thái từng mã và kế hoạch xử lý — cùng một bộ dữ liệu.</p>
+        </div>
+
         <details className="mt-4">
           <summary className="text-sm cursor-pointer select-none" style={{ ...sans, fontWeight: 700 }}>Vốn & margin (tùy chọn)</summary>
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mt-3">
+          <div className="grid grid-cols-2 lg:grid-cols-6 gap-3 mt-3">
             {[
               ["tienMat", "Tiền mặt còn lại (triệu đồng)", "50"],
               ["no", "Dư nợ margin (triệu đồng)", "0"],
               ["laiSuat", "Lãi suất margin (%/năm)", "12"],
               ["canhBao", "Ngưỡng cảnh báo ký quỹ (%)", "35"],
               ["giaiChap", "Ngưỡng xử lý / giải chấp (%)", "30"],
+              ["phi", "Phí giao dịch (%/lệnh)", "0,15"],
             ].map(([k, nhan, ph]) => (
               <label key={k} className="block text-[11px]" style={{ color: MUTED }}>
                 {nhan}
@@ -281,7 +478,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
               </label>
             ))}
           </div>
-          <p className="text-[11px] mt-2" style={{ color: MUTED }}>Tỷ lệ ký quỹ = (tài sản − nợ) / tài sản. Ngưỡng cảnh báo / xử lý mỗi công ty chứng khoán một kiểu (thường 30–40%) — sửa theo CTCK của bạn. Web coi mọi mã trong danh mục đều được vay.</p>
+          <p className="text-[11px] mt-2" style={{ color: MUTED }}>Tỷ lệ ký quỹ = (tài sản − nợ) / tài sản. Ngưỡng cảnh báo / xử lý mỗi công ty chứng khoán một kiểu (thường 30–40%) — sửa theo CTCK của bạn. Web coi mọi mã trong danh mục đều được vay. Phí giao dịch dùng cho nhật ký (lãi đã chốt).</p>
         </details>
       </Khoi>
 
@@ -297,14 +494,10 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
                 <label className="inline-flex items-center gap-1.5 text-xs" style={{ color: MUTED }}>
                   <input type="checkbox" checked={anMa} onChange={(e) => setAnMa(e.target.checked)} /> Ẩn tên mã trong ảnh
                 </label>
-                <XuatAnh
-                  kieu="nho"
-                  nhan="Tạo ảnh chia sẻ"
-                  tieuDe="Đánh giá danh mục"
-                  tenFile="CloudStock-danh-gia-danh-muc.png"
-                  rong={RONG_THE_DANH_GIA}
-                  the={<TheDanhGiaDanhMuc suc={suc} rr={rr} pb={pb} nhanXet={nxRR} anMa={anMa} ngay={ngay} />}
-                />
+                <XuatAnh kieu="nho" nhan="Tạo ảnh chia sẻ" tieuDe="Đánh giá danh mục" tenFile="CloudStock-danh-gia-danh-muc.png" rong={RONG_THE_DANH_GIA} the={<TheDanhGiaDanhMuc suc={suc} rr={rr} pb={pb} nhanXet={nxThe} anMa={anMa} ngay={ngay} phongCach={pc.ten} />} />
+                <button type="button" onClick={() => setMoBaoCao(true)} className={nutPhu} style={{ borderColor: PRIMARY, background: PRIMARY, color: "#fff", ...sans }}>
+                  <FileText size={13} /> Xuất báo cáo PDF
+                </button>
               </span>
             }
           >
@@ -312,19 +505,27 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
               <div className="text-center">
                 <DongHoDiem diem={suc?.diem} xepLoai={suc?.xepLoai} size={210} />
                 <p className="text-[11px] mt-1" style={{ color: MUTED }}>
-                  {suc?.gioiHan ? `Giới hạn ở mức Trung bình vì ${Math.round(suc.tyLeNang * 100)}% giá trị nằm ở mã có cảnh báo nặng` : lichSu.dangTai ? "Đang tải lịch sử giá để tính rủi ro…" : suc?.dayDu ? "Tính trên 1 năm dữ liệu giá" : lichSu.loi ? `Chưa tải được lịch sử giá (${lichSu.loi}) — điểm tạm tính` : "Điểm tạm tính"}
+                  {suc?.gioiHan
+                    ? `Giới hạn ở mức Trung bình vì ${Math.round(suc.tyLeNang * 100)}% giá trị nằm ở mã cần thoát`
+                    : lichSu.dangTai
+                      ? "Đang tải lịch sử giá và BCTC…"
+                      : suc?.dayDu
+                        ? `Chấm theo phong cách ${pc.ngan.toLowerCase()} · 1 năm dữ liệu giá`
+                        : lichSu.loi
+                          ? `Chưa tải được lịch sử giá (${lichSu.loi}) — điểm tạm tính`
+                          : "Điểm tạm tính"}
                 </p>
               </div>
               <div>
-                <TruDiem ten="Đa dạng hóa" v={suc?.tru.daDang ?? 0} moTa="Số khoản đầu tư độc lập thật (theo tương quan), mức tập trung rủi ro vào 1 mã, tập trung ngành" />
-                <TruDiem ten="Rủi ro" v={suc?.tru.ruiRo ?? 0} moTa="Biến động của danh mục so với VN-Index, độ dày đệm margin, đòn bẩy" />
-                <TruDiem ten="Xu hướng" v={suc?.tru.xuHuong ?? 0} moTa="Tỷ trọng giá trị nằm ở các mã trên Kijun và chưa có tín hiệu bán" />
-                <TruDiem ten="Thanh khoản" v={suc?.tru.thanhKhoan ?? 0} moTa="Tỷ trọng giá trị có thể bán hết trong 1 phiên (20% thanh khoản bình quân)" />
+                {TRU.filter(([k]) => suc?.tru?.[k] != null).map(([k, ten, moTa]) => (
+                  <TruDiem key={k} ten={ten} v={suc.tru[k]} toiDa={suc.toiDa[k]} moTa={moTa} />
+                ))}
+                {suc?.thieuDN && <p className="text-[11px]" style={{ color: MUTED }}>Doanh nghiệp: chưa đủ BCTC, tạm tính 50%.</p>}
               </div>
               <div>
                 <h3 className="text-sm mb-2" style={{ ...sans, fontWeight: 700 }}>Điều quan trọng nhất</h3>
                 <ul className="grid gap-2.5">
-                  {baoCao.slice(0, 3).map((x, k) => <NhanXet key={k} x={x} />)}
+                  {kq.nhanXet.slice(0, 3).map((x, k) => <NhanXet key={k} x={x} />)}
                 </ul>
               </div>
             </div>
@@ -344,156 +545,111 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
             )}
           </div>
 
-          {/* 4. RUI RO */}
-          {rr?.dsMa?.length > 0 && (
-            <>
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-                <The nhan="Biến động năm" phu={`VN-Index ${Math.round(rr.volV)}%`} mau={rr.volP > rr.volV * 1.3 ? VANG : TEXT}>{Math.round(rr.volP)}%</The>
-                <The nhan="Beta" phu="VN-Index −10% → danh mục ≈" mau={rr.betaP > 1.3 ? VANG : TEXT}>
-                  {rr.betaP.toFixed(2).replace(".", ",")} <span className="text-sm" style={{ color: MUTED }}>({p1(-rr.betaP * 10)}%)</span>
-                </The>
-                <The nhan="Khoản đầu tư độc lập" phu={`từ ${rr.ma.length} mã (tương quan TB ${rr.tqTrungBinh != null ? rr.tqTrungBinh.toFixed(2).replace(".", ",") : "—"})`} mau={rr.soCuocDocLap < 1.4 ? DO : rr.soCuocDocLap < 1.7 ? VANG : TEXT}>
-                  ≈ {p1(rr.soCuocDocLap)}
-                </The>
-                <The nhan="Một phiên xấu (VaR 95%)" phu={`≈ ${tien(rr.var95Dong)} · tệ nhất ${p1(rr.phienXauNhat.pct)}%`}>−{p1(rr.var95)}%</The>
-                <The nhan="Sụt giảm tối đa 1 năm" phu={`VN-Index −${p1(Math.abs(rr.ddV))}%`} mau={Math.abs(rr.ddP.pct) > Math.abs(rr.ddV) * 1.3 ? VANG : TEXT}>−{p1(Math.abs(rr.ddP.pct))}%</The>
-              </div>
+          {/* CAC TAB */}
+          <div className="flex gap-1 overflow-x-auto mb-4 border-b bang-cuon" style={{ borderColor: VIEN }} role="tablist">
+            {TABS.map(([k, t]) => (
+              <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)} className="px-3.5 py-2 text-sm whitespace-nowrap -mb-px border-b-2" style={{ ...sans, fontWeight: tab === k ? 800 : 600, borderColor: tab === k ? PRIMARY : "transparent", color: tab === k ? TEXT : MUTED }}>
+                {t}
+                {k === "xu_ly" && soCanXuLy > 0 && <span className="ml-1.5 text-[11px] px-1.5 rounded-full" style={{ background: DO, color: "#fff" }}>{soCanXuLy}</span>}
+              </button>
+            ))}
+          </div>
 
-                <Khoi tieuDe="Nếu cầm danh mục này 1 năm qua" className="mb-6" phu={`Tỷ trọng hiện tại giữ nguyên, ${rr.soPhien} phiên từ ${rr.tuNgay.split("-").reverse().join("/")}. Quá khứ, không phải dự báo.`}>
-                  <BieuDoHieuSuat chuoi={rr.chuoi} />
-                </Khoi>
-                <Khoi tieuDe="Kiểm tra sức chịu đựng" className="mb-6" phu="Danh mục, tài sản ròng và tỷ lệ ký quỹ sẽ ra sao nếu thị trường giảm.">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm" style={sans}>
-                      <thead>
-                        <tr className="text-left text-xs" style={{ color: MUTED }}>
-                          <th className="py-1.5 pr-2 font-normal">Kịch bản</th>
-                          <th className="py-1.5 px-2 font-normal text-right">Danh mục</th>
-                          <th className="py-1.5 px-2 font-normal text-right">Tài sản ròng</th>
-                          {pb.margin && <th className="py-1.5 pl-2 font-normal text-right">Ký quỹ</th>}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {rr.kichBan.map((k) => (
-                          <tr key={k.ten} className="border-t" style={{ borderColor: "var(--vien-nhe)" }}>
-                            <td className="py-2 pr-2">
-                              {k.ten}
-                              <div className="text-[11px]" style={{ color: MUTED }}>{k.ghiChu}</div>
-                            </td>
-                            <td className="py-2 px-2 text-right" style={{ color: mauLai(k.portPct) }}>{p1(k.portPct)}%</td>
-                            <td className="py-2 px-2 text-right">
-                              {k.navPct != null ? `${p1(k.navPct)}%` : "—"}
-                              <div className="text-[11px]" style={{ color: MUTED }}>{tien(k.doiGiaTri)}</div>
-                            </td>
-                            {pb.margin && (
-                              <td className="py-2 pl-2 text-right whitespace-nowrap" style={{ color: k.chamGC ? DO : k.chamCB ? VANG : TEXT, fontWeight: k.chamCB ? 700 : 400 }}>
-                                {k.tyLeKyQuy != null ? `${Math.round(k.tyLeKyQuy)}%` : "—"}
-                                {k.chamGC ? " · giải chấp" : k.chamCB ? " · gọi ký quỹ" : ""}
-                              </td>
-                            )}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </Khoi>
+          {tab === "xu_ly" && <DanhGiaXuLy kq={kq} keHoach={keHoach} chon={chonKH} setChon={setChonKH} sau={sau} laThanhVien={laThanhVien} lichSuNhan={lichSuNhan} coLuu={!!dm.id} onGhiNhatKy={daLamTheoKeHoach} />}
+          {tab === "rui_ro" && <PhanRuiRo rr={rr} pb={pb} />}
+          {tab === "doanh_nghiep" && <DanhGiaDoanhNghiep kq={kq} coBan={du?.coBan ?? {}} thiTruong={du?.thiTruong} />}
+          {tab === "boi_canh" && <DanhGiaBoiCanh boiCanh={du?.boiCanh} kq={kq} gocNganh={gocNganh} />}
+          {tab === "nhat_ky" && <DanhGiaNhatKy nhatKy={nhatKy} phiPct={soNhap(von.phi) ?? 0} catLo={pc.catLo} giaTheoMa={giaTheoMa} onThem={themLenh} onXoa={(id) => setNhatKy((n) => n.filter((g) => g.id !== id))} tenDanhMuc={dm.ten} />}
+
+          {tab === "chi_tiet" && (
+            <>
+              <Khoi tieuDe="Báo cáo chi tiết">
+                <ul className="grid gap-2.5">
+                  {kq.nhanXet.map((x, k) => <NhanXet key={k} x={x} />)}
+                </ul>
+                {pb.thieu.length > 0 && <p className="text-xs mt-3" style={{ color: VANG }}>Chưa có dữ liệu giá cho: {pb.thieu.join(", ")} — không tính vào tỷ trọng.</p>}
+              </Khoi>
               <div className="grid gap-4 lg:grid-cols-2 mb-6">
-                <Khoi tieuDe="Vốn bỏ vào vs rủi ro gánh" className="" phu="Mã có thanh tím dài hơn thanh cam là mã đang gánh rủi ro nhiều hơn phần vốn của nó.">
-                  <VonVaRuiRo ma={rr.ma} />
+                <Khoi tieuDe="Theo ngành" className="" phu={pb.gocNganhLon ? `Ngành lớn nhất đang ở góc ${{ Leading: "Dẫn dắt", Improving: "Cải thiện", Weakening: "Yếu dần", Lagging: "Tụt hậu" }[pb.gocNganhLon]} trên RRG ngành.` : undefined}>
+                  {pb.nganh.map((n) => <Thanh key={n.ten} ten={n.ten} v={n.tyTrong} />)}
                 </Khoi>
-                <Khoi tieuDe="Các mã có thực sự khác nhau?" className="" phu="Tương quan lợi suất ngày trong 1 năm (tối đa 12 mã lớn nhất).">
-                  {rr.ma.length >= 2 ? <MaTranTuongQuan rr={rr} /> : <p className="text-sm" style={{ color: MUTED }}>Cần ít nhất 2 mã.</p>}
+                <Khoi tieuDe="Theo mã" className="">
+                  {[...kq.hangMa].filter((h) => h.tyTrong != null).sort((a, b) => b.tyTrong - a.tyTrong).map((h) => <Thanh key={h.ma} ten={h.ma} v={h.tyTrong} />)}
                 </Khoi>
+              </div>
+              <div className="rounded-2xl border overflow-hidden mb-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
+                <div className="overflow-x-auto bang-cuon">
+                  <table className="w-full text-sm" style={sans}>
+                    <thead>
+                      <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED }}>
+                        {["Mã", "Số lượng", "Giá vốn", "Giá", "Lãi/lỗ", "Giá trị", "Tỷ trọng", "Rủi ro gánh", "Biến động năm", "Beta", "Phiên để bán hết", "Trạng thái", "Tín hiệu hệ thống", "Nhận xét"].map((t, i) => (
+                          <th key={t} className={`py-3 px-3 font-normal whitespace-nowrap ${i > 0 && i < 11 ? "text-right" : ""}`}>{t}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {pb.hang.map((h, i) => {
+                        const r = theoMaRR[h.ma];
+                        const tk = thanhKhoanMa[h.ma];
+                        const n = kq.nhan[h.ma];
+                        return (
+                          <tr key={`${h.ma}${i}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
+                            <td className="py-2.5 px-3 font-bold"><Link href={`/ma/${h.ma}`} className="hover:underline">{h.ma}</Link></td>
+                            <td className="py-2.5 px-3 text-right">{soVN(h.kl)}</td>
+                            <td className="py-2.5 px-3 text-right">{h.giaVon != null ? fmt(h.giaVon) : "—"}</td>
+                            <td className="py-2.5 px-3 text-right">{h.gia != null ? fmt(h.gia) : "—"}</td>
+                            <td className="py-2.5 px-3 text-right" style={{ color: mauLai(h.laiLoPct) }}>{h.laiLoPct != null ? pct(h.laiLoPct, 1) : "—"}</td>
+                            <td className="py-2.5 px-3 text-right">{tien(h.giaTri)}</td>
+                            <td className="py-2.5 px-3 text-right">{h.tyTrong != null ? `${p1(h.tyTrong * 100)}%` : "—"}</td>
+                            <td className="py-2.5 px-3 text-right" style={{ color: r && r.rc - r.w > 0.08 ? VANG : TEXT }}>{r ? `${p1(r.rc * 100)}%` : "—"}</td>
+                            <td className="py-2.5 px-3 text-right">{r ? `${Math.round(r.vol)}%` : "—"}</td>
+                            <td className="py-2.5 px-3 text-right">{r ? r.beta.toFixed(2).replace(".", ",") : "—"}</td>
+                            <td className="py-2.5 px-3 text-right" style={{ color: tk > 5 ? DO : tk > 1 ? VANG : TEXT }}>{tk != null ? (tk < 1 ? "< 1" : p1(tk)) : "—"}</td>
+                            <td className="py-2.5 px-3">{laThanhVien ? <NhanTrangThai nhan={n?.nhan} ten={NHAN[n?.nhan]?.ten} /> : <span className="inline-flex items-center gap-1 text-xs" style={{ color: MUTED }}><Lock size={12} /> Thành viên</span>}</td>
+                            <td className="py-2.5 px-3 whitespace-nowrap">
+                              {laThanhVien ? (
+                                <span style={{ color: MAU_TIN[h.tin] ?? MUTED, fontWeight: 700 }}>{NHAN_TIN[h.tin] ?? (theoMa[h.ma]?.ngoaiDanhSach ? "Ngoài danh sách" : "—")}</span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 text-xs" style={{ color: MUTED }}><Lock size={12} /> Thành viên</span>
+                              )}
+                            </td>
+                            <td className="py-2.5 px-3 min-w-[260px]">
+                              <div className="flex flex-col gap-1">
+                                {h.nhanXet.length === 0 ? <span style={{ color: MUTED }}>—</span> : h.nhanXet.map((x, j) => <span key={j} className="text-xs" style={{ color: MAU_MUC[x.muc] }}>{x.nhan}</span>)}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </>
           )}
-          {rr?.lichSuNgan?.length > 0 && <p className="text-xs mb-4" style={{ color: VANG }}>Chưa đủ 120 phiên lịch sử nên chưa tính rủi ro cho: {rr.lichSuNgan.join(", ")}.</p>}
 
-          {/* 5. BAO CAO DAY DU */}
-          <Khoi tieuDe="Báo cáo chi tiết">
-            <ul className="grid gap-2.5">
-              {baoCao.map((x, k) => <NhanXet key={k} x={x} />)}
-            </ul>
-            {pb.thieu.length > 0 && <p className="text-xs mt-3" style={{ color: VANG }}>Chưa có dữ liệu giá cho: {pb.thieu.join(", ")} — không tính vào tỷ trọng.</p>}
-          </Khoi>
-
-          {/* 6. PHAN BO */}
-          <div className="grid gap-4 lg:grid-cols-2 mb-6">
-            <Khoi tieuDe="Theo ngành" className="" phu={pb.gocNganhLon ? `Ngành lớn nhất đang ở góc ${{ Leading: "Dẫn dắt", Improving: "Cải thiện", Weakening: "Yếu dần", Lagging: "Tụt hậu" }[pb.gocNganhLon]} trên RRG ngành.` : undefined}>
-              {pb.nganh.map((n) => <Thanh key={n.ten} ten={n.ten} v={n.tyTrong} />)}
-            </Khoi>
-            <Khoi tieuDe="Theo mã" className="">
-              {[...pb.hang].filter((h) => h.tyTrong != null).sort((a, b) => b.tyTrong - a.tyTrong).map((h) => <Thanh key={h.ma} ten={h.ma} v={h.tyTrong} />)}
-            </Khoi>
-          </div>
-
-          {/* 7. CHI TIET TUNG MA */}
-          <div className="rounded-2xl border overflow-hidden mb-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
-            <div className="overflow-x-auto bang-cuon">
-              <table className="w-full text-sm" style={sans}>
-                <thead>
-                  <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED }}>
-                    {["Mã", "Số lượng", "Giá vốn", "Giá", "Lãi/lỗ", "Giá trị", "Tỷ trọng", "Rủi ro gánh", "Biến động năm", "Beta", "Phiên để bán hết", "Tín hiệu hệ thống", "Nhận xét"].map((t, i) => (
-                      <th key={t} className={`py-3 px-3 font-normal whitespace-nowrap ${i > 0 && i < 11 ? "text-right" : ""}`}>{t}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {pb.hang.map((h, i) => {
-                    const r = theoMaRR[h.ma];
-                    const tk = thanhKhoanMa[h.ma];
-                    return (
-                      <tr key={`${h.ma}${i}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
-                        <td className="py-2.5 px-3 font-bold"><Link href={`/ma/${h.ma}`} className="hover:underline">{h.ma}</Link></td>
-                        <td className="py-2.5 px-3 text-right">{soVN(h.kl)}</td>
-                        <td className="py-2.5 px-3 text-right">{h.giaVon != null ? fmt(h.giaVon) : "—"}</td>
-                        <td className="py-2.5 px-3 text-right">{h.gia != null ? fmt(h.gia) : "—"}</td>
-                        <td className="py-2.5 px-3 text-right" style={{ color: mauLai(h.laiLoPct) }}>{h.laiLoPct != null ? pct(h.laiLoPct, 1) : "—"}</td>
-                        <td className="py-2.5 px-3 text-right">{tien(h.giaTri)}</td>
-                        <td className="py-2.5 px-3 text-right">{h.tyTrong != null ? `${p1(h.tyTrong * 100)}%` : "—"}</td>
-                        <td className="py-2.5 px-3 text-right" style={{ color: r && r.rc - r.w > 0.08 ? VANG : TEXT }}>{r ? `${p1(r.rc * 100)}%` : "—"}</td>
-                        <td className="py-2.5 px-3 text-right">{r ? `${Math.round(r.vol)}%` : "—"}</td>
-                        <td className="py-2.5 px-3 text-right">{r ? r.beta.toFixed(2).replace(".", ",") : "—"}</td>
-                        <td className="py-2.5 px-3 text-right" style={{ color: tk > 5 ? DO : tk > 1 ? VANG : TEXT }}>{tk != null ? (tk < 1 ? "< 1" : p1(tk)) : "—"}</td>
-                        <td className="py-2.5 px-3 whitespace-nowrap">
-                          {laThanhVien ? (
-                            <span style={{ color: MAU_TIN[h.tin] ?? MUTED, fontWeight: 700 }}>{NHAN_TIN[h.tin] ?? (theoMa[h.ma]?.ngoaiDanhSach ? "Ngoài danh sách" : "—")}</span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-xs" style={{ color: MUTED }}><Lock size={12} /> Thành viên</span>
-                          )}
-                        </td>
-                        <td className="py-2.5 px-3 min-w-[260px]">
-                          <div className="flex flex-col gap-1">
-                            {h.nhanXet.length === 0 ? <span style={{ color: MUTED }}>—</span> : h.nhanXet.map((x, j) => <span key={j} className="text-xs" style={{ color: MAU_MUC[x.muc] }}>{x.nhan}</span>)}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {!laThanhVien && (
+          {!laThanhVien && tab !== "xu_ly" && (
             <div className="rounded-2xl border p-5 mb-6 flex flex-wrap items-center justify-between gap-4" style={{ borderColor: PRIMARY, background: "color-mix(in srgb, #6C5CE7 10%, var(--card))" }}>
               <div className="max-w-xl">
-                <p className="text-base mb-1" style={{ ...sans, fontWeight: 800 }}>Xem thêm tín hiệu hệ thống cho từng mã trong danh mục</p>
-                <p className="text-sm" style={{ color: MUTED }}>Thành viên (miễn phí) thấy tín hiệu MUA / NẮM GIỮ / BÁN, mốc cắt lỗ và chốt lời của từng mã ngay trong bảng đánh giá, kèm cảnh báo khi mã sắp chạm cắt lỗ.</p>
+                <p className="text-base mb-1" style={{ ...sans, fontWeight: 800 }}>Nên giữ hay bán từng mã? Có nên trung bình giá?</p>
+                <p className="text-sm" style={{ color: MUTED }}>Thành viên (miễn phí) thấy trạng thái và kế hoạch xử lý từng mã theo phong cách của mình, tín hiệu MUA / BÁN, mốc cắt lỗ – chốt lời, và nhận cảnh báo khi mã trong danh mục chuyển xấu.</p>
               </div>
               <TaiKhoanNut nhan="Đăng ký miễn phí" />
             </div>
           )}
+
+          <BaoCaoDanhMuc mo={moBaoCao} dong={() => setMoBaoCao(false)} kq={kq} sau={sau} hanhDongChon={hanhDongChon} du={du} gocNganh={gocNganh} laThanhVien={laThanhVien} baoCao={baoCao} setBaoCao={setBaoCao} ngay={ngay} nhatKy={nhatKy} tenDanhMuc={dm.ten} />
         </>
       )}
 
-      <details className="text-[11px] mb-2" style={{ color: MUTED }}>
+      <details className="text-[11px] mb-2 mt-4" style={{ color: MUTED }}>
         <summary className="cursor-pointer select-none" style={{ fontWeight: 700 }}>Cách tính & giới hạn</summary>
         <div className="mt-2 grid gap-1.5 leading-relaxed">
-          <p>Dữ liệu: giá đóng cửa đã điều chỉnh cổ tức (DNSE) khoảng 1 năm gần nhất, tỷ trọng hiện tại giữ nguyên suốt cả năm. Mã có dưới 120 phiên lịch sử không được tính rủi ro.</p>
+          <p>Dữ liệu: giá đóng cửa đã điều chỉnh cổ tức (DNSE) khoảng 1 năm gần nhất, tỷ trọng hiện tại giữ nguyên suốt cả năm. Mã có dưới 120 phiên lịch sử không được tính rủi ro. BCTC quý mới nhất từ VNDirect.</p>
           <p>Biến động năm = độ lệch chuẩn lợi suất ngày × √250. Beta so với VN-Index. “Rủi ro gánh” = phần đóng góp vào phương sai danh mục (risk contribution). “Khoản đầu tư độc lập” = bình phương hệ số đa dạng hóa (tổng biến động từng mã theo tỷ trọng / biến động danh mục) — xấp xỉ số nguồn rủi ro độc lập.</p>
           <p>Một phiên xấu (VaR 95%) = mức lỗ của 5% phiên tệ nhất trong 1 năm. Kịch bản VN-Index −5/−10/−20% ước theo beta (tuyến tính); kịch bản “đợt giảm mạnh nhất” dùng giá thật của các mã trong 20 phiên VN-Index giảm sâu nhất của năm. Phiên để bán hết = giá trị vị thế / (20% giá trị giao dịch bình quân 20 phiên).</p>
-          <p>Điểm sức khỏe = 4 trụ × 25 với ngưỡng do web tự đặt (quá nửa giá trị nằm ở mã có cảnh báo nặng thì điểm tối đa 64), chưa kiểm chứng bằng backtest. Lãi/lỗ chưa trừ phí và thuế. Chỉ để tham khảo, không phải khuyến nghị đầu tư.</p>
+          <p>Phong cách đầu tư không phải 4 hệ thống tín hiệu riêng: cùng một bộ dữ liệu, mỗi phong cách đổi trọng số 5 trụ điểm, quy tắc gắn trạng thái Giữ / Theo dõi / Giảm tỷ trọng / Thoát và quy tắc mua thêm. “Theo xu hướng trung hạn” dùng tín hiệu, cắt lỗ, Kijun và đường cân bằng dài hạn của hệ thống; ba phong cách còn lại dùng ngưỡng web tự đặt, chưa kiểm chứng bằng backtest. Kế hoạch xử lý: bán trước mua sau, tiền bán trả nợ margin trước, lô 100 cp, không đề xuất mua thêm khi đang dùng margin.</p>
+          <p>Điểm sức khỏe dùng ngưỡng do web tự đặt (quá nửa giá trị nằm ở mã cần thoát thì điểm tối đa 64), chưa kiểm chứng bằng backtest. Lãi/lỗ chưa trừ phí và thuế (nhật ký có trừ). Chỉ để tham khảo, không phải khuyến nghị đầu tư.</p>
         </div>
       </details>
     </div>
