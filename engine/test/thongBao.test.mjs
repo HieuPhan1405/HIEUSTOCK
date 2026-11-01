@@ -1,5 +1,5 @@
 // Test tay cho lib/thongBao.js (noi dung thong bao tin hieu / dang ky moi, ai duoc nhan). Chay: node engine/test/thongBao.test.mjs
-import { dungThongBaoTinHieu, thongBaoDangKy, locChoNguoiDung, tomTatDay, demChuaXem, cheSdt } from "../../lib/thongBao.js";
+import { dungThongBaoTinHieu, thongBaoDangKy, locChoNguoiDung, tomTatDay, demChuaXem, cheSdt, dungThongBaoGoiYMua } from "../../lib/thongBao.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -79,6 +79,19 @@ ok("1 dang ky: che so dien thoai tren man hinh khoa", tomTatDay([dk]).body === "
 
 const coGio = [{ tao_luc: "2026-09-28T03:00:00Z" }, { tao_luc: "2026-09-28T05:00:00Z" }];
 ok("chua xem: moi hon lan mo", demChuaXem(coGio, "2026-09-28T04:00:00Z") === 1 && demChuaXem(coGio, null) === 2);
+
+// GOI Y MUA MOI
+const datGY = [
+  { ma: "FPT", nganh: "Công nghệ - Viễn thông", moc: 52.59, stop_loss: 45, tp1: 58, ngayMua: "2026-11-02", daChot: false },
+  { ma: "HPG", nganh: "Thép", moc: 21, stop_loss: 20.2, ngayMua: "2026-11-02", daChot: true },
+];
+const gy = dungThongBaoGoiYMua({ dat: datGY, ngay: "2026-11-02" });
+ok("goi y mua: moi ma 1 su kien, khoa theo ma + ngay tin hieu", gy.length === 2 && gy[0].khoa === "goi_y_mua:FPT:2026-11-02" && gy[0].loai === "goi_y_mua" && gy[0].duong_dan === "/danh-gia-danh-muc?tab=goi_y");
+ok("goi y mua: cat lo chan 6% duoi moc (45 -> 49,43), vung mua moc +1%", /cắt lỗ 49,43/.test(gy[0].noi_dung) && /Vùng mua 52,59–53,12/.test(gy[0].noi_dung), gy[0].noi_dung);
+ok("goi y mua ngoai khung gio: chi ma da chot mua", JSON.stringify(dungThongBaoGoiYMua({ dat: datGY, ngay: "2026-11-02", trongKhung: false }).map((t) => t.ma)) === '["HPG"]');
+ok("goi y mua: khong co ngay -> rong", dungThongBaoGoiYMua({ dat: datGY }).length === 0);
+ok("goi y mua: pham vi 'chi ma theo doi' van nhan, 'khong' thi khong, khach chua duyet khong", locChoNguoiDung(gy, { daDuyet: true, phamVi: "danh_muc", maTheoDoi: [] }).length === 2 && locChoNguoiDung(gy, { daDuyet: true, phamVi: "khong" }).length === 0 && locChoNguoiDung(gy, { daDuyet: false }).length === 0);
+ok("goi y mua: tom tat day nhieu su kien co nhan 'Gợi ý mua'", /Gợi ý mua: FPT, HPG/.test(tomTatDay([...gy, ...ds]).body));
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

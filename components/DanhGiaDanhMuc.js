@@ -178,6 +178,12 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
       // ban tren may chi la nhap: chi gan lai voi danh muc da luu SAU KHI may chu tra ve (tranh ghi de ban moi hon sua o thiet bi khac)
       if (local) apDung(local);
       setSan(true);
+      // link tu thong bao ve may (?tab=goi_y): mo dung tab va cuon toi muc do
+      const tabUrl = new URLSearchParams(window.location.search).get("tab");
+      if (TABS.some(([k]) => k === tabUrl)) {
+        setTab(tabUrl);
+        setTimeout(() => document.querySelector('section[aria-label="Mã gợi ý mua"]')?.scrollIntoView({ behavior: "smooth", block: "start" }), 2500);
+      }
       if (!dangNhap) return;
       try {
         const r = await fetch("/api/danh-muc-luu", { cache: "no-store" });
