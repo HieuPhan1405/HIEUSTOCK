@@ -173,7 +173,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
 
   const trieu = (x) => (so(x) > 0 ? so(x) * 1e6 : 0);
   const pb = useMemo(
-    () => (vitri.length ? danhGiaDanhMuc(vitri, theoMa, { tienMat: trieu(von.tienMat), no: trieu(von.no), laiSuat: so(von.laiSuat), nguong: { canhBao: so(von.canhBao), giaiChap: so(von.giaiChap) }, gocNganh }) : null),
+    () => (vitri.length ? danhGiaDanhMuc(vitri, theoMa, { tienMat: String(von.tienMat).trim() === "" ? null : trieu(von.tienMat), no: trieu(von.no), laiSuat: so(von.laiSuat), nguong: { canhBao: so(von.canhBao), giaiChap: so(von.giaiChap) }, gocNganh }) : null),
     [vitri, theoMa, von, gocNganh]
   );
   const rr = useMemo(() => {
@@ -312,7 +312,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
               <div className="text-center">
                 <DongHoDiem diem={suc?.diem} xepLoai={suc?.xepLoai} size={210} />
                 <p className="text-[11px] mt-1" style={{ color: MUTED }}>
-                  {lichSu.dangTai ? "Đang tải lịch sử giá để tính rủi ro…" : suc?.dayDu ? "Tính trên 1 năm dữ liệu giá" : lichSu.loi ? `Chưa tải được lịch sử giá (${lichSu.loi}) — điểm tạm tính` : "Điểm tạm tính"}
+                  {suc?.gioiHan ? `Giới hạn ở mức Trung bình vì ${Math.round(suc.tyLeNang * 100)}% giá trị nằm ở mã có cảnh báo nặng` : lichSu.dangTai ? "Đang tải lịch sử giá để tính rủi ro…" : suc?.dayDu ? "Tính trên 1 năm dữ liệu giá" : lichSu.loi ? `Chưa tải được lịch sử giá (${lichSu.loi}) — điểm tạm tính` : "Điểm tạm tính"}
                 </p>
               </div>
               <div>
@@ -493,7 +493,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
           <p>Dữ liệu: giá đóng cửa đã điều chỉnh cổ tức (DNSE) khoảng 1 năm gần nhất, tỷ trọng hiện tại giữ nguyên suốt cả năm. Mã có dưới 120 phiên lịch sử không được tính rủi ro.</p>
           <p>Biến động năm = độ lệch chuẩn lợi suất ngày × √250. Beta so với VN-Index. “Rủi ro gánh” = phần đóng góp vào phương sai danh mục (risk contribution). “Khoản đầu tư độc lập” = bình phương hệ số đa dạng hóa (tổng biến động từng mã theo tỷ trọng / biến động danh mục) — xấp xỉ số nguồn rủi ro độc lập.</p>
           <p>Một phiên xấu (VaR 95%) = mức lỗ của 5% phiên tệ nhất trong 1 năm. Kịch bản VN-Index −5/−10/−20% ước theo beta (tuyến tính); kịch bản “đợt giảm mạnh nhất” dùng giá thật của các mã trong 20 phiên VN-Index giảm sâu nhất của năm. Phiên để bán hết = giá trị vị thế / (20% giá trị giao dịch bình quân 20 phiên).</p>
-          <p>Điểm sức khỏe = 4 trụ × 25 với ngưỡng do web tự đặt, chưa kiểm chứng bằng backtest. Lãi/lỗ chưa trừ phí và thuế. Chỉ để tham khảo, không phải khuyến nghị đầu tư.</p>
+          <p>Điểm sức khỏe = 4 trụ × 25 với ngưỡng do web tự đặt (quá nửa giá trị nằm ở mã có cảnh báo nặng thì điểm tối đa 64), chưa kiểm chứng bằng backtest. Lãi/lỗ chưa trừ phí và thuế. Chỉ để tham khảo, không phải khuyến nghị đầu tư.</p>
         </div>
       </details>
     </div>
