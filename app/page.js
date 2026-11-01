@@ -310,6 +310,9 @@ export default async function TrangTongQuan() {
             <Link href="/bieu-do" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
               Xem biểu đồ kỹ thuật
             </Link>
+            <Link href="/danh-gia-danh-muc" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: "#6C5CE7", color: TEXT }}>
+              Chấm điểm danh mục của bạn
+            </Link>
             {/* Anh chia nho (chup ca trang dai va bi cat o man hinh nho): the co dinh 720px, xem components/TheThiTruong.js / TheTinHieu.js */}
             <XuatAnh nhan="Ảnh thị trường" the={<TheThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} ngay={ngayAnh} />} rong={RONG_THE_THI_TRUONG} tenFile={`CloudStock-thi-truong-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tổng quan thị trường" />
             {xemTinHieu && <XuatAnh nhan="Ảnh tín hiệu" the={<TheTinHieu cohoi={cohoiAnh} ngay={ngayAnh} />} rong={RONG_THE_TIN_HIEU} tenFile={`CloudStock-tin-hieu-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tín hiệu trong phiên" />}

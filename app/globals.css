@@ -35,6 +35,9 @@ html[data-theme="dark"] {
   --panel-tim: #1B1830;
   --tim-chu: #C9BEFF;
   --tim-nhat: #A78BFA;
+  /* 2 mau chuoi cho bieu do danh gia danh muc (da kiem bang validate_palette: CVD + tuong phan tren --card) */
+  --bd-1: #7C6CF0;
+  --bd-2: #C4842A;
   --xanh: #22C55E;
   --xanh-nhat: #4ADE80;
   --xanh-dam: #16A34A;
@@ -81,6 +84,8 @@ html[data-theme="light"] {
   --panel-tim: #F3EFFF;
   --tim-chu: #5B45C9;
   --tim-nhat: #7C3AED;
+  --bd-1: #6C5CE7;
+  --bd-2: #B7791F;
   --xanh: #16A34A;
   --xanh-nhat: #1FAF55;
   --xanh-dam: #15803D;
