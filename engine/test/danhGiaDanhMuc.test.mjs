@@ -1,5 +1,5 @@
 // Test tay: node engine/test/danhGiaDanhMuc.test.mjs
-import { docDanDanhMuc, nhanXetMa, danhGiaDanhMuc } from "../../lib/danhGiaDanhMuc.js";
+import { docDanDanhMuc, nhanXetMa, danhGiaDanhMuc, phanTramGiamDenNguong } from "../../lib/danhGiaDanhMuc.js";
 let loi = 0;
 const dat = (ten, dk, them = "") => { if (dk) console.log("ok:", ten); else { console.log("SAI:", ten, them); loi++; } };
 const gan = (a, b, e = 1e-6) => Math.abs(a - b) <= e;
@@ -33,5 +33,31 @@ const nhieu = Object.fromEntries(Array.from({ length: 10 }, (_, i) => [`M${i}`, 
 const g2 = danhGiaDanhMuc(Object.keys(nhieu).map((ma) => ({ ma, kl: 100, giaVon: 19 })), nhieu);
 dat("10 ma deu nhau, tren Kijun -> diem cao (>= 90) va xep 'Tốt'", g2.diem >= 90 && g2.xepLoai === "Tốt", g2.diem);
 dat("rong -> khong loi, diem null", danhGiaDanhMuc([], {}).diem === null);
+// von & margin
+dat("giam den nguong: GT 100tr, no 50tr, khong tien mat, nguong 35% -> giam 23,08%", gan(phanTramGiamDenNguong(100e6, 0, 50e6, 35), 100 * (1 - 50 / 0.65 / 100), 1e-6), phanTramGiamDenNguong(100e6, 0, 50e6, 35));
+dat("co 20tr tien mat -> giam 43,08% (dem day hon)", gan(phanTramGiamDenNguong(100e6, 20e6, 50e6, 35), 100 * (1 - (50 / 0.65 - 20) / 100), 1e-6));
+dat("khong no -> null; no lon hon muc cho phep -> 0", phanTramGiamDenNguong(100e6, 0, 0, 35) === null && phanTramGiamDenNguong(100e6, 0, 80e6, 35) === 0);
+{
+  const th = { AAA: R({ gia: 50, kijun: 40 }) };
+  const v = [{ ma: "AAA", kl: 2000, giaVon: 40 }]; // GT 100tr
+  const gm = danhGiaDanhMuc(v, th, { tienMat: 0, no: 50e6, laiSuat: 12 });
+  dat("NAV = 50tr, don bay 2,0x, ty le ky quy 50%", gan(gm.taiSan.nav, 50e6) && gan(gm.margin.donBay, 2) && gan(gm.margin.tyLeKyQuy, 50), JSON.stringify(gm.margin));
+  dat("lai margin 12%/nam tren 50tr = 0,5 trieu/thang", gan(gm.margin.laiMoiThang, 500000));
+  dat("nhan xet margin: giam ~23% cham canh bao, don bay 2,00x, het tien mat", gm.nhanXet.some((x) => /đòn bẩy 2,00x/.test(x.nhan) && /23%/.test(x.nhan)) && gm.nhanXet.some((x) => /hết tiền mặt/.test(x.nhan)), JSON.stringify(gm.nhanXet.map((x) => x.nhan)));
+  const gc = danhGiaDanhMuc(v, th, { tienMat: 0, no: 70e6 }); // ky quy 30% < 35 -> da cham
+  dat("da cham canh bao -> muc 0", gc.nhanXet.some((x) => x.muc === 0 && /đã chạm/.test(x.nhan)), JSON.stringify(gc.nhanXet.map((x) => x.nhan)));
+  const ts = danhGiaDanhMuc(v, th, { tienMat: 100e6, no: 0 });
+  dat("tien mat 50% -> nhan xet cho co hoi, khong margin", ts.margin === null && ts.nhanXet.some((x) => /Tiền mặt chiếm 50%/.test(x.nhan)), JSON.stringify(ts.nhanXet.map((x) => x.nhan)));
+  dat("tru diem margin: diem co margin mong < diem khong margin", gm.diem < danhGiaDanhMuc(v, th, { tienMat: 0, no: 0 }).diem, gm.diem);
+}
+// dang song nganh: cam 4 ma cung nganh -> khong bi tru nhieu diem + nhan xet 'co ly do'
+{
+  const th = Object.fromEntries(["A", "B", "C", "D"].map((m) => [m, R({ gia: 20, kijun: 18, nganh: "Thép" })]));
+  const v = ["A", "B", "C", "D"].map((ma) => ({ ma, kl: 1000, giaVon: 19 }));
+  const song = danhGiaDanhMuc(v, th, { gocNganh: { "Thép": "Leading" } });
+  const khong = danhGiaDanhMuc(v, th, { gocNganh: { "Thép": "Lagging" } });
+  dat("song nganh: nhan xet noi co ly do, diem da dang cao hon khi nganh tut hau", song.nhanXet.some((x) => /có lý do/.test(x.nhan)) && song.chiTietDiem.daDang > khong.chiTietDiem.daDang, `${song.chiTietDiem.daDang} vs ${khong.chiTietDiem.daDang}`);
+  dat("nganh tut hau: canh bao nang (muc 0) + nhac goc Tut hau", khong.nhanXet.some((x) => x.muc === 0 && /Tụt hậu/.test(x.nhan)), JSON.stringify(khong.nhanXet.map((x) => x.nhan)));
+}
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

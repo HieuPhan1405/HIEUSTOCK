@@ -61,19 +61,23 @@ function Thanh({ ten, v, mau = PRIMARY }) {
 }
 
 // duLieu: { MA: { ma, ten_ngan, gia, doi, tin, diem, kijun, gg_bot, stop_loss, tp1, ban_bot, nganh, von_hoa } } (chi nguoi da duoc duyet moi vao duoc trang)
-export default function DanhGiaDanhMuc({ duLieu, ngay = "" }) {
+export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {} }) {
   const [ds, setDs] = useState([moi()]);
   const [san, setSan] = useState(false);
   const [dan, setDan] = useState(false);
   const [vanBan, setVanBan] = useState("");
   const [thongBao, setThongBao] = useState("");
+  // von & margin (nhap theo TRIEU DONG; ty le ky quy theo %): tien mat con lai, du no margin, lai suat %/nam (tuy chon), nguong canh bao / xu ly cua CTCK
+  const [von, setVon] = useState({ tienMat: "", no: "", laiSuat: "", canhBao: "35", giaiChap: "30" });
 
   // doc danh muc da luu tren MAY nay (khong gui len may chu)
   useEffect(() => {
     const t = setTimeout(() => {
       try {
         const j = JSON.parse(localStorage.getItem(KHOA_LUU) || "null");
-        if (Array.isArray(j) && j.length) setDs(j.map((x) => moi(x)));
+        const dsLuu = Array.isArray(j) ? j : j?.ds;
+        if (Array.isArray(dsLuu) && dsLuu.length) setDs(dsLuu.map((x) => moi(x)));
+        if (j && !Array.isArray(j) && j.von) setVon((v) => ({ ...v, ...j.von }));
       } catch {}
       setSan(true);
     }, 0);
@@ -82,9 +86,9 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "" }) {
   useEffect(() => {
     if (!san) return;
     try {
-      localStorage.setItem(KHOA_LUU, JSON.stringify(ds.filter((x) => x.ma || x.kl || x.giaVon).map(({ ma, kl, giaVon }) => ({ ma, kl, giaVon }))));
+      localStorage.setItem(KHOA_LUU, JSON.stringify({ ds: ds.filter((x) => x.ma || x.kl || x.giaVon).map(({ ma, kl, giaVon }) => ({ ma, kl, giaVon })), von }));
     } catch {}
-  }, [ds, san]);
+  }, [ds, von, san]);
 
   const vitri = useMemo(
     () =>
@@ -94,7 +98,11 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "" }) {
         .map((x) => ({ ...x, giaVon: x.giaVon > 0 ? x.giaVon : null })),
     [ds]
   );
-  const kq = useMemo(() => (vitri.length ? danhGiaDanhMuc(vitri, duLieu) : null), [vitri, duLieu]);
+  const trieu = (x) => (so(x) > 0 ? so(x) * 1e6 : 0);
+  const kq = useMemo(
+    () => (vitri.length ? danhGiaDanhMuc(vitri, duLieu, { tienMat: trieu(von.tienMat), no: trieu(von.no), laiSuat: so(von.laiSuat), nguong: { canhBao: so(von.canhBao), giaiChap: so(von.giaiChap) }, gocNganh }) : null),
+    [vitri, duLieu, von, gocNganh]
+  );
   const dsMa = useMemo(() => Object.keys(duLieu).sort(), [duLieu]);
 
   const sua = (id, k, v) => setDs((c) => c.map((x) => (x.id === id ? { ...x, [k]: v } : x)));
@@ -162,6 +170,29 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "" }) {
         )}
       </section>
 
+      {/* VON & MARGIN */}
+      <section className="rounded-2xl border p-4 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }} aria-label="Vốn và margin">
+        <div className="flex flex-wrap items-baseline justify-between gap-2 mb-3">
+          <h2 className="text-lg" style={{ ...sans, fontWeight: 700 }}>Vốn & margin</h2>
+          <span className="text-[11px]" style={{ color: MUTED }}>Tùy chọn — nhập theo triệu đồng; không dùng margin thì để trống ô nợ</span>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          {[
+            ["tienMat", "Tiền mặt còn lại (triệu đồng)", "50"],
+            ["no", "Dư nợ margin (triệu đồng)", "0"],
+            ["laiSuat", "Lãi suất margin (%/năm)", "12"],
+            ["canhBao", "Ngưỡng cảnh báo ký quỹ (%)", "35"],
+            ["giaiChap", "Ngưỡng xử lý / giải chấp (%)", "30"],
+          ].map(([k, nhan, ph]) => (
+            <label key={k} className="block text-[11px]" style={{ color: MUTED }}>
+              {nhan}
+              <input value={von[k]} onChange={(e) => setVon((v) => ({ ...v, [k]: e.target.value.replace(/[^0-9.,]/g, "") }))} inputMode="decimal" placeholder={ph} className={`${o} mt-1`} style={oStyle} />
+            </label>
+          ))}
+        </div>
+        <p className="text-[11px] mt-2" style={{ color: MUTED }}>Tỷ lệ ký quỹ = (tài sản − nợ) / tài sản. Ngưỡng cảnh báo và xử lý mỗi công ty chứng khoán một kiểu (thường 30–40%) — bạn tự sửa theo CTCK của mình; web coi toàn bộ cổ phiếu trong danh mục đều được vay.</p>
+      </section>
+
       {!kq && <p className="text-sm mb-6" style={{ color: MUTED }}>Nhập ít nhất một mã và số lượng để xem đánh giá.</p>}
 
       {kq && (
@@ -174,6 +205,20 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "" }) {
               {kq.diem != null ? `${kq.diem}/100 · ${kq.xepLoai}` : "—"}
             </The>
             <The nhan="Tập trung" phu={kq.tyTrong.maTop1 ? `Lớn nhất: ${kq.tyTrong.maTop1}` : undefined}>{kq.tyTrong.maTop1 ? `${(kq.tyTrong.top1 * 100).toFixed(0)}% · top 3: ${(kq.tyTrong.top3 * 100).toFixed(0)}%` : "—"}</The>
+          </div>
+
+          {/* VON & DON BAY */}
+          <div className={`grid grid-cols-2 ${kq.margin ? "lg:grid-cols-4" : "lg:grid-cols-3"} gap-4 mb-6`}>
+            <The nhan="Tài sản ròng (NAV)" phu={`Cổ phiếu ${tien(kq.taiSan.coPhieu)}${kq.taiSan.no > 0 ? ` − nợ ${tien(kq.taiSan.no)}` : ""}`}>{tien(kq.taiSan.nav)}</The>
+            <The nhan="Tiền mặt" phu={kq.taiSan.tongTaiSan > 0 ? `${(kq.taiSan.tyLeTienMat * 100).toFixed(0)}% tổng tài sản` : undefined}>{tien(kq.taiSan.tienMat)}</The>
+            {kq.margin ? (
+              <>
+                <The nhan="Đòn bẩy margin" mau={kq.margin.donBay > 1.5 ? DO : kq.margin.donBay > 1.2 ? VANG : TEXT} phu={`Tỷ lệ ký quỹ ${kq.margin.tyLeKyQuy != null ? kq.margin.tyLeKyQuy.toFixed(0) : "—"}%${kq.margin.laiMoiThang != null ? ` · lãi vay ~${tien(kq.margin.laiMoiThang)}/tháng` : ""}`}>{kq.margin.donBay != null ? `${kq.margin.donBay.toFixed(2).replace(".", ",")}x` : "—"}</The>
+                <The nhan={`Giảm bao nhiêu thì chạm ${kq.nguong.canhBao}%`} mau={kq.margin.giamDenCanhBao == null ? MUTED : kq.margin.giamDenCanhBao <= 10 ? DO : kq.margin.giamDenCanhBao <= 20 ? VANG : XANH} phu={kq.margin.giamDenGiaiChap != null ? `Giảm ~${kq.margin.giamDenGiaiChap.toFixed(0)}% thì tới ngưỡng xử lý ${kq.nguong.giaiChap}%` : undefined}>{kq.margin.giamDenCanhBao != null ? `−${kq.margin.giamDenCanhBao.toFixed(0)}% giá trị cổ phiếu` : "—"}</The>
+              </>
+            ) : (
+              <The nhan="Margin" phu="Chưa nhập dư nợ">Không dùng</The>
+            )}
           </div>
 
           {/* PHAN TICH */}

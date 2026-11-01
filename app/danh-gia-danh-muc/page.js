@@ -5,6 +5,7 @@ import DanhGiaDanhMuc from "@/components/DanhGiaDanhMuc";
 import NhanCapNhat from "@/components/NhanCapNhat";
 import { capNhatMoiNhat } from "@/components/dungChung";
 import { NGANH_NHAN } from "@/lib/nganh";
+import { layRRGNganh } from "@/lib/phanTichCoBanDb";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
@@ -26,8 +27,12 @@ export default async function TrangDanhGiaDanhMuc() {
   }
   let tatCa = [];
   let loi = null;
+  // RRG nganh la du lieu phu (khong co thi bo qua): goc Dan dat / Cai thien / Yeu dan / Tut hau tung nganh de nhan xet viec cam nhieu ma khi dang song nganh.
+  let gocNganh = {};
   try {
-    tatCa = await layTatCaTinHieu();
+    const [a, rrg] = await Promise.all([layTatCaTinHieu(), layRRGNganh().catch(() => null)]);
+    tatCa = a;
+    gocNganh = Object.fromEntries((rrg?.ketQua ?? []).map((k) => [NGANH_NHAN[k.nganh] || k.nganh, k.goc]));
   } catch (e) {
     loi = thongBaoLoi(e);
   }
@@ -46,7 +51,7 @@ export default async function TrangDanhGiaDanhMuc() {
         Tự điền các mã bạn đang nắm giữ (số lượng, giá vốn): web tính lãi/lỗ, tỷ trọng, mức tập trung theo mã và ngành, rồi nhận xét dựa trên tín hiệu của hệ thống.
       </p>
       <NhanCapNhat luc={luc} className="mb-4" />
-      {loi ? <p className="text-sm" style={{ color: "var(--do)" }}>Lỗi tải dữ liệu: {loi}</p> : <DanhGiaDanhMuc duLieu={duLieu} ngay={luc ? new Date(luc).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : ""} />}
+      {loi ? <p className="text-sm" style={{ color: "var(--do)" }}>Lỗi tải dữ liệu: {loi}</p> : <DanhGiaDanhMuc duLieu={duLieu} gocNganh={gocNganh} ngay={luc ? new Date(luc).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : ""} />}
     </div>
   );
 }
