@@ -8,13 +8,15 @@
 // moi moc cach gia vao it nhat 5% / 10% / 15%). Chi la DIEM VAO THAM KHAO (khong tinh vao tin hieu MUA/BAN). Ket qua lich su: day goc 18-19% (B), thung day 23% trong 20 phien, sut >= 5% trong 10 phien ~ 50% - nen chia 1/2 von va co cat lo.
 import { hhv } from "./mang.js";
 import { tinhBaMocChotLoi } from "./vaoLenh.js";
+import { trangThaiDongTien } from "../../lib/dongTienBanker.js";
 
 export const CAU_HINH_B = { giamPct: 10, giamTuPct: 20, giamDenPct: 30, trongNen: 10, dayCachToiThieu: 3, giuaHaiLan: 15, gtgdToiThieuTy: 3, heSoATR: 2.5, slToiThieuPct: 3, hardStopPct: 10 };
 export const SO_NEN_B_GAN_DAY = 10;
 
 // {high, low, close, volume, atr, tenkan, kijun, cloudTop, cbTop}: cac mang cung do dai (null cho nen chua du du lieu).
 // Tra ve { laB: bool[], gan: { i, cach, gia, giaVao, catLo, giam, day, klDay, sl, tp1, tp2, tp3 } | null, giamB: (muc giam % tai nen B hoac null)[], moTa(i) } - `gan` = diem B gan nhat trong SO_NEN_B_GAN_DAY nen cuoi; moTa(i) mo ta diem B bat ky.
-export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kijun, cloudTop, cbTop, open = null }, cauHinh = CAU_HINH_B) {
+// dongTienTrend / dongTienBB (tuy chon, lib/dongTienBanker.js): neu co, moTa(i) them dongTien = 1 (trend > bull/bear: dong tien da quay len) / 0 (con yeu) tai nen B - chi la nhan thong tin.
+export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kijun, cloudTop, cbTop, open = null, dongTienTrend = null, dongTienBB = null }, cauHinh = CAU_HINH_B) {
   const c = { ...CAU_HINH_B, ...cauHinh };
   const n = close.length;
   const laB = new Array(n).fill(false);
@@ -63,7 +65,7 @@ export function tinhDiemMuaPhucHoi({ high, low, close, volume, atr, tenkan, kiju
     const giaVao = open && i + 1 < n ? open[i + 1] : null;
     let catLo = false;
     for (let j = i + 1; j < n; j++) if (low[j] <= sl) { catLo = true; break; }
-    return { i, cach: n - 1 - i, gia: E, giaVao, catLo, giam: giamB[i], day, klDay, sl, tp1: tp.tp1Vong[i], tp2: tp.tp2Vong[i], tp3: tp.tp3Vong[i] };
+    return { i, cach: n - 1 - i, gia: E, giaVao, catLo, giam: giamB[i], day, klDay, dongTien: dongTienTrend ? trangThaiDongTien(dongTienTrend, dongTienBB, i) : null, sl, tp1: tp.tp1Vong[i], tp2: tp.tp2Vong[i], tp3: tp.tp3Vong[i] };
   };
   let gan = null;
   for (let i = n - 1; i >= Math.max(0, n - SO_NEN_B_GAN_DAY); i--) {

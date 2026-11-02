@@ -6,6 +6,7 @@ import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Squar
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { phanKyRSI } from "@/lib/phanKyRSI";
+import { tinhDongTienBanker } from "@/lib/dongTienBanker";
 import { nhanDienMauHinh, nhanDienDangHinhThanh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
 import { nhanDienMauHinhNen, THONG_KE_MAU_HINH_NEN } from "@/lib/mauHinhNen";
 import { LopVe } from "@/components/veBieuDoLop";
@@ -121,6 +122,7 @@ const CHI_BAO_PHU = [
   { khoa: "rsi", nhan: "RSI 14", mau: "#A78BFA" },
   { khoa: "macd", nhan: "MACD", mau: "#60A5FA" },
   { khoa: "stoch", nhan: "Stochastic", mau: "#FBBF24" },
+  { khoa: "dongTien", nhan: "Dòng tiền", mau: "#22C55E" }, // Banker Fund Flow (lib/dongTienBanker.js): chi la chi bao hien thi, KHONG phai tin hieu mua / ban
 ];
 // RSI phan ky (lib/phanKyRSI.js): 2 day / dinh gia lien tiep nguoc chieu RSI - chi la DIEU KIEN THAM KHAO, nghien cuu 2026-10-16 tren 390 ma cho thay KHONG co loi the thong ke rieng le.
 const CHI_BAO_PK = { khoa: "phanKy", nhan: "RSI phân kỳ", mau: "#34D399" };
@@ -225,6 +227,7 @@ function tinhChiBaoPhu(nen) {
   const bb = bollinger(close, 20, 2);
   const mc = macd(close);
   const st = stochastic(bars);
+  const dt = tinhDongTienBanker({ open: nen.map((b) => b.o ?? b.c), high: nen.map((b) => b.h), low: nen.map((b) => b.l), close });
   return {
     ema9: dong(ema(close, 9)),
     ema21: dong(ema(close, 21)),
@@ -237,6 +240,9 @@ function tinhChiBaoPhu(nen) {
     hist: mc.hist.map((v, i) => (v == null ? null : { time: nen[i].t, value: v, color: v >= 0 ? "rgba(34,197,94,0.6)" : "rgba(239,68,68,0.6)" })).filter(Boolean),
     stochK: dong(st.k),
     stochD: dong(st.d),
+    // dong tien: duong trend to mau theo trang thai (xanh = tren duong bull/bear = da quay len, cam = con yeu), bull/bear mau xam
+    dongTienTrend: dt.trend.map((v, i) => (v == null ? null : { time: nen[i].t, value: v, color: dt.bb[i] != null && v > dt.bb[i] ? "#22C55E" : "#FB923C" })).filter(Boolean),
+    dongTienBB: dong(dt.bb),
   };
 }
 
@@ -295,7 +301,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
-  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false, phanKy: false, mauHinh: false, nenNhat: false });
+  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
   const [mauVe, setMauVe] = useState(MAU_VE[0]);
   const [hitGia, setHitGia] = useState(false);
@@ -339,7 +345,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const [chonMH, setChonMH] = useState({ khoa: "", idx: 0 });
   const idxMH = chonMH.khoa === khoa ? chonMH.idx : 0; // doi ma / khung -> ve lai mau hinh moi nhat
   const mauHinhVe = bat.mauHinh && idxMH >= 0 && idxMH < dsMauHinh.length ? dsMauHinh[idxMH] : null;
-  const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0);
+  const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0) + (bat.dongTien ? 1 : 0);
   khoaVeRef.current = khoaLuu(ma, khungTG);
   const caoGoc = layDayManHinh ? Math.max(chieuCao, caoManHinh - 330) : chieuCao; // trang Bieu do: bieu do cao toi sat day man hinh thay vi co dinh
   const chieuCaoTong = caoGoc + soPhu * CHIEU_CAO_PHU;
@@ -728,10 +734,17 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       vach(sr, 80, "rgba(239,68,68,0.6)");
       vach(sr, 20, "rgba(34,197,94,0.6)");
     }
+    if (bat.dongTien) {
+      const o = cuaSo++;
+      const sr = dong("#22C55E", cp.dongTienTrend, o, { title: "Dòng tiền", ...khoang0_100 });
+      dong("#94A3B8", cp.dongTienBB, o, khoang0_100);
+      vach(sr, 80, "rgba(239,68,68,0.6)");
+      vach(sr, 20, "rgba(34,197,94,0.6)");
+    }
     // cua so gia lon hon cac cua so chi bao
     const panes = s.chart.panes();
     panes.forEach((p, i) => p.setStretchFactor(i === 0 ? 3.2 : 1));
-  }, [bat.rsi, bat.macd, bat.stoch, bat.phanKy, chiBaoPhu, phanKy, nen]);
+  }, [bat.rsi, bat.macd, bat.stoch, bat.dongTien, bat.phanKy, chiBaoPhu, phanKy, nen]);
 
   // 4. Vung lenh + diem MUA.
   useEffect(() => {

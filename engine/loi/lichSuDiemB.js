@@ -7,6 +7,7 @@ import { atr } from "./taChiBao.js";
 import { tinhIchimoku, tinhDuongCanBangDaiHan } from "./ichimoku.js";
 import { tinhDiemMuaPhucHoi } from "./diemMuaPhucHoi.js";
 import { laNganhTrongTam } from "../danh-sach/nganh.js";
+import { tinhDongTienBanker } from "../../lib/dongTienBanker.js";
 
 export const SO_NEN_TINH_B = 800;
 export const NGAY_BAT_DAU_MAC_DINH = "2026-01-01";
@@ -35,8 +36,9 @@ export function tinhLichSuDiemBChoMa(ma, nen, { tuNgay = NGAY_BAT_DAU_MAC_DINH, 
   const high = b.map((x) => x.h), low = b.map((x) => x.l), close = b.map((x) => x.c), volume = b.map((x) => x.v ?? 0);
   const ich = tinhIchimoku({ high, low });
   const cb = tinhDuongCanBangDaiHan({ high, low });
+  const dt = tinhDongTienBanker({ open: b.map((x) => x.o ?? x.c), high, low, close });
   const { laB, moTa } = tinhDiemMuaPhucHoi(
-    { high, low, close, volume, atr: atr({ high, low, close }, 14), tenkan: ich.tenkan, kijun: ich.kijun, cloudTop: ich.cloudTop, cbTop: cb.cbTop },
+    { high, low, close, volume, atr: atr({ high, low, close }, 14), tenkan: ich.tenkan, kijun: ich.kijun, cloudTop: ich.cloudTop, cbTop: cb.cbTop, dongTienTrend: dt.trend, dongTienBB: dt.bb },
     { giamTuPct: 15, giamDenPct: 999 }
   );
   const gtgd = (i) => { let s = 0; for (let j = Math.max(0, i - 19); j <= i; j++) s += (close[j] * volume[j]) / 1e6; return s / Math.min(20, i + 1); };
@@ -56,7 +58,7 @@ export function tinhLichSuDiemBChoMa(ma, nen, { tuNgay = NGAY_BAT_DAU_MAC_DINH, 
     const tpCham = [m.tp1, m.tp2, m.tp3].filter((x) => x > 0 && cao >= x).length;
     ketQua.push({
       ma, ngay: b[i].t, gia_b: m.gia, giam: so(m.giam, 2), kl_day: so(m.klDay, 2), day_20: m.day, sl: so(m.sl, 3), tp1: so(m.tp1, 3), tp2: so(m.tp2, 3), tp3: so(m.tp3, 3),
-      gia_vao: E2, ngay_cat_lo: ngayCatLo, tp_cham: E2 ? tpCham : null, pct_sau_5: so(sau(5), 2), pct_sau_10: so(sau(10), 2), pct_sau_20: so(sau(20), 2), vni_yeu: vniYeu.has(b[i].t) ? vniYeu.get(b[i].t) : null, gtgd: so(gtgd(i), 1),
+      gia_vao: E2, ngay_cat_lo: ngayCatLo, tp_cham: E2 ? tpCham : null, pct_sau_5: so(sau(5), 2), pct_sau_10: so(sau(10), 2), pct_sau_20: so(sau(20), 2), vni_yeu: vniYeu.has(b[i].t) ? vniYeu.get(b[i].t) : null, gtgd: so(gtgd(i), 1), dong_tien: m.dongTien,
     });
   }
   return ketQua;
@@ -75,7 +77,7 @@ export function tinhLichSuDiemBToanBo(nenTheoMa, vniNen, opts = {}) {
   return ds;
 }
 
-const COT_CSV = ["ma", "ngay", "gia_b", "giam", "kl_day", "day_20", "sl", "tp1", "tp2", "tp3", "gia_vao", "pct_sau_5", "pct_sau_10", "pct_sau_20", "vni_yeu", "gtgd", "ngay_cat_lo", "tp_cham"];
+const COT_CSV = ["ma", "ngay", "gia_b", "giam", "kl_day", "day_20", "sl", "tp1", "tp2", "tp3", "gia_vao", "pct_sau_5", "pct_sau_10", "pct_sau_20", "vni_yeu", "gtgd", "ngay_cat_lo", "tp_cham", "dong_tien"];
 export function xayDungCsvDiemB(ds) {
   const dong = [COT_CSV.join(",")];
   for (const s of ds) dong.push(COT_CSV.map((c) => (s[c] == null ? "" : c === "vni_yeu" ? (s[c] ? "1" : "0") : String(s[c]))).join(","));

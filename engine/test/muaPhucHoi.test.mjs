@@ -56,6 +56,17 @@ ok("gia B cach day tinh %", Math.abs(ds[0].bDayPct - (10 / 8.8 - 1) * 100) < 1e-
 }
 ok("khong co du lieu: mang rong", dungMuaPhucHoi({}).length === 0);
 
+// nhan dong tien tai diem B (Banker Fund Flow): 1 = da quay len, 0 = con yeu, thieu = null
+{
+  const h2 = [
+    { ma: "AAA", pb_cach: 0, pb_gia: 10, pb_day: 8.8, pb_sl: 9.4, pb_tp1: 10.8, pb_tp2: 11.5, pb_tp3: 13, pb_dong_tien: 1 },
+    { ma: "BBB", pb_cach: 2, pb_gia: 20, pb_day: 17, pb_sl: 18.6, pb_tp1: 21.5, pb_tp2: 23, pb_tp3: 26, pb_dong_tien: 0 },
+  ];
+  const r2 = dungMuaPhucHoi({ hang: h2, tatCa });
+  ok("nhan dong tien: AAA da quay len (1), BBB con yeu (0)", r2.find((x) => x.ma === "AAA")?.dongTien === 1 && r2.find((x) => x.ma === "BBB")?.dongTien === 0);
+  ok("nhan dong tien: thieu cot -> null", dungMuaPhucHoi({ hang: [hang[0]], tatCa })[0].dongTien === null);
+}
+
 if (loi) {
   console.log(`\n${loi} loi`);
   process.exit(1);

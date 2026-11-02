@@ -372,6 +372,12 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
                     {x.klDay >= 2 ? `bán tháo có KL (${fmt(x.klDay)}×)` : `KL đáy ${fmt(x.klDay)}×`}
                   </span>
                 )}
+                {x.dongTien != null && (
+                  <span style={{ color: x.dongTien === 1 ? XANH : VANG, ...sans, fontSize: 11 }} title="Thông tin tham khảo, không phải tín hiệu: Banker Fund Flow (trend so với đường bull/bear) tại nến B. Đã quay lên = điểm B có dòng tiền đã hồi; còn yếu = dòng tiền chưa quay lên. Lịch sử 2014–2026: điểm B (giảm 20–30%) khi dòng tiền đã quay lên có lãi sau 20 phiên +2,5% so với +1,1% khi còn yếu (từ 2022.5: +1,7% so với −1,5%), tốt hơn ở 12/14 năm. Chênh lệch nhỏ, chỉ tham khảo.">
+                    {" · "}
+                    {x.dongTien === 1 ? "dòng tiền đã quay lên" : "dòng tiền còn yếu"}
+                  </span>
+                )}
                 <br />
                 Cắt lỗ <b style={{ color: DO }}>{fmt(x.sl)}</b>
                 {" · "}TP1/TP2{" "}

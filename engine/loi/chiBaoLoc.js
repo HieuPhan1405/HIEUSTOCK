@@ -9,6 +9,7 @@ import { COT_CHI_BAO, COT_CHI_BAO_H1 } from "../../lib/cotChiBaoKyThuat.js";
 import { rsi as rsiLib } from "../../lib/chiBaoPhu.js";
 import { phanKyRSI, gopNenTuan } from "../../lib/phanKyRSI.js";
 import { tinhDiemMuaPhucHoi } from "./diemMuaPhucHoi.js";
+import { tinhDongTienBanker } from "../../lib/dongTienBanker.js";
 import { tinhHoiSauGiamDai } from "./hoiSauGiamDai.js";
 import { tinhDuongCanBangDaiHan } from "./ichimoku.js";
 import { laNganhTrongTam } from "../danh-sach/nganh.js";
@@ -84,7 +85,7 @@ export function maHoaPhanKy(nen, toiDa) {
   if (cach < 0 || cach >= toiDa) return null;
   return cuoiCung.loai === "tang" ? cach : -(cach + 1);
 }
-const COT_NGUYEN = new Set(["pb_cat", ...COT_MAU_HINH_NEN, "hg_giam_dai", "hg_gtgd_ok", "hg_day_cao", "hg_tren_tk_kj", "hg_cach", "hg_ban", "pb_cach", "rsi_h1_pk_cach", ...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
+const COT_NGUYEN = new Set(["pb_cat", ...COT_MAU_HINH_NEN, "hg_giam_dai", "hg_gtgd_ok", "hg_day_cao", "hg_tren_tk_kj", "hg_cach", "hg_ban", "pb_cach", "pb_dong_tien", "rsi_h1_pk_cach", ...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
 
 // Tra ve object { ngay_nen, ...COT_CHI_BAO } cho 1 ma, hoac null neu chua du du lieu.
 // ma (tuy chon): neu co, cot DIEM B (pb_*) chi tinh cho ma thuoc nganh trong tam (bo 10 nganh nho + ma chua gan nganh); khong truyen ma = tinh nhu cu.
@@ -208,7 +209,8 @@ export function tinhChiBaoLocChoMa(nen, ma = null) {
   {
     const cb = tinhDuongCanBangDaiHan({ high, low });
     const atrArr = atr({ high, low, close }, 14);
-    const { gan } = ma != null && !laNganhTrongTam(ma) ? { gan: null } : tinhDiemMuaPhucHoi({ open: b.map((x) => x.o ?? x.c), high, low, close, volume, atr: atrArr, tenkan: ich.tenkan, kijun: ich.kijun, cloudTop: ich.cloudTop, cbTop: cb.cbTop });
+    const dt = tinhDongTienBanker({ open: b.map((x) => x.o ?? x.c), high, low, close }); // nhan "dong tien da quay len / con yeu" cua diem B (lib/dongTienBanker.js)
+    const { gan } = ma != null && !laNganhTrongTam(ma) ? { gan: null } : tinhDiemMuaPhucHoi({ open: b.map((x) => x.o ?? x.c), high, low, close, volume, atr: atrArr, tenkan: ich.tenkan, kijun: ich.kijun, cloudTop: ich.cloudTop, cbTop: cb.cbTop, dongTienTrend: dt.trend, dongTienBB: dt.bb });
     kq.pb_cach = gan ? gan.cach : null;
     kq.pb_giam = gan ? gan.giam : null;
     kq.pb_gia = gan ? gan.gia : null;
@@ -220,6 +222,7 @@ export function tinhChiBaoLocChoMa(nen, ma = null) {
     kq.pb_tp1 = gan ? gan.tp1 : null;
     kq.pb_tp2 = gan ? gan.tp2 : null;
     kq.pb_tp3 = gan ? gan.tp3 : null;
+    kq.pb_dong_tien = gan ? gan.dongTien : null;
     // HOI SAU GIAM DAI: checklist 4 dieu kien + vi the cam het nhip hoi (engine/loi/hoiSauGiamDai.js)
     const hg = tinhHoiSauGiamDai({ open: b.map((x) => x.o ?? x.c), high, low, close, volume, atr: atrArr, tenkan: ich.tenkan, kijun: ich.kijun });
     const so01 = (v) => (v == null ? null : v ? 1 : 0);

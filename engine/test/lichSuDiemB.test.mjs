@@ -59,7 +59,7 @@ ok("moi diem B tu 2025 tro di", kq.every((e) => e.ngay >= "2025-01-01"));
   const ds = tinhLichSuDiemBToanBo(new Map([["AAA", nen], ["BBB", nen.slice(0, 40)]]), vni, { tuNgay: "2025-01-01", chiNganhTrongTam: false });
   ok("toan bo: ma it nen bi bo qua, khong loi", ds.every((s) => s.ma === "AAA"));
   const csv = xayDungCsvDiemB(ds).trim().split("\n");
-  ok("CSV: header 18 cot (them ngay_cat_lo, tp_cham), so cot moi dong khop", csv[0].split(",").length === 18 && csv.slice(1).every((d) => d.split(",").length === 18), csv[0]);
+  ok("CSV: header 19 cot (them ngay_cat_lo, tp_cham, dong_tien), so cot moi dong khop", csv[0].split(",").length === 19 && csv[0].endsWith(",dong_tien") && csv.slice(1).every((d) => d.split(",").length === 19), csv[0]);
   ok("CSV: null -> o rong, vni_yeu 1/0", csv.length < 2 || /,(0|1|),[\d.]*$/.test(csv[1]) || true);
 }
 

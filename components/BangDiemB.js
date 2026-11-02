@@ -33,6 +33,7 @@ const COT = [
   { khoa: "gia_hien_tai", nhan: "Lãi hiện tại", canPhai: true, lay: (r) => laiHienTai(r) },
   { khoa: "pct_sau_5", nhan: "+5 phiên", canPhai: true, lay: (r) => r.pct_sau_5 },
   { khoa: "vni", nhan: "Thị trường", lay: (r) => (r.vni_yeu === true ? 1 : 0) },
+  { khoa: "dong_tien", nhan: "Dòng tiền", lay: (r) => (r.dong_tien == null ? -1 : Number(r.dong_tien)) },
   { khoa: "ket_qua", nhan: "Kết quả", lay: (r) => ({ tot: 2, xau: 1, cho: 0 })[ketQuaDiemB(r).loai] },
 ];
 
@@ -189,6 +190,7 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
                     </td>
                     <td className="py-2.5 px-3 text-right" style={{ color: mauPct(r.pct_sau_5) }}>{r.pct_sau_5 == null ? "—" : pct(r.pct_sau_5, 1)}</td>
                     <td className="py-2.5 px-3 text-xs whitespace-nowrap" style={{ color: r.vni_yeu ? VANG : MUTED, ...sans }}>{r.vni_yeu === true ? "yếu" : r.vni_yeu === false ? "bình thường" : "—"}</td>
+                    <td className="py-2.5 px-3 text-xs whitespace-nowrap" style={{ color: r.dong_tien == null ? MUTED : Number(r.dong_tien) === 1 ? XANH : VANG, ...sans }}>{r.dong_tien == null ? "—" : Number(r.dong_tien) === 1 ? "đã quay lên" : "còn yếu"}</td>
                     <td className="py-2.5 px-3">
                       <span className="px-2 py-0.5 text-xs font-bold rounded-sm whitespace-nowrap" style={{ background: nhe(MAU_KQ[kq.loai], 13), color: MAU_KQ[kq.loai], ...sans }}>{kq.nhan}</span>
                       {r.tp_cham >= 1 && !catLo && <span className="ml-1 text-[11px]" style={{ color: XANH, ...sans }} title="Giá đã chạm mốc chốt lời kể từ khi vào lệnh">TP{r.tp_cham}</span>}
