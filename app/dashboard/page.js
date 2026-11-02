@@ -6,8 +6,9 @@ import { capNhatMoiNhat } from "@/components/dungChung";
 import DongTienThiTruong from "@/components/DongTienThiTruong";
 import { layCoDem } from "@/lib/boNhoMem";
 import { layTatCaTinHieu, layChiSoVNIndex } from "@/lib/tinHieu";
-import { layDongTienNuocNgoai } from "@/lib/thiTruong";
+import { layDongTienNuocNgoai, tinhTongQuanThiTruong } from "@/lib/thiTruong";
 import { TongQuanThiTruong } from "@/components/RaSoatThiTruong";
+import BieuDoTamLyLichSu from "@/components/BieuDoTamLyLichSu";
 import ThanhKhoanThiTruong from "@/components/ThanhKhoanThiTruong";
 import AnhHuongIndex from "@/components/AnhHuongIndex";
 import KhoiNgoaiThiTruong from "@/components/KhoiNgoaiThiTruong";
@@ -56,6 +57,14 @@ export default async function TrangDashboard() {
   const capNhat = capNhatMoiNhat(tatCa);
   const ngayHienThi = capNhat ? new Date(capNhat).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "numeric", month: "numeric", year: "numeric" }) : "";
 
+  // diem "truc tiep" cua bieu do lich su tam ly: cung cong thuc 3 ty le voi chuoi lich su (khong gom ty le % ma dat diem MUA nhu dong ho)
+  let tamLyHienTai = null;
+  if (capNhat && chiSoVNIndex?.gia && tatCa.length) {
+    const tq = tinhTongQuanThiTruong(tatCa, chiSoVNIndex);
+    const ba = [tq.doRong.tong ? (tq.doRong.tang / tq.doRong.tong) * 100 : null, tq.tren.kijun, tq.tren.canBang];
+    if (ba.every((x) => x != null)) tamLyHienTai = { ngay: new Date(capNhat).toLocaleDateString("en-CA", { timeZone: "Asia/Ho_Chi_Minh" }), s: ba.reduce((a, b) => a + b, 0) / 3, v: chiSoVNIndex.gia };
+  }
+
   return (
     <div id="chup-dashboard" className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
@@ -84,6 +93,7 @@ export default async function TrangDashboard() {
       )}
 
       <TongQuanThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} />
+      <BieuDoTamLyLichSu hienTai={tamLyHienTai} />
       <DongTienThiTruong />
       <Suspense fallback={<TheCho tieuDe="Vị trí VN-Index so với vùng giá trị" />}>
         <TheVungGiaTri />
