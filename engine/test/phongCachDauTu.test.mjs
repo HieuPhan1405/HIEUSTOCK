@@ -20,15 +20,9 @@ dat("trung han: duoi duong can bang dai han -> Thoat", nhanTrangThai({ ...co, gi
 dat("trung han: duoi Tenkan -> Theo doi", nhanTrangThai({ ...co, gia: 28.5 }, "trung_han").nhan === "theo_doi");
 dat("trung han: lo 11% -> Giam, lo 16% -> Thoat", nhanTrangThai({ ...co, laiLoPct: -11 }, "trung_han").nhan === "giam" && nhanTrangThai({ ...co, laiLoPct: -16 }, "trung_han").nhan === "thoat");
 dat("ty trong 45% (tran 30%) -> Giam", nhanTrangThai({ ...co, tyTrong: 0.45 }, "trung_han").nhan === "giam");
-// NGAN HAN
-dat("ngan han: duoi Tenkan -> Giam", nhanTrangThai({ ...co, gia: 28.5 }, "ngan_han").nhan === "giam");
-dat("ngan han: thung Kijun -> Thoat", nhanTrangThai({ ...co, gia: 27.5 }, "ngan_han").nhan === "thoat");
-dat("ngan han: lo 8% -> Thoat", nhanTrangThai({ ...co, laiLoPct: -8 }, "ngan_han").nhan === "thoat");
-// TANG TRUONG
-dat("tang truong: LN tang + tren can bang -> Giu", nhanTrangThai({ ...co, cb: khoe }, "tang_truong").nhan === "giu");
-dat("tang truong: LN giam + duoi can bang -> Thoat", nhanTrangThai({ ...co, gia: 24, cb: { ...khoe, lnYoY: -10 } }, "tang_truong").nhan === "thoat");
-dat("tang truong: LN giam, gia con tren -> Giam", nhanTrangThai({ ...co, cb: { ...khoe, lnYoY: -10 } }, "tang_truong").nhan === "giam");
-dat("tang truong: thieu BCTC -> Theo doi", nhanTrangThai(co, "tang_truong").nhan === "theo_doi");
+// CHI CON 2 PHONG CACH (03/11/2026): luot song va tang truong da bo; phong cach cu tu ve mac dinh
+dat("chi con 2 phong cach: trung_han, dai_han", Object.keys(PHONG_CACH).join() === "trung_han,dai_han");
+dat("phong cach cu ngan_han / tang_truong -> xu ly nhu xu huong (mac dinh)", nhanTrangThai({ ...co, gia: 24 }, "ngan_han").nhan === nhanTrangThai({ ...co, gia: 24 }, "trung_han").nhan && nhanTrangThai({ ...co, gia: 28.5 }, "tang_truong").nhan === "theo_doi");
 // DAI HAN
 dat("dai han: gia thung Kijun nhung DN khoe -> khong ban (Giu)", nhanTrangThai({ ...co, gia: 27.5, cb: khoe }, "dai_han").nhan === "giu");
 dat("dai han: duoi can bang -> chi Theo doi", nhanTrangThai({ ...co, gia: 24, cb: khoe }, "dai_han").nhan === "theo_doi");

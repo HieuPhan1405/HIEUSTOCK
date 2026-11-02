@@ -54,7 +54,6 @@ const ax = khLon.hanhDong.find((x) => x.ma === "X");
 dat("vi the lon -> mac dinh thoat 3 buoc", ax.cachThoat === "tung_phan" && ax.tungPhan);
 const sauTP = apDungKeHoach([{ ma: "X", kl: 6000, giaVon: 30, gia: 20 }], { tienMat: 0, no: 0 }, [ax]);
 dat("ap dung thoat 3 buoc: chi ban B1, phan con lai van giu", sauTP.vitri[0].kl === 6000 - ax.tungPhan.buoc[0].kl);
-dat("luot song: van mac dinh ban het ngay", goiYXuLy({ hang: [{ ma: "X", kl: 6000, giaVon: 30, gia: 20 }, { ma: "Y", kl: 1000, giaVon: 50, gia: 80 }], nhanTheoMa: { X: { nhan: "thoat", muc: 3, lyDo: ["x"] }, Y: { nhan: "giu", muc: 0, lyDo: [] } }, phongCach: "ngan_han", taiSan: { nav: 200e6 } }).hanhDong.find((x) => x.ma === "X").cachThoat === "ban_het");
 
 // TRUNG BINH GIA CO DIEU KIEN
 const vt = { ma: "X", kl: 2000, giaVon: 30, gia: 24 };

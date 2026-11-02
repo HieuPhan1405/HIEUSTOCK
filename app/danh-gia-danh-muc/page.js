@@ -13,7 +13,7 @@ export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Đánh giá danh mục cổ phiếu miễn phí",
   description:
-    "Chấm điểm danh mục cổ phiếu như quỹ đầu tư theo phong cách của bạn (lướt sóng, xu hướng, tăng trưởng, dài hạn): đa dạng hóa thật, rủi ro gánh từng mã, sức khỏe doanh nghiệp, kiểm tra sức chịu đựng, margin; gợi ý cắt lỗ / trung bình giá, nhật ký giao dịch và báo cáo PDF. Miễn phí.",
+    "Chấm điểm danh mục cổ phiếu như quỹ đầu tư theo phong cách của bạn (xu hướng hoặc dài hạn): đa dạng hóa thật, rủi ro gánh từng mã, sức khỏe doanh nghiệp, kiểm tra sức chịu đựng, margin; gợi ý cắt lỗ / trung bình giá, nhật ký giao dịch và báo cáo PDF. Miễn phí.",
 };
 
 // MO CHO MOI NGUOI (cong cu quang ba web): phan phan tich rui ro chi dung du lieu gia cong khai. Tin hieu he thong (MUA / BAN, cat lo, chot loi) CHI gui cho thanh vien da duoc duyet -

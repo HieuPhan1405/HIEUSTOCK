@@ -18,6 +18,7 @@ const CONG_CU = [
   { href: "/lenh-mo", nhan: "Sổ lệnh đang mở" },
   { href: "/danh-muc", nhan: "Danh mục theo dõi" },
   { href: "/danh-gia-danh-muc", nhan: "Đánh giá danh mục" },
+  { href: "/dai-han", nhan: "Đầu tư dài hạn" },
   { href: "/lenh-da-dong", nhan: "Lệnh đã đóng" },
   { href: "/bat-day", nhan: "Checklist bắt đáy" },
 ];

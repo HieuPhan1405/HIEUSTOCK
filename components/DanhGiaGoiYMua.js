@@ -73,8 +73,8 @@ export default function DanhGiaGoiYMua({ du, dangTai, loi, goiY, laThanhVien, ph
           {goiY.ghiChu.map((g, i) => <li key={i}>• {g}</li>)}
         </ul>
       )}
-      {(phongCach === "dai_han" || phongCach === "tang_truong") && (
-        <p className="text-xs mb-3" style={{ color: MUTED }}>Bộ điều kiện dựa trên tín hiệu kỹ thuật đã kiểm chứng. Với phong cách {phongCach === "dai_han" ? "dài hạn" : "tăng trưởng"}, nên xem thêm BCTC của mã (trang mã → Cơ bản) trước khi mua.</p>
+      {phongCach === "dai_han" && (
+        <p className="text-xs mb-3" style={{ color: MUTED }}>Bộ điều kiện dựa trên tín hiệu kỹ thuật đã kiểm chứng. Với phong cách dài hạn, nên xem thêm BCTC của mã (trang mã → Cơ bản) và danh sách ở trang Dài hạn trước khi mua.</p>
       )}
 
       {dat.length === 0 ? (
