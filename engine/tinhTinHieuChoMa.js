@@ -153,7 +153,8 @@ export function tinhTinHieuChoMa({ ma, nen, vniClose, san, ketQuaBreadth, thamSo
   const atrArr = tinhATR({ high, low, close });
   const { adx, diPlus, diMinus } = adxHeThong({ high, low, close });
   const rsiArr = tinhRSI({ close });
-  const mfiArr = tinhMFI({ high, low, close, volume });
+  // mfiThayThe: CHI NGHIEN CUU (mac dinh khong co): ham ({ open, high, low, close, volume }) tra mang cung do dai thay cho MFI trong diem (nghienCuuThayMfiBangDongTien.mjs); khong truyen = MFI nhu cu.
+  const mfiArr = p.mfiThayThe ? p.mfiThayThe({ open, high, low, close, volume }) : tinhMFI({ high, low, close, volume });
   const sanyaku = tinhSanyaku({ high, close, tenkan, kijun, cloudTop });
   const { inFVGZone, doLonSoATR } = tinhFVG({ high, low, close, atr: atrArr }, { fvgLookback: p.fvgLookback });
   const fvgDuLon = tinhFvgDuLonTuTy(doLonSoATR, p.nguongDiemFVGMem);
