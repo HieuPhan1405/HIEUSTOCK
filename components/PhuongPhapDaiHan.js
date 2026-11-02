@@ -6,7 +6,7 @@ import { ChevronDown, ShieldAlert, TriangleAlert } from "lucide-react";
 import { nhe } from "@/components/dungChung";
 import { soVN, pctVN } from "@/lib/soVN";
 import { HAN_CHO_THANG } from "@/lib/phuongPhapDaiHan";
-import { BANG_NAM, BAT_DAU_2026, KET_LUAN, KHONG_DUNG, CACH_BAN, LOI_VE_TINH, DINH_GIA, GIAI_DOAN } from "@/lib/phuongPhapDaiHanKetQua";
+import { CACH_BAN, LOI_VE_TINH, DINH_GIA, GIAI_DOAN } from "@/lib/phuongPhapDaiHanKetQua";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -180,7 +180,7 @@ export default function PhuongPhapDaiHan({ du }) {
       <div className="rounded-xl border p-4 mb-6 flex gap-3 text-sm" style={{ borderColor: nhe(VANG, 40), background: nhe(VANG, 8), ...sans }}>
         <ShieldAlert size={20} className="shrink-0 mt-0.5" style={{ color: VANG }} aria-hidden="true" />
         <p className="leading-relaxed">
-          <b>Thông tin tham khảo, không phải khuyến nghị đầu tư.</b> Các phương pháp được kiểm tra trên dữ liệu {GIAI_DOAN} (khoảng 4,75 năm, một chu kỳ thị trường, chỉ gồm mã còn niêm yết). Kết quả quá khứ không đảm bảo tương lai, và có năm phương pháp thua VN-Index rõ rệt (xem bảng kết quả theo năm).
+          <b>Thông tin tham khảo, không phải khuyến nghị đầu tư.</b> Các phương pháp được kiểm tra trên dữ liệu {GIAI_DOAN} (khoảng 4,75 năm, một chu kỳ thị trường, chỉ gồm mã còn niêm yết). Kết quả quá khứ không đảm bảo tương lai, và có những năm các phương pháp thua VN-Index rõ rệt.
           Bộ lọc chỉ nhìn báo cáo tài chính và giá, <b>không phát hiện được rủi ro pháp lý hay tin xấu</b> — hãy tự kiểm tra tin tức trước khi mua.
         </p>
       </div>
@@ -229,52 +229,6 @@ export default function PhuongPhapDaiHan({ du }) {
       </The>
 
       <KhungLoiVeTinh khung={du.khung} />
-
-      <The tieuDe={`Kết quả kiểm tra ${GIAI_DOAN}`}>
-        <p className="text-sm mb-3" style={{ color: MUTED }}>Lợi suất từng năm lịch (%), mua chia đều tối đa 15 mã, kiểm tra mỗi quý sau báo cáo tài chính, phí 0,2% mỗi chiều. *2026 tính đến 21/10.</p>
-        <div className="rounded-xl border overflow-hidden mb-4" style={{ borderColor: VIEN }}>
-          <div className="overflow-x-auto bang-cuon">
-            <table className="w-full text-sm" style={sans}>
-              <thead>
-                <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, background: "var(--nen)" }}>
-                  <th className="px-3 py-2">Phương pháp</th>
-                  {BANG_NAM.nam.map((n) => <th key={n} className="px-3 py-2 text-right">{n}</th>)}
-                  <th className="px-3 py-2 text-right">Lãi/năm</th><th className="px-3 py-2 text-right">Sụt giảm tối đa</th>
-                </tr>
-              </thead>
-              <tbody>
-                {BANG_NAM.dong.map((d) => (
-                  <tr key={d.khoa} className="border-b" style={{ borderColor: VIEN, background: d.khoa === "vni" ? "var(--nen)" : undefined }}>
-                    <td className="px-3 py-2" style={{ fontWeight: d.khoa === "vni" ? 700 : 500 }}>{d.ten}</td>
-                    {d.nam.map((v, i) => <td key={i} className="px-3 py-2 text-right" style={{ color: mauLai(v) }}>{pctVN(v, 0)}</td>)}
-                    <td className="px-3 py-2 text-right font-bold">{soVN(d.cagr, 1)}%</td>
-                    <td className="px-3 py-2 text-right" style={{ color: DO }}>{d.sut}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div className="rounded-xl border p-4 mb-4 text-sm" style={{ borderColor: nhe(DO, 35), background: nhe(DO, 6), ...sans }}>
-          <p className="mb-2" style={{ fontWeight: 700 }}>Nếu bắt đầu từ đầu 2026 (đến 21/10/2026): VN-Index {pctVN(BAT_DAU_2026.vni, 1)}</p>
-          <div className="flex flex-wrap gap-x-5 gap-y-1 mb-2">
-            {BAT_DAU_2026.dong.map((d) => <span key={d.ten}>{d.ten.split(" — ")[0]}: <b style={{ color: mauLai(d.lai) }}>{pctVN(d.lai, 1)}</b></span>)}
-          </div>
-          <p className="text-xs" style={{ color: MUTED }}>{BAT_DAU_2026.ghiChu}</p>
-        </div>
-        <ul className="grid gap-3 sm:grid-cols-2 text-sm mb-4" style={sans}>
-          {KET_LUAN.map((k) => (
-            <li key={k.tieu} className="rounded-xl border p-3" style={{ borderColor: VIEN, background: "var(--nen)" }}>
-              <p className="mb-1" style={{ fontWeight: 700 }}>{k.tieu}</p>
-              <p className="text-xs leading-relaxed" style={{ color: MUTED }}>{k.noi}</p>
-            </li>
-          ))}
-        </ul>
-        <p className="text-sm mb-2" style={{ fontWeight: 700, ...sans }}>Đã thử nhưng không đưa vào bộ phương pháp</p>
-        <ul className="text-xs grid gap-1" style={{ color: MUTED, ...sans }}>
-          {KHONG_DUNG.map((k) => <li key={k.ten}>• <b style={{ color: TEXT }}>{k.ten}</b>: {k.ketQua}</li>)}
-        </ul>
-      </The>
 
       <The tieuDe="Khi nào bán cho đúng?">
         <div className="grid gap-3 sm:grid-cols-2 text-sm mb-4" style={sans}>
