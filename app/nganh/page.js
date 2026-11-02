@@ -4,6 +4,7 @@ import BanDoNhiet from "@/components/BanDoNhiet";
 import BangRSNganh from "@/components/BangRSNganh";
 import RRGNganh from "@/components/RRGNganh";
 import RRGNganhCoChuDe from "@/components/RRGNganhCoChuDe";
+import BangNhietMuaVu from "@/components/BangNhietMuaVu";
 import { tinhRSNganh } from "@/lib/rsNganh";
 import { layRRGNganh } from "@/lib/phanTichCoBanDb";
 import { capNhatMoiNhat } from "@/components/dungChung";
@@ -12,7 +13,7 @@ import { thongBaoLoi } from "@/lib/loiAnToan";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: "Phân tích ngành",
-  description: "RRG ngành (ngành nào đang dẫn dắt), sức mạnh tương đối RS theo ngành, bản đồ nhiệt và dòng tiền theo ngành.",
+  description: "RRG ngành (ngành nào đang dẫn dắt), sức mạnh tương đối RS theo ngành, bản đồ nhiệt, dòng tiền và bảng nhiệt mùa vụ (lợi suất theo tháng) của từng ngành.",
 };
 
 const MUTED = "var(--mo)";
@@ -49,6 +50,10 @@ export default async function TrangNganh() {
       )}
       <BangRSNganh hang={tinhRSNganh(tatCa)} />
       <BanDoNhiet tatCa={tatCa} />
+      {/* Bang nhiet MUA VU (loi suat thang x nam, VN-Index + 22 nganh) - du lieu tinh lib/muaVuDuLieu.js, cap nhat bang scripts/capNhatMuaVu.mjs */}
+      <div className="mt-6">
+        <BangNhietMuaVu />
+      </div>
     </div>
   );
 }
