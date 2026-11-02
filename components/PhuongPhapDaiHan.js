@@ -5,7 +5,7 @@ import { useState } from "react";
 import { ChevronDown, ShieldAlert, TriangleAlert } from "lucide-react";
 import { nhe } from "@/components/dungChung";
 import { soVN, pctVN } from "@/lib/soVN";
-import { HAN_CHO_THANG } from "@/lib/phuongPhapDaiHan";
+import { HAN_CHO_THANG, lichGiaiNgan } from "@/lib/phuongPhapDaiHan";
 import { CACH_BAN, LOI_VE_TINH, DINH_GIA, GIAI_DOAN } from "@/lib/phuongPhapDaiHanKetQua";
 
 const VIEN = "var(--vien)";
@@ -32,8 +32,8 @@ const The = ({ tieuDe, children, className = "" }) => (
 );
 const mauLai = (v) => (v > 0 ? XANH : v < 0 ? DO : TEXT);
 
-function DongMa({ m, pp, mo, onMo }) {
-  const l = m.lich;
+function DongMa({ m, pp, mo, onMo, locXuHuong }) {
+  const l = lichGiaiNgan({ gia: m.gia, sma50: m.sma50, sma200: m.sma200, ggTop: m.ggTop, locXuHuong });
   const dinhGia = m.dinhGia;
   const d1 = l.dot[0];
   const d2 = l.dot[1];
@@ -63,16 +63,11 @@ function DongMa({ m, pp, mo, onMo }) {
         </td>
         <td className="px-3 py-2.5 text-xs whitespace-nowrap" style={sans}>
           {l.quaXuHuong ? (
-            <>
-              <Chip mau={XANH}>{pp === "buffett" ? "Đã qua xu hướng" : "Giải ngân được"}</Chip>
-              <div className="mt-1" style={{ color: MUTED }}>Đợt 1: {soVN(d1?.gia, 2)} · Đợt 2: ≤ {soVN(d2?.gia, 2)}</div>
-            </>
+            <div style={{ color: MUTED }}>Đợt 1: {soVN(d1?.gia, 2)} · Đợt 2: ≤ {soVN(d2?.gia, 2)}</div>
           ) : (
-            <>
-              <Chip mau={VANG}>Chờ xu hướng</Chip>
-              <div className="mt-1" style={{ color: MUTED }}>Chờ đóng cửa trên {soVN(l.choGiaVuot, 2)}</div>
-            </>
+            <div style={{ color: MUTED }}>Chờ đóng cửa trên {soVN(l.choGiaVuot, 2)}</div>
           )}
+          <div className="mt-1"><Chip mau={m.xuHuongTang ? XANH : VANG} title="So với đường cân bằng dài hạn">{m.xuHuongTang ? "Xu hướng tăng" : "Xu hướng giảm"}</Chip></div>
         </td>
         <td className="px-2 py-2.5"><ChevronDown size={16} style={{ color: MUTED, transform: mo ? "rotate(180deg)" : undefined, transition: "transform .15s" }} aria-hidden="true" /></td>
       </tr>
@@ -103,6 +98,7 @@ function DongMa({ m, pp, mo, onMo }) {
               <div className="text-xs leading-relaxed" style={{ color: TEXT, ...sans }}>
                 <p className="mb-1"><b>Giá hợp lý {soVN(m.giaHopLy, 2)}</b> (trung vị 4 cách định giá) · giá hiện tại bằng <b>{m.r != null ? `${soVN(m.r * 100, 0)}%` : "—"}</b> giá hợp lý. Vùng chiết khấu đáng quan tâm: giá {soVN(m.giaHopLy * 0.5, 2)} – {soVN(m.giaHopLy * 0.8, 2)} (chiết khấu 20–50%).</p>
                 <p className="mb-1" style={{ color: MUTED }}>Mốc tham chiếu: SMA50 {soVN(m.sma50, 2)} · SMA200 {soVN(m.sma200, 2)} · đường cân bằng dài hạn {soVN(m.ggTop, 2)} · cách đỉnh 1 năm {m.cachDinh != null ? pctVN(m.cachDinh, 0) : "—"}.</p>
+                {!m.xuHuongTang && !locXuHuong && <p className="mb-1" style={{ color: VANG }}>Giá đang dưới đường cân bằng dài hạn (xu hướng giảm): chia nhỏ vốn theo từng đợt, đừng dồn một lần.</p>}
                 {m.vayVcsh != null && <p className="mb-1" style={{ color: MUTED }}>Nợ vay / vốn chủ: {soVN(m.vayVcsh, 2)} lần.</p>}
                 {m.canhBao?.map((c, i) => (
                   <p key={i} className="flex gap-1.5 mt-1" style={{ color: VANG }}><TriangleAlert size={13} className="shrink-0 mt-0.5" aria-hidden="true" />{c}</p>
@@ -116,7 +112,7 @@ function DongMa({ m, pp, mo, onMo }) {
   );
 }
 
-function BangMa({ pp, ds }) {
+function BangMa({ pp, ds, locXuHuong }) {
   const [mo, setMo] = useState(null);
   if (!ds.length) return <p className="text-sm" style={{ color: MUTED }}>Hiện chưa có mã nào đạt toàn bộ điều kiện.</p>;
   const cotThem = pp === "coTuc" ? "Cổ tức" : pp === "graham" ? "P/E×P/B" : pp === "itBienDong" ? "Biến động/năm" : null;
@@ -132,7 +128,7 @@ function BangMa({ pp, ds }) {
             </tr>
           </thead>
           <tbody>
-            {ds.map((m) => <DongMa key={m.ma} m={m} pp={pp} mo={mo === m.ma} onMo={() => setMo(mo === m.ma ? null : m.ma)} />)}
+            {ds.map((m) => <DongMa key={m.ma} m={m} pp={pp} locXuHuong={locXuHuong} mo={mo === m.ma} onMo={() => setMo(mo === m.ma ? null : m.ma)} />)}
           </tbody>
         </table>
       </div>
@@ -149,7 +145,7 @@ function KhungLoiVeTinh({ khung }) {
           {ds.map((m) => (
             <Link key={m.ma} href={`/ma/${m.ma}`} className="rounded-lg border px-3 py-2 text-xs" style={{ borderColor: VIEN, background: "var(--nen)", ...sans }}>
               <b style={{ color: PRIMARY }}>{m.ma}</b> <span style={{ color: MUTED }}>{m.nganhNhan}</span>
-              <div className="mt-0.5"><b>{soVN(m.ty, 1)}%</b> danh mục · {m.lich.quaXuHuong ? <span style={{ color: XANH }}>giải ngân được</span> : <span style={{ color: VANG }}>chờ xu hướng</span>}</div>
+              <div className="mt-0.5"><b>{soVN(m.ty, 1)}%</b> danh mục · {m.xuHuongTang ? <span style={{ color: XANH }}>xu hướng tăng</span> : <span style={{ color: VANG }}>xu hướng giảm</span>}</div>
             </Link>
           ))}
         </div>
@@ -173,6 +169,7 @@ function KhungLoiVeTinh({ khung }) {
 export default function PhuongPhapDaiHan({ du }) {
   const khoa = Object.keys(du.phuongPhap);
   const [tab, setTab] = useState("buffett");
+  const [locXuHuong, setLocXuHuong] = useState(false); // tuy chon cua phuong phap Buffett: chi giai ngan khi gia tren duong can bang dai han (mac dinh tat)
   const hienTai = du.phuongPhap[tab] ?? du.phuongPhap[khoa[0]];
   const meta = hienTai.meta;
   return (
@@ -218,7 +215,13 @@ export default function PhuongPhapDaiHan({ du }) {
           {meta.dieuKien.map((d, i) => <li key={i}>• {d}</li>)}
         </ul>
         {meta.ghiChuXuHuong && <p className="text-xs mb-3 leading-relaxed" style={{ color: MUTED }}><b style={{ color: TEXT }}>Xu hướng giá:</b> {meta.ghiChuXuHuong}</p>}
-        <BangMa key={tab} pp={tab} ds={hienTai.ds} />
+        {meta.coLocXuHuong && (
+          <label className="flex items-start gap-2 text-xs mb-3 cursor-pointer" style={sans}>
+            <input type="checkbox" checked={locXuHuong} onChange={(e) => setLocXuHuong(e.target.checked)} className="mt-0.5" />
+            <span>Chỉ giải ngân khi giá đã đóng cửa trên đường cân bằng dài hạn (tránh mã còn đang giảm; mã chưa đạt sẽ hiện mức giá cần vượt)</span>
+          </label>
+        )}
+        <BangMa key={tab} pp={tab} ds={hienTai.ds} locXuHuong={!!meta.coLocXuHuong && locXuHuong} />
         <p className="text-[11px] mt-2" style={{ color: MUTED }}>
           Chỉ số cơ bản theo báo cáo tài chính quý {du.quyBaoCao.split("-").reverse().slice(1).join("/")}; giá {du.coGiaMoi ? "cập nhật theo phiên gần nhất trên web" : `tại ngày ${du.giaDen.split("-").reverse().join("/")}`}. Bấm vào từng dòng để xem lịch giải ngân 5 đợt và giá hợp lý. {DINH_GIA.moTa}
         </p>
