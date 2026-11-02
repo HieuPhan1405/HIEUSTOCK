@@ -32,5 +32,30 @@ dat("moTa(i) co dongTien 0 hoac 1 khi truyen mang", iB > 0 && [0, 1].includes(b1
 const b2 = tinhDiemMuaPhucHoi(dat1);
 dat("khong truyen mang dong tien -> dongTien null (khong doi hanh vi cu)", iB > 0 && b2.moTa(iB).dongTien === null);
 
+// hien thi giong Pine: mau + nhan
+{
+  const { tinhBankerHienThi } = await import("../../lib/dongTienBanker.js");
+  const m = 400;
+  const gia = Array.from({ length: m }, (_, i) => 30 + Math.sin(i / 10) * 8 + Math.sin(i / 3) * 1.5 + i * 0.01);
+  const x = { open: gia.map((v, i) => (i ? gia[i - 1] : v)), high: gia.map((v) => v + 0.6), low: gia.map((v) => v - 0.6), close: gia, volume: gia.map((_, i) => (i % 3 === 0 ? 4e6 : 1.5e6)) };
+  const r = tinhBankerHienThi(x);
+  dat("do dai mang khop", r.mauNen.length === m && r.mauDuong.length === m && r.nenVang.length === m);
+  dat("mau nen chi co 4 gia tri hoac null", r.mauNen.every((v) => v == null || ["xanhLa", "trang", "do", "xanhDuong"].includes(v)));
+  dat("trend > bull/bear: xanhLa / trang; trend < bull/bear: do / xanhDuong", r.mauNen.every((v, i) => v == null || r.trend[i] === r.bb[i] || (r.trend[i] > r.bb[i] ? ["xanhLa", "trang"].includes(v) : ["do", "xanhDuong"].includes(v))));
+  dat("nhan sap xep theo nen, co IN va mot tin hieu ra", r.nhan.every((l, i) => i === 0 || r.nhan[i - 1].i <= l.i) && r.nhan.some((l) => l.loai === "IN") && r.nhan.some((l) => ["OUT", "SI", "SO"].includes(l.loai)), JSON.stringify(r.nhan.slice(0, 6)));
+  // state machine: tu IN khong co IN tiep theo ma khong qua OUT / SI / TP / SL (chi RL duoc lap lai)
+  let vt = 0, hopLe = true;
+  for (const l of r.nhan) {
+    if (l.loai === "IN") { if (vt === 1) hopLe = false; vt = 1; }
+    else if (l.loai === "SI") { if (vt === -1) hopLe = false; vt = -1; }
+    else if (["OUT", "SO", "TP", "SL"].includes(l.loai)) vt = 0;
+    else if (l.loai === "RL" && vt !== 1) hopLe = false;
+    else if (l.loai === "RS" && vt !== -1) hopLe = false;
+  }
+  dat("trinh tu nhan hop le (IN / SI / RL / RS / OUT / SO / TP / SL khong chong cheo)", hopLe);
+  dat("cooldown 3 nen giua cac tin hieu quan tri", r.nhan.filter((l) => ["IN", "OUT", "SI", "SO", "RL", "RS"].includes(l.loai)).every((l, i, a) => i === 0 || l.i - a[i - 1].i > 3));
+  dat("nen vang chi khi trend cat len bull/bear va bull/bear < 25", r.nenVang.every((v, i) => !v || (r.trend[i] > r.bb[i] && r.bb[i] < 25)));
+}
+
 console.log(loi ? `\n${loi} test SAI` : "\nTat ca dung");
 process.exit(loi ? 1 : 0);

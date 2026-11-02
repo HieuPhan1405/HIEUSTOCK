@@ -1,12 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { createChart, createSeriesMarkers, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
+import { createChart, createSeriesMarkers, BaselineSeries, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
 import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2 } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { phanKyRSI } from "@/lib/phanKyRSI";
-import { tinhDongTienBanker } from "@/lib/dongTienBanker";
+import { tinhBankerHienThi, MAU_BANKER } from "@/lib/dongTienBanker";
 import { nhanDienMauHinh, nhanDienDangHinhThanh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
 import { nhanDienMauHinhNen, THONG_KE_MAU_HINH_NEN } from "@/lib/mauHinhNen";
 import { LopVe } from "@/components/veBieuDoLop";
@@ -227,8 +227,19 @@ function tinhChiBaoPhu(nen) {
   const bb = bollinger(close, 20, 2);
   const mc = macd(close);
   const st = stochastic(bars);
-  const dt = tinhDongTienBanker({ open: nen.map((b) => b.o ?? b.c), high: nen.map((b) => b.h), low: nen.map((b) => b.l), close });
+  // Dong tien (Banker Fund Flow) hien thi giong Pine: nen giua trend va bull/bear (mau theo trang thai), nen vang "Banker In", nen mo theo trang thai, duong trend doi mau, nhan IN / OUT / ...
+  const bk = tinhBankerHienThi({ open: nen.map((b) => b.o ?? b.c), high: nen.map((b) => b.h), low: nen.map((b) => b.l), close, volume: nen.map((b) => b.v ?? 0) });
+  const soNenNhan = 300; // chi gan nhan tren ~300 nen cuoi cho do roi
+  const nhanBk = bk.nhan.filter((l) => l.i >= nen.length - soNenNhan).map((l) => ({ time: nen[l.i].t, loai: l.loai, text: l.text }));
   return {
+    bankerNen: bk.trend.map((v, i) => (v == null || bk.bb[i] == null || bk.mauNen[i] == null ? null : { time: nen[i].t, open: v, high: Math.max(v, bk.bb[i]), low: Math.min(v, bk.bb[i]), close: bk.bb[i], color: MAU_BANKER[bk.mauNen[i]], borderColor: MAU_BANKER[bk.mauNen[i]], wickColor: MAU_BANKER[bk.mauNen[i]] })).filter(Boolean),
+    bankerVang: bk.nenVang.map((v, i) => (v ? { time: nen[i].t, open: 0, high: 50, low: 0, close: 50, color: MAU_BANKER.vang, borderColor: MAU_BANKER.vang, wickColor: MAU_BANKER.vang } : null)).filter(Boolean),
+    bankerDuong: bk.trend.map((v, i) => (v == null ? null : { time: nen[i].t, value: v, color: MAU_BANKER[bk.mauDuong[i]] })).filter(Boolean),
+    bankerNenTrang: bk.trend.map((v, i) => (v == null || bk.bb[i] == null ? null : { time: nen[i].t, value: 100, color: v > bk.bb[i] ? "rgba(34,197,94,0.08)" : v < bk.bb[i] ? "rgba(239,68,68,0.08)" : "rgba(0,0,0,0)" })).filter(Boolean),
+    bankerThoi: nen.map((b) => b.t),
+    bankerNhan: nhanBk,
+    bankerNhanGia: nhanBk.filter((l) => l.loai === "TP" || l.loai === "SL"),
+    bankerNhanDao: nhanBk.filter((l) => l.loai !== "TP" && l.loai !== "SL"),
     ema9: dong(ema(close, 9)),
     ema21: dong(ema(close, 21)),
     bbTren: dong(bb.tren),
@@ -240,9 +251,6 @@ function tinhChiBaoPhu(nen) {
     hist: mc.hist.map((v, i) => (v == null ? null : { time: nen[i].t, value: v, color: v >= 0 ? "rgba(34,197,94,0.6)" : "rgba(239,68,68,0.6)" })).filter(Boolean),
     stochK: dong(st.k),
     stochD: dong(st.d),
-    // dong tien: duong trend to mau theo trang thai (xanh = tren duong bull/bear = da quay len, cam = con yeu), bull/bear mau xam
-    dongTienTrend: dt.trend.map((v, i) => (v == null ? null : { time: nen[i].t, value: v, color: dt.bb[i] != null && v > dt.bb[i] ? "#22C55E" : "#FB923C" })).filter(Boolean),
-    dongTienBB: dong(dt.bb),
   };
 }
 
@@ -437,6 +445,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.markersPK = createSeriesMarkers(s.candle, []);
     s.markersMH = createSeriesMarkers(s.candle, []); // diem chinh cua mau hinh gia dang ve
     s.markersNen = createSeriesMarkers(s.candle, []); // mau hinh NEN NHAT (chip "Mẫu hình nến")
+    s.markersBanker = createSeriesMarkers(s.candle, []); // nhan TP / SL cua chi bao Dong tien (Banker Fund Flow) tren bieu do gia
     s.mh = { series: [], vach: [] }; // cac duong / vach gia cua mau hinh gia dang ve (xoa khi doi mau hinh)
     // Lop ke ve (canvas phu len bieu do): hinh luu o localStorage theo ma + khung thoi gian.
     s.lopVe = new LopVe({
@@ -735,11 +744,46 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       vach(sr, 20, "rgba(34,197,94,0.6)");
     }
     if (bat.dongTien) {
+      // GIONG PINE ([blackcat] L3 Banker Fund Flow): nen mo theo trang thai (xanh / do), vung 10-20 va 80-90 to mau, nen vang "Banker In", nen giua trend va bull/bear,
+      // duong trend doi mau, vach cham 80 / 20 / 10 / 90, nhan Banker In / IN / OUT / SI / SO / RL / RS tren cua so nay, nhan TP / SL tren bieu do gia.
       const o = cuaSo++;
-      const sr = dong("#22C55E", cp.dongTienTrend, o, { title: "Dòng tiền", ...khoang0_100 });
-      dong("#94A3B8", cp.dongTienBB, o, khoang0_100);
-      vach(sr, 80, "rgba(239,68,68,0.6)");
-      vach(sr, 20, "rgba(34,197,94,0.6)");
+      const khongVe = { priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false };
+      const nenMo = s.chart.addSeries(HistogramSeries, { ...khongVe }, o);
+      nenMo.setData(cp.bankerNenTrang);
+      s.phu.push(nenMo);
+      const vung = (day, dinh, rgba) => {
+        const sr = s.chart.addSeries(BaselineSeries, { baseValue: { type: "price", price: day }, topLineColor: "rgba(0,0,0,0)", topFillColor1: rgba, topFillColor2: rgba, bottomLineColor: "rgba(0,0,0,0)", bottomFillColor1: "rgba(0,0,0,0)", bottomFillColor2: "rgba(0,0,0,0)", lineWidth: 1, ...khongVe }, o);
+        sr.setData(cp.bankerThoi.map((t) => ({ time: t, value: dinh })));
+        s.phu.push(sr);
+      };
+      vung(10, 20, "rgba(250,204,21,0.3)");
+      vung(80, 90, "rgba(217,70,239,0.3)");
+      const nenCfg = { upColor: "rgba(0,0,0,0)", downColor: "rgba(0,0,0,0)", borderVisible: false, wickVisible: false, ...khongVe };
+      const nenVang = s.chart.addSeries(CandlestickSeries, nenCfg, o);
+      nenVang.setData(cp.bankerVang);
+      s.phu.push(nenVang);
+      const nenThan = s.chart.addSeries(CandlestickSeries, nenCfg, o);
+      nenThan.setData(cp.bankerNen);
+      s.phu.push(nenThan);
+      const sr = dong("#22C55E", cp.bankerDuong, o, { title: "Dòng tiền", lineWidth: 2, autoscaleInfoProvider: () => ({ priceRange: { minValue: -5, maxValue: 105 } }) });
+      const vachCham = (gia, mau) => sr.createPriceLine({ price: gia, color: mau, lineWidth: 1, lineStyle: LineStyle.Dotted, axisLabelVisible: false, title: "" });
+      vachCham(80, "rgba(239,68,68,0.8)");
+      vachCham(20, "rgba(250,204,21,0.8)");
+      vachCham(10, "rgba(132,204,22,0.8)");
+      vachCham(90, "rgba(217,70,239,0.8)");
+      const kieuNhan = {
+        bankerIn: ["belowBar", "arrowUp", MAU_BANKER.vang],
+        IN: ["belowBar", "arrowUp", "#84CC16"],
+        OUT: ["aboveBar", "arrowDown", "#FB923C"],
+        SI: ["aboveBar", "arrowDown", "#D946EF"],
+        SO: ["belowBar", "arrowUp", "#3B82F6"],
+        RL: ["belowBar", "arrowUp", "#14B8A6"],
+        RS: ["aboveBar", "arrowDown", "#A855F7"],
+      };
+      createSeriesMarkers(sr, cp.bankerNhanDao.map((l) => ({ time: l.time, position: kieuNhan[l.loai][0], shape: kieuNhan[l.loai][1], color: kieuNhan[l.loai][2], text: l.text })));
+      s.markersBanker.setMarkers(cp.bankerNhanGia.map((l) => ({ time: l.time, position: l.loai === "TP" ? "aboveBar" : "belowBar", shape: l.loai === "TP" ? "arrowDown" : "arrowUp", color: l.loai === "TP" ? "#14B8A6" : "#9F1239", text: l.text })));
+    } else {
+      s.markersBanker.setMarkers([]);
     }
     // cua so gia lon hon cac cua so chi bao
     const panes = s.chart.panes();
