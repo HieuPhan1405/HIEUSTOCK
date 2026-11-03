@@ -265,6 +265,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
       {
         khoa: "sapMua",
         nhan: "Sắp có điểm mua",
+        thanhVien: true, // can cot tin (khach chi nhan du lieu da lam sach -> luon 0)
         dem: dem((r) => laMaTheoDoi(r, coDuLieuMoc, loc.bienMoc)),
         dang: loc.chiGanDiemMua,
         ap: (l) => ({ ...xoaNhanh(l), chiGanDiemMua: true }),
@@ -274,6 +275,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
       {
         khoa: "duDiem",
         nhan: "Đủ điểm, chưa mua",
+        thanhVien: true,
         dem: dem((r) => lyDoChuaCoDiemMua(r)),
         dang: loc.chiDuDiemChuaMua,
         ap: (l) => ({ ...xoaNhanh(l), chiDuDiemChuaMua: true }),
