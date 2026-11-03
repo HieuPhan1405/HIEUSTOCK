@@ -127,6 +127,8 @@ const NHANH = [
   { khoa: "lon", nhan: "Vốn hóa ≥ 10.000 tỷ", moTa: "Doanh nghiệp lớn", f: (m) => m.vonHoaTy >= 10000 },
   { khoa: "roe", nhan: "ROE ≥ 20%", moTa: "Hiệu quả sinh lời cao", f: (m) => m.roe >= 20 },
 ];
+// bo dau + chu hoa: go "hoa phat" van ra "Hòa Phát"
+const boDau = (x) => String(x ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/đ/gi, "d").toUpperCase();
 const COT_SX = (pp) => [
   ["ma", "Mã", (m) => m.ma, false],
   ["nganh", "Ngành", (m) => m.nganhNhan, false],
@@ -154,8 +156,8 @@ function BangMa({ pp, ds, locXuHuong }) {
   const dsNganh = useMemo(() => [...new Set(ds.map((m) => m.nganhNhan).filter(Boolean))].sort((a, b) => a.localeCompare(b, "vi")), [ds]);
 
   const coSo = useMemo(() => {
-    const q = tim.trim().toUpperCase();
-    return ds.filter((m) => (!q || m.ma.includes(q) || (m.ten ?? "").toUpperCase().includes(q)) && (!nganh || m.nganhNhan === nganh));
+    const q = boDau(tim.trim());
+    return ds.filter((m) => (!q || boDau(m.ma).includes(q) || boDau(m.ten ?? "").includes(q)) && (!nganh || m.nganhNhan === nganh));
   }, [ds, tim, nganh]);
   const daLoc = useMemo(() => {
     const nh = NHANH.find((x) => x.khoa === nhanh);
