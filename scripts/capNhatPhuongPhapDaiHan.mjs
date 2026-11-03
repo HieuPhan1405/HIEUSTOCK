@@ -30,17 +30,23 @@ const so = (x) => (Number.isFinite(x) ? x : 0);
 const med = (a) => { const s = [...a].sort((x, y) => x - y); return s.length ? (s.length % 2 ? s[(s.length - 1) / 2] : (s[s.length / 2 - 1] + s[s.length / 2]) / 2) : NaN; };
 const lam = (x, d = 2) => (Number.isFinite(x) ? Math.round(x * 10 ** d) / 10 ** d : null);
 
+// Ma da BO HOP NHAT cong ty con lon (BCTC VNDirect giu so goc nen cac quy truoc va sau khong cung co so): LNST tong (23003) tut theo phan loi ich CDTS thieu, trong khi LNST cong ty me (23000)
+// van lien tuc (phan lai cua cong ty con chuyen sang ghi theo von chu so huu). Voi cac ma nay dung 23000 cho moi so loi nhuan (TTM, tang truong, quy duong) de khong thanh "tang truong thap" gia.
+// FPT: tu Q1/2026 khong con hop nhat FPT Telecom -> LNST tong 12T chi +6% con LN me +16%.
+const LN_CONG_TY_ME = new Set(["FPT"]);
+
 function coBan(ma) {
   const b = bctc[ma];
   if (!b) return null;
   const q = quy, q4 = lui(q, 4);
   const g = (it, qq = q) => gtv(b, qq, it);
-  const ln = ttm(b, q, 23003), ln0 = q4 ? ttm(b, q4, 23003) : NaN;
+  const maLN = LN_CONG_TY_ME.has(ma) ? 23000 : 23003;
+  const ln = ttm(b, q, maLN), ln0 = q4 ? ttm(b, q4, maLN) : NaN;
   const vcsh = so(g(14000)) + so(g(15000)), vcsh4 = q4 ? so(g(14000, q4)) + so(g(15000, q4)) : NaN;
-  const lq = g(23003), lq4 = q4 ? g(23003, q4) : NaN;
+  const lq = g(maLN), lq4 = q4 ? g(maLN, q4) : NaN;
   const tang = Number.isFinite(ln0) && ln0 > 0 && ln > 0 ? ln / ln0 - 1 : Number.isFinite(lq) && Number.isFinite(lq4) && lq4 > 0 ? lq / lq4 - 1 : NaN;
   let quyDuong = 0, quyCo = 0;
-  for (let k = 0; k < 8; k++) { const x = g(23003, lui(q, k)); if (Number.isFinite(x)) { quyCo++; if (x > 0) quyDuong++; } }
+  for (let k = 0; k < 8; k++) { const x = g(maLN, lui(q, k)); if (Number.isFinite(x)) { quyCo++; if (x > 0) quyDuong++; } }
   return {
     tc: b.loai !== "pi", loai: b.loai, ln, vcsh, roe: (ln / vcsh) * 100, roe4: (ln0 / vcsh4) * 100, tang,
     vay: so(g(13110)) + so(g(13340)), vayDH: so(g(13340)), tsnh: g(11000), nnh: g(13100), cfo: ttm(b, q, 32000),
