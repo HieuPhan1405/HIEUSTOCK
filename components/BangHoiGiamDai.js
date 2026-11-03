@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { fmt, pct, nhe } from "@/components/dungChung";
+import NutThamGia from "@/components/NutThamGia";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -42,6 +43,7 @@ const TH = "py-2.5 px-3 font-normal whitespace-nowrap";
 const Ma = ({ x }) => (
   <td className="py-2.5 px-3">
     <Link href={`/ma/${x.ma}`} className="hover:underline" style={{ ...sans, fontWeight: 700 }}>{x.ma}</Link>
+    <span className="ml-1.5 align-middle"><NutThamGia ma={x.ma} soNguoiThamGia={0} daThamGia={false} /></span>
     <NhanNganh x={x} />
     {x.nganh && <span className="block text-[11px]" style={{ color: MUTED, ...sans }}>{x.nganh}</span>}
   </td>

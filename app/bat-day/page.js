@@ -5,6 +5,9 @@ import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import HuongDanDungHieuQua from "@/components/HuongDanDungHieuQua";
 import { pct } from "@/components/dungChung";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import GiaiThichThem from "@/components/GiaiThichThem";
+import DaiThongKe, { OThongKe } from "@/components/DaiThongKe";
+import { NhanMuc } from "@/components/LienKetPhongCach";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -18,24 +21,6 @@ const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
-
-function TheKPI({ nhan, giaTri, phu, mau }) {
-  return (
-    <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mau || TEXT }}>
-        {giaTri}
-      </p>
-      <p className="text-xs mt-1" style={{ color: MUTED }}>
-        {nhan}
-      </p>
-      {phu && (
-        <p className="text-[11px]" style={{ color: MUTED }}>
-          {phu}
-        </p>
-      )}
-    </div>
-  );
-}
 
 export default async function TrangBatDay() {
   const nguoiDung = await layNguoiDungHienTai();
@@ -70,16 +55,17 @@ export default async function TrangBatDay() {
     : 0;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: TEXT }}>
+      <NhanMuc chu="Bắt đáy" />
       <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Checklist dò bắt đáy
       </h1>
-      <p className="text-sm mb-6" style={{ color: MUTED }}>
-        Toàn bộ lịch sử các lần checklist bắt đáy kích hoạt (chiết khấu sâu + quá bán + capitulation/phân kỳ + follow-through day)
-        trên toàn bộ cổ phiếu có GTGD ≥ 3 tỷ (VN100 và các mã khác, mã ngoài VN100 có nhãn &quot;khác&quot;), kèm kết quả thực tế sau 5/10/20 phiên để tự đánh giá độ tin cậy.
+      <p className="text-sm mb-1" style={{ color: MUTED }}>
+        Các lần cổ phiếu đủ điều kiện bắt đáy (giảm sâu, quá bán, bán tháo rồi có phiên xác nhận), kèm kết quả thật sau 5/10/20 phiên để bạn tự đánh giá độ tin cậy.
       </p>
-
-      <HuongDanDungHieuQua moSan={false} />
+      <GiaiThichThem nhanMo="Điều kiện checklist" className="mb-4">
+        Chiết khấu sâu + quá bán + capitulation/phân kỳ + follow-through day, trên toàn bộ cổ phiếu có GTGD ≥ 3 tỷ (VN100 và các mã khác, mã ngoài VN100 có nhãn &quot;khác&quot;).
+      </GiaiThichThem>
 
       {loi && (
         <p className="text-sm mb-6" style={{ color: DO }}>
@@ -87,17 +73,13 @@ export default async function TrangBatDay() {
         </p>
       )}
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        <TheKPI nhan="Tổng số lần bắt đáy" giaTri={duLieu.length} />
-        <TheKPI
-          nhan="Tỷ lệ thành công"
-          giaTri={`${tyLeThanhCong.toFixed(0)}%`}
-          phu={`${soThanhCong}/${daXongTheoDoi.length} lần đã có kết quả`}
-          mau={XANH}
-        />
-        <TheKPI nhan="Lãi/lỗ trung bình (sau 20 phiên)" giaTri={pct(laiTrungBinh, 2)} mau={laiTrungBinh >= 0 ? XANH : DO} />
-        <TheKPI nhan="Lãi trung bình khi thành công" giaTri={pct(laiTrungBinhKhiThanhCong, 2)} mau={XANH} />
-      </div>
+      <DaiThongKe>
+        <OThongKe nhan="Tỷ lệ thành công (sau 20 phiên)" so={`${tyLeThanhCong.toFixed(0)}%`} phu={`${soThanhCong}/${daXongTheoDoi.length} lần đã có kết quả`} mau={XANH} />
+        <OThongKe nhan="Lãi/lỗ trung bình sau 20 phiên" so={pct(laiTrungBinh, 2)} mau={laiTrungBinh >= 0 ? XANH : DO} />
+        <OThongKe nhan="Lãi trung bình khi thành công" so={pct(laiTrungBinhKhiThanhCong, 2)} mau={XANH} />
+        <OThongKe nhan="Tổng số lần bắt đáy" so={duLieu.length} />
+      </DaiThongKe>
+      <HuongDanDungHieuQua moSan={false} />
 
       {!loi && duLieu.length === 0 ? (
         <div className="rounded-2xl border p-6 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
@@ -107,9 +89,9 @@ export default async function TrangBatDay() {
         <BangBatDay duLieu={duLieu} />
       )}
 
-      <p className="text-[11px] mt-3" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
-        &quot;Đang theo dõi&quot; = tín hiệu quá mới, chưa đủ 20 phiên để đánh giá kết quả. Mã ngoài VN100 và nhóm &quot;KL đáy&quot; kiểm tra lịch sử cho kết quả không ổn định theo từng năm — chỉ là công cụ tham khảo, không phải khuyến nghị đầu tư.
-      </p>
+      <GiaiThichThem className="mt-3" tomTat="Chỉ là công cụ tham khảo, không phải khuyến nghị đầu tư.">
+        &quot;Đang theo dõi&quot; = tín hiệu quá mới, chưa đủ 20 phiên để đánh giá kết quả. Mã ngoài VN100 và nhóm &quot;KL đáy&quot; kiểm tra lịch sử cho kết quả không ổn định theo từng năm.
+      </GiaiThichThem>
     </div>
   );
 }

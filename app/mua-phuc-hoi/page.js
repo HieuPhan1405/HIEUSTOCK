@@ -4,6 +4,8 @@ import BangDiemB from "@/components/BangDiemB";
 import HuongDanDungHieuQua from "@/components/HuongDanDungHieuQua";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import GiaiThichThem from "@/components/GiaiThichThem";
+import { NhanMuc } from "@/components/LienKetPhongCach";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -37,11 +39,15 @@ export default async function TrangMuaPhucHoi() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: TEXT }}>
+      <NhanMuc chu="Bắt đáy" />
       <h1 className="text-2xl mb-1" style={{ ...sans, fontWeight: 700 }}>Điểm mua phục hồi (điểm B)</h1>
-      <p className="text-sm mb-6" style={{ color: MUTED }}>
-        Cổ phiếu đã giảm sâu rồi đóng cửa lấy lại cả Tenkan và Kijun — xác nhận nhịp hồi đã bắt đầu, thường sớm hơn điểm MUA của hệ thống. Toàn bộ điểm B từ đầu 2026 trên các mã có GTGD ≥ 3 tỷ thuộc 11 ngành trọng tâm (ngân hàng, BĐS, chứng khoán, thép, thực phẩm, bán lẻ, công nghệ, logistics, dầu khí, hóa chất, xây dựng), kèm kết quả thực tế sau khi vào lệnh (mở cửa phiên kế tiếp).
+      <p className="text-sm mb-1" style={{ color: MUTED }}>
+        Cổ phiếu đã giảm sâu rồi đóng cửa lấy lại cả Tenkan và Kijun: nhịp hồi đã bắt đầu, thường sớm hơn điểm MUA của hệ thống. Kèm kết quả thật sau khi vào lệnh.
       </p>
+      <GiaiThichThem nhanMo="Phạm vi dữ liệu" className="mb-4">
+        Toàn bộ điểm B từ đầu 2026 trên các mã có GTGD ≥ 3 tỷ thuộc 11 ngành trọng tâm (ngân hàng, BĐS, chứng khoán, thép, thực phẩm, bán lẻ, công nghệ, logistics, dầu khí, hóa chất, xây dựng); giá vào = mở cửa phiên kế tiếp sau điểm B.
+      </GiaiThichThem>
 
       <HuongDanDungHieuQua moSan />
 
@@ -54,9 +60,9 @@ export default async function TrangMuaPhucHoi() {
         <BangDiemB duLieu={duLieu} />
       )}
 
-      <p className="text-[11px] mt-3" style={{ color: MUTED, ...sans }}>
-        Lãi hiện tại = giá hiện tại so với giá vào (mở cửa phiên kế tiếp sau điểm B), chưa trừ phí, và thống kê chỉ tính các lệnh ĐANG GIỮ (từ khi vào giá chưa chạm cắt lỗ = giá B − 2,5×ATR; lệnh đã cắt lỗ hiện ngày cắt và bị loại khỏi thống kê); &quot;+5 phiên&quot; là lãi/lỗ sau 5 phiên kể từ khi vào. Các điểm B có ngày khác nhau nên thời gian nắm giữ khác nhau. &quot;Đang lãi&quot; = lãi hiện tại &gt; 0. Cột &quot;Thị trường&quot;: yếu = VN-Index thấp hơn đỉnh 60 phiên từ 7%. Nhãn &quot;đã có lệnh MUA&quot; chỉ dựa trên lệnh đã ghi nhận trên web. Không phải khuyến nghị đầu tư.
-      </p>
+      <GiaiThichThem className="mt-3" nhanMo="Cách tính các cột" tomTat="Không phải khuyến nghị đầu tư.">
+        Lãi hiện tại = giá hiện tại so với giá vào (mở cửa phiên kế tiếp sau điểm B), chưa trừ phí, và thống kê chỉ tính các lệnh ĐANG GIỮ (từ khi vào giá chưa chạm cắt lỗ = giá B − 2,5×ATR; lệnh đã cắt lỗ hiện ngày cắt và bị loại khỏi thống kê); &quot;+5 phiên&quot; là lãi/lỗ sau 5 phiên kể từ khi vào. Các điểm B có ngày khác nhau nên thời gian nắm giữ khác nhau. &quot;Đang lãi&quot; = lãi hiện tại &gt; 0. Cột &quot;Thị trường&quot;: yếu = VN-Index thấp hơn đỉnh 60 phiên từ 7%. Nhãn &quot;đã có lệnh MUA&quot; chỉ dựa trên lệnh đã ghi nhận trên web.
+      </GiaiThichThem>
     </div>
   );
 }

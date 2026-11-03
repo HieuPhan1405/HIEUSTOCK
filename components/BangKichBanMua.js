@@ -5,6 +5,9 @@ import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { fmt, nhe } from "@/components/dungChung";
 import { soVN } from "@/lib/soVN";
+import NutThamGia from "@/components/NutThamGia";
+import GiaiThichThem from "@/components/GiaiThichThem";
+import { HangLocNhanh, ThanhGocNhin } from "@/components/boLocChung";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -42,6 +45,13 @@ function chuoiThayDoi(r, k) {
   const doi = cap.filter(([, a, b]) => a != null && b != null && Math.abs(a - b) > 1e-9);
   if (doi.length === 0) return "điểm thành phần giữ nguyên";
   return doi.map(([ten, a, b]) => `${ten} ${so1(a)}→${so1(b)}`).join(" · ");
+}
+
+function tomTatSomNhat(r) {
+  if (r.mua_tu != null) return { nhan: `Hôm nay nếu đóng cửa ${fmt(r.mua_tu)}${r.mua_den !== r.mua_tu ? `–${fmt(r.mua_den)}` : ""}`, mau: XANH };
+  const ds = KICH_BAN.map((k) => ({ k, p: r[`${k.khoa}_phien`] })).filter((x) => x.p != null).sort((a, b) => a.p - b.p);
+  if (!ds.length) return { nhan: "Chưa có kịch bản trong 10 phiên", mau: MUTED };
+  return { nhan: `Sớm nhất +${ds[0].p} phiên (${ds[0].k.nhan.toLowerCase()})`, mau: ds[0].p <= 3 ? XANH : TEXT };
 }
 
 function OKichBan({ r, k }) {
@@ -103,81 +113,88 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
     setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: khoa === "ma" ? "asc" : khoa === "diem" || khoa === "gia" ? "desc" : "asc" }));
   }
 
+  const demLoc = (f) => (timKiem.trim() ? duLieu.filter((r) => r.ma.includes(timKiem.trim().toUpperCase())) : duLieu).filter(f).length;
   const LOC = [
-    { khoa: "co", nhan: "Có kịch bản mua" },
-    { khoa: "ba", nhan: "Trong 3 phiên" },
-    { khoa: "homnay", nhan: "Có thể MUA hôm nay" },
-    { khoa: "tat", nhan: "Tất cả mã" },
-  ];
+    { khoa: "co", nhan: "Có kịch bản mua", f: (r) => somNhat(r) < 99 },
+    { khoa: "ba", nhan: "Trong 3 phiên", f: (r) => somNhat(r) <= 3 },
+    { khoa: "homnay", nhan: "Có thể MUA hôm nay", f: (r) => r.mua_tu != null },
+    { khoa: "tat", nhan: "Tất cả mã", f: () => true },
+  ].map((l) => ({ ...l, dem: demLoc(l.f), dang: loc === l.khoa }));
 
   return (
     <div>
-      <div className="flex flex-wrap gap-2 mb-4">
-        {[
-          { khoa: "MUA", nhan: `Mua mới · mã chưa có lệnh (${soMua})` },
-          { khoa: "GIUA", nhan: `Mua thêm giữa chừng · mã đang giữ (${tatCa.length - soMua})` },
-        ].map((g) => (
-          <button
-            key={g.khoa}
-            type="button"
-            onClick={() => setNhom(g.khoa)}
-            className="px-4 py-2 text-sm rounded-lg border"
-            style={{
-              borderColor: nhom === g.khoa ? PRIMARY : VIEN,
-              background: nhom === g.khoa ? nhe(PRIMARY, 18) : NEN_CARD,
-              color: nhom === g.khoa ? TEXT : MUTED,
-              fontFamily: "var(--font-chu)",
-              fontWeight: nhom === g.khoa ? 700 : 500,
-            }}
-          >
-            {g.nhan}
-          </button>
-        ))}
-      </div>
+      {/* 2 nhom: ma chua co lenh / ma dang giu (mua them giua chung) */}
+      <ThanhGocNhin
+        ds={[
+          { khoa: "MUA", nhan: `Mua mới (${soMua})` },
+          { khoa: "GIUA", nhan: `Mua thêm giữa chừng (${tatCa.length - soMua})` },
+        ]}
+        dang={nhom}
+        onChon={setNhom}
+      />
+      <p className="text-xs mb-3" style={{ color: MUTED }}>
+        {laGiua ? "Mã đang giữ lệnh, chưa chạm TP3, chưa mua thêm giữa chừng." : "Mã chưa có lệnh."}
+      </p>
 
-      <div className="flex flex-wrap items-center gap-3 mb-4">
-        <div className="relative max-w-sm flex-1 min-w-[180px]">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" color={MUTED} />
-          <input
-            value={timKiem}
-            onChange={(e) => setTimKiem(e.target.value)}
-            placeholder="Tìm mã cổ phiếu..."
-            className="w-full pl-9 pr-3 py-2 text-sm rounded-lg outline-none"
-            style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
-          />
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {LOC.map((l) => (
-            <button
-              key={l.khoa}
-              type="button"
-              onClick={() => setLoc(l.khoa)}
-              className="px-3 py-1.5 text-xs rounded-full border"
-              style={{
-                borderColor: loc === l.khoa ? PRIMARY : VIEN,
-                background: loc === l.khoa ? nhe(PRIMARY, 16) : "transparent",
-                color: loc === l.khoa ? TEXT : MUTED,
-                fontFamily: "var(--font-chu)",
-                fontWeight: loc === l.khoa ? 700 : 500,
-              }}
-            >
-              {l.nhan}
-            </button>
-          ))}
-        </div>
+      <HangLocNhanh ds={LOC} onChon={(l) => setLoc(l.khoa)} />
+      <div className="relative max-w-sm mb-3">
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" color={MUTED} />
+        <input
+          value={timKiem}
+          onChange={(e) => setTimKiem(e.target.value)}
+          placeholder="Tìm mã cổ phiếu..."
+          className="w-full pl-9 pr-3 py-2 text-sm rounded-lg outline-none"
+          style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
+        />
       </div>
 
       <p className="text-xs mb-2" style={{ color: MUTED }}>
-        Hiển thị {daLoc.length} / {duLieu.length} mã {laGiua ? "đang giữ lệnh, chưa chạm TP3, chưa mua thêm giữa chừng" : "chưa có lệnh"}.
+        <b style={{ color: TEXT }}>{daLoc.length}</b> / {duLieu.length} mã
       </p>
 
-      <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <div className="overflow-x-auto bang-cuon">
+      {/* DIEN THOAI: the - moi ma 1 dong, ket luan "khi nao MUA" o ben phai */}
+      <div className="sm:hidden rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
+        {daLoc.map((r, i) => {
+          const tt = tomTatSomNhat(r);
+          return (
+            <Link key={r.ma} href={`/ma/${r.ma}`} className={`flex items-center gap-3 px-3 py-2.5 ${i > 0 ? "border-t" : ""}`} style={{ borderColor: "var(--vien-nhe)" }}>
+              <div className="min-w-0 flex-1">
+                <p className="flex items-center gap-1.5">
+                  <span className="font-bold" style={{ fontFamily: "var(--font-chu)" }}>
+                    {r.ma}
+                  </span>
+                  <NutThamGia ma={r.ma} soNguoiThamGia={0} daThamGia={false} />
+                  <span className="text-xs" style={{ color: MUTED }}>
+                    {fmt(r.gia)} · điểm {soVN(r.diem, 2, true)}
+                  </span>
+                </p>
+                <p className="text-xs mt-0.5 font-semibold" style={{ color: tt.mau }}>
+                  {tt.nhan}
+                </p>
+              </div>
+            </Link>
+          );
+        })}
+        {daLoc.length === 0 && (
+          <p className="py-6 text-center text-sm" style={{ color: MUTED }}>
+            Chưa có dữ liệu phù hợp.
+          </p>
+        )}
+      </div>
+
+      {/* MAY TINH: bang, tieu de cot dinh khi cuon */}
+      <div className="hidden sm:block rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
+        <div className="overflow-auto bang-cuon max-h-[calc(100vh-150px)]">
           <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
             <thead>
-              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "var(--font-chu)" }}>
+              <tr className="text-left" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                 {cacCot.map((c) => (
-                  <th key={c.khoa} className={`py-3 px-3 font-normal cursor-pointer select-none whitespace-nowrap ${c.canPhai ? "text-right" : "text-left"}`} onClick={() => doiSapXep(c.khoa)}>
+                  <th
+                    key={c.khoa}
+                    className={`sticky top-0 z-[2] py-2.5 px-3 font-normal cursor-pointer select-none whitespace-nowrap border-b ${c.canPhai ? "text-right" : "text-left"}`}
+                    style={{ background: NEN_CARD, borderColor: VIEN }}
+                    onClick={() => doiSapXep(c.khoa)}
+                  >
                     <span className="inline-flex items-center gap-1">
                       {c.nhan}
                       {c.phu && (
@@ -197,11 +214,14 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
             </thead>
             <tbody>
               {daLoc.map((r, i) => (
-                <tr key={r.ma} className={i > 0 ? "border-t align-top" : "align-top"} style={{ borderColor: "var(--vien-nhe)" }}>
+                <tr key={r.ma} className={`hover:bg-[color:var(--hover-nhe)] ${i > 0 ? "border-t align-top" : "align-top"}`} style={{ borderColor: "var(--vien-nhe)" }}>
                   <td className="py-2.5 px-3">
-                    <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
-                      {r.ma}
-                    </Link>
+                    <div className="flex items-center gap-1.5">
+                      <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+                        {r.ma}
+                      </Link>
+                      <NutThamGia ma={r.ma} soNguoiThamGia={0} daThamGia={false} />
+                    </div>
                   </td>
                   <td className="py-2.5 px-3 text-right">{fmt(r.gia)}</td>
                   {laGiua && (
@@ -250,22 +270,21 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
         </div>
       </div>
 
-      <div className="text-[11px] mt-3 space-y-1" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+      <GiaiThichThem nhanMo="Cách đọc bảng" className="mt-3">
         <p>
-          <b style={{ color: VANG }}>Cách đọc:</b> &quot;Hôm nay&quot; là khoảng giá đóng cửa của phiên hôm nay (trong biên độ ±7%) mà hệ thống sẽ ra tín hiệu MUA. Ba cột kịch bản cho biết nếu giá giữ nguyên /
-          tăng đều 1% / giảm đều 1% mỗi phiên thì sau bao nhiêu phiên mã đủ điều kiện MUA (tối đa 10 phiên), kèm điểm lúc đó và thành phần nào thay đổi (XH = xu hướng, ĐL = động lượng, DT = dòng tiền).
+          &quot;Hôm nay&quot; là khoảng giá đóng cửa của phiên hôm nay (trong biên độ ±7%) mà hệ thống sẽ ra tín hiệu MUA. Ba cột kịch bản cho biết nếu giá giữ nguyên / tăng đều 1% / giảm đều 1%
+          mỗi phiên thì sau bao nhiêu phiên mã đủ điều kiện MUA (tối đa 10 phiên), kèm điểm lúc đó và thành phần nào thay đổi (XH = xu hướng, ĐL = động lượng, DT = dòng tiền).
         </p>
         {laGiua && (
-          <p>
-            <b style={{ color: VANG }}>Mua thêm giữa chừng</b> chỉ áp dụng cho mã đang giữ lệnh gốc, chưa chạm TP3 và chưa mua thêm giữa chừng lần nào: giá hồi về vùng hỗ trợ rồi bật lên trong khi điểm vẫn tốt. &quot;Hôm nay&quot; là
-            khoảng giá đóng cửa sẽ kích hoạt tín hiệu mua thêm; các cột kịch bản cho biết sau bao nhiêu phiên tín hiệu này xuất hiện. Mã nào không có ô nào ra tín hiệu trong 10 phiên sẽ không hiện ở bộ lọc &quot;Có kịch bản mua&quot;.
+          <p className="mt-1">
+            Mua thêm giữa chừng chỉ áp dụng cho mã đang giữ lệnh gốc, chưa chạm TP3 và chưa mua thêm giữa chừng lần nào: giá hồi về vùng hỗ trợ rồi bật lên trong khi điểm vẫn tốt.
           </p>
         )}
-        <p>
-          Đây là mô phỏng với giả định khối lượng mỗi phiên bằng trung bình 20 phiên và chưa tính độ rộng ngành, nên có thể lệch nhẹ so với tín hiệu thật. Giá chạy khác kịch bản thì thời điểm sẽ khác.
-          Thông tin tham khảo, không phải khuyến nghị đầu tư.
+        <p className="mt-1">
+          Đây là mô phỏng với giả định khối lượng mỗi phiên bằng trung bình 20 phiên và chưa tính độ rộng ngành, nên có thể lệch nhẹ so với tín hiệu thật. Giá chạy khác kịch bản thì thời điểm sẽ
+          khác. Thông tin tham khảo, không phải khuyến nghị đầu tư.
         </p>
-      </div>
+      </GiaiThichThem>
     </div>
   );
 }

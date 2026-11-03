@@ -6,6 +6,7 @@ import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import NhanCapNhat from "@/components/NhanCapNhat";
 import NhanThiTruong5Phien from "@/components/NhanThiTruong5Phien";
 import GiaiThichThem from "@/components/GiaiThichThem";
+import LienKetPhongCach, { NhanMucXuHuong } from "@/components/LienKetPhongCach";
 import { capNhatMoiNhat } from "@/components/dungChung";
 import { layLichSuGia } from "@/lib/lichSuGia";
 import { lenhDangMo } from "@/lib/muaThemTinhToan";
@@ -13,7 +14,7 @@ import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Sổ lệnh đang mở",
+  title: "Lệnh đang mở · Đầu tư theo xu hướng",
   description: "Danh mục các mã đang MUA / NẮM GIỮ: vùng mua, cắt lỗ, chốt lời và lãi/lỗ hiện tại.",
 };
 
@@ -28,7 +29,7 @@ export default async function TrangLenhMo({ searchParams }) {
   if (!nguoiDung || !nguoiDung.da_duyet) {
     return (
       <KhoaTrangNoiDung
-        tieuDe="Sổ lệnh đang mở"
+        tieuDe="Lệnh đang mở"
         moTa="Đăng ký hoặc đăng nhập miễn phí để xem toàn bộ danh mục đang MUA/NẮM GIỮ, điểm chốt lời và cảnh báo rủi ro."
         choDuyet={!!nguoiDung}
       />
@@ -53,12 +54,14 @@ export default async function TrangLenhMo({ searchParams }) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: TEXT }}>
+      <NhanMucXuHuong />
       <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
-        Sổ lệnh đang mở
+        Lệnh đang mở
       </h1>
-      <p className="text-sm mb-3" style={{ color: MUTED }}>
+      <p className="text-sm mb-1" style={{ color: MUTED }}>
         {loi ? "—" : `${lenhMo.length} lệnh đang mở${soMa < lenhMo.length ? ` của ${soMa} mã` : ""} — mỗi dòng là một lệnh, có giá mua, cắt lỗ, chốt lời riêng.`}
       </p>
+      <LienKetPhongCach loai="xuHuong" className="mb-3" />
 
       <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-1" />
       <Suspense fallback={null}>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import BangLenhDaDong from "@/components/BangLenhDaDong";
+import { NhanMucXuHuong } from "@/components/LienKetPhongCach";
 import { thongKeLenhDaDong } from "@/lib/thongKeLenh";
 import { pct } from "@/components/dungChung";
 import { TY_LE_CHOT, TY_LE_CHOT_CU, TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
@@ -99,6 +100,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
 
   return (
     <div className={nhung ? "" : "max-w-6xl mx-auto px-4 sm:px-6 py-8"} style={{ color: TEXT }}>
+      {!nhung && <NhanMucXuHuong />}
       <TieuDeTag className={nhung ? "text-lg mb-1" : "text-2xl mb-1"} style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         {tieuDe}
       </TieuDeTag>
@@ -107,7 +109,7 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
           <>
             Kết quả các lệnh đã bán, đã thoát vị thế hoặc đã chốt lời từng phần (TP1 / TP2 / TP3) kể từ khi web bắt đầu ghi nhận. Lệnh đang giữ xem ở{" "}
             <Link href="/lenh-mo" className="underline" style={{ color: "#6C5CE7" }}>
-              Sổ lệnh đang mở
+              Lệnh đang mở
             </Link>
             .
           </>

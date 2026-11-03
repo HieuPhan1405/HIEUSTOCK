@@ -1,5 +1,6 @@
 import PhuongPhapDaiHan from "@/components/PhuongPhapDaiHan";
 import NhanCapNhat from "@/components/NhanCapNhat";
+import LienKetPhongCach from "@/components/LienKetPhongCach";
 import { layDuLieuDaiHan } from "@/lib/phuongPhapDaiHanDb";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 
@@ -27,6 +28,7 @@ export default async function TrangDaiHan() {
       <p className="text-sm mb-4 max-w-3xl" style={{ color: "var(--mo)" }}>
         Chọn doanh nghiệp tốt theo tiêu chí của các nhà đầu tư nổi tiếng, mua chia 5 đợt theo vùng giá và biết khi nào nên bán. Không dùng tín hiệu mua bán ngắn hạn.
       </p>
+      <LienKetPhongCach loai="daiHan" className="mb-4 -mt-2" />
       {du?.capNhat && <NhanCapNhat luc={du.capNhat} className="mb-4" />}
       {loi ? (
         <p className="text-sm" style={{ color: "var(--do)" }}>

@@ -8,6 +8,7 @@ import NutXuatBang from "@/components/NutXuatBang";
 import SignalPill from "@/components/SignalPill";
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import NutThamGia from "@/components/NutThamGia";
+import NutLuuDanhSach from "@/components/NutLuuDanhSach";
 import NhanPhuTinHieu, { dsNhanPhu } from "@/components/NhanPhuTinHieu";
 import { CAC_COT } from "@/components/cotChung";
 import { COT_CHI_BAO_HIEN, THU_TU_COT_CHI_BAO } from "@/components/cotChiBao";
@@ -454,9 +455,13 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
         }
       />
       </div>
-      <p className="text-xs mb-2" style={{ color: MUTED }}>
-        <b style={{ color: "var(--chu)" }}>{daLoc.length}</b> / {duLieu.length} mã · <span style={{ color: XANH }}>{soTang} tăng</span> · <span style={{ color: DO }}>{soGiam} giảm</span> · {soDung} đứng giá
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+        <p className="text-xs" style={{ color: MUTED }}>
+          <b style={{ color: "var(--chu)" }}>{daLoc.length}</b> / {duLieu.length} mã · <span style={{ color: XANH }}>{soTang} tăng</span> · <span style={{ color: DO }}>{soGiam} giảm</span> · {soDung} đứng giá
+        </p>
+        {/* luu ca ket qua dang loc thanh danh sach theo doi (Danh muc cua toi) */}
+        <NutLuuDanhSach dsMa={daLoc.map((r) => r.ma)} coDangNhap={!!nguoiDung} moChuaDangNhap={() => setMoModalTK(true)} />
+      </div>
 
       {/* DIEN THOAI: danh sach the (bang nhieu cot kho doc tren man hinh nho) */}
       <div className="sm:hidden">
@@ -480,6 +485,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
                     {r.ma}
                   </span>
                   {r.mat_than && <span style={{ color: DO }}>⚠</span>}
+                  <NutThamGia ma={r.ma} soNguoiThamGia={banDoThamGia[r.ma]?.soNguoiThamGia ?? 0} daThamGia={banDoThamGia[r.ma]?.daThamGia ?? false} coDangNhap={!!nguoiDung} moChuaDangNhap={ctx.moModalTK} onDoiTrangThai={doiTrangThaiThamGia} />
                   <span className="text-xs truncate" style={{ color: MUTED }}>
                     {r.ten_ngan}
                   </span>

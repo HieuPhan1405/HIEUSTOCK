@@ -23,12 +23,12 @@ export default async function TrangCoBan() {
     loi = thongBaoLoi(e);
   }
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: "var(--chu)" }}>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: "var(--chu)" }}>
       <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Bộ lọc cơ bản
       </h1>
       <p className="text-sm mb-4" style={{ color: "var(--mo)" }}>
-        Lọc {hang.length || "toàn bộ"} cổ phiếu theo chất lượng doanh nghiệp từ báo cáo tài chính hợp nhất theo quý: điểm Z, điểm F, ROE, định giá, tăng trưởng và cổ tức. Bấm một mã để xem phân tích đầy đủ.
+        Lọc {hang.length || "toàn bộ"} cổ phiếu theo chất lượng doanh nghiệp (báo cáo tài chính theo quý): sức khoẻ tài chính, ROE, định giá, tăng trưởng, cổ tức. Bấm một mã để xem phân tích đầy đủ.
       </p>
       {loi && (
         <p className="text-sm mb-6" style={{ color: "var(--do)" }}>

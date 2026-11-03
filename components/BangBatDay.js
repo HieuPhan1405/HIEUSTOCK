@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { fmt, pct, nhe } from "@/components/dungChung";
 import { soVN } from "@/lib/soVN";
+import NutThamGia from "@/components/NutThamGia";
 import { ngayBatDauKhoang, danhSachNganh } from "@/lib/locDiemB";
 
 const VIEN = "var(--vien)";
@@ -64,6 +65,8 @@ export default function BangBatDay({ duLieu }) {
   const [chiDiemCao, setChiDiemCao] = useState(false);
   const [chiCoDiemB, setChiCoDiemB] = useState(false);
   const nganhs = useMemo(() => danhSachNganh(duLieu), [duLieu]);
+  const [moLocThem, setMoLocThem] = useState(false);
+  const soLocThem = [chiThanhCong, chiVn100, chiCoKL, chiDiemCao, chiCoDiemB].filter(Boolean).length;
 
   const daLoc = useMemo(() => {
     const tuKhoa = timKiem.trim().toUpperCase();
@@ -116,6 +119,18 @@ export default function BangBatDay({ duLieu }) {
             style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)" }}
           />
         </div>
+        <select value={nganh} onChange={(e) => setNganh(e.target.value)} className="text-xs rounded-lg px-2 py-2 outline-none" style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT }}>
+          <option value="">Mọi ngành</option>
+          {nganhs.map((x) => (
+            <option key={x} value={x}>{x}</option>
+          ))}
+        </select>
+        <button type="button" onClick={() => setMoLocThem((x) => !x)} aria-expanded={moLocThem} className="text-xs rounded-lg px-3 py-2 border" style={{ borderColor: soLocThem ? PRIMARY : VIEN, background: NEN_CARD, color: TEXT, fontFamily: "var(--font-chu)" }}>
+          Lọc thêm{soLocThem > 0 && <b style={{ color: PRIMARY }}> · {soLocThem}</b>} {moLocThem ? "▴" : "▾"}
+        </button>
+      </div>
+      {moLocThem && (
+        <div className="flex flex-wrap items-center gap-3 mb-4 rounded-xl border p-3" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }}>
           <input type="checkbox" checked={chiThanhCong} onChange={(e) => setChiThanhCong(e.target.checked)} />
           Chỉ hiện lệnh bắt thành công
@@ -128,12 +143,6 @@ export default function BangBatDay({ duLieu }) {
           <input type="checkbox" checked={chiCoKL} onChange={(e) => setChiCoKL(e.target.checked)} />
           Chỉ bán tháo có KL (≥ 2×)
         </label>
-        <select value={nganh} onChange={(e) => setNganh(e.target.value)} className="text-xs rounded-lg px-2 py-2 outline-none" style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT }}>
-          <option value="">Mọi ngành</option>
-          {nganhs.map((x) => (
-            <option key={x} value={x}>{x}</option>
-          ))}
-        </select>
         <label className="flex items-center gap-2 text-xs cursor-pointer select-none" style={{ color: MUTED }} title="Điểm checklist từ 6 trở lên (ngưỡng 6 cho kết quả tốt hơn ngưỡng 5 từ 2022.5 nhưng không ổn định mọi năm)">
           <input type="checkbox" checked={chiDiemCao} onChange={(e) => setChiDiemCao(e.target.checked)} />
           Điểm ≥ 6
@@ -142,21 +151,23 @@ export default function BangBatDay({ duLieu }) {
           <input type="checkbox" checked={chiCoDiemB} onChange={(e) => setChiCoDiemB(e.target.checked)} />
           Đã có điểm B sau
         </label>
-      </div>
+        </div>
+      )}
 
       <p className="text-xs mb-2" style={{ color: MUTED }}>
         Hiển thị {daLoc.length} / {duLieu.length} lần bắt đáy.
       </p>
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <div className="overflow-x-auto bang-cuon">
+        <div className="overflow-auto bang-cuon max-h-[calc(100vh-150px)]">
           <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
             <thead>
-              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "var(--font-chu)" }}>
+              <tr className="text-left" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
                 {COT.map((c) => (
                   <th
                     key={c.khoa}
-                    className={`py-3 px-3 font-normal cursor-pointer select-none whitespace-nowrap ${c.canPhai ? "text-right" : "text-left"}`}
+                    className={`sticky top-0 z-[2] border-b py-2.5 px-3 font-normal cursor-pointer select-none whitespace-nowrap ${c.canPhai ? "text-right" : "text-left"}`}
+                    style={{ background: NEN_CARD, borderColor: VIEN }}
                     onClick={() => doiSapXep(c.khoa)}
                   >
                     <span className="inline-flex items-center gap-1">
@@ -184,6 +195,7 @@ export default function BangBatDay({ duLieu }) {
                       <Link href={`/ma/${row.ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
                         {row.ma}
                       </Link>
+                      <span className="ml-1.5 align-middle"><NutThamGia ma={row.ma} soNguoiThamGia={0} daThamGia={false} /></span>
                       {row.vn100 === false && (
                         <span className="ml-1.5 px-1 text-[11px] rounded-sm" style={{ background: nhe(MUTED, 15), color: MUTED, fontFamily: "var(--font-chu)" }} title="Ngoài VN100 (GTGD TB20 ≥ 3 tỷ)">
                           khác

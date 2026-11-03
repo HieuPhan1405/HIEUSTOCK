@@ -142,7 +142,7 @@ function NguyenTac() {
           Mỗi mã có <b style={{ color: XANH }}>vùng chốt lời gần (TP1–TP2)</b> và <b style={{ color: XANH }}>mốc xa (TP3)</b> cố định từ lúc mua. Nhãn{" "}
           <b style={{ color: XANH }}>&quot;Đã chạm&quot;</b> nghĩa là giá đã từng lên tới mốc đó trong quá trình giữ (kể cả sau đó giá tụt lại).
           Tỷ lệ chốt: <b style={{ color: XANH }}>30% ở TP1, 30% ở TP2</b> và <b style={{ color: XANH }}>40% còn lại giữ đến khi hệ thống báo BÁN</b> (điểm số tụt, chạm mức cắt lỗ hoặc quay về hòa vốn sau TP2) để lệnh thắng lớn chạy tiếp. TP3 chỉ là mốc mục tiêu tham khảo, không chốt ở đó.
-          Sau khi đã chạm TP2 (đã chốt 60%), mức cắt lỗ của phần còn lại tự dời về giá mua (xem thêm phần &quot;Bảo vệ lãi&quot; bên dưới) nên lệnh không còn rủi ro lỗ. Mỗi lần chạm TP1/TP2 được ghi vào trang Lệnh đã đóng thành một dòng, và khi lệnh đóng thật sự thì ghi thêm dòng phần còn lại. Điểm mua sau khi một lệnh đã kết thúc là <b style={{ color: XANH }}>lệnh mua bình thường</b> như mọi lệnh khác. <b style={{ color: XANH }}>Không có &quot;mua thêm&quot;</b>: nếu bạn bỏ qua lệnh đầu thì có thể đợi đợt sau — khi giá hồi về hỗ trợ (Kijun) rồi bật lên đủ điều kiện, hệ thống báo <b style={{ color: XANH }}>MUA MỚI</b> với giá mua, cắt lỗ, chốt lời và lãi/lỗ tính riêng, chốt giống lệnh Mua: 30% ở TP1, 30% ở TP2 của riêng lệnh đó, 40% còn lại giữ đến tín hiệu BÁN (sau TP2 cắt lỗ dời về giá mua). Mỗi lệnh là một dòng riêng trong Sổ lệnh đang mở; mã có nhiều lệnh được đánh số <b style={{ color: XANH }}>(1), (2)...</b> theo ngày mua, và ở trang của mã có thanh ngang để chọn từng lệnh, chọn lệnh nào thì giá mua, cắt lỗ, chốt lời, lãi/lỗ và biểu đồ hiện theo lệnh đó. Hệ thống chỉ
+          Sau khi đã chạm TP2 (đã chốt 60%), mức cắt lỗ của phần còn lại tự dời về giá mua (xem thêm phần &quot;Bảo vệ lãi&quot; bên dưới) nên lệnh không còn rủi ro lỗ. Mỗi lần chạm TP1/TP2 được ghi vào trang Lệnh đã đóng thành một dòng, và khi lệnh đóng thật sự thì ghi thêm dòng phần còn lại. Điểm mua sau khi một lệnh đã kết thúc là <b style={{ color: XANH }}>lệnh mua bình thường</b> như mọi lệnh khác. <b style={{ color: XANH }}>Không có &quot;mua thêm&quot;</b>: nếu bạn bỏ qua lệnh đầu thì có thể đợi đợt sau — khi giá hồi về hỗ trợ (Kijun) rồi bật lên đủ điều kiện, hệ thống báo <b style={{ color: XANH }}>MUA MỚI</b> với giá mua, cắt lỗ, chốt lời và lãi/lỗ tính riêng, chốt giống lệnh Mua: 30% ở TP1, 30% ở TP2 của riêng lệnh đó, 40% còn lại giữ đến tín hiệu BÁN (sau TP2 cắt lỗ dời về giá mua). Mỗi lệnh là một dòng riêng ở trang Lệnh đang mở; mã có nhiều lệnh được đánh số <b style={{ color: XANH }}>(1), (2)...</b> theo ngày mua, và ở trang của mã có thanh ngang để chọn từng lệnh, chọn lệnh nào thì giá mua, cắt lỗ, chốt lời, lãi/lỗ và biểu đồ hiện theo lệnh đó. Hệ thống chỉ
           gợi ý, không tự bán.
         </p>
       </Muc>
@@ -173,13 +173,13 @@ function NguyenTac() {
           (khối lượng và giá trị giao dịch tính trung bình 20 phiên). Mã kém thanh khoản khó vào/ra lệnh, dễ trượt giá. Hệ thống cũng tự loại các mã quá
           kém thanh khoản khỏi tín hiệu MUA.
         </p>
-        <Luu>* Ở trang Bộ lọc và Sổ lệnh có ô &quot;Chỉ mã ưu tiên&quot; để lọc nhanh theo 4 tiêu chí trên, và ô &quot;Mã theo dõi: sắp chạm mốc tính điểm +&quot; (Bộ lọc) để theo dõi trong phiên.</Luu>
+        <Luu>* Ở trang Bộ lọc và Lệnh đang mở có ô &quot;Chỉ mã ưu tiên&quot; để lọc nhanh theo 4 tiêu chí trên, và ô &quot;Mã theo dõi: sắp chạm mốc tính điểm +&quot; (Bộ lọc) để theo dõi trong phiên.</Luu>
       </Muc>
 
       <Muc so={10} tieuDe="Thời điểm đặt lệnh (Mua/Bán)">
         <p>
           Nên đặt lệnh trong 2 khung: <b style={{ color: XANH }}>10h30 – 11h30</b> và <b style={{ color: XANH }}>14h00 – 14h45</b>. Đồng hồ ở đầu
-          trang Tổng quan, Bộ lọc và Sổ lệnh cho biết đang trong hay ngoài khung, còn bao lâu tới khung tiếp theo và mốc reset lúc 09h00 mỗi phiên.
+          trang Tổng quan, Bộ lọc và Lệnh đang mở cho biết đang trong hay ngoài khung, còn bao lâu tới khung tiếp theo và mốc reset lúc 09h00 mỗi phiên.
           Ngoài khung: chỉ theo dõi, tránh vội vàng lúc giá biến động mạnh đầu phiên.
         </p>
       </Muc>
@@ -196,7 +196,7 @@ function NguyenTac() {
 
       <Muc tieuDe="Giải thích ký hiệu">
         <p className="mb-3">
-          Các biểu tượng và nhãn nhỏ xuất hiện cạnh mã trong Bộ lọc, Sổ lệnh, Danh mục theo dõi và trang chi tiết mã:
+          Các biểu tượng và nhãn nhỏ xuất hiện cạnh mã trong Bộ lọc, Lệnh đang mở, Danh sách theo dõi và trang chi tiết mã:
         </p>
         <div className="grid sm:grid-cols-2 gap-x-6">
           <KyHieu ky="⚠" mau="var(--do)" chu={<><b style={{ color: XANH }}>Mắt Thần</b> — cảnh báo rủi ro đảo chiều, cần xem lại ngay.</>} />
@@ -278,7 +278,7 @@ export default async function TrangHuongDan() {
         </p>
       </Muc>
 
-      <Muc tieuDe="Sổ lệnh đang mở">
+      <Muc tieuDe="Đầu tư theo xu hướng: Lệnh đang mở">
         <p>
           Toàn bộ mã đang MUA hoặc NẮM GIỮ (lệnh đã chạm TP1/TP2 vẫn còn phần giữ nên vẫn nằm ở đây cho tới khi hệ thống báo BÁN): ngày mua, giá mua, số phiên đã giữ, lãi/lỗ hiện tại, mốc chốt lời cao nhất đã chạm, cảnh báo (Mắt Thần, Bán
           bớt) và nhãn giải ngân (Giải ngân 1 phần / Bổ sung). Nhãn ↺ Mua lại chỉ còn ở lệnh cũ (kiểu mua lại đã tắt từ 27/09/2026); nhãn 🛡 Bảo vệ lãi nghĩa là mức cắt lỗ đã được dời lên cao hơn (hòa vốn) sau khi giá từng chạm TP2 (xem mục &quot;Giải thích ký hiệu&quot; bên dưới). Giá mua, cắt lỗ và chốt lời được hiển thị dạng vùng: vùng mua (từ mốc chuyển mua đến cao hơn giá mua tối đa 1%, cao hơn nữa là đuổi giá — backtest 11 năm cho thấy mua cao hơn mốc quá 1% thì trung bình lỗ), vùng cắt lỗ (từ mức cắt lỗ lên tới đường hỗ trợ gần nhất phía trên) và vùng chốt lời (TP1 đến TP3). Bảng có bộ lọc (sàn, ngành, xu hướng, đang lãi/lỗ, mã ưu tiên...) và hiện đầy đủ các chỉ
@@ -288,13 +288,18 @@ export default async function TrangHuongDan() {
         </p>
       </Muc>
 
-      <Muc tieuDe="Danh mục theo dõi">
+      <Muc tieuDe="Danh sách theo dõi">
         <p>
-          Bấm nút tham gia (biểu tượng người cạnh mã ở Bộ lọc hoặc Sổ lệnh) để thêm mã vào danh mục. Danh mục là danh sách <b>mã</b> bạn theo dõi (mỗi mã một dòng); mã đang có lệnh
+          Bạn có thể tạo nhiều danh sách (tối đa 20, mỗi danh sách 200 mã), ví dụ &quot;Ngân hàng&quot;, &quot;Chờ mua&quot;. Thêm mã bằng nút <b>dấu trang</b> cạnh mã ở Bộ lọc, Lệnh đang mở
+          (bấm vào rồi tick danh sách muốn thêm), bằng ô &quot;Thêm mã&quot; ở trang Danh sách theo dõi (gõ nhiều mã cách nhau dấu phẩy), hoặc nút <b>Lưu vào danh sách</b> ở Bộ lọc để lưu cả kết quả
+          đang lọc. Mỗi danh sách hiện dạng <b>bảng giá gọn</b>: giá, % hôm nay, tín hiệu, điểm, xu hướng, dòng tiền, lãi/lỗ lệnh và cảnh báo; bấm nút X để bỏ mã (có Hoàn tác).
+        </p>
+        <p className="mt-2">
+          <b>Danh sách chính</b> (biểu tượng chuông) dùng cho thông báo khi bạn chọn chế độ &quot;Chỉ mã đang theo dõi&quot; và có thêm góc nhìn <b>Vị thế &amp; lệnh đã đóng</b>: mã đang có lệnh
           có mũi tên ▾ ở đầu dòng — bấm để xổ ra các <b>vị thế</b> (lệnh) của mã đó với giá mua, vùng cắt lỗ, chốt lời, lãi/lỗ và số phiên giữ. Mã có nhiều vị thế được đánh số (1), (2)... theo
           ngày mua; nhãn &quot;Lệnh đầu&quot; / &quot;Mua mới&quot; cho biết đó là đợt nào, và mỗi vị thế ghi rõ mở trước hay sau khi bạn theo dõi mã. Bộ lọc <b>Vị thế tốt nhất</b> (lãi nhiều
           nhất) và <b>Vị thế sau</b> (mở gần nhất) cho mỗi mã chỉ hiện đúng 1 vị thế, các thẻ thống kê tính theo bộ lọc đó. Lệnh tự chuyển sang &quot;Lệnh đã đóng của tôi&quot; khi bán/thoát —
-          chỉ tính từ ngày bạn tham gia mã đó. Số liệu theo lệnh của hệ thống, không phải giá khớp thật trong tài khoản chứng khoán của bạn. Trang của từng mã có <b>Nhật ký giao dịch</b>: chọn ngày
+          chỉ tính từ ngày bạn thêm mã đó vào danh sách chính. Số liệu theo lệnh của hệ thống, không phải giá khớp thật trong tài khoản chứng khoán của bạn. Trang của từng mã có <b>Nhật ký giao dịch</b>: chọn ngày
           mua để xem riêng từng lệnh (mua, chạm/chốt TP, đóng, số phiên giữ, kết quả quy ra 100 đơn vị vốn), hoặc &quot;Tất cả&quot; để xem gộp theo thời gian.
         </p>
       </Muc>
@@ -324,7 +329,7 @@ export default async function TrangHuongDan() {
       <Muc tieuDe="Đăng ký, Tham gia và một vài lưu ý">
         <DanhSach
           muc={[
-            "Đăng ký bằng số điện thoại + mật khẩu (miễn phí) để mở khoá Checklist bắt đáy, Sổ lệnh đang mở, Lệnh đã đóng, cột Tín hiệu ở Bộ lọc và phần nguyên tắc giao dịch bên dưới.",
+            "Đăng ký bằng số điện thoại + mật khẩu (miễn phí) để mở khoá Checklist bắt đáy, Lệnh đang mở, Lệnh đã đóng, Danh sách theo dõi, cột Tín hiệu ở Bộ lọc và phần nguyên tắc giao dịch bên dưới.",
             "Biểu tượng người kèm số cạnh mã là nút Tham gia: bấm để theo dõi mã đó (cần đăng nhập), con số là tổng người đang quan tâm.",
             "Giá hiển thị theo đơn vị nghìn đồng (134.5 nghĩa là 134.500đ).",
             "Tín hiệu tính theo nến ngày và được cập nhật mỗi lần hệ thống quét thị trường; thời điểm cập nhật hiển thị ở đầu trang chi tiết mã.",

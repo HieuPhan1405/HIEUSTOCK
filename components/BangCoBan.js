@@ -2,7 +2,14 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
 import { soVN } from "@/lib/soVN";
+import NutThamGia from "@/components/NutThamGia";
+import NutLuuDanhSach from "@/components/NutLuuDanhSach";
+import ModalTaiKhoan from "@/components/ModalTaiKhoan";
+import GiaiThichThem from "@/components/GiaiThichThem";
+import { HangLocNhanh, ThanhGocNhin } from "@/components/boLocChung";
+import { napDanhSach, useDanhSachTheoDoi } from "@/lib/danhSachTheoDoiClient";
 
 // BO LOC CO BAN (/co-ban): bang toan thi truong theo diem Z, F, ROE, dinh gia, tang truong, co tuc, Danh gia 360 (lib/phanTichCoBanDb.js layBangCoBan, quy moi nhat cua tung ma).
 // Loc + sap xep tren trinh duyet. Nhom "Doanh nghiep" co Z va F; "Ngan hang / CK / BH" chi co DuPont + diem sinh loi (khong co Z, F, co tuc).
@@ -79,6 +86,12 @@ export default function BangCoBan({ hang, capNhat }) {
   const [vungZ, datVungZ] = useState("");
   const [sap, datSap] = useState({ k: "d360", hd: -1 });
   const [soHien, datSoHien] = useState(SO_DONG);
+  // O loc so (ROE, P/E...) gon sau 1 nut nhu Bo loc ky thuat - bang hien len som hon
+  const [moChiTiet, datMoChiTiet] = useState(false);
+  const [moTK, datMoTK] = useState(false);
+  // da dang nhap = kho danh sach theo doi tra ve mang (khach: null) - de nut theo doi / luu danh sach mo hop dang nhap cho khach
+  const kho = useDanhSachTheoDoi();
+  const coDangNhap = kho.daTai && kho.danhSach != null;
 
   const dat = (k) => (gt) => {
     datV((c) => ({ ...c, [k]: gt }));
@@ -141,14 +154,45 @@ export default function BangCoBan({ hang, capNhat }) {
     datSoHien(SO_DONG);
   };
   const doiSap = (c) => datSap((s) => (s.k === c.k ? { k: c.k, hd: -s.hd } : { k: c.k, hd: c.l || c.asc ? 1 : -1 }));
+  const soLocChiTiet = Object.entries(v).filter(([k, x]) => x !== "" && !(k === "gtgd" && x === LOC_RONG.gtgd)).length + (vungZ ? 1 : 0);
+  const coSoNhanh = useMemo(() => {
+    const q = tim.trim().toUpperCase();
+    return theoNhom.filter((h) => (!q || h.ma.includes(q)) && (!nganh || h.nhanNganh === nganh));
+  }, [theoNhom, tim, nganh]);
   const ngayCN = capNhat ? new Date(capNhat).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" }) : "";
   const nhanhHienCo = NHANH.filter((n) => laPi || !n.pi);
 
+  const dsNhanh = [
+    { khoa: "", nhan: "Tất cả", dem: coSoNhanh.length, dang: !nhanh },
+    ...nhanhHienCo.map((n) => ({ khoa: n.k, nhan: n.ten, moTa: n.mota, dem: coSoNhanh.filter(n.loc).length, dang: nhanh === n.k })),
+  ];
+
   return (
-    <section className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }} aria-label="Bộ lọc cơ bản">
+    <section aria-label="Bộ lọc cơ bản">
+      <ThanhGocNhin
+        ds={[
+          { khoa: "pi", nhan: "Doanh nghiệp" },
+          { khoa: "tc", nhan: "Ngân hàng · Chứng khoán · Bảo hiểm" },
+        ]}
+        dang={nhom}
+        onChon={doiNhom}
+      />
+      <p className="text-xs mb-3" style={{ color: MUTED }}>
+        {laPi ? "Có điểm Z″ (rủi ro phá sản), điểm F (sức khoẻ tài chính), cổ tức." : "Không có điểm Z, F: chỉ DuPont, điểm sinh lời và định giá."}
+      </p>
+
+      <div data-may="cb-nhanh">
+        <HangLocNhanh
+          ds={dsNhanh}
+          onChon={(m) => {
+            datNhanh(m.khoa && nhanh !== m.khoa ? m.khoa : null);
+            datSoHien(SO_DONG);
+          }}
+        />
+      </div>
+      {nhanh && <p className="text-xs mb-3" style={{ color: MUTED }}>{NHANH.find((n) => n.k === nhanh)?.mota}</p>}
+
       <div className="flex flex-wrap items-center gap-2 mb-3">
-        <Chip bat={laPi} onClick={() => doiNhom("pi")}>Doanh nghiệp (Z, F, DuPont)</Chip>
-        <Chip bat={!laPi} onClick={() => doiNhom("tc")} title="Ngân hàng, chứng khoán, bảo hiểm: không có điểm Z và F, chỉ DuPont, điểm sinh lời và định giá">Ngân hàng / Chứng khoán / Bảo hiểm</Chip>
         <input
           value={tim}
           onChange={(e) => {
@@ -157,8 +201,8 @@ export default function BangCoBan({ hang, capNhat }) {
           }}
           placeholder="Tìm mã…"
           aria-label="Tìm mã"
-          className="px-3 py-1.5 rounded-full text-xs border"
-          style={{ borderColor: VIEN, background: "transparent", color: "var(--chu)", width: 110, ...sans }}
+          className="px-3 py-2 rounded-lg text-sm border w-[130px]"
+          style={{ borderColor: VIEN, background: NEN_CARD, color: "var(--chu)", ...sans }}
         />
         <select
           value={nganh}
@@ -167,8 +211,8 @@ export default function BangCoBan({ hang, capNhat }) {
             datSoHien(SO_DONG);
           }}
           aria-label="Ngành"
-          className="px-3 py-1.5 rounded-full text-xs border"
-          style={{ borderColor: VIEN, background: "transparent", color: nganh ? "var(--chu)" : MUTED, ...sans }}
+          className="px-3 py-2 rounded-lg text-sm border"
+          style={{ borderColor: VIEN, background: NEN_CARD, color: nganh ? "var(--chu)" : MUTED, ...sans }}
         >
           <option value="">Mọi ngành</option>
           {dsNganh.map((n) => (
@@ -177,76 +221,115 @@ export default function BangCoBan({ hang, capNhat }) {
             </option>
           ))}
         </select>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-1.5 mb-2" data-may="cb-nhanh">
-        <span className="text-[11px] mr-1" style={{ color: MUTED }}>Bộ lọc nhanh:</span>
-        {nhanhHienCo.map((n) => (
-          <Chip
-            key={n.k}
-            bat={nhanh === n.k}
-            onClick={() => {
-              datNhanh(nhanh === n.k ? null : n.k);
-              datSoHien(SO_DONG);
-            }}
-            title={n.mota}
-          >
-            {n.ten}
-          </Chip>
-        ))}
-      </div>
-      {nhanh && <p className="text-[11px] mb-3" style={{ color: MUTED }}>{NHANH.find((n) => n.k === nhanh)?.mota}</p>}
-
-      <div className="flex flex-wrap items-end gap-3 my-3 rounded-xl border p-3" style={{ borderColor: VIEN }}>
-        {laPi && <So nhan="Điểm F ≥" gt={v.f} dat={dat("f")} />}
-        {laPi && (
-          <label className="flex flex-col gap-0.5 text-[11px]" style={{ color: MUTED }}>
-            Vùng Z″
-            <select
-              value={vungZ}
-              onChange={(e) => {
-                datVungZ(e.target.value);
-                datSoHien(SO_DONG);
-              }}
-              aria-label="Vùng Z″"
-              className="px-2 rounded-lg border"
-              style={{ borderColor: VIEN, background: "transparent", color: "var(--chu)", ...sans, height: 34 }}
-            >
-              <option value="" style={{ color: "#000" }}>Tất cả</option>
-              <option value="an toàn" style={{ color: "#000" }}>An toàn</option>
-              <option value="xám" style={{ color: "#000" }}>Xám</option>
-              <option value="nguy cơ" style={{ color: "#000" }}>Nguy cơ</option>
-            </select>
-          </label>
-        )}
-        <So nhan="ROE ≥" gt={v.roe} dat={dat("roe")} don="%" />
-        <So nhan="P/E ≤" gt={v.pe} dat={dat("pe")} />
-        <So nhan="P/B ≤" gt={v.pb} dat={dat("pb")} buoc={0.1} />
-        {laPi && <So nhan="Cổ tức ≥" gt={v.coTuc} dat={dat("coTuc")} don="%" />}
-        <So nhan="LN 4 quý tăng ≥" gt={v.ln} dat={dat("ln")} don="%" />
-        <So nhan="Điểm 360 ≥" gt={v.d360} dat={dat("d360")} buoc={0.5} />
-        <So nhan="GTGD ≥" gt={v.gtgd} dat={dat("gtgd")} don="tỷ" />
-        <So nhan="Vốn hoá ≥" gt={v.vonHoa} dat={dat("vonHoa")} don="tỷ" />
-        <button type="button" onClick={xoaLoc} className="px-3 py-1.5 rounded-full text-xs border" style={{ borderColor: VIEN, color: MUTED, ...sans }}>
-          Xoá lọc
+        <button
+          type="button"
+          onClick={() => datMoChiTiet((x) => !x)}
+          aria-expanded={moChiTiet}
+          className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm border"
+          style={{ borderColor: soLocChiTiet ? "var(--tim-nhat)" : VIEN, background: NEN_CARD, color: "var(--chu)", ...sans }}
+        >
+          <SlidersHorizontal size={14} />
+          Lọc theo chỉ số
+          {soLocChiTiet > 0 && <b style={{ color: "var(--tim-chu)" }}>· {soLocChiTiet}</b>}
         </button>
+        {(soLocChiTiet > 0 || nhanh || tim || nganh) && (
+          <button type="button" onClick={xoaLoc} className="px-3 py-2 rounded-lg text-xs border" style={{ borderColor: VIEN, color: "var(--tim-chu)", ...sans }}>
+            Xoá lọc
+          </button>
+        )}
       </div>
 
-      <div className="flex flex-wrap items-baseline justify-between gap-2 mb-2 text-xs" style={{ color: MUTED }}>
+      {moChiTiet && (
+        <div className="flex flex-wrap items-end gap-3 mb-3 rounded-xl border p-3" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          {laPi && <So nhan="Điểm F ≥" gt={v.f} dat={dat("f")} />}
+          {laPi && (
+            <label className="flex flex-col gap-0.5 text-[11px]" style={{ color: MUTED }}>
+              Vùng Z″
+              <select
+                value={vungZ}
+                onChange={(e) => {
+                  datVungZ(e.target.value);
+                  datSoHien(SO_DONG);
+                }}
+                aria-label="Vùng Z″"
+                className="px-2 rounded-lg border"
+                style={{ borderColor: VIEN, background: "transparent", color: "var(--chu)", ...sans, height: 34 }}
+              >
+                <option value="" style={{ color: "#000" }}>Tất cả</option>
+                <option value="an toàn" style={{ color: "#000" }}>An toàn</option>
+                <option value="xám" style={{ color: "#000" }}>Xám</option>
+                <option value="nguy cơ" style={{ color: "#000" }}>Nguy cơ</option>
+              </select>
+            </label>
+          )}
+          <So nhan="ROE ≥" gt={v.roe} dat={dat("roe")} don="%" />
+          <So nhan="P/E ≤" gt={v.pe} dat={dat("pe")} />
+          <So nhan="P/B ≤" gt={v.pb} dat={dat("pb")} buoc={0.1} />
+          {laPi && <So nhan="Cổ tức ≥" gt={v.coTuc} dat={dat("coTuc")} don="%" />}
+          <So nhan="LN 4 quý tăng ≥" gt={v.ln} dat={dat("ln")} don="%" />
+          <So nhan="Điểm 360 ≥" gt={v.d360} dat={dat("d360")} buoc={0.5} />
+          <So nhan="GTGD ≥" gt={v.gtgd} dat={dat("gtgd")} don="tỷ" />
+          <So nhan="Vốn hoá ≥" gt={v.vonHoa} dat={dat("vonHoa")} don="tỷ" />
+        </div>
+      )}
+
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2 text-xs" style={{ color: MUTED }}>
         <span>
           <b style={{ color: "var(--chu)" }}>{ds.length}</b> / {theoNhom.length} mã{v.gtgd ? ` · thanh khoản ≥ ${v.gtgd} tỷ/phiên` : ""}
+          {ngayCN ? ` · BCTC quý, cập nhật ${ngayCN}` : ""}
         </span>
-        <span>Báo cáo hợp nhất theo quý (VNDirect){ngayCN ? ` · cập nhật ${ngayCN}` : ""}</span>
+        <NutLuuDanhSach dsMa={ds.map((h) => h.ma)} coDangNhap={coDangNhap} moChuaDangNhap={() => datMoTK(true)} />
       </div>
 
-      <div className="overflow-auto rounded-xl border" style={{ borderColor: VIEN, maxHeight: "75vh" }}>
+      {/* DIEN THOAI: the - ma, nganh, ROE, P/E, diem 360 */}
+      <div className="sm:hidden rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
+        {ds.slice(0, soHien).map((h, i) => (
+          <Link key={h.ma} href={`/ma/${h.ma}`} className={`flex items-center gap-3 px-3 py-2.5 ${i > 0 ? "border-t" : ""}`} style={{ borderColor: "var(--vien-nhe)" }}>
+            <div className="min-w-0 flex-1">
+              <p className="flex items-center gap-1.5">
+                <span className="font-bold" style={sans}>
+                  {h.ma}
+                </span>
+                <NutThamGia ma={h.ma} soNguoiThamGia={0} daThamGia={false} coDangNhap={coDangNhap} moChuaDangNhap={() => datMoTK(true)} />
+                <span className="text-xs truncate" style={{ color: MUTED }}>
+                  {h.nhanNganh}
+                </span>
+              </p>
+              <p className="text-xs mt-0.5" style={{ color: MUTED }}>
+                ROE <b style={{ color: h.roe == null ? MUTED : h.roe >= 15 ? XANH : h.roe < 8 ? DO : "var(--chu)" }}>{f1(h.roe)}%</b> · P/E {h.pe == null ? "lỗ" : f1(h.pe)} · P/B {f1(h.pb)}
+                {laPi && h.f != null && (
+                  <>
+                    {" · F "}
+                    <b style={{ color: mauF(h.f) }}>{h.f}</b>
+                  </>
+                )}
+              </p>
+            </div>
+            <div className="text-right shrink-0">
+              <p className="font-bold" style={{ color: mauXL[h.xepLoai] ?? MUTED, ...sans }}>
+                {f1(h.d360)}
+              </p>
+              <p className="text-[11px]" style={{ color: mauXL[h.xepLoai] ?? MUTED }}>
+                {h.xepLoai ?? "điểm 360"}
+              </p>
+            </div>
+          </Link>
+        ))}
+        {ds.length === 0 && (
+          <p className="py-8 text-center text-sm" style={{ color: MUTED }}>
+            Không có mã nào khớp bộ lọc.
+          </p>
+        )}
+      </div>
+
+      <div className="hidden sm:block overflow-auto bang-cuon rounded-2xl border max-h-[calc(100vh-150px)]" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <table className="w-full text-sm">
           <thead className="sticky top-0 z-[2]">
             <tr>
               {cot.map((c) => (
                 <th
                   key={c.k}
-                  className={`py-2 px-2.5 text-[11px] font-normal whitespace-nowrap cursor-pointer select-none ${c.l ? "text-left" : "text-right"} ${c.an ?? ""} ${c.k === "ma" ? "sticky left-0 z-[3]" : ""}`}
+                  className={`py-2.5 px-2.5 text-xs font-normal whitespace-nowrap cursor-pointer select-none ${c.l ? "text-left" : "text-right"} ${c.an ?? ""} ${c.k === "ma" ? "sticky left-0 z-[3]" : ""}`}
                   style={{ color: sap.k === c.k ? "var(--chu)" : MUTED, background: NEN_CARD, borderBottom: `1px solid ${VIEN}` }}
                   onClick={() => doiSap(c)}
                   data-may={c.may}
@@ -259,10 +342,17 @@ export default function BangCoBan({ hang, capNhat }) {
           </thead>
           <tbody>
             {ds.slice(0, soHien).map((h) => (
-              <tr key={h.ma} className="border-t hover:bg-[var(--vien-nhe)]" style={{ borderColor: "var(--vien-nhe)" }}>
+              <tr key={h.ma} className="border-t hover:bg-[color:var(--hover-nhe)]" style={{ borderColor: "var(--vien-nhe)" }}>
                 <td className="py-1.5 px-2.5 sticky left-0 z-[1] whitespace-nowrap" style={{ background: NEN_CARD }}>
-                  <Link href={`/ma/${h.ma}`} className="font-bold" style={sans}>{h.ma}</Link>
-                  <span className="ml-1 text-[10px]" style={{ color: MUTED }}>{tenQuy(h.quy)}</span>
+                  <span className="inline-flex items-center gap-1.5">
+                    <Link href={`/ma/${h.ma}`} className="font-bold hover:underline" style={sans}>
+                      {h.ma}
+                    </Link>
+                    <NutThamGia ma={h.ma} soNguoiThamGia={0} daThamGia={false} coDangNhap={coDangNhap} moChuaDangNhap={() => datMoTK(true)} />
+                    <span className="text-[11px]" style={{ color: MUTED }} title="Quý báo cáo tài chính">
+                      {tenQuy(h.quy)}
+                    </span>
+                  </span>
                 </td>
                 <td className="py-1.5 px-2.5 text-xs max-md:hidden whitespace-nowrap" style={{ color: MUTED }}>{h.nhanNganh}</td>
                 <td className="py-1.5 px-2.5 text-right">{h.vonHoa == null ? "—" : soVN(h.vonHoa, 0)}</td>
@@ -277,7 +367,7 @@ export default function BangCoBan({ hang, capNhat }) {
                 <td className="py-1.5 px-2.5 text-right max-sm:hidden" style={{ color: mauTang(h.lnYoY) }}>{pc(h.lnYoY)}</td>
                 <td className="py-1.5 px-2.5 text-right max-md:hidden" style={{ color: mauTang(h.lnQuyYoY) }}>{pc(h.lnQuyYoY)}</td>
                 <td className="py-1.5 px-2.5 text-right whitespace-nowrap">
-                  <b style={{ color: mauXL[h.xepLoai] ?? MUTED }}>{f1(h.d360)}</b> <span className="text-[10px]" style={{ color: mauXL[h.xepLoai] ?? MUTED }}>{h.xepLoai ?? ""}</span>
+                  <b style={{ color: mauXL[h.xepLoai] ?? MUTED }}>{f1(h.d360)}</b> <span className="text-[11px]" style={{ color: mauXL[h.xepLoai] ?? MUTED }}>{h.xepLoai ?? ""}</span>
                 </td>
                 <td className="py-1.5 px-2.5 text-right max-md:hidden">{h.gtgd == null ? "—" : soVN(h.gtgd, 0)}</td>
               </tr>
@@ -299,9 +389,11 @@ export default function BangCoBan({ hang, capNhat }) {
           </Chip>
         </div>
       )}
-      <p className="text-[11px] mt-3" style={{ color: MUTED }}>
-        Số liệu tính trên 4 quý gần nhất so với cùng kỳ năm trước. Z″ trên 5,85 an toàn · 4,15–5,85 xám · dưới 4,15 nguy cơ; F là điểm Piotroski 0–9. Điểm 360 là thứ hạng so với các mã cùng nhóm (10 = tốt nhất), không phải ngưỡng tuyệt đối. P/E, P/B theo giá đóng cửa phiên gần nhất. Bảng chỉ để sàng lọc, không phải khuyến nghị đầu tư; mã tái cơ cấu hoặc thoái vốn có thể cho điểm nhiễu.
-      </p>
+      <GiaiThichThem nhanMo="Cách đọc các chỉ số" className="mt-3">
+        Số liệu tính trên 4 quý gần nhất so với cùng kỳ năm trước. Z″ trên 5,85 an toàn · 4,15–5,85 xám · dưới 4,15 nguy cơ; F là điểm Piotroski 0–9. Điểm 360 là thứ hạng so với các mã cùng nhóm (10 = tốt nhất),
+        không phải ngưỡng tuyệt đối. P/E, P/B theo giá đóng cửa phiên gần nhất. Báo cáo hợp nhất theo quý (VNDirect). Bảng chỉ để sàng lọc, không phải khuyến nghị đầu tư; mã tái cơ cấu hoặc thoái vốn có thể cho điểm nhiễu.
+      </GiaiThichThem>
+      <ModalTaiKhoan open={moTK} onClose={() => datMoTK(false)} onThanhCong={() => napDanhSach()} tieuDeGoiY="Đăng ký hoặc đăng nhập miễn phí để lưu mã vào danh sách theo dõi." />
     </section>
   );
 }

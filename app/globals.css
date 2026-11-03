@@ -782,3 +782,13 @@ html.cs-dang-chup .cs-cung {
     animation: none;
   }
 }
+
+/* Hop noi BAM DUOC (chon danh sach theo doi, luu ket qua loc): cung kieu hien voi o giai nghia nhung nhan chuot (o giai nghia co pointer-events: none) */
+.cs-hop-noi {
+  animation: cs-giai-nghia-hien 0.15s ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-hop-noi {
+    animation: none;
+  }
+}

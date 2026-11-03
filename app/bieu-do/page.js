@@ -6,6 +6,8 @@ import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import SignalPill from "@/components/SignalPill";
 import { tinhVungLenh } from "@/components/dungChung";
 import { tenCongTy } from "@/lib/tenMa";
+import NutThamGia from "@/components/NutThamGia";
+import XemNhanhDanhSach from "@/components/XemNhanhDanhSach";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -52,12 +54,12 @@ export default async function TrangBieuDo({ searchParams }) {
       : null;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: TEXT }}>
       <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Biểu đồ kỹ thuật
       </h1>
-      <p className="text-sm mb-5" style={{ color: MUTED }}>
-        Nến Nhật, khối lượng, Ichimoku, đường cân bằng dài hạn và MA. Rê chuột (hoặc chạm trên điện thoại) để xem giá từng phiên, cuộn để phóng to/thu nhỏ.
+      <p className="text-sm mb-4" style={{ color: MUTED }}>
+        Rê chuột (hoặc chạm) để xem giá từng phiên, cuộn để phóng to/thu nhỏ.
       </p>
 
       <form action="/bieu-do" method="get" className="flex gap-2 mb-3 max-w-md">
@@ -80,23 +82,16 @@ export default async function TrangBieuDo({ searchParams }) {
           <Search size={15} aria-hidden="true" /> Xem
         </button>
       </form>
-      <div className="flex flex-wrap items-center gap-1.5 mb-5 text-xs">
-        <span style={{ color: MUTED }}>Xem nhanh:</span>
-        {GOI_Y.map((g) => (
-          <Link
-            key={g}
-            href={`/bieu-do?ma=${g}`}
-            className="px-2 py-1 rounded-md border hover:text-[color:var(--chu)]"
-            style={{ borderColor: g === ma ? PRIMARY : VIEN, color: g === ma ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
-          >
-            {g}
-          </Link>
-        ))}
-      </div>
+      {/* thanh vien: cac ma trong danh sach theo doi; khach: goi y co dinh */}
+      <XemNhanhDanhSach ma={ma} goiY={GOI_Y} />
 
       {ten && (
-        <p className="text-sm mb-3" style={{ color: MUTED }}>
-          <b style={{ color: TEXT }}>{ma}</b> — {ten.ten} · {ten.san}
+        <p className="flex flex-wrap items-center gap-2 text-sm mb-3" style={{ color: MUTED }}>
+          <b style={{ color: TEXT }}>{ma}</b>
+          {ma !== "VNINDEX" && nguoiDung?.da_duyet && <NutThamGia ma={ma} soNguoiThamGia={0} daThamGia={false} />}
+          <span>
+            {ten.ten} · {ten.san}
+          </span>
         </p>
       )}
       {row && ma !== "VNINDEX" && (

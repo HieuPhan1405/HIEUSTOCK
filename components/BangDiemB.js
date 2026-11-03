@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { fmt, pct, nhe } from "@/components/dungChung";
 import { soVN } from "@/lib/soVN";
+import NutThamGia from "@/components/NutThamGia";
+import DaiThongKe, { OThongKe } from "@/components/DaiThongKe";
 import { ganDacTrungNganh, locDiemB, ketQuaDiemB, thongKeDiemB, laiHienTai, trangThaiLenh, danhSachNganh, laKhuyenNghi, DAI_GIAM, KHOANG_PHIEN, LOC_MAC_DINH, LOC_KHUYEN_NGHI } from "@/lib/locDiemB";
 
 const VIEN = "var(--vien)";
@@ -36,16 +38,6 @@ const COT = [
   { khoa: "dong_tien", nhan: "Dòng tiền", lay: (r) => (r.dong_tien == null ? -1 : Number(r.dong_tien)) },
   { khoa: "ket_qua", nhan: "Kết quả", lay: (r) => ({ tot: 2, xau: 1, cho: 0 })[ketQuaDiemB(r).loai] },
 ];
-
-function The({ nhan, giaTri, phu, mau }) {
-  return (
-    <div className="rounded-2xl border p-3 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-xl" style={{ ...mono, fontWeight: 700, color: mau || TEXT }}>{giaTri}</p>
-      <p className="text-[11px] mt-0.5" style={{ color: MUTED }}>{nhan}</p>
-      {phu && <p className="text-[11px]" style={{ color: MUTED }}>{phu}</p>}
-    </div>
-  );
-}
 
 function Ck({ loc, dat, k, nhan, tieuDe }) {
   return (
@@ -85,14 +77,18 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
   const dangLoc = JSON.stringify(loc) !== JSON.stringify(LOC_MAC_DINH);
   const dangKhuyenNghi = loc.dai === "tu_20" && loc.klDay && loc.vniYeu;
   const soKhuyenNghi = useMemo(() => duLieu.filter(laKhuyenNghi).length, [duLieu]);
+  // Cac o tick loc them (KL day, nganh cung hoi, thi truong yeu...) gon sau 1 nut - dem so o dang khac mac dinh
+  const [moLocThem, setMoLocThem] = useState(false);
+  const KHOA_THEM = ["klDay", "cungNganh", "manhNganh", "vniYeu", "chuaMuaThuong", "ganGiaB", "chiDangGiu", "chiThanhCong"];
+  const soLocThem = KHOA_THEM.filter((k) => loc[k] !== LOC_MAC_DINH[k]).length;
   return (
     <div>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-        <The nhan="Đang giữ / đã cắt lỗ" giaTri={`${tk.nGiu} / ${tk.nCat}`} phu={`${tk.n} điểm B hiển thị (${duLieu.length} từ đầu 2026)${tk.nCho ? `, ${tk.nCho} chờ vào lệnh` : ""}`} />
-        <The nhan="Lãi hiện tại TB (đang giữ)" giaTri={tk.tbLai == null ? "—" : pct(tk.tbLai, 2)} mau={tk.tbLai == null ? MUTED : mauPct(tk.tbLai)} phu="giá hiện tại so với giá vào, chỉ lệnh chưa cắt lỗ" />
-        <The nhan="Tỷ lệ đang lãi" giaTri={tk.tyLeLai == null ? "—" : `${tk.tyLeLai.toFixed(0)}%`} mau={tk.tyLeLai == null ? MUTED : tk.tyLeLai >= 50 ? XANH : DO} phu={`${tk.nGia} điểm có giá`} />
-        <The nhan="Lãi/lỗ TB gồm cả lệnh đã cắt lỗ" giaTri={tk.tbTatCa == null ? "—" : pct(tk.tbTatCa, 2)} mau={tk.tbTatCa == null ? MUTED : mauPct(tk.tbTatCa)} phu="cắt lỗ tính tại mốc SL — số thực tế hơn (bỏ lệnh cắt lỗ thì lãi cao ảo)" />
-      </div>
+      <DaiThongKe className="mb-4">
+        <OThongKe nhan="Lãi/lỗ TB gồm cả lệnh đã cắt lỗ" so={tk.tbTatCa == null ? "—" : pct(tk.tbTatCa, 2)} mau={tk.tbTatCa == null ? MUTED : mauPct(tk.tbTatCa)} phu="số thực tế nhất (cắt lỗ tính tại mốc SL)" />
+        <OThongKe nhan="Tỷ lệ đang lãi" so={tk.tyLeLai == null ? "—" : `${tk.tyLeLai.toFixed(0)}%`} mau={tk.tyLeLai == null ? MUTED : tk.tyLeLai >= 50 ? XANH : DO} phu={`${tk.nGia} điểm có giá`} />
+        <OThongKe nhan="Lãi hiện tại TB (đang giữ)" so={tk.tbLai == null ? "—" : pct(tk.tbLai, 2)} mau={tk.tbLai == null ? MUTED : mauPct(tk.tbLai)} phu="chỉ lệnh chưa cắt lỗ" />
+        <OThongKe nhan="Đang giữ / đã cắt lỗ" so={`${tk.nGiu} / ${tk.nCat}`} phu={`${tk.n} điểm B hiển thị${tk.nCho ? `, ${tk.nCho} chờ vào` : ""}`} />
+      </DaiThongKe>
 
       <div className="flex flex-wrap items-center gap-2 mb-2">
         <button
@@ -116,6 +112,17 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
         </div>
         <Sel loc={loc} dat={dat} k="dai" ds={DAI_GIAM} />
         <Sel loc={loc} dat={dat} k="nganh" ds={nganhs} tatCa="Mọi ngành" />
+        <button type="button" onClick={() => setMoLocThem((x) => !x)} aria-expanded={moLocThem} className="text-xs rounded-lg px-3 py-2 border" style={{ borderColor: soLocThem ? PRIMARY : VIEN, background: NEN_CARD, color: TEXT, ...sans }}>
+          Lọc thêm{soLocThem > 0 && <b style={{ color: PRIMARY }}> · {soLocThem}</b>} {moLocThem ? "▴" : "▾"}
+        </button>
+        {dangLoc && (
+          <button onClick={() => setLoc(LOC_MAC_DINH)} className="text-xs underline" style={{ color: PRIMARY }}>
+            Xóa bộ lọc
+          </button>
+        )}
+      </div>
+      {moLocThem && (
+      <div className="flex flex-wrap items-center gap-3 mb-3 rounded-xl border p-3" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <Ck loc={loc} dat={dat} k="klDay" nhan="KL đáy ≥ 2×" tieuDe="KL lớn nhất 5 phiên quanh đáy ≥ 2 lần KL trung bình 20 phiên trước đáy (bán tháo có khối lượng) — yếu tố kiểm chứng tốt nhất" />
         <select value={loc.cungNganh} onChange={(e) => dat("cungNganh", Number(e.target.value))} className="text-xs rounded-lg px-2 py-2 outline-none" style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT }} title="Số mã KHÁC cùng ngành cũng có điểm B trong 7 ngày (~5 phiên). Càng nhiều mã cùng hồi, kết quả lịch sử càng tốt (≥ 1 mã: +0,4% so với −0,9% sau 10 phiên từ 2022.5; ≥ 3 mã: +0,7% so với −0,5%).">
           <option value={0}>Ngành cùng hồi: không lọc</option>
@@ -129,20 +136,19 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
         <Ck loc={loc} dat={dat} k="ganGiaB" nhan="Còn gần giá vào (≤ +5%)" tieuDe="Giá hiện tại không cao hơn giá vào quá 5% và chưa thủng cắt lỗ" />
         <Ck loc={loc} dat={dat} k="chiDangGiu" nhan="Chỉ lệnh đang giữ (bỏ lệnh đã cắt lỗ)" tieuDe="Bỏ các điểm B mà từ khi vào lệnh giá đã chạm mốc cắt lỗ (giá vào − 2,5×ATR). Bỏ chọn để xem cả lệnh đã cắt lỗ." />
         <Ck loc={loc} dat={dat} k="chiThanhCong" nhan="Chỉ đang lãi" />
-        {dangLoc && (
-          <button onClick={() => setLoc(LOC_MAC_DINH)} className="text-xs underline" style={{ color: PRIMARY }}>
-            Xóa bộ lọc
-          </button>
-        )}
       </div>
+      )}
+      <p className="text-xs mb-2" style={{ color: MUTED }}>
+        <b style={{ color: TEXT }}>{daLoc.length}</b> / {duLieu.length} điểm B từ đầu 2026
+      </p>
 
       <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <div className="overflow-x-auto bang-cuon">
+        <div className="overflow-auto bang-cuon max-h-[calc(100vh-150px)]">
           <table className="w-full text-sm" style={mono}>
             <thead>
-              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, ...sans }}>
+              <tr className="text-left" style={{ color: MUTED, ...sans }}>
                 {COT.map((c) => (
-                  <th key={c.khoa} data-may={`diemb-${c.khoa}`} className={`py-3 px-3 font-normal cursor-pointer select-none whitespace-nowrap ${c.canPhai ? "text-right" : "text-left"}`} onClick={() => doiSapXep(c.khoa)}>
+                  <th key={c.khoa} data-may={`diemb-${c.khoa}`} className={`sticky top-0 z-[2] border-b py-2.5 px-3 font-normal cursor-pointer select-none whitespace-nowrap ${c.canPhai ? "text-right" : "text-left"}`} style={{ background: NEN_CARD, borderColor: VIEN }} onClick={() => doiSapXep(c.khoa)}>
                     <span className="inline-flex items-center gap-1">
                       {c.nhan}
                       {sapXep.khoa === c.khoa ? sapXep.chieu === "desc" ? <ArrowDown size={12} color={PRIMARY} /> : <ArrowUp size={12} color={PRIMARY} /> : <ArrowUpDown size={12} opacity={0.4} />}
@@ -161,6 +167,7 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
                   <tr key={`${r.ma}-${r.ngay}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
                     <td className="py-2.5 px-3 whitespace-nowrap">
                       <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ ...sans, fontWeight: 700 }}>{r.ma}</Link>
+                      <span className="ml-1.5 align-middle"><NutThamGia ma={r.ma} soNguoiThamGia={0} daThamGia={false} /></span>
                       {r.ng_so_ma >= 1 && (
                         <span className="ml-1.5 px-1 text-[11px] rounded-sm" style={{ background: nhe(PRIMARY, 13), color: PRIMARY, ...sans }} title={`${r.ng_so_ma} mã khác cùng ngành cũng có điểm B trong 7 ngày (~5 phiên) — càng nhiều mã càng là cả ngành cùng hồi`}>
                           ngành hồi ({r.ng_so_ma})

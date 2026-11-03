@@ -55,13 +55,13 @@ export default async function TrangDanhGiaDanhMuc() {
   );
   const luc = capNhatMoiNhat(tatCa);
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-10" style={{ color: "var(--chu)" }}>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: "var(--chu)" }}>
       <h1 className="text-2xl sm:text-3xl mb-2" style={{ fontFamily: "var(--font-chu)", fontWeight: 800 }}>
         Đánh giá danh mục
       </h1>
       <p className="text-sm mb-4 max-w-3xl" style={{ color: "var(--mo)" }}>
-        Nhập các mã bạn đang cầm và chọn phong cách đầu tư — web chấm điểm danh mục theo cách các quỹ đầu tư làm: danh mục <b>thật sự</b> đa dạng đến đâu, mã nào gánh phần lớn rủi ro, doanh nghiệp khỏe hay yếu, VN-Index giảm
-        10–20% thì tài sản và tỷ lệ ký quỹ ra sao — rồi gợi ý nên giữ, cắt lỗ hay trung bình giá từng mã, kèm báo cáo PDF. Miễn phí.
+        Nhập các mã bạn đang cầm và chọn phong cách đầu tư. Web chấm điểm danh mục như các quỹ: đa dạng thật đến đâu, mã nào gánh rủi ro, thị trường giảm thì mất bao nhiêu — rồi gợi ý giữ, cắt lỗ hay trung bình giá
+        từng mã, kèm báo cáo PDF. Miễn phí.
       </p>
       <NhanCapNhat luc={luc} className="mb-4" />
       {loi ? (

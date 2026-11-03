@@ -113,17 +113,18 @@ function DaDienRaO({ chuY }) {
   );
 }
 
+// 1 o trong dai thong ke (cac o cach nhau 1px tren nen vien = duong ke luoi) - giong Lenh dang mo / Lenh da dong
 function The({ so, nhan, phu, mau, may }) {
   return (
-    <div className="rounded-2xl border p-4 text-center" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-2xl" style={{ fontFamily: CHU_SO, fontWeight: 700, color: mau }}>
-        {so}
-      </p>
-      <p className="text-xs mt-1" style={{ color: MUTED }} data-may={may}>
+    <div className="px-4 py-3 min-w-0" style={{ background: NEN_CARD }}>
+      <p className="text-xs" style={{ color: MUTED }} data-may={may}>
         {nhan}
       </p>
+      <p className="text-xl leading-tight" style={{ fontFamily: CHU_SO, fontWeight: 700, color: mau }}>
+        {so}
+      </p>
       {phu && (
-        <p className="text-[11px]" style={{ color: MUTED }}>
+        <p className="text-xs" style={{ color: MUTED }}>
           {phu}
         </p>
       )}
@@ -275,7 +276,7 @@ export default function DanhMucMa({ dsMa, soCoDuLieu, soTheoDoi }) {
         </div>
       )}
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="rounded-2xl border mb-4 grid grid-cols-2 lg:grid-cols-4 gap-px overflow-hidden" style={{ borderColor: VIEN, background: "var(--vien-nhe)" }}>
         <The
           so={dsHien.length}
           nhan={loc === "tatca" ? "Vị thế đang giữ" : `${BO_LOC.find((b) => b.khoa === loc).nhan} (mỗi mã 1)`}

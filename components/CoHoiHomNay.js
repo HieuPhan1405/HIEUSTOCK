@@ -143,7 +143,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
         </Link>
       </div>
       <p className="text-xs mb-4" style={{ color: MUTED }}>
-        Chỉ các lệnh phát sinh trong phiên này. Chốt lời: {CHUOI_TY_LE_CHOT}. Lệnh đang giữ từ trước xem ở Sổ lệnh đang mở.
+        Chỉ các lệnh phát sinh trong phiên này. Chốt lời: {CHUOI_TY_LE_CHOT}. Lệnh đang giữ từ trước xem ở Lệnh đang mở.
       </p>
 
       <div className="grid gap-4 md:grid-cols-2">

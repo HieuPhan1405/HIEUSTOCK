@@ -3,10 +3,11 @@ import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import BangKichBanMua from "@/components/BangKichBanMua";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import { NhanMucXuHuong } from "@/components/LienKetPhongCach";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Kịch bản mua",
+  title: "Sắp có lệnh · Đầu tư theo xu hướng",
   description: "Mã chưa có lệnh sẽ ra tín hiệu MUA ở mức giá nào và sau bao nhiêu phiên, theo các kịch bản giá giữ nguyên, tăng đều, giảm đều.",
 };
 
@@ -21,7 +22,7 @@ export default async function TrangKichBanMua() {
   if (!nguoiDung || !nguoiDung.da_duyet) {
     return (
       <KhoaTrangNoiDung
-        tieuDe="Kịch bản mua"
+        tieuDe="Sắp có lệnh"
         moTa="Đăng ký hoặc đăng nhập miễn phí để xem mã nào có thể ra tín hiệu MUA ở mức giá nào và sau bao nhiêu phiên."
         choDuyet={!!nguoiDung}
       />
@@ -41,16 +42,17 @@ export default async function TrangKichBanMua() {
     : null;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: TEXT }}>
+      <NhanMucXuHuong />
       <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
-        Kịch bản mua
+        Sắp có lệnh
       </h1>
-      <p className="text-sm mb-2" style={{ color: MUTED }}>
-        Mã chưa có lệnh: giá đóng cửa hôm nay ở khoảng nào thì ra tín hiệu MUA, và nếu giá giữ nguyên, tăng đều hoặc giảm đều thì sau bao nhiêu phiên mã đủ điều kiện MUA. Mã đang giữ lệnh: khi nào có thể xuất hiện tín hiệu mua thêm giữa chừng.
+      <p className="text-sm mb-1" style={{ color: MUTED }}>
+        Mã nào sắp ra tín hiệu MUA: giá đóng cửa hôm nay cần ở khoảng nào, hoặc sau mấy phiên nữa nếu giá đi ngang, tăng hay giảm đều.
       </p>
       {chuoiLuc && (
-        <p className="text-[11px] mb-6" style={{ color: MUTED }}>
-          Cập nhật lúc <b>{chuoiLuc}</b> (tính lại định kỳ trong phiên, không phải thời gian thực)
+        <p className="text-xs mb-5" style={{ color: MUTED }}>
+          Cập nhật lúc <b>{chuoiLuc}</b> · tính lại định kỳ trong phiên
         </p>
       )}
 
