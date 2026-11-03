@@ -21,6 +21,8 @@ import DanhGiaBoiCanh from "@/components/DanhGiaBoiCanh";
 import DanhGiaNhatKy, { homNayVN } from "@/components/DanhGiaNhatKy";
 import BaoCaoDanhMuc from "@/components/BaoCaoDanhMuc";
 import DanhGiaGoiYMua from "@/components/DanhGiaGoiYMua";
+import DanhGiaGoiYDaiHan from "@/components/DanhGiaGoiYDaiHan";
+import { goiYDaiHan } from "@/lib/goiYDaiHan";
 import { goiYTheoDanhMuc } from "@/lib/goiYMua";
 import { Khoi, The, Thanh, NhanXet, NhanTrangThai, VIEN, NEN_CARD, TEXT, MUTED, PRIMARY, XANH, DO, VANG, MAU_MUC, sans, soVN, p0, p1, tien, mauLai } from "@/components/DanhGiaChung";
 
@@ -299,7 +301,7 @@ function PhanRuiRo({ rr, pb, kq }) {
 
 // duLieu: { MA: dong tin hieu rut gon } (khach chi co truong cong khai: gia, kijun, can bang, nganh...); laThanhVien: da duoc duyet -> co tin hieu / cat lo / chot loi he thong.
 // dangNhap: co tai khoan -> luu nhieu danh muc len may chu (/api/danh-muc-luu) + canh bao.
-export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laThanhVien = false, dangNhap = false }) {
+export default function DanhGiaDanhMuc({ duLieu, daiHan = null, ngay = "", gocNganh = {}, laThanhVien = false, dangNhap = false }) {
   const [ds, setDs] = useState([moi()]);
   const [von, setVon] = useState(VON_MAC_DINH);
   const [phongCach, setPhongCach] = useState(PHONG_CACH_MAC_DINH);
@@ -543,6 +545,13 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
     const nav = kq ? kq.pb.taiSan.nav : (vonOpts.tienMat ?? 0) - (vonOpts.no ?? 0);
     return goiYTheoDanhMuc((d.mua ?? []).filter((x) => x.dat), { dangCam, taiSan: { tienMat: vonOpts.tienMat, no: vonOpts.no, nav } });
   }, [goiYDu.du, kq, vitri, theoMa, vonOpts]);
+  // goi y mua theo phong cach DAI HAN: danh sach trang /dai-han (BCTC), khong dung tin hieu MUA / BAN
+  const goiYDH = useMemo(() => {
+    if (phongCach !== "dai_han" || !daiHan) return null;
+    const dangCam = kq ? kq.hangMa.map((h) => ({ ma: h.ma, nganh: h.nganh })) : vitri.map((v) => ({ ma: v.ma, nganh: theoMa[v.ma]?.nganh }));
+    const nav = kq ? kq.pb.taiSan.nav : (vonOpts.tienMat ?? 0) - (vonOpts.no ?? 0);
+    return goiYDaiHan(daiHan, { dangCam, taiSan: { tienMat: vonOpts.tienMat, no: vonOpts.no, nav } });
+  }, [phongCach, daiHan, kq, vitri, theoMa, vonOpts]);
   const nxThe = useMemo(() => [...nhanXetRuiRo(rr, pb), ...(kq?.dn?.nhanXet ?? [])].sort((a, b) => a.muc - b.muc || a.uuTien - b.uuTien), [rr, pb, kq]);
   const theoMaRR = useMemo(() => Object.fromEntries((rr?.ma ?? []).map((x) => [x.ma, x])), [rr]);
   const thanhKhoanMa = useMemo(() => Object.fromEntries((rr?.thanhKhoan?.ds ?? []).map((x) => [x.ma, x.soPhien])), [rr]);
@@ -606,7 +615,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
   const oStyle = { borderColor: VIEN, background: "transparent", color: TEXT, ...sans };
   const nutPhu = "inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg border font-semibold";
   const soCanXuLy = kq ? Object.values(kq.nhan).filter((n) => n.muc >= 2).length : 0;
-  const soGoiY = goiY ? goiY.goiY.filter((x) => x.trongCho).length : goiYDu.du?.khoa ? goiYDu.du.soDat ?? 0 : 0;
+  const soGoiY = phongCach === "dai_han" ? goiYDH?.soMaTrongCho ?? 0 : goiY ? goiY.goiY.filter((x) => x.trongCho).length : goiYDu.du?.khoa ? goiYDu.du.soDat ?? 0 : 0;
 
   return (
     <div>
@@ -692,7 +701,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
       {!pb && (
         <>
           <p className="text-sm mb-4" style={{ color: MUTED }}>Nhập ít nhất một mã và số lượng (hoặc bấm “Thử với danh mục mẫu”) để xem đánh giá. Khách chưa có mã nào: nhập tiền mặt ở “Vốn & margin” để xem kế hoạch mua bên dưới.</p>
-          <DanhGiaGoiYMua du={goiYDu.du} dangTai={goiYDu.dangTai} loi={goiYDu.loi} goiY={goiY} laThanhVien={laThanhVien} phongCach={phongCach} onGhiNhatKy={daLamTheoKeHoach} />
+          {phongCach === "dai_han" ? <DanhGiaGoiYDaiHan goiY={goiYDH} onGhiNhatKy={daLamTheoKeHoach} /> : <DanhGiaGoiYMua du={goiYDu.du} dangTai={goiYDu.dangTai} loi={goiYDu.loi} goiY={goiY} laThanhVien={laThanhVien} phongCach={phongCach} onGhiNhatKy={daLamTheoKeHoach} />}
         </>
       )}
 
@@ -770,7 +779,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
 
           {tab === "xu_ly" && <DanhGiaXuLy kq={kq} keHoach={keHoach} chon={chonKH} setChon={setChonKH} sau={sau} laThanhVien={laThanhVien} lichSuNhan={lichSuNhan} coLuu={!!dm.id} onGhiNhatKy={daLamTheoKeHoach} theoMa={theoMa} />}
           {tab === "rui_ro" && <PhanRuiRo rr={rr} pb={pb} kq={kq} />}
-          {tab === "goi_y" && <DanhGiaGoiYMua du={goiYDu.du} dangTai={goiYDu.dangTai} loi={goiYDu.loi} goiY={goiY} laThanhVien={laThanhVien} phongCach={phongCach} onGhiNhatKy={daLamTheoKeHoach} />}
+          {tab === "goi_y" && (phongCach === "dai_han" ? <DanhGiaGoiYDaiHan goiY={goiYDH} onGhiNhatKy={daLamTheoKeHoach} /> : <DanhGiaGoiYMua du={goiYDu.du} dangTai={goiYDu.dangTai} loi={goiYDu.loi} goiY={goiY} laThanhVien={laThanhVien} phongCach={phongCach} onGhiNhatKy={daLamTheoKeHoach} />)}
           {tab === "doanh_nghiep" && <DanhGiaDoanhNghiep kq={kq} coBan={du?.coBan ?? {}} thiTruong={du?.thiTruong} />}
           {tab === "boi_canh" && <DanhGiaBoiCanh boiCanh={du?.boiCanh} kq={kq} gocNganh={gocNganh} />}
           {tab === "nhat_ky" && <DanhGiaNhatKy nhatKy={nhatKy} phiPct={soNhap(von.phi) ?? 0} catLo={pc.catLo} giaTheoMa={giaTheoMa} onThem={themLenh} onXoa={(id) => setNhatKy((n) => n.filter((g) => g.id !== id))} tenDanhMuc={dm.ten} />}
@@ -852,7 +861,7 @@ export default function DanhGiaDanhMuc({ duLieu, ngay = "", gocNganh = {}, laTha
             </div>
           )}
 
-          <BaoCaoDanhMuc mo={moBaoCao} dong={() => setMoBaoCao(false)} kq={kq} sau={sau} hanhDongChon={hanhDongChon} du={du} gocNganh={gocNganh} laThanhVien={laThanhVien} baoCao={baoCao} setBaoCao={setBaoCao} ngay={ngay} nhatKy={nhatKy} tenDanhMuc={dm.ten} goiY={goiY} goiYDu={goiYDu.du} />
+          <BaoCaoDanhMuc mo={moBaoCao} dong={() => setMoBaoCao(false)} kq={kq} sau={sau} hanhDongChon={hanhDongChon} du={du} gocNganh={gocNganh} laThanhVien={laThanhVien} baoCao={baoCao} setBaoCao={setBaoCao} ngay={ngay} nhatKy={nhatKy} tenDanhMuc={dm.ten} goiY={phongCach === "dai_han" ? null : goiY} goiYDu={goiYDu.du} />
         </>
       )}
 
