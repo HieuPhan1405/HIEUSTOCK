@@ -318,6 +318,9 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const rootRef = useRef(null);
   // CHE DO TOAN MAN HINH (kieu TradingView): bieu do chiem het cua so, thanh cong cu gon 1 hang cuon ngang, bang thong tin o cot phai. Esc (khi khong dang chon cong cu ve) de thoat.
   const [toanMH, setToanMH] = useState(false);
+  // GON MAC DINH (04/11/2026): chi hien khung Ngay / Tuan + 2 lop chinh cua he thong; chi bao khac va cong cu ve mo khi can (toan man hinh thi hien het).
+  const [moChiBao, setMoChiBao] = useState(false);
+  const [moVe, setMoVe] = useState(false);
   const [caoManHinh, setCaoManHinh] = useState(900);
   // Volume Profile: nen 1 gio (tai khi can), co hinh "frvp" hay khong, va cac tham chieu de ham tinh ho so luon doc du lieu moi nhat
   const [nenGio, setNenGio] = useState({ ma: "", nen: null });
@@ -890,19 +893,36 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const truoc = nen && idx > 0 ? nen[idx - 1].c : null;
   const doiPct = hienTai && truoc ? ((hienTai.c - truoc) / truoc) * 100 : null;
   const mauDoi = doiPct == null ? MUTED : doiPct >= 0 ? XANH : DO;
+  // chip chi bao: luon hien 2 lop chinh (Ichimoku, can bang dai han) + chi bao dang bat; bam "+ Chi bao khac" (hoac toan man hinh) moi hien het
+  const hienChip = (k) => toanMH || moChiBao || k === "ichimoku" || k === "canBang" || !!bat[k];
+  const hienVe = toanMH || moVe || congCu != null;
 
   return (
     <div ref={rootRef} className={toanMH ? "fixed inset-0 z-[300] flex flex-col overflow-hidden" : "rounded-2xl border overflow-hidden"} style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className={`flex items-center gap-x-4 gap-y-2 px-3 py-2.5 border-b ${toanMH ? "shrink-0 overflow-x-auto flex-nowrap [&>*]:shrink-0" : "flex-wrap max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:[&>*]:shrink-0 max-sm:[scrollbar-width:none]"}`} style={{ borderColor: VIEN }}>
         <div className="flex items-center gap-1.5">
-          {KHUNG_CHON.map((k) => (
+          {KHUNG_CHON.slice(0, 2).map((k) => (
             <Chip key={k.khoa} bat={khungTG === k.khoa} onClick={() => setKhungTG(k.khoa)}>
               {k.nhan}
             </Chip>
           ))}
+          <select
+            value={noiNgay ? khungTG : ""}
+            onChange={(e) => e.target.value && setKhungTG(e.target.value)}
+            aria-label="Khung trong ngày"
+            className="px-2 py-1 rounded-md text-xs cursor-pointer"
+            style={{ border: `1px solid ${noiNgay ? PRIMARY : VIEN}`, background: noiNgay ? "rgba(108,92,231,0.18)" : "transparent", color: noiNgay ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
+          >
+            <option value="">Trong ngày</option>
+            {KHUNG_CHON.slice(2).map((k) => (
+              <option key={k.khoa} value={k.khoa}>
+                {k.nhan}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          {CONG_TAT.filter((c) => !(noiNgay && (c.khoa === "vp" || c.khoa === "htkc"))).map((c) => (
+          {CONG_TAT.filter((c) => !(noiNgay && (c.khoa === "vp" || c.khoa === "htkc")) && hienChip(c.khoa)).map((c) => (
             <Chip key={c.khoa} may={`chip-${c.khoa}`} bat={bat[c.khoa]} mau={c.mau} onClick={() => setBat((b) => ({ ...b, [c.khoa]: !b[c.khoa] }))}>
               {c.nhan}
             </Chip>
@@ -912,22 +932,36 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
               Vùng lệnh
             </Chip>
           )}
-          <span className="w-px h-4 mx-1" style={{ background: VIEN }} aria-hidden="true" />
-          {CHI_BAO_PHU.map((c) => (
+          {CHI_BAO_PHU.filter((c) => hienChip(c.khoa)).map((c) => (
             <Chip key={c.khoa} may={`chip-${c.khoa}`} bat={bat[c.khoa]} mau={c.mau} onClick={() => setBat((b) => ({ ...b, [c.khoa]: !b[c.khoa] }))}>
               {c.nhan}
             </Chip>
           ))}
-          <span className="w-px h-4 mx-1" style={{ background: VIEN }} aria-hidden="true" />
-          <Chip may="mau-hinh" bat={bat.mauHinh} mau="#F6C544" onClick={() => setBat((b) => ({ ...b, mauHinh: !b.mauHinh }))}>
-            Mẫu hình
-          </Chip>
-          <Chip may="mau-hinh-nen" bat={bat.nenNhat} mau="#38BDF8" onClick={() => setBat((b) => ({ ...b, nenNhat: !b.nenNhat }))}>
-            Mẫu hình nến
-          </Chip>
-          <Chip may="chip-phanKy" bat={bat.phanKy} mau={CHI_BAO_PK.mau} onClick={() => setBat((b) => ({ ...b, phanKy: !b.phanKy, rsi: !b.phanKy ? true : b.rsi }))}>
-            {CHI_BAO_PK.nhan}
-          </Chip>
+          {hienChip("mauHinh") && (
+            <Chip may="mau-hinh" bat={bat.mauHinh} mau="#F6C544" onClick={() => setBat((b) => ({ ...b, mauHinh: !b.mauHinh }))}>
+              Mẫu hình
+            </Chip>
+          )}
+          {hienChip("nenNhat") && (
+            <Chip may="mau-hinh-nen" bat={bat.nenNhat} mau="#38BDF8" onClick={() => setBat((b) => ({ ...b, nenNhat: !b.nenNhat }))}>
+              Mẫu hình nến
+            </Chip>
+          )}
+          {hienChip("phanKy") && (
+            <Chip may="chip-phanKy" bat={bat.phanKy} mau={CHI_BAO_PK.mau} onClick={() => setBat((b) => ({ ...b, phanKy: !b.phanKy, rsi: !b.phanKy ? true : b.rsi }))}>
+              {CHI_BAO_PK.nhan}
+            </Chip>
+          )}
+          {!toanMH && (
+            <button type="button" onClick={() => setMoChiBao((v) => !v)} aria-expanded={moChiBao} className="px-2.5 py-1 rounded-md text-xs cursor-pointer" style={{ border: `1px dashed ${VIEN}`, color: "var(--tim-chu)", fontFamily: "var(--font-chu)" }}>
+              {moChiBao ? "Thu gọn chỉ báo" : "+ Chỉ báo khác"}
+            </button>
+          )}
+          {!toanMH && (
+            <button type="button" onClick={() => setMoVe((v) => !v)} aria-expanded={moVe || congCu != null} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs cursor-pointer" style={{ border: `1px solid ${moVe || congCu != null ? PRIMARY : VIEN}`, background: moVe || congCu != null ? "rgba(108,92,231,0.18)" : "transparent", color: moVe || congCu != null ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}>
+              <PenLine size={13} strokeWidth={2} /> Công cụ vẽ
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-1 ml-auto">
           <button
@@ -1040,139 +1074,143 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         </div>
       )}
 
-      {/* THANH CONG CU KE VE: chon cong cu roi bam / bam hai lan len bieu do; bam vao hinh de chon, keo diem dau mut de sua, Delete de xoa; Esc huy. */}
-      <div className={`flex items-center gap-x-1.5 gap-y-1.5 px-3 py-2 border-b ${toanMH ? "shrink-0 overflow-x-auto flex-nowrap [&>*]:shrink-0" : "flex-wrap max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:[&>*]:shrink-0 max-sm:[scrollbar-width:none]"}`} style={{ borderColor: VIEN }} data-may="cong-cu-ve">
-        <span className="text-[11px] mr-1 hidden sm:inline" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}>
-          Công cụ vẽ
-        </span>
-        <button
-          type="button"
-          onClick={() => setCongCuState(null)}
-          aria-pressed={congCu === null}
-          title="Con trỏ: kéo, thu phóng biểu đồ; bấm vào hình vẽ để chọn"
-          className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-          style={{ background: congCu === null ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === null ? PRIMARY : VIEN}`, color: congCu === null ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
-        >
-          <MousePointer2 size={13} strokeWidth={2} />
-          Con trỏ
-        </button>
-        {CONG_CU_VE.map(({ khoa: k, nhan, Icon }) => (
+      {hienVe && (
+        <>
+        {/* THANH CONG CU KE VE: chon cong cu roi bam / bam hai lan len bieu do; bam vao hinh de chon, keo diem dau mut de sua, Delete de xoa; Esc huy. */}
+        <div className={`flex items-center gap-x-1.5 gap-y-1.5 px-3 py-2 border-b ${toanMH ? "shrink-0 overflow-x-auto flex-nowrap [&>*]:shrink-0" : "flex-wrap max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:[&>*]:shrink-0 max-sm:[scrollbar-width:none]"}`} style={{ borderColor: VIEN }} data-may="cong-cu-ve">
+          <span className="text-[11px] mr-1 hidden sm:inline" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}>
+            Công cụ vẽ
+          </span>
           <button
-            key={k}
             type="button"
-            onClick={() => setCongCuState((c) => (c === k ? null : k))}
-            aria-pressed={congCu === k}
-            title={`${nhan}: bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ`}
+            onClick={() => setCongCuState(null)}
+            aria-pressed={congCu === null}
+            title="Con trỏ: kéo, thu phóng biểu đồ; bấm vào hình vẽ để chọn"
             className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-            style={{ background: congCu === k ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === k ? PRIMARY : VIEN}`, color: congCu === k ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+            style={{ background: congCu === null ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === null ? PRIMARY : VIEN}`, color: congCu === null ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
           >
-            {Icon ? <Icon size={13} strokeWidth={2} /> : <span className="text-[11px] font-bold leading-none">Fib</span>}
-            {nhan}
+            <MousePointer2 size={13} strokeWidth={2} />
+            Con trỏ
           </button>
-        ))}
-        <span className="w-px h-4 mx-1" style={{ background: VIEN }} aria-hidden="true" />
-        <div className="flex items-center gap-1" aria-label="Màu nét vẽ">
-          {MAU_VE.map((m) => (
+          {CONG_CU_VE.map(({ khoa: k, nhan, Icon }) => (
             <button
-              key={m}
+              key={k}
               type="button"
-              onClick={() => setMauVe(m)}
-              aria-label={`Màu ${m}`}
-              aria-pressed={mauVe === m}
-              className="w-4 h-4 rounded-full cursor-pointer"
-              style={{ background: m, outline: mauVe === m ? `2px solid ${TEXT}` : "none", outlineOffset: 1 }}
-            />
+              onClick={() => setCongCuState((c) => (c === k ? null : k))}
+              aria-pressed={congCu === k}
+              title={`${nhan}: bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ`}
+              className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
+              style={{ background: congCu === k ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === k ? PRIMARY : VIEN}`, color: congCu === k ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+            >
+              {Icon ? <Icon size={13} strokeWidth={2} /> : <span className="text-[11px] font-bold leading-none">Fib</span>}
+              {nhan}
+            </button>
           ))}
+          <span className="w-px h-4 mx-1" style={{ background: VIEN }} aria-hidden="true" />
+          <div className="flex items-center gap-1" aria-label="Màu nét vẽ">
+            {MAU_VE.map((m) => (
+              <button
+                key={m}
+                type="button"
+                onClick={() => setMauVe(m)}
+                aria-label={`Màu ${m}`}
+                aria-pressed={mauVe === m}
+                className="w-4 h-4 rounded-full cursor-pointer"
+                style={{ background: m, outline: mauVe === m ? `2px solid ${TEXT}` : "none", outlineOffset: 1 }}
+              />
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={() => setGiuCongCu((v) => !v)}
+            aria-pressed={giuCongCu}
+            title="Giữ công cụ: vẽ xong vẫn giữ công cụ đang chọn để vẽ tiếp (Esc để thoát)"
+            className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
+            style={{ background: giuCongCu ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${giuCongCu ? PRIMARY : VIEN}`, color: giuCongCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+          >
+            {giuCongCu ? <Lock size={13} strokeWidth={2} /> : <LockOpen size={13} strokeWidth={2} />}
+            Giữ công cụ
+          </button>
+          <button
+            type="button"
+            onClick={() => setHitGia((v) => !v)}
+            aria-pressed={hitGia}
+            title="Hít giá: điểm vẽ tự bám vào Mở / Cao / Thấp / Đóng của nến gần nhất"
+            className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
+            style={{ background: hitGia ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${hitGia ? PRIMARY : VIEN}`, color: hitGia ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+          >
+            <Magnet size={13} strokeWidth={2} />
+            Hít giá
+          </button>
+          <button
+            type="button"
+            disabled={!lichSuVe.coHoanTac}
+            onClick={() => veRef.current?.lopVe.hoanTac()}
+            title="Hoàn tác (Ctrl+Z)"
+            className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
+            style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: lichSuVe.coHoanTac ? 1 : 0.45, cursor: lichSuVe.coHoanTac ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
+          >
+            <Undo2 size={13} strokeWidth={2} />
+            Hoàn tác
+          </button>
+          <button
+            type="button"
+            disabled={!lichSuVe.coLamLai}
+            onClick={() => veRef.current?.lopVe.lamLai()}
+            title="Làm lại (Ctrl+Y hoặc Ctrl+Shift+Z)"
+            className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
+            style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: lichSuVe.coLamLai ? 1 : 0.45, cursor: lichSuVe.coLamLai ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
+          >
+            <Redo2 size={13} strokeWidth={2} />
+            Làm lại
+          </button>
+          <button
+            type="button"
+            disabled={!chonVe}
+            onClick={() => veRef.current?.lopVe.xoaChon()}
+            title="Xóa hình đang chọn (phím Delete)"
+            className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
+            style={{ border: `1px solid ${VIEN}`, color: chonVe ? DO : MUTED, opacity: chonVe ? 1 : 0.45, cursor: chonVe ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
+          >
+            <Trash2 size={13} strokeWidth={2} />
+            Xóa hình
+          </button>
+          <button
+            type="button"
+            disabled={soHinhVe === 0}
+            onClick={() => {
+              if (soHinhVe > 0 && window.confirm(`Xóa tất cả ${soHinhVe} hình vẽ của ${ma}?`)) veRef.current?.lopVe.xoaHet();
+            }}
+            title="Xóa tất cả hình vẽ của mã này"
+            className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
+            style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: soHinhVe > 0 ? 1 : 0.45, cursor: soHinhVe > 0 ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
+          >
+            <PenLine size={13} strokeWidth={2} />
+            Xóa hết{soHinhVe > 0 ? ` (${soHinhVe})` : ""}
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={() => setGiuCongCu((v) => !v)}
-          aria-pressed={giuCongCu}
-          title="Giữ công cụ: vẽ xong vẫn giữ công cụ đang chọn để vẽ tiếp (Esc để thoát)"
-          className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-          style={{ background: giuCongCu ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${giuCongCu ? PRIMARY : VIEN}`, color: giuCongCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
-        >
-          {giuCongCu ? <Lock size={13} strokeWidth={2} /> : <LockOpen size={13} strokeWidth={2} />}
-          Giữ công cụ
-        </button>
-        <button
-          type="button"
-          onClick={() => setHitGia((v) => !v)}
-          aria-pressed={hitGia}
-          title="Hít giá: điểm vẽ tự bám vào Mở / Cao / Thấp / Đóng của nến gần nhất"
-          className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-          style={{ background: hitGia ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${hitGia ? PRIMARY : VIEN}`, color: hitGia ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
-        >
-          <Magnet size={13} strokeWidth={2} />
-          Hít giá
-        </button>
-        <button
-          type="button"
-          disabled={!lichSuVe.coHoanTac}
-          onClick={() => veRef.current?.lopVe.hoanTac()}
-          title="Hoàn tác (Ctrl+Z)"
-          className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
-          style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: lichSuVe.coHoanTac ? 1 : 0.45, cursor: lichSuVe.coHoanTac ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
-        >
-          <Undo2 size={13} strokeWidth={2} />
-          Hoàn tác
-        </button>
-        <button
-          type="button"
-          disabled={!lichSuVe.coLamLai}
-          onClick={() => veRef.current?.lopVe.lamLai()}
-          title="Làm lại (Ctrl+Y hoặc Ctrl+Shift+Z)"
-          className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
-          style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: lichSuVe.coLamLai ? 1 : 0.45, cursor: lichSuVe.coLamLai ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
-        >
-          <Redo2 size={13} strokeWidth={2} />
-          Làm lại
-        </button>
-        <button
-          type="button"
-          disabled={!chonVe}
-          onClick={() => veRef.current?.lopVe.xoaChon()}
-          title="Xóa hình đang chọn (phím Delete)"
-          className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
-          style={{ border: `1px solid ${VIEN}`, color: chonVe ? DO : MUTED, opacity: chonVe ? 1 : 0.45, cursor: chonVe ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
-        >
-          <Trash2 size={13} strokeWidth={2} />
-          Xóa hình
-        </button>
-        <button
-          type="button"
-          disabled={soHinhVe === 0}
-          onClick={() => {
-            if (soHinhVe > 0 && window.confirm(`Xóa tất cả ${soHinhVe} hình vẽ của ${ma}?`)) veRef.current?.lopVe.xoaHet();
-          }}
-          title="Xóa tất cả hình vẽ của mã này"
-          className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
-          style={{ border: `1px solid ${VIEN}`, color: MUTED, opacity: soHinhVe > 0 ? 1 : 0.45, cursor: soHinhVe > 0 ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
-        >
-          <PenLine size={13} strokeWidth={2} />
-          Xóa hết{soHinhVe > 0 ? ` (${soHinhVe})` : ""}
-        </button>
-      </div>
 
-      {/* Dong goi y luon hien, cao co dinh: neu chi hien khi chon cong cu thi bieu do bi day xuong, lech vi tri con tro */}
-      <div className="px-3 h-7 flex items-center text-[11px] border-b truncate" style={{ borderColor: VIEN, color: congCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}>
-        {congCu ? (
-          <span>
-            {congCu === "gapKhuc" ? (
-              <>Đường dẫn: bấm <b>chuột trái</b> để thêm từng đoạn, <b>chuột phải</b> (hoặc bấm đúp / Enter) để kết thúc. </>
-            ) : congCu === "frvp" ? (
-              <>Volume Profile vùng chọn: bấm nến <b>bắt đầu</b> rồi bấm nến <b>kết thúc</b> (hoặc bấm - kéo - thả). </>
-            ) : (
-              <>Đang vẽ: bấm 2 lần hoặc bấm - kéo - thả. </>
-            )}
-            Giữ <b>Space</b> để kéo biểu đồ, <b>Esc</b> để thoát.
-          </span>
-        ) : (
-          <span>
-            Chọn công cụ để vẽ. Bấm vào hình để chọn (chuột phải cũng được), kéo để di chuyển; <b>Ctrl+Z</b> hoàn tác, <b>Delete</b> xóa.
-          </span>
-        )}
-      </div>
+        {/* Dong goi y luon hien, cao co dinh: neu chi hien khi chon cong cu thi bieu do bi day xuong, lech vi tri con tro */}
+        <div className="px-3 h-7 flex items-center text-[11px] border-b truncate" style={{ borderColor: VIEN, color: congCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}>
+          {congCu ? (
+            <span>
+              {congCu === "gapKhuc" ? (
+                <>Đường dẫn: bấm <b>chuột trái</b> để thêm từng đoạn, <b>chuột phải</b> (hoặc bấm đúp / Enter) để kết thúc. </>
+              ) : congCu === "frvp" ? (
+                <>Volume Profile vùng chọn: bấm nến <b>bắt đầu</b> rồi bấm nến <b>kết thúc</b> (hoặc bấm - kéo - thả). </>
+              ) : (
+                <>Đang vẽ: bấm 2 lần hoặc bấm - kéo - thả. </>
+              )}
+              Giữ <b>Space</b> để kéo biểu đồ, <b>Esc</b> để thoát.
+            </span>
+          ) : (
+            <span>
+              Chọn công cụ để vẽ. Bấm vào hình để chọn (chuột phải cũng được), kéo để di chuyển; <b>Ctrl+Z</b> hoàn tác, <b>Delete</b> xóa.
+            </span>
+          )}
+        </div>
+        </>
+      )}
       {thongTin && !toanMH && (
         <div className="min-[1340px]:hidden px-3 py-2 border-b" style={{ borderColor: VIEN }}>
           <BangThongTinBieuDo tt={thongTin} />

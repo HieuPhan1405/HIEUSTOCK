@@ -1,5 +1,6 @@
 import { nhe } from "@/components/dungChung";
 import { soVN } from "@/lib/soVN";
+import GiaiThichThem from "@/components/GiaiThichThem";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -81,9 +82,9 @@ export default function VungGiaTriChiSo({ vt, ten = "VN-Index" }) {
       </div>
 
       <p className="text-sm leading-relaxed" style={{ color: TEXT }}>{tt.yNghia}</p>
-      <p className="text-[11px] mt-2" style={{ color: MUTED }}>
+      <GiaiThichThem nhanMo="Cách tính" className="mt-2">
         Ước lượng từ nến ngày (khối lượng mỗi phiên chia đều theo biên độ giá của phiên đó), tính đến phiên {vt.ngay.split("-").reverse().join("/")}. Thông tin tham khảo, không phải khuyến nghị đầu tư.
-      </p>
+      </GiaiThichThem>
     </div>
   );
 }

@@ -148,7 +148,7 @@ export default function XuatAnh({ nhan = "Chụp ảnh", tenFile = "cloudstock.p
       {/* the chia se ve ngoai man hinh (chi che do `the`) */}
       {daVaoTrinhDuyet && the && dangChup &&
         createPortal(
-          <div aria-hidden="true" style={{ position: "fixed", left: -99999, top: 0, width: rong, pointerEvents: "none" }}>
+          <div aria-hidden="true" className="cs-the-xuat" style={{ position: "fixed", left: -99999, top: 0, width: rong, pointerEvents: "none" }}>
             <div ref={theRef}>{the}</div>
           </div>,
           document.body

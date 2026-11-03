@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { tenCongTy } from "@/lib/tenMa";
 import { nhe } from "@/components/dungChung";
+import GiaiThichThem from "@/components/GiaiThichThem";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -90,10 +91,10 @@ export default function KhoiNgoaiThiTruong({ ngoai }) {
         <span>Mua ròng →</span>
       </div>
 
-      <p className="text-xs mb-4 leading-relaxed" style={{ color: MUTED }}>
+      <GiaiThichThem nhanMo="Mua ròng / bán ròng là gì?" className="mb-4">
         <b style={{ color: "var(--chu-2)" }}>Mua ròng</b>: khối ngoại mua vào NHIỀU HƠN bán ra trong phiên (chênh lệch giá trị mua − bán &gt; 0) → dòng tiền ngoại đang vào ròng.{" "}
         <b style={{ color: "var(--chu-2)" }}>Bán ròng</b>: ngược lại — bán ra nhiều hơn mua vào, dòng tiền ngoại đang rút ròng. Không phải tổng khối lượng mua hoặc bán riêng lẻ.
-      </p>
+      </GiaiThichThem>
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div>

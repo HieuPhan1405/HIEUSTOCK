@@ -243,7 +243,7 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
       <div className="rounded-2xl border" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <TieuDeKhoi
           ngay={ngayHienThi}
-          phu={`Tính trên ${tq.tong} mã hệ thống đang theo dõi (HOSE, HNX, UPCOM), không phải toàn thị trường. Top tăng/giảm chỉ xét mã có giá trị giao dịch trung bình 20 phiên từ 5 tỷ đồng.`}
+          phu={`Tính trên ${tq.tong} mã hệ thống theo dõi (không phải toàn thị trường); top tăng / giảm chỉ xét mã có GTGD TB20 từ 5 tỷ.`}
         >
           Rà soát nhanh thị trường
         </TieuDeKhoi>

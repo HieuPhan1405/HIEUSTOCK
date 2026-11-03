@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { soVN } from "@/lib/soVN";
+import GiaiThichThem from "@/components/GiaiThichThem";
 
 // KHOI "DONG TIEN THOI GIAN THUC" cua Dashboard thi truong (du lieu tu DNSE: engine/dich-vu/dongTienRealTime.mjs -> /api/dong-tien). Don vi hien thi: TY DONG (du lieu goc: trieu dong).
 const VIEN = "var(--vien)";
@@ -108,9 +109,9 @@ export default function DongTienThiTruong() {
           </span>
         )}
       </div>
-      <p className="text-xs mb-4" style={{ color: MUTED }}>
+      <GiaiThichThem nhanMo="Mua / bán chủ động là gì?" className="mb-4">
         <b>Mua chủ động</b> = tổng giá trị lệnh khớp do bên MUA đặt giá chào bán (kéo giá lên); <b>bán chủ động</b> ngược lại. Chỉ tính khớp liên tục (không gồm ATO/ATC). &ldquo;Lệnh lớn&rdquo; ≥ {du?.nguong?.lonTrieu ?? 500} triệu/lệnh — ước lượng theo cỡ lệnh, không phải dữ liệu tổ chức thật. Nguồn: DNSE.
-      </p>
+      </GiaiThichThem>
 
       {d.trangThai === "tai" && <p className="text-sm" style={{ color: MUTED }}>Đang tải…</p>}
       {d.trangThai === "khoa" && <p className="text-sm" style={{ color: MUTED }}>Đăng nhập tài khoản đã được duyệt để xem dòng tiền thời gian thực.</p>}

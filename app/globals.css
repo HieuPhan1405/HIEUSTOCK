@@ -75,7 +75,7 @@ html[data-theme="light"] {
   --vien: #DDDFE8;
   --vien-dam: #C5C8D6;
   --nen-hover: #E6E8F0;
-  --mo-3: #8E8EA2;
+  --mo-3: #6E6E84; /* tuong phan >= 4,5:1 tren nen trang (truoc #8E8EA2 chi 3,3:1) */
   --mo: #5A5A6E;
   --mo-2: #6B6B80;
   --chu-3: #3A3A4C;
@@ -714,5 +714,71 @@ html.cs-dang-chup .cs-cung {
   }
   .cs-bao-cao-tieu-de {
     break-after: avoid;
+  }
+}
+
+/* ---------- DE DOC CHO MOI NGUOI (04/11/2026) ----------
+   Chu nho nhat tren man hinh 12px (truoc dung 11px / 10px o ~340 cho). Anh chia se (the 720px trong components/XuatAnh.js: .cs-the-xuat) va bao cao PDF (.cs-in-bao-cao)
+   giu co chu cu vi da can bo cuc theo kich thuoc co dinh. */
+.text-\[11px\] {
+  font-size: 12px;
+}
+.text-\[10px\] {
+  font-size: 11px;
+}
+.cs-the-xuat .text-\[11px\],
+.cs-in-bao-cao .text-\[11px\] {
+  font-size: 11px;
+}
+.cs-the-xuat .text-\[10px\],
+.cs-in-bao-cao .text-\[10px\] {
+  font-size: 10px;
+}
+
+/* Thuat ngu co giai nghia (components/GiaiNghia.js): hop giai nghia gan vao body, vi tri fixed do JS tinh (khong bi the cha cat, khong tran man hinh). */
+.cs-giai-nghia {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--mo-3);
+  text-underline-offset: 3px;
+  cursor: help;
+  outline: none;
+  border-radius: 3px;
+}
+.cs-giai-nghia:focus-visible {
+  box-shadow: 0 0 0 2px var(--tim-nhat);
+}
+.cs-giai-nghia-hop {
+  z-index: 90;
+  display: block;
+  padding: 9px 11px;
+  border-radius: 10px;
+  border: 1px solid var(--vien-dam);
+  background: var(--card);
+  color: var(--chu-2);
+  font-family: var(--font-chu);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 14px 34px -12px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+  animation: cs-giai-nghia-hien 0.15s ease;
+}
+@keyframes cs-giai-nghia-hien {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+}
+@media (max-width: 639px) {
+  .cs-giai-nghia-hop {
+    font-size: 14px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-giai-nghia-hop {
+    animation: none;
   }
 }

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { dangTrongPhienGiaoDich } from "@/lib/khungGioVaoLenh";
 import DinhGiaThiTruong from "@/components/DinhGiaThiTruong";
+import GiaiThichThem from "@/components/GiaiThichThem";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -356,10 +357,12 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
             </div>
           </div>
 
-          <p className="text-[11px] mt-3" style={{ color: MUTED }}>
-            GTGD tổng = khớp lệnh + thoả thuận toàn sàn HOSE (nguồn VNDirect). Hình dạng đường trong phiên lấy từ khối lượng khớp lệnh từng phút của VN-Index (DNSE) rồi quy đổi ra tiền cho khớp tổng GTGD từng
-            ngày — số ước tính, không phải đếm chính xác từng giao dịch. {m.daKetThuc ? "" : "Phiên đang chạy: so với cùng thời điểm của phiên trước. "}Rê chuột để xem số tại từng thời điểm.
-          </p>
+          <GiaiThichThem nhanMo="Cách tính" className="mt-3">
+            <p>
+              GTGD tổng = khớp lệnh + thoả thuận toàn sàn HOSE (nguồn VNDirect). Hình dạng đường trong phiên lấy từ khối lượng khớp lệnh từng phút của VN-Index (DNSE) rồi quy đổi ra tiền cho khớp tổng GTGD từng
+              ngày — số ước tính, không phải đếm chính xác từng giao dịch. {m.daKetThuc ? "" : "Phiên đang chạy: so với cùng thời điểm của phiên trước. "}Rê chuột để xem số tại từng thời điểm.
+            </p>
+          </GiaiThichThem>
         </>
       )}
     </div>

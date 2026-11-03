@@ -83,7 +83,7 @@ export default async function TrangDashboard() {
         )}
       </div>
       <p className="text-sm mb-5" style={{ color: MUTED }}>
-        Tổng quan, độ rộng, dòng tiền, vùng giá trị và thanh khoản (phần ngành nằm ở trang Ngành) — tách riêng khỏi trang Tổng quan (trang đó chỉ tập trung vào hướng đi lệnh/vị thế).
+        Bức tranh chung của thị trường: độ rộng, tâm lý, dòng tiền, thanh khoản và khối ngoại. Phần ngành nằm ở tab Ngành.
       </p>
 
       {loi && (

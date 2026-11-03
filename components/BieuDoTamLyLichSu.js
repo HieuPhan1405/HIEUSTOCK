@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { nhe } from "@/components/dungChung";
+import GiaiThichThem from "@/components/GiaiThichThem";
 
 // Bieu do LICH SU "tam ly thi truong" (xap xi 3 ty le breadth, 2013 -> nay) + VN-Index, vung < 20 (qua ban / hoang loan) to do.
 // Du lieu lich su sinh tinh boi scripts/capNhatTamLyLichSu.mjs (tai muon, khong nam trong bundle trang); diem cuoi "truc tiep" do Dashboard truyen vao (cung cong thuc 3 ty le).
@@ -267,7 +268,7 @@ export default function BieuDoTamLyLichSu({ hienTai = null }) {
         </div>
       </div>
       <p className="text-xs mb-3" style={{ color: MUTED }}>
-        Trung bình 3 tỷ lệ (mã tăng giá, mã trên Kijun, mã trên đường cân bằng dài hạn) tính trên các mã đang niêm yết, từ 2013. Vùng đỏ dưới 20 = quá bán / hoảng loạn.
+        Vùng đỏ dưới 20 = quá bán / hoảng loạn.
       </p>
 
       {ghiChu}
@@ -305,9 +306,11 @@ export default function BieuDoTamLyLichSu({ hienTai = null }) {
           Chờ VN-Index đóng cửa vượt đỉnh 5 phiên (tam giác xanh) làm mức giảm thêm còn khoảng 2% và giảm số lần còn rơi trên 5% từ 35% xuống 18%; lãi sau 20 phiên gần như không đổi, giá mua vẫn cao hơn đáy khoảng 7%. Hiệu ứng chỉ rõ trong ≤ 20 phiên, mẫu nhỏ (26 lần).
           {dangQuaBan && <b style={{ color: DO }}> Hiện chỉ số đang dưới 20.</b>}
         </p>
-        <p>
-          Chỉ số này xấp xỉ (không có tỷ lệ “mã đạt điểm MUA” như dòng hồ phía trên) và thiên lệch người sống sót; chỉ là thông tin tham khảo, không phải lệnh mua hay khuyến nghị tỷ trọng.
-        </p>
+        <GiaiThichThem nhanMo="Cách tính">
+          <p>
+            Trung bình 3 tỷ lệ (mã tăng giá, mã trên Kijun, mã trên đường cân bằng dài hạn) tính trên các mã đang niêm yết, từ 2013. Chỉ số này xấp xỉ (không có tỷ lệ “mã đạt điểm MUA” như đồng hồ phía trên) và thiên lệch người sống sót; chỉ là thông tin tham khảo, không phải lệnh mua hay khuyến nghị tỷ trọng.
+          </p>
+        </GiaiThichThem>
       </div>
     </div>
   );

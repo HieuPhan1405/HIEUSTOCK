@@ -22,6 +22,7 @@ import { thongBaoLoi } from "@/lib/loiAnToan";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import { quyenTrangChu, locCauNhanDinh } from "@/lib/khoaTrangChu";
 import KhoaTinHieuTrangChu from "@/components/KhoaTinHieuTrangChu";
+import GiaiNghia from "@/components/GiaiNghia";
 
 export const dynamic = "force-dynamic";
 
@@ -264,180 +265,178 @@ export default async function TrangTongQuan() {
 
   return (
     <div style={{ color: TEXT }}>
-      {/* HERO */}
-      <div className="relative overflow-hidden border-b" style={{ borderColor: VIEN }}>
-        <div aria-hidden="true" className="cs-aurora" />
-        <div aria-hidden="true" className="cs-luoi" />
-        <Image
-          src="/logo-bieu-tuong-toi.png"
-          alt=""
-          aria-hidden="true"
-          width={260}
-          height={176}
-          className="chi-toi hidden md:block absolute right-10 top-6 w-[330px] h-auto opacity-[0.09] pointer-events-none select-none"
-        />
-        <Image
-          src="/logo-bieu-tuong.png"
-          alt=""
-          aria-hidden="true"
-          width={260}
-          height={176}
-          className="chi-sang hidden md:block absolute right-10 top-6 w-[330px] h-auto opacity-[0.09] pointer-events-none select-none"
-        />
-        <div className="relative max-w-6xl mx-auto px-6 pt-14 pb-12">
-          <div className="mb-5">
-            <span className="cs-nhan-hero" style={{ fontFamily: "var(--font-chu)" }}>
-              <span className="cs-nhip" aria-hidden="true" />
-              Cập nhật sau mỗi phiên · Quét toàn bộ thị trường
-            </span>
+      {/* HERO: chi cho khach chua dang nhap (gioi thieu). Thanh vien vao thang phan thi truong + tin hieu (04/11/2026: bot cuon qua phan quang cao moi ngay). */}
+      {xemTinHieu ? (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h1 className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+              Thị trường hôm nay
+            </h1>
+            <p className="text-sm mt-0.5" style={{ color: MUTED }}>
+              {ngayAnh ? `Phiên ${ngayAnh} · ` : ""}
+              {tong} cổ phiếu hệ thống đang theo dõi
+            </p>
           </div>
-          <h1
-            className="text-[28px] sm:text-4xl leading-[1.15] mb-4"
-            style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}
-          >
-            Tổng quan thị trường,<br />
-            <span className="cs-chu-mau">đọc trong 5 giây.</span>
-          </h1>
-          <p className="max-w-xl" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
-            Điểm hợp lưu Xu hướng · Động lượng · Dòng tiền cho {tong > 0 ? tong : "gần 400"} cổ phiếu HOSE, HNX, UPCOM, kiểm chứng
-            bằng backtest 11 năm với giá vào lệnh thực tế. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc thị trường nhanh hơn.
-          </p>
-          <div className="flex flex-wrap gap-3 mt-6 text-sm" style={{ fontFamily: "var(--font-chu)" }}>
-            <Link href="/bo-loc" className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold" style={{ background: "#6C5CE7", color: "#FFFFFF" }}>
-              Mở Bộ lọc cổ phiếu
-              <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
-            </Link>
-            <Link href="/bieu-do" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
-              Xem biểu đồ kỹ thuật
-            </Link>
-            <Link href="/danh-gia-danh-muc" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: "#6C5CE7", color: TEXT }}>
-              Chấm điểm danh mục của bạn
-            </Link>
-            {/* Anh chia nho (chup ca trang dai va bi cat o man hinh nho): the co dinh 720px, xem components/TheThiTruong.js / TheTinHieu.js */}
-            <XuatAnh nhan="Ảnh thị trường" the={<TheThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} ngay={ngayAnh} />} rong={RONG_THE_THI_TRUONG} tenFile={`CloudStock-thi-truong-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tổng quan thị trường" />
-            {xemTinHieu && <XuatAnh nhan="Ảnh tín hiệu" the={<TheTinHieu cohoi={cohoiAnh} ngay={ngayAnh} />} rong={RONG_THE_TIN_HIEU} tenFile={`CloudStock-tin-hieu-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tín hiệu trong phiên" />}
+          <div className="flex flex-wrap gap-2">
+            <XuatAnh nhan="Ảnh thị trường" kieu="nho" the={<TheThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} ngay={ngayAnh} />} rong={RONG_THE_THI_TRUONG} tenFile={`CloudStock-thi-truong-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tổng quan thị trường" />
+            <XuatAnh nhan="Ảnh tín hiệu" kieu="nho" the={<TheTinHieu cohoi={cohoiAnh} ngay={ngayAnh} />} rong={RONG_THE_TIN_HIEU} tenFile={`CloudStock-tin-hieu-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tín hiệu trong phiên" />
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="relative overflow-hidden border-b" style={{ borderColor: VIEN }}>
+          <div aria-hidden="true" className="cs-aurora" />
+          <div aria-hidden="true" className="cs-luoi" />
+          <Image
+            src="/logo-bieu-tuong-toi.png"
+            alt=""
+            aria-hidden="true"
+            width={260}
+            height={176}
+            className="chi-toi hidden md:block absolute right-10 top-6 w-[330px] h-auto opacity-[0.09] pointer-events-none select-none"
+          />
+          <Image
+            src="/logo-bieu-tuong.png"
+            alt=""
+            aria-hidden="true"
+            width={260}
+            height={176}
+            className="chi-sang hidden md:block absolute right-10 top-6 w-[330px] h-auto opacity-[0.09] pointer-events-none select-none"
+          />
+          <div className="relative max-w-6xl mx-auto px-6 pt-14 pb-12">
+            <div className="mb-5">
+              <span className="cs-nhan-hero" style={{ fontFamily: "var(--font-chu)" }}>
+                <span className="cs-nhip" aria-hidden="true" />
+                Cập nhật sau mỗi phiên · Quét toàn bộ thị trường
+              </span>
+            </div>
+            <h1
+              className="text-[28px] sm:text-4xl leading-[1.15] mb-4"
+              style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}
+            >
+              Tổng quan thị trường,<br />
+              <span className="cs-chu-mau">đọc trong 5 giây.</span>
+            </h1>
+            <p className="max-w-xl" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+              Điểm hợp lưu Xu hướng · Động lượng · Dòng tiền cho {tong > 0 ? tong : "gần 400"} cổ phiếu HOSE, HNX, UPCOM, kiểm chứng
+              bằng backtest 11 năm với giá vào lệnh thực tế. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc thị trường nhanh hơn.
+            </p>
+            <div className="flex flex-wrap gap-3 mt-6 text-sm" style={{ fontFamily: "var(--font-chu)" }}>
+              <Link href="/bo-loc" className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold" style={{ background: "#6C5CE7", color: "#FFFFFF" }}>
+                Mở Bộ lọc cổ phiếu
+                <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
+              </Link>
+              <Link href="/bieu-do" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
+                Xem biểu đồ kỹ thuật
+              </Link>
+              <Link href="/danh-gia-danh-muc" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: "#6C5CE7", color: TEXT }}>
+                Chấm điểm danh mục của bạn
+              </Link>
+              {/* Anh chia nho (chup ca trang dai va bi cat o man hinh nho): the co dinh 720px, xem components/TheThiTruong.js / TheTinHieu.js */}
+              <XuatAnh nhan="Ảnh thị trường" the={<TheThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} ngay={ngayAnh} />} rong={RONG_THE_THI_TRUONG} tenFile={`CloudStock-thi-truong-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tổng quan thị trường" />
+            </div>
+          </div>
+        </div>
 
-      <div id="chup-thi-truong" className="max-w-6xl mx-auto px-6 py-10">
+      )}
+
+      <div id="chup-thi-truong" className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {loi && (
           <p className="text-sm mb-6" style={{ color: DO }}>
             Lỗi tải dữ liệu: {loi}
           </p>
         )}
 
-        {/* NHAN DINH THI TRUONG - doan van tu dong sinh, khong phai khuyen nghi dau tu */}
-        {nhanDinh && (
-          <div
-            className="rounded-2xl border p-6 mb-6 relative overflow-hidden"
-            style={{ borderColor: VIEN, background: NEN_CARD }}
-          >
-            <div className="flex items-center gap-2 mb-3 relative">
-              <span className="text-xs " style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
-                Nhận định nhanh
-              </span>
-              <span
-                className="text-xs font-bold px-2 py-0.5 rounded-sm"
-                style={{ color: nhanDinh.mau, background: nhe(nhanDinh.mau, 13), fontFamily: "var(--font-chu)" }}
-              >
-                {nhanDinh.sacThai}
-              </span>
-            </div>
-            <p className="text-sm leading-relaxed relative" style={{ fontFamily: "var(--font-chu)", color: "var(--chu-2)" }}>
-              {nhanDinh.doanVan}
-            </p>
-            <p className="text-[11px] mt-3 relative" style={{ color: MUTED }}>
-              Tự động tổng hợp từ {tatCa.length} mã đang theo dõi — không phải khuyến nghị đầu tư.
-            </p>
-          </div>
-        )}
-
-        {/* PTKT VNINDEX - dung chung cong thuc cua he thong, ap dung cho chinh chi so */}
-        {chiSoVNIndex ? (
-          <div className="rounded-2xl border p-6 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-            <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-              <div>
-                <p className="text-xs  mb-1" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
-                  PTKT VNINDEX
-                </p>
-                <div className="flex items-baseline gap-3">
-                  <span className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
-                    {fmt(chiSoVNIndex.gia)}
-                  </span>
-                  <span
-                    className="text-sm"
-                    style={{ fontFamily: "var(--font-chu)", color: chiSoVNIndex.doi >= 0 ? XANH : DO }}
-                  >
-                    {pct(chiSoVNIndex.doi, 2)}
-                  </span>
-                </div>
-              </div>
-              {/* Chi so khong "nam giu" duoc - hien xu huong thay cho nhan lenh MUA / NAM GIU / BAN. */}
-              <span
-                className="px-2 py-0.5 text-xs font-bold tracking-wide rounded-sm"
-                style={{ color: phanLoaiTrend(chiSoVNIndex.trend).mau, background: nhe(phanLoaiTrend(chiSoVNIndex.trend).mau, 13), fontFamily: "var(--font-chu)" }}
-              >
-                XU HƯỚNG {phanLoaiTrend(chiSoVNIndex.trend).nhan.toUpperCase()}
-              </span>
-            </div>
-
-            <div className={`grid grid-cols-2 gap-4 ${chiSoVNIndex.kumo_twist ? "sm:grid-cols-4" : "sm:grid-cols-3"}`}>
-              <div>
-                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Điểm tổng hợp</p>
-                <p
-                  className="text-lg"
-                  style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: chiSoVNIndex.diem >= 0 ? XANH : DO }}
-                >
-                  {soVN(chiSoVNIndex.diem, 2, true)}
-                </p>
-              </div>
-              <div>
-                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Xu hướng</p>
-                <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: phanLoaiTrend(chiSoVNIndex.trend).mau }}>
-                  {phanLoaiTrend(chiSoVNIndex.trend).nhan}
-                </p>
-              </div>
-              <div>
-                <p className="text-[11px] mb-1" style={{ color: MUTED }}>Đường cân bằng</p>
-                <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
-                  {fmt(chiSoVNIndex.kijun)}
-                </p>
-              </div>
-              {/* May tuong lai chi co gia tri o phien may doi chieu - khong co thi an o nay (khong hien "—"). */}
-              {chiSoVNIndex.kumo_twist && (
+        {/* VN-INDEX + NHAN DINH (gop 2 the cu "Nhan dinh nhanh" + "PTKT VNINDEX", 04/11/2026): gia + 2 nhan (sac thai, xu huong) -> 1 doan nhan dinh -> 5 so lieu chi so.
+            Nhan dinh la doan van tu dong sinh tu ~390 ma dang theo doi; chi so tinh cung he thong chi bao nhu tung ma (xem AFL: LaVNIndex). */}
+        {(nhanDinh || chiSoVNIndex) && (
+          <div className="rounded-2xl border p-5 sm:p-6 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
+            <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
+              {chiSoVNIndex ? (
                 <div>
-                  <p className="text-[11px] mb-1" style={{ color: MUTED }}>Mây tương lai đổi chiều</p>
-                  <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: chiSoVNIndex.kumo_twist === "TANG" ? XANH : DO }}>
-                    {chiSoVNIndex.kumo_twist === "TANG" ? "Tăng" : "Giảm"}
+                  <p className="text-sm mb-0.5" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+                    VN-Index
+                  </p>
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+                      {fmt(chiSoVNIndex.gia)}
+                    </span>
+                    <span className="text-base font-semibold" style={{ fontFamily: "var(--font-chu)", color: chiSoVNIndex.doi >= 0 ? XANH : DO }}>
+                      {pct(chiSoVNIndex.doi, 2)}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm" style={{ color: MUTED }}>
+                  Nhận định thị trường
+                </p>
+              )}
+              <div className="flex flex-wrap gap-2">
+                {nhanDinh && (
+                  <span className="text-xs font-bold px-2 py-1 rounded-md" style={{ color: nhanDinh.mau, background: nhe(nhanDinh.mau, 13), fontFamily: "var(--font-chu)" }}>
+                    Thị trường {nhanDinh.sacThai.toLowerCase()}
+                  </span>
+                )}
+                {/* Chi so khong "nam giu" duoc - hien xu huong thay cho nhan lenh MUA / NAM GIU / BAN. */}
+                {chiSoVNIndex && (
+                  <span className="text-xs font-bold px-2 py-1 rounded-md" data-may="xu-huong-tt" style={{ color: phanLoaiTrend(chiSoVNIndex.trend).mau, background: nhe(phanLoaiTrend(chiSoVNIndex.trend).mau, 13), fontFamily: "var(--font-chu)" }}>
+                    Xu hướng {phanLoaiTrend(chiSoVNIndex.trend).nhan.toLowerCase()}
+                  </span>
+                )}
+              </div>
+            </div>
+            {nhanDinh && (
+              <p className="text-[15px] leading-relaxed" style={{ fontFamily: "var(--font-chu)", color: "var(--chu-2)" }}>
+                {nhanDinh.doanVan}
+              </p>
+            )}
+            {chiSoVNIndex && (
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-5 pt-5 border-t" style={{ borderColor: VIEN }}>
+                <div>
+                  <p className="text-xs mb-1" style={{ color: MUTED }}>
+                    <GiaiNghia khoa="diem-tong-hop-vni">Điểm tổng hợp</GiaiNghia>
+                  </p>
+                  <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: chiSoVNIndex.diem >= 0 ? XANH : DO }}>
+                    {soVN(chiSoVNIndex.diem, 2, true)}
                   </p>
                 </div>
-              )}
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-4 mt-5 pt-5 border-t" style={{ borderColor: VIEN }}>
-              <div className="flex justify-between text-sm">
-                <span style={{ color: MUTED }}>Vùng cân bằng trung hạn</span>
-                <span style={{ fontFamily: "var(--font-chu)" }}>
-                  {fmt(chiSoVNIndex.gg_bot)} – {fmt(chiSoVNIndex.gg_top)}
-                </span>
+                <div>
+                  <p className="text-xs mb-1" style={{ color: MUTED }}>
+                    <GiaiNghia khoa="kijun-vni">Đường cân bằng</GiaiNghia>
+                  </p>
+                  <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+                    {fmt(chiSoVNIndex.kijun)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs mb-1" style={{ color: MUTED }}>
+                    <GiaiNghia khoa="gg-vni">Vùng cân bằng dài hạn</GiaiNghia>
+                  </p>
+                  <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+                    {fmt(chiSoVNIndex.gg_bot)} – {fmt(chiSoVNIndex.gg_top)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs mb-1" style={{ color: MUTED }}>
+                    Đỉnh 52 tuần
+                  </p>
+                  <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+                    {fmt(chiSoVNIndex.dinh_52t)}
+                  </p>
+                </div>
+                {/* May tuong lai chi co gia tri o phien may doi chieu - khong co thi an (khong hien "—"). */}
+                {chiSoVNIndex.kumo_twist && (
+                  <p className="col-span-full text-sm" style={{ color: chiSoVNIndex.kumo_twist === "TANG" ? XANH : DO }}>
+                    <GiaiNghia khoa="tag-Mây tương lai">Mây tương lai</GiaiNghia> của VN-Index sắp đổi chiều {chiSoVNIndex.kumo_twist === "TANG" ? "tăng" : "giảm"}.
+                  </p>
+                )}
               </div>
-              <div className="flex justify-between text-sm">
-                <span style={{ color: MUTED }}>Đỉnh 52 tuần</span>
-                <span style={{ fontFamily: "var(--font-chu)" }}>{fmt(chiSoVNIndex.dinh_52t)}</span>
-              </div>
-            </div>
-
-            <p className="text-[11px] mt-4" style={{ color: MUTED }}>
-              Áp dụng cùng hệ thống chỉ báo như từng mã cổ phiếu, tính trực tiếp trên chỉ số VNINDEX.
-            </p>
+            )}
           </div>
-        ) : (
-          !loi && (
-            <div className="rounded-2xl border p-6 mb-6 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
-              Chưa có dữ liệu PTKT VNINDEX — cần chạy lại Explore + upload sau khi cập nhật công thức AFL mới nhất.
-            </div>
-          )
+        )}
+        {!chiSoVNIndex && !loi && (
+          <p className="text-sm mb-6" style={{ color: MUTED }}>
+            Chưa có dữ liệu PTKT VN-Index — cần chạy lại Explore + upload sau khi cập nhật công thức AFL mới nhất.
+          </p>
         )}
 
         <NhanCapNhat luc={capNhat} className={xemTinHieu ? "mb-2" : "mb-6"} />
