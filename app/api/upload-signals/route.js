@@ -203,8 +203,11 @@ export async function POST(request) {
   const vaoTp1 = [];
   const vaoTp2 = [];
   const vaoTp3 = [];
+  const homNayVao = ngayGiaoDichVN();
   for (const h of hangDL) {
     const kq = tinhGiaVaoWeb({
+      giaMuaMoi: soFloat(h.gia_mua),
+      homNay: homNayVao,
       tinMoi: h.tin || "TRUNG LAP",
       giaTriMoi: { gia: soFloat(h.gia), stop_loss: soFloat(h.stop_loss), tp1: soFloat(h.tp1), tp2: soFloat(h.tp2), tp3: soFloat(h.tp3) },
       ngayMuaMoi: soNgayVN(h.ngay_mua),
@@ -212,6 +215,11 @@ export async function POST(request) {
       bayGio,
       cheDoVao: h.che_do_vao,
     });
+    // Vua qua ngay chia quyen: dua luon gia vao + SL/TP da nhan he so vao ban ghi CU de phat hien lenh dong (cat lo / chot loi) o ben duoi so voi gia DA DIEU CHINH, khong ghi "lo gia".
+    const cuVao = banGhiCuTheoMa[h.ma];
+    if (cuVao && cuVao.gia_vao_web > 0 && kq.gia != null && kq.gia !== Number(cuVao.gia_vao_web) && cuVao.ngay_mua_txt === soNgayVN(h.ngay_mua)) {
+      banGhiCuTheoMa[h.ma] = { ...cuVao, gia_vao_web: kq.gia, vao_stop_loss: kq.stop_loss, vao_tp1: kq.tp1, vao_tp2: kq.tp2, vao_tp3: kq.tp3 };
+    }
     giaVaoWeb.push(kq.gia);
     thoiDiemVaoWeb.push(kq.luc);
     vaoStopLoss.push(kq.stop_loss);
