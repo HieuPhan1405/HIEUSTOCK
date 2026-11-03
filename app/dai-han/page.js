@@ -25,7 +25,7 @@ export default async function TrangDaiHan() {
         Đầu tư dài hạn
       </h1>
       <p className="text-sm mb-4 max-w-3xl" style={{ color: "var(--mo)" }}>
-        Chọn doanh nghiệp bằng tiêu chí của các nhà đầu tư nổi tiếng đã được kiểm tra trên thị trường Việt Nam, định giá, chia vốn giải ngân 5 đợt theo vùng giá và biết khi nào nên bán. Không dùng tín hiệu mua bán ngắn hạn của hệ thống.
+        Chọn doanh nghiệp tốt theo tiêu chí của các nhà đầu tư nổi tiếng, mua chia 5 đợt theo vùng giá và biết khi nào nên bán. Không dùng tín hiệu mua bán ngắn hạn.
       </p>
       {du?.capNhat && <NhanCapNhat luc={du.capNhat} className="mb-4" />}
       {loi ? (

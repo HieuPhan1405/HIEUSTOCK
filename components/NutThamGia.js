@@ -44,6 +44,7 @@ export default function NutThamGia({ ma, soNguoiThamGia, daThamGia, coDangNhap =
       disabled={dangXuLy}
       data-may="tham-gia"
       title={coDangNhap ? (daThamGia ? "Rời khỏi mã này" : "Tham gia theo dõi mã này") : "Đăng ký/Đăng nhập để tham gia"}
+      aria-label={`Tham gia theo dõi ${ma}${soNguoiThamGia > 0 ? ` (${soNguoiThamGia} người)` : ""}`}
       className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold transition-colors"
       style={{
         background: daThamGia ? "rgba(108,92,231,0.18)" : "var(--phu)",
@@ -52,7 +53,8 @@ export default function NutThamGia({ ma, soNguoiThamGia, daThamGia, coDangNhap =
       }}
     >
       <UserPlus size={11} />
-      {soNguoiThamGia ?? 0}
+      {/* 0 nguoi thi chi hien bieu tuong (bot so 0 lap lai tren moi dong bang) */}
+      {soNguoiThamGia > 0 ? soNguoiThamGia : null}
     </button>
   );
 }

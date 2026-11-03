@@ -181,12 +181,12 @@ export default async function TrangDanhMuc() {
     .sort((a, b) => Number(b.lenh.length > 0) - Number(a.lenh.length > 0) || a.ma.localeCompare(b.ma));
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: TEXT }}>
       <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Danh mục theo dõi
       </h1>
       <p className="text-sm mb-3" style={{ color: MUTED }}>
-        Mã nào bạn bấm nút tham gia (biểu tượng người cạnh mã ở{" "}
+        Các mã bạn bấm nút theo dõi (biểu tượng người cạnh mã ở{" "}
         <Link href="/bo-loc" className="underline" style={{ color: PRIMARY }}>
           Bộ lọc
         </Link>{" "}
@@ -194,7 +194,7 @@ export default async function TrangDanhMuc() {
         <Link href="/lenh-mo" className="underline" style={{ color: PRIMARY }}>
           Sổ lệnh
         </Link>
-        ) sẽ tự vào đây. Bấm mũi tên <b>▾</b> cạnh mã để xem từng vị thế.
+        ), kèm cảnh báo trong phiên và vị thế của từng mã.
       </p>
       <GiaiThichThem className="mb-3">
         Mỗi mã một dòng; mã đang có vị thế có mũi tên ở đầu dòng — bấm để xổ ra các vị thế (lệnh) của mã đó: mã có nhiều lệnh được đánh số (1), (2)... theo ngày mua, nhãn{" "}
@@ -231,7 +231,7 @@ export default async function TrangDanhMuc() {
       {thamGia.length > 0 && (
         <>
           <section className="mb-10">
-            <TieuDeMuc phu="Giá mua, vùng cắt lỗ, chốt lời và lãi/lỗ lấy theo lệnh của hệ thống, không phải giá khớp thật của bạn. Bấm mũi tên ▾ cạnh mã để xem từng vị thế; lọc &quot;Vị thế tốt nhất&quot; / &quot;Vị thế sau&quot; để mỗi mã chỉ hiện 1 vị thế.">Mã đang theo dõi</TieuDeMuc>
+            <TieuDeMuc phu="Giá mua, cắt lỗ, chốt lời theo lệnh của hệ thống (không phải giá khớp thật của bạn).">Mã đang theo dõi</TieuDeMuc>
             <DanhMucMa dsMa={dsMa} soCoDuLieu={cuaToi.length} soTheoDoi={thamGia.length} />
           </section>
 

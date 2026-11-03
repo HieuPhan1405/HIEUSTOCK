@@ -6,7 +6,7 @@ import { NGANH_NHAN } from "@/lib/nganh";
 // dang mo (2 bang cung nhom bo loc: tim ma, von hoa, xu huong, san, nganh, canh
 // bao va tieu chi UU TIEN; moi bang them cac bo loc rieng qua "children").
 import { useState, useEffect, useRef, useMemo, useSyncExternalStore } from "react";
-import { Search, Columns3 } from "lucide-react";
+import { Search, Columns3, Lock } from "lucide-react";
 import { phanLoaiXuHuong, chamTPCaoNhat, laDangGiu, datChuanUuTien } from "@/components/dungChung";
 import { NHOM_COT } from "@/components/cotChung";
 import { coCanhBaoBanBot } from "@/lib/ghiChuTuDong";
@@ -331,6 +331,93 @@ export function ChonCotHienThi({ cot, dsKhoa, dangChon, onBat, onHienTatCa, onMa
           })}
         </div>
       )}
+    </div>
+  );
+}
+
+// ---------- 04/11/2026: GON KIEU CAC BO LOC NOI TIENG (TradingView Screener, Finviz, Simplize) ----------
+// Nho 1 lua chon chuoi (vd goc nhin dang chon) vao localStorage - doc qua useSyncExternalStore nhu useCotHienThi (server tra macDinh, khong lech luc hydrate).
+export function useLuaChonLuu(khoaLuuTru, macDinh, dsHopLe) {
+  const luuTru = useSyncExternalStore(
+    dangKyLuuTru,
+    () => {
+      try {
+        return localStorage.getItem(khoaLuuTru);
+      } catch {
+        return null;
+      }
+    },
+    () => null
+  );
+  const [ghiDe, setGhiDe] = useState(null);
+  const giaTri = ghiDe ?? luuTru;
+  const hienTai = dsHopLe.includes(giaTri) ? giaTri : macDinh;
+  function dat(v) {
+    setGhiDe(v);
+    try {
+      localStorage.setItem(khoaLuuTru, v);
+      window.dispatchEvent(new Event(SU_KIEN_DOI_COT));
+    } catch {}
+  }
+  return [hienTai, dat];
+}
+
+// HANG "BO LOC NHANH": cac nut loc san (nhu "Signal" cua Finviz / "Screens" cua TradingView) - 1 cham la ra danh sach, kem so ma.
+// ds: [{ khoa, nhan, dem, dang (bool), khoa: bool (can dang nhap), moTa }]; onChon(muc). Dien thoai: 1 hang cuon ngang.
+export function HangLocNhanh({ ds, onChon, sau = null }) {
+  return (
+    <div className="flex items-center gap-2 mb-3 overflow-x-auto sm:flex-wrap pb-1 sm:pb-0 [scrollbar-width:none]" role="toolbar" aria-label="Bộ lọc nhanh">
+      {ds.map((m) => (
+        <button
+          key={m.khoa}
+          type="button"
+          onClick={() => onChon(m)}
+          aria-pressed={!!m.dang}
+          title={m.moTa}
+          className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors"
+          style={{
+            borderColor: m.dang ? PRIMARY : VIEN,
+            background: m.dang ? "rgba(108,92,231,0.18)" : NEN_CARD,
+            color: m.dang ? TEXT : "var(--mo-2)",
+            fontFamily: "var(--font-chu)",
+            fontWeight: m.dang ? 700 : 500,
+          }}
+        >
+          {m.biKhoa && <Lock size={12} aria-hidden="true" />}
+          {m.nhan}
+          {m.dem != null && !m.biKhoa && (
+            <span className="text-xs px-1.5 rounded-full" style={{ background: m.dang ? "rgba(255,255,255,0.14)" : "var(--vien-nhe)", color: m.dang ? TEXT : MUTED }}>
+              {m.dem}
+            </span>
+          )}
+        </button>
+      ))}
+      {sau}
+    </div>
+  );
+}
+
+// THANH "GOC NHIN" cua bang (nhu cac tab Overview / Performance / Technical cua TradingView, Finviz): moi goc nhin la 1 bo cot vua du, khong do het hang chuc cot ra 1 luc.
+// ds: [{ khoa, nhan }]; ben phai co the gan them (vd nut Cot hien thi).
+export function ThanhGocNhin({ ds, dang, onChon, phai = null }) {
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+      <div className="inline-flex max-w-full overflow-x-auto rounded-xl p-1 gap-1 [scrollbar-width:none]" style={{ background: NEN_CARD, border: `1px solid ${VIEN}` }} role="tablist" aria-label="Góc nhìn của bảng">
+        {ds.map((g) => (
+          <button
+            key={g.khoa}
+            type="button"
+            role="tab"
+            aria-selected={dang === g.khoa}
+            onClick={() => onChon(g.khoa)}
+            className="shrink-0 px-3 py-1.5 rounded-lg text-sm whitespace-nowrap"
+            style={dang === g.khoa ? { background: PRIMARY, color: "#fff", fontWeight: 700, fontFamily: "var(--font-chu)" } : { color: MUTED, fontFamily: "var(--font-chu)" }}
+          >
+            {g.nhan}
+          </button>
+        ))}
+      </div>
+      {phai}
     </div>
   );
 }

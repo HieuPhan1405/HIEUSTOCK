@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { TriangleAlert } from "lucide-react";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import LenhMoNoiDung from "@/components/LenhMoNoiDung";
@@ -51,29 +50,19 @@ export default async function TrangLenhMo({ searchParams }) {
   // lenh thi danh so (1), (2). Cach 2 TP + giu den BAN: lenh cham TP1/TP2 van con phan giu nen van nam o day cho toi khi he thong bao BAN; TP3 chi la moc tham khao.
   const lenhMo = lenhDangMo(tatCa, vnindex?.nen.map((b) => b.t) ?? null);
   const soMa = new Set(lenhMo.map((r) => r.ma)).size;
-  const soCanhBao = new Set(lenhMo.filter((r) => r.mat_than).map((r) => r.ma)).size;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: TEXT }}>
       <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Sổ lệnh đang mở
       </h1>
-      <p className="text-sm mb-1" style={{ color: MUTED }}>
-        {loi
-          ? "—"
-          : `${lenhMo.length} lệnh đang mở${soMa < lenhMo.length ? ` của ${soMa} mã (mã có nhiều lệnh được đánh số (1), (2)...)` : ""} / tổng ${tatCa.length} mã theo dõi.`}
+      <p className="text-sm mb-3" style={{ color: MUTED }}>
+        {loi ? "—" : `${lenhMo.length} lệnh đang mở${soMa < lenhMo.length ? ` của ${soMa} mã` : ""} — mỗi dòng là một lệnh, có giá mua, cắt lỗ, chốt lời riêng.`}
       </p>
-      {soCanhBao > 0 && (
-        <p className="text-sm mb-6 flex items-center gap-1.5" style={{ color: DO }}>
-          <TriangleAlert size={14} strokeWidth={2} aria-hidden="true" />
-          {soCanhBao} mã đang cảnh báo Mắt Thần — nên xem lại ngay.
-        </p>
-      )}
-      {soCanhBao === 0 && <div className="mb-6" />}
 
-      <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-2" />
+      <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-1" />
       <Suspense fallback={null}>
-        <NhanThiTruong5Phien className="mb-6" />
+        <NhanThiTruong5Phien className="mb-5" />
       </Suspense>
 
       {loi && (

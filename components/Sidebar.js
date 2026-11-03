@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, Briefcase, ListFilter, TrendingDown, BookOpen, CandlestickChart, Wallet, Mail, Ellipsis } from "lucide-react";
+import { LayoutGrid, Briefcase, ListFilter, TrendingDown, BookOpen, CandlestickChart, Wallet, Mail, Ellipsis, Sprout } from "lucide-react";
 import { MENU, mucDangMo } from "@/lib/menu";
 
-const ICON = { "/": LayoutGrid, "/bo-loc": ListFilter, "/bieu-do": CandlestickChart, "/lenh-mo": Briefcase, "/danh-muc": Wallet, "/bat-day": TrendingDown, "/huong-dan": BookOpen };
+const ICON = { "/": LayoutGrid, "/bo-loc": ListFilter, "/bieu-do": CandlestickChart, "/lenh-mo": Briefcase, "/danh-muc": Wallet, "/bat-day": TrendingDown, "/dai-han": Sprout, "/huong-dan": BookOpen };
 
 const BG = "var(--nen-sau)";
 const VIEN = "var(--vien)";
@@ -14,7 +14,7 @@ const PRIMARY = "#6C5CE7";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
 
-// MENU GON (7 muc - xem lib/menu.js): cac trang cung nhom (Thi truong: Tong quan / Dashboard / Tin tuc; So lenh: Dang mo / Da dong) gop 1 muc, trong trang co thanh tab
+// MENU GON (8 muc - xem lib/menu.js): cac trang cung nhom (Thi truong: Tong quan / Dashboard / Tin tuc; So lenh: Dang mo / Da dong) gop 1 muc, trong trang co thanh tab
 // (components/ThanhTabNhom.js). Lien he o cuoi thanh ben + chan trang.
 export default function Sidebar() {
   const pathname = usePathname();

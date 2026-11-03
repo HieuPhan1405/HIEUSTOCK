@@ -53,16 +53,16 @@ export default async function TrangBoLoc() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10" style={{ color: "var(--chu)" }}>
+    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: "var(--chu)" }}>
       <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         Bộ lọc cổ phiếu
       </h1>
-      <p className="text-sm mb-4" style={{ color: "var(--mo)" }}>
-        Lọc và sắp xếp toàn bộ {tatCa.length} cổ phiếu đang theo dõi (HOSE, HNX, UPCOM) theo nhiều tiêu chí.
+      <p className="text-sm mb-3" style={{ color: "var(--mo)" }}>
+        Chọn một bộ lọc nhanh hoặc tự lọc theo sàn, ngành, vốn hoá — bấm tiêu đề cột để sắp xếp, bấm mã để xem chi tiết.
       </p>
-      <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-2" />
+      <NhanCapNhat luc={capNhatMoiNhat(tatCa)} className="mb-1" />
       <Suspense fallback={null}>
-        <NhanThiTruong5Phien className="mb-6" />
+        <NhanThiTruong5Phien className="mb-5" />
       </Suspense>
 
       {loi ? (

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { soVN } from "@/lib/soVN";
 import { tinhRRG, gocRRG } from "@/lib/rrgTinh";
+import GiaiThichThem from "@/components/GiaiThichThem";
 
 // RRG (Relative Rotation Graph) tren Dashboard. Chuoi gia ngay cua tung nganh + benchmark do engine/dich-vu/tinhRRG.mjs dua len (/api/upload-phan-tich-co-ban),
 // trinh duyet tu tinh lai theo bo loc: khung ngay/tuan, chu ky RS, do dai duoi, benchmark, chon nganh, them ma co phieu (gia lay tu /api/gia-lich-su).
@@ -377,10 +378,10 @@ export default function RRGNganh({ du }) {
           </div>
         </div>
       )}
-      <p className="text-[11px] mt-3" style={{ color: MUTED }}>
+      <GiaiThichThem nhanMo="Cách tính và ý nghĩa các cột" className="mt-3">
         Mốc so sánh mặc định là chỉ số trung bình đều các mã thanh khoản ≥ 0,3 tỷ/phiên (VN-Index tính theo vốn hoá nên VIC, VHM, ngân hàng kéo, ngành nào cũng “thắng” nó). Chu kỳ RS càng ngắn đồ thị càng nhạy nhưng nhiễu hơn. <b>Nóng</b> = giá trị giao dịch 5 phiên / mức thường lệ 10 tuần trước.{" "}
         <b>Tiền ròng ước tính</b> chỉ đo giá đóng cửa nghiêng về đầu cao hay đầu thấp của nến theo giá trị giao dịch, không phải mua/bán chủ động thật; hai cột này chỉ có cho ngành. Mỗi ngành tính trên các mã hệ thống đang quét (số trong ngoặc: mã đủ thanh khoản/tổng mã của ngành); ngành dưới 3 mã đủ thanh khoản không được vẽ. Mã cổ phiếu hình thoi, nét đứt. Nhóm chủ đề (vd Đầu tư công) là chấm viền sáng, đuôi chấm chấm: chỉ số nhóm = trung bình đều lợi suất ngày của MỌI mã trong nhóm (kể cả mã ít giao dịch), nên nhiễu hơn ngành; không có cột Nóng / Tiền ròng. Không phải khuyến nghị đầu tư.
-      </p>
+      </GiaiThichThem>
     </section>
   );
 }

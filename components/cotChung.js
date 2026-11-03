@@ -28,6 +28,7 @@ import {
 const MUTED = "var(--mo)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
+const mauDau = (v) => (v == null || !Number.isFinite(Number(v)) || Number(v) === 0 ? undefined : Number(v) > 0 ? XANH : DO);
 const VANG = "var(--vang)";
 
 export const NHOM_COT = ["Cơ bản", "Điểm & chỉ báo", "Chỉ báo kỹ thuật", "Thanh khoản & vốn hoá", "Vị thế đang giữ", "Giá mục tiêu & hỗ trợ"];
@@ -182,12 +183,13 @@ export const CAC_COT = {
         </span>
       ),
   },
-  trend: { nhan: "Xu hướng", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.trend, hien: (r) => so1So(r.trend) },
-  dt: { nhan: "Dòng tiền", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.dt, hien: (r) => soAn(r.dt, 1) },
-  mom: { nhan: "Động lượng", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.mom, hien: (r) => soAn(r.mom, 1) },
+  // to mau theo dau (xanh duong / do am) nhu cac bang screener - doc nhanh hon so tran
+  trend: { nhan: "Xu hướng", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.trend, hien: (r) => <span style={{ color: mauDau(r.trend) }}>{so1So(r.trend)}</span> },
+  dt: { nhan: "Dòng tiền", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.dt, hien: (r) => <span style={{ color: mauDau(r.dt) }}>{soAn(r.dt, 1)}</span> },
+  mom: { nhan: "Động lượng", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.mom, hien: (r) => <span style={{ color: mauDau(r.mom) }}>{soAn(r.mom, 1)}</span> },
   adx: { nhan: "ADX", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.adx, hien: (r) => so1So(r.adx) },
-  rs_vni: { nhan: "RS/VNI", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.rs_vni, hien: (r) => pct(r.rs_vni, 1) },
-  rs_vni_60: { nhan: "RS/VNI 60 phiên", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.rs_vni_60, hien: (r) => pct(r.rs_vni_60, 1) },
+  rs_vni: { nhan: "RS/VNI", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.rs_vni, hien: (r) => <span style={{ color: mauDau(r.rs_vni) }}>{pct(r.rs_vni, 1)}</span> },
+  rs_vni_60: { nhan: "RS/VNI 60 phiên", nhom: "Điểm & chỉ báo", canPhai: true, lay: (r) => r.rs_vni_60, hien: (r) => <span style={{ color: mauDau(r.rs_vni_60) }}>{pct(r.rs_vni_60, 1)}</span> },
   // Vi tri gia trong bien do 120 phien (0% = day, 100% = dinh) - thong tin tham khao, xem lib/nhanTinHieu.js.
   vi_tri_120: {
     nhan: "Vị trí trong biên độ 6 tháng",

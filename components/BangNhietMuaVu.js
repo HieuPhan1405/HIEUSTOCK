@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { MUA_VU } from "@/lib/muaVuDuLieu";
 import { Khoi, TEXT, MUTED, VIEN, PRIMARY, XANH, DO, VANG, sans } from "@/components/DanhGiaChung";
+import GiaiThichThem from "@/components/GiaiThichThem";
 
 const THANG = ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"];
 const p1 = (x) => (x == null ? "" : x.toFixed(1).replace(".", ","));
@@ -110,10 +111,11 @@ export default function BangNhietMuaVu({ nganhDanhMuc = [] }) {
           <b>Độ ổn định của mùa vụ {chon}:</b> tương quan giữa trung bình tháng 2013–2019 và 2020–2026 ={" "}
           <b style={{ color: od.mau }}>{MUA_VU.onDinh[chon] == null ? "—" : String(MUA_VU.onDinh[chon]).replace(".", ",")}</b> — <span style={{ color: od.mau }}>{od.nhan}</span>. Cùng dấu ở {cungDau}/12 tháng.
         </p>
-        <p style={{ color: MUTED }}>
+        <p style={{ color: "var(--chu-2)" }}>Mùa vụ chỉ để tham khảo tâm lý, không dùng làm điều kiện mua bán.</p>
+        <GiaiThichThem nhanMo="Vì sao?" className="mt-1">
           Kiểm chứng của web trên VN-Index: chọn 6 tháng đẹp nhất của giai đoạn đầu rồi chỉ nằm trong 6 tháng đó, giai đoạn sau nhân vốn ×0,72, trong khi nằm cả năm ×1,81. Với từng mã, tháng vào lệnh cũng không dự đoán được lãi/lỗ. Vì vậy bảng này chỉ để tham khảo tâm lý
           (ví dụ tháng 4 và tháng 9–10 từng hay có cú giảm), không dùng làm điều kiện mua bán.
-        </p>
+        </GiaiThichThem>
       </div>
 
       <h3 className="text-sm mt-5 mb-1.5" style={{ ...sans, fontWeight: 700 }}>Trung bình theo ngành (bấm vào tên ngành để xem chi tiết)</h3>
@@ -144,10 +146,11 @@ export default function BangNhietMuaVu({ nganhDanhMuc = [] }) {
           })}
         </div>
       </div>
-      <p className="text-[11px] mt-2" style={{ color: MUTED }}>
-        ● = ngành đang có trong danh mục. Cột “Ổn định” là tương quan tháng giữa 2013–2019 và 2020–2026 (1 = mùa vụ lặp lại, 0 = ngẫu nhiên, âm = ngược lại); thử 22 ngành nên vài ngành có số cao chỉ do tình cờ. Lịch sử ngành chỉ gồm các mã đang niêm yết (bỏ sót mã đã hủy niêm yết) nên có
-        thiên lệch người sống sót; mỗi tháng chỉ có 13–14 năm quan sát. Dữ liệu cập nhật bằng <code>node scripts/capNhatMuaVu.mjs</code>.
-      </p>
+      {/* du lieu cap nhat bang: node scripts/capNhatMuaVu.mjs */}
+      <GiaiThichThem tomTat="● = ngành đang có trong danh mục." nhanMo="Cách đọc cột Ổn định" className="mt-2">
+        Cột “Ổn định” là tương quan tháng giữa 2013–2019 và 2020–2026 (1 = mùa vụ lặp lại, 0 = ngẫu nhiên, âm = ngược lại); thử 22 ngành nên vài ngành có số cao chỉ do tình cờ. Lịch sử ngành chỉ gồm các mã đang niêm yết (bỏ sót mã đã hủy niêm yết) nên có
+        thiên lệch người sống sót; mỗi tháng chỉ có 13–14 năm quan sát.
+      </GiaiThichThem>
     </Khoi>
   );
 }

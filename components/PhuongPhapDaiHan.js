@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { ChevronDown, ShieldAlert, TriangleAlert } from "lucide-react";
 import { nhe } from "@/components/dungChung";
+import GiaiThichThem from "@/components/GiaiThichThem";
 import { soVN, pctVN } from "@/lib/soVN";
 import { HAN_CHO_THANG, lichGiaiNgan } from "@/lib/phuongPhapDaiHan";
 import { CACH_BAN, LOI_VE_TINH, DINH_GIA, GIAI_DOAN } from "@/lib/phuongPhapDaiHanKetQua";
@@ -159,9 +160,9 @@ function KhungLoiVeTinh({ khung }) {
       </p>
       {dong(khung.loi, `Lõi — khoảng 65% danh mục (${khung.loi.length} mã)`, PRIMARY)}
       {dong(khung.veTinh, `Vệ tinh — khoảng 35% danh mục (${khung.veTinh.length} mã)`, TEXT)}
-      <p className="text-xs" style={{ color: MUTED }}>
+      <GiaiThichThem nhanMo="Kết quả kiểm tra mô hình">
         Test mô hình lõi & vệ tinh (FPT + 7 ngân hàng lớn + bán lẻ, BĐS khu công nghiệp) từ các mốc bắt đầu 2014–2025: trung bình {LOI_VE_TINH.cagrTB}%/năm so với khoảng {LOI_VE_TINH.vniTB}% của VN-Index, hơn VN-Index ở {LOI_VE_TINH.homVni}. Nhưng {LOI_VE_TINH.gayDay} Danh sách mã trong test được chọn sau nên số liệu bị thổi phồng. {LOI_VE_TINH.canhBao}
-      </p>
+      </GiaiThichThem>
     </The>
   );
 }
@@ -176,10 +177,14 @@ export default function PhuongPhapDaiHan({ du }) {
     <div style={{ color: TEXT }}>
       <div className="rounded-xl border p-4 mb-6 flex gap-3 text-sm" style={{ borderColor: nhe(VANG, 40), background: nhe(VANG, 8), ...sans }}>
         <ShieldAlert size={20} className="shrink-0 mt-0.5" style={{ color: VANG }} aria-hidden="true" />
-        <p className="leading-relaxed">
-          <b>Thông tin tham khảo, không phải khuyến nghị đầu tư.</b> Các phương pháp được kiểm tra trên dữ liệu {GIAI_DOAN} (khoảng 4,75 năm, một chu kỳ thị trường, chỉ gồm mã còn niêm yết). Kết quả quá khứ không đảm bảo tương lai, và có những năm các phương pháp thua VN-Index rõ rệt.
-          Bộ lọc chỉ nhìn báo cáo tài chính và giá, <b>không phát hiện được rủi ro pháp lý hay tin xấu</b> — hãy tự kiểm tra tin tức trước khi mua.
-        </p>
+        <div className="leading-relaxed">
+          <p>
+            <b>Thông tin tham khảo, không phải khuyến nghị đầu tư.</b> Bộ lọc chỉ nhìn báo cáo tài chính và giá, <b>không phát hiện được rủi ro pháp lý hay tin xấu</b> — hãy tự kiểm tra tin tức trước khi mua.
+          </p>
+          <GiaiThichThem nhanMo="Giới hạn của kiểm chứng" className="mt-1">
+            Các phương pháp được kiểm tra trên dữ liệu {GIAI_DOAN} (khoảng 4,75 năm, một chu kỳ thị trường, chỉ gồm mã còn niêm yết). Kết quả quá khứ không đảm bảo tương lai, và có những năm các phương pháp thua VN-Index rõ rệt.
+          </GiaiThichThem>
+        </div>
       </div>
 
       <The tieuDe="Khung đầu tư dài hạn: 4 bước">
@@ -214,7 +219,11 @@ export default function PhuongPhapDaiHan({ du }) {
         <ul className="grid gap-1 mb-3 text-xs sm:grid-cols-2" style={{ color: TEXT, ...sans }}>
           {meta.dieuKien.map((d, i) => <li key={i}>• {d}</li>)}
         </ul>
-        {meta.ghiChuXuHuong && <p className="text-xs mb-3 leading-relaxed" style={{ color: MUTED }}><b style={{ color: TEXT }}>Xu hướng giá:</b> {meta.ghiChuXuHuong}</p>}
+        {meta.ghiChuXuHuong && (
+          <GiaiThichThem nhanMo="Có nên chờ xu hướng giá?" className="mb-3">
+            {meta.ghiChuXuHuong}
+          </GiaiThichThem>
+        )}
         {meta.coLocXuHuong && (
           <label className="flex items-start gap-2 text-xs mb-3 cursor-pointer" style={sans}>
             <input type="checkbox" checked={locXuHuong} onChange={(e) => setLocXuHuong(e.target.checked)} className="mt-0.5" />
@@ -222,13 +231,15 @@ export default function PhuongPhapDaiHan({ du }) {
           </label>
         )}
         <BangMa key={tab} pp={tab} ds={hienTai.ds} locXuHuong={!!meta.coLocXuHuong && locXuHuong} />
-        <p className="text-[11px] mt-2" style={{ color: MUTED }}>
+        <GiaiThichThem nhanMo="Nguồn số liệu và cách tính giá hợp lý" className="mt-2">
+        <p>
           Chỉ số cơ bản theo báo cáo tài chính quý {du.quyBaoCao.split("-").reverse().slice(1).join("/")}; giá {du.coGiaMoi ? "cập nhật theo phiên gần nhất trên web" : `tại ngày ${du.giaDen.split("-").reverse().join("/")}`}. Bấm vào từng dòng để xem lịch giải ngân 5 đợt và giá hợp lý. {DINH_GIA.moTa}
         </p>
-        <div className="mt-3 grid gap-1 text-xs sm:grid-cols-2" style={{ color: MUTED }}>
+        <div className="mt-2 grid gap-1 sm:grid-cols-2">
           {DINH_GIA.nhom.map((n) => <span key={n.nhan}><b style={{ color: TEXT }}>{n.nhan}</b>: {n.ghiChu}</span>)}
         </div>
-        <p className="text-xs mt-2" style={{ color: MUTED }}>{DINH_GIA.ghiChu}</p>
+        <p className="mt-2">{DINH_GIA.ghiChu}</p>
+        </GiaiThichThem>
       </The>
 
       <KhungLoiVeTinh khung={du.khung} />
@@ -248,8 +259,10 @@ export default function PhuongPhapDaiHan({ du }) {
           ))}
         </div>
         <p className="text-sm mb-2" style={{ ...sans, fontWeight: 700 }}>Vì sao không cắt lỗ theo giá?</p>
-        <p className="text-xs mb-3 leading-relaxed" style={{ color: MUTED }}>
-          Thị trường Việt Nam thường điều chỉnh 25–40% rồi hồi phục. Test 36 tháng cho thấy mọi quy tắc bán theo giá (cắt lỗ, trailing stop, thủng SMA200…) làm giảm lãi 9–44 điểm vì bán sớm 60–100% vị thế, đổi lại chỉ cắt được đuôi xấu nhất (−91% xuống −27% đến −43%). {CACH_BAN.ghiChu}
+        <p className="text-sm mb-1" style={{ color: "var(--chu-2)" }}>Thị trường Việt Nam thường điều chỉnh 25–40% rồi hồi phục; bán theo giá làm mất phần lớn lãi.</p>
+        <GiaiThichThem nhanMo="Xem kết quả kiểm tra 36 tháng">
+        <p className="mb-3">
+          Test 36 tháng cho thấy mọi quy tắc bán theo giá (cắt lỗ, trailing stop, thủng SMA200…) làm giảm lãi 9–44 điểm vì bán sớm 60–100% vị thế, đổi lại chỉ cắt được đuôi xấu nhất (−91% xuống −27% đến −43%). {CACH_BAN.ghiChu}
         </p>
         <div className="rounded-xl border overflow-hidden" style={{ borderColor: VIEN }}>
           <div className="overflow-x-auto bang-cuon">
@@ -265,6 +278,7 @@ export default function PhuongPhapDaiHan({ du }) {
             </table>
           </div>
         </div>
+        </GiaiThichThem>
       </The>
 
       {du.daLoai.length > 0 && (

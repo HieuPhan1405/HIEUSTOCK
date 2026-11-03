@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Fragment, useMemo, useState } from "react";
 import { pctVN, soVN } from "@/lib/soVN";
+import GiaiThichThem from "@/components/GiaiThichThem";
 
 // Bang XEP HANG SUC MANH NGANH (RS ngành) tren Dashboard. `hang` da tinh o server bang lib/rsNganh.js (chi gom so lieu tong hop theo nganh va gia/RS/thanh khoan tung ma,
 // khong chua tin hieu MUA/BAN). Bam tieu de cot de sap xep; bam 1 nganh de xem XEP HANG CAC MA trong nganh (theo RS 20 hoac 60 phien).
@@ -190,10 +191,10 @@ export default function BangRSNganh({ hang }) {
           </tbody>
         </table>
       </div>
-      <p className="text-[11px] leading-snug mt-3" style={{ color: MUTED }}>
+      <GiaiThichThem nhanMo="Cách tính" className="mt-3">
         RS 20/60 phiên = chênh lệch lợi suất 20/60 phiên so với VN-Index của mã ở giữa ngành (trung vị, điểm %). Các cột &quot;Trên …&quot; là tỷ lệ mã trong ngành có giá nằm trên đường tương ứng. Chỉ tính trên các mã hệ thống
         đang theo dõi. Thông tin tham khảo, không phải khuyến nghị đầu tư.
-      </p>
+      </GiaiThichThem>
     </div>
   );
 }

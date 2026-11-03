@@ -1,7 +1,8 @@
 import Link from "next/link";
 import GiaiThichThem from "@/components/GiaiThichThem";
+import BangLenhDaDong from "@/components/BangLenhDaDong";
 import { thongKeLenhDaDong } from "@/lib/thongKeLenh";
-import { fmt, pct } from "@/components/dungChung";
+import { pct } from "@/components/dungChung";
 import { TY_LE_CHOT, TY_LE_CHOT_CU, TY_LE_CHOT_KET_THUC } from "@/lib/tyLeChot";
 import { tenCongTy } from "@/lib/tenMa";
 
@@ -70,17 +71,18 @@ function nhanKetThucGoc(x) {
   return chinh;
 }
 
-function The({ so, nhan, phu, mau, may }) {
+// 1 o trong dai thong ke (cac o cach nhau 1px tren nen vien = duong ke luoi)
+function OThongKe({ so, nhan, phu, mau, may }) {
   return (
-    <div className="rounded-2xl border p-4 text-center h-full" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mau }}>
-        {so}
-      </p>
-      <p className="text-xs mt-1" style={{ color: MUTED }} data-may={may}>
+    <div className="px-4 py-3 min-w-0" style={{ background: NEN_CARD }}>
+      <p className="text-xs" style={{ color: MUTED }} data-may={may}>
         {nhan}
       </p>
+      <p className="text-xl leading-tight" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mau }}>
+        {so}
+      </p>
       {phu && (
-        <p className="text-[11px]" style={{ color: MUTED }}>
+        <p className="text-xs" style={{ color: MUTED }}>
           {phu}
         </p>
       )}
@@ -96,11 +98,11 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
   const TieuDeTag = nhung ? "h2" : "h1";
 
   return (
-    <div className={nhung ? "" : "max-w-6xl mx-auto px-6 py-10"} style={{ color: TEXT }}>
+    <div className={nhung ? "" : "max-w-6xl mx-auto px-4 sm:px-6 py-8"} style={{ color: TEXT }}>
       <TieuDeTag className={nhung ? "text-lg mb-1" : "text-2xl mb-1"} style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
         {tieuDe}
       </TieuDeTag>
-      <p className="text-sm mb-6" style={{ color: MUTED }}>
+      <p className="text-sm mb-4" style={{ color: MUTED }}>
         {moTa ?? (
           <>
             Kết quả các lệnh đã bán, đã thoát vị thế hoặc đã chốt lời từng phần (TP1 / TP2 / TP3) kể từ khi web bắt đầu ghi nhận. Lệnh đang giữ xem ở{" "}
@@ -118,25 +120,17 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         </p>
       )}
 
-      <div className="grid grid-cols-2 gap-4 mb-3">
-        <The
+      <div className="rounded-2xl border mb-3 grid grid-cols-2 sm:grid-cols-4 gap-px overflow-hidden" style={{ borderColor: VIEN, background: "var(--vien-nhe)" }}>
+        <OThongKe
           so={tk.soLenh}
           nhan="Lệnh đã đóng"
           may="lenh-da-dong"
-          phu={
-            tk.soLenh || tk.soDangChotTungPhan
-              ? `${tk.soThang} thắng · ${tk.soThua} thua${tk.soDangChotTungPhan ? ` · ${tk.soDangChotTungPhan} lệnh mới chốt một phần (còn giữ)` : ""}`
-              : undefined
-          }
+          phu={tk.soLenh || tk.soDangChotTungPhan ? `${tk.soThang} thắng · ${tk.soThua} thua${tk.soDangChotTungPhan ? ` · ${tk.soDangChotTungPhan} đang chốt dần` : ""}` : null}
         />
-        <The so={tk.phienTB == null ? "—" : `${tk.phienTB.toFixed(0)} phiên`} nhan="Thời gian giữ trung bình" may="so-phien" />
+        <OThongKe so={tk.laiTBThang == null ? "—" : pct(tk.laiTBThang, 2)} nhan="Lãi TB lệnh thắng" mau={XANH} />
+        <OThongKe so={tk.loTBThua == null ? "—" : pct(tk.loTBThua, 2)} nhan="Lỗ TB lệnh thua" mau={DO} />
+        <OThongKe so={tk.phienTB == null ? "—" : `${tk.phienTB.toFixed(0)} phiên`} nhan="Thời gian giữ TB" may="so-phien" />
       </div>
-      {tk.soLenh > 0 && (
-        <div className="grid grid-cols-2 gap-4 mb-3">
-          <The so={tk.laiTBThang == null ? "—" : pct(tk.laiTBThang, 2)} nhan="Lãi trung bình lệnh thắng" mau={XANH} />
-          <The so={tk.loTBThua == null ? "—" : pct(tk.loTBThua, 2)} nhan="Lỗ trung bình lệnh thua" mau={DO} />
-        </div>
-      )}
 
       <GiaiThichThem className="mb-6" tomTat={`Tính theo từng lệnh (gộp các lần chốt TP1, TP2 và phần còn lại). Lãi/lỗ chưa trừ phí + thuế (~${CHI_PHI_CHU}%/lệnh).`}>
         Ngày bán và giá bán lấy theo lần cập nhật dữ liệu khi lệnh chuyển sang BÁN / thoát (xấp xỉ giá đóng cửa phiên đó, không phải giá khớp thật). Với
@@ -148,69 +142,8 @@ export default function LenhDaDongView({ ds, loi, tieuDe = "Lệnh đã đóng",
         nên dòng TP3 hiện {TY_LE_CHOT_CU.tp3}% (hoặc gộp {100 - TY_LE_CHOT_CU.giu}%). Kết quả chỉ mang tính tham khảo, không phải khuyến nghị đầu tư.
       </GiaiThichThem>
 
-      <div className="rounded-2xl border overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <div className="overflow-x-auto bang-cuon">
-          <table className="w-full text-sm" style={{ fontFamily: "var(--font-chu)" }}>
-            <thead>
-              <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, fontFamily: "var(--font-chu)" }}>
-                <th className="py-3 px-3 font-normal">Mã</th>
-                <th className="py-3 px-3 font-normal">Ngày mua</th>
-                <th className="py-3 px-3 font-normal text-right">Giá mua</th>
-                <th className="py-3 px-3 font-normal">Ngày bán</th>
-                <th className="py-3 px-3 font-normal text-right">Giá bán</th>
-                <th className="py-3 px-3 font-normal text-right">Lãi/Lỗ</th>
-                <th className="py-3 px-3 font-normal text-right">Số phiên</th>
-                <th className="py-3 px-3 font-normal text-right">Kết thúc</th>
-              </tr>
-            </thead>
-            <tbody>
-              {ds.length === 0 && (
-                <tr>
-                  <td colSpan={8} className="py-8 px-4 text-center text-sm" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
-                    Chưa có lệnh nào đóng kể từ khi web bắt đầu ghi nhận. Khi một mã đang NẮM GIỮ chuyển sang BÁN, kết quả sẽ tự xuất hiện ở đây.
-                  </td>
-                </tr>
-              )}
-              {ds.map((x, i) => (
-                <tr key={`${x.ma}-${x.ngay_mua}-${x.vong}`} className={i > 0 ? "border-t" : ""} style={{ borderColor: "var(--vien-nhe)" }}>
-                  <td className="py-2.5 px-3">
-                    <Link href={`/ma/${x.ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
-                      {x.ma}
-                    </Link>
-                    {MUA_THEM[x.vong] && (
-                      <span className="block text-[11px] font-bold tracking-wide leading-tight mt-0.5" style={{ color: MUA_THEM[x.vong].mau, fontFamily: "var(--font-chu)" }}>
-                        {MUA_THEM[x.vong].nhan}
-                      </span>
-                    )}
-                    {tenCongTy(x.ma) && (
-                      <span className="block max-w-[190px] truncate text-[11px] leading-tight" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} title={tenCongTy(x.ma).ten}>
-                        {tenCongTy(x.ma).ngan}
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-2.5 px-3" style={{ color: MUTED }}>
-                    {ngayVN(x.ngay_mua)}
-                  </td>
-                  <td className="py-2.5 px-3 text-right">{fmt(x.gia_mua)}</td>
-                  <td className="py-2.5 px-3" style={{ color: MUTED }}>
-                    {ngayVN(x.ngay_ban)}
-                  </td>
-                  <td className="py-2.5 px-3 text-right">{fmt(x.gia_ban)}</td>
-                  <td className="py-2.5 px-3 text-right font-bold" style={{ color: mauLai(x.lai_lo_pct) }}>
-                    {pct(x.lai_lo_pct, 2)}
-                  </td>
-                  <td className="py-2.5 px-3 text-right" style={{ color: MUTED }}>
-                    {x.so_phien ?? "—"}
-                  </td>
-                  <td className="py-2.5 px-3 text-right text-xs" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
-                    {nhanKetThuc(x)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      {/* moi dong gan san chuoi ly do dong + nhan Mua moi + ten de bang (client) loc nhanh va ve the dien thoai */}
+      <BangLenhDaDong ds={ds.map((x) => ({ ...x, _ketThuc: nhanKetThuc(x), _muaMoi: !!MUA_THEM[x.vong], _tenNgan: tenCongTy(x.ma)?.ngan ?? null, _ten: tenCongTy(x.ma)?.ten ?? null }))} />
     </div>
   );
 }
