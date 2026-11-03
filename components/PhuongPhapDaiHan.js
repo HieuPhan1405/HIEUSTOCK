@@ -1,8 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { ChevronDown, ShieldAlert, TriangleAlert } from "lucide-react";
+import { useMemo, useState } from "react";
+import { ArrowDown, ArrowUp, ArrowUpDown, ChevronDown, Search, ShieldAlert, TriangleAlert } from "lucide-react";
+import { HangLocNhanh } from "@/components/boLocChung";
+import NutThamGia from "@/components/NutThamGia";
+import NutLuuDanhSach from "@/components/NutLuuDanhSach";
+import ModalTaiKhoan from "@/components/ModalTaiKhoan";
+import { napDanhSach, useDanhSachTheoDoi } from "@/lib/danhSachTheoDoiClient";
 import { nhe } from "@/components/dungChung";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import { soVN, pctVN } from "@/lib/soVN";
@@ -33,7 +38,7 @@ const The = ({ tieuDe, children, className = "" }) => (
 );
 const mauLai = (v) => (v > 0 ? XANH : v < 0 ? DO : TEXT);
 
-function DongMa({ m, pp, mo, onMo, locXuHuong }) {
+function DongMa({ m, pp, mo, onMo, locXuHuong, coDangNhap, moDangNhap }) {
   const l = lichGiaiNgan({ gia: m.gia, sma50: m.sma50, sma200: m.sma200, ggTop: m.ggTop, locXuHuong });
   const dinhGia = m.dinhGia;
   const d1 = l.dot[0];
@@ -43,6 +48,7 @@ function DongMa({ m, pp, mo, onMo, locXuHuong }) {
       <tr className="border-b cursor-pointer hover:bg-[color:var(--hover-nhe)]" style={{ borderColor: VIEN }} onClick={onMo} aria-expanded={mo}>
         <td className="px-3 py-2.5 font-bold whitespace-nowrap" style={sans}>
           <Link href={`/ma/${m.ma}`} onClick={(e) => e.stopPropagation()} className="underline decoration-dotted underline-offset-2" style={{ color: PRIMARY }}>{m.ma}</Link>
+          <span className="ml-1.5 align-middle" onClick={(e) => e.stopPropagation()}><NutThamGia ma={m.ma} soNguoiThamGia={0} daThamGia={false} coDangNhap={coDangNhap} moChuaDangNhap={moDangNhap} /></span>
           {m.canhBao?.length > 0 && <TriangleAlert size={13} className="inline-block ml-1 align-text-top" style={{ color: VANG }} aria-label="Có cảnh báo, bấm để xem" />}
           <div className="text-[11px] font-normal" style={{ color: MUTED }}>{m.ten}</div>
         </td>
@@ -113,26 +119,128 @@ function DongMa({ m, pp, mo, onMo, locXuHuong }) {
   );
 }
 
+// BO LOC + SAP XEP (04/11/2026): tim theo ma / ten, nganh, bo loc nhanh (co so ma), nguong ROE / P/E; bam tieu de cot de sap xep; luu ca ket qua vao danh sach theo doi.
+const NHANH = [
+  { khoa: "re", nhan: "Đang rẻ", moTa: "Giá không quá 80% giá hợp lý (không tính mã 'rất rẻ - kiểm tra')", f: (m) => m.dinhGia?.khoa === "re" },
+  { khoa: "tang", nhan: "Xu hướng tăng", moTa: "Giá trên đường cân bằng dài hạn", f: (m) => !!m.xuHuongTang },
+  { khoa: "sach", nhan: "Không cảnh báo", moTa: "Không có cảnh báo rủi ro đi kèm", f: (m) => !(m.canhBao?.length > 0) },
+  { khoa: "lon", nhan: "Vốn hóa ≥ 10.000 tỷ", moTa: "Doanh nghiệp lớn", f: (m) => m.vonHoaTy >= 10000 },
+  { khoa: "roe", nhan: "ROE ≥ 20%", moTa: "Hiệu quả sinh lời cao", f: (m) => m.roe >= 20 },
+];
+const COT_SX = (pp) => [
+  ["ma", "Mã", (m) => m.ma, false],
+  ["nganh", "Ngành", (m) => m.nganhNhan, false],
+  ["gia", "Giá", (m) => m.gia, true],
+  ["von", "Vốn hóa (tỷ)", (m) => m.vonHoaTy, true],
+  ["roe", "ROE", (m) => m.roe, true],
+  ["ln", "LN 12T", (m) => m.lnTang, true],
+  ["pe", "P/E", (m) => m.pe, true],
+  ...(pp === "coTuc" ? [["cotuc", "Cổ tức", (m) => m.tySuatCoTuc, true]] : pp === "graham" ? [["graham", "P/E×P/B", (m) => m.peXpb, true]] : pp === "itBienDong" ? [["bd", "Biến động/năm", (m) => m.doLech, true]] : []),
+  ["hopLy", "Giá hợp lý", (m) => m.r, true],
+];
+
 function BangMa({ pp, ds, locXuHuong }) {
   const [mo, setMo] = useState(null);
+  const [tim, setTim] = useState("");
+  const [nganh, setNganh] = useState("");
+  const [nhanh, setNhanh] = useState("");
+  const [roeTu, setRoeTu] = useState("");
+  const [peDen, setPeDen] = useState("");
+  const [sx, setSx] = useState({ khoa: null, chieu: "desc" });
+  const [moTK, setMoTK] = useState(false);
+  const kho = useDanhSachTheoDoi();
+  const coDangNhap = kho.daTai && kho.danhSach != null;
+  const cot = COT_SX(pp);
+  const dsNganh = useMemo(() => [...new Set(ds.map((m) => m.nganhNhan).filter(Boolean))].sort((a, b) => a.localeCompare(b, "vi")), [ds]);
+
+  const coSo = useMemo(() => {
+    const q = tim.trim().toUpperCase();
+    return ds.filter((m) => (!q || m.ma.includes(q) || (m.ten ?? "").toUpperCase().includes(q)) && (!nganh || m.nganhNhan === nganh));
+  }, [ds, tim, nganh]);
+  const daLoc = useMemo(() => {
+    const nh = NHANH.find((x) => x.khoa === nhanh);
+    const r = roeTu === "" ? null : Number(roeTu);
+    const pe = peDen === "" ? null : Number(peDen);
+    let a = coSo.filter((m) => (!nh || nh.f(m)) && (r == null || m.roe >= r) && (pe == null || (m.pe > 0 && m.pe <= pe)));
+    const c = COT_SX(pp).find((x) => x[0] === sx.khoa);
+    if (c) {
+      a = [...a].sort((x, y) => {
+        const p = c[2](x);
+        const q = c[2](y);
+        if (p == null || q == null) return p == null && q == null ? 0 : p == null ? 1 : -1;
+        const so = typeof p === "string" ? p.localeCompare(q, "vi") : p - q;
+        return sx.chieu === "asc" ? so : -so;
+      });
+    }
+    return a;
+  }, [coSo, nhanh, roeTu, peDen, sx, pp]);
+
   if (!ds.length) return <p className="text-sm" style={{ color: MUTED }}>Hiện chưa có mã nào đạt toàn bộ điều kiện.</p>;
-  const cotThem = pp === "coTuc" ? "Cổ tức" : pp === "graham" ? "P/E×P/B" : pp === "itBienDong" ? "Biến động/năm" : null;
+  const doiSx = (khoa, soHoc) => setSx((c) => (c.khoa === khoa ? { khoa, chieu: c.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: soHoc ? "desc" : "asc" }));
+  const dsNhanh = [
+    { khoa: "", nhan: "Tất cả", dem: coSo.length, dang: !nhanh },
+    ...NHANH.map((x) => ({ khoa: x.khoa, nhan: x.nhan, moTa: x.moTa, dem: coSo.filter(x.f).length, dang: nhanh === x.khoa })),
+  ];
+  const dangLoc = tim || nganh || nhanh || roeTu !== "" || peDen !== "";
+  const o = "px-3 py-2 rounded-lg text-sm border";
+  const oStyle = { borderColor: VIEN, background: NEN_CARD, color: TEXT, ...sans };
   return (
-    <div className="rounded-xl border overflow-hidden" style={{ borderColor: VIEN }}>
-      <div className="overflow-x-auto bang-cuon">
-        <table className="w-full text-sm" style={sans}>
-          <thead>
-            <tr className="text-left border-b" style={{ borderColor: VIEN, color: MUTED, background: "var(--nen)" }}>
-              <th className="px-3 py-2">Mã</th><th className="px-3 py-2">Ngành</th><th className="px-3 py-2 text-right">Giá</th><th className="px-3 py-2 text-right">Vốn hóa (tỷ)</th><th className="px-3 py-2 text-right">ROE</th><th className="px-3 py-2 text-right">LN 12T</th><th className="px-3 py-2 text-right">P/E</th>
-              {cotThem && <th className="px-3 py-2 text-right">{cotThem}</th>}
-              <th className="px-3 py-2 text-right">Giá hợp lý</th><th className="px-3 py-2">Giải ngân</th><th className="w-6" />
-            </tr>
-          </thead>
-          <tbody>
-            {ds.map((m) => <DongMa key={m.ma} m={m} pp={pp} locXuHuong={locXuHuong} mo={mo === m.ma} onMo={() => setMo(mo === m.ma ? null : m.ma)} />)}
-          </tbody>
-        </table>
+    <div>
+      <HangLocNhanh ds={dsNhanh} onChon={(m) => setNhanh(m.khoa && nhanh !== m.khoa ? m.khoa : "")} />
+      <div className="flex flex-wrap items-center gap-2 mb-3">
+        <div className="relative flex-1 min-w-[160px] max-w-xs">
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: MUTED }} aria-hidden="true" />
+          <input value={tim} onChange={(e) => setTim(e.target.value)} placeholder="Tìm mã hoặc tên công ty…" aria-label="Tìm mã hoặc tên công ty" className={`${o} w-full pl-9`} style={oStyle} />
+        </div>
+        <select value={nganh} onChange={(e) => setNganh(e.target.value)} aria-label="Ngành" className={o} style={{ ...oStyle, color: nganh ? TEXT : MUTED }}>
+          <option value="">Mọi ngành</option>
+          {dsNganh.map((n) => <option key={n} value={n}>{n}</option>)}
+        </select>
+        <label className="flex items-center gap-1.5 text-sm" style={{ color: MUTED }}>
+          ROE ≥
+          <input type="number" inputMode="decimal" value={roeTu} onChange={(e) => setRoeTu(e.target.value)} placeholder="—" aria-label="ROE tối thiểu" className="w-16 px-2 py-2 rounded-lg border text-sm text-center" style={oStyle} />%
+        </label>
+        <label className="flex items-center gap-1.5 text-sm" style={{ color: MUTED }}>
+          P/E ≤
+          <input type="number" inputMode="decimal" value={peDen} onChange={(e) => setPeDen(e.target.value)} placeholder="—" aria-label="P/E tối đa" className="w-16 px-2 py-2 rounded-lg border text-sm text-center" style={oStyle} />
+        </label>
+        {dangLoc && (
+          <button type="button" onClick={() => { setTim(""); setNganh(""); setNhanh(""); setRoeTu(""); setPeDen(""); }} className="text-xs px-3 py-2 rounded-lg border" style={{ borderColor: VIEN, color: PRIMARY, ...sans }}>
+            Xóa lọc
+          </button>
+        )}
       </div>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-2 text-xs" style={{ color: MUTED }}>
+        <span><b style={{ color: TEXT }}>{daLoc.length}</b> / {ds.length} mã · bấm tiêu đề cột để sắp xếp, bấm dòng để xem lịch giải ngân</span>
+        <NutLuuDanhSach dsMa={daLoc.map((m) => m.ma)} coDangNhap={coDangNhap} moChuaDangNhap={() => setMoTK(true)} />
+      </div>
+      <div className="rounded-xl border overflow-hidden" style={{ borderColor: VIEN }}>
+        <div className="overflow-auto bang-cuon max-h-[calc(100vh-150px)]">
+          <table className="w-full text-sm" style={sans}>
+            <thead>
+              <tr className="text-left" style={{ color: MUTED }}>
+                {cot.map(([khoa, nhan, , soHoc]) => (
+                  <th key={khoa} className={`sticky top-0 z-[2] border-b px-3 py-2 cursor-pointer select-none whitespace-nowrap hover:text-[color:var(--chu)] ${soHoc ? "text-right" : ""}`} style={{ background: "var(--nen)", borderColor: VIEN }} onClick={() => doiSx(khoa, soHoc)}>
+                    <span className="inline-flex items-center gap-1">
+                      {nhan}
+                      {sx.khoa === khoa ? sx.chieu === "desc" ? <ArrowDown size={12} color={PRIMARY} /> : <ArrowUp size={12} color={PRIMARY} /> : <ArrowUpDown size={12} opacity={0.35} />}
+                    </span>
+                  </th>
+                ))}
+                <th className="sticky top-0 z-[2] border-b px-3 py-2" style={{ background: "var(--nen)", borderColor: VIEN }}>Giải ngân</th>
+                <th className="sticky top-0 z-[2] border-b w-6" style={{ background: "var(--nen)", borderColor: VIEN }} />
+              </tr>
+            </thead>
+            <tbody>
+              {daLoc.map((m) => <DongMa key={m.ma} m={m} pp={pp} locXuHuong={locXuHuong} mo={mo === m.ma} onMo={() => setMo(mo === m.ma ? null : m.ma)} coDangNhap={coDangNhap} moDangNhap={() => setMoTK(true)} />)}
+              {daLoc.length === 0 && (
+                <tr><td colSpan={cot.length + 2} className="py-8 text-center text-sm" style={{ color: MUTED }}>Không có mã nào khớp bộ lọc.</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <ModalTaiKhoan open={moTK} onClose={() => setMoTK(false)} onThanhCong={() => napDanhSach()} tieuDeGoiY="Đăng ký hoặc đăng nhập miễn phí để lưu mã vào danh sách theo dõi." />
     </div>
   );
 }
