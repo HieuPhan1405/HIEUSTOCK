@@ -205,18 +205,18 @@ export default function BaoCaoDanhMuc({ mo, dong, kq, sau, hanhDongChon = [], du
         {rr?.dsMa?.length > 0 && (
           <Muc so={muc()} tieuDe="Rủi ro (1 năm dữ liệu giá)">
             <div className="cs-bao-cao-khoi grid grid-cols-3 sm:grid-cols-6 gap-2 mb-3">
-              <O nhan="Biến động năm" gt={`${p0(rr.volP)}%`} phu={`VN-Index ${p0(rr.volV)}%`} />
+              <O nhan="Biến động dự báo" gt={`${p0(rr.volP)}%`} phu={`VN-Index ${p0(rr.volV)}%`} />
               <O nhan="Beta" gt={rr.betaP.toFixed(2).replace(".", ",")} />
               <O nhan="Khoản độc lập" gt={`≈ ${p1(rr.soCuocDocLap)}`} phu={`từ ${rr.ma.length} mã`} />
               <O nhan="Một phiên xấu" gt={`−${p1(rr.var95)}%`} phu="VaR 95%" />
-              <O nhan="Sụt giảm tối đa" gt={`−${p1(Math.abs(rr.ddP.pct))}%`} phu={`VN-Index −${p1(Math.abs(rr.ddV))}%`} />
+              {rr.duBao ? <O nhan="Sụt giảm 6 tháng tới" gt={`≤ ${p0(rr.duBao.p80)}%`} phu={`4/5 trường hợp · thường ${p0(rr.duBao.trungVi)}%`} /> : <O nhan="Sụt giảm tối đa" gt={`−${p1(Math.abs(rr.ddP.pct))}%`} phu={`VN-Index −${p1(Math.abs(rr.ddV))}%`} />}
               <O nhan="1 năm qua" gt={dau(rr.laiP)} phu={`VN-Index ${dau(rr.laiV)}`} mau={mauLai(rr.laiP - rr.laiV)} />
             </div>
             <div className="cs-bao-cao-khoi mb-3"><BieuDoHieuSuat chuoi={rr.chuoi} /></div>
             <Bang
               cot={["Kịch bản", "Danh mục", "Tài sản ròng", ...(pb.margin ? ["Ký quỹ"] : [])]}
               phai={[1, 2, 3]}
-              hang={rr.kichBan.map((k) => [
+              hang={[...rr.kichBan, ...(rr.khungHoang ?? [])].map((k) => [
                 <span key="t">{k.ten}<div className="text-[10px]" style={{ color: "#5A5A6E" }}>{k.ghiChu}</div></span>,
                 `${p1(k.portPct)}%`,
                 k.navPct != null ? `${p1(k.navPct)}%${an ? "" : ` (${tien(k.doiGiaTri)})`}` : "—",

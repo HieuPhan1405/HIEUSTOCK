@@ -52,7 +52,7 @@ dat("trung vi thi truong", trungViThiTruong([1, 2, 3, 4, 5].map((x) => ({ pe: x,
 const pb = { soMaCoGia: 2, chiTietDiem: { daDang: 30, kyThuat: 20, ruiRo: 20 }, nganh: [], nganhDangSong: false, margin: null, hang: [{ ma: "A", tyTrong: 0.6, gia: 20, r: { gg_bot: 25 }, nhanXet: [] }, { ma: "B", tyTrong: 0.4, gia: 30, r: { gg_bot: 25 }, nhanXet: [] }] };
 const s = chamDiemSucKhoe(pb, null, { trongSo: PHONG_CACH.dai_han.trongSo, doanhNghiep: 0.8, xuHuongDaiHan: true, tyLeThoat: 0 });
 dat("5 tru, toi da theo trong so", s.toiDa.doanhNghiep === 35 && s.tru.doanhNghiep === 28 && s.diem === Object.values(s.tru).reduce((a, b) => a + b, 0), JSON.stringify(s));
-dat("xu huong dai han = ty trong tren can bang (40%)", s.tru.xuHuong === 4, s.tru.xuHuong);
+dat("xu huong dai han = ty trong tren can bang (40%) x trong so", s.tru.xuHuong === Math.round(0.4 * PHONG_CACH.dai_han.trongSo.xuHuong), s.tru.xuHuong);
 dat("ty le thoat > 50% -> chan 64", chamDiemSucKhoe(pb, null, { trongSo: PHONG_CACH.dai_han.trongSo, doanhNghiep: 1, tyLeThoat: 0.6 }).diem <= 64);
 dat("mac dinh van 4 tru x 25", Object.keys(chamDiemSucKhoe(pb, null).tru).length === 4);
 
