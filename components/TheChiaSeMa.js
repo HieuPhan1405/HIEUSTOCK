@@ -19,7 +19,7 @@ const TIN = {
   BAN: { nhan: "BÁN", mau: C.do },
   "TRUNG LAP": { nhan: "TRUNG LẬP", mau: C.mo },
 };
-const LY_DO_DONG = { CAT_LO: "Cắt lỗ", BAO_VE_LAI: "Bảo vệ lãi", BAN: "Bán theo tín hiệu", THOAT: "Thoát lệnh", TP3: "Chạm TP3", CHOT_TP3: "Chạm TP3", TP1: "Chốt lời TP1", TP2: "Chốt lời TP2" };
+const LY_DO_DONG = { CAT_LO: "Cắt lỗ", BAO_VE_LAI: "Bảo vệ lãi", BAN: "Bán theo tín hiệu", THOAT: "Thoát lệnh", TP3: "Chốt lời", CHOT_TP3: "Chốt lời", TP1: "Chốt lời TP1", TP2: "Chốt lời TP2" };
 
 function Tich({ mau = C.xanh, size = 15 }) {
   return (
@@ -80,7 +80,6 @@ function LenhMo({ l, gia }) {
         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
           {tp("TP1", l.tp1, 1)}
           {tp("TP2", l.tp2, 2)}
-          {tp("TP3", l.tp3, 3)}
         </div>
       </div>
       {gia != null && l.gia_mua > 0 && <div style={{ fontSize: 13, color: C.mo, marginTop: 10 }}>Lãi/lỗ tính từ giá mua đến giá hiện tại {fmt(gia)}, chưa trừ phí.</div>}
