@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, TriangleAlert } from "lucide-react";
 import SignalPill from "@/components/SignalPill";
@@ -246,7 +246,7 @@ function ketLuanTuDong(row) {
   const cauMo = {
     MUA: "Đang phát tín hiệu MUA",
     BAN: lyDoBan ? `Lệnh vừa kết thúc (${lyDoBan.nhan.toLowerCase()})` : "Đang phát tín hiệu BÁN",
-    "TRUNG LAP": row.ket_thuc_tp3 ? "Giá đã chạm TP3, lệnh kết thúc và không còn nắm vị thế (trung lập)" : "Chưa đủ điều kiện vào lệnh, đang trung lập",
+    "TRUNG LAP": row.ket_thuc_tp3 ? "Lệnh trước đã chốt lời đủ mục tiêu và kết thúc, không còn nắm vị thế (trung lập)" : "Chưa đủ điều kiện vào lệnh, đang trung lập",
     "NAM GIU": "Đang nắm giữ vị thế mở",
   }[row.tin] || "Chưa đủ điều kiện vào lệnh, đang trung lập";
   // Lenh web giu (da mua trong khung, tin hieu mat, chua cham cat lo trong khung) - van dang nam giu du he thong bao trung lap / ban.
@@ -424,6 +424,18 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
   // moi thu theo lenh do. vt = lenh dang xem (hoac chinh dong tin hieu khi ma khong giu lenh nao); row van la du lieu chung cua ma (diem, xu huong, trang thai...).
   const cacLenh = useMemo(() => lenhDangMo([row], lichPhien), [row, lichPhien]);
   const [chon, setChon] = useState(0);
+  // Nen ngay cho BIEU DO trong anh chia se (components/TheChiaSeMa.js): tai 1 lan khi mo trang (cung nguon /api/gia-lich-su voi bieu do, co cache); loi thi anh chi thieu bieu do.
+  const [nenAnh, setNenAnh] = useState(null);
+  useEffect(() => {
+    let huy = false;
+    fetch(`/api/gia-lich-su?ma=${encodeURIComponent(row.ma)}&kt=D`)
+      .then((r) => r.json())
+      .then((d) => !huy && Array.isArray(d.nen) && setNenAnh(d.nen.slice(-80)))
+      .catch(() => {});
+    return () => {
+      huy = true;
+    };
+  }, [row.ma]);
   const router = useRouter();
   const trongKhung = useTrongKhungVaoLenh();
   const lenh = cacLenh.length ? cacLenh[Math.min(chon, cacLenh.length - 1)] : null;
@@ -456,7 +468,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           kieu="nho"
           tenFile={`CloudStock-${row.ma}-${new Date().toISOString().slice(0, 10)}.png`}
           tieuDe={`${row.ma} · CloudStock`}
-          the={<TheChiaSeMa row={row} cacLenh={cacLenh} lichSuDaDong={lichSuDaDong} ketLuan={ketLuanTuDong(row)} vungGia={vungGia} tag={tag} />}
+          the={<TheChiaSeMa row={row} cacLenh={cacLenh} lichSuDaDong={lichSuDaDong} ketLuan={ketLuanTuDong(row)} vungGia={vungGia} tag={tag} nen={nenAnh} />}
         />
       </div>
 
