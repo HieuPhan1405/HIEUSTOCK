@@ -191,7 +191,13 @@ function OKetQua({ x }) {
 }
 
 // LICH SU DAI tu 2024: tom tat theo nam + theo thang (luy ke) + danh sach tung lenh (loc theo nam, "Hien them"). Diem sau phi + thue MBS, chua tru truot gia; bo phien dau hop dong moi va phien dang chay.
+// DON BAY: von (trieu dong) x don bay / gia tri 1 hop dong (~1.870 diem x 100.000d = 187 trieu) = so hop dong (lam tron xuong, toi thieu 1). Lai / lo = diem x 100.000d x so hop dong; % = tren VON cua ban.
+// Ky quy toi thieu ~17-18% gia tri hop dong -> don bay toi da ~5,5 lan; tren muc do thi dang lo lon se bi ep ban (margin call).
+const GIA_TRI_HD = 187; // trieu dong, 1 hop dong ~ 1.870 diem
+const DON_BAY = [1, 2, 3, 4, 5];
 function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien, setNgayXem }) {
+  const [donBay, setDonBay] = useState(1);
+  const [von, setVon] = useState(200); // trieu dong
   const hang = dai?.hang || [];
   const lenh = hang.filter((r) => r.phia && !r.dauHD && !r.dangChay);
   const thang = (ds) => ds.filter((r) => r.diemSauPhi > 0).length;
@@ -203,6 +209,21 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
     .sort()
     .map((t, i, ks) => ({ t, lenh: thangTheo[t].length, thang: thang(thangTheo[t]), diem: tongDiem(thangTheo[t]), luyKe: ks.slice(0, i + 1).reduce((x, k) => x + tongDiem(thangTheo[k]) * 0.1, 0) }));
   const loc = (namLoc ? hang.filter((r) => r.ngay.startsWith(namLoc)) : hang).slice().reverse();
+  const soHD = Math.max(1, Math.floor((von * donBay) / GIA_TRI_HD));
+  const thieuVon = von * donBay < GIA_TRI_HD;
+  const tr = (diem) => diem * 0.1 * soHD; // diem -> trieu dong voi soHD hop dong
+  const pctVon = (diem) => (von > 0 ? (tr(diem) / von) * 100 : 0);
+  // sut von lon nhat (theo lenh, cong don) va ngay / thang te nhat, tinh theo % von
+  let dinh = 0;
+  let cd = 0;
+  let sut = 0;
+  for (const r of lenh) {
+    cd += r.diemSauPhi;
+    dinh = Math.max(dinh, cd);
+    sut = Math.min(sut, cd - dinh);
+  }
+  const ngayTe = lenh.reduce((m, r) => Math.min(m, r.diemSauPhi), 0);
+  const thangTe = dsThang.reduce((m, x) => Math.min(m, x.diem), 0);
   const nhanThang = (t) => `${t.slice(5)}/${t.slice(2, 4)}`;
   return (
     <div className="rounded-2xl border overflow-hidden mb-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
@@ -226,7 +247,7 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                   ["Số lệnh", lenh.length, null],
                   ["Thắng", `${thang(lenh)} (${lenh.length ? Math.round((thang(lenh) / lenh.length) * 100) : 0}%)`, null],
                   ["Tổng điểm sau phí", diemCoDau(tongDiem(lenh)), tongDiem(lenh) > 0 ? XANH : DO],
-                  ["Quy tiền, 1 hợp đồng", trieu(tongDiem(lenh)), tongDiem(lenh) > 0 ? XANH : DO],
+                  [`Lãi/lỗ với ${soHD} hợp đồng`, trieu(tongDiem(lenh) * soHD), tongDiem(lenh) > 0 ? XANH : DO],
                 ].map(([n, v, m]) => (
                   <div key={n} className="px-3 py-2" style={{ background: NEN_CARD }}>
                     <p className="text-xs" style={{ color: MUTED }}>{n}</p>
@@ -234,20 +255,80 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                   </div>
                 ))}
               </div>
+              <div className="mx-3 mb-3 rounded-xl p-3" style={{ border: `1px solid ${VIEN}` }}>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                  <span className="text-sm" style={{ fontWeight: 700 }}>Tính theo đòn bẩy</span>
+                  <label className="flex items-center gap-1.5 text-sm" style={{ color: MUTED }}>
+                    Vốn của bạn
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={10}
+                      step={10}
+                      value={von}
+                      onChange={(e) => setVon(Math.max(0, Number(e.target.value) || 0))}
+                      aria-label="Vốn (triệu đồng)"
+                      className="w-24 px-2 py-1 rounded-md text-sm text-right"
+                      style={{ background: "var(--nen-phu)", border: `1px solid ${VIEN}`, color: TEXT, ...mono }}
+                    />
+                    triệu
+                  </label>
+                  <div role="radiogroup" aria-label="Đòn bẩy" className="flex items-center gap-1.5">
+                    <span className="text-sm" style={{ color: MUTED }}>Đòn bẩy</span>
+                    {DON_BAY.map((x) => (
+                      <button
+                        key={x}
+                        type="button"
+                        role="radio"
+                        aria-checked={donBay === x}
+                        onClick={() => setDonBay(x)}
+                        className="px-2.5 py-1 rounded-full text-xs"
+                        style={{ border: `1px solid ${donBay === x ? "#6C5CE7" : VIEN}`, background: donBay === x ? "rgba(108,92,231,0.18)" : "transparent", color: donBay === x ? TEXT : MUTED, fontWeight: donBay === x ? 700 : 400 }}
+                      >
+                        {x === 1 ? "Không" : `${x}x`}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <p className="text-xs mt-2" style={{ color: MUTED }}>
+                  {thieuVon ? (
+                    <b style={{ color: DO }}>Vốn × đòn bẩy chưa đủ cho 1 hợp đồng (≈ {GIA_TRI_HD} triệu). Tăng vốn hoặc đòn bẩy; bên dưới tạm tính 1 hợp đồng.</b>
+                  ) : (
+                    <>
+                      {soHD} hợp đồng (≈ {soVN(soHD * GIA_TRI_HD, 0, true)} triệu giá trị) trên vốn {soVN(von, 0, true)} triệu: lãi/lỗ cả kỳ{" "}
+                      <b style={{ color: tongDiem(lenh) > 0 ? XANH : DO }}>
+                        {trieu(tongDiem(lenh) * soHD)} ({tongDiem(lenh) > 0 ? "+" : ""}
+                        {soVN(pctVon(tongDiem(lenh)), 0, true)}% vốn)
+                      </b>
+                      . Sụt vốn lớn nhất <b style={{ color: DO }}>{soVN(pctVon(sut), 0, true)}%</b> · phiên tệ nhất <b style={{ color: DO }}>{trieu(ngayTe * soHD)} ({soVN(pctVon(ngayTe), 1, true)}%)</b> · tháng tệ nhất{" "}
+                      <b style={{ color: DO }}>{trieu(thangTe * soHD)} ({soVN(pctVon(thangTe), 0, true)}%)</b>.
+                    </>
+                  )}
+                </p>
+                {donBay >= 4 && (
+                  <p className="text-xs mt-1" style={{ color: VANG }}>
+                    Đòn bẩy {donBay}x: ký quỹ chỉ còn {soVN(100 / donBay, 0, true)}% giá trị hợp đồng. Lỗ vài phiên liền có thể chạm mức ký quỹ tối thiểu (khoảng 17–18%) và bị ép bán; từ {Math.floor(100 / 18)}x trở lên rất dễ mất gần hết vốn.
+                  </p>
+                )}
+                <p className="text-[11px] mt-1" style={{ color: MUTED }}>
+                  Giả định giá trị 1 hợp đồng ≈ 187 triệu (1.870 điểm). Chưa tính lãi vay, chưa nhập lãi vào vốn, chưa trừ trượt giá. Số liệu quá khứ, không phải khuyến nghị.
+                </p>
+              </div>
               {dai.thieu && (
                 <p className="px-3 pb-2 text-xs" style={{ color: VANG }}>
                   Chưa cập nhật các phiên từ {ngayHien(dai.thieu.tu)} đến {ngayHien(dai.thieu.den)} (bản chụp cũ), nên tổng ở trên có thể thiếu vài phiên.
                 </p>
               )}
               <div className="overflow-x-auto">
-                <table className="w-full text-sm" style={{ minWidth: 420 }}>
+                <table className="w-full text-sm" style={{ minWidth: 480 }}>
                   <thead>
                     <tr style={{ color: MUTED }}>
                       <th className="text-left font-normal px-3 py-2">Năm</th>
                       <th className="text-right font-normal px-3 py-2">Lệnh</th>
                       <th className="text-right font-normal px-3 py-2">Thắng</th>
                       <th className="text-right font-normal px-3 py-2">Điểm sau phí</th>
-                      <th className="text-right font-normal px-3 py-2">Triệu đồng</th>
+                      <th className="text-right font-normal px-3 py-2">Triệu đồng ({soHD} HĐ)</th>
+                      <th className="text-right font-normal px-3 py-2">% vốn</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -259,20 +340,24 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                           <td className="px-3 py-1.5 text-right" style={mono}>{g.length}</td>
                           <td className="px-3 py-1.5 text-right" style={mono}>{thang(g)} ({Math.round((thang(g) / g.length) * 100)}%)</td>
                           <td className="px-3 py-1.5 text-right" style={{ ...mono, color: tongDiem(g) > 0 ? XANH : DO }}>{diemCoDau(tongDiem(g))}</td>
-                          <td className="px-3 py-1.5 text-right" style={{ ...mono, color: tongDiem(g) > 0 ? XANH : DO }}>{trieu(tongDiem(g)).replace(" triệu", "")}</td>
+                          <td className="px-3 py-1.5 text-right" style={{ ...mono, color: tongDiem(g) > 0 ? XANH : DO }}>{trieu(tongDiem(g) * soHD).replace(" triệu", "")}</td>
+                          <td className="px-3 py-1.5 text-right" style={{ ...mono, color: tongDiem(g) > 0 ? XANH : DO }}>
+                            {tongDiem(g) > 0 ? "+" : ""}
+                            {soVN(pctVon(tongDiem(g)), 0, true)}%
+                          </td>
                         </tr>
                       );
                     })}
                   </tbody>
                 </table>
               </div>
-              <p className="px-3 py-2 text-xs border-t" style={{ borderColor: VIEN, color: MUTED }}>Theo tháng (điểm sau phí · lũy kế triệu đồng)</p>
+              <p className="px-3 py-2 text-xs border-t" style={{ borderColor: VIEN, color: MUTED }}>Theo tháng (điểm sau phí · lũy kế triệu đồng · % vốn của tháng)</p>
               <div className="px-3 pb-3 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
                 {dsThang.map((m) => (
                   <div key={m.t} className="rounded-lg px-2 py-1.5" style={{ border: `1px solid ${VIEN}` }} title={`${m.lenh} lệnh, thắng ${m.thang}`}>
                     <p className="text-[11px]" style={{ color: MUTED }}>{nhanThang(m.t)}</p>
                     <p className="text-sm" style={{ ...mono, fontWeight: 700, color: m.diem > 0 ? XANH : DO }}>{diemCoDau(m.diem)}</p>
-                    <p className="text-[11px]" style={{ ...mono, color: MUTED }}>{soVN(m.luyKe, 1, true)} tr</p>
+                    <p className="text-[11px]" style={{ ...mono, color: MUTED }}>{soVN(m.luyKe * soHD, 1, true)} tr · {m.diem > 0 ? "+" : ""}{soVN(pctVon(m.diem), 0, true)}%</p>
                   </div>
                 ))}
               </div>
