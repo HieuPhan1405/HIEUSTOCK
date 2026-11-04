@@ -20,6 +20,7 @@ const ok = (ten, dk, them = "") => {
   ok("PK tang 3 phien: cach 2 khop, cach 3 khong", khopChiBao({ rsi_pk_cach: 2 }, bo2("tang_3")) && !khopChiBao({ rsi_pk_cach: 3 }, bo2("tang_3")));
   ok("PK GIAM khong bi tinh la PK tang", !khopChiBao({ rsi_pk_cach: -1 }, bo2("tang_10")) && khopChiBao({ rsi_pk_cach: -3 }, bo2("giam_5")));
   ok("khong co phan ky (null): khong khop", !khopChiBao({ rsi_pk_cach: null }, bo2("tang_10")));
+  ok("khung tuan giu nguyen: tang trong 4 tuan", khopChiBao({ rsi_pk_tuan_cach: 3 }, bo2("tang_tuan_4")) && !khopChiBao({ rsi_pk_tuan_cach: 4 }, bo2("tang_tuan_4")));
   // GOP: dieu kien khop phan ky da hinh thanh HOAC som (rsi_pks_cach, tinh tu day / dinh moi)
   ok("gop: PK som tang (rsi_pks_cach) cung khop dieu kien tang", khopChiBao({ rsi_pks_cach: 0 }, bo2("tang_1")) && khopChiBao({ rsi_pks_cach: 2 }, bo2("tang_3")) && !khopChiBao({ rsi_pks_cach: 3 }, bo2("tang_3")));
   ok("gop: PK som giam khong bi tinh la tang, khop dieu kien giam", !khopChiBao({ rsi_pks_cach: -1 }, bo2("tang_10")) && khopChiBao({ rsi_pks_cach: -3 }, bo2("giam_5")));
