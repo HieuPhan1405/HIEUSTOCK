@@ -14,7 +14,8 @@ const SO_NEN_TOI_THIEU = 260; // can du cho HHV(H,252) co y nghia, giong AFL can
 // Tra ve mang su kien: [{ ngay, diem, gia_luc_tin_hieu, pct_sau_5, pct_sau_10, pct_sau_20, chiet_khau, rsi, capitulation, ftd, kl_day }].
 // kl_day = KL lon nhat 5 phien gan nhat / KL TB 20 phien truoc do (ban thao co KL >= 2x: ket qua lich su tot hon trong 2022 va 2025 nhung khong on dinh theo nam - nghienCuuNangCapChecklist.mjs).
 // gtgdToiThieuTy: loc thanh khoan khi mo rong ra moi ma (GTGD TB20 = gia x KL / 1 trieu, don vi ty); null = khong loc (VN100 giu nguyen nhu AFL).
-export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024, gtgdToiThieuTy = null } = {}) {
+// nguong: diem kich hoat (mac dinh NGUONG_THAM_KHAO = 5, giong AFL); thu nguong thap hon chi de NGHIEN CUU (engine/dich-vu/nghienCuuBatDayNguong.mjs).
+export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024, gtgdToiThieuTy = null, nguong = NGUONG_THAM_KHAO } = {}) {
   const n = nen.length;
   if (n < SO_NEN_TOI_THIEU) return [];
 
@@ -92,7 +93,7 @@ export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024, gtgdToiThieu
   // Tin hieu kich hoat = SU KIEN (vuot nguong DUNG NGAY hom do), khong phai trang thai giu.
   const namCuaBar = nen.map((b) => Number(b.t.slice(0, 4)));
   const chiTuNamNay = namCuaBar.map((y) => namBatDauTheoDoi <= 0 || y >= namBatDauTheoDoi);
-  const tinHieuKichHoat = tongDiemRiengMa.map((d, i) => i > 0 && d >= NGUONG_THAM_KHAO && tongDiemRiengMa[i - 1] < NGUONG_THAM_KHAO && chiTuNamNay[i]);
+  const tinHieuKichHoat = tongDiemRiengMa.map((d, i) => i > 0 && d >= nguong && tongDiemRiengMa[i - 1] < nguong && chiTuNamNay[i]);
 
   // Gia sau N phien: ref() voi n duong tra ve null tu nhien khi vuot qua cuoi du lieu (khac AFL can
   // fix rieng bang BarIndex/BarCount - xem chu thich trong file AFL goc).
