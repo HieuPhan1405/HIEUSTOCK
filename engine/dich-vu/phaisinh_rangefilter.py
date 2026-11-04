@@ -45,15 +45,16 @@ def thu(nmin, per, mult, dem=None):
         n_buy, n_sell = int(buy.sum()), int(sell.sum()); print(f"      (so tin hieu Buy {n_buy}, Sell {n_sell} tren {N} ngay = {(n_buy + n_sell) / N:.2f} / ngay)")
     return e34, e89
 
-print("=== A. CHI EMA 34 / 89 (dat chuan so sanh): long khi gia > EMA34 > EMA89, short khi gia < EMA34 < EMA89 ===")
-for nm in (5, 15):
-    B = nen_n(X, nm); nb = B["C"].shape[1]; c = B["C"].reshape(-1); e34, e89 = ema(c, 34), ema(c, 89)
-    pos = np.where((c > e34) & (e34 > e89), 1, np.where((c < e34) & (e34 < e89), -1, 0)).astype(float)
-    lai, so = chay_vt(pos.reshape(N, nb), B["C"], s0=3 if nm == 5 else 1); ghi("ema", f"[{nm}p] chi EMA 34/89 (xu huong)", lai, so, ngay)
+if __name__ == "__main__":
+    print("=== A. CHI EMA 34 / 89 (dat chuan so sanh): long khi gia > EMA34 > EMA89, short khi gia < EMA34 < EMA89 ===")
+    for nm in (5, 15):
+        B = nen_n(X, nm); nb = B["C"].shape[1]; c = B["C"].reshape(-1); e34, e89 = ema(c, 34), ema(c, 89)
+        pos = np.where((c > e34) & (e34 > e89), 1, np.where((c < e34) & (e34 < e89), -1, 0)).astype(float)
+        lai, so = chay_vt(pos.reshape(N, nb), B["C"], s0=3 if nm == 5 else 1); ghi("ema", f"[{nm}p] chi EMA 34/89 (xu huong)", lai, so, ngay)
 
-print("\n=== B. RANGE FILTER x EMA, nen 5 phut (mac dinh Pine: per 100, mult 3; theo Hieu: mult 4) ===")
-for per, mult in ((100, 3.0), (100, 4.0), (50, 4.0), (30, 4.0), (20, 4.0), (100, 5.0)):
-    thu(5, per, mult, dem=True)
-print("\n=== C. RANGE FILTER x EMA, nen 15 phut ===")
-for per, mult in ((50, 3.0), (50, 4.0), (30, 4.0), (100, 4.0)):
-    thu(15, per, mult, dem=True)
+    print("\n=== B. RANGE FILTER x EMA, nen 5 phut (mac dinh Pine: per 100, mult 3; theo Hieu: mult 4) ===")
+    for per, mult in ((100, 3.0), (100, 4.0), (50, 4.0), (30, 4.0), (20, 4.0), (100, 5.0)):
+        thu(5, per, mult, dem=True)
+    print("\n=== C. RANGE FILTER x EMA, nen 15 phut ===")
+    for per, mult in ((50, 3.0), (50, 4.0), (30, 4.0), (100, 4.0)):
+        thu(15, per, mult, dem=True)
