@@ -6,7 +6,7 @@ import { Bell, BellOff, RotateCcw } from "lucide-react";
 import { soVN } from "@/lib/soVN";
 import GiaiThichThem from "@/components/GiaiThichThem";
 
-// TRANG /phai-sinh: tin hieu pha vo trong ngay cho VN30F1M (cong cu ca nhan cua quan tri). Du lieu + logic: /api/phai-sinh (lib/phaVoPhaiSinh.js).
+// TRANG /phai-sinh: tin hieu PHA VO BIEN DONG 0,3 trong ngay cho VN30F1M (thanh vien da duyet). Cat lo doi len gia vao + 2 diem khi lai 7 diem. Du lieu + logic: /api/phai-sinh (lib/phaVoPhaiSinh.js).
 // Tu lam moi 15 giay trong phien. Thong bao trinh duyet + tieng bip khi trang thai lenh doi (chi khi trang dang mo).
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -28,6 +28,7 @@ const NHAN_TRANG_THAI = {
   khongKhop: { chu: "Hôm nay không có lệnh", mau: MUTED },
   dangGiu: { chu: "Đang giữ lệnh", mau: XANH },
   catLo: { chu: "Đã cắt lỗ", mau: DO },
+  khoaLai: { chu: "Đã thoát có lãi (cắt lỗ đã dời)", mau: XANH },
   cuoiPhien: { chu: "Đã đóng cuối phiên", mau: MUTED },
 };
 // Vi tri gia vao so voi vung gia tri phien truoc - chi de THEO DOI (xem ghi chu cuoi trang), khong phai bo loc
@@ -59,12 +60,20 @@ function LenhDangCo({ x }) {
       </p>
       {x.ra ? (
         <p className="text-sm" style={{ color: TEXT }}>
-          {x.trangThai === "catLo" ? "Cắt lỗ" : "Đóng cuối phiên"} lúc {x.ra.gio} giá <span style={mono}>{d1(x.ra.gia)}</span>
+          {x.trangThai === "catLo" ? "Cắt lỗ" : x.trangThai === "khoaLai" ? "Thoát khi giá quay lại mức cắt lỗ đã dời" : "Đóng cuối phiên"} lúc {x.ra.gio} giá <span style={mono}>{d1(x.ra.gia)}</span>
         </p>
       ) : (
-        <p className="text-sm" style={{ color: TEXT }}>
-          Đang giữ · cắt lỗ tại <span style={mono}>{d1(x.catLo)}</span> · đóng lúc 14:29
-        </p>
+        <>
+          <p className="text-sm" style={{ color: TEXT }}>
+            Đang giữ · cắt lỗ tại <span style={mono}>{d1(x.catLoHienTai ?? x.catLo)}</span>
+            {x.daKhoa ? " (đã dời lên giá vào + 2 điểm)" : ""} · đóng lúc 14:29
+          </p>
+          {!x.daKhoa && x.mucKich != null && (
+            <p className="text-xs mt-1" style={{ color: VANG }}>
+              Khi giá chạm <b style={mono}>{d1(x.mucKich)}</b> (lãi 7 điểm): dời cắt lỗ lên <b style={mono}>{d1(x.mucKhoa)}</b>
+            </p>
+          )}
+        </>
       )}
       {NHAN_VUNG[x.viTriVao] && (
         <p className="text-xs mt-1" style={{ color: NHAN_VUNG[x.viTriVao].mau }}>
@@ -145,13 +154,13 @@ function BieuDoTrongNgay({ du }) {
       s.duong.push(s.nen.createPriceLine({ price: gia, color: mau, lineWidth: 1, lineStyle: net, axisLabelVisible: true, title: nhan }));
     };
     const b = du.bienDong || {};
-    const k = du.khoangMoCua || {};
-    them(b.mucMua, s.mau.xanh, "Mua (BĐ)");
-    them(b.mucBan, s.mau.do, "Bán (BĐ)");
-    them(b.giaMoCua, s.mau.mo, "Mở cửa", LineStyle.Dotted);
-    if (k.trangThai && k.trangThai !== "chuaMoCua") {
-      them(k.dinh, "#38BDF8", k.trangThai === "dangDo" ? "Đỉnh (tạm)" : "Đỉnh 15'", LineStyle.SparseDotted);
-      them(k.day, "#38BDF8", k.trangThai === "dangDo" ? "Đáy (tạm)" : "Đáy 15'", LineStyle.SparseDotted);
+    them(b.mucMua, s.mau.xanh, "Mua");
+    them(b.mucBan, s.mau.do, "Bán khống");
+    them(b.giaMoCua, s.mau.mo, "Mở cửa / cắt lỗ", LineStyle.Dotted);
+    if (b.phia) {
+      // moc doi cat lo (lai 7 diem) va cat lo da doi
+      if (b.daKhoa) them(b.mucKhoa, "#F6C544", "Cắt lỗ đã dời", LineStyle.Dashed);
+      else them(b.mucKich, "#F6C544", "Lãi 7đ → dời cắt lỗ", LineStyle.SparseDotted);
     }
     const vg = du.vungGiaTriTruoc;
     if (vg) {
@@ -160,10 +169,12 @@ function BieuDoTrongNgay({ du }) {
       them(vg.poc, "#A78BFA", "POC", LineStyle.Dotted);
     }
     const dd = [];
-    for (const [x, ten] of [[b, "BĐ"], [k, "KM"]]) {
-      if (!x.phia) continue;
-      dd.push({ time: giayTruc(du.ngay, x.vao.k), position: x.phia > 0 ? "belowBar" : "aboveBar", color: x.phia > 0 ? s.mau.xanh : s.mau.do, shape: x.phia > 0 ? "arrowUp" : "arrowDown", text: `${ten} ${x.phia > 0 ? "mua" : "bán"}` });
-      if (x.ra) dd.push({ time: giayTruc(du.ngay, x.ra.k), position: x.phia > 0 ? "aboveBar" : "belowBar", color: s.mau.mo, shape: "circle", text: `${ten} ${x.trangThai === "catLo" ? "cắt lỗ" : "đóng"}` });
+    {
+      const x = b;
+      if (x.phia) {
+        dd.push({ time: giayTruc(du.ngay, x.vao.k), position: x.phia > 0 ? "belowBar" : "aboveBar", color: x.phia > 0 ? s.mau.xanh : s.mau.do, shape: x.phia > 0 ? "arrowUp" : "arrowDown", text: x.phia > 0 ? "Mua" : "Bán khống" });
+        if (x.ra) dd.push({ time: giayTruc(du.ngay, x.ra.k), position: x.phia > 0 ? "aboveBar" : "belowBar", color: s.mau.mo, shape: "circle", text: x.trangThai === "catLo" ? "cắt lỗ" : x.trangThai === "khoaLai" ? "thoát lãi" : "đóng" });
+      }
     }
     dd.sort((a, c) => a.time - c.time);
     s.danhDau.setMarkers(dd);
@@ -180,7 +191,7 @@ function OKetQua({ x }) {
   return (
     <span style={mono}>
       <b style={{ color: x.phia > 0 ? XANH : DO }}>{x.phia > 0 ? "Mua" : "Bán"}</b> {d1(x.vao)} <span style={{ color: MUTED }}>{x.gioVao}</span> → {x.ra != null ? d1(x.ra) : "…"}{" "}
-      <span style={{ color: MUTED }}>{x.lyDo === "catLo" ? "cắt lỗ" : x.lyDo === "cuoiPhien" ? "14:29" : "đang giữ"}</span>
+      <span style={{ color: MUTED }}>{x.lyDo === "catLo" ? "cắt lỗ" : x.lyDo === "khoaLai" ? "thoát lãi" : x.lyDo === "cuoiPhien" ? "14:29" : "đang giữ"}</span>
       {NHAN_VUNG[x.viTri] && (
         <span className="ml-2 text-[11px]" style={{ color: NHAN_VUNG[x.viTri].mau }} title={`Giá vào ${NHAN_VUNG[x.viTri].chu}`}>
           {NHAN_VUNG[x.viTri].gon}
@@ -424,8 +435,7 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
   );
 }
 
-// chiBienDong = true (thanh vien): chi hien cach pha vo bien dong 0,3; false (quan tri / may dev): them khoang mo cua 15 phut.
-export default function PhaVoPhaiSinh({ chiBienDong = false }) {
+export default function PhaVoPhaiSinh() {
   const [du, setDu] = useState(null);
   const [lichSu, setLichSu] = useState(null);
   const [loi, setLoi] = useState(null);
@@ -502,17 +512,17 @@ export default function PhaVoPhaiSinh({ chiBienDong = false }) {
 
   // Phat hien trang thai doi (vua co lenh / vua thoat) -> ghi su kien, thong bao trinh duyet, tieng bip
   function xetThayDoi(j) {
-    const moi = { bd: j.bienDong?.trangThai, km: j.khoangMoCua?.trangThai, ngay: j.ngay };
+    const moi = { bd: j.bienDong?.trangThai, ngay: j.ngay };
     const cu = truoc.current;
     truoc.current = moi;
     if (!cu || cu.ngay !== moi.ngay) return;
     const tin = [];
-    for (const [khoa, ten, x] of [["bd", "Biến động 0,3", j.bienDong], ["km", "Khoảng mở cửa 15'", j.khoangMoCua]]) {
+    for (const [khoa, ten, x] of [["bd", "Biến động 0,3", j.bienDong]]) {
       if (cu[khoa] === moi[khoa]) continue;
       if (moi[khoa] === "dangGiu") tin.push(`${ten}: ${x.phia > 0 ? "MUA" : "BÁN KHỐNG"} ${d1(x.vao.gia)} lúc ${x.vao.gio}, cắt lỗ ${d1(x.catLo)}`);
+      else if (moi[khoa] === "khoaLai") tin.push(`${ten}: THOÁT CÓ LÃI ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm, cắt lỗ đã dời)`);
       else if (moi[khoa] === "catLo") tin.push(`${ten}: CẮT LỖ ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm)`);
       else if (moi[khoa] === "cuoiPhien") tin.push(`${ten}: đóng cuối phiên ${d1(x.ra.gia)} (${diemCoDau(x.diemSauPhi)} điểm)`);
-      else if (moi[khoa] === "cho" && cu[khoa] === "dangDo") tin.push(`${ten}: đã có khoảng mở cửa, đỉnh ${d1(x.dinh)} đáy ${d1(x.day)}`);
     }
     if (!tin.length) return;
     const gio = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
@@ -547,7 +557,6 @@ export default function PhaVoPhaiSinh({ chiBienDong = false }) {
   }
 
   const b = du?.bienDong || {};
-  const k = du?.khoangMoCua || {};
   const pt = du?.phienTruoc;
   const cach = pt ? 0.3 * pt.bienDo : null;
   // Phien dau hop dong moi: ban kiem chung bo qua kieu bien dong (bien do hom truoc la cua hop dong cu) -> khong cong vao tong
@@ -630,8 +639,8 @@ export default function PhaVoPhaiSinh({ chiBienDong = false }) {
         </p>
       )}
 
-      <div className={`grid ${chiBienDong ? "" : "md:grid-cols-2 "}gap-4 mb-4`}>
-        <The tieuDe="Phá vỡ biến động 0,3" moTa="Đặt lệnh dừng hai phía quanh giá mở cửa. Giá chạm mức nào trước thì vào theo hướng đó, cắt lỗ tại giá mở cửa." trangThai={b.trangThai}>
+      <div className="grid gap-4 mb-4">
+        <The tieuDe="Phá vỡ biến động 0,3" moTa="Đặt lệnh dừng hai phía quanh giá mở cửa. Giá chạm mức nào trước thì vào theo hướng đó, cắt lỗ tại giá mở cửa; khi lãi 7 điểm thì dời cắt lỗ lên giá vào + 2 điểm." trangThai={b.trangThai}>
           {pt && (
             <p className="text-xs mb-2" style={{ color: MUTED }}>
               Biên độ phiên {ngayHien(du.ngayTruoc)}: <b style={{ color: TEXT, ...mono }}>{d1(pt.bienDo)}</b> điểm ({d1(pt.thap)} – {d1(pt.cao)}) → khoảng cách đặt lệnh <b style={{ color: TEXT, ...mono }}>{d1(cach)}</b> điểm
@@ -642,6 +651,7 @@ export default function PhaVoPhaiSinh({ chiBienDong = false }) {
               <Dong nhan="MUA khi giá chạm" gia={`≥ ${d1(b.mucMua)}`} mau={XANH} ghiChu={ghiChuVung(b.viTriMua)} />
               <Dong nhan="BÁN KHỐNG khi giá chạm" gia={`≤ ${d1(b.mucBan)}`} mau={DO} ghiChu={ghiChuVung(b.viTriBan)} />
               <Dong nhan="Cắt lỗ" ghiChu="bằng giá mở cửa" gia={d1(b.catLo)} />
+              <Dong nhan="Khi lãi 7 điểm" ghiChu="dời cắt lỗ lên giá vào + 2 điểm (mua) / − 2 điểm (bán khống)" gia="khóa +2" mau={VANG} />
             </>
           ) : (
             cach != null && (
@@ -649,32 +659,16 @@ export default function PhaVoPhaiSinh({ chiBienDong = false }) {
                 <Dong nhan="MUA khi giá chạm" gia={`mở cửa + ${d1(cach)}`} mau={XANH} />
                 <Dong nhan="BÁN KHỐNG khi giá chạm" gia={`mở cửa − ${d1(cach)}`} mau={DO} />
                 <Dong nhan="Cắt lỗ" gia="giá mở cửa" />
+                <Dong nhan="Khi lãi 7 điểm" ghiChu="dời cắt lỗ lên giá vào ± 2 điểm" gia="khóa +2" mau={VANG} />
               </>
             )
           )}
           <LenhDangCo x={b} />
         </The>
-
-        {!chiBienDong && (
-        <The tieuDe="Khoảng mở cửa 15 phút" moTa="Đỉnh và đáy của 9:00–9:15. Nến 1 phút đóng cửa vượt ra ngoài thì vào theo hướng đó, cắt lỗ ở biên đối diện." trangThai={k.trangThai}>
-          {k.dinh != null && Number.isFinite(k.dinh) ? (
-            <>
-              <Dong nhan="MUA khi nến 1 phút đóng cửa" gia={`> ${d1(k.dinh)}`} mau={XANH} ghiChu={k.trangThai === "dangDo" ? "đỉnh tạm tính, chốt lúc 9:15" : "cắt lỗ tại đáy khoảng"} />
-              <Dong nhan="BÁN KHỐNG khi nến 1 phút đóng cửa" gia={`< ${d1(k.day)}`} mau={DO} ghiChu={k.trangThai === "dangDo" ? "đáy tạm tính, chốt lúc 9:15" : "cắt lỗ tại đỉnh khoảng"} />
-              <Dong nhan="Độ rộng khoảng" gia={`${d1(k.dinh - k.day)} điểm`} />
-            </>
-          ) : (
-            <p className="text-sm" style={{ color: MUTED }}>
-              Mức mua và bán có sau 9:15.
-            </p>
-          )}
-          <LenhDangCo x={k} />
-        </The>
-        )}
       </div>
 
       <div className="rounded-2xl border p-3 mb-4 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
-        <b style={{ color: TEXT }}>Luật chung:</b> {chiBienDong ? "tối đa 1 lệnh mỗi ngày" : "mỗi kiểu tối đa 1 lệnh mỗi ngày"} · chỉ vào lệnh trước 13:29 · không chốt lời sớm · chưa bị cắt lỗ thì đóng lúc 14:29, không giữ qua đêm.
+        <b style={{ color: TEXT }}>Luật chung:</b> tối đa 1 lệnh mỗi ngày · chỉ vào lệnh trước 13:29 · không chốt lời sớm · khi lãi 7 điểm dời cắt lỗ lên giá vào + 2 điểm · chưa bị cắt lỗ thì đóng lúc 14:29, không giữ qua đêm.
         {vg && (
           <span className="block mt-1">
             <b style={{ color: TEXT }}>Vùng giá trị phiên {ngayHien(du.ngayTruoc)}:</b> <span style={mono}>{d1(vg.val)} – {d1(vg.vah)}</span> · POC <span style={mono}>{d1(vg.poc)}</span> (chỉ để theo dõi, không phải bộ lọc)
@@ -697,24 +691,22 @@ export default function PhaVoPhaiSinh({ chiBienDong = false }) {
 
       <div className="rounded-2xl border overflow-hidden mb-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <p className="px-3 py-2 text-xs border-b" style={{ borderColor: VIEN, color: MUTED }}>
-          Nến 1 phút phiên {ngayHien(du?.ngay)}{chiBienDong ? "" : " · BĐ = phá vỡ biến động, KM = khoảng mở cửa"}
+          Nến 1 phút phiên {ngayHien(du?.ngay)}
         </p>
         <BieuDoTrongNgay du={du} />
       </div>
 
       <div className="rounded-2xl border overflow-hidden mb-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <p className="px-3 py-2 text-xs border-b" style={{ borderColor: VIEN, color: MUTED }}>
-          {lichSu ? `${lichSu.length} phiên gần nhất · điểm sau phí và thuế, chưa trừ trượt giá · * phiên đầu hợp đồng mới${chiBienDong ? "" : ", kiểu biến động không tính vào tổng"}` : "Đang tải lịch sử…"}
+          {lichSu ? `${lichSu.length} phiên gần nhất · điểm sau phí và thuế, chưa trừ trượt giá · * phiên đầu hợp đồng mới (không tính vào tổng)` : "Đang tải lịch sử…"}
         </p>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm" style={{ minWidth: chiBienDong ? 440 : 760 }}>
+          <table className="w-full text-sm" style={{ minWidth: 440 }}>
             <thead>
               <tr style={{ color: MUTED }}>
                 <th className="text-left font-normal px-3 py-2">Ngày</th>
                 <th className="text-left font-normal px-3 py-2">Biến động 0,3</th>
                 <th className="text-right font-normal px-3 py-2">Điểm</th>
-                {!chiBienDong && <th className="text-left font-normal px-3 py-2">Khoảng mở cửa 15&apos;</th>}
-                {!chiBienDong && <th className="text-right font-normal px-3 py-2">Điểm</th>}
               </tr>
             </thead>
             <tbody>
@@ -731,16 +723,6 @@ export default function PhaVoPhaiSinh({ chiBienDong = false }) {
                   <td className="px-3 py-1.5 text-right whitespace-nowrap" style={{ ...mono, color: !x.bienDong.phia ? MUTED : x.bienDong.diemSauPhi > 0 ? XANH : DO, opacity: boQua(x, "bienDong") ? 0.45 : 1 }}>
                     {x.bienDong.phia ? diemCoDau(x.bienDong.diemSauPhi) : ""}
                   </td>
-                  {!chiBienDong && (
-                    <td className="px-3 py-1.5 whitespace-nowrap">
-                      <OKetQua x={x.khoangMoCua} />
-                    </td>
-                  )}
-                  {!chiBienDong && (
-                    <td className="px-3 py-1.5 text-right whitespace-nowrap" style={{ ...mono, color: !x.khoangMoCua.phia ? MUTED : x.khoangMoCua.diemSauPhi > 0 ? XANH : DO }}>
-                      {x.khoangMoCua.phia ? diemCoDau(x.khoangMoCua.diemSauPhi) : ""}
-                    </td>
-                  )}
                 </tr>
               ))}
               {lichSu && (
@@ -752,51 +734,41 @@ export default function PhaVoPhaiSinh({ chiBienDong = false }) {
                   <td className="px-3 py-2 text-right font-bold" style={{ ...mono, color: tong("bienDong") > 0 ? XANH : DO }}>
                     {diemCoDau(tong("bienDong"))}
                   </td>
-                  {!chiBienDong && (
-                    <td className="px-3 py-2" style={{ color: MUTED }}>
-                      {soLenh("khoangMoCua")} lệnh, thắng {soThang("khoangMoCua")}
-                    </td>
-                  )}
-                  {!chiBienDong && (
-                    <td className="px-3 py-2 text-right font-bold" style={{ ...mono, color: tong("khoangMoCua") > 0 ? XANH : DO }}>
-                      {diemCoDau(tong("khoangMoCua"))}
-                    </td>
-                  )}
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-        {lichSu && (theoVung("bienDong") || (!chiBienDong && theoVung("khoangMoCua"))) && (
+        {lichSu && theoVung("bienDong") && (
           <p className="px-3 py-2 text-xs border-t" style={{ borderColor: VIEN, color: MUTED }}>
-            Theo vị trí giá vào so với vùng giá trị hôm trước — Biến động: {theoVung("bienDong") || "—"}
-            {!chiBienDong && <> | Khoảng mở cửa: {theoVung("khoangMoCua") || "—"}</>}
+            Theo vị trí giá vào so với vùng giá trị hôm trước: {theoVung("bienDong")}
           </p>
         )}
       </div>
 
       <LichSuDai moDai={moDai} setMoDai={setMoDai} dai={dai} namLoc={namLoc} setNamLoc={setNamLoc} soHien={soHien} setSoHien={setSoHien} setNgayXem={setNgayXem} />
 
-      {chiBienDong && (
-        <GiaiThichThem className="mb-3" nhanMo="Cách làm, kiểm chứng và rủi ro" tomTat="Phái sinh có đòn bẩy cao, có thể mất nhiều hơn số tiền ký quỹ ban đầu. Đây là số liệu thống kê, không phải khuyến nghị.">
-          <p>
-            <b>Cách làm:</b> mỗi sáng, lấy biên độ phiên trước (cao nhất − thấp nhất) nhân 0,3 để ra khoảng cách. Đặt lệnh dừng mua ở giá mở cửa cộng khoảng cách, bán khống ở giá mở cửa trừ khoảng cách; giá chạm mức nào trước thì vào theo hướng đó.
-            Cắt lỗ tại giá mở cửa, không chốt lời sớm, chưa cắt lỗ thì đóng lúc 14:29; mỗi ngày tối đa 1 lệnh và không giữ qua đêm.
-          </p>
-          <p className="mt-2">
-            <b>Kiểm chứng trên dữ liệu 2018–2026</b> (nến 1 phút VN30F1M, đã trừ phí MBS và trượt giá 0,4 điểm mỗi vòng): lãi khoảng 15–23% mỗi năm trên giá trị hợp đồng, lãi ở mọi năm 2018–2025 nhưng năm 2026 gần như hòa vốn; sụt vốn lớn nhất khoảng 7–8%.
-            Chỉ khoảng 40% số lệnh thắng, lãi đến từ vài lệnh chạy xa; từng thua 10–13 phiên liên tiếp. Nếu khớp lệnh thực tế kém hơn dự kiến thì lãi giảm nhanh, và gần như hòa vốn khi trượt giá khoảng 1,5 điểm mỗi vòng.
-          </p>
-          <p className="mt-2">
-            <b>Vốn:</b> một hợp đồng có giá trị khoảng 187 triệu đồng (1.870 điểm × 100.000đ). Kết quả trên tính theo giá trị hợp đồng chưa đòn bẩy, không nên chỉ nạp ký quỹ tối thiểu; vốn từ khoảng 90 triệu đồng cho mỗi hợp đồng giúp chịu được các chuỗi thua.
-            Quá khứ không đảm bảo tương lai.
-          </p>
-        </GiaiThichThem>
-      )}
+      <GiaiThichThem className="mb-3" nhanMo="Cách làm, kiểm chứng và rủi ro" tomTat="Phái sinh có đòn bẩy cao, có thể mất nhiều hơn số tiền ký quỹ ban đầu. Đây là số liệu thống kê, không phải khuyến nghị.">
+        <p>
+          <b>Cách làm:</b> mỗi sáng, lấy biên độ phiên trước (cao nhất − thấp nhất) nhân 0,3 để ra khoảng cách. Đặt lệnh dừng mua ở giá mở cửa cộng khoảng cách, bán khống ở giá mở cửa trừ khoảng cách; giá chạm mức nào trước thì vào theo hướng đó.
+          Cắt lỗ ban đầu tại giá mở cửa. <b>Khi lãi đạt 7 điểm thì dời cắt lỗ lên giá vào + 2 điểm</b> (bán khống: giá vào − 2 điểm) rồi để chạy; không chốt lời sớm, chưa bị cắt lỗ thì đóng lúc 14:29. Mỗi ngày tối đa 1 lệnh, không giữ qua đêm.
+        </p>
+        <p className="mt-2">
+          <b>Vì sao dời cắt lỗ:</b> nhiều lệnh chạy lãi vài điểm rồi quay đầu về cắt lỗ. Kiểm chứng cho thấy dời cắt lỗ sau khi lãi 7 điểm tốt hơn cắt lỗ cố định, còn chốt lời cố định hoặc cắt lỗ theo đuôi đều làm lãi giảm vì cắt mất các lệnh chạy xa.
+        </p>
+        <p className="mt-2">
+          <b>Kiểm chứng trên dữ liệu 2018–2026</b> (nến 1 phút VN30F1M, đã trừ phí MBS và trượt giá 0,4 điểm mỗi vòng): lãi khoảng 18–26% mỗi năm trên giá trị hợp đồng (Sharpe 1,6–1,9), sụt vốn lớn nhất khoảng 6–9%, lãi ở hầu hết các năm nhưng năm 2026 gần như hòa vốn.
+          Khoảng một nửa số lệnh thắng, lãi đến từ vài lệnh chạy xa; từng thua 10–13 phiên liên tiếp. Nếu khớp lệnh thực tế kém hơn dự kiến thì lãi giảm nhanh, và gần như hòa vốn khi trượt giá khoảng 1,5 điểm mỗi vòng.
+        </p>
+        <p className="mt-2">
+          <b>Vốn:</b> một hợp đồng có giá trị khoảng 187 triệu đồng (1.870 điểm × 100.000đ). Kết quả trên tính theo giá trị hợp đồng chưa đòn bẩy, không nên chỉ nạp ký quỹ tối thiểu; vốn từ khoảng 90 triệu đồng cho mỗi hợp đồng giúp chịu được các chuỗi thua.
+          Quá khứ không đảm bảo tương lai.
+        </p>
+      </GiaiThichThem>
       <p className="text-[11px]" style={{ color: MUTED }}>
-        Công cụ thống kê, không phải khuyến nghị đầu tư và không tự đặt lệnh. Giá lấy từ nến 1 phút nên chậm hơn bảng giá vài giây đến một phút{chiBienDong ? ". " : "; tín hiệu khoảng mở cửa chỉ tính khi nến 1 phút đã đóng xong. "}Điểm sau phí theo biểu phí MBS (3.000đ + 2.700đ + 2.550đ mỗi lượt và thuế),
-        1 điểm = 100.000đ mỗi hợp đồng. Trong kiểm chứng 2018–2026, mỗi kiểu chỉ thắng khoảng một phần ba số lệnh và từng thua 10–13 phiên liên tiếp. Vùng giá trị hôm trước là vùng giá chứa 70% khối lượng của
-        phiên trước (VAL – VAH, POC là mức nhiều khối lượng nhất); trong kiểm chứng, lệnh có giá vào còn nằm trong vùng này gần hoà vốn, lệnh đã ra khỏi vùng lãi trung bình cao hơn, nhưng chênh lệch chưa đủ chắc để dùng làm bộ lọc nên chỉ ghi lại để theo dõi.
+        Công cụ thống kê, không phải khuyến nghị đầu tư và không tự đặt lệnh. Giá lấy từ nến 1 phút nên chậm hơn bảng giá vài giây đến một phút. Điểm sau phí theo biểu phí MBS (3.000đ + 2.700đ + 2.550đ mỗi lượt và thuế),
+        1 điểm = 100.000đ mỗi hợp đồng. Vùng giá trị hôm trước là vùng giá chứa 70% khối lượng của phiên trước (VAL – VAH, POC là mức nhiều khối lượng nhất); trong kiểm chứng, lệnh có giá vào còn nằm trong vùng này gần hoà vốn,
+        lệnh đã ra khỏi vùng lãi trung bình cao hơn, nhưng chênh lệch chưa đủ chắc để dùng làm bộ lọc nên chỉ ghi lại để theo dõi.
       </p>
     </div>
   );
