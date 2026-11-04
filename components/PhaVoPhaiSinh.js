@@ -190,6 +190,155 @@ function OKetQua({ x }) {
   );
 }
 
+// LICH SU DAI tu 2024: tom tat theo nam + theo thang (luy ke) + danh sach tung lenh (loc theo nam, "Hien them"). Diem sau phi + thue MBS, chua tru truot gia; bo phien dau hop dong moi va phien dang chay.
+function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien, setNgayXem }) {
+  const hang = dai?.hang || [];
+  const lenh = hang.filter((r) => r.phia && !r.dauHD && !r.dangChay);
+  const thang = (ds) => ds.filter((r) => r.diemSauPhi > 0).length;
+  const tongDiem = (ds) => ds.reduce((s, r) => s + r.diemSauPhi, 0);
+  const nam = [...new Set(lenh.map((r) => r.ngay.slice(0, 4)))].sort();
+  const thangTheo = {};
+  for (const r of lenh) (thangTheo[r.ngay.slice(0, 7)] ||= []).push(r);
+  const dsThang = Object.keys(thangTheo)
+    .sort()
+    .map((t, i, ks) => ({ t, lenh: thangTheo[t].length, thang: thang(thangTheo[t]), diem: tongDiem(thangTheo[t]), luyKe: ks.slice(0, i + 1).reduce((x, k) => x + tongDiem(thangTheo[k]) * 0.1, 0) }));
+  const loc = (namLoc ? hang.filter((r) => r.ngay.startsWith(namLoc)) : hang).slice().reverse();
+  const nhanThang = (t) => `${t.slice(5)}/${t.slice(2, 4)}`;
+  return (
+    <div className="rounded-2xl border overflow-hidden mb-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
+      <button type="button" onClick={() => setMoDai(!moDai)} aria-expanded={moDai} className="w-full flex items-center justify-between gap-3 px-3 py-3 text-left" style={{ color: TEXT }}>
+        <span>
+          <b style={{ fontFamily: "var(--font-chu)" }}>Lịch sử từ 2024</b>
+          <span className="text-xs ml-2" style={{ color: MUTED }}>
+            từng lệnh, theo tháng, theo năm · cách biến động 0,3
+          </span>
+        </span>
+        <span className="text-sm" style={{ color: MUTED }}>{moDai ? "Thu gọn" : "Xem"}</span>
+      </button>
+      {moDai && (
+        <div className="border-t" style={{ borderColor: VIEN }}>
+          {!dai ? (
+            <p className="px-3 py-4 text-sm" style={{ color: MUTED }}>Đang tải lịch sử…</p>
+          ) : (
+            <>
+              <div className="px-3 py-3 grid grid-cols-2 sm:grid-cols-4 gap-px" style={{ background: "var(--vien-nhe)" }}>
+                {[
+                  ["Số lệnh", lenh.length, null],
+                  ["Thắng", `${thang(lenh)} (${lenh.length ? Math.round((thang(lenh) / lenh.length) * 100) : 0}%)`, null],
+                  ["Tổng điểm sau phí", diemCoDau(tongDiem(lenh)), tongDiem(lenh) > 0 ? XANH : DO],
+                  ["Quy tiền, 1 hợp đồng", trieu(tongDiem(lenh)), tongDiem(lenh) > 0 ? XANH : DO],
+                ].map(([n, v, m]) => (
+                  <div key={n} className="px-3 py-2" style={{ background: NEN_CARD }}>
+                    <p className="text-xs" style={{ color: MUTED }}>{n}</p>
+                    <p className="text-lg" style={{ ...mono, fontWeight: 700, color: m || TEXT }}>{v}</p>
+                  </div>
+                ))}
+              </div>
+              {dai.thieu && (
+                <p className="px-3 pb-2 text-xs" style={{ color: VANG }}>
+                  Chưa cập nhật các phiên từ {ngayHien(dai.thieu.tu)} đến {ngayHien(dai.thieu.den)} (bản chụp cũ), nên tổng ở trên có thể thiếu vài phiên.
+                </p>
+              )}
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm" style={{ minWidth: 420 }}>
+                  <thead>
+                    <tr style={{ color: MUTED }}>
+                      <th className="text-left font-normal px-3 py-2">Năm</th>
+                      <th className="text-right font-normal px-3 py-2">Lệnh</th>
+                      <th className="text-right font-normal px-3 py-2">Thắng</th>
+                      <th className="text-right font-normal px-3 py-2">Điểm sau phí</th>
+                      <th className="text-right font-normal px-3 py-2">Triệu đồng</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {nam.map((y) => {
+                      const g = lenh.filter((r) => r.ngay.startsWith(y));
+                      return (
+                        <tr key={y} className="border-t" style={{ borderColor: "var(--vien-nhe)" }}>
+                          <td className="px-3 py-1.5" style={mono}>{y}</td>
+                          <td className="px-3 py-1.5 text-right" style={mono}>{g.length}</td>
+                          <td className="px-3 py-1.5 text-right" style={mono}>{thang(g)} ({Math.round((thang(g) / g.length) * 100)}%)</td>
+                          <td className="px-3 py-1.5 text-right" style={{ ...mono, color: tongDiem(g) > 0 ? XANH : DO }}>{diemCoDau(tongDiem(g))}</td>
+                          <td className="px-3 py-1.5 text-right" style={{ ...mono, color: tongDiem(g) > 0 ? XANH : DO }}>{trieu(tongDiem(g)).replace(" triệu", "")}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <p className="px-3 py-2 text-xs border-t" style={{ borderColor: VIEN, color: MUTED }}>Theo tháng (điểm sau phí · lũy kế triệu đồng)</p>
+              <div className="px-3 pb-3 grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2">
+                {dsThang.map((m) => (
+                  <div key={m.t} className="rounded-lg px-2 py-1.5" style={{ border: `1px solid ${VIEN}` }} title={`${m.lenh} lệnh, thắng ${m.thang}`}>
+                    <p className="text-[11px]" style={{ color: MUTED }}>{nhanThang(m.t)}</p>
+                    <p className="text-sm" style={{ ...mono, fontWeight: 700, color: m.diem > 0 ? XANH : DO }}>{diemCoDau(m.diem)}</p>
+                    <p className="text-[11px]" style={{ ...mono, color: MUTED }}>{soVN(m.luyKe, 1, true)} tr</p>
+                  </div>
+                ))}
+              </div>
+              <div className="flex flex-wrap items-center gap-2 px-3 py-2 border-t" style={{ borderColor: VIEN }}>
+                <span className="text-xs" style={{ color: MUTED }}>Từng lệnh:</span>
+                {["", ...nam].map((y) => (
+                  <button
+                    key={y || "tat"}
+                    type="button"
+                    onClick={() => {
+                      setNamLoc(y);
+                      setSoHien(40);
+                    }}
+                    className="px-2.5 py-1 rounded-full text-xs"
+                    style={{ border: `1px solid ${namLoc === y ? "#6C5CE7" : VIEN}`, color: namLoc === y ? TEXT : MUTED, fontWeight: namLoc === y ? 700 : 400 }}
+                  >
+                    {y || "Tất cả"}
+                  </button>
+                ))}
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm" style={{ minWidth: 440 }}>
+                  <thead>
+                    <tr style={{ color: MUTED }}>
+                      <th className="text-left font-normal px-3 py-2">Ngày</th>
+                      <th className="text-left font-normal px-3 py-2">Biến động 0,3</th>
+                      <th className="text-right font-normal px-3 py-2">Điểm</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loc.slice(0, soHien).map((r) => (
+                      <tr key={r.ngay} className="border-t cursor-pointer" style={{ borderColor: "var(--vien-nhe)", opacity: r.dauHD ? 0.45 : 1 }} onClick={() => !r.dangChay && setNgayXem(r.ngay)} title="Bấm để xem lại ngày này (biểu đồ nến 1 phút ở trên)">
+                        <td className="px-3 py-1.5 whitespace-nowrap" style={mono}>
+                          {ngayHien(r.ngay).slice(0, 5)}/{r.ngay.slice(2, 4)}
+                          {r.dangChay && <span style={{ color: VANG }}> ●</span>}
+                          {r.dauHD && <span style={{ color: VANG }} title="Phiên đầu hợp đồng mới: không tính vào tổng"> *</span>}
+                        </td>
+                        <td className="px-3 py-1.5 whitespace-nowrap">
+                          <OKetQua x={r.phia ? r : { phia: 0, lyDo: "khongKhop" }} />
+                        </td>
+                        <td className="px-3 py-1.5 text-right whitespace-nowrap" style={{ ...mono, color: !r.phia ? MUTED : r.diemSauPhi > 0 ? XANH : DO }}>
+                          {r.phia ? diemCoDau(r.diemSauPhi) : ""}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              {loc.length > soHien && (
+                <div className="px-3 py-3 text-center border-t" style={{ borderColor: "var(--vien-nhe)" }}>
+                  <button type="button" onClick={() => setSoHien(soHien + 60)} className="text-sm px-3 py-1.5 rounded-lg" style={{ border: `1px solid ${VIEN}`, color: TEXT }}>
+                    Hiện thêm ({loc.length - soHien} phiên)
+                  </button>
+                </div>
+              )}
+              <p className="px-3 py-2 text-[11px] border-t" style={{ borderColor: VIEN, color: MUTED }}>
+                Mô phỏng trên nến 1 phút, khớp lý tưởng tại mức chạm; điểm sau phí và thuế MBS, chưa trừ trượt giá (mỗi 0,4 điểm trượt/vòng trừ thêm khoảng 0,4 điểm mỗi lệnh). Bản chụp đến {ngayHien(dai.capNhatTinh)}, các phiên gần nhất lấy trực tiếp. Quá khứ không đảm bảo tương lai.
+              </p>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // chiBienDong = true (thanh vien): chi hien cach pha vo bien dong 0,3; false (quan tri / may dev): them khoang mo cua 15 phut.
 export default function PhaVoPhaiSinh({ chiBienDong = false }) {
   const [du, setDu] = useState(null);
@@ -201,6 +350,22 @@ export default function PhaVoPhaiSinh({ chiBienDong = false }) {
   const truoc = useRef(null);
   const baoRef = useRef(false);
   baoRef.current = bao;
+  // LICH SU DAI tu 2024 (chi cach bien dong 0,3): tai khi bam mo
+  const [moDai, setMoDai] = useState(false);
+  const [dai, setDai] = useState(null);
+  const [namLoc, setNamLoc] = useState("");
+  const [soHien, setSoHien] = useState(40);
+  useEffect(() => {
+    if (!moDai || dai) return;
+    let huy = false;
+    fetch("/api/phai-sinh?lichSuDai=1")
+      .then((r) => r.json())
+      .then((j) => !huy && j.trangThai === "ok" && setDai(j))
+      .catch(() => {});
+    return () => {
+      huy = true;
+    };
+  }, [moDai, dai]);
 
   // Tai trang thai: 15 giay / lan trong phien, 30 giay truoc phien va nghi trua, 5 phut sau phien; xem lai ngay cu thi chi tai 1 lan.
   useEffect(() => {
@@ -524,6 +689,8 @@ export default function PhaVoPhaiSinh({ chiBienDong = false }) {
           </p>
         )}
       </div>
+
+      <LichSuDai moDai={moDai} setMoDai={setMoDai} dai={dai} namLoc={namLoc} setNamLoc={setNamLoc} soHien={soHien} setSoHien={setSoHien} setNgayXem={setNgayXem} />
 
       {chiBienDong && (
         <GiaiThichThem className="mb-3" nhanMo="Cách làm, kiểm chứng và rủi ro" tomTat="Phái sinh có đòn bẩy cao, có thể mất nhiều hơn số tiền ký quỹ ban đầu. Đây là số liệu thống kê, không phải khuyến nghị.">
