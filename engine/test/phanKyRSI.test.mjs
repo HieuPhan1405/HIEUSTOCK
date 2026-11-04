@@ -1,5 +1,5 @@
 // Test tay cho lib/phanKyRSI.js. Chay: node engine/test/phanKyRSI.test.mjs
-import { phanKyRSI, gopNenTuan } from "../../lib/phanKyRSI.js";
+import { phanKyRSI, phanKyRSISom, gopNenTuan } from "../../lib/phanKyRSI.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -31,6 +31,19 @@ ok("RSI day sau thap hon -> khong phan ky tang", phanKyRSI(nen, rsi2, { k: 3 }).
 // RSI day truoc cao hon nguong (rsiDay 40) -> khong tinh
 const rsi3 = rsiArr.map((v, i) => (i === 5 ? 45 : i === 15 ? 50 : v));
 ok("RSI day truoc > 40 -> khong tinh", phanKyRSI(nen, rsi3, { k: 3 }).filter((e) => e.loai === "tang").length === 0);
+
+// PHAN KY SOM: RSI day sau cao hon day truoc chi 0,3 diem (khong du 2 diem) -> khong phai phan ky chat, nhung la phan ky som da xac nhan
+const rsiYeu = rsiArr.map((v, i) => (i === 15 ? 25.3 : v));
+ok("RSI cao hon 0,3 -> khong phan ky chat", phanKyRSI(nen, rsiYeu, { k: 3 }).filter((e) => e.loai === "tang").length === 0);
+const somYeu = phanKyRSISom(nen, rsiYeu, { k: 3 }).filter((e) => e.loai === "tang");
+ok("... nhung co phan ky SOM (i1=5, i2=15, da xac nhan)", somYeu.length === 1 && somYeu[0].i1 === 5 && somYeu[0].i2 === 15 && somYeu[0].choXacNhan === false, JSON.stringify(somYeu));
+ok("phan ky chat khong bi lap trong danh sach som", phanKyRSISom(nen, rsiArr, { k: 3 }).filter((e) => e.loai === "tang").length === 0);
+// day moi nhat CHUA xac nhan: nen 15 la day nhung chi moi co 2 nen sau (cat nen con 18 nen), k = 3
+const nenCho = nen.slice(0, 18);
+const rsiCho = rsiArr.slice(0, 18);
+ok("day moi nhat chua du k nen -> khong phan ky chat", phanKyRSI(nenCho, rsiCho, { k: 3 }).filter((e) => e.loai === "tang").length === 0);
+const somCho = phanKyRSISom(nenCho, rsiCho, { k: 3 }).filter((e) => e.loai === "tang");
+ok("... nhung co phan ky SOM dang cho xac nhan", somCho.length === 1 && somCho[0].i2 === 15 && somCho[0].choXacNhan === true, JSON.stringify(somCho));
 
 // Gop tuan: 2026-10-12 (thu hai) .. 2026-10-16 (thu sau) la 1 tuan; 2026-10-19 la tuan sau
 const w = gopNenTuan([

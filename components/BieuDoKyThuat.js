@@ -5,7 +5,7 @@ import { createChart, createSeriesMarkers, BaselineSeries, CandlestickSeries, Hi
 import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2 } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
-import { phanKyRSI } from "@/lib/phanKyRSI";
+import { phanKyRSI, phanKyRSISom } from "@/lib/phanKyRSI";
 import { tinhBankerHienThi, MAU_BANKER } from "@/lib/dongTienBanker";
 import { nhanDienMauHinh, nhanDienDangHinhThanh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
 import { nhanDienMauHinhNen, THONG_KE_MAU_HINH_NEN } from "@/lib/mauHinhNen";
@@ -127,6 +127,8 @@ const CHI_BAO_PHU = [
 // RSI phan ky (lib/phanKyRSI.js): 2 day / dinh gia lien tiep nguoc chieu RSI - chi la DIEU KIEN THAM KHAO, nghien cuu 2026-10-16 tren 390 ma cho thay KHONG co loi the thong ke rieng le.
 const CHI_BAO_PK = { khoa: "phanKy", nhan: "RSI phân kỳ", mau: "#34D399" };
 const SO_PK_HIEN = 8; // chi ve SO_PK_HIEN phan ky gan nhat moi loai (tranh roi bieu do)
+const SO_PK_SOM_HIEN = 3; // phan ky SOM (mau vang): chi ve 3 cai gan nhat moi loai
+const MAU_PK_SOM = "#FBBF24";
 const CHIEU_CAO_PHU = 140;
 
 // Cong cu ke ve (components/veBieuDoLop.js)
@@ -344,6 +346,11 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const phanKy = useMemo(() => {
     if (!nen || nen.length < 60) return [];
     return phanKyRSI(nen.map((b) => ({ h: b.h, l: b.l, c: b.c })), rsi(nen.map((b) => b.c), 14), { k: 2 });
+  }, [nen]);
+  // Phan ky SOM (it dieu kien, co the CHUA du nen xac nhan): ve mau vang, nhan "PK↑?" / "PK↓?" (xem lib/phanKyRSI.js phanKyRSISom)
+  const phanKySom = useMemo(() => {
+    if (!nen || nen.length < 60) return [];
+    return phanKyRSISom(nen.map((b) => ({ h: b.h, l: b.l, c: b.c })), rsi(nen.map((b) => b.c), 14), { k: 2 });
   }, [nen]);
   // MAU HINH GIA (lib/mauHinh.js): nhan dien tren nen dang hien (ngay / tuan); bam chip "Mẫu hình" de tu ve len bieu do, bam tung mau hinh de xem hinh khac.
   const dsMauHinh = useMemo(() => {
@@ -723,6 +730,18 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           doan(o, e.rsi1, e.rsi2);
           nhan.push({ time: nen[e.i2].t, position: e.loai === "tang" ? "belowBar" : "aboveBar", color: mau, shape: e.loai === "tang" ? "arrowUp" : "arrowDown", text: e.loai === "tang" ? "PK↑" : "PK↓" });
         }
+        // PK SOM (vang, net dut): it dieu kien hon, co the chua xac nhan
+        const somGan = [...phanKySom.filter((e) => e.loai === "tang").slice(-SO_PK_SOM_HIEN), ...phanKySom.filter((e) => e.loai === "giam").slice(-SO_PK_SOM_HIEN)];
+        for (const e of somGan) {
+          const doanSom = (o2, y1, y2) => {
+            const dg = s.chart.addSeries(LineSeries, { color: MAU_PK_SOM, lineWidth: 2, lineStyle: LineStyle.Dashed, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false }, o2);
+            dg.setData([{ time: nen[e.i1].t, value: y1 }, { time: nen[e.i2].t, value: y2 }]);
+            s.phu.push(dg);
+          };
+          doanSom(0, e.gia1, e.gia2);
+          doanSom(o, e.rsi1, e.rsi2);
+          if (!nhan.some((m) => m.time === nen[e.i2].t)) nhan.push({ time: nen[e.i2].t, position: e.loai === "tang" ? "belowBar" : "aboveBar", color: MAU_PK_SOM, shape: e.loai === "tang" ? "arrowUp" : "arrowDown", text: e.loai === "tang" ? "PK↑?" : "PK↓?" });
+        }
         nhan.sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
         s.markersPK.setMarkers(nhan);
       } else {
@@ -791,7 +810,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     // cua so gia lon hon cac cua so chi bao
     const panes = s.chart.panes();
     panes.forEach((p, i) => p.setStretchFactor(i === 0 ? 3.2 : 1));
-  }, [bat.rsi, bat.macd, bat.stoch, bat.dongTien, bat.phanKy, chiBaoPhu, phanKy, nen]);
+  }, [bat.rsi, bat.macd, bat.stoch, bat.dongTien, bat.phanKy, chiBaoPhu, phanKy, phanKySom, nen]);
 
   // 4. Vung lenh + diem MUA.
   useEffect(() => {
@@ -1306,7 +1325,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       {!toanMH && (
       <p className="px-3 py-2 text-[11px] border-t" style={{ borderColor: VIEN, color: MUTED }}>
         Giá đã điều chỉnh cổ tức/thưởng cổ phiếu (giống dữ liệu AmiBroker), khối lượng khớp lệnh; chỉ báo tính giống hệ thống tín hiệu (Ichimoku 9-17-33, mây dịch 26
-        phiên, đường cân bằng dài hạn 65/129); EMA, Bollinger, RSI, MACD, Stochastic là chỉ báo tham khảo thông dụng. RSI phân kỳ (PK↑ đáy sau thấp hơn nhưng RSI cao hơn; PK↓ đỉnh sau cao hơn nhưng RSI thấp hơn) chỉ xác nhận sau 2 nến và chỉ là điều kiện tham khảo, không phải tín hiệu mua bán: thống kê 390 mã cho thấy không có lợi thế riêng lẻ. Volume Profile là ước lượng: khối lượng mỗi nến chia đều theo khoảng giá của nến đó (dùng nến 1 giờ khi có, từ khoảng 10/2023; trước đó dùng nến của biểu đồ), không phải dữ liệu khớp lệnh theo từng mức giá. Hỗ trợ / Kháng cự (KL) là các vùng giá có khối lượng giao dịch lớn trong khoảng 6 tháng gần nhất (nét đậm = vùng lớn), chỉ để tham khảo: kiểm tra lịch sử cho thấy giá giữ được ở các mức này khoảng một nửa số lần. Hình vẽ lưu trên trình duyệt này theo từng mã và khung thời gian. Trong phiên, nến hôm nay cập nhật theo giá khớp thực tế, web tự làm mới mỗi 30 giây, không dùng để đặt lệnh khớp từng giây.
+        phiên, đường cân bằng dài hạn 65/129); EMA, Bollinger, RSI, MACD, Stochastic là chỉ báo tham khảo thông dụng. RSI phân kỳ (PK↑ đáy sau thấp hơn nhưng RSI cao hơn; PK↓ đỉnh sau cao hơn nhưng RSI thấp hơn) chỉ xác nhận sau 2 nến (màu xanh / đỏ); nét đứt MÀU VÀNG PK↑? / PK↓? là phân kỳ SỚM: ít điều kiện hơn (RSI chỉ cần cao hơn đáy trước, không cần ≤ 40) hoặc đáy / đỉnh mới chưa đủ 2 nến xác nhận, dễ báo sai hơn. Cả hai chỉ là điều kiện tham khảo, không phải tín hiệu mua bán: thống kê 390 mã cho thấy không có lợi thế riêng lẻ. Volume Profile là ước lượng: khối lượng mỗi nến chia đều theo khoảng giá của nến đó (dùng nến 1 giờ khi có, từ khoảng 10/2023; trước đó dùng nến của biểu đồ), không phải dữ liệu khớp lệnh theo từng mức giá. Hỗ trợ / Kháng cự (KL) là các vùng giá có khối lượng giao dịch lớn trong khoảng 6 tháng gần nhất (nét đậm = vùng lớn), chỉ để tham khảo: kiểm tra lịch sử cho thấy giá giữ được ở các mức này khoảng một nửa số lần. Hình vẽ lưu trên trình duyệt này theo từng mã và khung thời gian. Trong phiên, nến hôm nay cập nhật theo giá khớp thực tế, web tự làm mới mỗi 30 giây, không dùng để đặt lệnh khớp từng giây.
       </p>
       )}
     </div>
