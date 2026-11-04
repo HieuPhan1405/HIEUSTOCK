@@ -31,6 +31,11 @@ COVERS = {
     "gioithieu_hook": dict(photo="img/gioi-thieu.jpg", l1="NHÌN VÀO ĐÂU<br>TRƯỚC?", c1="#F5C542", l2="BẢNG GIÁ CẢ TRĂM MÃ", c2="#FAFAFA",
                            l3="Mình là Hiếu, kể bạn nghe<br>cách mình nhìn thị trường", only=["tiktok_1080x1920"],
                            dy={"tiktok_1080x1920": 400}, s1={"tiktok_1080x1920": 108}, s2={"tiktok_1080x1920": 62}),
+    # 4/11/2026: VN-Index +33,40 điểm (Entrade); đầu người nói nằm thấp hơn các video trước nên chỉ đẩy ảnh xuống 70 px; chỉ bản TikTok
+    "vnindex33": dict(photo="img/vnindex-33.jpg", l1="VN-INDEX +33 ĐIỂM", c1="#F5C542", l2="VÌ SAO BẬT TĂNG?", c2="#22C55E",
+                      l3="2 tin vĩ mô đáng chú ý: 46/46 ngân hàng giảm<br>lãi huy động · NHNN dự kiến FX swap 182 ngày",
+                      only=["tiktok_1080x1920"], dy={"tiktok_1080x1920": 70}, s1={"tiktok_1080x1920": 80},
+                      s2={"tiktok_1080x1920": 76}, s3={"tiktok_1080x1920": 42}),
 }
 # (rộng, cao, offset y của ảnh, cỡ chữ l1, l2, l3, top của khối chữ)
 SIZES = {
