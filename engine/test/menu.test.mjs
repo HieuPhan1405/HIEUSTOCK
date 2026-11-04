@@ -9,7 +9,7 @@ const ok = (ten, dk, them = "") => {
   } else console.log("ok:", ten);
 };
 
-ok("menu 8 muc", MENU.length === 8);
+ok("menu 9 muc", MENU.length === 9);
 ok("trang dau -> Thi truong", mucDangMo("/")?.nhan === "Thị trường");
 ok("/dashboard, /nganh, /thi-truong thuoc Thi truong", mucDangMo("/dashboard")?.href === "/" && mucDangMo("/nganh")?.href === "/" && mucDangMo("/thi-truong")?.href === "/");
 ok("/lenh-da-dong thuoc So lenh", mucDangMo("/lenh-da-dong")?.href === "/lenh-mo");
@@ -17,7 +17,8 @@ ok("/lenh-mo khong nham voi /lenh-da-dong", tabCuaTrang("/lenh-mo")?.dangChon ==
 ok("Bo loc: tab Ky thuat + Co ban", mucDangMo("/bo-loc")?.nhan === "Bộ lọc cổ phiếu" && tabCuaTrang("/bo-loc")?.tab.map((t) => t.href).join() === "/bo-loc,/co-ban" && tabCuaTrang("/co-ban")?.dangChon === "/co-ban");
 ok("/kich-ban-mua la tab Sap co lenh cua So lenh", mucDangMo("/kich-ban-mua")?.href === "/lenh-mo" && tabCuaTrang("/kich-ban-mua")?.dangChon === "/kich-ban-mua" && tabCuaTrang("/lenh-mo")?.tab.length === 3);
 ok("So lenh doi ten Dau tu theo xu huong, nhan ngan Tin hieu, tab: dang mo -> sap co -> da dong", mucDangMo("/lenh-mo")?.nhan === "Đầu tư theo xu hướng" && mucDangMo("/lenh-mo")?.nhanNgan === "Tín hiệu" && tabCuaTrang("/lenh-mo")?.tab.map((t) => t.href).join() === "/lenh-mo,/kich-ban-mua,/lenh-da-dong");
-ok("3 cach dau tu dung lien nhau: xu huong, dai han, bat day", MENU.slice(3, 6).map((m) => m.href).join() === "/lenh-mo,/dai-han,/bat-day");
+ok("cac cach dau tu dung lien nhau: xu huong, dai han, phai sinh, bat day", MENU.slice(3, 7).map((m) => m.href).join() === "/lenh-mo,/dai-han,/phai-sinh,/bat-day");
+ok("/phai-sinh la muc rieng (khong tab)", mucDangMo("/phai-sinh")?.href === "/phai-sinh" && tabCuaTrang("/phai-sinh") === null);
 ok("/ma/VPB, /lien-he khong thuoc menu", mucDangMo("/ma/VPB") === null && mucDangMo("/lien-he") === null);
 ok("tab trang dau: 4 tab (Tong quan, Dashboard, Nganh, Tin tuc), dang chon Tong quan", tabCuaTrang("/")?.tab.length === 4 && tabCuaTrang("/")?.dangChon === "/");
 ok("/bat-day va /hoi-giam-dai chung muc Bat day (co tab)", mucDangMo("/hoi-giam-dai")?.href === "/bat-day" && tabCuaTrang("/hoi-giam-dai")?.dangChon === "/hoi-giam-dai" && tabCuaTrang("/bat-day")?.tab.length === 3 && mucDangMo("/mua-phuc-hoi")?.href === "/bat-day");

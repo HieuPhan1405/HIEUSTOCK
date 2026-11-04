@@ -1,30 +1,32 @@
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
+import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import PhaVoPhaiSinh from "@/components/PhaVoPhaiSinh";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Phá vỡ trong ngày · VN30F1M",
+  title: "Phái sinh VN30F1M · Phá vỡ biến động 0,3",
+  description: "Mức mua, bán khống và cắt lỗ trong ngày của hợp đồng tương lai VN30F1M theo cách phá vỡ biến động 0,3, kèm kết quả 20 phiên gần nhất.",
   robots: { index: false, follow: false },
 };
 
-// Cong cu CA NHAN cua quan tri (tin hieu pha vo trong ngay cho hop dong tuong lai VN30F1M) - khong phai noi dung cho khach, khong co trong menu.
-// Chi tai khoan co la_admin moi xem duoc; may dev (khong phai production) duoc xem de kiem thu. API /api/phai-sinh co cung dieu kien.
+// Tin hieu pha vo trong ngay cho hop dong tuong lai VN30F1M. 05/11/2026: mo cho THANH VIEN DA DUYET voi cach PHA VO BIEN DONG 0,3 (co trong menu "Phai sinh");
+// quan tri (la_admin) va may dev xem du ca khoang mo cua 15 phut. API /api/phai-sinh co cung quy tac.
 export default async function TrangPhaiSinh() {
-  let duocXem = process.env.NODE_ENV !== "production";
-  if (!duocXem) {
-    try {
-      const nd = await layNguoiDungHienTai();
-      duocXem = nd?.la_admin === true;
-    } catch {
-      duocXem = false;
-    }
+  let nd = null;
+  try {
+    nd = await layNguoiDungHienTai();
+  } catch {
+    nd = null;
   }
-  if (!duocXem) {
+  const xemDay = process.env.NODE_ENV !== "production" || nd?.la_admin === true;
+  if (!xemDay && !nd?.da_duyet) {
     return (
-      <div className="max-w-xl mx-auto px-6 py-16 text-center" style={{ color: "var(--mo)" }}>
-        <p className="text-sm">Trang này chỉ dành cho tài khoản quản trị. Hãy đăng nhập bằng tài khoản quản trị rồi mở lại.</p>
-      </div>
+      <KhoaTrangNoiDung
+        tieuDe="Phái sinh VN30F1M"
+        moTa="Đăng ký hoặc đăng nhập miễn phí để xem mức mua, bán khống và cắt lỗ trong ngày của hợp đồng tương lai VN30F1M theo cách phá vỡ biến động 0,3, kèm kết quả các phiên gần nhất."
+        choDuyet={!!nd}
+      />
     );
   }
-  return <PhaVoPhaiSinh />;
+  return <PhaVoPhaiSinh chiBienDong={!xemDay} />;
 }

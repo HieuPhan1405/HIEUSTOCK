@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { createChart, createSeriesMarkers, CandlestickSeries, LineStyle } from "lightweight-charts";
 import { Bell, BellOff, RotateCcw } from "lucide-react";
 import { soVN } from "@/lib/soVN";
+import GiaiThichThem from "@/components/GiaiThichThem";
 
 // TRANG /phai-sinh: tin hieu pha vo trong ngay cho VN30F1M (cong cu ca nhan cua quan tri). Du lieu + logic: /api/phai-sinh (lib/phaVoPhaiSinh.js).
 // Tu lam moi 15 giay trong phien. Thong bao trinh duyet + tieng bip khi trang thai lenh doi (chi khi trang dang mo).
@@ -189,7 +190,8 @@ function OKetQua({ x }) {
   );
 }
 
-export default function PhaVoPhaiSinh() {
+// chiBienDong = true (thanh vien): chi hien cach pha vo bien dong 0,3; false (quan tri / may dev): them khoang mo cua 15 phut.
+export default function PhaVoPhaiSinh({ chiBienDong = false }) {
   const [du, setDu] = useState(null);
   const [lichSu, setLichSu] = useState(null);
   const [loi, setLoi] = useState(null);
@@ -378,7 +380,7 @@ export default function PhaVoPhaiSinh() {
         </p>
       )}
 
-      <div className="grid md:grid-cols-2 gap-4 mb-4">
+      <div className={`grid ${chiBienDong ? "" : "md:grid-cols-2 "}gap-4 mb-4`}>
         <The tieuDe="Phá vỡ biến động 0,3" moTa="Đặt lệnh dừng hai phía quanh giá mở cửa. Giá chạm mức nào trước thì vào theo hướng đó, cắt lỗ tại giá mở cửa." trangThai={b.trangThai}>
           {pt && (
             <p className="text-xs mb-2" style={{ color: MUTED }}>
@@ -403,6 +405,7 @@ export default function PhaVoPhaiSinh() {
           <LenhDangCo x={b} />
         </The>
 
+        {!chiBienDong && (
         <The tieuDe="Khoảng mở cửa 15 phút" moTa="Đỉnh và đáy của 9:00–9:15. Nến 1 phút đóng cửa vượt ra ngoài thì vào theo hướng đó, cắt lỗ ở biên đối diện." trangThai={k.trangThai}>
           {k.dinh != null && Number.isFinite(k.dinh) ? (
             <>
@@ -417,10 +420,11 @@ export default function PhaVoPhaiSinh() {
           )}
           <LenhDangCo x={k} />
         </The>
+        )}
       </div>
 
       <div className="rounded-2xl border p-3 mb-4 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
-        <b style={{ color: TEXT }}>Luật chung:</b> mỗi kiểu tối đa 1 lệnh mỗi ngày · chỉ vào lệnh trước 13:29 · không chốt lời sớm · chưa bị cắt lỗ thì đóng lúc 14:29, không giữ qua đêm.
+        <b style={{ color: TEXT }}>Luật chung:</b> {chiBienDong ? "tối đa 1 lệnh mỗi ngày" : "mỗi kiểu tối đa 1 lệnh mỗi ngày"} · chỉ vào lệnh trước 13:29 · không chốt lời sớm · chưa bị cắt lỗ thì đóng lúc 14:29, không giữ qua đêm.
         {vg && (
           <span className="block mt-1">
             <b style={{ color: TEXT }}>Vùng giá trị phiên {ngayHien(du.ngayTruoc)}:</b> <span style={mono}>{d1(vg.val)} – {d1(vg.vah)}</span> · POC <span style={mono}>{d1(vg.poc)}</span> (chỉ để theo dõi, không phải bộ lọc)
@@ -443,24 +447,24 @@ export default function PhaVoPhaiSinh() {
 
       <div className="rounded-2xl border overflow-hidden mb-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <p className="px-3 py-2 text-xs border-b" style={{ borderColor: VIEN, color: MUTED }}>
-          Nến 1 phút phiên {ngayHien(du?.ngay)} · BĐ = phá vỡ biến động, KM = khoảng mở cửa
+          Nến 1 phút phiên {ngayHien(du?.ngay)}{chiBienDong ? "" : " · BĐ = phá vỡ biến động, KM = khoảng mở cửa"}
         </p>
         <BieuDoTrongNgay du={du} />
       </div>
 
       <div className="rounded-2xl border overflow-hidden mb-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
         <p className="px-3 py-2 text-xs border-b" style={{ borderColor: VIEN, color: MUTED }}>
-          {lichSu ? `${lichSu.length} phiên gần nhất · điểm sau phí và thuế, chưa trừ trượt giá · * phiên đầu hợp đồng mới, kiểu biến động không tính vào tổng` : "Đang tải lịch sử…"}
+          {lichSu ? `${lichSu.length} phiên gần nhất · điểm sau phí và thuế, chưa trừ trượt giá · * phiên đầu hợp đồng mới${chiBienDong ? "" : ", kiểu biến động không tính vào tổng"}` : "Đang tải lịch sử…"}
         </p>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm" style={{ minWidth: 760 }}>
+          <table className="w-full text-sm" style={{ minWidth: chiBienDong ? 440 : 760 }}>
             <thead>
               <tr style={{ color: MUTED }}>
                 <th className="text-left font-normal px-3 py-2">Ngày</th>
                 <th className="text-left font-normal px-3 py-2">Biến động 0,3</th>
                 <th className="text-right font-normal px-3 py-2">Điểm</th>
-                <th className="text-left font-normal px-3 py-2">Khoảng mở cửa 15&apos;</th>
-                <th className="text-right font-normal px-3 py-2">Điểm</th>
+                {!chiBienDong && <th className="text-left font-normal px-3 py-2">Khoảng mở cửa 15&apos;</th>}
+                {!chiBienDong && <th className="text-right font-normal px-3 py-2">Điểm</th>}
               </tr>
             </thead>
             <tbody>
@@ -477,12 +481,16 @@ export default function PhaVoPhaiSinh() {
                   <td className="px-3 py-1.5 text-right whitespace-nowrap" style={{ ...mono, color: !x.bienDong.phia ? MUTED : x.bienDong.diemSauPhi > 0 ? XANH : DO, opacity: boQua(x, "bienDong") ? 0.45 : 1 }}>
                     {x.bienDong.phia ? diemCoDau(x.bienDong.diemSauPhi) : ""}
                   </td>
-                  <td className="px-3 py-1.5 whitespace-nowrap">
-                    <OKetQua x={x.khoangMoCua} />
-                  </td>
-                  <td className="px-3 py-1.5 text-right whitespace-nowrap" style={{ ...mono, color: !x.khoangMoCua.phia ? MUTED : x.khoangMoCua.diemSauPhi > 0 ? XANH : DO }}>
-                    {x.khoangMoCua.phia ? diemCoDau(x.khoangMoCua.diemSauPhi) : ""}
-                  </td>
+                  {!chiBienDong && (
+                    <td className="px-3 py-1.5 whitespace-nowrap">
+                      <OKetQua x={x.khoangMoCua} />
+                    </td>
+                  )}
+                  {!chiBienDong && (
+                    <td className="px-3 py-1.5 text-right whitespace-nowrap" style={{ ...mono, color: !x.khoangMoCua.phia ? MUTED : x.khoangMoCua.diemSauPhi > 0 ? XANH : DO }}>
+                      {x.khoangMoCua.phia ? diemCoDau(x.khoangMoCua.diemSauPhi) : ""}
+                    </td>
+                  )}
                 </tr>
               ))}
               {lichSu && (
@@ -494,26 +502,47 @@ export default function PhaVoPhaiSinh() {
                   <td className="px-3 py-2 text-right font-bold" style={{ ...mono, color: tong("bienDong") > 0 ? XANH : DO }}>
                     {diemCoDau(tong("bienDong"))}
                   </td>
-                  <td className="px-3 py-2" style={{ color: MUTED }}>
-                    {soLenh("khoangMoCua")} lệnh, thắng {soThang("khoangMoCua")}
-                  </td>
-                  <td className="px-3 py-2 text-right font-bold" style={{ ...mono, color: tong("khoangMoCua") > 0 ? XANH : DO }}>
-                    {diemCoDau(tong("khoangMoCua"))}
-                  </td>
+                  {!chiBienDong && (
+                    <td className="px-3 py-2" style={{ color: MUTED }}>
+                      {soLenh("khoangMoCua")} lệnh, thắng {soThang("khoangMoCua")}
+                    </td>
+                  )}
+                  {!chiBienDong && (
+                    <td className="px-3 py-2 text-right font-bold" style={{ ...mono, color: tong("khoangMoCua") > 0 ? XANH : DO }}>
+                      {diemCoDau(tong("khoangMoCua"))}
+                    </td>
+                  )}
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-        {lichSu && (theoVung("bienDong") || theoVung("khoangMoCua")) && (
+        {lichSu && (theoVung("bienDong") || (!chiBienDong && theoVung("khoangMoCua"))) && (
           <p className="px-3 py-2 text-xs border-t" style={{ borderColor: VIEN, color: MUTED }}>
-            Theo vị trí giá vào so với vùng giá trị hôm trước — Biến động: {theoVung("bienDong") || "—"} | Khoảng mở cửa: {theoVung("khoangMoCua") || "—"}
+            Theo vị trí giá vào so với vùng giá trị hôm trước — Biến động: {theoVung("bienDong") || "—"}
+            {!chiBienDong && <> | Khoảng mở cửa: {theoVung("khoangMoCua") || "—"}</>}
           </p>
         )}
       </div>
 
+      {chiBienDong && (
+        <GiaiThichThem className="mb-3" nhanMo="Cách làm, kiểm chứng và rủi ro" tomTat="Phái sinh có đòn bẩy cao, có thể mất nhiều hơn số tiền ký quỹ ban đầu. Đây là số liệu thống kê, không phải khuyến nghị.">
+          <p>
+            <b>Cách làm:</b> mỗi sáng, lấy biên độ phiên trước (cao nhất − thấp nhất) nhân 0,3 để ra khoảng cách. Đặt lệnh dừng mua ở giá mở cửa cộng khoảng cách, bán khống ở giá mở cửa trừ khoảng cách; giá chạm mức nào trước thì vào theo hướng đó.
+            Cắt lỗ tại giá mở cửa, không chốt lời sớm, chưa cắt lỗ thì đóng lúc 14:29; mỗi ngày tối đa 1 lệnh và không giữ qua đêm.
+          </p>
+          <p className="mt-2">
+            <b>Kiểm chứng trên dữ liệu 2018–2026</b> (nến 1 phút VN30F1M, đã trừ phí MBS và trượt giá 0,4 điểm mỗi vòng): lãi khoảng 15–23% mỗi năm trên giá trị hợp đồng, lãi ở mọi năm 2018–2025 nhưng năm 2026 gần như hòa vốn; sụt vốn lớn nhất khoảng 7–8%.
+            Chỉ khoảng 40% số lệnh thắng, lãi đến từ vài lệnh chạy xa; từng thua 10–13 phiên liên tiếp. Nếu khớp lệnh thực tế kém hơn dự kiến thì lãi giảm nhanh, và gần như hòa vốn khi trượt giá khoảng 1,5 điểm mỗi vòng.
+          </p>
+          <p className="mt-2">
+            <b>Vốn:</b> một hợp đồng có giá trị khoảng 187 triệu đồng (1.870 điểm × 100.000đ). Kết quả trên tính theo giá trị hợp đồng chưa đòn bẩy, không nên chỉ nạp ký quỹ tối thiểu; vốn từ khoảng 90 triệu đồng cho mỗi hợp đồng giúp chịu được các chuỗi thua.
+            Quá khứ không đảm bảo tương lai.
+          </p>
+        </GiaiThichThem>
+      )}
       <p className="text-[11px]" style={{ color: MUTED }}>
-        Công cụ thống kê cá nhân, không phải khuyến nghị đầu tư và không tự đặt lệnh. Giá lấy từ nến 1 phút nên chậm hơn bảng giá vài giây đến một phút; tín hiệu khoảng mở cửa chỉ tính khi nến 1 phút đã đóng xong. Điểm sau phí theo biểu phí MBS (3.000đ + 2.700đ + 2.550đ mỗi lượt và thuế),
+        Công cụ thống kê, không phải khuyến nghị đầu tư và không tự đặt lệnh. Giá lấy từ nến 1 phút nên chậm hơn bảng giá vài giây đến một phút{chiBienDong ? ". " : "; tín hiệu khoảng mở cửa chỉ tính khi nến 1 phút đã đóng xong. "}Điểm sau phí theo biểu phí MBS (3.000đ + 2.700đ + 2.550đ mỗi lượt và thuế),
         1 điểm = 100.000đ mỗi hợp đồng. Trong kiểm chứng 2018–2026, mỗi kiểu chỉ thắng khoảng một phần ba số lệnh và từng thua 10–13 phiên liên tiếp. Vùng giá trị hôm trước là vùng giá chứa 70% khối lượng của
         phiên trước (VAL – VAH, POC là mức nhiều khối lượng nhất); trong kiểm chứng, lệnh có giá vào còn nằm trong vùng này gần hoà vốn, lệnh đã ra khỏi vùng lãi trung bình cao hơn, nhưng chênh lệch chưa đủ chắc để dùng làm bộ lọc nên chỉ ghi lại để theo dõi.
       </p>

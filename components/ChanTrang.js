@@ -19,6 +19,7 @@ const CONG_CU = [
   { href: "/danh-muc", nhan: "Danh sách theo dõi" },
   { href: "/danh-gia-danh-muc", nhan: "Đánh giá danh mục" },
   { href: "/dai-han", nhan: "Đầu tư dài hạn" },
+  { href: "/phai-sinh", nhan: "Phái sinh VN30F1M" },
   { href: "/lenh-da-dong", nhan: "Lệnh đã đóng" },
   { href: "/bat-day", nhan: "Checklist bắt đáy" },
 ];
