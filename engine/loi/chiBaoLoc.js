@@ -78,7 +78,7 @@ const pctCach = (a, b) => (a != null && b != null && b !== 0 ? (a / b - 1) * 100
 // RSI phan ky gan nhat (lib/phanKyRSI.js) -> ma hoa nhu _cat_cach: TANG xac nhan k nen truoc = +k, GIAM = -(k + 1); null neu khong co trong `toiDa` nen cuoi.
 export function maHoaPhanKy(nen, toiDa) {
   if (!Array.isArray(nen) || nen.length < 40) return null;
-  const ev = phanKyRSI(nen, rsiLib(nen.map((x) => x.c), 14), { k: 3 });
+  const ev = phanKyRSI(nen, rsiLib(nen.map((x) => x.c), 14), { k: 2 });
   const cuoiCung = ev[ev.length - 1];
   if (!cuoiCung) return null;
   const cach = nen.length - 1 - cuoiCung.xacNhan;
