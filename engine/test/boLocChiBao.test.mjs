@@ -21,6 +21,9 @@ const ok = (ten, dk, them = "") => {
   ok("PK GIAM khong bi tinh la PK tang", !khopChiBao({ rsi_pk_cach: -1 }, bo2("tang_10")) && khopChiBao({ rsi_pk_cach: -3 }, bo2("giam_5")));
   ok("khung tuan: tang trong 4 tuan", khopChiBao({ rsi_pk_tuan_cach: 3 }, bo2("tang_tuan_4")) && !khopChiBao({ rsi_pk_tuan_cach: 4 }, bo2("tang_tuan_4")));
   ok("khong co phan ky (null): khong khop", !khopChiBao({ rsi_pk_cach: null }, bo2("tang_10")));
+  // phan ky SOM (mau vang): cach tinh tu day / dinh moi (0 = nen cuoi)
+  ok("PK SOM tang: day moi 0 -> khop 'hom nay', cach 3 khong khop 3 phien", khopChiBao({ rsi_pks_cach: 0 }, bo2("som_tang_1")) && khopChiBao({ rsi_pks_cach: 2 }, bo2("som_tang_3")) && !khopChiBao({ rsi_pks_cach: 3 }, bo2("som_tang_3")));
+  ok("PK SOM giam khong bi tinh la tang, tuan 2 khop", !khopChiBao({ rsi_pks_cach: -1 }, bo2("som_tang_10")) && khopChiBao({ rsi_pks_cach: -3 }, bo2("som_giam_5")) && khopChiBao({ rsi_pks_tuan_cach: 1 }, bo2("som_tang_tuan_2")));
 }
 
 // ---- Diem mua phuc hoi (pb_cach = so phien tu diem B, 0 = hom nay) ----

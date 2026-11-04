@@ -7,7 +7,7 @@ import { hhv, llv, sma } from "./mang.js";
 import { tinhIchimoku } from "./ichimoku.js";
 import { COT_CHI_BAO, COT_CHI_BAO_H1 } from "../../lib/cotChiBaoKyThuat.js";
 import { rsi as rsiLib } from "../../lib/chiBaoPhu.js";
-import { phanKyRSI, gopNenTuan } from "../../lib/phanKyRSI.js";
+import { phanKyRSI, phanKyRSISom, gopNenTuan } from "../../lib/phanKyRSI.js";
 import { tinhDiemMuaPhucHoi } from "./diemMuaPhucHoi.js";
 import { tinhDongTienBanker } from "../../lib/dongTienBanker.js";
 import { tinhHoiSauGiamDai } from "./hoiSauGiamDai.js";
@@ -85,7 +85,18 @@ export function maHoaPhanKy(nen, toiDa) {
   if (cach < 0 || cach >= toiDa) return null;
   return cuoiCung.loai === "tang" ? cach : -(cach + 1);
 }
-const COT_NGUYEN = new Set(["pb_cat", ...COT_MAU_HINH_NEN, "hg_giam_dai", "hg_gtgd_ok", "hg_day_cao", "hg_tren_tk_kj", "hg_cach", "hg_ban", "pb_cach", "pb_dong_tien", "rsi_h1_pk_cach", ...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
+// RSI phan ky SOM gan nhat (phanKyRSISom): khac maHoaPhanKy o cho tinh tu DAY / DINH MOI (i2), khong phai tu nen xac nhan (co the chua xac nhan): 0 = day / dinh la nen cuoi, TANG = +cach, GIAM = -(cach + 1).
+export function maHoaPhanKySom(nen, toiDa) {
+  if (!Array.isArray(nen) || nen.length < 40) return null;
+  const ev = phanKyRSISom(nen, rsiLib(nen.map((x) => x.c), 14), { k: 2 });
+  let cuoiCung = null;
+  for (const e of ev) if (!cuoiCung || e.i2 >= cuoiCung.i2) cuoiCung = e;
+  if (!cuoiCung) return null;
+  const cach = nen.length - 1 - cuoiCung.i2;
+  if (cach < 0 || cach >= toiDa) return null;
+  return cuoiCung.loai === "tang" ? cach : -(cach + 1);
+}
+const COT_NGUYEN = new Set(["pb_cat", ...COT_MAU_HINH_NEN, "hg_giam_dai", "hg_gtgd_ok", "hg_day_cao", "hg_tren_tk_kj", "hg_cach", "hg_ban", "pb_cach", "pb_dong_tien", "rsi_h1_pk_cach", ...COT_MAU_HINH_NGAY, ...COT_MAU_HINH_TUAN, "rsi_pk_cach", "rsi_pk_tuan_cach", "rsi_pks_cach", "rsi_pks_tuan_cach", "macd_cat_cach", "stoch_cat_cach", "ma20_50_cat_cach", "ma50_200_cat_cach", "gia_so_may", "tenkan_tren_kijun"]);
 
 // Tra ve object { ngay_nen, ...COT_CHI_BAO } cho 1 ma, hoac null neu chua du du lieu.
 // ma (tuy chon): neu co, cot DIEM B (pb_*) chi tinh cho ma thuoc nganh trong tam (bo 10 nganh nho + ma chua gan nganh); khong truyen ma = tinh nhu cu.
@@ -174,6 +185,8 @@ export function tinhChiBaoLocChoMa(nen, ma = null) {
     macd_cat_cach: nenTuLanCat(macdLine, macdSignal),
     rsi_pk_cach: maHoaPhanKy(b, SO_NEN_PK_NGAY),
     rsi_pk_tuan_cach: maHoaPhanKy(gopNenTuan(b), SO_NEN_PK_TUAN),
+    rsi_pks_cach: maHoaPhanKySom(b, SO_NEN_PK_NGAY),
+    rsi_pks_tuan_cach: maHoaPhanKySom(gopNenTuan(b), SO_NEN_PK_TUAN),
     stoch_k: cuoi(stochK),
     stoch_d: cuoi(stochD),
     stoch_cat_cach: nenTuLanCat(stochK, stochD),

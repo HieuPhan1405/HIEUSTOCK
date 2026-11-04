@@ -56,7 +56,8 @@ function cotCat(khoa, nhan, moTa) {
 }
 
 // Cot RSI phan ky (khung ngay / tuan): "↑ hom nay" = phan ky TANG vua xac nhan (canh dao chieu), "↓ ..." = phan ky GIAM. donVi: "phiên" hoặc "tuần".
-function cotPhanKy(khoa, nhan, donVi, moTa) {
+// som = true: phan ky SOM (mau VANG, lib/phanKyRSI.js phanKyRSISom) - "cach" tinh tu day / dinh MOI, co the chua du nen xac nhan.
+function cotPhanKy(khoa, nhan, donVi, moTa, som = false) {
   return {
     nhan,
     nhom: NHOM,
@@ -70,8 +71,15 @@ function cotPhanKy(khoa, nhan, donVi, moTa) {
       if (!c) return Trong;
       const khi = c.cach === 0 ? (donVi === "tuần" ? "tuần này" : donVi.startsWith("nến") ? "nến này" : "hôm nay") : `${c.cach} ${donVi}`;
       return (
-        <span style={{ color: c.huong > 0 ? XANH : DO }} title={`${moTa}: phân kỳ ${c.huong > 0 ? "tăng (đáy sau thấp hơn, RSI cao hơn)" : "giảm (đỉnh sau cao hơn, RSI thấp hơn)"} xác nhận ${khi === "hôm nay" || khi === "tuần này" ? khi : khi + " trước"}. Chỉ là điều kiện tham khảo.`}>
-          {c.huong > 0 ? "↑ PK tăng" : "↓ PK giảm"} · {khi}
+        <span
+          style={{ color: som ? VANG : c.huong > 0 ? XANH : DO }}
+          title={
+            som
+              ? `${moTa}: phân kỳ SỚM (ít điều kiện, đáy / đỉnh mới có thể chưa đủ nến xác nhận) ${c.huong > 0 ? "tăng: đáy mới thấp hơn nhưng RSI cao hơn" : "giảm: đỉnh mới cao hơn nhưng RSI thấp hơn"}; đáy / đỉnh mới cách đây ${khi === "hôm nay" || khi === "tuần này" ? "0 nến (chính nến cuối)" : khi}. Dễ báo sai hơn, chỉ để tham khảo.`
+              : `${moTa}: phân kỳ ${c.huong > 0 ? "tăng (đáy sau thấp hơn, RSI cao hơn)" : "giảm (đỉnh sau cao hơn, RSI thấp hơn)"} xác nhận ${khi === "hôm nay" || khi === "tuần này" ? khi : khi + " trước"}. Chỉ là điều kiện tham khảo.`
+          }
+        >
+          {som ? (c.huong > 0 ? "↑ PK sớm?" : "↓ PK sớm?") : c.huong > 0 ? "↑ PK tăng" : "↓ PK giảm"} · {khi}
         </span>
       );
     },
@@ -179,6 +187,8 @@ export const COT_CHI_BAO_HIEN = {
   rsi_h1_pk_cach: cotPhanKy("rsi_h1_pk_cach", "RSI phân kỳ (1H)", "nến 1H", "Khung 1 giờ, ~12 phiên gần nhất"),
   rsi_pk_cach: cotPhanKy("rsi_pk_cach", "RSI phân kỳ (ngày)", "phiên", "Khung ngày, 3 tháng gần nhất"),
   rsi_pk_tuan_cach: cotPhanKy("rsi_pk_tuan_cach", "RSI phân kỳ (tuần)", "tuần", "Khung tuần, 6 tháng gần nhất"),
+  rsi_pks_cach: cotPhanKy("rsi_pks_cach", "RSI phân kỳ SỚM (ngày)", "phiên", "Khung ngày, 3 tháng gần nhất", true),
+  rsi_pks_tuan_cach: cotPhanKy("rsi_pks_tuan_cach", "RSI phân kỳ SỚM (tuần)", "tuần", "Khung tuần, 6 tháng gần nhất", true),
   macd: cotSo("macd", "MACD", (v) => soAn(v, 3), mauDau, "Đường MACD (12, 26)"),
   macd_hist: cotSo("macd_hist", "MACD Hist", (v) => soAn(v, 3), mauDau, "MACD trừ Signal (9): dương = MACD trên Signal"),
   macd_cat_cach: cotCat("macd_cat_cach", "MACD cắt Signal", "MACD và Signal"),
