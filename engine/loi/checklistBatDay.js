@@ -9,16 +9,8 @@ import { VN100 } from "../danh-sach/vn100.js";
 const NGUONG_THAM_KHAO = 5;
 const SO_NEN_TOI_THIEU = 260; // can du cho HHV(H,252) co y nghia, giong AFL can lich su du de bat dau tinh diem
 
-// nen: [{t: "YYYY-MM-DD", o, h, l, c, v}] tang dan (index 0 = cu nhat) - dung chung dinh dang voi
-// phan con lai cua engine (xem engine/loi/quetToanBo.js).
-// Tra ve mang su kien: [{ ngay, diem, gia_luc_tin_hieu, pct_sau_5, pct_sau_10, pct_sau_20, chiet_khau, rsi, capitulation, ftd, kl_day }].
-// kl_day = KL lon nhat 5 phien gan nhat / KL TB 20 phien truoc do (ban thao co KL >= 2x: ket qua lich su tot hon trong 2022 va 2025 nhung khong on dinh theo nam - nghienCuuNangCapChecklist.mjs).
-// gtgdToiThieuTy: loc thanh khoan khi mo rong ra moi ma (GTGD TB20 = gia x KL / 1 trieu, don vi ty); null = khong loc (VN100 giu nguyen nhu AFL).
-// nguong: diem kich hoat (mac dinh NGUONG_THAM_KHAO = 5, giong AFL); thu nguong thap hon chi de NGHIEN CUU (engine/dich-vu/nghienCuuBatDayNguong.mjs).
-export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024, gtgdToiThieuTy = null, nguong = NGUONG_THAM_KHAO } = {}) {
-  const n = nen.length;
-  if (n < SO_NEN_TOI_THIEU) return [];
-
+// Phan TINH TOAN dung chung (ban dau nam trong tinhChecklistBatDay): tra ve cac mang theo tung phien. Dung boi su kien lich su (tinhChecklistBatDay) va trang thai HIEN TAI (tinhChecklistHienTai).
+function tinhMang(nen) {
   const high = nen.map((b) => b.h);
   const low = nen.map((b) => b.l);
   const close = nen.map((b) => b.c);
@@ -89,6 +81,20 @@ export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024, gtgdToiThieu
   const diemFtd = c9Ftd.map((v) => (v ? 2 : 0));
 
   const tongDiemRiengMa = close.map((_, i) => nhomMotDiem[i] + nhomHaiDiem[i] + diemFtd[i]);
+  return { high, low, close, volume, chietKhau, c1ChietKhau, rsiVal, mfiVal, c2Oversold, wpr, c3Wpr, ma200Dev, c4Ma200, c6Capitulation, c7PhanKy, c8DaySauCaoHon, klDay, gtgdTB, c9Ftd, diemFtd, nhomMotDiem, nhomHaiDiem, tongDiemRiengMa };
+}
+
+// nen: [{t: "YYYY-MM-DD", o, h, l, c, v}] tang dan (index 0 = cu nhat) - dung chung dinh dang voi
+// phan con lai cua engine (xem engine/loi/quetToanBo.js).
+// Tra ve mang su kien: [{ ngay, diem, gia_luc_tin_hieu, pct_sau_5, pct_sau_10, pct_sau_20, chiet_khau, rsi, capitulation, ftd, kl_day }].
+// kl_day = KL lon nhat 5 phien gan nhat / KL TB 20 phien truoc do (ban thao co KL >= 2x: ket qua lich su tot hon trong 2022 va 2025 nhung khong on dinh theo nam - nghienCuuNangCapChecklist.mjs).
+// gtgdToiThieuTy: loc thanh khoan khi mo rong ra moi ma (GTGD TB20 = gia x KL / 1 trieu, don vi ty); null = khong loc (VN100 giu nguyen nhu AFL).
+// nguong: diem kich hoat (mac dinh NGUONG_THAM_KHAO = 5, giong AFL); thu nguong thap hon chi de NGHIEN CUU (engine/dich-vu/nghienCuuBatDayNguong.mjs).
+export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024, gtgdToiThieuTy = null, nguong = NGUONG_THAM_KHAO } = {}) {
+  const n = nen.length;
+  if (n < SO_NEN_TOI_THIEU) return [];
+
+  const { close, chietKhau, rsiVal, c6Capitulation, c9Ftd, klDay, gtgdTB, tongDiemRiengMa } = tinhMang(nen);
 
   // Tin hieu kich hoat = SU KIEN (vuot nguong DUNG NGAY hom do), khong phai trang thai giu.
   const namCuaBar = nen.map((b) => Number(b.t.slice(0, 4)));
@@ -121,6 +127,28 @@ export function tinhChecklistBatDay(nen, { namBatDauTheoDoi = 2024, gtgdToiThieu
     });
   }
   return ketQua;
+}
+
+// TRANG THAI HIEN TAI cua 1 ma (phien cuoi cung): tong diem va tung dieu kien dang dat hay chua, de trang Bat day cho biet "dang bao nhieu diem, con thieu dieu kien nao". Cung cong thuc voi su kien lich su.
+// Tra ve null neu chua du du lieu. diem toi da: nhom 1 = 4 (chiet khau, qua ban 0,5 + 0,5, Williams %R, duoi MA200), nhom 2 = 3 (capitulation, phan ky RSI, day sau cao hon), FTD = 2.
+// Luu y: capitulation / phan ky / day sau cao hon / FTD la dieu kien CUA PHIEN CUOI (chi dat khi phien cuoi la phien do); nguong kich hoat bao tin hieu la NGUONG_THAM_KHAO.
+export function tinhChecklistHienTai(nen) {
+  if (!Array.isArray(nen) || nen.length < SO_NEN_TOI_THIEU) return null;
+  const m = tinhMang(nen);
+  const i = nen.length - 1;
+  const so = (v) => (v == null || !Number.isFinite(v) ? null : v);
+  return {
+    diem: m.tongDiemRiengMa[i],
+    chiet_khau: so(m.chietKhau[i]),
+    c1: m.c1ChietKhau[i] ? 1 : 0,
+    c2: m.c2Oversold[i],
+    c3: m.c3Wpr[i] ? 1 : 0,
+    c4: m.c4Ma200[i] ? 1 : 0,
+    c6: m.c6Capitulation[i] ? 1 : 0,
+    c7: m.c7PhanKy[i] ? 1 : 0,
+    c8: m.c8DaySauCaoHon[i] ? 1 : 0,
+    c9: m.c9Ftd[i] ? 2 : 0,
+  };
 }
 
 // Tinh checklist cho CA VN100 tu du lieu nen DA CO SAN trong bo nho (nenTheoMa: Map<ma, nen[]> -

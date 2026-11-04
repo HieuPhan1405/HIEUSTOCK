@@ -8,6 +8,7 @@ import { tinhIchimoku } from "./ichimoku.js";
 import { COT_CHI_BAO, COT_CHI_BAO_H1 } from "../../lib/cotChiBaoKyThuat.js";
 import { rsi as rsiLib } from "../../lib/chiBaoPhu.js";
 import { phanKyRSI, phanKyRSISom, gopNenTuan } from "../../lib/phanKyRSI.js";
+import { tinhChecklistHienTai } from "./checklistBatDay.js";
 import { tinhDiemMuaPhucHoi } from "./diemMuaPhucHoi.js";
 import { tinhDongTienBanker } from "../../lib/dongTienBanker.js";
 import { tinhHoiSauGiamDai } from "./hoiSauGiamDai.js";
@@ -101,6 +102,8 @@ const COT_NGUYEN = new Set(["pb_cat", ...COT_MAU_HINH_NEN, "hg_giam_dai", "hg_gt
 // Tra ve object { ngay_nen, ...COT_CHI_BAO } cho 1 ma, hoac null neu chua du du lieu.
 // ma (tuy chon): neu co, cot DIEM B (pb_*) chi tinh cho ma thuoc nganh trong tam (bo 10 nganh nho + ma chua gan nganh); khong truyen ma = tinh nhu cu.
 export function tinhChiBaoLocChoMa(nen, ma = null) {
+  // checklist bat day (can >= 260 nen, dung toan bo nen chu khong cat theo SO_NEN_TINH); thieu nen -> cac cot bd_* de trong
+  const bd = tinhChecklistHienTai(nen);
   if (!Array.isArray(nen) || nen.length < SO_NEN_TOI_THIEU) return null;
   const b = nen.slice(-SO_NEN_TINH);
   const n = b.length;
@@ -178,6 +181,16 @@ export function tinhChiBaoLocChoMa(nen, ma = null) {
 
   const kq = {
     ngay_nen: b[n - 1].t,
+    bd_diem: bd ? bd.diem : null,
+    bd_c1: bd ? bd.c1 : null,
+    bd_c2: bd ? bd.c2 : null,
+    bd_c3: bd ? bd.c3 : null,
+    bd_c4: bd ? bd.c4 : null,
+    bd_c6: bd ? bd.c6 : null,
+    bd_c7: bd ? bd.c7 : null,
+    bd_c8: bd ? bd.c8 : null,
+    bd_c9: bd ? bd.c9 : null,
+    bd_chiet_khau: bd ? bd.chiet_khau : null,
     rsi14: cuoi(rsi({ close }, 14)),
     macd: cuoi(macdLine),
     macd_signal: cuoi(macdSignal),
