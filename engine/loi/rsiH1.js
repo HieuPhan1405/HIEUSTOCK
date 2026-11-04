@@ -1,4 +1,4 @@
-// RSI KHUNG 1 GIO cho BO LOC (khong tham gia tin hieu MUA/BAN): RSI 14 tren nen 1 gio + RSI phan ky 1 gio (lib/phanKyRSI.js, k = 3) ma hoa nhu cot _cat_cach cua bo loc:
+// RSI KHUNG 1 GIO cho BO LOC (khong tham gia tin hieu MUA/BAN): RSI 14 tren nen 1 gio + RSI phan ky 1 gio (lib/phanKyRSI.js, k = 2) ma hoa nhu cot _cat_cach cua bo loc:
 // phan ky TANG xac nhan k nen 1 gio truoc = +k, GIAM = -(k + 1), null neu khong co trong `SO_NEN_PK_H1` nen 1 gio cuoi (~12 phien).
 // nen1h: [{ t, h, l, c }] tang dan theo thoi gian (nen cuoi co the dang chay do). Cot: rsi_h1, rsi_h1_pk_cach (lib/cotChiBaoKyThuat.js, COT_CHI_BAO_H1).
 import { rsi } from "./taChiBao.js";
@@ -13,7 +13,7 @@ export function tinhRsiH1ChoMa(nen1h) {
   const close = nen1h.map((b) => b.c);
   const r = rsi({ close }, 14);
   const cuoi = r[r.length - 1];
-  const ev = phanKyRSI(nen1h.map((b) => ({ h: b.h, l: b.l, c: b.c })), r, { k: 3 });
+  const ev = phanKyRSI(nen1h.map((b) => ({ h: b.h, l: b.l, c: b.c })), r, { k: 2 });
   const gan = ev[ev.length - 1];
   let pk = null;
   if (gan) {

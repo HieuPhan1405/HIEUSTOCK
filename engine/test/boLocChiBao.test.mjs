@@ -3,7 +3,7 @@ import { DS_CHI_BAO_LOC, CHI_BAO_LOC, NHOM_CHI_BAO_LOC, GOI_Y_NHANH, KHOANG, gia
 import { COT_CHI_BAO } from "../../lib/cotChiBaoKyThuat.js";
 import { KHOA_MAU_HINH as KHOA_MH } from "../../lib/mauHinh.js";
 // free_float / von_hoa_tu_do_ty: cot suy ra tu lib/freeFloat.js tren dong tin hieu (lib/tinHieu.js), khong phai cot cua bang chi_bao_ky_thuat
-const COT_TONG_HOP = new Set(["mh_ngay", "mh_tuan", "pb", "nen", "free_float", "von_hoa_tu_do_ty"]);
+const COT_TONG_HOP = new Set(["mh_ngay", "mh_tuan", "rsi_pk_gop", "pb", "nen", "free_float", "von_hoa_tu_do_ty"]);
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -19,11 +19,11 @@ const ok = (ten, dk, them = "") => {
   ok("PK tang hom nay khop (0), khong khop khi cach 1", khopChiBao({ rsi_pk_cach: 0 }, bo2("tang_1")) && !khopChiBao({ rsi_pk_cach: 1 }, bo2("tang_1")));
   ok("PK tang 3 phien: cach 2 khop, cach 3 khong", khopChiBao({ rsi_pk_cach: 2 }, bo2("tang_3")) && !khopChiBao({ rsi_pk_cach: 3 }, bo2("tang_3")));
   ok("PK GIAM khong bi tinh la PK tang", !khopChiBao({ rsi_pk_cach: -1 }, bo2("tang_10")) && khopChiBao({ rsi_pk_cach: -3 }, bo2("giam_5")));
-  ok("khung tuan: tang trong 4 tuan", khopChiBao({ rsi_pk_tuan_cach: 3 }, bo2("tang_tuan_4")) && !khopChiBao({ rsi_pk_tuan_cach: 4 }, bo2("tang_tuan_4")));
   ok("khong co phan ky (null): khong khop", !khopChiBao({ rsi_pk_cach: null }, bo2("tang_10")));
-  // phan ky SOM (mau vang): cach tinh tu day / dinh moi (0 = nen cuoi)
-  ok("PK SOM tang: day moi 0 -> khop 'hom nay', cach 3 khong khop 3 phien", khopChiBao({ rsi_pks_cach: 0 }, bo2("som_tang_1")) && khopChiBao({ rsi_pks_cach: 2 }, bo2("som_tang_3")) && !khopChiBao({ rsi_pks_cach: 3 }, bo2("som_tang_3")));
-  ok("PK SOM giam khong bi tinh la tang, tuan 2 khop", !khopChiBao({ rsi_pks_cach: -1 }, bo2("som_tang_10")) && khopChiBao({ rsi_pks_cach: -3 }, bo2("som_giam_5")) && khopChiBao({ rsi_pks_tuan_cach: 1 }, bo2("som_tang_tuan_2")));
+  // GOP: dieu kien khop phan ky da hinh thanh HOAC som (rsi_pks_cach, tinh tu day / dinh moi)
+  ok("gop: PK som tang (rsi_pks_cach) cung khop dieu kien tang", khopChiBao({ rsi_pks_cach: 0 }, bo2("tang_1")) && khopChiBao({ rsi_pks_cach: 2 }, bo2("tang_3")) && !khopChiBao({ rsi_pks_cach: 3 }, bo2("tang_3")));
+  ok("gop: PK som giam khong bi tinh la tang, khop dieu kien giam", !khopChiBao({ rsi_pks_cach: -1 }, bo2("tang_10")) && khopChiBao({ rsi_pks_cach: -3 }, bo2("giam_5")));
+  ok("gop: da hinh thanh hoac som deu khop, khong co thi khong", khopChiBao({ rsi_pk_cach: 1, rsi_pks_cach: null }, bo2("tang_3")) && !khopChiBao({ rsi_pk_cach: null, rsi_pks_cach: null }, bo2("tang_3")));
 }
 
 // ---- Diem mua phuc hoi (pb_cach = so phien tu diem B, 0 = hom nay) ----

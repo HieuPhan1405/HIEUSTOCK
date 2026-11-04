@@ -55,6 +55,34 @@ function cotCat(khoa, nhan, moTa) {
   };
 }
 
+const K_XAC_NHAN_PK = 2; // = k cua phanKyRSI o bieu do va engine
+
+// Cot gop phan ky ngay: chon ban ghi co day / dinh moi hon (hoa -> da hinh thanh) de hien; sap xep theo do moi cua day / dinh.
+function cotPhanKyGop() {
+  const chat = cotPhanKy("rsi_pk_cach", "", "phiên", "Khung ngày, 3 tháng gần nhất");
+  const som = cotPhanKy("rsi_pks_cach", "", "phiên", "Khung ngày, 3 tháng gần nhất", true);
+  const chon = (r) => {
+    const a = giaiMaCat(r.rsi_pk_cach);
+    const b = giaiMaCat(r.rsi_pks_cach);
+    if (!a && !b) return null;
+    if (a && (!b || a.cach + K_XAC_NHAN_PK <= b.cach)) return { c: a, kieu: chat, tuoi: a.cach + K_XAC_NHAN_PK };
+    return { c: b, kieu: som, tuoi: b.cach };
+  };
+  return {
+    nhan: "RSI phân kỳ (ngày)",
+    nhom: NHOM,
+    canPhai: true,
+    lay: (r) => {
+      const x = chon(r);
+      return x ? x.c.huong * (1000 - x.tuoi) : null;
+    },
+    hien: (r, ctx) => {
+      const x = chon(r);
+      return x ? x.kieu.hien(r, ctx) : Trong;
+    },
+  };
+}
+
 // Cot RSI phan ky (khung ngay / tuan): "↑ hom nay" = phan ky TANG vua xac nhan (canh dao chieu), "↓ ..." = phan ky GIAM. donVi: "phiên" hoặc "tuần".
 // som = true: phan ky SOM (mau VANG, lib/phanKyRSI.js phanKyRSISom) - "cach" tinh tu day / dinh MOI, co the chua du nen xac nhan.
 function cotPhanKy(khoa, nhan, donVi, moTa, som = false) {
@@ -185,10 +213,8 @@ export const COT_CHI_BAO_HIEN = {
   rsi14: cotSo("rsi14", "RSI (14)", so1So, (v) => (v < 30 ? XANH : v > 70 ? DO : undefined), "Dưới 30: quá bán (xanh) · trên 70: quá mua (đỏ)"),
   rsi_h1: cotSo("rsi_h1", "RSI 1H (14)", so1So, (v) => (v < 30 ? XANH : v > 70 ? DO : undefined), "RSI 14 trên nến 1 giờ - dưới 30: quá bán (xanh) · trên 70: quá mua (đỏ); cập nhật ~10 phút/lần trong phiên"),
   rsi_h1_pk_cach: cotPhanKy("rsi_h1_pk_cach", "RSI phân kỳ (1H)", "nến 1H", "Khung 1 giờ, ~12 phiên gần nhất"),
-  rsi_pk_cach: cotPhanKy("rsi_pk_cach", "RSI phân kỳ (ngày)", "phiên", "Khung ngày, 3 tháng gần nhất"),
-  rsi_pk_tuan_cach: cotPhanKy("rsi_pk_tuan_cach", "RSI phân kỳ (tuần)", "tuần", "Khung tuần, 6 tháng gần nhất"),
-  rsi_pks_cach: cotPhanKy("rsi_pks_cach", "RSI phân kỳ SỚM (ngày)", "phiên", "Khung ngày, 3 tháng gần nhất", true),
-  rsi_pks_tuan_cach: cotPhanKy("rsi_pks_tuan_cach", "RSI phân kỳ SỚM (tuần)", "tuần", "Khung tuần, 6 tháng gần nhất", true),
+  // 1 cot gop: phan ky ngay MOI HON giua "da hinh thanh" (rsi_pk_cach, xanh / do) va "som" (rsi_pks_cach, vang, "PK som?"). So sanh theo do moi cua DAY / DINH: da hinh thanh = cach + 2 nen (cho xac nhan k = 2).
+  rsi_pk_gop: cotPhanKyGop(),
   macd: cotSo("macd", "MACD", (v) => soAn(v, 3), mauDau, "Đường MACD (12, 26)"),
   macd_hist: cotSo("macd_hist", "MACD Hist", (v) => soAn(v, 3), mauDau, "MACD trừ Signal (9): dương = MACD trên Signal"),
   macd_cat_cach: cotCat("macd_cat_cach", "MACD cắt Signal", "MACD và Signal"),
