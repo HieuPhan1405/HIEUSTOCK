@@ -70,7 +70,8 @@ def cut(src, out):
 
 def transcribe(video, words_json):
     from faster_whisper import WhisperModel
-    m = WhisperModel("medium", device="cpu", compute_type="int8")
+    import os
+    m = WhisperModel(os.environ.get("WHISPER_MODEL", "medium"), device="cpu", compute_type="int8")
     segs, _ = m.transcribe(video, language="vi", word_timestamps=True, vad_filter=True,
                            initial_prompt="VN-Index, cổ phiếu, chứng khoán, ngân hàng, lãi suất, khối ngoại, nhà đầu tư.")
     words = []
