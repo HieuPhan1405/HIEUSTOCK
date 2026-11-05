@@ -36,6 +36,13 @@ COVERS = {
                       l3="2 tin vĩ mô đáng chú ý: 46/46 ngân hàng giảm<br>lãi huy động · NHNN dự kiến FX swap 182 ngày",
                       only=["tiktok_1080x1920"], dy={"tiktok_1080x1920": 70}, s1={"tiktok_1080x1920": 80},
                       s2={"tiktok_1080x1920": 76}, s3={"tiktok_1080x1920": 42}),
+    # 5/11/2026: 2 video đơn giản (vĩ mô Mỹ → lãi suất VN; bất động sản 3 thứ quan sát); chỉ bản TikTok
+    "vimomy": dict(photo="img/bia-vimo-my.jpg", l1="3 THỨ ĐẢO CHIỀU", c1="#F5C542", l2="CÙNG LÚC ĐÊM QUA", c2="#FAFAFA",
+                   l3="Dầu · USD · lợi suất trái phiếu Mỹ<br>cùng hạ nhiệt", only=["tiktok_1080x1920"],
+                   dy={"tiktok_1080x1920": 70}, s1={"tiktok_1080x1920": 96}, s2={"tiktok_1080x1920": 70}, s3={"tiktok_1080x1920": 44}),
+    "batdongsan": dict(photo="img/bia-batdongsan.jpg", l1="BẤT ĐỘNG SẢN", c1="#F5C542", l2="3 THỨ MÌNH QUAN SÁT", c2="#FAFAFA",
+                       l3="Giá ngừng giảm · dòng tiền quay lại<br>câu chuyện doanh nghiệp đủ mạnh", only=["tiktok_1080x1920"],
+                       dy={"tiktok_1080x1920": 50}, s1={"tiktok_1080x1920": 112}, s2={"tiktok_1080x1920": 68}, s3={"tiktok_1080x1920": 42}),
 }
 # (rộng, cao, offset y của ảnh, cỡ chữ l1, l2, l3, top của khối chữ)
 SIZES = {
