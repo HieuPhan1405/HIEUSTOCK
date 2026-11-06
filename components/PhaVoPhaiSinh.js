@@ -156,7 +156,13 @@ function BieuDoTrongNgay({ du }) {
     const b = du.bienDong || {};
     them(b.mucMua, s.mau.xanh, "Mua");
     them(b.mucBan, s.mau.do, "Bán khống");
-    them(b.giaMoCua, s.mau.mo, "Mở cửa / cắt lỗ", LineStyle.Dotted);
+    them(b.giaMoCua, s.mau.mo, "Mở cửa", LineStyle.Dotted);
+    // cat lo ban dau: chua vao lenh thi ve ca 2 muc du kien (mua / ban khong), da vao thi ve muc cua lenh dang co
+    if (b.phia) them(b.catLo, s.mau.do, "Cắt lỗ", LineStyle.Dotted);
+    else {
+      if (b.catLoMua != null) them(b.catLoMua, s.mau.do, "Cắt lỗ nếu mua", LineStyle.SparseDotted);
+      if (b.catLoBan != null) them(b.catLoBan, s.mau.do, "Cắt lỗ nếu bán", LineStyle.SparseDotted);
+    }
     if (b.phia) {
       // moc doi cat lo (lai 7 diem) va cat lo da doi
       if (b.daKhoa) them(b.mucKhoa, "#F6C544", "Cắt lỗ đã dời", LineStyle.Dashed);
@@ -640,7 +646,7 @@ export default function PhaVoPhaiSinh() {
       )}
 
       <div className="grid gap-4 mb-4">
-        <The tieuDe="Phá vỡ biến động 0,3" moTa="Đặt lệnh dừng hai phía quanh giá mở cửa. Giá chạm mức nào trước thì vào theo hướng đó, cắt lỗ tại giá mở cửa; khi lãi 7 điểm thì dời cắt lỗ lên giá vào + 2 điểm." trangThai={b.trangThai}>
+        <The tieuDe="Phá vỡ biến động 0,3" moTa="Đặt lệnh dừng hai phía quanh giá mở cửa. Giá chạm mức nào trước thì vào theo hướng đó, cắt lỗ tại giá mở cửa nhưng cách giá vào ít nhất 7 điểm; khi lãi 7 điểm thì dời cắt lỗ lên giá vào + 2 điểm." trangThai={b.trangThai}>
           {pt && (
             <p className="text-xs mb-2" style={{ color: MUTED }}>
               Biên độ phiên {ngayHien(du.ngayTruoc)}: <b style={{ color: TEXT, ...mono }}>{d1(pt.bienDo)}</b> điểm ({d1(pt.thap)} – {d1(pt.cao)}) → khoảng cách đặt lệnh <b style={{ color: TEXT, ...mono }}>{d1(cach)}</b> điểm
@@ -650,7 +656,14 @@ export default function PhaVoPhaiSinh() {
             <>
               <Dong nhan="MUA khi giá chạm" gia={`≥ ${d1(b.mucMua)}`} mau={XANH} ghiChu={ghiChuVung(b.viTriMua)} />
               <Dong nhan="BÁN KHỐNG khi giá chạm" gia={`≤ ${d1(b.mucBan)}`} mau={DO} ghiChu={ghiChuVung(b.viTriBan)} />
-              <Dong nhan="Cắt lỗ" ghiChu="bằng giá mở cửa" gia={d1(b.catLo)} />
+              {b.phia ? (
+                <Dong nhan="Cắt lỗ" ghiChu="giá mở cửa, hoặc cách giá vào 7 điểm nếu xa hơn" gia={d1(b.catLo)} />
+              ) : (
+                <>
+                  <Dong nhan="Cắt lỗ nếu MUA" ghiChu="giá mở cửa, hoặc thấp hơn giá vào 7 điểm nếu xa hơn" gia={d1(b.catLoMua)} />
+                  <Dong nhan="Cắt lỗ nếu BÁN KHỐNG" ghiChu="giá mở cửa, hoặc cao hơn giá vào 7 điểm nếu xa hơn" gia={d1(b.catLoBan)} />
+                </>
+              )}
               <Dong nhan="Khi lãi 7 điểm" ghiChu="dời cắt lỗ lên giá vào + 2 điểm (mua) / − 2 điểm (bán khống)" gia="khóa +2" mau={VANG} />
             </>
           ) : (
@@ -658,7 +671,7 @@ export default function PhaVoPhaiSinh() {
               <>
                 <Dong nhan="MUA khi giá chạm" gia={`mở cửa + ${d1(cach)}`} mau={XANH} />
                 <Dong nhan="BÁN KHỐNG khi giá chạm" gia={`mở cửa − ${d1(cach)}`} mau={DO} />
-                <Dong nhan="Cắt lỗ" gia="giá mở cửa" />
+                <Dong nhan="Cắt lỗ" ghiChu="giá mở cửa, hoặc cách giá vào ít nhất 7 điểm" gia="≥ 7 điểm" />
                 <Dong nhan="Khi lãi 7 điểm" ghiChu="dời cắt lỗ lên giá vào ± 2 điểm" gia="khóa +2" mau={VANG} />
               </>
             )
@@ -751,7 +764,10 @@ export default function PhaVoPhaiSinh() {
       <GiaiThichThem className="mb-3" nhanMo="Cách làm, kiểm chứng và rủi ro" tomTat="Phái sinh có đòn bẩy cao, có thể mất nhiều hơn số tiền ký quỹ ban đầu. Đây là số liệu thống kê, không phải khuyến nghị.">
         <p>
           <b>Cách làm:</b> mỗi sáng, lấy biên độ phiên trước (cao nhất − thấp nhất) nhân 0,3 để ra khoảng cách. Đặt lệnh dừng mua ở giá mở cửa cộng khoảng cách, bán khống ở giá mở cửa trừ khoảng cách; giá chạm mức nào trước thì vào theo hướng đó.
-          Cắt lỗ ban đầu tại giá mở cửa. <b>Khi lãi đạt 7 điểm thì dời cắt lỗ lên giá vào + 2 điểm</b> (bán khống: giá vào − 2 điểm) rồi để chạy; không chốt lời sớm, chưa bị cắt lỗ thì đóng lúc 14:29. Mỗi ngày tối đa 1 lệnh, không giữ qua đêm.
+          Cắt lỗ ban đầu tại giá mở cửa, <b>nhưng luôn cách giá vào ít nhất 7 điểm</b> (hôm trước biên độ nhỏ thì giá mở cửa chỉ cách mức vào 3–4 điểm, dễ bị quét bởi nhiễu rồi giá vẫn đi đúng hướng). <b>Khi lãi đạt 7 điểm thì dời cắt lỗ lên giá vào + 2 điểm</b> (bán khống: giá vào − 2 điểm) rồi để chạy; không chốt lời sớm, chưa bị cắt lỗ thì đóng lúc 14:29. Mỗi ngày tối đa 1 lệnh, không giữ qua đêm.
+        </p>
+        <p className="mt-2">
+          <b>Vì sao cắt lỗ tối thiểu 7 điểm:</b> kiểm chứng 2018–2026 cho thấy cắt lỗ quá gần bị quét nhiều (tỷ lệ thắng thấp), còn cắt xa hơn 10 điểm làm lãi giảm lại. Mức 6–9 điểm đều tốt hơn cắt ở giá mở cửa; chọn 7 điểm. Tổng điểm sau phí và trượt giá tăng khoảng 12% (1.900 → 2.134 điểm), tỷ lệ lệnh thắng từ 50% lên 57%, tốt hơn ở cả giai đoạn trước và sau 07/2022. Nâng mức vào lệnh hoặc bỏ ngày biên độ nhỏ đều kém hơn nên không áp dụng.
         </p>
         <p className="mt-2">
           <b>Vì sao dời cắt lỗ:</b> nhiều lệnh chạy lãi vài điểm rồi quay đầu về cắt lỗ. Kiểm chứng cho thấy dời cắt lỗ sau khi lãi 7 điểm tốt hơn cắt lỗ cố định, còn chốt lời cố định hoặc cắt lỗ theo đuôi đều làm lãi giảm vì cắt mất các lệnh chạy xa.

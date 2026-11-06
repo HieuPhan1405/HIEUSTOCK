@@ -23,7 +23,8 @@ for a in range(N):
             p = 1 if H[a, k] >= tr else -1 if L[a, k] <= du else 0
             if not p: continue
             gia = max(O[a, k], tr) if p > 0 else min(O[a, k], du)
-            j, rr = chay_lenh(O[a], H[a], L[a], C[a], p, k, gia, cat=o0)
+            cat = min(o0, gia - 7) if p > 0 else max(o0, gia + 7)  # cat lo toi thieu 7 diem tu gia vao (06/11/2026), giong lib/phaVoPhaiSinh.js
+            j, rr = chay_lenh(O[a], H[a], L[a], C[a], p, k, gia, cat=cat)
             g = p * (rr - gia)
             r.update(phia="MUA" if p > 0 else "BAN KHONG", gio_vao=gio(k), gia_vao=gia, gio_ra=gio(j), gia_ra=rr, ly_do="cat lo" if j < 240 else "dong 14:29", diem_gop=g, diem_sau_phi=g - phi(gia, 0), diem_sau_phi_truot=g - phi(gia))
             break
