@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
-import { UserRound, Pencil, Check, X as HuyIcon, ChevronDown, KeyRound, LogOut, Wallet, ShieldCheck } from "lucide-react";
+import { UserRound, Pencil, Check, X as HuyIcon, ChevronDown, KeyRound, LogOut, Wallet, ShieldCheck, CircleUserRound } from "lucide-react";
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import DoiMatKhau from "@/components/DoiMatKhau";
 import { tatDay } from "@/lib/dayTrinhDuyet";
@@ -123,23 +123,33 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
     return (
       <div ref={goc} className="relative" style={{ fontFamily: "var(--font-chu)" }}>
         <DoiMatKhau mo={moDoiMk} onDong={() => setMoDoiMk(false)} />
-        <button
-          type="button"
-          onClick={() => setMoMenu((v) => !v)}
-          aria-expanded={moMenu}
-          aria-label={`Tài khoản: ${ten}`}
-          className="flex items-center gap-2 h-9 pl-1 pr-1 sm:pr-2 rounded-lg border transition-colors hover:bg-[color:var(--hover-nhe)]"
-          style={{ borderColor: moMenu ? PRIMARY : VIEN, background: NEN_CARD }}
-        >
-          <span className="relative w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold" style={{ background: "rgba(108,92,231,0.22)", color: "var(--tim-chu)" }}>
-            {String(ten).trim().charAt(0).toUpperCase() || "?"}
-            {!nguoiDung.da_duyet && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full" style={{ background: VANG, border: "2px solid var(--nen)" }} aria-hidden="true" />}
-          </span>
-          <span className="hidden sm:block max-w-[120px] truncate text-xs" style={{ color: TEXT }}>
-            {ten}
-          </span>
-          <ChevronDown size={14} className="hidden sm:block" color={MUTED} aria-hidden="true" />
-        </button>
+        {/* Bam vao TEN / chu cai dau = vao TRANG CA NHAN (/tai-khoan); mui ten nho ben canh mo menu nhanh (danh muc, quan tri, doi mat khau, dang xuat) */}
+        <div className="flex items-center h-9 rounded-lg border" style={{ borderColor: moMenu ? PRIMARY : VIEN, background: NEN_CARD }}>
+          <Link
+            href="/tai-khoan"
+            aria-label={`Trang cá nhân: ${ten}`}
+            title="Trang cá nhân"
+            className="flex items-center gap-2 h-full pl-1 pr-1 sm:pr-2 rounded-lg sm:rounded-r-none transition-colors hover:bg-[color:var(--hover-nhe)]"
+          >
+            <span className="relative w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold" style={{ background: "rgba(108,92,231,0.22)", color: "var(--tim-chu)" }}>
+              {String(ten).trim().charAt(0).toUpperCase() || "?"}
+              {!nguoiDung.da_duyet && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full" style={{ background: VANG, border: "2px solid var(--nen)" }} aria-hidden="true" />}
+            </span>
+            <span className="hidden sm:block max-w-[120px] truncate text-xs" style={{ color: TEXT }}>
+              {ten}
+            </span>
+          </Link>
+          <button
+            type="button"
+            onClick={() => setMoMenu((v) => !v)}
+            aria-expanded={moMenu}
+            aria-label="Menu tài khoản"
+            className="hidden sm:flex items-center justify-center h-full px-1.5 rounded-r-lg border-l transition-colors hover:bg-[color:var(--hover-nhe)]"
+            style={{ borderColor: VIEN }}
+          >
+            <ChevronDown size={14} color={MUTED} aria-hidden="true" />
+          </button>
+        </div>
 
         {moMenu && (
           <div className="absolute right-0 top-full mt-2 w-[260px] max-w-[calc(100vw-16px)] rounded-2xl border shadow-2xl p-2 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, zIndex: 45 }}>
@@ -148,9 +158,9 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
                 <FormDoiTen tenMoi={tenMoi} setTenMoi={setTenMoi} dangLuu={dangLuu} onLuu={luuTen} onHuy={() => setDangSuaTen(false)} rong={180} />
               ) : (
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold truncate" style={{ color: TEXT }}>
+                  <Link href="/tai-khoan" onClick={() => setMoMenu(false)} className="font-semibold truncate hover:underline" style={{ color: TEXT }}>
                     {ten}
-                  </span>
+                  </Link>
                   <button type="button" onClick={moSuaTen} style={{ color: MUTED }} aria-label="Đổi tên hiển thị" title="Đổi tên hiển thị">
                     <Pencil size={12} strokeWidth={2.5} />
                   </button>
@@ -171,6 +181,9 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
               )}
             </div>
             <div className="border-t my-1" style={{ borderColor: VIEN }} />
+            <Link href="/tai-khoan" onClick={() => setMoMenu(false)} className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[color:var(--hover-nhe)]" style={{ color: TEXT }}>
+              <CircleUserRound size={15} color={MUTED} aria-hidden="true" /> Trang cá nhân
+            </Link>
             <Link href="/danh-muc" onClick={() => setMoMenu(false)} className="flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[color:var(--hover-nhe)]" style={{ color: TEXT }}>
               <Wallet size={15} color={MUTED} aria-hidden="true" /> Danh mục theo dõi
             </Link>
@@ -198,7 +211,9 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
           <FormDoiTen tenMoi={tenMoi} setTenMoi={setTenMoi} dangLuu={dangLuu} onLuu={luuTen} onHuy={() => setDangSuaTen(false)} />
         ) : (
           <span style={{ color: MUTED }} className={`items-center gap-1 ${compact ? "hidden sm:flex" : "flex"}`}>
-            Xin chào, {nguoiDung.ten || nguoiDung.sdt}
+            <Link href="/tai-khoan" className="hover:underline" title="Trang cá nhân">
+              Xin chào, {nguoiDung.ten || nguoiDung.sdt}
+            </Link>
             <button type="button" onClick={moSuaTen} style={{ color: MUTED }} aria-label="Đổi tên hiển thị" title="Đổi tên hiển thị">
               <Pencil size={11} strokeWidth={2.5} />
             </button>

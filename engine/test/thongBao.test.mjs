@@ -1,5 +1,5 @@
 // Test tay cho lib/thongBao.js (noi dung thong bao tin hieu / dang ky moi, ai duoc nhan). Chay: node engine/test/thongBao.test.mjs
-import { dungThongBaoTinHieu, thongBaoDangKy, locChoNguoiDung, tomTatDay, demChuaXem, cheSdt, dungThongBaoGoiYMua } from "../../lib/thongBao.js";
+import { dungThongBaoTinHieu, thongBaoDangKy, locChoNguoiDung, tomTatDay, demChuaXem, cheSdt, dungThongBaoGoiYMua, NHOM_THONG_BAO, KHOA_NHOM, loaiDuocPhep, chuanHoaNhom } from "../../lib/thongBao.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -92,6 +92,22 @@ ok("goi y mua ngoai khung gio: chi ma da chot mua", JSON.stringify(dungThongBaoG
 ok("goi y mua: khong co ngay -> rong", dungThongBaoGoiYMua({ dat: datGY }).length === 0);
 ok("goi y mua: pham vi 'chi ma theo doi' van nhan, 'khong' thi khong, khach chua duyet khong", locChoNguoiDung(gy, { daDuyet: true, phamVi: "danh_muc", maTheoDoi: [] }).length === 2 && locChoNguoiDung(gy, { daDuyet: true, phamVi: "khong" }).length === 0 && locChoNguoiDung(gy, { daDuyet: false }).length === 0);
 ok("goi y mua: tom tat day nhieu su kien co nhan 'Gợi ý mua'", /Gợi ý mua: FPT, HPG/.test(tomTatDay([...gy, ...ds]).body));
+
+// Chon loai thong bao o trang ca nhan (nguoi_dung.thong_bao_nhom): tich nhom nao gui nhom do
+{
+  const loaiCo = new Set(tatCa.map((t) => t.loai));
+  ok("moi loai thong bao deu thuoc dung 1 nhom", [...loaiCo].every((l) => NHOM_THONG_BAO.filter((n) => n.loai.includes(l)).length === 1));
+  ok("nhom = null (chua chon) -> nhan het nhu truoc", locChoNguoiDung(tatCa, { daDuyet: true, nhom: null }).length === 6 && locChoNguoiDung(tatCa, { laAdmin: true, nhom: null }).length === 7);
+  ok("loaiDuocPhep: tich 'mua' nhan mua + mua_moi, khong nhan ban", loaiDuocPhep("mua", ["mua"]) && loaiDuocPhep("mua_moi", ["mua"]) && !loaiDuocPhep("ban", ["mua"]));
+  ok("loai khong thuoc nhom nao (thong bao 'thu') luon duoc gui", loaiDuocPhep("thu", []) === true && loaiDuocPhep("thu", ["mua"]) === true);
+  ok("bo tich het: khong nhan tin hieu", locChoNguoiDung(tatCa, { daDuyet: true, nhom: [] }).length === 0);
+  const chiBan = locChoNguoiDung(tatCa, { daDuyet: true, nhom: ["ban"] });
+  ok("chi tich 'ban': chi nhan loai ban", chiBan.length > 0 && chiBan.every((t) => t.loai === "ban"), JSON.stringify(chiBan.map((t) => t.loai)));
+  ok("admin chi tich 'dang_ky': chi nhan dang ky", JSON.stringify(locChoNguoiDung(tatCa, { laAdmin: true, nhom: ["dang_ky"] }).map((t) => t.loai)) === '["dang_ky"]');
+  ok("tai khoan thuong tich dang_ky van khong nhan dang ky", locChoNguoiDung(tatCa, { daDuyet: true, nhom: KHOA_NHOM }).every((t) => t.loai !== "dang_ky"));
+  ok("tich nhom + pham vi 'chi ma theo doi' ket hop", locChoNguoiDung(tatCa, { daDuyet: true, phamVi: "danh_muc", maTheoDoi: ["HPG"], nhom: ["ban_bot", "ban"] }).every((t) => t.ma === "HPG" && ["ban_bot", "ban"].includes(t.loai)));
+  ok("chuanHoaNhom: bo khoa la + trung; khong phai mang -> null; rong hop le", JSON.stringify(chuanHoaNhom(["mua", "mua", "xyz", "ban"])) === '["mua","ban"]' && chuanHoaNhom("mua") === null && JSON.stringify(chuanHoaNhom([])) === "[]");
+}
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);
