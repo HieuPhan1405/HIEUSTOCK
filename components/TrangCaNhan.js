@@ -424,11 +424,11 @@ export default function TrangCaNhan() {
           </p>
         )}
         <p className="text-[11px] mt-3" style={{ color: MUTED }}>
-          Báo lệnh phái sinh VN30F1M bật riêng ở trang{" "}
+          Thông báo phái sinh gửi trong giờ giao dịch khi hệ thống đang chạy (hoặc có người mở trang{" "}
           <Link href="/phai-sinh" style={{ color: PRIMARY }}>
             Phái sinh
-          </Link>{" "}
-          (chỉ chạy khi trang đang mở). Tín hiệu chỉ để tham khảo, không phải khuyến nghị đầu tư.
+          </Link>
+          ); trang đó còn có tiếng bíp riêng khi bạn đang mở. “Dấu hiệu hồi phục” và “Dấu hiệu tạo đáy” chỉ là nhắc theo dõi, không phải điểm mua chính. Tín hiệu chỉ để tham khảo, không phải khuyến nghị đầu tư.
         </p>
       </The>
     </div>

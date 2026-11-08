@@ -1,4 +1,6 @@
 import { withDb, daoDamBangBatDay } from "@/lib/db";
+import { baoSuKienMoi, homNayVN, luiNgay } from "@/lib/thongBaoDb";
+import { dungThongBaoBatDay } from "@/lib/thongBao";
 
 // Nhan CSV tu AFL amibroker/8_Export_ChecklistBatDay.afl - MOI dong la 1 lan
 // checklist bat day kich hoat trong QUA KHU (khong phai trang thai hom nay
@@ -89,9 +91,13 @@ export async function POST(request) {
   // (2001-2023) se ton dong mai tren web du AmiBroker da loc dung.
   const cot = (ten, chuyenDoi) => hangDL.map((h) => chuyenDoi(h[ten]));
   let soDongDaXoa = 0;
+  const daCo = new Set(); // (ma|ngay) da co truoc lan upload nay
+  const ngayLonNhat = hangDL.reduce((m, h) => (soNgayVN(h.ngay) > m ? soNgayVN(h.ngay) : m), "0000-00-00");
 
   await withDb(async (client) => {
     await daoDamBangBatDay(client);
+    const { rows: cu } = await client.query(`SELECT ma, to_char(ngay_tin_hieu, 'YYYY-MM-DD') AS ngay FROM bat_day_su_kien WHERE ngay_tin_hieu >= $1::date`, [luiNgay(ngayLonNhat, 10)]);
+    for (const r of cu) daCo.add(`${r.ma}|${r.ngay}`);
     await client.query(
       `INSERT INTO bat_day_su_kien
         (ma, ngay_tin_hieu, diem, gia_luc_tin_hieu, pct_sau_5, pct_sau_10, pct_sau_20, chiet_khau, rsi, capitulation, ftd, kl_day, vn100)
@@ -140,11 +146,19 @@ export async function POST(request) {
     soDongDaXoa = rowCount;
   });
 
+  // THONG BAO "co dau hieu tao day" (chi la nhac theo doi, khong phai diem mua chinh): lan kich hoat MOI trong 4 ngay gan day, chua tung co truoc lan upload nay.
+  const tu = luiNgay(homNayVN(), 4);
+  const moi = hangDL
+    .map((h) => ({ ma: h.ma, ngay: soNgayVN(h.ngay), diem: soFloat(h.diem), chiet_khau: soFloat(h.chiet_khau), capitulation: soBool(h.capitulation), ftd: soBool(h.ftd), vn100: h.vn100 === undefined || h.vn100 === "" ? true : soBool(h.vn100) }))
+    .filter((r) => r.ngay >= tu && !daCo.has(`${r.ma}|${r.ngay}`));
+  const thongBao = await baoSuKienMoi(dungThongBaoBatDay(moi));
+
   return Response.json({
     trangThai: "ok",
     soDongDaLuu: hangDL.length,
     tongSoDongNhan: hangDL.length,
     soDongLoiDaBoQua: soDongLoi,
     soDongDaXoa,
+    thongBao,
   });
 }

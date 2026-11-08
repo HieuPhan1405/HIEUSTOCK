@@ -363,6 +363,27 @@ async function main() {
     const v = new Date(d.getTime() + 7 * 3600e3);
     return { thu: v.getUTCDay(), phut: v.getUTCHours() * 60 + v.getUTCMinutes() };
   };
+  // BAO PHAI SINH (08/11/2026): moi 30 giay trong gio giao dich (T2-T6, 08:59-14:35 gio VN) goi web /api/phai-sinh/bao de GUI THONG BAO DAY ve may khi co su kien phai sinh moi (vao lenh, vao lai sau cat lo,
+  // cat lo, thoat, dong cuoi phien; tai khoan nao tich nhom "Phai sinh" o trang ca nhan). May chu tu tinh trang thai tu nen 1 phut DNSE, khoa chong trung nen goi nhieu lan khong bao lai. Chi chay khi co --upload.
+  const CHU_KY_PHAI_SINH_MS = 30000;
+  let dangBaoPhaiSinh = false;
+  const baoPhaiSinh = async () => {
+    if (!uploadDuocPhep || dangBaoPhaiSinh) return;
+    const t = phutVN();
+    if (t.thu < 1 || t.thu > 5 || t.phut < 8 * 60 + 59 || t.phut > 14 * 60 + 35) return;
+    dangBaoPhaiSinh = true;
+    try {
+      const res = await fetch(`${process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn"}/api/phai-sinh/bao`, { method: "POST", headers: { "x-api-key": uploadKey }, signal: AbortSignal.timeout(20000) });
+      const j = await res.json().catch(() => ({}));
+      if (j.moi) console.log(`[${new Date().toLocaleTimeString("vi-VN")}] [phai sinh] ${j.moi} thong bao moi (${j.trangThaiLenh ?? ""}), da gui ${j.daGui ?? 0} thiet bi`);
+      else if (!res.ok) console.log(`[phai sinh] HTTP ${res.status} ${j.thongBao ?? j.loi ?? ""}`);
+    } catch {
+      /* mat mang / web cham: bo qua, lan sau thu lai */
+    } finally {
+      dangBaoPhaiSinh = false;
+    }
+  };
+  const henGioPhaiSinh = setInterval(baoPhaiSinh, CHU_KY_PHAI_SINH_MS);
   const thamSoDung = process.argv.find((x) => x.startsWith("--dung-luc="))?.slice(11) ?? "15:30";
   const [gDung, pDung] = thamSoDung.split(":").map(Number);
   const phutDung = (Number.isFinite(gDung) ? gDung : 15) * 60 + (Number.isFinite(pDung) ? pDung : 30);
@@ -390,6 +411,7 @@ async function main() {
       clearInterval(henGioChiBao);
       clearInterval(henGioKichBan);
       clearInterval(henGioRsiH1);
+      clearInterval(henGioPhaiSinh);
       try {
         await dongTien?.chotCuoiNgay();
       } catch {}
@@ -406,6 +428,7 @@ async function main() {
     clearInterval(henGioChiBao);
     clearInterval(henGioKichBan);
     clearInterval(henGioRsiH1);
+    clearInterval(henGioPhaiSinh);
     dongTien?.dong();
     dsKetNoi.forEach((k) => k.dong());
       dsKetNoiTopGia.forEach((k) => k.dong());

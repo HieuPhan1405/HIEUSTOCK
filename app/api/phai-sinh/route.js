@@ -1,5 +1,6 @@
 import { layNguoiDungTuToken } from "@/lib/nguoiDung";
 import { layTrangThaiPhaVo, layLichSuPhaVo, layLichSuDai } from "@/lib/phaVoPhaiSinhDuLieu";
+import { baoPhaiSinh } from "@/lib/thongBaoDb";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 
 export const dynamic = "force-dynamic";
@@ -34,7 +35,10 @@ export async function GET(request) {
     }
     const ngay = searchParams.get("ngay");
     if (ngay && !/^\d{4}-\d{2}-\d{2}$/.test(ngay)) return Response.json({ trangThai: "loi", thongBao: "Ngày không hợp lệ" }, { status: 400 });
-    return Response.json({ trangThai: "ok", ...(await layTrangThaiPhaVo({ ngay })) }, { headers: { "Cache-Control": "private, no-store" } });
+    const trangThai = await layTrangThaiPhaVo({ ngay });
+    // Nguoi dang mo trang /phai-sinh cung "gac" thong bao day: su kien moi cua HOM NAY duoc ghi + gui (khoa chong trung nen nhieu nguoi cung goi van chi bao 1 lan). Toi da 4 giay, loi bo qua.
+    if (!ngay) await Promise.race([baoPhaiSinh(trangThai).catch(() => null), new Promise((r) => setTimeout(r, 4000))]);
+    return Response.json({ trangThai: "ok", ...trangThai }, { headers: { "Cache-Control": "private, no-store" } });
   } catch (loi) {
     return Response.json({ trangThai: "loi", thongBao: thongBaoLoi(loi) }, { status: 502 });
   }

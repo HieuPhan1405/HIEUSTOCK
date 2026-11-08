@@ -1,4 +1,6 @@
 import { withDb, daoDamBangDiemB } from "@/lib/db";
+import { baoSuKienMoi, homNayVN, luiNgay } from "@/lib/thongBaoDb";
+import { dungThongBaoDiemB } from "@/lib/thongBao";
 
 // Nhan CSV lich su DIEM MUA PHUC HOI (diem B) tu engine (engine/loi/lichSuDiemB.js xayDungCsvDiemB) - moi dong la 1 diem B cua 1 ma, tinh lai TOAN BO tu dau 2026 moi lan.
 // Header: ma,ngay,gia_b,giam,kl_day,day_20,sl,tp1,tp2,tp3,gia_vao,pct_sau_5,pct_sau_10,pct_sau_20,vni_yeu,gtgd,ngay_cat_lo,tp_cham,dong_tien (ngay dang yyyy-mm-dd, o rong = NULL; ngay_cat_lo = ngay cham cat lo, rong = dang giu).
@@ -50,9 +52,13 @@ export async function POST(request) {
 
   const cot = (ten, chuyenDoi) => hangDL.map((h) => chuyenDoi(h[ten]));
   const ngayNhoNhat = hangDL.reduce((m, h) => (h.ngay < m ? h.ngay : m), hangDL[0].ngay);
+  const ngayLonNhat = hangDL.reduce((m, h) => (h.ngay > m ? h.ngay : m), hangDL[0].ngay);
   let soDongDaXoa = 0;
+  const daCo = new Set(); // (ma|ngay) da co truoc lan upload nay - chi diem B THAT SU MOI moi bao "co dau hieu hoi phuc"
   await withDb(async (client) => {
     await daoDamBangDiemB(client);
+    const { rows: cu } = await client.query(`SELECT ma, to_char(ngay, 'YYYY-MM-DD') AS ngay FROM diem_b_su_kien WHERE ngay >= $1::date`, [luiNgay(ngayLonNhat, 10)]);
+    for (const r of cu) daCo.add(`${r.ma}|${r.ngay}`);
     await client.query(
       `INSERT INTO diem_b_su_kien (ma, ngay, gia_b, giam, kl_day, day_20, sl, tp1, tp2, tp3, gia_vao, pct_sau_5, pct_sau_10, pct_sau_20, vni_yeu, gtgd, ngay_cat_lo, tp_cham, dong_tien)
        SELECT * FROM unnest($1::text[], $2::date[], $3::float8[], $4::float8[], $5::float8[], $6::float8[], $7::float8[], $8::float8[], $9::float8[], $10::float8[],
@@ -76,5 +82,11 @@ export async function POST(request) {
       soDongDaXoa = rowCount;
     }
   });
-  return Response.json({ trangThai: "ok", soDongDaLuu: hangDL.length, soDongLoiDaBoQua: soDongLoi, soDongDaXoa });
+  // THONG BAO "co dau hieu hoi phuc" (chi la nhac theo doi, khong phai diem mua chinh): diem B moi trong 4 ngay gan day, chua tung co truoc lan upload nay.
+  const tu = luiNgay(homNayVN(), 4);
+  const moi = hangDL
+    .filter((h) => h.ngay >= tu && !daCo.has(`${h.ma}|${h.ngay}`))
+    .map((h) => ({ ma: h.ma, ngay: h.ngay, gia_b: soFloat(h.gia_b), giam: soFloat(h.giam), dong_tien: soFloat(h.dong_tien) }));
+  const thongBao = await baoSuKienMoi(dungThongBaoDiemB(moi));
+  return Response.json({ trangThai: "ok", soDongDaLuu: hangDL.length, soDongLoiDaBoQua: soDongLoi, soDongDaXoa, thongBao });
 }

@@ -1,5 +1,5 @@
 // Test tay cho lib/thongBao.js (noi dung thong bao tin hieu / dang ky moi, ai duoc nhan). Chay: node engine/test/thongBao.test.mjs
-import { dungThongBaoTinHieu, thongBaoDangKy, locChoNguoiDung, tomTatDay, demChuaXem, cheSdt, dungThongBaoGoiYMua, NHOM_THONG_BAO, KHOA_NHOM, loaiDuocPhep, chuanHoaNhom } from "../../lib/thongBao.js";
+import { dungThongBaoTinHieu, thongBaoDangKy, locChoNguoiDung, tomTatDay, demChuaXem, cheSdt, dungThongBaoGoiYMua, NHOM_THONG_BAO, KHOA_NHOM, loaiDuocPhep, chuanHoaNhom, dungThongBaoDiemB, dungThongBaoBatDay, dungThongBaoPhaiSinh } from "../../lib/thongBao.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -107,6 +107,43 @@ ok("goi y mua: tom tat day nhieu su kien co nhan 'Gợi ý mua'", /Gợi ý mua:
   ok("tai khoan thuong tich dang_ky van khong nhan dang ky", locChoNguoiDung(tatCa, { daDuyet: true, nhom: KHOA_NHOM }).every((t) => t.loai !== "dang_ky"));
   ok("tich nhom + pham vi 'chi ma theo doi' ket hop", locChoNguoiDung(tatCa, { daDuyet: true, phamVi: "danh_muc", maTheoDoi: ["HPG"], nhom: ["ban_bot", "ban"] }).every((t) => t.ma === "HPG" && ["ban_bot", "ban"].includes(t.loai)));
   ok("chuanHoaNhom: bo khoa la + trung; khong phai mang -> null; rong hop le", JSON.stringify(chuanHoaNhom(["mua", "mua", "xyz", "ban"])) === '["mua","ban"]' && chuanHoaNhom("mua") === null && JSON.stringify(chuanHoaNhom([])) === "[]");
+}
+
+// Dau hieu hoi phuc (diem B), dau hieu tao day (bat day), phai sinh
+{
+  const b = dungThongBaoDiemB([
+    { ma: "HPG", ngay: "2026-11-06", gia_b: 25.3, giam: 24.3, dong_tien: 1 },
+    { ma: "VPB", ngay: "2026-11-06", gia_b: 20, giam: 17, dong_tien: 0 }, // giam < 20%: khong bao
+    { ma: "NVL", ngay: "2026-11-06", gia_b: 10, giam: 31, dong_tien: 0 }, // giam >= 30%: khong bao
+  ]);
+  ok("diem B: chi nhom giam 20-30%", b.length === 1 && b[0].ma === "HPG" && b[0].khoa === "diem_b:HPG:2026-11-06" && b[0].loai === "diem_b");
+  ok("diem B: noi 'co dau hieu hoi phuc', khong goi la diem mua chinh", b[0].tieu_de === "HPG: có dấu hiệu hồi phục" && /chưa phải điểm mua chính/.test(b[0].noi_dung) && !/MUA/.test(b[0].tieu_de), b[0].noi_dung);
+  ok("diem B: kem muc giam + dong tien", /Giảm 24,3%/.test(b[0].noi_dung) && /dòng tiền đã quay lên/.test(b[0].noi_dung), b[0].noi_dung);
+  const d = dungThongBaoBatDay([
+    { ma: "DGC", ngay: "2026-11-06", diem: 6, chiet_khau: 31.2, capitulation: true, ftd: true, vn100: true },
+    { ma: "ABC", ngay: "2026-11-06", diem: 5, chiet_khau: 30, vn100: false }, // ngoai VN100: khong bao
+  ]);
+  ok("bat day: chi VN100, tieu de 'co dau hieu tao day'", d.length === 1 && d[0].tieu_de === "DGC: có dấu hiệu tạo đáy" && d[0].loai === "bat_day" && d[0].khoa === "bat_day:DGC:2026-11-06");
+  ok("bat day: nhac chua phai diem mua chinh + noi dung", /chưa phải điểm mua chính/.test(d[0].noi_dung) && /chiết khấu 31,2%/.test(d[0].noi_dung) && /bán tháo/.test(d[0].noi_dung), d[0].noi_dung);
+  ok("tich nhom 'diem_b' / 'bat_day' lay dung loai", loaiDuocPhep("diem_b", ["diem_b"]) && !loaiDuocPhep("diem_b", ["bat_day"]) && loaiDuocPhep("bat_day", ["bat_day"]));
+
+  const x1 = { phia: 1, vao: { k: 20, gia: 1869.5, gio: "09:20" }, catLo: 1862.5, mucKhoa: 1871.5, trangThai: "catLo", ra: { k: 60, gia: 1862.5, gio: "10:00" }, diemSauPhi: -7.5 };
+  const x2 = { phia: -1, vao: { k: 100, gia: 1859.7, gio: "10:40" }, catLo: 1866.7, mucKhoa: 1857.7, trangThai: "cuoiPhien", ra: { k: 240, gia: 1847.6, gio: "14:29" }, diemSauPhi: 11.6 };
+  const ps = dungThongBaoPhaiSinh({ ngay: "2026-11-09", bienDong: { ...x1, lenhHai: x2, mucMua: 1869.5, mucBan: 1859.7 } });
+  ok("phai sinh: lenh 1 + thoat + vao lai + thoat = 4 thong bao, khoa khac nhau", ps.length === 4 && new Set(ps.map((t) => t.khoa)).size === 4 && ps.every((t) => t.loai === "phai_sinh" && t.duong_dan === "/phai-sinh"), JSON.stringify(ps.map((t) => t.khoa)));
+  ok("phai sinh: tieu de vao lenh / cat lo / vao lai", ps[0].tieu_de === "PHÁI SINH: MUA VN30F1M 1.869,5" && /CẮT LỖ VN30F1M 1.862,5/.test(ps[1].tieu_de) && /Vào lại — BÁN KHỐNG/.test(ps[2].tieu_de) && /ĐÓNG CUỐI PHIÊN/.test(ps[3].tieu_de), JSON.stringify(ps.map((t) => t.tieu_de)));
+  const cho = dungThongBaoPhaiSinh({ ngay: "2026-11-09", bienDong: { ...x1, vaoLai: "cho", mucMua: 1869.5, mucBan: 1859.7 } });
+  ok("phai sinh: dang cho vao lai co thong bao 'cho2' kem muc", cho.length === 3 && cho[2].khoa === "phai_sinh:2026-11-09:cho2" && /1\.869,5/.test(cho[2].noi_dung) && /1\.859,7/.test(cho[2].noi_dung), JSON.stringify(cho.map((t) => t.khoa)));
+  const dangGiu = dungThongBaoPhaiSinh({ ngay: "2026-11-09", bienDong: { ...x1, ra: null, trangThai: "dangGiu" } });
+  ok("phai sinh: dang giu chi co thong bao vao lenh", dangGiu.length === 1 && dangGiu[0].khoa === "phai_sinh:2026-11-09:vao1");
+  ok("phai sinh: phien dau hop dong moi / chua co lenh -> khong bao", dungThongBaoPhaiSinh({ ngay: "2026-11-09", bienDong: x1, phienDauHopDong: true }).length === 0 && dungThongBaoPhaiSinh({ ngay: "2026-11-09", bienDong: { trangThai: "cho" } }).length === 0);
+  // loc theo tai khoan
+  const tb = [...ps, ...b, ...d];
+  ok("phai sinh khong bi 'pham vi' chan; chi phu thuoc nhom + da duyet", locChoNguoiDung(tb, { daDuyet: true, phamVi: "khong", nhom: ["phai_sinh"] }).length === 4 && locChoNguoiDung(tb, { daDuyet: true, phamVi: "danh_muc", maTheoDoi: [], nhom: ["phai_sinh"] }).length === 4 && locChoNguoiDung(tb, { daDuyet: false, nhom: ["phai_sinh"] }).length === 0);
+  ok("diem B / bat day theo pham vi 'chi ma theo doi'", locChoNguoiDung(tb, { daDuyet: true, phamVi: "danh_muc", maTheoDoi: ["DGC"], nhom: ["diem_b", "bat_day"] }).map((t) => t.ma).join() === "DGC");
+  ok("bo tich phai sinh: khong nhan phai sinh nhung van nhan B", locChoNguoiDung(tb, { daDuyet: true, nhom: ["diem_b"] }).every((t) => t.loai === "diem_b") && locChoNguoiDung(tb, { daDuyet: true, nhom: null }).length === tb.length);
+  const gop = tomTatDay([...b, ...d]);
+  ok("gom nhieu loai: nhan 'Dau hieu hoi phuc' / 'tao day'", /Dấu hiệu hồi phục: HPG/.test(gop.body) && /Dấu hiệu tạo đáy: DGC/.test(gop.body), gop.body);
 }
 
 console.log(loi === 0 ? "\nTAT CA DAT" : `\n${loi} LOI`);

@@ -4,8 +4,8 @@ import PhaVoPhaiSinh from "@/components/PhaVoPhaiSinh";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "Phái sinh VN30F1M · Phá vỡ biến động 0,3",
-  description: "Mức mua, bán khống và cắt lỗ trong ngày của hợp đồng tương lai VN30F1M theo cách phá vỡ biến động 0,3, kèm kết quả 20 phiên gần nhất.",
+  title: "Phái sinh VN30F1M",
+  description: "Mức mua, bán khống và cắt lỗ trong ngày của hợp đồng tương lai VN30F1M, kèm kết quả các phiên gần nhất.",
   robots: { index: false, follow: false },
 };
 
@@ -23,7 +23,7 @@ export default async function TrangPhaiSinh() {
     return (
       <KhoaTrangNoiDung
         tieuDe="Phái sinh VN30F1M"
-        moTa="Đăng ký hoặc đăng nhập miễn phí để xem mức mua, bán khống và cắt lỗ trong ngày của hợp đồng tương lai VN30F1M theo cách phá vỡ biến động 0,3, kèm kết quả các phiên gần nhất."
+        moTa="Đăng ký hoặc đăng nhập miễn phí để xem mức mua, bán khống và cắt lỗ trong ngày của hợp đồng tương lai VN30F1M, kèm kết quả các phiên gần nhất."
         choDuyet={!!nd}
       />
     );
