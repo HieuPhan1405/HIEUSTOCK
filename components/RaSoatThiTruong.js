@@ -12,7 +12,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#8B5CF6";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -112,7 +112,7 @@ function HangRaSoat({ so, nhan, mauNhan = XANH, nhan2, mauNhan2 = DO, children, 
   return (
     <div className="grid md:grid-cols-[250px_1fr] gap-x-6 gap-y-2 py-4 border-b last:border-b-0" style={{ borderColor: "var(--vien-nhe)" }}>
       <div className="flex gap-3">
-        <span className="shrink-0 w-6 h-6 rounded-md text-[11px] flex items-center justify-center" style={{ background: "rgba(108,92,231,0.2)", color: "var(--tim-chu)", fontWeight: 700, ...mono }}>
+        <span className="shrink-0 w-6 h-6 rounded-md text-[11px] flex items-center justify-center" style={{ background: "rgba(139,92,246,0.2)", color: "var(--tim-chu)", fontWeight: 700, ...mono }}>
           {so}
         </span>
         <div className="text-sm leading-snug" style={{ ...sans, fontWeight: 600 }}>
@@ -224,7 +224,7 @@ export function TongQuanThiTruong({ tatCa, vnindex }) {
         </The>
 
         <The may="muc-giu-lenh" tieuDe="Mức giữ lệnh của hệ thống" phu="Số mã đang MUA hoặc NẮM GIỮ trên tổng số mã hệ thống theo dõi. Chỉ là thống kê, không phải khuyến nghị tỷ trọng.">
-          <p className="text-center text-4xl mb-1" style={{ ...mono, fontWeight: 700, color: PRIMARY }}>
+          <p className="text-center text-4xl mb-1" style={{ ...mono, fontWeight: 700, color: "var(--tim-chu)" }}>
             {tq.tyLeDangGiu == null ? "—" : <SoChay gia={Math.round(tq.tyLeDangGiu)} hau="%" />}
           </p>
           <p className="text-center text-xs mb-4" style={{ color: MUTED }}>

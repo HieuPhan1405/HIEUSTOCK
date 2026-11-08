@@ -19,7 +19,7 @@ const phongChu = Open_Sans({
 export const dynamic = "force-dynamic";
 
 // Dien thoai: phu kin man hinh (tai tho / khong co), de thanh dieu huong day man hinh dung vung an toan (env(safe-area-inset-bottom)); mau thanh trinh duyet theo nen toi.
-export const viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#0B0B10" };
+export const viewport = { width: "device-width", initialScale: 1, viewportFit: "cover", themeColor: "#0E2016" };
 
 export const metadata = {
   metadataBase: new URL("https://www.cloudstock.id.vn"),

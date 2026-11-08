@@ -15,7 +15,7 @@ const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#8B5CF6";
 
 // Ket qua bat day - CHI xet dc khi da co du du lieu gia sau 20 phien (con
 // qua moi, chua du 20 phien thi la "Dang theo doi", KHONG tinh la that bai.
@@ -126,7 +126,7 @@ export default function BangBatDay({ duLieu }) {
           ))}
         </select>
         <button type="button" onClick={() => setMoLocThem((x) => !x)} aria-expanded={moLocThem} className="text-xs rounded-lg px-3 py-2 border" style={{ borderColor: soLocThem ? PRIMARY : VIEN, background: NEN_CARD, color: TEXT, fontFamily: "var(--font-chu)" }}>
-          Lọc thêm{soLocThem > 0 && <b style={{ color: PRIMARY }}> · {soLocThem}</b>} {moLocThem ? "▴" : "▾"}
+          Lọc thêm{soLocThem > 0 && <b style={{ color: "var(--tim-chu)" }}> · {soLocThem}</b>} {moLocThem ? "▴" : "▾"}
         </button>
       </div>
       {moLocThem && (

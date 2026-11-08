@@ -6,7 +6,7 @@ import { tinhTongQuanThiTruong, nhanTamLy } from "@/lib/thiTruong";
 import { gioChupVN } from "@/lib/xuatAnh";
 
 export const RONG_THE_THI_TRUONG = 720;
-const C = { nen: "#0E0F1C", card: "#181A2E", the2: "#1E2140", vien: "#2A2D48", chu: "#F4F5FB", mo: "#A3A6C4", xanh: "#4ADE80", xanhDam: "#16A34A", do: "#F87171", doDam: "#B91C1C", vang: "#FBBF24", tim: "#8B7CF6", timNhat: "#C9BEFF", cyan: "#5EEAD4" };
+const C = { nen: "#0E2016", card: "#1F3D2B", the2: "#28503A", vien: "#2F5A41", chu: "#F6F0E1", mo: "#B3C0AE", xanh: "#4ADE80", xanhDam: "#16A34A", do: "#F87171", doDam: "#B91C1C", vang: "#FBBF24", tim: "#8B5CF6", timNhat: "#C9BEFF", cyan: "#5EEAD4" };
 const FONT = "var(--font-chu), 'Open Sans', system-ui, sans-serif";
 
 // bien CSS cua web (doi theo giao dien sang / toi) -> mau co dinh cua the
@@ -86,7 +86,7 @@ export default function TheThiTruong({ tatCa = [], vnindex = null, ngay = "" }) 
     <div
       style={{
         width: RONG_THE_THI_TRUONG,
-        background: `radial-gradient(620px 300px at 12% -60px, rgba(108,92,231,0.42), rgba(108,92,231,0) 70%), radial-gradient(460px 260px at 105% 40px, rgba(34,211,238,0.14), rgba(34,211,238,0) 70%), ${C.nen}`,
+        background: `radial-gradient(620px 300px at 12% -60px, rgba(139,92,246,0.42), rgba(139,92,246,0) 70%), radial-gradient(460px 260px at 105% 40px, rgba(34,211,238,0.14), rgba(34,211,238,0) 70%), ${C.nen}`,
         color: C.chu,
         fontFamily: FONT,
         padding: "28px 28px 24px",
@@ -104,7 +104,7 @@ export default function TheThiTruong({ tatCa = [], vnindex = null, ngay = "" }) 
       </div>
 
       {/* VN-INDEX + TAM LY */}
-      <div style={{ background: `linear-gradient(160deg, ${C.the2}, ${C.card})`, border: `1px solid ${C.vien}`, borderRadius: 24, padding: "24px 26px", marginBottom: 16, boxShadow: "0 18px 40px -22px rgba(108,92,231,0.7)" }}>
+      <div style={{ background: `linear-gradient(160deg, ${C.the2}, ${C.card})`, border: `1px solid ${C.vien}`, borderRadius: 24, padding: "24px 26px", marginBottom: 16, boxShadow: "0 18px 40px -22px rgba(139,92,246,0.7)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", gap: 20, alignItems: "center" }}>
           <div style={{ minWidth: 0 }}>
             <div style={{ fontSize: 15, color: C.mo, marginBottom: 6 }}>VN-Index</div>
@@ -113,7 +113,7 @@ export default function TheThiTruong({ tatCa = [], vnindex = null, ngay = "" }) 
                 <div style={{ fontSize: 54, fontWeight: 800, lineHeight: 1, letterSpacing: -1 }}>{fmt(vnindex.gia)}</div>
                 <div style={{ fontSize: 24, fontWeight: 800, color: mauDoi(vnindex.doi), marginTop: 8 }}>{pct(vnindex.doi, 2)}</div>
                 {tq.xuHuong && (
-                  <span style={{ display: "inline-block", marginTop: 14, padding: "6px 16px", borderRadius: 999, fontSize: 16, fontWeight: 800, color: "#0E0F1C", background: co(tq.xuHuong.mau), boxShadow: `0 8px 22px -8px ${co(tq.xuHuong.mau)}` }}>
+                  <span style={{ display: "inline-block", marginTop: 14, padding: "6px 16px", borderRadius: 999, fontSize: 16, fontWeight: 800, color: "#0E2016", background: co(tq.xuHuong.mau), boxShadow: `0 8px 22px -8px ${co(tq.xuHuong.mau)}` }}>
                     Xu hướng {tq.xuHuong.nhan.toLowerCase()}
                   </span>
                 )}

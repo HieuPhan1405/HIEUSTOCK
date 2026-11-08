@@ -19,7 +19,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#8B5CF6";
 const GOI_Y = ["VNINDEX", "VN30", "VCB", "FPT", "HPG", "SSI", "STB"];
 
 export default async function TrangBieuDo({ searchParams }) {
@@ -77,7 +77,7 @@ export default async function TrangBieuDo({ searchParams }) {
         <button
           type="submit"
           className="px-4 py-2 text-sm flex items-center gap-2 shrink-0 rounded-lg cursor-pointer"
-          style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}
+          style={{ background: "#8B5CF6", color: "#FFFFFF", fontWeight: 600 }}
         >
           <Search size={15} aria-hidden="true" /> Xem
         </button>
@@ -97,7 +97,7 @@ export default async function TrangBieuDo({ searchParams }) {
       {row && ma !== "VNINDEX" && (
         <div className="flex flex-wrap items-center gap-3 mb-3 text-sm">
           {nguoiDung && <SignalPill tin={row.tin} banTheoDoiTu={row.ban_theo_doi ? row.ban_theo_doi_tu : null} webGiu={Array.isArray(row.lenh_web) && row.lenh_web.length > 0} muaTheoDoiTu={row.mua_theo_doi_tu ?? null} daChotMua={row.da_chot_mua === true} />}
-          <Link href={`/ma/${ma}`} className="underline" style={{ color: PRIMARY }}>
+          <Link href={`/ma/${ma}`} className="underline" style={{ color: "var(--tim-chu)" }}>
             Xem chi tiết {ma} →
           </Link>
         </div>

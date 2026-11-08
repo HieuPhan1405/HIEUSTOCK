@@ -9,7 +9,7 @@ import { NGANH_NHAN } from "@/lib/nganh";
 import { soVN } from "@/lib/soVN";
 
 export const RONG_THE = 720;
-const C = { nen: "#0E0F1C", card: "#181A2E", the2: "#20234A", vien: "#2E3254", chu: "#F7F8FF", mo: "#B4B7D6", xanh: "#4ADE80", do: "#FF7A7A", vang: "#FBBF24", tim: "#8B7CF6", timNhat: "#CFC6FF", cyan: "#5EEAD4", luoi: "#252846" };
+const C = { nen: "#0E2016", card: "#1F3D2B", the2: "#28503A", vien: "#2F5A41", chu: "#F6F0E1", mo: "#B3C0AE", xanh: "#4ADE80", do: "#FF7A7A", vang: "#FBBF24", tim: "#8B5CF6", timNhat: "#C4B5FD", cyan: "#5EEAD4", luoi: "#274A36" };
 const FONT = "var(--font-chu), 'Open Sans', system-ui, sans-serif";
 
 const mauLai = (v) => (v == null ? C.mo : v >= 0 ? C.xanh : C.do);
@@ -136,7 +136,7 @@ function BieuDoNen({ nen, muc = [], rong = 636, cao = 280 }) {
         <g key={m.ten}>
           <line x1={x0} x2={x1} y1={m.y} y2={m.y} stroke={m.mau} strokeWidth="1.6" strokeDasharray={m.net === "lien" ? undefined : "6 5"} opacity="0.95" />
           <rect x={x1 + 4} y={m.yNhan - 9} width={LE_PHAI - 8} height={18} rx="9" fill={m.mau} />
-          <text x={x1 + 4 + (LE_PHAI - 8) / 2} y={m.yNhan + 4.5} fontSize="12" fontWeight="800" textAnchor="middle" fill="#0E0F1C">
+          <text x={x1 + 4 + (LE_PHAI - 8) / 2} y={m.yNhan + 4.5} fontSize="12" fontWeight="800" textAnchor="middle" fill="#0E2016">
             {m.ten} {fmt(m.gia)}
           </text>
         </g>
@@ -232,7 +232,7 @@ export default function TheChiaSeMa({ row, cacLenh = [], lichSuDaDong = [], ketL
     <div
       style={{
         width: RONG_THE,
-        background: `radial-gradient(620px 300px at 12% -60px, rgba(108,92,231,0.42), rgba(108,92,231,0) 70%), radial-gradient(460px 260px at 105% 40px, rgba(34,211,238,0.14), rgba(34,211,238,0) 70%), ${C.nen}`,
+        background: `radial-gradient(620px 300px at 12% -60px, rgba(139,92,246,0.42), rgba(139,92,246,0) 70%), radial-gradient(460px 260px at 105% 40px, rgba(34,211,238,0.14), rgba(34,211,238,0) 70%), ${C.nen}`,
         color: C.chu,
         fontFamily: FONT,
         padding: "28px 28px 24px",
@@ -251,7 +251,7 @@ export default function TheChiaSeMa({ row, cacLenh = [], lichSuDaDong = [], ketL
       </div>
 
       {/* MA + GIA + TIN HIEU */}
-      <div style={{ background: `linear-gradient(160deg, ${C.the2}, ${C.card})`, border: `1px solid ${C.vien}`, borderRadius: 24, padding: "24px 26px", marginBottom: 16, boxShadow: "0 18px 40px -22px rgba(108,92,231,0.7)" }}>
+      <div style={{ background: `linear-gradient(160deg, ${C.the2}, ${C.card})`, border: `1px solid ${C.vien}`, borderRadius: 24, padding: "24px 26px", marginBottom: 16, boxShadow: "0 18px 40px -22px rgba(139,92,246,0.7)" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 20 }}>
           <div style={{ minWidth: 0, flex: 1 }}>
             <div style={{ fontSize: 56, fontWeight: 800, lineHeight: 1, letterSpacing: -1 }}>{row.ma}</div>
@@ -264,7 +264,7 @@ export default function TheChiaSeMa({ row, cacLenh = [], lichSuDaDong = [], ketL
           </div>
         </div>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, alignItems: "center", marginTop: 20, paddingTop: 18, borderTop: `1px solid ${C.vien}` }}>
-          <span style={{ background: tin.mau, color: "#0E0F1C", fontWeight: 800, fontSize: 20, padding: "7px 20px", borderRadius: 999, boxShadow: `0 8px 22px -8px ${tin.mau}` }}>{tin.nhan}</span>
+          <span style={{ background: tin.mau, color: "#0E2016", fontWeight: 800, fontSize: 20, padding: "7px 20px", borderRadius: 999, boxShadow: `0 8px 22px -8px ${tin.mau}` }}>{tin.nhan}</span>
           <span style={{ fontSize: 15, color: C.mo }}>
             Điểm hợp lưu <b style={{ fontSize: 26, color: mauDiem, marginLeft: 6 }}>{fmt(row.diem)}</b>
           </span>
@@ -344,7 +344,7 @@ export default function TheChiaSeMa({ row, cacLenh = [], lichSuDaDong = [], ketL
 
       {/* KET LUAN + MIEN TRU */}
       {ketLuan && cacLenh.length > 0 && (
-        <div style={{ fontSize: 17, lineHeight: 1.6, color: C.chu, marginBottom: 16, padding: "18px 20px", borderRadius: 18, background: "rgba(108,92,231,0.12)", borderLeft: `4px solid ${C.tim}` }}>
+        <div style={{ fontSize: 17, lineHeight: 1.6, color: C.chu, marginBottom: 16, padding: "18px 20px", borderRadius: 18, background: "rgba(139,92,246,0.12)", borderLeft: `4px solid ${C.tim}` }}>
           <b style={{ color: C.timNhat }}>Nhận định: </b>
           {ketLuan}
         </div>

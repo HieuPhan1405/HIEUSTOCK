@@ -31,7 +31,7 @@ const NEN_CARD = "var(--card)";
 const NEN_INSET = "var(--vien-nhe)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#8B5CF6";
 const XANH = "var(--xanh)";
 const VANG = "var(--vang)";
 const DO = "var(--do)";
@@ -321,14 +321,14 @@ export default async function TrangTongQuan() {
               bằng backtest 11 năm với giá vào lệnh thực tế. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc thị trường nhanh hơn.
             </p>
             <div className="flex flex-wrap gap-3 mt-6 text-sm" style={{ fontFamily: "var(--font-chu)" }}>
-              <Link href="/bo-loc" className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold" style={{ background: "#6C5CE7", color: "#FFFFFF" }}>
+              <Link href="/bo-loc" className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold" style={{ background: "#8B5CF6", color: "#FFFFFF" }}>
                 Mở Bộ lọc cổ phiếu
                 <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
               </Link>
               <Link href="/bieu-do" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
                 Xem biểu đồ kỹ thuật
               </Link>
-              <Link href="/danh-gia-danh-muc" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: "#6C5CE7", color: TEXT }}>
+              <Link href="/danh-gia-danh-muc" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: "#8B5CF6", color: TEXT }}>
                 Chấm điểm danh mục của bạn
               </Link>
               {/* Anh chia nho (chup ca trang dai va bi cat o man hinh nho): the co dinh 720px, xem components/TheThiTruong.js / TheTinHieu.js */}

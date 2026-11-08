@@ -15,7 +15,7 @@ import { NhanXet, NhanTrangThai, sans, soVN, p1, p0, dau, tien, mauLai, ngayVN }
 // In: globals.css (@media print) an moi thu ngoai .cs-in-bao-cao. Mau giao dien SANG co dinh (bien CSS dat lai trong khung bao cao) - khong theo giao dien toi cua web.
 const SANG = {
   "--nen": "#FFFFFF", "--card": "#FFFFFF", "--chu": "#12121C", "--mo": "#5A5A6E", "--vien": "#DDDFE8", "--vien-nhe": "#ECEDF3",
-  "--xanh": "#16A34A", "--do": "#DC2626", "--vang": "#D97706", "--cam": "#EA580C", "--bd-1": "#6C5CE7", "--bd-2": "#B7791F", "--tim-nhat": "#7C3AED",
+  "--xanh": "#16A34A", "--do": "#DC2626", "--vang": "#D97706", "--cam": "#EA580C", "--bd-1": "#8B5CF6", "--bd-2": "#B7791F", "--tim-nhat": "#7C3AED",
 };
 const TEN_TRU = { daDang: "Đa dạng hóa", ruiRo: "Rủi ro", xuHuong: "Xu hướng", thanhKhoan: "Thanh khoản", doanhNghiep: "Doanh nghiệp" };
 const LOAI_HD = { ban_het: "Bán hết", ban_bot: "Bán bớt", chot_bot: "Chốt lời một phần", mua_them: "Mua thêm", tra_no: "Giảm nợ" };
@@ -89,12 +89,12 @@ export default function BaoCaoDanhMuc({ mo, dong, kq, sau, hanhDongChon = [], du
   return createPortal(
     <div className="cs-in-bao-cao fixed inset-0 z-[200] overflow-auto" style={{ background: "rgba(10,10,20,0.72)" }} role="dialog" aria-modal="true" aria-label="Báo cáo danh mục">
       {/* THANH CONG CU (khong in) */}
-      <div className="cs-khong-in sticky top-0 z-10 px-4 py-3 border-b" style={{ background: "#15151F", borderColor: "#26262F", color: "#F5F5F7", ...sans }}>
+      <div className="cs-khong-in sticky top-0 z-10 px-4 py-3 border-b" style={{ background: "#1F3D2B", borderColor: "#2F5A41", color: "#F6F0E1", ...sans }}>
         <div className="max-w-[860px] mx-auto">
           <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
             <b className="text-sm">Báo cáo danh mục — xem trước</b>
             <div className="flex gap-2">
-              <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-1.5 text-sm px-4 py-2 rounded-lg font-semibold" style={{ background: "#6C5CE7", color: "#fff" }}>
+              <button type="button" onClick={() => window.print()} className="inline-flex items-center gap-1.5 text-sm px-4 py-2 rounded-lg font-semibold" style={{ background: "#8B5CF6", color: "#fff" }}>
                 <Printer size={15} /> In / Lưu PDF
               </button>
               <button type="button" onClick={dong} className="inline-flex items-center gap-1.5 text-sm px-3 py-2 rounded-lg border" style={{ borderColor: "#3A3A48" }} aria-label="Đóng báo cáo">
@@ -129,7 +129,7 @@ export default function BaoCaoDanhMuc({ mo, dong, kq, sau, hanhDongChon = [], du
 
       {/* TRANG BAO CAO */}
       <div className="cs-trang mx-auto my-6 bg-white shadow-2xl" style={{ ...SANG, width: "min(820px, calc(100vw - 16px))", padding: "28px 30px", color: "#12121C", ...sans }}>
-        <header className="cs-bao-cao-khoi flex flex-wrap items-start justify-between gap-3 mb-4 pb-3 border-b-2" style={{ borderColor: "#6C5CE7" }}>
+        <header className="cs-bao-cao-khoi flex flex-wrap items-start justify-between gap-3 mb-4 pb-3 border-b-2" style={{ borderColor: "#8B5CF6" }}>
           <div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/logo-day-du.png" alt="CloudStock" style={{ height: 34, width: "auto" }} />
@@ -148,7 +148,7 @@ export default function BaoCaoDanhMuc({ mo, dong, kq, sau, hanhDongChon = [], du
         </header>
 
         {baoCao.ghiChu?.trim() && (
-          <section className="cs-bao-cao-khoi mb-5 rounded-lg p-3 text-[12.5px] whitespace-pre-line" style={{ background: "#F3F1FF", borderLeft: "4px solid #6C5CE7" }}>
+          <section className="cs-bao-cao-khoi mb-5 rounded-lg p-3 text-[12.5px] whitespace-pre-line" style={{ background: "#F3F1FF", borderLeft: "4px solid #8B5CF6" }}>
             <b>Nhận định của chuyên viên: </b>
             {baoCao.ghiChu.trim()}
           </section>
@@ -340,7 +340,7 @@ export default function BaoCaoDanhMuc({ mo, dong, kq, sau, hanhDongChon = [], du
           <p className="mt-1">
             <b>Lưu ý:</b> báo cáo dựa trên dữ liệu quá khứ và danh mục do người dùng nhập, chỉ để tham khảo, không phải khuyến nghị mua bán. Lãi/lỗ chưa trừ phí và thuế (trừ nhật ký). Kết quả quá khứ không đảm bảo tương lai.
           </p>
-          <p className="mt-2 text-center" style={{ color: "#6C5CE7", fontWeight: 700 }}>CloudStock · cloudstock.id.vn/danh-gia-danh-muc</p>
+          <p className="mt-2 text-center" style={{ color: "var(--tim-chu)", fontWeight: 700 }}>CloudStock · cloudstock.id.vn/danh-gia-danh-muc</p>
         </section>
       </div>
     </div>,

@@ -9,7 +9,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#8B5CF6";
 const XANH = "var(--xanh)";
 const sans = { fontFamily: "var(--font-chu)" };
 
@@ -157,7 +157,7 @@ export default function XuatAnh({ nhan = "Chụp ảnh", tenFile = "cloudstock.p
       {daVaoTrinhDuyet && (anh || loi) &&
         createPortal(
           <div role="dialog" aria-modal="true" aria-label="Ảnh đã tạo" className="fixed inset-0 z-[100] flex items-center justify-center p-4 backdrop-blur-sm" style={{ background: "rgba(5,5,10,0.72)" }} onClick={dong}>
-            <div className="rounded-2xl border w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD, color: TEXT, boxShadow: "0 30px 80px -20px rgba(108,92,231,0.45)", animation: "cs-len 0.3s var(--ease-ra) backwards" }} onClick={(e) => e.stopPropagation()}>
+            <div className="rounded-2xl border w-full max-w-3xl max-h-[92vh] flex flex-col overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD, color: TEXT, boxShadow: "0 30px 80px -20px rgba(139,92,246,0.45)", animation: "cs-len 0.3s var(--ease-ra) backwards" }} onClick={(e) => e.stopPropagation()}>
               <div className="flex items-center justify-between gap-3 px-4 py-3 border-b" style={{ borderColor: VIEN }}>
                 <div className="min-w-0">
                   <p className="font-bold" style={sans}>{loi ? "Không tạo được ảnh" : "Ảnh đã sẵn sàng"}</p>

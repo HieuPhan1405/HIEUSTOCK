@@ -22,14 +22,14 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#8B5CF6";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 
 function mauTheoGiaoDien() {
   const cs = getComputedStyle(document.documentElement);
   const l = (ten) => cs.getPropertyValue(`--${ten}`).trim();
-  return { nen: l("card"), mo: l("mo"), vien: l("vien"), luoi: l("vien-nhe"), xanh: l("xanh"), do: l("do"), ma200: l("chu-2") };
+  return { nen: l("card"), mo: l("mo"), vien: l("vien"), luoi: l("vien-nhe"), xanh: l("xanh"), do: l("do"), ma200: l("chu-2"), diemB: l("diem-b") || "#A78BFA", diemDay: l("diem-day") || "#E8DCC4" };
 }
 // Doi mau bieu do ngay khi nguoi dung doi che do sang/toi (khong can tai lai trang).
 function apDungMau(s) {
@@ -291,7 +291,7 @@ function Chip({ bat, onClick, children, mau, may }) {
       aria-pressed={bat}
       className="px-2.5 py-1 rounded-md text-xs cursor-pointer transition-colors flex items-center gap-1.5"
       style={{
-        background: bat ? "rgba(108,92,231,0.18)" : "transparent",
+        background: bat ? "rgba(139,92,246,0.18)" : "transparent",
         border: `1px solid ${bat ? PRIMARY : VIEN}`,
         color: bat ? TEXT : MUTED,
         fontFamily: "'Open Sans', sans-serif",
@@ -311,7 +311,9 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
-  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false });
+  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true });
+  // DIEM B (mua phuc hoi) + DIEM BAT DAY cua ma nay (chi thanh vien da duyet - xem /api/diem-bieu-do), ve thanh mui ten tren nen gia (khung Ngay / Tuan).
+  const [diemSK, setDiemSK] = useState({ ma: "", b: [], batDay: [] });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
   const [mauVe, setMauVe] = useState(MAU_VE[0]);
   const [hitGia, setHitGia] = useState(false);
@@ -456,6 +458,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.markersMH = createSeriesMarkers(s.candle, []); // diem chinh cua mau hinh gia dang ve
     s.markersNen = createSeriesMarkers(s.candle, []); // mau hinh NEN NHAT (chip "Mẫu hình nến")
     s.markersBanker = createSeriesMarkers(s.candle, []); // nhan TP / SL cua chi bao Dong tien (Banker Fund Flow) tren bieu do gia
+    s.markersSK = createSeriesMarkers(s.candle, []); // diem B (mua phuc hoi) + diem bat day
     s.mh = { series: [], vach: [] }; // cac duong / vach gia cua mau hinh gia dang ve (xoa khi doi mau hinh)
     // Lop ke ve (canvas phu len bieu do): hinh luu o localStorage theo ma + khung thoi gian.
     s.lopVe = new LopVe({
@@ -638,6 +641,22 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       huy = true;
     };
   }, [ma, khungTG, lanThu]);
+
+  // 2a. Tai diem B + diem bat day cua ma (1 lan moi ma; khach / chua duyet nhan danh sach rong).
+  useEffect(() => {
+    let huy = false;
+    fetch(`/api/diem-bieu-do?ma=${encodeURIComponent(ma)}`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (!huy) setDiemSK({ ma, b: Array.isArray(j.b) ? j.b : [], batDay: Array.isArray(j.batDay) ? j.batDay : [] });
+      })
+      .catch(() => {
+        if (!huy) setDiemSK({ ma, b: [], batDay: [] });
+      });
+    return () => {
+      huy = true;
+    };
+  }, [ma]);
 
   // 2b. Trong phien giao dich: tu dong lam moi nen "hom nay" moi 30 giay (khung Ngay - nguon
   // DNSE tra ve nen hom nay dang chay, khong phai da chot) - khung Tuan khong can vi khong doi trong ngay.
@@ -822,6 +841,33 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
     s.markers.setMarkers(nenMua ? [{ time: nenMua, position: "belowBar", color: mauTheoGiaoDien().xanh, shape: "arrowUp", text: "MUA" }] : []);
   }, [vung, ngayMua, nen, kieuMau, noiNgay]);
 
+  // 4a. Diem B (mui ten tim "B") + diem bat day (cham be "Đáy") tren nen gia: moi su kien dat vao nen cung ngay (hoac nen tuan chua ngay do); chi khung Ngay / Tuan.
+  const sk = diemSK.ma === ma ? diemSK : null;
+  useEffect(() => {
+    const s = veRef.current;
+    if (!s || !s.markersSK) return;
+    if (!nen || !sk || noiNgay) return s.markersSK.setMarkers([]);
+    const m = mauTheoGiaoDien();
+    const ds = [];
+    const them = (ngay, kieu) => {
+      const t = ngay ? timNenTruoc(nen, ngay) : null;
+      if (t) ds.push({ time: t, kieu });
+    };
+    if (bat.diemB) for (const x of sk.b) them(x.ngay, "B");
+    if (bat.batDay) for (const x of sk.batDay) them(x.ngay, "day");
+    const thuTu = (t) => (typeof t === "number" ? t : Date.parse(`${t}T00:00:00Z`));
+    ds.sort((a, c) => thuTu(a.time) - thuTu(c.time) || (a.kieu < c.kieu ? -1 : 1));
+    const daCo = new Set();
+    const nhan = [];
+    for (const d of ds) {
+      const k = `${d.time}|${d.kieu}`;
+      if (daCo.has(k)) continue;
+      daCo.add(k);
+      nhan.push(d.kieu === "B" ? { time: d.time, position: "belowBar", color: m.diemB, shape: "arrowUp", text: "B" } : { time: d.time, position: "belowBar", color: m.diemDay, shape: "circle", text: "Đáy" });
+    }
+    s.markersSK.setMarkers(nhan);
+  }, [sk, nen, bat.diemB, bat.batDay, noiNgay, kieuMau, ma]);
+
   // 4b. Tu ve MAU HINH GIA len bieu do: duong co / canh (LineSeries), diem chinh (marker), muc tieu + cat lo (vach gia); cuon bieu do toi mau hinh.
   useEffect(() => {
     const s = veRef.current;
@@ -930,7 +976,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             onChange={(e) => e.target.value && setKhungTG(e.target.value)}
             aria-label="Khung trong ngày"
             className="px-2 py-1 rounded-md text-xs cursor-pointer"
-            style={{ border: `1px solid ${noiNgay ? PRIMARY : VIEN}`, background: noiNgay ? "rgba(108,92,231,0.18)" : "transparent", color: noiNgay ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
+            style={{ border: `1px solid ${noiNgay ? PRIMARY : VIEN}`, background: noiNgay ? "rgba(139,92,246,0.18)" : "transparent", color: noiNgay ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
           >
             <option value="">Trong ngày</option>
             {KHUNG_CHON.slice(2).map((k) => (
@@ -949,6 +995,16 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           {conVung && (
             <Chip may="chip-vung" bat={bat.vung} mau={XANH} onClick={() => setBat((b) => ({ ...b, vung: !b.vung }))}>
               Vùng lệnh
+            </Chip>
+          )}
+          {!noiNgay && sk && sk.b.length > 0 && (
+            <Chip may="chip-diemB" bat={bat.diemB} mau="var(--diem-b)" onClick={() => setBat((b) => ({ ...b, diemB: !b.diemB }))}>
+              Điểm B ({sk.b.length})
+            </Chip>
+          )}
+          {!noiNgay && sk && sk.batDay.length > 0 && (
+            <Chip may="chip-batDay" bat={bat.batDay} mau="var(--diem-day)" onClick={() => setBat((b) => ({ ...b, batDay: !b.batDay }))}>
+              Bắt đáy ({sk.batDay.length})
             </Chip>
           )}
           {CHI_BAO_PHU.filter((c) => hienChip(c.khoa)).map((c) => (
@@ -977,7 +1033,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             </button>
           )}
           {!toanMH && (
-            <button type="button" onClick={() => setMoVe((v) => !v)} aria-expanded={moVe || congCu != null} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs cursor-pointer" style={{ border: `1px solid ${moVe || congCu != null ? PRIMARY : VIEN}`, background: moVe || congCu != null ? "rgba(108,92,231,0.18)" : "transparent", color: moVe || congCu != null ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}>
+            <button type="button" onClick={() => setMoVe((v) => !v)} aria-expanded={moVe || congCu != null} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs cursor-pointer" style={{ border: `1px solid ${moVe || congCu != null ? PRIMARY : VIEN}`, background: moVe || congCu != null ? "rgba(139,92,246,0.18)" : "transparent", color: moVe || congCu != null ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}>
               <PenLine size={13} strokeWidth={2} /> Công cụ vẽ
             </button>
           )}
@@ -990,7 +1046,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             data-may="toan-man-hinh"
             title={toanMH ? "Thu nhỏ (Esc)" : "Xem biểu đồ toàn màn hình"}
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs cursor-pointer"
-            style={{ border: `1px solid ${toanMH ? PRIMARY : VIEN}`, background: toanMH ? "rgba(108,92,231,0.18)" : "transparent", color: toanMH ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
+            style={{ border: `1px solid ${toanMH ? PRIMARY : VIEN}`, background: toanMH ? "rgba(139,92,246,0.18)" : "transparent", color: toanMH ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
           >
             {toanMH ? <Minimize2 size={13} strokeWidth={2} /> : <Maximize2 size={13} strokeWidth={2} />}
             {toanMH ? "Thu nhỏ" : "Toàn màn hình"}
@@ -1106,7 +1162,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             aria-pressed={congCu === null}
             title="Con trỏ: kéo, thu phóng biểu đồ; bấm vào hình vẽ để chọn"
             className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-            style={{ background: congCu === null ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === null ? PRIMARY : VIEN}`, color: congCu === null ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+            style={{ background: congCu === null ? "rgba(139,92,246,0.18)" : "transparent", border: `1px solid ${congCu === null ? PRIMARY : VIEN}`, color: congCu === null ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
           >
             <MousePointer2 size={13} strokeWidth={2} />
             Con trỏ
@@ -1119,7 +1175,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
               aria-pressed={congCu === k}
               title={`${nhan}: bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ`}
               className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-              style={{ background: congCu === k ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === k ? PRIMARY : VIEN}`, color: congCu === k ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+              style={{ background: congCu === k ? "rgba(139,92,246,0.18)" : "transparent", border: `1px solid ${congCu === k ? PRIMARY : VIEN}`, color: congCu === k ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
             >
               {Icon ? <Icon size={13} strokeWidth={2} /> : <span className="text-[11px] font-bold leading-none">Fib</span>}
               {nhan}
@@ -1145,7 +1201,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             aria-pressed={giuCongCu}
             title="Giữ công cụ: vẽ xong vẫn giữ công cụ đang chọn để vẽ tiếp (Esc để thoát)"
             className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-            style={{ background: giuCongCu ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${giuCongCu ? PRIMARY : VIEN}`, color: giuCongCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+            style={{ background: giuCongCu ? "rgba(139,92,246,0.18)" : "transparent", border: `1px solid ${giuCongCu ? PRIMARY : VIEN}`, color: giuCongCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
           >
             {giuCongCu ? <Lock size={13} strokeWidth={2} /> : <LockOpen size={13} strokeWidth={2} />}
             Giữ công cụ
@@ -1156,7 +1212,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             aria-pressed={hitGia}
             title="Hít giá: điểm vẽ tự bám vào Mở / Cao / Thấp / Đóng của nến gần nhất"
             className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-            style={{ background: hitGia ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${hitGia ? PRIMARY : VIEN}`, color: hitGia ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+            style={{ background: hitGia ? "rgba(139,92,246,0.18)" : "transparent", border: `1px solid ${hitGia ? PRIMARY : VIEN}`, color: hitGia ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
           >
             <Magnet size={13} strokeWidth={2} />
             Hít giá
@@ -1278,7 +1334,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
                   type="button"
                   onClick={() => setLanThu((x) => x + 1)}
                   className="px-3 py-1.5 rounded-md text-xs cursor-pointer"
-                  style={{ background: "#6C5CE7", color: "#FFFFFF" }}
+                  style={{ background: "#8B5CF6", color: "#FFFFFF" }}
                 >
                   Thử lại
                 </button>

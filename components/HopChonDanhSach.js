@@ -10,7 +10,7 @@ import { GIOI_HAN } from "@/lib/danhSachTheoDoiThuan";
 const VIEN = "var(--vien)";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#8B5CF6";
 const RONG = 272;
 const LE = 12;
 
@@ -72,7 +72,7 @@ export function OTaoDanhSach({ goiY = "", onTao, nhanNut = "Tạo" }) {
   const [dang, setDang] = useState(false);
   if (!mo)
     return (
-      <button type="button" onClick={() => setMo(true)} className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-sm hover:bg-[color:var(--hover-nhe)]" style={{ color: PRIMARY }}>
+      <button type="button" onClick={() => setMo(true)} className="w-full flex items-center gap-2 px-2 py-2 rounded-lg text-sm hover:bg-[color:var(--hover-nhe)]" style={{ color: "var(--tim-chu)" }}>
         <Plus size={15} /> Tạo danh sách mới
       </button>
     );
@@ -190,7 +190,7 @@ export default function HopChonDanhSach({ ma, nutRef, danhSach, daThamGiaChinh, 
           {loi}
         </p>
       )}
-      <Link href="/danh-muc" className="block px-2 pt-1.5 pb-1 text-xs hover:underline" style={{ color: PRIMARY }}>
+      <Link href="/danh-muc" className="block px-2 pt-1.5 pb-1 text-xs hover:underline" style={{ color: "var(--tim-chu)" }}>
         Mở danh sách theo dõi →
       </Link>
     </KhungHop>

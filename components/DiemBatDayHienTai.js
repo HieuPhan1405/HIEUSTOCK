@@ -16,7 +16,7 @@ const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#8B5CF6";
 const sans = { fontFamily: "var(--font-chu)" };
 const NGUONG = 5; // diem bao tin hieu (xem engine/loi/checklistBatDay.js NGUONG_THAM_KHAO)
 const DIEM_TOI_DA = 9;
@@ -249,7 +249,7 @@ export default function DiemBatDayHienTai({ ds, ngay, capNhat }) {
       </div>
       {hien.length > soHien && (
         <div className="text-center mt-3">
-          <button type="button" onClick={() => setSoHien(soHien + 60)} className="text-sm px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: PRIMARY, ...sans }}>
+          <button type="button" onClick={() => setSoHien(soHien + 60)} className="text-sm px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: "var(--tim-chu)", ...sans }}>
             Hiện thêm ({hien.length - soHien} mã)
           </button>
         </div>

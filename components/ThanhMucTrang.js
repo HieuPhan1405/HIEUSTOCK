@@ -4,7 +4,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 
 // THANH MUC TRANG (dinh duoi thanh dau): chip nhay toi tung khoi cua trang dai (trang ma) va to sang khoi dang xem. Chi hien khoi CO trong trang (id ton tai).
 const VIEN = "var(--vien)";
-const PRIMARY = "#6C5CE7";
+const PRIMARY = "#8B5CF6";
 
 export default function ThanhMucTrang({ muc }) {
   // id cac khoi thuc su co trong trang (doc tu DOM; server tra rong de khop luc hydrate)
