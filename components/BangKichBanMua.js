@@ -89,7 +89,7 @@ export default function BangKichBanMua({ duLieu: tatCa }) {
   const soMua = useMemo(() => tatCa.filter((r) => (r.loai ?? "MUA") === "MUA").length, [tatCa]);
   const duLieu = useMemo(() => tatCa.filter((r) => (r.loai ?? "MUA") === nhom), [tatCa, nhom]);
   const laGiua = nhom === "GIUA";
-  const cacCot = laGiua ? [COT[0], COT[1], COT_GIA_MUA, ...COT.slice(2)] : COT;
+  const cacCot = useMemo(() => (laGiua ? [COT[0], COT[1], COT_GIA_MUA, ...COT.slice(2)] : COT), [laGiua]);
   const [timKiem, setTimKiem] = useState("");
   const [loc, setLoc] = useState("co"); // co = chi ma co kich ban | homnay | ba | tat
   const [sapXep, setSapXep] = useState({ khoa: "sn", chieu: "asc" });

@@ -16,11 +16,13 @@ const do1 = async (kq, ten, fn) => {
   }
 };
 
+const giayHienTai = () => Math.floor(Date.now() / 1000);
+
 export default async function Trang({ searchParams }) {
   const sp = await searchParams;
   if (!process.env.UPLOAD_API_KEY || sp?.k !== process.env.UPLOAD_API_KEY) return <p>—</p>;
   const kq = {};
-  const den = Math.floor(Date.now() / 1000);
+  const den = giayHienTai();
   const url = `https://services.entrade.com.vn/chart-api/v2/ohlcs/index?symbol=VNINDEX&resolution=1D&from=${den - 86400 * 80}&to=${den}`;
   await do1(kq, "fetchTran", () => fetch(url, { signal: AbortSignal.timeout(30000) }).then((r) => r.text()));
   await do1(kq, "fetchRevalidate", () => fetch(url + "&a=1", { next: { revalidate: 120 }, signal: AbortSignal.timeout(30000) }).then((r) => r.text()));

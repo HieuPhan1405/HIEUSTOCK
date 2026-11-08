@@ -113,7 +113,7 @@ export default function TrangCaNhan() {
   async function dangXuat() {
     await tatDay().catch(() => {});
     await fetch("/api/dang-xuat", { method: "POST" }).catch(() => {});
-    window.location.assign("/");
+    window.location.assign(`${window.location.origin}/`); // tai lai TOAN trang de xoa trang thai dang nhap phia trinh duyet
   }
 
   // ---- thong bao ve may cua thiet bi nay

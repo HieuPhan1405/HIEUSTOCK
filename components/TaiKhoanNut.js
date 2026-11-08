@@ -6,6 +6,7 @@ import { UserRound, Pencil, Check, X as HuyIcon, ChevronDown, KeyRound, LogOut, 
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import DoiMatKhau from "@/components/DoiMatKhau";
 import { tatDay } from "@/lib/dayTrinhDuyet";
+import { layNguoiDungTrinhDuyet, xoaNguoiDungDaNho } from "@/lib/nguoiDungTrinhDuyet";
 
 const PRIMARY = "#6C5CE7";
 const MUTED = "var(--mo)";
@@ -56,10 +57,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
   const goc = useRef(null);
 
   const taiPhien = useCallback(() => {
-    fetch("/api/nguoi-dung-hien-tai")
-      .then((r) => r.json())
-      .then((d) => setNguoiDung(d.nguoiDung || null))
-      .catch(() => setNguoiDung(null));
+    layNguoiDungTrinhDuyet().then(setNguoiDung); // dung chung 1 lan goi voi cac component khac tren trang
   }, []);
 
   useEffect(() => {
@@ -86,6 +84,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
   async function dangXuat() {
     await tatDay().catch(() => {});
     await fetch("/api/dang-xuat", { method: "POST" });
+    xoaNguoiDungDaNho();
     setNguoiDung(null);
     window.location.reload();
   }

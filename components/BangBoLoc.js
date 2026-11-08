@@ -15,6 +15,8 @@ import { COT_CHI_BAO_HIEN, THU_TU_COT_CHI_BAO } from "@/components/cotChiBao";
 import BoLocChiBaoKyThuat from "@/components/BoLocChiBaoKyThuat";
 import { locTheoChiBao, cotChoBoLoc } from "@/lib/boLocChiBao";
 import { coCanhBaoBanBot } from "@/lib/ghiChuTuDong";
+import { layNguoiDungTrinhDuyet } from "@/lib/nguoiDungTrinhDuyet";
+import { moCot } from "@/lib/goiCot";
 import {
   NGANH_NHAN,
   LOC_TRONG,
@@ -195,7 +197,9 @@ const COT_CAN_DANG_NHAP = new Set(["gia_mua", "ngay_mua", "so_phien_giu", "lai_l
 // Cac khoa loc thuoc "Bo loc nhanh" (bam nut nhanh nay thi bo cac nut nhanh khac, giu nguyen o tim / san / von hoa / nganh).
 const xoaNhanh = (l) => ({ ...l, tin: "", xuHuong: "", chiGanDiemMua: false, chiDuDiemChuaMua: false, chiMatThan: false, chiChotLoi: false, chiBanBot: false, chiUuTien: false });
 
-export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
+export default function BangBoLoc({ duLieu: duLieuTho = null, duLieuGon = null, chiBaoLuc = null }) {
+  // Trang gui dang cot (lib/goiCot.js) de nhe; mo lai thanh mang doi tuong 1 lan.
+  const duLieu = useMemo(() => duLieuTho ?? moCot(duLieuGon), [duLieuTho, duLieuGon]);
   const searchParams = useSearchParams();
   const [sapXep, setSapXep] = useState({ khoa: "diem", chieu: "desc" });
   // Doc bo loc ban dau tu URL - chi doc 1 LAN luc khoi tao state, sau do nguoi
@@ -222,12 +226,9 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
   const [banDoThamGia, setBanDoThamGia] = useState({});
 
   useEffect(() => {
-    fetch("/api/nguoi-dung-hien-tai")
-      .then((r) => r.json())
-      // Tai khoan CHUA duoc admin duyet (da_duyet=false) coi nhu chua dang nhap o day - khong mo
-      // khoa cot vi the (giong nguoi chua dang ky), du van dang nhap duoc binh thuong o noi khac.
-      .then((d) => setNguoiDung(d.nguoiDung?.da_duyet ? d.nguoiDung : null))
-      .catch(() => {});
+    // Tai khoan CHUA duoc admin duyet (da_duyet=false) coi nhu chua dang nhap o day - khong mo
+    // khoa cot vi the (giong nguoi chua dang ky), du van dang nhap duoc binh thuong o noi khac.
+    layNguoiDungTrinhDuyet().then((nd) => setNguoiDung(nd?.da_duyet ? nd : null));
     fetch("/api/tham-gia")
       .then((r) => r.json())
       .then((d) => {

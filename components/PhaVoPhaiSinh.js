@@ -574,7 +574,9 @@ export default function PhaVoPhaiSinh() {
   const [suKien, setSuKien] = useState([]);
   const truoc = useRef(null);
   const baoRef = useRef(false);
-  baoRef.current = bao;
+  useEffect(() => {
+    baoRef.current = bao; // doc trong callback tai du lieu (khong ghi ref luc render)
+  }, [bao]);
   const [kq, setKq] = useState({ von: 200, soHD: 1, im: 17 }); // von (trieu), so hop dong, ty le ky quy cong ty (%) - nho o trinh duyet nay
   const doiKq = (patch) => {
     const moi = { ...kq, ...patch };
@@ -644,6 +646,37 @@ export default function PhaVoPhaiSinh() {
     };
   }, [moDai, dai]);
 
+  // Phat hien trang thai doi (vua co lenh / vua thoat) -> ghi su kien, thong bao trinh duyet, tieng bip
+  function xetThayDoi(j) {
+    const moi = { bd: j.bienDong?.trangThai, ngay: j.ngay, hai: j.bienDong?.lenhHai?.trangThai ?? (j.bienDong?.vaoLai === "cho" ? "cho" : null) };
+    const cu = truoc.current;
+    truoc.current = moi;
+    if (!cu || cu.ngay !== moi.ngay) return;
+    const tin = [];
+    for (const [khoa, ten, x] of [["bd", "Phái sinh", j.bienDong]]) {
+      if (cu[khoa] === moi[khoa]) continue;
+      if (moi[khoa] === "dangGiu") tin.push(`${ten}: ${x.phia > 0 ? "MUA" : "BÁN KHỐNG"} ${d1(x.vao.gia)} lúc ${x.vao.gio}, cắt lỗ ${d1(x.catLo)}`);
+      else if (moi[khoa] === "khoaLai") tin.push(`${ten}: THOÁT CÓ LÃI ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm)`);
+      else if (moi[khoa] === "catLo") tin.push(`${ten}: CẮT LỖ ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm)`);
+      else if (moi[khoa] === "cuoiPhien") tin.push(`${ten}: đóng cuối phiên ${d1(x.ra.gia)} (${diemCoDau(x.diemSauPhi)} điểm)`);
+    }
+    // lenh VAO LAI sau cat lo (lenh 2)
+    if (cu.hai !== moi.hai) {
+      const h = j.bienDong?.lenhHai;
+      if (moi.hai === "cho") tin.push(`Phái sinh: đã cắt lỗ, CHỜ VÀO LẠI (mua ≥ ${d1(j.bienDong.mucMua)} hoặc bán khống ≤ ${d1(j.bienDong.mucBan)}, trước 13:29)`);
+      else if (moi.hai === "dangGiu") tin.push(`Vào lại: ${h.phia > 0 ? "MUA" : "BÁN KHỐNG"} ${d1(h.vao.gia)} lúc ${h.vao.gio}, cắt lỗ ${d1(h.catLo)}`);
+      else if (moi.hai === "khoaLai") tin.push(`Vào lại: THOÁT CÓ LÃI ${d1(h.ra.gia)} lúc ${h.ra.gio} (${diemCoDau(h.diemSauPhi)} điểm)`);
+      else if (moi.hai === "catLo") tin.push(`Vào lại: CẮT LỖ ${d1(h.ra.gia)} lúc ${h.ra.gio} (${diemCoDau(h.diemSauPhi)} điểm)`);
+      else if (moi.hai === "cuoiPhien") tin.push(`Vào lại: đóng cuối phiên ${d1(h.ra.gia)} (${diemCoDau(h.diemSauPhi)} điểm)`);
+    }
+    if (!tin.length) return;
+    const gio = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+    setSuKien((ds) => [...tin.map((t) => `${gio} · ${t}`), ...ds].slice(0, 8));
+    if (!baoRef.current) return;
+    // thong bao va am thanh tach rieng: loi cai nay khong lam mat cai kia; dong su kien tren trang van luon co
+    for (const t of tin) hienThongBao("VN30F1M · tín hiệu", t);
+    bip(amThanh);
+  }
   // Tai trang thai: 15 giay / lan trong phien, 30 giay truoc phien va nghi trua, 5 phut sau phien; xem lai ngay cu thi chi tai 1 lan.
   useEffect(() => {
     let huy = false;
@@ -708,37 +741,6 @@ export default function PhaVoPhaiSinh() {
     };
   }, []);
 
-  // Phat hien trang thai doi (vua co lenh / vua thoat) -> ghi su kien, thong bao trinh duyet, tieng bip
-  function xetThayDoi(j) {
-    const moi = { bd: j.bienDong?.trangThai, ngay: j.ngay, hai: j.bienDong?.lenhHai?.trangThai ?? (j.bienDong?.vaoLai === "cho" ? "cho" : null) };
-    const cu = truoc.current;
-    truoc.current = moi;
-    if (!cu || cu.ngay !== moi.ngay) return;
-    const tin = [];
-    for (const [khoa, ten, x] of [["bd", "Phái sinh", j.bienDong]]) {
-      if (cu[khoa] === moi[khoa]) continue;
-      if (moi[khoa] === "dangGiu") tin.push(`${ten}: ${x.phia > 0 ? "MUA" : "BÁN KHỐNG"} ${d1(x.vao.gia)} lúc ${x.vao.gio}, cắt lỗ ${d1(x.catLo)}`);
-      else if (moi[khoa] === "khoaLai") tin.push(`${ten}: THOÁT CÓ LÃI ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm)`);
-      else if (moi[khoa] === "catLo") tin.push(`${ten}: CẮT LỖ ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm)`);
-      else if (moi[khoa] === "cuoiPhien") tin.push(`${ten}: đóng cuối phiên ${d1(x.ra.gia)} (${diemCoDau(x.diemSauPhi)} điểm)`);
-    }
-    // lenh VAO LAI sau cat lo (lenh 2)
-    if (cu.hai !== moi.hai) {
-      const h = j.bienDong?.lenhHai;
-      if (moi.hai === "cho") tin.push(`Phái sinh: đã cắt lỗ, CHỜ VÀO LẠI (mua ≥ ${d1(j.bienDong.mucMua)} hoặc bán khống ≤ ${d1(j.bienDong.mucBan)}, trước 13:29)`);
-      else if (moi.hai === "dangGiu") tin.push(`Vào lại: ${h.phia > 0 ? "MUA" : "BÁN KHỐNG"} ${d1(h.vao.gia)} lúc ${h.vao.gio}, cắt lỗ ${d1(h.catLo)}`);
-      else if (moi.hai === "khoaLai") tin.push(`Vào lại: THOÁT CÓ LÃI ${d1(h.ra.gia)} lúc ${h.ra.gio} (${diemCoDau(h.diemSauPhi)} điểm)`);
-      else if (moi.hai === "catLo") tin.push(`Vào lại: CẮT LỖ ${d1(h.ra.gia)} lúc ${h.ra.gio} (${diemCoDau(h.diemSauPhi)} điểm)`);
-      else if (moi.hai === "cuoiPhien") tin.push(`Vào lại: đóng cuối phiên ${d1(h.ra.gia)} (${diemCoDau(h.diemSauPhi)} điểm)`);
-    }
-    if (!tin.length) return;
-    const gio = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
-    setSuKien((ds) => [...tin.map((t) => `${gio} · ${t}`), ...ds].slice(0, 8));
-    if (!baoRef.current) return;
-    // thong bao va am thanh tach rieng: loi cai nay khong lam mat cai kia; dong su kien tren trang van luon co
-    for (const t of tin) hienThongBao("VN30F1M · tín hiệu", t);
-    bip(amThanh);
-  }
   async function batTatBao() {
     if (bao) {
       setBao(false);

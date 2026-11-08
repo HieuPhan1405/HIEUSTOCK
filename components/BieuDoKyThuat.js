@@ -366,7 +366,10 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const idxMH = chonMH.khoa === khoa ? chonMH.idx : 0; // doi ma / khung -> ve lai mau hinh moi nhat
   const mauHinhVe = bat.mauHinh && idxMH >= 0 && idxMH < dsMauHinh.length ? dsMauHinh[idxMH] : null;
   const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0) + (bat.dongTien ? 1 : 0);
-  khoaVeRef.current = khoaLuu(ma, khungTG);
+  // Khoa luu hinh ve cua ma + khung hien tai: cap nhat trong effect (khong ghi ref luc render). Dat TRUOC cac effect khoi tao / nap hinh ve nen chay truoc chung trong cung 1 lan cap nhat.
+  useEffect(() => {
+    khoaVeRef.current = khoaLuu(ma, khungTG);
+  }, [ma, khungTG]);
   const caoGoc = layDayManHinh ? Math.max(chieuCao, caoManHinh - 330) : chieuCao; // trang Bieu do: bieu do cao toi sat day man hinh thay vi co dinh
   const chieuCaoTong = caoGoc + soPhu * CHIEU_CAO_PHU;
 

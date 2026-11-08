@@ -9,6 +9,7 @@ import { capNhatMoiNhat } from "@/components/dungChung";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import { lamSachChoKhach } from "@/lib/lamSachChoKhach";
+import { donCot } from "@/lib/goiCot";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -71,7 +72,8 @@ export default async function TrangBoLoc() {
         </p>
       ) : (
         <Suspense fallback={null}>
-          <BangBoLoc duLieu={tatCa} chiBaoLuc={chiBaoLuc} />
+          {/* Gui DANG COT (lib/goiCot.js): ten truong 1 lan + mang gia tri, so lam tron 6 chu so -> trang nhe ~45% */}
+          <BangBoLoc duLieuGon={donCot(tatCa)} chiBaoLuc={chiBaoLuc} />
         </Suspense>
       )}
     </div>

@@ -16,10 +16,12 @@ export default function ThanhDau() {
     <header className="sticky top-0 z-30 backdrop-blur-xl" style={{ background: BG, borderBottom: `1px solid ${VIEN}` }}>
       <div className="h-14 px-3 md:px-6 flex items-center gap-2 md:gap-3">
         <Link href="/gioi-thieu" aria-label="CloudStock - về trang giới thiệu" className="flex items-center gap-2 shrink-0 md:mr-3">
-          <Image src="/logo-bieu-tuong-toi.png" alt="" width={260} height={176} priority className="chi-toi h-7 md:h-9 w-auto" />
-          <Image src="/logo-bieu-tuong.png" alt="" width={260} height={176} priority className="chi-sang h-7 md:h-9 w-auto" />
-          <Image src="/logo-chu-toi.png" alt="CloudStock" width={420} height={64} priority className="chi-toi hidden sm:block h-[18px] md:h-5 w-auto" />
-          <Image src="/logo-chu.png" alt="CloudStock" width={420} height={64} priority className="chi-sang hidden sm:block h-[18px] md:h-5 w-auto" />
+          {/* Kich thuoc = co hien thi that (bieu tuong cao 36px, chu cao 20px) de trinh duyet tai anh nho (64 / 128 px) thay vi 640 / 1080 px. KHONG "priority": ban sang / toi dang an
+              (display: none) se khong bi tai, truoc day ca 4 anh x 2 co deu duoc tai truoc o moi trang. */}
+          <Image src="/logo-bieu-tuong-toi.png" alt="" width={53} height={36} className="chi-toi h-7 md:h-9 w-auto" />
+          <Image src="/logo-bieu-tuong.png" alt="" width={53} height={36} className="chi-sang h-7 md:h-9 w-auto" />
+          <Image src="/logo-chu-toi.png" alt="CloudStock" width={132} height={20} className="chi-toi hidden sm:block h-[18px] md:h-5 w-auto" />
+          <Image src="/logo-chu.png" alt="CloudStock" width={132} height={20} className="chi-sang hidden sm:block h-[18px] md:h-5 w-auto" />
         </Link>
         <TimMaToanCuc className="flex-1 min-w-0 md:max-w-xl" />
         <DongHoGiaoDich className="ml-auto shrink-0" />
