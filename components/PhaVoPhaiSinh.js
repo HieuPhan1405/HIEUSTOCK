@@ -20,6 +20,9 @@ const d1 = (v) => soVN(v, 1, true);
 const diemCoDau = (v) => `${v > 0 ? "+" : ""}${soVN(v, 1, true)}`;
 const trieu = (diem) => `${diem > 0 ? "+" : ""}${soVN(diem * 0.1, 2, true)} triệu`;
 const ngayHien = (s) => (s ? s.split("-").reverse().join("/") : "");
+// 1 ngay co toi da 2 lenh: lenh dau (o) va lenh VAO LAI sau cat lo (o.hai). co = false -> bo qua lenh vao lai.
+const dsLenh = (o, co = true) => (o && o.phia ? [o, ...(co && o.hai ? [o.hai] : [])] : []);
+const diemNgay = (o, co = true) => dsLenh(o, co).reduce((t, x) => t + x.diemSauPhi, 0);
 
 const NHAN_TRANG_THAI = {
   chuaMoCua: { chu: "Chờ mở cửa", mau: MUTED },
@@ -28,6 +31,7 @@ const NHAN_TRANG_THAI = {
   khongKhop: { chu: "Hôm nay không có lệnh", mau: MUTED },
   dangGiu: { chu: "Đang giữ lệnh", mau: XANH },
   catLo: { chu: "Đã cắt lỗ", mau: DO },
+  choVaoLai: { chu: "Đã cắt lỗ · chờ vào lại", mau: VANG },
   khoaLai: { chu: "Đã thoát có lãi (cắt lỗ đã dời)", mau: XANH },
   cuoiPhien: { chu: "Đã đóng cuối phiên", mau: MUTED },
 };
@@ -49,12 +53,17 @@ function Dong({ nhan, gia, mau, ghiChu }) {
   );
 }
 
-function LenhDangCo({ x }) {
+function LenhDangCo({ x, nhan }) {
   if (!x || !x.phia) return null;
   const mua = x.phia > 0;
   const mau = x.diemSauPhi > 0 ? XANH : DO;
   return (
     <div className="mt-3 rounded-xl p-3" style={{ background: "var(--nen-2, rgba(127,127,127,0.08))", border: `1px solid ${VIEN}` }}>
+      {nhan && (
+        <p className="text-xs mb-1" style={{ color: VANG }}>
+          {nhan}
+        </p>
+      )}
       <p className="text-sm font-bold mb-1" style={{ color: mua ? XANH : DO }}>
         {mua ? "MUA" : "BÁN KHỐNG"} lúc {x.vao.gio} giá <span style={mono}>{d1(x.vao.gia)}</span>
       </p>
@@ -168,6 +177,12 @@ function BieuDoTrongNgay({ du }) {
       if (b.daKhoa) them(b.mucKhoa, "#F6C544", "Cắt lỗ đã dời", LineStyle.Dashed);
       else them(b.mucKich, "#F6C544", "Lãi 7đ → dời cắt lỗ", LineStyle.SparseDotted);
     }
+    const h2 = b.lenhHai; // lenh VAO LAI sau cat lo
+    if (h2) {
+      them(h2.catLo, s.mau.do, "Cắt lỗ (lệnh 2)", LineStyle.Dotted);
+      if (h2.daKhoa) them(h2.mucKhoa, "#F6C544", "Cắt lỗ lệnh 2 đã dời", LineStyle.Dashed);
+      else them(h2.mucKich, "#F6C544", "Lãi 7đ → dời (lệnh 2)", LineStyle.SparseDotted);
+    }
     const vg = du.vungGiaTriTruoc;
     if (vg) {
       them(vg.vah, "#A78BFA", "VAH", LineStyle.LargeDashed);
@@ -175,10 +190,9 @@ function BieuDoTrongNgay({ du }) {
       them(vg.poc, "#A78BFA", "POC", LineStyle.Dotted);
     }
     const dd = [];
-    {
-      const x = b;
-      if (x.phia) {
-        dd.push({ time: giayTruc(du.ngay, x.vao.k), position: x.phia > 0 ? "belowBar" : "aboveBar", color: x.phia > 0 ? s.mau.xanh : s.mau.do, shape: x.phia > 0 ? "arrowUp" : "arrowDown", text: x.phia > 0 ? "Mua" : "Bán khống" });
+    for (const [x, lai] of [[b, false], [b.lenhHai, true]]) {
+      if (x && x.phia) {
+        dd.push({ time: giayTruc(du.ngay, x.vao.k), position: x.phia > 0 ? "belowBar" : "aboveBar", color: x.phia > 0 ? s.mau.xanh : s.mau.do, shape: x.phia > 0 ? "arrowUp" : "arrowDown", text: `${lai ? "Vào lại " : ""}${x.phia > 0 ? "mua" : "bán khống"}` });
         if (x.ra) dd.push({ time: giayTruc(du.ngay, x.ra.k), position: x.phia > 0 ? "aboveBar" : "belowBar", color: s.mau.mo, shape: "circle", text: x.trangThai === "catLo" ? "cắt lỗ" : x.trangThai === "khoaLai" ? "thoát lãi" : "đóng" });
       }
     }
@@ -215,8 +229,11 @@ const DON_BAY = [1, 2, 3, 4, 5];
 function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien, setNgayXem }) {
   const [donBay, setDonBay] = useState(1);
   const [von, setVon] = useState(200); // trieu dong
+  const [gomVaoLai, setGomVaoLai] = useState(true); // tinh ca lenh VAO LAI sau cat lo (lenh thu 2 trong ngay)
   const hang = dai?.hang || [];
-  const lenh = hang.filter((r) => r.phia && !r.dauHD && !r.dangChay);
+  const lenhNgay = hang.filter((r) => r.phia && !r.dauHD && !r.dangChay); // moi phan tu = 1 ngay co lenh
+  const lenh = lenhNgay.flatMap((r) => dsLenh(r, gomVaoLai).map((o) => ({ ...o, ngay: r.ngay }))); // moi phan tu = 1 LENH
+  const lenhLai = lenhNgay.filter((r) => r.hai).map((r) => r.hai);
   const thang = (ds) => ds.filter((r) => r.diemSauPhi > 0).length;
   const tongDiem = (ds) => ds.reduce((s, r) => s + r.diemSauPhi, 0);
   const nam = [...new Set(lenh.map((r) => r.ngay.slice(0, 4)))].sort();
@@ -239,7 +256,7 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
     dinh = Math.max(dinh, cd);
     sut = Math.min(sut, cd - dinh);
   }
-  const ngayTe = lenh.reduce((m, r) => Math.min(m, r.diemSauPhi), 0);
+  const ngayTe = lenhNgay.reduce((m, r) => Math.min(m, diemNgay(r, gomVaoLai)), 0);
   const thangTe = dsThang.reduce((m, x) => Math.min(m, x.diem), 0);
   const nhanThang = (t) => `${t.slice(5)}/${t.slice(2, 4)}`;
   return (
@@ -271,6 +288,16 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                     <p className="text-lg" style={{ ...mono, fontWeight: 700, color: m || TEXT }}>{v}</p>
                   </div>
                 ))}
+              </div>
+              <div className="px-3 pb-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs" style={{ color: MUTED }}>
+                <label className="flex items-center gap-1.5 cursor-pointer" style={{ color: TEXT }}>
+                  <input type="checkbox" checked={gomVaoLai} onChange={(e) => setGomVaoLai(e.target.checked)} />
+                  Tính cả lệnh vào lại sau cắt lỗ
+                </label>
+                <span>
+                  Riêng lệnh vào lại: {lenhLai.length} lệnh · thắng {lenhLai.length ? Math.round((thang(lenhLai) / lenhLai.length) * 100) : 0}% ·{" "}
+                  <b style={{ color: tongDiem(lenhLai) > 0 ? XANH : DO }}>{diemCoDau(tongDiem(lenhLai))} điểm</b>
+                </span>
               </div>
               <div className="mx-3 mb-3 rounded-xl p-3" style={{ border: `1px solid ${VIEN}` }}>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
@@ -414,9 +441,15 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                         </td>
                         <td className="px-3 py-1.5 whitespace-nowrap">
                           <OKetQua x={r.phia ? r : { phia: 0, lyDo: "khongKhop" }} />
+                          {gomVaoLai && r.hai && (
+                            <div className="text-xs mt-0.5">
+                              <span style={{ color: VANG }}>↳ vào lại </span>
+                              <OKetQua x={r.hai} />
+                            </div>
+                          )}
                         </td>
-                        <td className="px-3 py-1.5 text-right whitespace-nowrap" style={{ ...mono, color: !r.phia ? MUTED : r.diemSauPhi > 0 ? XANH : DO }}>
-                          {r.phia ? diemCoDau(r.diemSauPhi) : ""}
+                        <td className="px-3 py-1.5 text-right whitespace-nowrap" style={{ ...mono, color: !r.phia ? MUTED : diemNgay(r, gomVaoLai) > 0 ? XANH : DO }}>
+                          {r.phia ? diemCoDau(diemNgay(r, gomVaoLai)) : ""}
                         </td>
                       </tr>
                     ))}
@@ -518,7 +551,7 @@ export default function PhaVoPhaiSinh() {
 
   // Phat hien trang thai doi (vua co lenh / vua thoat) -> ghi su kien, thong bao trinh duyet, tieng bip
   function xetThayDoi(j) {
-    const moi = { bd: j.bienDong?.trangThai, ngay: j.ngay };
+    const moi = { bd: j.bienDong?.trangThai, ngay: j.ngay, hai: j.bienDong?.lenhHai?.trangThai ?? (j.bienDong?.vaoLai === "cho" ? "cho" : null) };
     const cu = truoc.current;
     truoc.current = moi;
     if (!cu || cu.ngay !== moi.ngay) return;
@@ -529,6 +562,15 @@ export default function PhaVoPhaiSinh() {
       else if (moi[khoa] === "khoaLai") tin.push(`${ten}: THOÁT CÓ LÃI ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm, cắt lỗ đã dời)`);
       else if (moi[khoa] === "catLo") tin.push(`${ten}: CẮT LỖ ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm)`);
       else if (moi[khoa] === "cuoiPhien") tin.push(`${ten}: đóng cuối phiên ${d1(x.ra.gia)} (${diemCoDau(x.diemSauPhi)} điểm)`);
+    }
+    // lenh VAO LAI sau cat lo (lenh 2)
+    if (cu.hai !== moi.hai) {
+      const h = j.bienDong?.lenhHai;
+      if (moi.hai === "cho") tin.push(`Biến động 0,3: đã cắt lỗ, CHỜ VÀO LẠI (mua ≥ ${d1(j.bienDong.mucMua)} hoặc bán khống ≤ ${d1(j.bienDong.mucBan)}, trước 13:29)`);
+      else if (moi.hai === "dangGiu") tin.push(`Vào lại: ${h.phia > 0 ? "MUA" : "BÁN KHỐNG"} ${d1(h.vao.gia)} lúc ${h.vao.gio}, cắt lỗ ${d1(h.catLo)}`);
+      else if (moi.hai === "khoaLai") tin.push(`Vào lại: THOÁT CÓ LÃI ${d1(h.ra.gia)} lúc ${h.ra.gio} (${diemCoDau(h.diemSauPhi)} điểm)`);
+      else if (moi.hai === "catLo") tin.push(`Vào lại: CẮT LỖ ${d1(h.ra.gia)} lúc ${h.ra.gio} (${diemCoDau(h.diemSauPhi)} điểm)`);
+      else if (moi.hai === "cuoiPhien") tin.push(`Vào lại: đóng cuối phiên ${d1(h.ra.gia)} (${diemCoDau(h.diemSauPhi)} điểm)`);
     }
     if (!tin.length) return;
     const gio = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
@@ -567,15 +609,19 @@ export default function PhaVoPhaiSinh() {
   const cach = pt ? 0.3 * pt.bienDo : null;
   // Phien dau hop dong moi: ban kiem chung bo qua kieu bien dong (bien do hom truoc la cua hop dong cu) -> khong cong vao tong
   const boQua = (x, khoa) => khoa === "bienDong" && x.phienDauHopDong;
-  const duocTinh = (khoa) => (lichSu || []).filter((x) => !x.dangChay && x[khoa].phia && !boQua(x, khoa));
-  const tong = (khoa) => duocTinh(khoa).reduce((s, x) => s + x[khoa].diemSauPhi, 0);
+  // moi phan tu = 1 LENH (lenh dau va lenh vao lai sau cat lo tinh rieng)
+  const duocTinh = (khoa) =>
+    (lichSu || [])
+      .filter((x) => !x.dangChay && x[khoa].phia && !boQua(x, khoa))
+      .flatMap((x) => dsLenh(x[khoa]));
+  const tong = (khoa) => duocTinh(khoa).reduce((s, x) => s + x.diemSauPhi, 0);
   const soLenh = (khoa) => duocTinh(khoa).length;
-  const soThang = (khoa) => duocTinh(khoa).filter((x) => x[khoa].diemSauPhi > 0).length;
+  const soThang = (khoa) => duocTinh(khoa).filter((x) => x.diemSauPhi > 0).length;
   const theoVung = (khoa) =>
     ["ra", "trong", "vao"]
       .map((v) => {
-        const g = duocTinh(khoa).filter((x) => x[khoa].viTri === v);
-        return g.length ? `${NHAN_VUNG[v].gon} ${g.length} lệnh ${diemCoDau(g.reduce((s, x) => s + x[khoa].diemSauPhi, 0))}` : null;
+        const g = duocTinh(khoa).filter((x) => x.viTri === v);
+        return g.length ? `${NHAN_VUNG[v].gon} ${g.length} lệnh ${diemCoDau(g.reduce((s, x) => s + x.diemSauPhi, 0))}` : null;
       })
       .filter(Boolean)
       .join(" · ");
@@ -646,7 +692,7 @@ export default function PhaVoPhaiSinh() {
       )}
 
       <div className="grid gap-4 mb-4">
-        <The tieuDe="Phá vỡ biến động 0,3" moTa="Đặt lệnh dừng hai phía quanh giá mở cửa. Giá chạm mức nào trước thì vào theo hướng đó, cắt lỗ tại giá mở cửa nhưng cách giá vào ít nhất 7 điểm; khi lãi 7 điểm thì dời cắt lỗ lên giá vào + 2 điểm." trangThai={b.trangThai}>
+        <The tieuDe="Phá vỡ biến động 0,3" moTa="Đặt lệnh dừng hai phía quanh giá mở cửa. Giá chạm mức nào trước thì vào theo hướng đó, cắt lỗ tại giá mở cửa nhưng cách giá vào ít nhất 7 điểm; khi lãi 7 điểm thì dời cắt lỗ lên giá vào + 2 điểm. Nếu lệnh đầu bị cắt lỗ, chờ giá chạm lại một trong hai mức để vào lệnh thứ 2." trangThai={b.trangThaiNgay || b.trangThai}>
           {pt && (
             <p className="text-xs mb-2" style={{ color: MUTED }}>
               Biên độ phiên {ngayHien(du.ngayTruoc)}: <b style={{ color: TEXT, ...mono }}>{d1(pt.bienDo)}</b> điểm ({d1(pt.thap)} – {d1(pt.cao)}) → khoảng cách đặt lệnh <b style={{ color: TEXT, ...mono }}>{d1(cach)}</b> điểm
@@ -676,12 +722,33 @@ export default function PhaVoPhaiSinh() {
               </>
             )
           )}
-          <LenhDangCo x={b} />
+          <LenhDangCo x={b} nhan={b.lenhHai || b.vaoLai ? "Lệnh 1" : null} />
+          {b.vaoLai === "cho" && (
+            <p className="mt-3 rounded-xl p-3 text-sm" style={{ border: `1px solid ${VANG}`, color: VANG }}>
+              Đã cắt lỗ. <b>Chờ vào lại:</b> nếu trước 13:29 giá chạm lại mức mua <b style={mono}>≥ {d1(b.mucMua)}</b> hoặc mức bán khống <b style={mono}>≤ {d1(b.mucBan)}</b> thì vào lệnh thứ 2 (cùng luật cắt lỗ, dời cắt lỗ, đóng 14:29). Tối đa 2 lệnh mỗi ngày.
+            </p>
+          )}
+          {b.vaoLai === "khongKhop" && (
+            <p className="mt-3 text-xs" style={{ color: MUTED }}>
+              Đã cắt lỗ; hết giờ vào lệnh mà giá không chạm lại mức nào nên không có lệnh vào lại.
+            </p>
+          )}
+          {b.lenhHai && (
+            <>
+              <LenhDangCo x={b.lenhHai} nhan="Lệnh 2 · vào lại sau khi lệnh 1 bị cắt lỗ" />
+              <p className="text-sm mt-2" style={{ color: MUTED }}>
+                Cả ngày{b.lenhHai.ra ? "" : " (tạm tính)"}:{" "}
+                <b style={{ color: b.tongDiemSauPhi > 0 ? XANH : DO, ...mono }}>
+                  {diemCoDau(b.tongDiemSauPhi)} điểm ({trieu(b.tongDiemSauPhi)} / hợp đồng)
+                </b>
+              </p>
+            </>
+          )}
         </The>
       </div>
 
       <div className="rounded-2xl border p-3 mb-4 text-sm" style={{ borderColor: VIEN, background: NEN_CARD, color: MUTED }}>
-        <b style={{ color: TEXT }}>Luật chung:</b> tối đa 1 lệnh mỗi ngày · chỉ vào lệnh trước 13:29 · không chốt lời sớm · khi lãi 7 điểm dời cắt lỗ lên giá vào + 2 điểm · chưa bị cắt lỗ thì đóng lúc 14:29, không giữ qua đêm.
+        <b style={{ color: TEXT }}>Luật chung:</b> tối đa 2 lệnh mỗi ngày (lệnh thứ 2 chỉ khi lệnh đầu bị cắt lỗ ban đầu; không bao giờ giữ 2 hợp đồng cùng lúc) · chỉ vào lệnh trước 13:29 · không chốt lời sớm · khi lãi 7 điểm dời cắt lỗ lên giá vào + 2 điểm · chưa bị cắt lỗ thì đóng lúc 14:29, không giữ qua đêm.
         {vg && (
           <span className="block mt-1">
             <b style={{ color: TEXT }}>Vùng giá trị phiên {ngayHien(du.ngayTruoc)}:</b> <span style={mono}>{d1(vg.val)} – {d1(vg.vah)}</span> · POC <span style={mono}>{d1(vg.poc)}</span> (chỉ để theo dõi, không phải bộ lọc)
@@ -732,9 +799,20 @@ export default function PhaVoPhaiSinh() {
                   </td>
                   <td className="px-3 py-1.5 whitespace-nowrap" style={boQua(x, "bienDong") ? { opacity: 0.45 } : undefined} title={boQua(x, "bienDong") ? "Phiên đầu hợp đồng mới: không tính vào tổng" : undefined}>
                     <OKetQua x={x.bienDong} />
+                    {x.bienDong.hai && (
+                      <div className="text-xs mt-0.5">
+                        <span style={{ color: VANG }}>↳ vào lại </span>
+                        <OKetQua x={x.bienDong.hai} />
+                      </div>
+                    )}
+                    {x.bienDong.vaoLai === "cho" && (
+                      <div className="text-xs mt-0.5" style={{ color: VANG }}>
+                        ↳ chờ vào lại
+                      </div>
+                    )}
                   </td>
-                  <td className="px-3 py-1.5 text-right whitespace-nowrap" style={{ ...mono, color: !x.bienDong.phia ? MUTED : x.bienDong.diemSauPhi > 0 ? XANH : DO, opacity: boQua(x, "bienDong") ? 0.45 : 1 }}>
-                    {x.bienDong.phia ? diemCoDau(x.bienDong.diemSauPhi) : ""}
+                  <td className="px-3 py-1.5 text-right whitespace-nowrap" style={{ ...mono, color: !x.bienDong.phia ? MUTED : diemNgay(x.bienDong) > 0 ? XANH : DO, opacity: boQua(x, "bienDong") ? 0.45 : 1 }}>
+                    {x.bienDong.phia ? diemCoDau(diemNgay(x.bienDong)) : ""}
                   </td>
                 </tr>
               ))}
@@ -764,7 +842,12 @@ export default function PhaVoPhaiSinh() {
       <GiaiThichThem className="mb-3" nhanMo="Cách làm, kiểm chứng và rủi ro" tomTat="Phái sinh có đòn bẩy cao, có thể mất nhiều hơn số tiền ký quỹ ban đầu. Đây là số liệu thống kê, không phải khuyến nghị.">
         <p>
           <b>Cách làm:</b> mỗi sáng, lấy biên độ phiên trước (cao nhất − thấp nhất) nhân 0,3 để ra khoảng cách. Đặt lệnh dừng mua ở giá mở cửa cộng khoảng cách, bán khống ở giá mở cửa trừ khoảng cách; giá chạm mức nào trước thì vào theo hướng đó.
-          Cắt lỗ ban đầu tại giá mở cửa, <b>nhưng luôn cách giá vào ít nhất 7 điểm</b> (hôm trước biên độ nhỏ thì giá mở cửa chỉ cách mức vào 3–4 điểm, dễ bị quét bởi nhiễu rồi giá vẫn đi đúng hướng). <b>Khi lãi đạt 7 điểm thì dời cắt lỗ lên giá vào + 2 điểm</b> (bán khống: giá vào − 2 điểm) rồi để chạy; không chốt lời sớm, chưa bị cắt lỗ thì đóng lúc 14:29. Mỗi ngày tối đa 1 lệnh, không giữ qua đêm.
+          Cắt lỗ ban đầu tại giá mở cửa, <b>nhưng luôn cách giá vào ít nhất 7 điểm</b> (hôm trước biên độ nhỏ thì giá mở cửa chỉ cách mức vào 3–4 điểm, dễ bị quét bởi nhiễu rồi giá vẫn đi đúng hướng). <b>Khi lãi đạt 7 điểm thì dời cắt lỗ lên giá vào + 2 điểm</b> (bán khống: giá vào − 2 điểm) rồi để chạy; không chốt lời sớm, chưa bị cắt lỗ thì đóng lúc 14:29. Mỗi ngày tối đa 2 lệnh (lệnh thứ 2 chỉ là lệnh vào lại sau khi lệnh đầu bị cắt lỗ, xem bên dưới), không giữ qua đêm.
+        </p>
+        <p className="mt-2">
+          <b>Vào lại sau khi bị cắt lỗ (từ 08/11/2026):</b> khi lệnh đầu bị cắt lỗ ban đầu (chưa kịp lãi 7 điểm để dời cắt lỗ), chờ giá chạm lại một trong hai mức mua / bán khống buổi sáng (vẫn trước 13:29) rồi vào lệnh thứ 2 với đúng luật cắt lỗ, dời cắt lỗ và đóng 14:29. Chỉ giữ 1 hợp đồng tại một thời điểm nên ký quỹ không đổi.
+          Phần lớn lệnh vào lại (khoảng 3/4) là ngược chiều lệnh đầu: ngày giá quét hai phía. Kiểm chứng 2018–2026: lãi tăng khoảng 12–15% (319 → 351 và 242 → 277 điểm/năm, trước / sau 07/2022), Sharpe 1,55 → 1,73 (sau 07/2022), sụt vốn lớn nhất gần như không đổi (−91 → −95 điểm); khoảng 20 lệnh vào lại mỗi năm, thắng khoảng 59%.
+          Lưu ý: độ tin cậy ở mức biên giới (t ≈ 2 cho toàn kỳ, khoảng tin cậy 90% của phần tăng thêm +13…+62 điểm/năm), chưa phải chắc chắn; các chuỗi 5 ngày xấu hơn (−65 so với −51 điểm) và số ngày lỗ từ 15 điểm trở lên tăng gấp 3 vì có thêm lệnh. Vào lại sau MỌI lần thoát (kể cả thoát lãi) thì kém hơn nên không áp dụng. Trong &ldquo;Lịch sử từ 2024&rdquo; có ô để tính hoặc không tính lệnh vào lại.
         </p>
         <p className="mt-2">
           <b>Vì sao cắt lỗ tối thiểu 7 điểm:</b> kiểm chứng 2018–2026 cho thấy cắt lỗ quá gần bị quét nhiều (tỷ lệ thắng thấp), còn cắt xa hơn 10 điểm làm lãi giảm lại. Mức 6–9 điểm đều tốt hơn cắt ở giá mở cửa; chọn 7 điểm. Tổng điểm sau phí và trượt giá tăng khoảng 12% (1.900 → 2.134 điểm), tỷ lệ lệnh thắng từ 50% lên 57%, tốt hơn ở cả giai đoạn trước và sau 07/2022. Nâng mức vào lệnh hoặc bỏ ngày biên độ nhỏ đều kém hơn nên không áp dụng.

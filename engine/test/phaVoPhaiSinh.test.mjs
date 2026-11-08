@@ -1,5 +1,5 @@
 // Test tay cho lib/phaVoPhaiSinh.js. Chay: node engine/test/phaVoPhaiSinh.test.mjs
-import { viTriPhut, gioCuaPhut, tachPhien, bienDoPhien, tinhBienDong, DIEM_CAT_LO_TOI_THIEU, catLoBanDau, DIEM_KICH_KHOA_LAI, DIEM_KHOA_LAI, thuNamTuanBa, laPhienDauHopDong, phiVong, vungGiaTriPhien, viTriVungGiaTri, K_CUOI, K_HET_GIO_VAO } from "../../lib/phaVoPhaiSinh.js";
+import { viTriPhut, gioCuaPhut, tachPhien, bienDoPhien, tinhBienDong, DIEM_CAT_LO_TOI_THIEU, catLoBanDau, DIEM_KICH_KHOA_LAI, DIEM_KHOA_LAI, thuNamTuanBa, laPhienDauHopDong, phiVong, vungGiaTriPhien, viTriVungGiaTri, K_CUOI, K_HET_GIO_VAO, SO_LENH_TOI_DA_NGAY } from "../../lib/phaVoPhaiSinh.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -122,6 +122,53 @@ const phang = (n, g) => new Array(n).fill(g);
   const h = phang(241, 1000); for (let k = 30; k <= 240; k++) h[k] = 1012;
   const r2 = tinhBienDong(tachPhien(phien("2026-10-13", h, { 30: { o: 1009, h: 1012, l: 1009 } })).get("2026-10-13"), 20);
   ok("vao nhay qua muc: cat lo van o mo cua 1000 neu xa hon vao - 7", gan(r2.vao.gia, 1009) && gan(r2.catLo, 1000));
+}
+
+// 4c. VAO LAI SAU CAT LO (08/11/2026)
+{
+  ok("hang so: toi da 2 lenh / ngay", SO_LENH_TOI_DA_NGAY === 2);
+  // bien do truoc 20: muc mua 1006, muc ban 994, mo cua 1000. MUA 1006 o phut 10 (cat lo = min(1000, 999) = 999); phut 30 giam 998 -> bi cat lo o 999 (-7);
+  // phut 40 giam 993 (cham muc ban 994) -> lenh 2 BAN KHONG 994, cat lo = max(1000, 1001) = 1001, giam tiep 985 -> dong 14:29 tai 985 (+9)
+  const g = phang(241, 1000); for (let k = 5; k <= 10; k++) g[k] = 1000 + (k - 4); for (let k = 11; k <= 29; k++) g[k] = 1006; for (let k = 30; k <= 39; k++) g[k] = 998; for (let k = 40; k <= 59; k++) g[k] = 993; for (let k = 60; k <= 240; k++) g[k] = 985;
+  const p = tachPhien(phien("2026-10-13", g)).get("2026-10-13");
+  const r = tinhBienDong(p, 20);
+  ok("lenh dau bi cat lo o 999 (-7)", r.phia === 1 && r.trangThai === "catLo" && gan(r.ra.gia, 999) && r.ra.k === 30 && gan(r.diem, -7), JSON.stringify(r.ra));
+  const h = r.lenhHai;
+  ok("co lenh vao lai: BAN KHONG khi cham muc ban 994", !!h && h.phia === -1 && gan(h.vao.gia, 994) && h.vao.k === 40, JSON.stringify(h && h.vao));
+  ok("lenh 2 cat lo = max(mo cua, vao + 7) = 1001, muc kich / khoa theo gia vao 994", gan(h.catLo, 1001) && gan(h.mucKich, 987) && gan(h.mucKhoa, 992));
+  ok("lenh 2: lai 9 diem (>= 7 nen da doi cat lo xuong 992), dong 14:29 tai 985", h.trangThai === "cuoiPhien" && h.daKhoa === true && gan(h.ra.gia, 985) && gan(h.diem, 9), JSON.stringify(h.ra));
+  ok("tong diem sau phi ca ngay = lenh 1 + lenh 2", gan(r.tongDiemSauPhi, r.diemSauPhi + h.diemSauPhi) && gan(r.diemSauPhi, -7 - phiVong(1006)) && gan(h.diemSauPhi, 9 - phiVong(994)));
+  ok("trang thai ca ngay = trang thai lenh 2", r.trangThaiNgay === "cuoiPhien" && r.vaoLai === undefined);
+  // giua phien (den phut 35): lenh dau da cat lo, chua cham muc nao nua -> cho vao lai
+  const r2 = tinhBienDong(p, 20, { kDen: 35 });
+  ok("giua phien: da cat lo, dang cho vao lai", r2.trangThai === "catLo" && r2.lenhHai === undefined && r2.vaoLai === "cho" && r2.trangThaiNgay === "choVaoLai" && gan(r2.tongDiemSauPhi, r2.diemSauPhi));
+  // den phut 45: lenh 2 dang giu (chua doi cat lo vi lai moi 1 diem)
+  const r3 = tinhBienDong(p, 20, { kDen: 45 });
+  ok("lenh 2 dang giu, tam tinh theo gia hien tai", r3.lenhHai.trangThai === "dangGiu" && r3.lenhHai.ra === null && r3.trangThaiNgay === "dangGiu" && gan(r3.lenhHai.diem, 994 - 993));
+}
+{
+  // Lenh dau thoat sau khi DA DOI cat lo (khoaLai) -> KHONG vao lai du gia cham muc ban sau do
+  const g = phang(241, 1000); for (let k = 5; k <= 10; k++) g[k] = 1000 + (k - 4); for (let k = 11; k <= 29; k++) g[k] = 1006; g[30] = 1014; for (let k = 31; k <= 59; k++) g[k] = 1012; for (let k = 60; k <= 79; k++) g[k] = 1000; for (let k = 80; k <= 240; k++) g[k] = 990;
+  const r = tinhBienDong(tachPhien(phien("2026-10-13", g)).get("2026-10-13"), 20);
+  ok("thoat khoa lai thi khong vao lai", r.trangThai === "khoaLai" && r.lenhHai === undefined && r.vaoLai === undefined && r.trangThaiNgay === "khoaLai" && gan(r.tongDiemSauPhi, r.diemSauPhi));
+}
+{
+  // Cat lo roi gia cham lai CUNG muc mua (cung chieu) -> vao lai MUA lan nua; lenh 2 cung bi cat lo -> KHONG co lenh 3
+  // mua 1006 phut 10, cat lo 999 o phut 20; hoi len 1007 o phut 30 (cham muc mua 1006: vao 1006), cat lo 999 o phut 50; phut 60 len 1010, khong con lenh
+  const g = phang(241, 1000); for (let k = 5; k <= 10; k++) g[k] = 1000 + (k - 4); for (let k = 11; k <= 19; k++) g[k] = 1006; for (let k = 20; k <= 29; k++) g[k] = 998; for (let k = 30; k <= 49; k++) g[k] = 1007; for (let k = 50; k <= 59; k++) g[k] = 998; for (let k = 60; k <= 240; k++) g[k] = 1010;
+  const r = tinhBienDong(tachPhien(phien("2026-10-13", g)).get("2026-10-13"), 20);
+  ok("cat lo roi cham lai muc mua: vao lai cung chieu", r.trangThai === "catLo" && r.lenhHai && r.lenhHai.phia === 1 && gan(r.lenhHai.vao.gia, 1006) && r.lenhHai.vao.k === 30, JSON.stringify(r.lenhHai && r.lenhHai.vao));
+  ok("lenh 2 cung cat lo; khong co lenh thu 3 (toi da 2 lenh / ngay)", r.lenhHai.trangThai === "catLo" && r.lenhHai.lenhHai === undefined && r.lenhBa === undefined && r.vaoLai === undefined);
+}
+{
+  // Cat lo SAU 13:29 (khong con gio vao): khong vao lai. MUA 1006 o phut 10, giu den phut 185 roi sap xuong 990
+  const g = phang(241, 1000); for (let k = 5; k <= 10; k++) g[k] = 1000 + (k - 4); for (let k = 11; k <= 184; k++) g[k] = 1006; for (let k = 185; k <= 240; k++) g[k] = 990;
+  const r = tinhBienDong(tachPhien(phien("2026-10-13", g)).get("2026-10-13"), 20);
+  ok("cat lo sau 13:30 thi khong vao lai", r.trangThai === "catLo" && r.ra.k >= K_HET_GIO_VAO && r.lenhHai === undefined && r.vaoLai === "khongKhop" && r.trangThaiNgay === "catLo", JSON.stringify([r.ra, r.vaoLai]));
+  // Cat lo luc 13:20 (phut 200?) tuong tu: cat lo o phut 170 (con gio vao) nhung het gio khong cham -> khongKhop
+  const h = phang(241, 1000); for (let k = 5; k <= 10; k++) h[k] = 1000 + (k - 4); for (let k = 11; k <= 169; k++) h[k] = 1006; for (let k = 170; k <= 240; k++) h[k] = 998;
+  const r2 = tinhBienDong(tachPhien(phien("2026-10-13", h)).get("2026-10-13"), 20);
+  ok("cat lo luc phut 170 nhung khong cham muc nao truoc 13:30 -> vaoLai khongKhop", r2.trangThai === "catLo" && r2.ra.k === 170 && r2.lenhHai === undefined && r2.vaoLai === "khongKhop", JSON.stringify([r2.ra, r2.vaoLai]));
 }
 
 // 5. Dao han

@@ -1,5 +1,5 @@
 // TAO BAN CHUP LICH SU PHA VO BIEN DONG 0,3 cho trang /phai-sinh (muc "Lich su tu 2024"): doc nen 1 phut VN30F1M da tai (taiDuLieuPhaiSinh.mjs -> engine/output/vn30f1m_1p.json),
-// chay DUNG logic cua web (lib/phaVoPhaiSinh.js: tinhBienDong, vung gia tri, phien dau hop dong) cho tung phien tu ngay TU, ghi lib/phaiSinhLichSuTinh.json.
+// chay DUNG logic cua web (lib/phaVoPhaiSinh.js: tinhBienDong gom ca lenh VAO LAI sau cat lo, vung gia tri, phien dau hop dong) cho tung phien tu ngay TU, ghi lib/phaiSinhLichSuTinh.json.
 // Trang web ghep ban chup nay voi ~30 phien gan nhat lay truc tiep tu DNSE (lib/phaVoPhaiSinhDuLieu.js layLichSuDai) -> CHAY LAI moi 3-4 tuan de khong bi ho giua 2 nguon.
 // Chay: node engine/dich-vu/taiDuLieuPhaiSinh.mjs && node engine/dich-vu/taoLichSuPhaiSinhWeb.mjs   (TU=2024-01-01 doi ngay bat dau)
 import { readFileSync, writeFileSync } from "node:fs";
@@ -26,10 +26,17 @@ for (let i = 1; i < ds.length; i++) {
   if (dauHD) r.dauHD = 1;
   if (x && x.phia) {
     Object.assign(r, { phia: x.phia, vao: x.vao.gia, gioVao: x.vao.gio, ra: x.ra ? x.ra.gia : null, gioRa: x.ra ? x.ra.gio : null, lyDo: x.trangThai, diemSauPhi: Math.round(x.diemSauPhi * 100) / 100, viTri: viTriVungGiaTri(x.vao.gia, x.phia, vung) });
+    // 08/11/2026: lenh VAO LAI sau khi lenh dau bi cat lo (toi da 2 lenh / ngay)
+    if (x.lenhHai) {
+      const h = x.lenhHai;
+      r.hai = { phia: h.phia, vao: h.vao.gia, gioVao: h.vao.gio, ra: h.ra ? h.ra.gia : null, gioRa: h.ra ? h.ra.gio : null, lyDo: h.trangThai, diemSauPhi: Math.round(h.diemSauPhi * 100) / 100, viTri: viTriVungGiaTri(h.vao.gia, h.phia, vung) };
+    }
   }
   hang.push(r);
 }
 const out = { tu: TU, den: hang[hang.length - 1].ngay, tao: new Date().toISOString().slice(0, 10), hang };
 writeFileSync(path.join(GOC, "..", "lib", "phaiSinhLichSuTinh.json"), JSON.stringify(out));
 const L = hang.filter((r) => r.phia && !r.dauHD);
-console.log(`Ghi lib/phaiSinhLichSuTinh.json: ${hang.length} phien tu ${hang[0].ngay} den ${out.den}; ${L.length} lenh, thang ${L.filter((r) => r.diemSauPhi > 0).length}, tong ${L.reduce((s, r) => s + r.diemSauPhi, 0).toFixed(1)} diem sau phi`);
+const H = L.filter((r) => r.hai);
+const tong = (ds) => ds.reduce((t, r) => t + r.diemSauPhi, 0);
+console.log(`Ghi lib/phaiSinhLichSuTinh.json: ${hang.length} phien tu ${hang[0].ngay} den ${out.den}; ${L.length + H.length} lenh (${H.length} lenh vao lai), thang ${L.filter((r) => r.diemSauPhi > 0).length + H.filter((r) => r.hai.diemSauPhi > 0).length}, tong ${(tong(L) + H.reduce((t, r) => t + r.hai.diemSauPhi, 0)).toFixed(1)} diem sau phi (lenh dau ${tong(L).toFixed(1)}, vao lai ${H.reduce((t, r) => t + r.hai.diemSauPhi, 0).toFixed(1)})`);
