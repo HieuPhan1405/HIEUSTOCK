@@ -5,6 +5,7 @@ import { createChart, createSeriesMarkers, CandlestickSeries, LineStyle } from "
 import { Bell, BellOff, RotateCcw } from "lucide-react";
 import { soVN } from "@/lib/soVN";
 import GiaiThichThem from "@/components/GiaiThichThem";
+import { laIOSChuaCaiDat, quyenHienTai } from "@/lib/dayTrinhDuyet";
 
 // TRANG /phai-sinh: tin hieu PHA VO BIEN DONG 0,3 trong ngay cho VN30F1M (thanh vien da duyet). Cat lo doi len gia vao + 2 diem khi lai 7 diem. Du lieu + logic: /api/phai-sinh (lib/phaVoPhaiSinh.js).
 // Tu lam moi 15 giay trong phien. Thong bao trinh duyet + tieng bip khi trang thai lenh doi (chi khi trang dang mo).
@@ -16,6 +17,57 @@ const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "#F6C544";
 const mono = { fontFamily: "var(--font-chu)" };
+const KHOA_BAO = "cs-phai-sinh-bao"; // nho lua chon "Bat bao" qua cac lan tai lai trang (localStorage cua trinh duyet nay)
+// Hien thong bao: uu tien service worker (chay duoc tren Android / dien thoai, khi tab o nen), roi moi den new Notification (may tinh). Tra ve true neu da gui.
+async function hienThongBao(tieuDe, noiDung) {
+  if (typeof Notification === "undefined" || Notification.permission !== "granted") return false;
+  const tuyChon = { body: noiDung, icon: "/icon-192.png", badge: "/badge-96.png", tag: `phai-sinh-${Date.now()}`, lang: "vi", vibrate: [200, 100, 200], data: { url: "/phai-sinh" } };
+  try {
+    if ("serviceWorker" in navigator) {
+      if (!(await navigator.serviceWorker.getRegistration("/"))) await navigator.serviceWorker.register("/sw.js", { scope: "/", updateViaCache: "none" });
+      const reg = await navigator.serviceWorker.ready; // dang ky service worker (public/sw.js) neu chua co roi doi no san sang
+      await reg.showNotification(tieuDe, tuyChon);
+      return true;
+    }
+  } catch {
+    /* thu cach 2 */
+  }
+  try {
+    new Notification(tieuDe, { body: noiDung, icon: "/icon-192.png" });
+    return true;
+  } catch {
+    return false;
+  }
+}
+// Tieng bip 0,35 giay. Trinh duyet chi cho phat am thanh sau khi nguoi dung da cham vao trang it nhat 1 lan -> ctxRef giu AudioContext da "mo khoa". Tra ve true neu am thanh dang chay.
+function bip(ctxRef) {
+  try {
+    const Ctx = window.AudioContext || window.webkitAudioContext;
+    if (!Ctx) return false;
+    if (!ctxRef.current) ctxRef.current = new Ctx();
+    const a = ctxRef.current;
+    if (a.state === "suspended") a.resume().catch(() => {});
+    const o = a.createOscillator();
+    const g = a.createGain();
+    o.frequency.value = 880;
+    g.gain.value = 0.08;
+    o.connect(g);
+    g.connect(a.destination);
+    o.start();
+    o.stop(a.currentTime + 0.35);
+    return a.state === "running";
+  } catch {
+    return false;
+  }
+}
+const luuBao = (bat) => {
+  try {
+    if (bat) localStorage.setItem(KHOA_BAO, "1");
+    else localStorage.removeItem(KHOA_BAO);
+  } catch {
+    /* trinh duyet chan localStorage: van dung duoc, chi la khong nho */
+  }
+};
 const d1 = (v) => soVN(v, 1, true);
 const diemCoDau = (v) => `${v > 0 ? "+" : ""}${soVN(v, 1, true)}`;
 const trieu = (diem) => `${diem > 0 ? "+" : ""}${soVN(diem * 0.1, 2, true)} triệu`;
@@ -484,6 +536,48 @@ export default function PhaVoPhaiSinh() {
   const truoc = useRef(null);
   const baoRef = useRef(false);
   baoRef.current = bao;
+  const amThanh = useRef(null);
+  const daKhoiPhucBao = useRef(false);
+  const [quyen, setQuyen] = useState(""); // quyen thong bao cua trinh duyet: granted | denied | default
+  const [ketQuaThu, setKetQuaThu] = useState("");
+  // Giu man hinh sang khi dang bat bao (dien thoai khoa man hinh la trinh duyet dung trang -> khong con bao)
+  useEffect(() => {
+    if (!bao || typeof navigator === "undefined" || !("wakeLock" in navigator)) return;
+    let khoa = null;
+    let huy = false;
+    const xin = async () => {
+      try {
+        khoa = await navigator.wakeLock.request("screen");
+      } catch {
+        /* khong xin duoc (pin yeu / trinh duyet chan): bo qua */
+      }
+    };
+    const khiHien = () => {
+      if (document.visibilityState === "visible" && !huy) xin();
+    };
+    xin();
+    document.addEventListener("visibilitychange", khiHien);
+    return () => {
+      huy = true;
+      document.removeEventListener("visibilitychange", khiHien);
+      khoa?.release().catch(() => {});
+    };
+  }, [bao]);
+  // Sau khi tai lai trang, am thanh bi trinh duyet chan cho den khi nguoi dung cham vao trang 1 lan: mo khoa o lan cham dau tien
+  useEffect(() => {
+    if (!bao) return;
+    const moKhoa = () => {
+      try {
+        const Ctx = window.AudioContext || window.webkitAudioContext;
+        if (!amThanh.current && Ctx) amThanh.current = new Ctx();
+        amThanh.current?.resume?.().catch(() => {});
+      } catch {
+        /* bo qua */
+      }
+    };
+    window.addEventListener("pointerdown", moKhoa, { once: true });
+    return () => window.removeEventListener("pointerdown", moKhoa);
+  }, [bao]);
   // LICH SU DAI tu 2024 (chi cach bien dong 0,3): tai khi bam mo
   const [moDai, setMoDai] = useState(false);
   const [dai, setDai] = useState(null);
@@ -517,6 +611,16 @@ export default function PhaVoPhaiSinh() {
           setLoi(null);
           setDu(j);
           pha = j.pha;
+          if (!daKhoiPhucBao.current) {
+            // khoi phuc lua chon "Dang bat bao" cua lan truoc (localStorage); doc sau khi trang da hien de khong lech noi dung may chu / trinh duyet
+            daKhoiPhucBao.current = true;
+            try {
+              if (localStorage.getItem(KHOA_BAO) === "1") setBao(true);
+            } catch {
+              /* khong doc duoc localStorage: de mac dinh tat */
+            }
+            setQuyen(quyenHienTai());
+          }
           if (!ngayXem) xetThayDoi(j);
         }
       } catch {
@@ -576,32 +680,40 @@ export default function PhaVoPhaiSinh() {
     const gio = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
     setSuKien((ds) => [...tin.map((t) => `${gio} · ${t}`), ...ds].slice(0, 8));
     if (!baoRef.current) return;
-    try {
-      if (typeof Notification !== "undefined" && Notification.permission === "granted") for (const t of tin) new Notification("VN30F1M · phá vỡ trong ngày", { body: t });
-      const Ctx = window.AudioContext || window.webkitAudioContext;
-      if (Ctx) {
-        const a = new Ctx();
-        const o = a.createOscillator();
-        const g = a.createGain();
-        o.frequency.value = 880;
-        g.gain.value = 0.08;
-        o.connect(g);
-        g.connect(a.destination);
-        o.start();
-        o.stop(a.currentTime + 0.35);
-      }
-    } catch {
-      /* trinh duyet chan thong bao / am thanh: van con dong su kien tren trang */
-    }
+    // thong bao va am thanh tach rieng: loi cai nay khong lam mat cai kia; dong su kien tren trang van luon co
+    for (const t of tin) hienThongBao("VN30F1M · phá vỡ trong ngày", t);
+    bip(amThanh);
   }
   async function batTatBao() {
-    if (bao) return setBao(false);
+    if (bao) {
+      setBao(false);
+      luuBao(false);
+      return;
+    }
     try {
       if (typeof Notification !== "undefined" && Notification.permission === "default") await Notification.requestPermission();
     } catch {
       /* bo qua */
     }
+    setQuyen(quyenHienTai());
+    bip(amThanh); // bam nut = lan cham dau tien -> mo khoa am thanh
     setBao(true);
+    luuBao(true);
+  }
+  // Gui thu 1 thong bao + 1 tieng bip de kiem tra may nay co nhan duoc khong
+  async function guiThuBao() {
+    setKetQuaThu("Đang gửi thử…");
+    try {
+      if (typeof Notification !== "undefined" && Notification.permission === "default") await Notification.requestPermission();
+    } catch {
+      /* bo qua */
+    }
+    const q = quyenHienTai();
+    setQuyen(q);
+    const hien = await hienThongBao("VN30F1M · thử báo", "Nếu bạn thấy thông báo này thì báo lệnh đã hoạt động.");
+    const am = bip(amThanh);
+    if (hien) setKetQuaThu(am ? "Đã gửi thông báo và phát bíp." : "Đã gửi thông báo; âm thanh đang bị trình duyệt chặn (chạm vào trang một lần rồi thử lại).");
+    else setKetQuaThu(typeof Notification === "undefined" ? "Trình duyệt này không hỗ trợ thông báo." : q === "denied" ? "Trình duyệt đang chặn thông báo của web này." : q === "default" ? "Bạn chưa cho phép thông báo." : "Không hiện được thông báo (trình duyệt từ chối).");
   }
 
   const b = du?.bienDong || {};
@@ -680,6 +792,26 @@ export default function PhaVoPhaiSinh() {
         </div>
       </div>
 
+      {bao && (
+        <div className="rounded-xl p-3 mb-4 text-xs" style={{ border: `1px solid ${quyen === "granted" ? VIEN : VANG}`, background: NEN_CARD, color: MUTED }}>
+          <p>
+            <b style={{ color: TEXT }}>Đang bật báo.</b>{" "}
+            {typeof Notification === "undefined" || (laIOSChuaCaiDat() && quyen !== "granted")
+              ? "Trình duyệt này chưa nhận được thông báo: iPhone / iPad chỉ nhận khi mở web từ biểu tượng trên Màn hình chính. Vẫn có bíp và dòng diễn biến trên trang."
+              : quyen === "denied"
+                ? "Trình duyệt đang CHẶN thông báo của web này: mở cài đặt trang web (biểu tượng ổ khóa cạnh địa chỉ), cho phép Thông báo, rồi bấm Gửi thử."
+                : quyen === "default"
+                  ? "Chưa cho phép thông báo: bấm Gửi thử để trình duyệt hỏi quyền."
+                  : "Báo chỉ chạy khi trang này đang mở (đừng đóng tab, đừng khóa máy lâu): trình duyệt tạm dừng trang chạy nền nên có thể trễ hoặc không báo. Trang tự giữ màn hình sáng khi bật báo."}
+          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-2">
+            <button type="button" onClick={guiThuBao} className="px-2.5 py-1 rounded-md cursor-pointer" style={{ border: `1px solid ${VIEN}`, color: TEXT }}>
+              Gửi thử thông báo
+            </button>
+            {ketQuaThu && <span style={{ color: TEXT }}>{ketQuaThu}</span>}
+          </div>
+        </div>
+      )}
       {loi && (
         <p className="text-sm mb-4" style={{ color: DO }}>
           {loi}
