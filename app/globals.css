@@ -19,21 +19,21 @@
 :root,
 html[data-theme="dark"] {
   color-scheme: dark;
-  --nen: #0E2016;
-  --nen-sau: #09160F;
-  --nen-phu: #12281B;
-  --card: #1F3D2B;
-  --vien-nhe: #274A36;
-  --vien: #2F5A41;
-  --vien-dam: #437A5A;
-  --nen-hover: #2A5039;
-  --mo-3: #98AA98;
-  --mo: #A9B8A7;
-  --mo-2: #BDC7B3;
-  --chu-3: #D3D0BD;
-  --chu-2: #E8DCC4;
-  --chu: #F6F0E1;
-  --panel-tim: #2B2457;
+  --nen: #0B120E;
+  --nen-sau: #070C09;
+  --nen-phu: #0F1813;
+  --card: #141F18;
+  --vien-nhe: #1A2820;
+  --vien: #263A2E;
+  --vien-dam: #3A5645;
+  --nen-hover: #1B2A21;
+  --mo-3: #8C978A;
+  --mo: #9EA99B;
+  --mo-2: #B0B8A6;
+  --chu-3: #CBC5B0;
+  --chu-2: #E2D9C2;
+  --chu: #F2ECDC;
+  --panel-tim: #1F3D2B;
   --tim-chu: #C4B5FD;
   --tim-nhat: #A78BFA;
   /* 2 mau chuoi cho bieu do danh gia danh muc (tim sang + be cat: tuong phan >= 3:1 tren --card xanh rung) */
@@ -45,7 +45,7 @@ html[data-theme="dark"] {
   --xanh: #4ADE80;
   --xanh-nhat: #86EFAC;
   --xanh-dam: #22C55E;
-  --xanh-nen: #164B2D;
+  --xanh-nen: #14391F;
   --do: #F05252;
   --do-nhat: #F87171;
   --do-nen: #3B1F22;
@@ -59,33 +59,33 @@ html[data-theme="dark"] {
   --cyan: #22D3EE;
   --cam: #F97316;
   --chanh: #A3E635;
-  --hover-nhe: rgba(232,220,196,0.05);
-  --hover-dam: rgba(232,220,196,0.11);
-  --phu: rgba(232,220,196,0.06);
-  --thanh-cuon: #3A664D;
-  --nhiet-trung: #2F5A41;
+  --hover-nhe: rgba(226,217,194,0.05);
+  --hover-dam: rgba(226,217,194,0.10);
+  --phu: rgba(226,217,194,0.05);
+  --thanh-cuon: #2E4636;
+  --nhiet-trung: #243628;
   --nhiet-tang: #16A34A;
   --nhiet-giam: #8A2B2B;
-  --nhiet-chu: #F6F0E1;
-  --nhiet-chu-2: #E8DCC4;
+  --nhiet-chu: #F2ECDC;
+  --nhiet-chu-2: #E2D9C2;
 }
 html[data-theme="light"] {
   color-scheme: light;
-  --nen: #F1E9D6;
-  --nen-sau: #E8DCC4;
-  --nen-phu: #F6F0E1;
-  --card: #FBF8F0;
-  --vien-nhe: #EBE1CB;
-  --vien: #DDD0B3;
-  --vien-dam: #C4B391;
-  --nen-hover: #E8DDC3;
+  --nen: #F3EDDD;
+  --nen-sau: #E9E0CA;
+  --nen-phu: #F8F4E8;
+  --card: #FFFDF8;
+  --vien-nhe: #EEE6D2;
+  --vien: #E0D5BB;
+  --vien-dam: #C9BB99;
+  --nen-hover: #EFE7D3;
   --mo-3: #5F6A5A; /* tuong phan >= 4,5:1 tren nen be */
   --mo: #4A5A4C;
   --mo-2: #566657;
   --chu-3: #2E4536;
   --chu-2: #1F3D2B;
   --chu: #14261B;
-  --panel-tim: #ECE6FB;
+  --panel-tim: #E6EDE0;
   --tim-chu: #6D28D9;
   --tim-nhat: #7C3AED;
   --bd-1: #8B5CF6;
@@ -112,7 +112,7 @@ html[data-theme="light"] {
   --hover-nhe: rgba(31,61,43,0.05);
   --hover-dam: rgba(31,61,43,0.09);
   --phu: rgba(31,61,43,0.04);
-  --thanh-cuon: #C4B391;
+  --thanh-cuon: #C9BB99;
   --nhiet-trung: #E3D9BE;
   --nhiet-tang: #4ADE80;
   --nhiet-giam: #F87171;
