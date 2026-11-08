@@ -6,8 +6,15 @@
 }
 
 /* PHONG CHU CHUNG: moi cho (chu va so) dung 1 bien, doi phong chi sua day + next/font o app/layout.js. */
+/* KY HIEU DAC BIET (→ ≥ ≤ ≈ ▲ ▼ ● ✓ ...) lay tu phong he thong (local()): Open Sans tach cac ky hieu nay thanh 2-3 tep rieng (~70-100 KB) va trinh duyet TAI CA TEP chi vi trang co 1 dau "→" hay "●".
+   Khai bao nay chiem cac ky tu do truoc Open Sans nen khong con tai tep nao. May khong co phong he thong nao (hiem) thi roi ve Open Sans nhu cu. Dau gach (– —), ngoac kep, ... va mui ten len / xuong nam san trong tep chu Latin nen khong liet ke. */
+@font-face {
+  font-family: "CS Ky Hieu";
+  src: local("Segoe UI Symbol"), local("Apple Symbols"), local("Noto Sans Symbols 2"), local("Noto Sans Symbols"), local("DejaVu Sans"), local("Arial Unicode MS");
+  unicode-range: U+2190, U+2192, U+21B3, U+21BA, U+221A, U+2248, U+2264-2265, U+2033, U+238B, U+23F3, U+25B2, U+25B4, U+25BC, U+25BE, U+25C0, U+25C6, U+25CB, U+25CF, U+25D0, U+2605, U+26A0, U+2705, U+2713, U+2715, U+2717, U+2795, U+2B50;
+}
 :root {
-  --font-chu: var(--font-chu-tai), "Open Sans", "Segoe UI", system-ui, Roboto, sans-serif;
+  --font-chu: "CS Ky Hieu", var(--font-chu-tai), "Open Sans", "Segoe UI", system-ui, Roboto, sans-serif;
 }
 
 /* ---------- CHE DO SANG / TOI ----------

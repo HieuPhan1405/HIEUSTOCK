@@ -2,6 +2,7 @@ import { layBangCoBan } from "@/lib/phanTichCoBanDb";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import BangCoBan from "@/components/BangCoBan";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import { donCot } from "@/lib/goiCot";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -40,7 +41,8 @@ export default async function TrangCoBan() {
           Chưa có dữ liệu phân tích cơ bản.
         </p>
       )}
-      {hang.length > 0 && <BangCoBan hang={hang} capNhat={capNhat ? new Date(capNhat).toISOString() : null} />}
+      {/* Gui DANG COT (lib/goiCot.js): ten truong 1 lan thay vi lap lai o ~400 dong */}
+      {hang.length > 0 && <BangCoBan hangGon={donCot(hang)} capNhat={capNhat ? new Date(capNhat).toISOString() : null} />}
     </div>
   );
 }

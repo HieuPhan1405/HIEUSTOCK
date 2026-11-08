@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { moCot } from "@/lib/goiCot";
 import { SlidersHorizontal } from "lucide-react";
 import { soVN } from "@/lib/soVN";
 import NutThamGia from "@/components/NutThamGia";
@@ -20,7 +21,8 @@ const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
 const sans = { fontFamily: "var(--font-chu)" };
-const SO_DONG = 100;
+// 40 dong moi lan (truoc la 100): ban dien thoai (the) va ban may tinh (bang) deu duoc ve san trong HTML nen moi dong tinh 2 lan; 40 dong + "Xem them" giam ~60% HTML ban dau.
+const SO_DONG = 40;
 const LOC_RONG = { f: "", roe: "", pe: "", pb: "", coTuc: "", ln: "", d360: "", gtgd: "2", vonHoa: "" };
 
 const f1 = (x, d = 1) => (x == null || !Number.isFinite(x) ? "—" : soVN(x, d, true));
@@ -77,7 +79,9 @@ const COT = [
   { k: "gtgd", t: "GTGD (tỷ)", an: "max-md:hidden" },
 ];
 
-export default function BangCoBan({ hang, capNhat }) {
+export default function BangCoBan({ hang: hangTho = null, hangGon = null, capNhat }) {
+  // Trang gui dang cot (lib/goiCot.js); mo lai thanh mang doi tuong 1 lan.
+  const hang = useMemo(() => hangTho ?? moCot(hangGon), [hangTho, hangGon]);
   const [nhom, datNhom] = useState("pi");
   const [tim, datTim] = useState("");
   const [nganh, datNganh] = useState("");
