@@ -803,3 +803,179 @@ html.cs-dang-chup .cs-cung {
     animation: none;
   }
 }
+
+/* ===== RADAR TIN HIEU (trang chu, components/RadarTinHieu.js) ===== */
+.cs-radar-luoi {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  gap: 6px;
+  isolation: isolate;
+}
+.cs-radar-o {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-family: var(--font-chu);
+  color: var(--mo-3);
+  background: var(--vien-nhe);
+  border: 1.5px solid transparent;
+  transition: color 0.2s, border-color 0.2s;
+}
+.cs-radar-o:hover {
+  color: var(--chu);
+  border-color: var(--vien-dam);
+}
+/* o co su kien: sang len khi vach quet di qua (do tre = vi tri ngang x chu ky, do bang JS vao --p), giu sang den het vong; truoc luot dau van mo (fill-mode both) */
+.cs-radar-o--sang {
+  animation: cs-radar-bat 8s linear infinite both;
+  animation-delay: calc(var(--p, 0) * 8s);
+}
+@keyframes cs-radar-bat {
+  0% {
+    color: var(--mo-3);
+    border-color: transparent;
+    background: var(--vien-nhe);
+    box-shadow: none;
+    transform: scale(1);
+  }
+  3% {
+    color: var(--chu);
+    border-color: var(--c);
+    background: color-mix(in srgb, var(--c) 55%, var(--card));
+    box-shadow: 0 0 22px color-mix(in srgb, var(--c) 70%, transparent);
+    transform: scale(1.14);
+  }
+  9%,
+  92% {
+    color: var(--chu);
+    border-color: var(--c);
+    background: color-mix(in srgb, var(--c) 30%, var(--card));
+    box-shadow: 0 0 14px color-mix(in srgb, var(--c) 45%, transparent);
+    transform: scale(1);
+  }
+  100% {
+    color: var(--mo-3);
+    border-color: transparent;
+    background: var(--vien-nhe);
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+.cs-radar-quet {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 0;
+  width: 46px;
+  margin-left: -46px;
+  pointer-events: none;
+  z-index: 2;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--cyan) 22%, transparent));
+  border-right: 2px solid color-mix(in srgb, var(--cyan) 75%, transparent);
+  animation: cs-radar-chay 8s linear infinite;
+}
+@keyframes cs-radar-chay {
+  from {
+    left: 0;
+  }
+  to {
+    left: calc(100% + 46px);
+  }
+}
+.cs-radar-diem {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--xanh);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--xanh) 60%, transparent);
+  animation: cs-radar-nhip 2s ease-out infinite;
+}
+@keyframes cs-radar-nhip {
+  to {
+    box-shadow: 0 0 0 8px transparent;
+  }
+}
+.cs-radar-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--vien);
+  background: var(--card);
+  color: var(--mo-2);
+  font-size: 12px;
+  font-family: var(--font-chu);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.cs-radar-chip b {
+  color: var(--chu);
+  font-weight: 700;
+}
+.cs-radar-chip:hover {
+  border-color: var(--vien-dam);
+  color: var(--chu);
+}
+.cs-radar-chip[aria-pressed="true"] {
+  border-color: var(--c);
+  background: color-mix(in srgb, var(--c) 18%, var(--card));
+  color: var(--chu);
+}
+.cs-radar-chip-cham {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--c);
+}
+.cs-radar-chip--khoa {
+  border-style: dashed;
+}
+.cs-radar-the {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border-radius: 999px;
+  color: var(--chu);
+  background: color-mix(in srgb, var(--c) 26%, transparent);
+  border: 1px solid color-mix(in srgb, var(--c) 60%, transparent);
+}
+.cs-radar-dong li:nth-child(n + 7) a {
+  opacity: 0.7;
+}
+@media (max-width: 639px) {
+  .cs-radar-luoi {
+    grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+    gap: 5px;
+  }
+  .cs-radar-o {
+    height: 26px;
+    font-size: 10.5px;
+  }
+  /* dien thoai: chi ~60 o dau (A-Z) de luoi khong qua dai; o co su kien luon hien */
+  .cs-radar-o:not(.cs-radar-o--sang):nth-child(n + 63) {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-radar-quet,
+  .cs-radar-diem {
+    animation: none;
+  }
+  .cs-radar-quet {
+    display: none;
+  }
+  .cs-radar-o--sang {
+    animation: none;
+    color: var(--chu);
+    border-color: var(--c);
+    background: color-mix(in srgb, var(--c) 30%, var(--card));
+    box-shadow: 0 0 14px color-mix(in srgb, var(--c) 45%, transparent);
+  }
+}

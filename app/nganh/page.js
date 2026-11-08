@@ -49,9 +49,9 @@ export default async function TrangNganh() {
         </Suspense>
       )}
       <BangRSNganh hang={tinhRSNganh(tatCa)} />
-      {/* Ban do nhiet chi can 4 truong. KHONG gui nguyen dong tin hieu xuong trinh duyet: truoc 09/11/2026 trang nay lo gia mua / cat lo / TP / tin hieu cua moi ma cho ca khach
+      {/* Ban do nhiet chi can ~8 truong (ma, nganh, % ngay, RS20/RS60, diem, GTGD, von hoa - deu la truong khach cung duoc thay). KHONG gui nguyen dong tin hieu xuong trinh duyet: truoc 09/11/2026 trang nay lo gia mua / cat lo / TP / tin hieu cua moi ma cho ca khach
           (trai voi lib/lamSachChoKhach.js) va nang them ~1 MB. */}
-      <BanDoNhiet tatCa={tatCa.map((r) => ({ ma: r.ma, nganh: r.nganh, doi: r.doi, gtgd_tb20: r.gtgd_tb20 }))} />
+      <BanDoNhiet tatCa={tatCa.map((r) => ({ ma: r.ma, nganh: r.nganh, doi: r.doi, gtgd_tb20: r.gtgd_tb20, rs_vni: r.rs_vni, rs_vni_60: r.rs_vni_60, diem: r.diem, von_hoa_ty: r.von_hoa_ty }))} />
       {/* Bang nhiet MUA VU (loi suat thang x nam, VN-Index + 22 nganh) - du lieu tinh lib/muaVuDuLieu.js, cap nhat bang scripts/capNhatMuaVu.mjs */}
       <div className="mt-6">
         <BangNhietMuaVu />

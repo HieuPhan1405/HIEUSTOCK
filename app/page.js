@@ -23,6 +23,9 @@ import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import { quyenTrangChu, locCauNhanDinh } from "@/lib/khoaTrangChu";
 import KhoaTinHieuTrangChu from "@/components/KhoaTinHieuTrangChu";
 import GiaiNghia from "@/components/GiaiNghia";
+import RadarTinHieu from "@/components/RadarTinHieu";
+import { layBatDayGanDay } from "@/lib/batDay";
+import { dungSuKienRadar, chonLuoiMa } from "@/lib/radarSuKien";
 
 export const dynamic = "force-dynamic";
 
@@ -217,13 +220,16 @@ export default async function TrangTongQuan() {
   let dongLenh = [];
   let muaPhucHoi = [];
   let diemBGanDay = {};
+  let batDayGanDay = [];
   if (xemTinHieu) {
-    const [a, cb, c] = await Promise.all([
+    const [a, cb, c, bd] = await Promise.all([
       layLenhCoSuKienNgay(ngayPhien).catch(() => []),
       layChiBaoKyThuat().catch(() => null),
       layDiemBGanDay().then((x) => Object.fromEntries(x.map((d) => [d.ma, d]))).catch(() => ({})),
+      layBatDayGanDay().catch(() => []),
     ]);
     dongLenh = a;
+    batDayGanDay = bd;
     try {
       muaPhucHoi = cb ? dungMuaPhucHoi({ hang: cb.hang, tatCa }) : [];
     } catch {
@@ -262,6 +268,11 @@ export default async function TrangTongQuan() {
   // Du lieu cho 2 the anh chia se (Anh thi truong / Anh tin hieu)
   const ngayAnh = capNhat ? new Date(capNhat).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "numeric", month: "numeric", year: "numeric" }) : "";
   const cohoiAnh = xemTinHieu ? dungCoHoiHomNay({ tatCa, dongLenh, ngay: ngayPhien }) : null;
+
+  // RADAR: su kien dang chu y trong phien dung tu du lieu da co (khach chi nhan loai thi truong - lib/radarSuKien.js). Chi gui xuong trinh duyet ma + loai + mo ta, khong gui dong tin hieu.
+  const radar = tatCa.length ? dungSuKienRadar({ tatCa, coHoi: cohoiAnh, muaPhucHoi, batDay: batDayGanDay, xemTinHieu }) : null;
+  const radarMa = radar ? chonLuoiMa(tatCa, radar.suKien) : [];
+  const radarGio = capNhat ? new Date(capNhat).toLocaleTimeString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit" }) : "";
 
   return (
     <div style={{ color: TEXT }}>
@@ -445,6 +456,8 @@ export default async function TrangTongQuan() {
             <NhanThiTruong5Phien className="mb-6" />
           </Suspense>
         )}
+
+        {radar && <RadarTinHieu cacMa={radarMa} suKien={radar.suKien} dem={radar.dem} ngay={ngayAnh} gio={radarGio} khoa={!xemTinHieu} />}
 
         {/* TOP CO HOI DANG CHU Y: 4 o lenh CUA PHIEN HOM NAY - hang tren Mua | Ban, hang duoi Mua moi | Ban bot. Tong quan/Ra soat nhanh
             (breadth, top nganh, khoi ngoai...) o trang /dashboard rieng. */}
