@@ -17,7 +17,7 @@ const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const NGOC = "var(--cyan)";
 
 const pillCua = (row) => <SignalPill tin={row.tin} banTheoDoiTu={row.ban_theo_doi ? row.ban_theo_doi_tu : null} webGiu={Array.isArray(row.lenh_web) && row.lenh_web.length > 0} muaTheoDoiTu={row.mua_theo_doi_tu ?? null} daChotMua={row.da_chot_mua === true} />;

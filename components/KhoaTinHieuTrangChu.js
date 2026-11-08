@@ -6,7 +6,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -72,7 +72,7 @@ export default function KhoaTinHieuTrangChu({ choDuyet = false }) {
         <h2 className="text-lg" style={{ ...sans, fontWeight: 700 }}>
           Top cơ hội đáng chú ý
         </h2>
-        <Link href="/huong-dan" className="text-xs" style={{ color: "var(--tim-chu)", ...mono }}>
+        <Link href="/huong-dan" className="text-xs" style={{ color: PRIMARY, ...mono }}>
           xem hướng dẫn →
         </Link>
       </div>
@@ -95,7 +95,7 @@ export default function KhoaTinHieuTrangChu({ choDuyet = false }) {
           >
             <div
               className="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-3"
-              style={{ background: choDuyet ? "rgba(251,191,36,0.16)" : "rgba(139,92,246,0.18)" }}
+              style={{ background: choDuyet ? "rgba(251,191,36,0.16)" : "rgba(108,92,231,0.18)" }}
             >
               {choDuyet ? <Clock size={22} color={VANG} strokeWidth={2} /> : <Lock size={22} color={PRIMARY} strokeWidth={2} />}
             </div>

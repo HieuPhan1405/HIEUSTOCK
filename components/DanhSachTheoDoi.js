@@ -19,7 +19,7 @@ const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const CHU = "var(--font-chu)";
 
 const THU_TU_TIN = { MUA: 4, "NAM GIU": 3, "TRUNG LAP": 2, BAN: 1 };
@@ -244,7 +244,7 @@ export default function DanhSachTheoDoi({ danhSachBanDau, hang, canhBaoChinh, ds
           <button
             type="button"
             className="font-semibold underline"
-            style={{ color: "var(--tim-chu)" }}
+            style={{ color: PRIMARY }}
             onClick={async () => {
               const h = hoanTac;
               setHoanTac(null);
@@ -417,7 +417,7 @@ export default function DanhSachTheoDoi({ danhSachBanDau, hang, canhBaoChinh, ds
             </div>
           </div>
           {dangXem.chinh && (
-            <button type="button" onClick={() => datCheDo("chiTiet")} className="mt-3 text-sm underline" style={{ color: "var(--tim-chu)" }}>
+            <button type="button" onClick={() => datCheDo("chiTiet")} className="mt-3 text-sm underline" style={{ color: PRIMARY }}>
               Xem vị thế từng lệnh, cảnh báo chi tiết và lệnh đã đóng →
             </button>
           )}
@@ -545,7 +545,7 @@ function TaoMoi({ soDanhSach, onTao }) {
   if (soDanhSach >= GIOI_HAN.soDanhSach) return null;
   if (!mo)
     return (
-      <button type="button" onClick={() => setMo(true)} className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm border border-dashed" style={{ borderColor: VIEN, color: "var(--tim-chu)", fontFamily: CHU }}>
+      <button type="button" onClick={() => setMo(true)} className="shrink-0 inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-sm border border-dashed" style={{ borderColor: VIEN, color: PRIMARY, fontFamily: CHU }}>
         <Plus size={14} /> Danh sách mới
       </button>
     );

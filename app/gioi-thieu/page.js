@@ -21,7 +21,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 
 const TINH_NANG = [
@@ -70,7 +70,7 @@ const TINH_NANG = [
 function TheTinhNang({ Icon, tieuDe, mo }) {
   return (
     <div className="rounded-2xl border p-5" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(139,92,246,0.15)" }}>
+      <div className="w-10 h-10 rounded-xl flex items-center justify-center mb-4" style={{ background: "rgba(108,92,231,0.15)" }}>
         <Icon size={20} color={PRIMARY} strokeWidth={2} aria-hidden="true" />
       </div>
       <h3 className="text-base mb-1.5" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
@@ -86,7 +86,7 @@ function TheTinhNang({ Icon, tieuDe, mo }) {
 function TheSo({ so, nhan }) {
   return (
     <div className="text-center">
-      <p className="text-2xl md:text-3xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: "var(--tim-chu)" }}>
+      <p className="text-2xl md:text-3xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: PRIMARY }}>
         {so}
       </p>
       <p className="text-xs mt-1" style={{ color: MUTED }}>
@@ -123,7 +123,7 @@ export default function TrangGioiThieu() {
             <Link
               href="/"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-semibold"
-              style={{ background: "#8B5CF6", color: "#FFFFFF" }}
+              style={{ background: "#6C5CE7", color: "#FFFFFF" }}
             >
               Vào Dashboard <ArrowRight size={16} aria-hidden="true" />
             </Link>
@@ -166,7 +166,7 @@ export default function TrangGioiThieu() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <TaiKhoanNut compact nhan="Đăng ký nhận tư vấn miễn phí" />
-            <Link href="/huong-dan" className="text-sm" style={{ color: "var(--tim-chu)", fontFamily: "var(--font-chu)" }}>
+            <Link href="/huong-dan" className="text-sm" style={{ color: PRIMARY, fontFamily: "var(--font-chu)" }}>
               Xem hướng dẫn & nguyên tắc →
             </Link>
           </div>

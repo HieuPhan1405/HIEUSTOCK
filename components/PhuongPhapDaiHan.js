@@ -21,7 +21,7 @@ const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const sans = { fontFamily: "var(--font-chu)" };
 const MAU = { xanh: XANH, do: DO, vang: VANG, mo: MUTED, chu: TEXT };
 
@@ -47,7 +47,7 @@ function DongMa({ m, pp, mo, onMo, locXuHuong, coDangNhap, moDangNhap }) {
     <>
       <tr className="border-b cursor-pointer hover:bg-[color:var(--hover-nhe)]" style={{ borderColor: VIEN }} onClick={onMo} aria-expanded={mo}>
         <td className="px-3 py-2.5 font-bold whitespace-nowrap" style={sans}>
-          <Link href={`/ma/${m.ma}`} onClick={(e) => e.stopPropagation()} className="underline decoration-dotted underline-offset-2" style={{ color: "var(--tim-chu)" }}>{m.ma}</Link>
+          <Link href={`/ma/${m.ma}`} onClick={(e) => e.stopPropagation()} className="underline decoration-dotted underline-offset-2" style={{ color: PRIMARY }}>{m.ma}</Link>
           <span className="ml-1.5 align-middle" onClick={(e) => e.stopPropagation()}><NutThamGia ma={m.ma} soNguoiThamGia={0} daThamGia={false} coDangNhap={coDangNhap} moChuaDangNhap={moDangNhap} /></span>
           {m.canhBao?.length > 0 && <TriangleAlert size={13} className="inline-block ml-1 align-text-top" style={{ color: VANG }} aria-label="Có cảnh báo, bấm để xem" />}
           <div className="text-[11px] font-normal" style={{ color: MUTED }}>{m.ten}</div>
@@ -207,7 +207,7 @@ function BangMa({ pp, ds, locXuHuong }) {
           <input type="number" inputMode="decimal" value={peDen} onChange={(e) => setPeDen(e.target.value)} placeholder="—" aria-label="P/E tối đa" className="w-16 px-2 py-2 rounded-lg border text-sm text-center" style={oStyle} />
         </label>
         {dangLoc && (
-          <button type="button" onClick={() => { setTim(""); setNganh(""); setNhanh(""); setRoeTu(""); setPeDen(""); }} className="text-xs px-3 py-2 rounded-lg border" style={{ borderColor: VIEN, color: "var(--tim-chu)", ...sans }}>
+          <button type="button" onClick={() => { setTim(""); setNganh(""); setNhanh(""); setRoeTu(""); setPeDen(""); }} className="text-xs px-3 py-2 rounded-lg border" style={{ borderColor: VIEN, color: PRIMARY, ...sans }}>
             Xóa lọc
           </button>
         )}
@@ -255,7 +255,7 @@ function KhungLoiVeTinh({ khung }) {
         <div className="flex flex-wrap gap-2">
           {ds.map((m) => (
             <Link key={m.ma} href={`/ma/${m.ma}`} className="rounded-lg border px-3 py-2 text-xs" style={{ borderColor: VIEN, background: "var(--nen)", ...sans }}>
-              <b style={{ color: "var(--tim-chu)" }}>{m.ma}</b> <span style={{ color: MUTED }}>{m.nganhNhan}</span>
+              <b style={{ color: PRIMARY }}>{m.ma}</b> <span style={{ color: MUTED }}>{m.nganhNhan}</span>
               <div className="mt-0.5"><b>{soVN(m.ty, 1)}%</b> danh mục · {m.xuHuongTang ? <span style={{ color: XANH }}>xu hướng tăng</span> : <span style={{ color: VANG }}>xu hướng giảm</span>}</div>
             </Link>
           ))}

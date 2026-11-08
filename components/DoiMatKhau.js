@@ -4,7 +4,7 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const sans = { fontFamily: "var(--font-chu)" };
 
 // Nut + hop thoai DOI MAT KHAU cho nguoi dung dang dang nhap (dat trong menu Tai khoan o thanh dau).

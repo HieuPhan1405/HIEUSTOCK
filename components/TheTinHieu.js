@@ -5,7 +5,7 @@ import { gioChupVN } from "@/lib/xuatAnh";
 
 export const RONG_THE_TIN_HIEU = 720;
 const TOI_DA = 8;
-const C = { nen: "#0E2016", card: "#1F3D2B", the2: "#28503A", vien: "#2F5A41", chu: "#F6F0E1", mo: "#B3C0AE", xanh: "#4ADE80", do: "#F87171", cam: "#FB923C", vang: "#FBBF24", tim: "#8B5CF6", timNhat: "#C4B5FD" };
+const C = { nen: "#0E0F1C", card: "#181A2E", the2: "#1E2140", vien: "#2A2D48", chu: "#F4F5FB", mo: "#A3A6C4", xanh: "#4ADE80", do: "#F87171", cam: "#FB923C", vang: "#FBBF24", tim: "#6C5CE7", timNhat: "#A29BFE" };
 const FONT = "var(--font-chu), 'Open Sans', system-ui, sans-serif";
 const mauLai = (v) => (v == null ? C.mo : v > 0 ? C.xanh : v < 0 ? C.do : C.vang);
 
@@ -43,7 +43,7 @@ const Hang = ({ ma, trai, phai, mauPhai = C.chu }) => (
 export default function TheTinHieu({ cohoi, ngay = "" }) {
   const { mua = [], ban = [], muaMoi = [], banBot = [] } = cohoi || {};
   return (
-    <div style={{ width: RONG_THE_TIN_HIEU, background: `radial-gradient(620px 300px at 12% -60px, rgba(139,92,246,0.42), rgba(139,92,246,0) 70%), ${C.nen}`, color: C.chu, fontFamily: FONT, padding: "28px 28px 24px", boxSizing: "border-box" }}>
+    <div style={{ width: RONG_THE_TIN_HIEU, background: `radial-gradient(620px 300px at 12% -60px, rgba(108,92,231,0.42), rgba(108,92,231,0) 70%), ${C.nen}`, color: C.chu, fontFamily: FONT, padding: "28px 28px 24px", boxSizing: "border-box" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo-day-du-toi.png" alt="CloudStock" style={{ height: 44, width: "auto" }} />

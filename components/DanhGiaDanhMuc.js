@@ -648,7 +648,7 @@ export default function DanhGiaDanhMuc({ duLieu, daiHan = null, ngay = "", gocNg
             <ClipboardPaste size={13} /> Dán nhiều dòng
           </button>
           {vitri.length === 0 && (
-            <button type="button" onClick={() => setDs(MAU_THU.map((x) => moi(x)))} className={nutPhu} style={{ borderColor: PRIMARY, color: "var(--tim-chu)", ...sans }}>
+            <button type="button" onClick={() => setDs(MAU_THU.map((x) => moi(x)))} className={nutPhu} style={{ borderColor: PRIMARY, color: PRIMARY, ...sans }}>
               <Sparkles size={13} /> Thử với danh mục mẫu
             </button>
           )}
@@ -668,7 +668,7 @@ export default function DanhGiaDanhMuc({ duLieu, daiHan = null, ngay = "", gocNg
           <div className="text-sm mb-2" style={{ ...sans, fontWeight: 700 }}>Phong cách đầu tư</div>
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-2" role="radiogroup" aria-label="Phong cách đầu tư">
             {Object.entries(PHONG_CACH).map(([k, p]) => (
-              <button key={k} type="button" role="radio" aria-checked={phongCach === k} onClick={() => { setPhongCach(k); setChonKH({}); }} className="text-left rounded-xl border px-3 py-2" style={{ borderColor: phongCach === k ? PRIMARY : VIEN, background: phongCach === k ? "color-mix(in srgb, #8B5CF6 12%, var(--card))" : "transparent", ...sans }}>
+              <button key={k} type="button" role="radio" aria-checked={phongCach === k} onClick={() => { setPhongCach(k); setChonKH({}); }} className="text-left rounded-xl border px-3 py-2" style={{ borderColor: phongCach === k ? PRIMARY : VIEN, background: phongCach === k ? "color-mix(in srgb, #6C5CE7 12%, var(--card))" : "transparent", ...sans }}>
                 <div className="text-sm" style={{ fontWeight: 700 }}>{p.ten}</div>
                 <div className="text-[11px] hidden sm:block" style={{ color: MUTED }}>{k === "trung_han" ? "Theo hệ thống CloudStock" : `Tỷ trọng tối đa ${Math.round(p.tyTrongToiDa * 100)}%/mã${p.catLo != null ? `, cắt lỗ ${p.catLo}%` : ", không cắt lỗ theo giá"}`}</div>
               </button>
@@ -852,7 +852,7 @@ export default function DanhGiaDanhMuc({ duLieu, daiHan = null, ngay = "", gocNg
           )}
 
           {!laThanhVien && tab !== "xu_ly" && tab !== "goi_y" && (
-            <div className="rounded-2xl border p-5 mb-6 flex flex-wrap items-center justify-between gap-4" style={{ borderColor: PRIMARY, background: "color-mix(in srgb, #8B5CF6 10%, var(--card))" }}>
+            <div className="rounded-2xl border p-5 mb-6 flex flex-wrap items-center justify-between gap-4" style={{ borderColor: PRIMARY, background: "color-mix(in srgb, #6C5CE7 10%, var(--card))" }}>
               <div className="max-w-xl">
                 <p className="text-base mb-1" style={{ ...sans, fontWeight: 800 }}>Nên giữ hay bán từng mã? Có nên trung bình giá?</p>
                 <p className="text-sm" style={{ color: MUTED }}>Thành viên (miễn phí) thấy trạng thái và kế hoạch xử lý từng mã theo phong cách của mình, tín hiệu MUA / BÁN, mốc cắt lỗ – chốt lời, và nhận cảnh báo khi mã trong danh mục chuyển xấu.</p>

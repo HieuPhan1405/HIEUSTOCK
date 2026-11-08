@@ -3,7 +3,7 @@
 import { gioChupVN } from "@/lib/xuatAnh";
 
 export const RONG_THE_DANH_GIA = 720;
-const C = { nen: "#0E2016", card: "#1F3D2B", the2: "#28503A", vien: "#2F5A41", chu: "#F6F0E1", mo: "#B3C0AE", xanh: "#4ADE80", do: "#F87171", vang: "#FBBF24", tim: "#A78BFA", timNhat: "#C4B5FD", cam: "#C4842A" };
+const C = { nen: "#0E0F1C", card: "#181A2E", the2: "#1E2140", vien: "#2A2D48", chu: "#F4F5FB", mo: "#A3A6C4", xanh: "#4ADE80", do: "#F87171", vang: "#FBBF24", tim: "#7C6CF0", timNhat: "#A29BFE", cam: "#C4842A" };
 const FONT = "var(--font-chu), 'Open Sans', system-ui, sans-serif";
 const p1 = (x) => (x == null || !Number.isFinite(x) ? "—" : x.toFixed(1).replace(".", ","));
 const mauDiem = (d) => (d == null ? C.mo : d >= 70 ? C.xanh : d >= 50 ? C.vang : C.do);
@@ -43,7 +43,7 @@ export default function TheDanhGiaDanhMuc({ suc, rr, pb, nhanXet = [], anMa = fa
     : [];
   const ma = [...(pb?.hang ?? [])].filter((h) => h.tyTrong != null).sort((a, b) => b.tyTrong - a.tyTrong).slice(0, 8);
   return (
-    <div style={{ width: RONG_THE_DANH_GIA, background: `radial-gradient(620px 300px at 12% -60px, rgba(139,92,246,0.42), rgba(139,92,246,0) 70%), ${C.nen}`, color: C.chu, fontFamily: FONT, padding: "28px 28px 22px", boxSizing: "border-box" }}>
+    <div style={{ width: RONG_THE_DANH_GIA, background: `radial-gradient(620px 300px at 12% -60px, rgba(108,92,231,0.42), rgba(108,92,231,0) 70%), ${C.nen}`, color: C.chu, fontFamily: FONT, padding: "28px 28px 22px", boxSizing: "border-box" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/logo-day-du-toi.png" alt="CloudStock" style={{ height: 44, width: "auto" }} />

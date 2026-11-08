@@ -14,7 +14,7 @@ const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const DO = "var(--do)";
 const XANH = "var(--xanh)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const TIM = "var(--tim-nhat)";
 
 // 1 o trong dai thong ke gon
@@ -52,7 +52,7 @@ function KhoiCanChuY({ nhom, onXemHet }) {
         <h2 className="text-base" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
           Cần chú ý hôm nay
         </h2>
-        <button type="button" onClick={onXemHet} className="text-xs" style={{ color: "var(--tim-chu)" }}>
+        <button type="button" onClick={onXemHet} className="text-xs" style={{ color: PRIMARY }}>
           Lọc bảng theo các lệnh này →
         </button>
       </div>

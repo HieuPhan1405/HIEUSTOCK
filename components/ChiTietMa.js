@@ -235,7 +235,7 @@ function ThanhMotChieu({ nhan, hien, khoa, giaTri, mucMax, hauTo = "" }) {
         </span>
       </div>
       <div className="h-1.5 rounded-sm overflow-hidden" style={{ background: "var(--vien-nhe)" }}>
-        <div className="h-full" style={{ width: `${rong}%`, background: "#8B5CF6" }} />
+        <div className="h-full" style={{ width: `${rong}%`, background: "#6C5CE7" }} />
       </div>
     </div>
   );
@@ -325,7 +325,7 @@ function ThanhChonLenh({ cacLenh, chon, datChon }) {
               aria-selected={dangChon}
               onClick={() => datChon(i)}
               className="shrink-0 text-left rounded-xl border px-3 py-2"
-              style={dangChon ? { borderColor: "#8B5CF6", background: "rgba(139,92,246,0.15)" } : { borderColor: VIEN, background: "transparent" }}
+              style={dangChon ? { borderColor: "#6C5CE7", background: "rgba(108,92,231,0.15)" } : { borderColor: VIEN, background: "transparent" }}
             >
               <span className="block text-sm font-bold" style={{ fontFamily: "var(--font-chu)" }}>
                 {l.ten_lenh}

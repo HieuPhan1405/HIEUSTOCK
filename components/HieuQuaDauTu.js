@@ -8,7 +8,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const MAU_TSSL = "var(--vang-2)"; // vang - Ty suat sinh loi cua he thong
@@ -175,7 +175,7 @@ export default function HieuQuaDauTu() {
 
       <div className="flex flex-wrap gap-2 mb-2" role="group" aria-label="Cách tính">
         {[["tssl", "Theo thời gian (cân bằng lại mỗi ngày)"], ["lenh", "Lãi trung bình mỗi lệnh (đã chốt + đang giữ)"]].map(([k, ten]) => (
-          <button key={k} type="button" aria-pressed={cach === k} onClick={() => { setCach(k); setHover(null); }} className="text-xs rounded-full px-3 py-1.5" style={cach === k ? { background: "#8B5CF6", color: "#fff", fontWeight: 700 } : { color: MUTED, border: `1px solid ${VIEN}` }}>
+          <button key={k} type="button" aria-pressed={cach === k} onClick={() => { setCach(k); setHover(null); }} className="text-xs rounded-full px-3 py-1.5" style={cach === k ? { background: "#6C5CE7", color: "#fff", fontWeight: 700 } : { color: MUTED, border: `1px solid ${VIEN}` }}>
             {ten}
           </button>
         ))}
@@ -191,7 +191,7 @@ export default function HieuQuaDauTu() {
               setHover(null);
             }}
             className="py-2 rounded-lg text-sm"
-            style={tab === t ? { background: "#8B5CF6", color: "#fff", fontWeight: 700 } : { color: MUTED }}
+            style={tab === t ? { background: "#6C5CE7", color: "#fff", fontWeight: 700 } : { color: MUTED }}
           >
             {t}
           </button>

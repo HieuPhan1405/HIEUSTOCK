@@ -15,7 +15,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 
 // Gia tri "nganh" AFL xuat ra KHONG dau (quy uoc chung toan he thong) - map
 // sang nhan co dau de hien thi dep hon trong dropdown, nhung filter van so
@@ -171,7 +171,7 @@ export function HangBoLocChung({ loc, datLoc, truocChon, sauChon, coBoLoc, onXoa
       <OSelect value={loc.nganh} onChange={dat("nganh")} placeholder="Tất cả ngành" options={DS_NGANH.map((n) => [n, NGANH_NHAN[n]])} />
       {sauChon}
       {coBoLoc && (
-        <button onClick={onXoa} className="text-xs px-3 py-2 rounded-lg" style={{ color: "var(--tim-chu)", border: `1px solid ${VIEN}` }}>
+        <button onClick={onXoa} className="text-xs px-3 py-2 rounded-lg" style={{ color: PRIMARY, border: `1px solid ${VIEN}` }}>
           Xoá bộ lọc
         </button>
       )}
@@ -298,7 +298,7 @@ export function ChonCotHienThi({ cot, dsKhoa, dangChon, onBat, onHienTatCa, onMa
           style={{ background: NEN_CARD, borderColor: VIEN }}
         >
           <div className="flex gap-2 mb-3">
-            <button type="button" onClick={onHienTatCa} className="text-xs px-2.5 py-1.5 rounded-lg" style={{ color: "var(--tim-chu)", border: `1px solid ${VIEN}` }}>
+            <button type="button" onClick={onHienTatCa} className="text-xs px-2.5 py-1.5 rounded-lg" style={{ color: PRIMARY, border: `1px solid ${VIEN}` }}>
               Hiện tất cả
             </button>
             <button type="button" onClick={onMacDinh} className="text-xs px-2.5 py-1.5 rounded-lg" style={{ color: MUTED, border: `1px solid ${VIEN}` }}>
@@ -377,7 +377,7 @@ export function HangLocNhanh({ ds, onChon, sau = null }) {
           className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm border transition-colors"
           style={{
             borderColor: m.dang ? PRIMARY : VIEN,
-            background: m.dang ? "rgba(139,92,246,0.18)" : NEN_CARD,
+            background: m.dang ? "rgba(108,92,231,0.18)" : NEN_CARD,
             color: m.dang ? TEXT : "var(--mo-2)",
             fontFamily: "var(--font-chu)",
             fontWeight: m.dang ? 700 : 500,

@@ -37,7 +37,7 @@ const NEN_CARD = "var(--card)";
 const MUTED = "var(--mo)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 
 // Bo loc "MA THEO DOI" gom 2 nhom: (1) da DAT DIEM MUA nhung dang doi phien sau (laChoPhienSau) va
 // (2) chi ma sap cham moc tinh diem +: ma chua co lenh, gia
@@ -391,7 +391,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
       <button type="button" onClick={() => setMoLocChiTiet((v) => !v)} aria-expanded={moLocChiTiet} className="sm:hidden w-full flex items-center justify-between gap-3 text-left px-3 py-2.5 mb-3 rounded-xl border text-sm" style={{ borderColor: soLocChiTiet ? PRIMARY : VIEN, background: NEN_CARD, color: "var(--chu)", fontFamily: "var(--font-chu)" }}>
         <span>
           Lọc thêm (sàn, ngành, vốn hoá, chỉ báo)
-          {soLocChiTiet > 0 && <b style={{ color: "var(--tim-chu)" }}> · {soLocChiTiet} đang bật</b>}
+          {soLocChiTiet > 0 && <b style={{ color: PRIMARY }}> · {soLocChiTiet} đang bật</b>}
         </span>
         <span style={{ color: MUTED }}>{moLocChiTiet ? "Thu gọn" : "Mở"}</span>
       </button>
@@ -525,7 +525,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
         </div>
         {daLoc.length > soDong && (
           <div ref={canCuoiRef} className="py-3 text-center">
-            <button type="button" onClick={veThem} className="text-sm px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: "var(--tim-chu)" }}>
+            <button type="button" onClick={veThem} className="text-sm px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: PRIMARY }}>
               Hiện thêm ({daLoc.length - soDong} mã)
             </button>
           </div>
@@ -588,7 +588,7 @@ export default function BangBoLoc({ duLieu, chiBaoLuc = null }) {
               {daLoc.length > soDong && (
                 <tr ref={canCuoiRef}>
                   <td colSpan={dsCot.length} className="py-3 text-center">
-                    <button type="button" onClick={veThem} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: "var(--tim-chu)", fontFamily: "var(--font-chu)" }}>
+                    <button type="button" onClick={veThem} className="text-xs px-3 py-1.5 rounded-lg border" style={{ borderColor: VIEN, color: PRIMARY, fontFamily: "var(--font-chu)" }}>
                       Hiện thêm ({Math.min(SO_DONG_THEM, daLoc.length - soDong)} / còn {daLoc.length - soDong} mã)
                     </button>
                   </td>

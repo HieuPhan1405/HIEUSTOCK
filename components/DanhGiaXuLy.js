@@ -329,7 +329,7 @@ export default function DanhGiaXuLy({ kq, keHoach, chon, setChon, sau, laThanhVi
   if (!laThanhVien) {
     return (
       <>
-        <div className="rounded-2xl border p-5 mb-6 flex flex-wrap items-center justify-between gap-4" style={{ borderColor: PRIMARY, background: "color-mix(in srgb, #8B5CF6 10%, var(--card))" }}>
+        <div className="rounded-2xl border p-5 mb-6 flex flex-wrap items-center justify-between gap-4" style={{ borderColor: PRIMARY, background: "color-mix(in srgb, #6C5CE7 10%, var(--card))" }}>
           <div className="max-w-2xl">
             <p className="text-base mb-1" style={{ ...sans, fontWeight: 800 }}>
               <Lock size={15} className="inline -mt-1 mr-1" />

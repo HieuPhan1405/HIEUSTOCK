@@ -429,7 +429,7 @@ export default function TrangQuanTri() {
               type="submit"
               disabled={dangLuuTT}
               className="px-3 py-1.5 text-sm font-medium sm:col-span-2"
-              style={{ background: "#8B5CF6", color: "#FFFFFF", fontWeight: 600, opacity: dangLuuTT ? 0.6 : 1 }}
+              style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600, opacity: dangLuuTT ? 0.6 : 1 }}
             >
               {dangLuuTT ? "Đang lưu..." : "Lưu thông tin"}
             </button>
@@ -449,7 +449,7 @@ export default function TrangQuanTri() {
             <p className="text-xs " style={{ color: "var(--mo)" }}>
               Tin nhắn liên hệ ({dsLienHe.length})
             </p>
-            <button onClick={() => taiLienHe(apiKey)} className="text-xs" style={{ color: "var(--tim-chu)" }}>
+            <button onClick={() => taiLienHe(apiKey)} className="text-xs" style={{ color: "#6C5CE7" }}>
               {dangTaiLienHe ? "Đang tải..." : "Tải lại"}
             </button>
           </div>
@@ -496,7 +496,7 @@ export default function TrangQuanTri() {
                 <span style={{ color: "var(--vang)" }}> · {dsNguoiDung.filter((nd) => !nd.da_duyet).length} chờ duyệt</span>
               )}
             </p>
-            <button onClick={() => taiNguoiDung(apiKey)} className="text-xs" style={{ color: "var(--tim-chu)" }}>
+            <button onClick={() => taiNguoiDung(apiKey)} className="text-xs" style={{ color: "#6C5CE7" }}>
               {dangTaiNguoiDung ? "Đang tải..." : "Tải lại"}
             </button>
           </div>
@@ -515,7 +515,7 @@ export default function TrangQuanTri() {
                   <button
                     type="button"
                     className="text-xs font-semibold mr-4"
-                    style={{ color: "var(--tim-chu)" }}
+                    style={{ color: "#6C5CE7" }}
                     onClick={() => navigator.clipboard?.writeText(`Mật khẩu tạm của bạn: ${mkTam.mk} — bạn đăng nhập bằng số điện thoại ${mkTam.sdt} rồi đổi lại mật khẩu nhé.`)}
                   >
                     Sao chép tin nhắn gửi khách
@@ -566,7 +566,7 @@ export default function TrangQuanTri() {
                 <button onClick={() => datLaiMatKhau(nd)} className="text-xs" style={{ color: "var(--vang)" }} title="Khách quên mật khẩu: tạo mật khẩu tạm">
                   Đặt lại MK
                 </button>
-                <button onClick={() => datAdmin(nd.id, !nd.la_admin)} className="text-xs" style={{ color: nd.la_admin ? "var(--do)" : "#8B5CF6" }}>
+                <button onClick={() => datAdmin(nd.id, !nd.la_admin)} className="text-xs" style={{ color: nd.la_admin ? "var(--do)" : "#6C5CE7" }}>
                   {nd.la_admin ? "Bỏ Admin" : "Đặt Admin"}
                 </button>
               </div>
@@ -616,7 +616,7 @@ export default function TrangQuanTri() {
               type="submit"
               disabled={dangXuLyZalo}
               className="px-3 py-1.5 text-sm font-medium"
-              style={{ background: "#8B5CF6", color: "#FFFFFF", fontWeight: 600, opacity: dangXuLyZalo ? 0.6 : 1 }}
+              style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600, opacity: dangXuLyZalo ? 0.6 : 1 }}
             >
               Lưu &amp; Kết nối Zalo
             </button>
@@ -666,7 +666,7 @@ export default function TrangQuanTri() {
         <button
           type="submit"
           className="px-4 py-2 text-sm font-medium"
-          style={{ background: "#8B5CF6", color: "#FFFFFF", fontWeight: 600 }}
+          style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}
         >
           Tải dữ liệu
         </button>
@@ -734,7 +734,7 @@ export default function TrangQuanTri() {
                 className="px-2 py-1.5 text-sm outline-none"
                 style={{ background: "var(--nen)", border: `1px solid ${VIEN}`, color: "var(--chu)" }}
               />
-              <button type="submit" className="px-3 py-1.5 text-sm font-medium" style={{ background: "#8B5CF6", color: "#FFFFFF", fontWeight: 600 }}>
+              <button type="submit" className="px-3 py-1.5 text-sm font-medium" style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}>
                 Thêm
               </button>
             </form>
@@ -794,7 +794,7 @@ export default function TrangQuanTri() {
               <button
                 type="submit"
                 className="px-3 py-1.5 text-sm font-medium sm:col-span-4"
-                style={{ background: "#8B5CF6", color: "#FFFFFF", fontWeight: 600 }}
+                style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}
               >
                 Thêm
               </button>

@@ -10,7 +10,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -192,7 +192,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
             aria-selected={tab === k}
             onClick={() => setTab(k)}
             className="px-3 py-1.5 rounded-lg"
-            style={tab === k ? { background: "#8B5CF6", color: "#fff", fontWeight: 700 } : { color: MUTED }}
+            style={tab === k ? { background: "#6C5CE7", color: "#fff", fontWeight: 700 } : { color: MUTED }}
           >
             {nhan}
           </button>
@@ -208,7 +208,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
       ) : (
         <>
           <p className="text-center text-sm sm:text-base mb-1" style={{ color: TEXT, fontFamily: "var(--font-chu)" }}>
-            Thanh khoản VN-Index {m.daKetThuc ? "đạt" : "hiện"} <b style={{ color: "var(--tim-chu)" }}>{so(m.giaTriA)} tỷ đồng</b>
+            Thanh khoản VN-Index {m.daKetThuc ? "đạt" : "hiện"} <b style={{ color: PRIMARY }}>{so(m.giaTriA)} tỷ đồng</b>
             {m.soHomQua != null && (
               <>
                 , <b style={{ color: m.soHomQua >= 0 ? XANH : DO }}>{m.soHomQua >= 0 ? "tăng" : "giảm"} {so(Math.abs(m.soHomQua), 1)}%</b> so với{" "}
@@ -306,7 +306,7 @@ export default function ThanhKhoanThiTruong({ ma = "VNINDEX" }) {
                     style={{ left: Math.min(LE_TRAI + x(hoverPhut) + 10, rong - 150), top: 6, width: 140, pointerEvents: "none", borderColor: VIEN, background: "var(--nen)", fontFamily: "var(--font-chu)" }}
                   >
                     <p style={{ color: MUTED }}>{gioPhut(hoverPhut)}</p>
-                    <p style={{ color: "var(--tim-chu)", fontWeight: 700 }}>
+                    <p style={{ color: PRIMARY, fontWeight: 700 }}>
                       {nhanA}: {hoverA != null ? `${so(hoverA)} tỷ` : "—"}
                     </p>
                     <p style={{ color: XAM }}>

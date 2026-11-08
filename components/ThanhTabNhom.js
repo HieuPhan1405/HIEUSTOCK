@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { tabCuaTrang } from "@/lib/menu";
 
 const VIEN = "var(--vien)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
 

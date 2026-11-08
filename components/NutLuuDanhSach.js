@@ -10,7 +10,7 @@ import { GIOI_HAN, tenGoiY } from "@/lib/danhSachTheoDoiThuan";
 const VIEN = "var(--vien)";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 
 function HopLuu({ dsMa, nutRef, danhSach, onDong }) {
   const hopRef = useRef(null);
@@ -84,7 +84,7 @@ function HopLuu({ dsMa, nutRef, danhSach, onDong }) {
       {kq?.id != null && (
         <p className="px-2 py-1.5 text-sm" style={{ color: "var(--xanh)" }}>
           Đã thêm {kq.them} mã vào «{kq.ten}».{" "}
-          <Link href={`/danh-muc?ds=${kq.id}`} className="underline font-semibold" style={{ color: "var(--tim-chu)" }}>
+          <Link href={`/danh-muc?ds=${kq.id}`} className="underline font-semibold" style={{ color: PRIMARY }}>
             Mở danh sách
           </Link>
         </p>

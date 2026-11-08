@@ -7,7 +7,7 @@ import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import DoiMatKhau from "@/components/DoiMatKhau";
 import { tatDay } from "@/lib/dayTrinhDuyet";
 
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
@@ -131,7 +131,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
           className="flex items-center gap-2 h-9 pl-1 pr-1 sm:pr-2 rounded-lg border transition-colors hover:bg-[color:var(--hover-nhe)]"
           style={{ borderColor: moMenu ? PRIMARY : VIEN, background: NEN_CARD }}
         >
-          <span className="relative w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold" style={{ background: "rgba(139,92,246,0.22)", color: "var(--tim-chu)" }}>
+          <span className="relative w-7 h-7 rounded-md flex items-center justify-center text-xs font-bold" style={{ background: "rgba(108,92,231,0.22)", color: "var(--tim-chu)" }}>
             {String(ten).trim().charAt(0).toUpperCase() || "?"}
             {!nguoiDung.da_duyet && <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full" style={{ background: VANG, border: "2px solid var(--nen)" }} aria-hidden="true" />}
           </span>
@@ -182,7 +182,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
             <button type="button" onClick={() => { setMoMenu(false); setMoDoiMk(true); }} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[color:var(--hover-nhe)] text-left" style={{ color: TEXT }}>
               <KeyRound size={15} color={MUTED} aria-hidden="true" /> Đổi mật khẩu
             </button>
-            <button type="button" onClick={dangXuat} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[color:var(--hover-nhe)] text-left" style={{ color: "var(--tim-chu)" }}>
+            <button type="button" onClick={dangXuat} className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg hover:bg-[color:var(--hover-nhe)] text-left" style={{ color: PRIMARY }}>
               <LogOut size={15} aria-hidden="true" /> Đăng xuất
             </button>
           </div>
@@ -210,7 +210,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
             CHỜ DUYỆT
           </TheNho>
         )}
-        <button onClick={dangXuat} style={{ color: "var(--tim-chu)" }} className="font-medium">
+        <button onClick={dangXuat} style={{ color: PRIMARY }} className="font-medium">
           Đăng xuất
         </button>
       </div>
@@ -223,7 +223,7 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
         onClick={() => setMoModal(true)}
         aria-label={thanhDau ? "Đăng ký / Đăng nhập" : undefined}
         className={`flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold whitespace-nowrap ${thanhDau ? "h-9 w-9 sm:w-auto sm:px-3" : "px-3 py-2"} ${compact || thanhDau ? "" : "w-full"}`}
-        style={{ background: "#8B5CF6", color: "#FFFFFF", fontFamily: "var(--font-chu)" }}
+        style={{ background: "#6C5CE7", color: "#FFFFFF", fontFamily: "var(--font-chu)" }}
       >
         <UserRound size={14} strokeWidth={2.5} />
         {thanhDau ? (

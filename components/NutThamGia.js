@@ -6,7 +6,7 @@ import HopChonDanhSach from "@/components/HopChonDanhSach";
 import { useDanhSachTheoDoi } from "@/lib/danhSachTheoDoiClient";
 
 const MUTED = "var(--mo)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 
 // Nut THEO DOI 1 ma - dung chung cho Bo loc (cong khai, co the CHUA dang nhap -> moChuaDangNhap bat modal dang ky), Lenh dang mo, Danh sach theo doi.
 // 04/11/2026: bam mo hop chon DANH SACH (danh sach chinh + cac danh sach tu tao, xem lib/danhSachTheoDoi.js) thay vi bat/tat thang 1 danh sach. So canh bieu tuong
@@ -40,7 +40,7 @@ export default function NutThamGia({ ma, soNguoiThamGia, daThamGia, coDangNhap =
         title={coDangNhap ? (coTrongDs ? "Đang theo dõi — bấm để chọn danh sách" : "Thêm vào danh sách theo dõi") : "Đăng ký/Đăng nhập để theo dõi mã"}
         aria-label={`Theo dõi ${ma}${soNguoiThamGia > 0 ? ` (${soNguoiThamGia} người theo dõi)` : ""}`}
         className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[11px] font-bold transition-colors"
-        style={{ background: coTrongDs ? "rgba(139,92,246,0.18)" : "var(--phu)", color: coTrongDs ? PRIMARY : MUTED }}
+        style={{ background: coTrongDs ? "rgba(108,92,231,0.18)" : "var(--phu)", color: coTrongDs ? PRIMARY : MUTED }}
       >
         <Icon size={12} />
         {/* 0 nguoi thi chi hien bieu tuong (bot so 0 lap lai tren moi dong bang) */}

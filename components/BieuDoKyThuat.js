@@ -22,7 +22,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 
@@ -291,7 +291,7 @@ function Chip({ bat, onClick, children, mau, may }) {
       aria-pressed={bat}
       className="px-2.5 py-1 rounded-md text-xs cursor-pointer transition-colors flex items-center gap-1.5"
       style={{
-        background: bat ? "rgba(139,92,246,0.18)" : "transparent",
+        background: bat ? "rgba(108,92,231,0.18)" : "transparent",
         border: `1px solid ${bat ? PRIMARY : VIEN}`,
         color: bat ? TEXT : MUTED,
         fontFamily: "'Open Sans', sans-serif",
@@ -976,7 +976,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             onChange={(e) => e.target.value && setKhungTG(e.target.value)}
             aria-label="Khung trong ngày"
             className="px-2 py-1 rounded-md text-xs cursor-pointer"
-            style={{ border: `1px solid ${noiNgay ? PRIMARY : VIEN}`, background: noiNgay ? "rgba(139,92,246,0.18)" : "transparent", color: noiNgay ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
+            style={{ border: `1px solid ${noiNgay ? PRIMARY : VIEN}`, background: noiNgay ? "rgba(108,92,231,0.18)" : "transparent", color: noiNgay ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
           >
             <option value="">Trong ngày</option>
             {KHUNG_CHON.slice(2).map((k) => (
@@ -1033,7 +1033,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             </button>
           )}
           {!toanMH && (
-            <button type="button" onClick={() => setMoVe((v) => !v)} aria-expanded={moVe || congCu != null} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs cursor-pointer" style={{ border: `1px solid ${moVe || congCu != null ? PRIMARY : VIEN}`, background: moVe || congCu != null ? "rgba(139,92,246,0.18)" : "transparent", color: moVe || congCu != null ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}>
+            <button type="button" onClick={() => setMoVe((v) => !v)} aria-expanded={moVe || congCu != null} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs cursor-pointer" style={{ border: `1px solid ${moVe || congCu != null ? PRIMARY : VIEN}`, background: moVe || congCu != null ? "rgba(108,92,231,0.18)" : "transparent", color: moVe || congCu != null ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}>
               <PenLine size={13} strokeWidth={2} /> Công cụ vẽ
             </button>
           )}
@@ -1046,7 +1046,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             data-may="toan-man-hinh"
             title={toanMH ? "Thu nhỏ (Esc)" : "Xem biểu đồ toàn màn hình"}
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs cursor-pointer"
-            style={{ border: `1px solid ${toanMH ? PRIMARY : VIEN}`, background: toanMH ? "rgba(139,92,246,0.18)" : "transparent", color: toanMH ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
+            style={{ border: `1px solid ${toanMH ? PRIMARY : VIEN}`, background: toanMH ? "rgba(108,92,231,0.18)" : "transparent", color: toanMH ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
           >
             {toanMH ? <Minimize2 size={13} strokeWidth={2} /> : <Maximize2 size={13} strokeWidth={2} />}
             {toanMH ? "Thu nhỏ" : "Toàn màn hình"}
@@ -1162,7 +1162,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             aria-pressed={congCu === null}
             title="Con trỏ: kéo, thu phóng biểu đồ; bấm vào hình vẽ để chọn"
             className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-            style={{ background: congCu === null ? "rgba(139,92,246,0.18)" : "transparent", border: `1px solid ${congCu === null ? PRIMARY : VIEN}`, color: congCu === null ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+            style={{ background: congCu === null ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === null ? PRIMARY : VIEN}`, color: congCu === null ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
           >
             <MousePointer2 size={13} strokeWidth={2} />
             Con trỏ
@@ -1175,7 +1175,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
               aria-pressed={congCu === k}
               title={`${nhan}: bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ`}
               className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-              style={{ background: congCu === k ? "rgba(139,92,246,0.18)" : "transparent", border: `1px solid ${congCu === k ? PRIMARY : VIEN}`, color: congCu === k ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+              style={{ background: congCu === k ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === k ? PRIMARY : VIEN}`, color: congCu === k ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
             >
               {Icon ? <Icon size={13} strokeWidth={2} /> : <span className="text-[11px] font-bold leading-none">Fib</span>}
               {nhan}
@@ -1201,7 +1201,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             aria-pressed={giuCongCu}
             title="Giữ công cụ: vẽ xong vẫn giữ công cụ đang chọn để vẽ tiếp (Esc để thoát)"
             className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-            style={{ background: giuCongCu ? "rgba(139,92,246,0.18)" : "transparent", border: `1px solid ${giuCongCu ? PRIMARY : VIEN}`, color: giuCongCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+            style={{ background: giuCongCu ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${giuCongCu ? PRIMARY : VIEN}`, color: giuCongCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
           >
             {giuCongCu ? <Lock size={13} strokeWidth={2} /> : <LockOpen size={13} strokeWidth={2} />}
             Giữ công cụ
@@ -1212,7 +1212,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             aria-pressed={hitGia}
             title="Hít giá: điểm vẽ tự bám vào Mở / Cao / Thấp / Đóng của nến gần nhất"
             className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
-            style={{ background: hitGia ? "rgba(139,92,246,0.18)" : "transparent", border: `1px solid ${hitGia ? PRIMARY : VIEN}`, color: hitGia ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
+            style={{ background: hitGia ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${hitGia ? PRIMARY : VIEN}`, color: hitGia ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
           >
             <Magnet size={13} strokeWidth={2} />
             Hít giá
@@ -1334,7 +1334,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
                   type="button"
                   onClick={() => setLanThu((x) => x + 1)}
                   className="px-3 py-1.5 rounded-md text-xs cursor-pointer"
-                  style={{ background: "#8B5CF6", color: "#FFFFFF" }}
+                  style={{ background: "#6C5CE7", color: "#FFFFFF" }}
                 >
                   Thử lại
                 </button>

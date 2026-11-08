@@ -36,7 +36,7 @@ export default function DanhGiaGoiYMua({ du, dangTai, loi, goiY, laThanhVien, ph
   if (!laThanhVien || du.khoa) {
     return (
       <Khoi tieuDe="Mã gợi ý mua" phu={phu}>
-        <div className="rounded-xl border p-4 flex flex-wrap items-center justify-between gap-3" style={{ borderColor: PRIMARY, background: "color-mix(in srgb, #8B5CF6 10%, var(--card))" }}>
+        <div className="rounded-xl border p-4 flex flex-wrap items-center justify-between gap-3" style={{ borderColor: PRIMARY, background: "color-mix(in srgb, #6C5CE7 10%, var(--card))" }}>
           <div className="max-w-xl text-sm" style={sans}>
             <p style={{ fontWeight: 800 }} className="mb-1">
               <Lock size={14} className="inline -mt-0.5 mr-1" />

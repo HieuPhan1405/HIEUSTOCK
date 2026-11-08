@@ -29,7 +29,7 @@ export const metadata = {
 
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const DO = "var(--do)";
 
 // Chi cac cot chi bao dung cho ghi chu (khong de de len cot cua dong tin hieu).
@@ -183,7 +183,7 @@ export default async function TrangDanhMuc({ searchParams }) {
       <p className="text-sm mb-1" style={{ color: MUTED }}>
         Tạo nhiều danh sách (vd: Ngân hàng, Chờ mua, Kết quả lọc) để xem nhanh giá, tín hiệu và cảnh báo của từng mã. Thêm mã ở ô bên dưới, bằng nút{" "}
         <b style={{ color: TEXT }}>dấu trang</b> cạnh mã ở{" "}
-        <Link href="/bo-loc" className="underline" style={{ color: "var(--tim-chu)" }}>
+        <Link href="/bo-loc" className="underline" style={{ color: PRIMARY }}>
           Bộ lọc
         </Link>
         , hoặc nút <b style={{ color: TEXT }}>Lưu vào danh sách</b> để lưu cả kết quả lọc.

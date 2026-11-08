@@ -12,7 +12,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 
 function thoiGianTuongDoi(ngayISO) {
   if (!ngayISO) return "";
@@ -63,7 +63,7 @@ function CotDanhMuc({ nhan, danhSach }) {
     <div className="rounded-2xl border p-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <p
         className="text-xs  mb-1 pb-3 border-b"
-        style={{ color: "var(--tim-chu)", borderColor: VIEN, fontFamily: "var(--font-chu)" }}
+        style={{ color: PRIMARY, borderColor: VIEN, fontFamily: "var(--font-chu)" }}
       >
         {nhan}
       </p>

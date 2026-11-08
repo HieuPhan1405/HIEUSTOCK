@@ -10,7 +10,7 @@ const ICON = { "/": LayoutGrid, "/bo-loc": ListFilter, "/bieu-do": CandlestickCh
 
 const BG = "var(--nen-sau)";
 const VIEN = "var(--vien)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
 
@@ -42,7 +42,7 @@ export default function Sidebar() {
                 aria-current={active ? "page" : undefined}
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors hover:bg-[color:var(--hover-nhe)]"
                 style={{
-                  background: active ? "linear-gradient(90deg, rgba(139,92,246,0.24), rgba(139,92,246,0.05))" : undefined,
+                  background: active ? "linear-gradient(90deg, rgba(108,92,231,0.24), rgba(108,92,231,0.05))" : undefined,
                   boxShadow: active ? "inset 3px 0 0 var(--tim-nhat)" : undefined,
                   color: active ? "var(--tim-chu)" : MUTED,
                   fontFamily: "var(--font-chu)",
@@ -75,14 +75,14 @@ export default function Sidebar() {
             role="dialog"
             aria-label="Các mục khác"
             className="cs-ngan-keo absolute left-3 right-3 rounded-2xl border p-2"
-            style={{ bottom: "calc(64px + env(safe-area-inset-bottom, 0px))", background: "var(--card)", borderColor: VIEN, boxShadow: "0 -12px 40px -12px rgba(139,92,246,0.45)" }}
+            style={{ bottom: "calc(64px + env(safe-area-inset-bottom, 0px))", background: "var(--card)", borderColor: VIEN, boxShadow: "0 -12px 40px -12px rgba(108,92,231,0.45)" }}
             onClick={(e) => e.stopPropagation()}
           >
             {MENU_PHU.map(({ href, nhan }) => {
               const active = dangMo?.href === href;
               const Icon = ICON[href];
               return (
-                <Link key={href} href={href} onClick={() => setMoTai(null)} aria-current={active ? "page" : undefined} className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm" style={{ color: active ? "var(--tim-chu)" : TEXT, background: active ? "rgba(139,92,246,0.18)" : undefined, fontFamily: "var(--font-chu)", fontWeight: active ? 700 : 500 }}>
+                <Link key={href} href={href} onClick={() => setMoTai(null)} aria-current={active ? "page" : undefined} className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm" style={{ color: active ? "var(--tim-chu)" : TEXT, background: active ? "rgba(108,92,231,0.18)" : undefined, fontFamily: "var(--font-chu)", fontWeight: active ? 700 : 500 }}>
                   <Icon size={19} strokeWidth={2} />
                   {nhan}
                 </Link>

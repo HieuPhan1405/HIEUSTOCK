@@ -44,7 +44,7 @@ export default function DanhGiaLuuThanh({ dangNhap, dsLuu = [], dmId, ten, trang
           </button>
         </span>
       ) : (
-        <button type="button" onClick={() => setDangDat(true)} className={nut} style={{ borderColor: PRIMARY, color: "var(--tim-chu)" }}>
+        <button type="button" onClick={() => setDangDat(true)} className={nut} style={{ borderColor: PRIMARY, color: PRIMARY }}>
           <Save size={13} /> Lưu vào tài khoản
         </button>
       )}

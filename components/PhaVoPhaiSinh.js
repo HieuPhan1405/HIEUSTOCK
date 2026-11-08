@@ -300,7 +300,7 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                         aria-checked={donBay === x}
                         onClick={() => setDonBay(x)}
                         className="px-2.5 py-1 rounded-full text-xs"
-                        style={{ border: `1px solid ${donBay === x ? "#8B5CF6" : VIEN}`, background: donBay === x ? "rgba(139,92,246,0.18)" : "transparent", color: donBay === x ? TEXT : MUTED, fontWeight: donBay === x ? 700 : 400 }}
+                        style={{ border: `1px solid ${donBay === x ? "#6C5CE7" : VIEN}`, background: donBay === x ? "rgba(108,92,231,0.18)" : "transparent", color: donBay === x ? TEXT : MUTED, fontWeight: donBay === x ? 700 : 400 }}
                       >
                         {x === 1 ? "Không" : `${x}x`}
                       </button>
@@ -389,7 +389,7 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                       setSoHien(40);
                     }}
                     className="px-2.5 py-1 rounded-full text-xs"
-                    style={{ border: `1px solid ${namLoc === y ? "#8B5CF6" : VIEN}`, color: namLoc === y ? TEXT : MUTED, fontWeight: namLoc === y ? 700 : 400 }}
+                    style={{ border: `1px solid ${namLoc === y ? "#6C5CE7" : VIEN}`, color: namLoc === y ? TEXT : MUTED, fontWeight: namLoc === y ? 700 : 400 }}
                   >
                     {y || "Tất cả"}
                   </button>

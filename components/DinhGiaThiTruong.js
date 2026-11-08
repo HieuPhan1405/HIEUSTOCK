@@ -6,7 +6,7 @@ import { thongKeMang } from "@/lib/tinhDinhGia";
 const VIEN = "var(--vien)";
 const MUTED = "var(--mo)";
 const TEXT = "var(--chu)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -46,7 +46,7 @@ function TheChiSo({ ten, hienTai, lichSu, doLech, tbLichSu, tuNgay }) {
           </span>
         )}
       </div>
-      <p className="text-3xl mt-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: "var(--tim-chu)" }}>
+      <p className="text-3xl mt-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: PRIMARY }}>
         {so(hienTai, 2)}
       </p>
       <div className="mt-2 grid grid-cols-3 gap-2 text-[11px]" style={{ fontFamily: "var(--font-chu)" }}>
@@ -172,7 +172,7 @@ export default function DinhGiaThiTruong() {
             ["pe", "PE"],
             ["pb", "PB"],
           ].map(([k, n]) => (
-            <button key={k} onClick={() => setChiSo(k)} className="px-2.5 py-1 rounded-lg" style={chiSo === k ? { background: "#8B5CF6", color: "#fff", fontWeight: 700 } : { color: MUTED, border: `1px solid ${VIEN}` }}>
+            <button key={k} onClick={() => setChiSo(k)} className="px-2.5 py-1 rounded-lg" style={chiSo === k ? { background: "#6C5CE7", color: "#fff", fontWeight: 700 } : { color: MUTED, border: `1px solid ${VIEN}` }}>
               {n}
             </button>
           ))}
@@ -223,7 +223,7 @@ export default function DinhGiaThiTruong() {
             style={{ left: Math.min(LE_TRAI + x(hover) + 10, rong - 130), top: 6, width: 120, pointerEvents: "none", borderColor: VIEN, background: "var(--nen)", fontFamily: "var(--font-chu)" }}
           >
             <p style={{ color: MUTED }}>{diem[hover].hienTai ? `Hiện tại (${ngayVN(diem[hover].ngay)})` : thangNam(diem[hover].ngay)}</p>
-            <p style={{ color: "var(--tim-chu)", fontWeight: 700 }}>
+            <p style={{ color: PRIMARY, fontWeight: 700 }}>
               {nhan}: {so(diem[hover].v, 2)}
             </p>
           </div>

@@ -16,7 +16,7 @@ const TEXT = "var(--chu)";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const sans = { fontFamily: "var(--font-chu)" };
 const mono = { fontFamily: "var(--font-chu)" };
 const MAU_KQ = { tot: XANH, xau: DO, cho: VANG };
@@ -113,10 +113,10 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
         <Sel loc={loc} dat={dat} k="dai" ds={DAI_GIAM} />
         <Sel loc={loc} dat={dat} k="nganh" ds={nganhs} tatCa="Mọi ngành" />
         <button type="button" onClick={() => setMoLocThem((x) => !x)} aria-expanded={moLocThem} className="text-xs rounded-lg px-3 py-2 border" style={{ borderColor: soLocThem ? PRIMARY : VIEN, background: NEN_CARD, color: TEXT, ...sans }}>
-          Lọc thêm{soLocThem > 0 && <b style={{ color: "var(--tim-chu)" }}> · {soLocThem}</b>} {moLocThem ? "▴" : "▾"}
+          Lọc thêm{soLocThem > 0 && <b style={{ color: PRIMARY }}> · {soLocThem}</b>} {moLocThem ? "▴" : "▾"}
         </button>
         {dangLoc && (
-          <button onClick={() => setLoc(LOC_MAC_DINH)} className="text-xs underline" style={{ color: "var(--tim-chu)" }}>
+          <button onClick={() => setLoc(LOC_MAC_DINH)} className="text-xs underline" style={{ color: PRIMARY }}>
             Xóa bộ lọc
           </button>
         )}
@@ -169,7 +169,7 @@ export default function BangDiemB({ duLieu: duLieuTho }) {
                       <Link href={`/ma/${r.ma}`} className="hover:underline" style={{ ...sans, fontWeight: 700 }}>{r.ma}</Link>
                       <span className="ml-1.5 align-middle"><NutThamGia ma={r.ma} soNguoiThamGia={0} daThamGia={false} /></span>
                       {r.ng_so_ma >= 1 && (
-                        <span className="ml-1.5 px-1 text-[11px] rounded-sm" style={{ background: nhe(PRIMARY, 13), color: "var(--tim-chu)", ...sans }} title={`${r.ng_so_ma} mã khác cùng ngành cũng có điểm B trong 7 ngày (~5 phiên) — càng nhiều mã càng là cả ngành cùng hồi`}>
+                        <span className="ml-1.5 px-1 text-[11px] rounded-sm" style={{ background: nhe(PRIMARY, 13), color: PRIMARY, ...sans }} title={`${r.ng_so_ma} mã khác cùng ngành cũng có điểm B trong 7 ngày (~5 phiên) — càng nhiều mã càng là cả ngành cùng hồi`}>
                           ngành hồi ({r.ng_so_ma})
                         </span>
                       )}

@@ -260,7 +260,7 @@ export default function BieuDoTamLyLichSu({ hienTai = null }) {
               onClick={() => setKhoang(i)}
               aria-pressed={i === khoang}
               className="px-2.5 py-1 rounded-md text-xs"
-              style={{ border: `1px solid ${i === khoang ? "#8B5CF6" : VIEN}`, background: i === khoang ? nhe("#8B5CF6", 22) : "transparent", color: i === khoang ? TEXT : MUTED, ...mono }}
+              style={{ border: `1px solid ${i === khoang ? "#6C5CE7" : VIEN}`, background: i === khoang ? nhe("#6C5CE7", 22) : "transparent", color: i === khoang ? TEXT : MUTED, ...mono }}
             >
               {k.nhan}
             </button>

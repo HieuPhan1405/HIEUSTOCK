@@ -13,7 +13,7 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
@@ -51,7 +51,7 @@ function OLenh({ tieuDe, mau, moTa, ghiChu = null, ds, trong, hien, may, lienKet
           </p>
         )}
         {lienKet && (
-          <Link href={lienKet.href} className="text-[11px] mt-1 inline-block" style={{ color: "var(--tim-chu)" }}>
+          <Link href={lienKet.href} className="text-[11px] mt-1 inline-block" style={{ color: PRIMARY }}>
             {lienKet.nhan}
           </Link>
         )}
@@ -138,7 +138,7 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
           Top cơ hội đáng chú ý
           {ngay && <span style={{ color: MUTED, fontWeight: 400 }}> · phiên {ngayVN(ngay)}</span>}
         </h2>
-        <Link href="/lenh-mo" className="text-xs" style={{ color: "var(--tim-chu)", ...mono }}>
+        <Link href="/lenh-mo" className="text-xs" style={{ color: PRIMARY, ...mono }}>
           xem lệnh đang mở →
         </Link>
       </div>

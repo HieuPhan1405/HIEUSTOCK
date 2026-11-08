@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useDanhSachTheoDoi } from "@/lib/danhSachTheoDoiClient";
 
 const MUTED = "var(--mo)";
-const PRIMARY = "#8B5CF6";
+const PRIMARY = "#6C5CE7";
 const TOI_DA = 14;
 
 // "Xem nhanh" cua trang Bieu do: cac ma trong danh sach theo doi cua ban (danh sach chinh truoc, roi cac danh sach khac, bo trung). Khach / danh sach trong thi dung goi y co dinh.
