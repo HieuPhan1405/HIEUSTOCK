@@ -2,6 +2,7 @@ import Link from "next/link";
 import { fmt, pct, tinhVungLenh, chuoiVung, nhanGiaiNgan, nhanLoaiVao, nhanLenhWeb } from "@/components/dungChung";
 import NhanViTri120 from "@/components/NhanViTri120";
 import DiemChatLuong from "@/components/DiemChatLuong";
+import TangLenh from "@/components/TangLenh";
 import { nhanViTri120 } from "@/lib/nhanTinHieu";
 import { diemChatLuongCho } from "@/lib/diemChatLuong";
 import { dungCoHoiHomNay } from "@/lib/coHoiHomNay";
@@ -198,10 +199,11 @@ export default function CoHoiHomNay({ tatCa, dongLenh, ngay, muaPhucHoi = [], di
               }
             >
               <VungLenh row={r} />
-              {(diemChatLuongCho(r) || nhanViTri120(r)) && (
+              {(diemChatLuongCho(r) || nhanViTri120(r) || r.tang_lenh?.tang) && (
                 <>
                   <br />
                   <DiemChatLuong row={r} kieu="day" className="mr-2" style={sans} />
+                  <TangLenh row={r} kieu="day" className="mr-2" style={sans} />
                   <NhanViTri120 row={r} className="font-bold" style={sans} />
                 </>
               )}

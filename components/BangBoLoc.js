@@ -139,6 +139,7 @@ const THU_TU_COT = [
   "rs_vni_60",
   "vi_tri_120",
   "diem_chat_luong",
+  "tang_lenh",
   "sanyaku",
   "breadth_nganh",
   "khoi_luong_tb20",
@@ -170,7 +171,7 @@ const DS_KHOA_CHON = THU_TU_COT.filter((k) => k !== "ma" && k !== "tin");
 // GOC NHIN (04/11/2026, theo cac tab Overview / Performance / Technical cua TradingView, Finviz): moi goc nhin 1 bo cot vua du. "Tuỳ chọn" = cac cot nguoi dung tu tick (Cot hien thi).
 const GOC_NHIN = [
   { khoa: "tongQuan", nhan: "Tổng quan", cot: ["nganh", "gia", "doi", "diem", "trend", "rs_vni", "gtgd_tb20"] },
-  { khoa: "kyThuat", nhan: "Kỹ thuật", cot: ["gia", "doi", "diem", "trend", "mom", "dt", "adx", "rs_vni", "rs_vni_60", "vi_tri_120", "diem_chat_luong", "breadth_nganh"] },
+  { khoa: "kyThuat", nhan: "Kỹ thuật", cot: ["gia", "doi", "diem", "trend", "mom", "dt", "adx", "rs_vni", "rs_vni_60", "vi_tri_120", "diem_chat_luong", "tang_lenh", "breadth_nganh"] },
   { khoa: "thanhKhoan", nhan: "Thanh khoản & vốn hoá", cot: ["san", "von_hoa", "von_hoa_ty", "free_float", "gia", "doi", "khoi_luong_tb20", "gtgd_tb20", "uu_tien"] },
   { khoa: "viThe", nhan: "Vị thế", thanhVien: true, cot: ["gia", "doi", "ngay_mua", "gia_mua", "lai_lo_pct", "so_phien_giu", "vung_mua", "vung_sl", "vung_tp", "chot_loi"] },
   { khoa: "mocGia", nhan: "Mốc giá", cot: ["gia", "doi", "kijun", "gg_bot", "gg_top", "dinh_52t", "tp1", "tp2", "tp3"] },

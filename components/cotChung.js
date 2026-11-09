@@ -1,5 +1,6 @@
 import { soVN } from "@/lib/soVN";
 import DiemChatLuong from "@/components/DiemChatLuong";
+import TangLenh from "@/components/TangLenh";
 import { diemChatLuongCho } from "@/lib/diemChatLuong";
 // Danh muc CAC COT CHI SO dung chung cho bang Bo loc co phieu va bang So lenh
 // dang mo - moi chi so dinh nghia 1 lan (nhan, cach sap xep, cach hien thi).
@@ -207,6 +208,13 @@ export const CAC_COT = {
     canPhai: true,
     lay: (r) => diemChatLuongCho(r)?.diem ?? null,
     hien: (r) => (diemChatLuongCho(r) ? <DiemChatLuong row={r} /> : Trong),
+  },
+  // Tang lenh A / A+ / A++ (chi tham khao, xem lib/tangLenh.js); chi ma dang MUA / vua MUA phien truoc va du so lieu
+  tang_lenh: {
+    nhan: "Tầng lệnh",
+    nhom: "Điểm & chỉ báo",
+    lay: (r) => r.tang_lenh?.diemSo || null,
+    hien: (r) => (r.tang_lenh?.tang ? <TangLenh row={r} /> : Trong),
   },
   sanyaku: {
     nhan: "Độ tin cậy",
