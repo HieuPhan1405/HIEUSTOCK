@@ -76,6 +76,15 @@ ok("Mat Than: III, III2; III2 (giam manh hon) len truoc", co(tv, "III", "mat_tha
 ok("LLL vua MUA vua tang manh -> o noi bat la mua", topKhach.every((s) => s.ma !== "LLL" || true) && tv.suKien.find((s) => s.ma === "LLL" && s.top)?.loai === "mua");
 ok("diem B / bat day: MMM, NNN, OOO, PPP", co(tv, "MMM", "diem_b") && co(tv, "NNN", "diem_b") && co(tv, "OOO", "bat_day") && co(tv, "PPP", "bat_day"));
 ok("dem MUA = 3", tv.dem.mua === 3, JSON.stringify(tv.dem));
+{
+  // Diem chat luong /100: ma co vi_tri_120 thi mo ta kem diem, khong thi giu mo ta cu
+  const t2 = [{ ma: "DCL", gia: 10, doi: 0, vi_tri_120: 0.95 }, { ma: "DCL2", gia: 10, doi: 0, vi_tri_120: 0.2 }];
+  const r2 = dungSuKienRadar({ tatCa: t2, coHoi: { mua: [{ ma: "DCL", diem: 1.2 }, { ma: "DCL2", diem: 2 }, { ma: "KHONGVT", diem: 1 }] }, xemTinHieu: true });
+  const m = (ma) => r2.suKien.find((x) => x.ma === ma && x.loai === "mua");
+  ok("mua: co vi_tri_120 -> mo ta co 'điểm chất lượng X/100'", /điểm chất lượng \d+\/100/.test(m("DCL").moTa) && /điểm hợp lưu/.test(m("DCL").moTa), m("DCL").moTa);
+  ok("mua: thieu vi_tri_120 -> mo ta cu (khong co diem chat luong)", !/chất lượng/.test(m("KHONGVT").moTa), m("KHONGVT").moTa);
+  ok("mua: diem chat luong cao xep truoc diem hop luu cao", r2.suKien.filter((x) => x.loai === "mua").map((x) => x.ma)[0] === "DCL", JSON.stringify(r2.suKien.filter((x) => x.loai === "mua").map((x) => x.ma)));
+}
 ok("mo ta MUA diem <= 0 khong ghi diem", tv.suKien.find((s) => s.ma === "MUA3").moTa === "có tín hiệu MUA" && /2,4|1,8/.test(tv.suKien.find((s) => s.ma === "MUA2").moTa));
 ok("mo ta ban lay ly do (viet thuong dau): 'cat lo'", tv.suKien.find((s) => s.ma === "BAN1").moTa === "cắt lỗ");
 ok("mo ta diem B / bat day trung tinh (khong co 'diem mua')", !/điểm mua/i.test(tv.suKien.find((s) => s.ma === "MMM").moTa + tv.suKien.find((s) => s.ma === "OOO").moTa));

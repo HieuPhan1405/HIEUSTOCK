@@ -1,4 +1,6 @@
 import { soVN } from "@/lib/soVN";
+import DiemChatLuong from "@/components/DiemChatLuong";
+import { diemChatLuongCho } from "@/lib/diemChatLuong";
 // Danh muc CAC COT CHI SO dung chung cho bang Bo loc co phieu va bang So lenh
 // dang mo - moi chi so dinh nghia 1 lan (nhan, cach sap xep, cach hien thi).
 // Hai bang tu chon thu tu + cot mac dinh (xem BangBoLoc.js / BangLenhMo.js) va
@@ -197,6 +199,14 @@ export const CAC_COT = {
     canPhai: true,
     lay: (r) => (r.vi_tri_120 == null || r.vi_tri_120 === "" ? null : Number(r.vi_tri_120) * 100),
     hien: (r) => (r.vi_tri_120 == null || r.vi_tri_120 === "" ? Trong : <span title="0% = giá đang ở đáy biên độ ~6 tháng, 100% = đang ở đỉnh">{soAn(Number(r.vi_tri_120) * 100, 0)}%</span>),
+  },
+  // Diem chat luong /100 cua tin hieu MUA moi (chi tham khao, xem lib/diemChatLuong.js); ma khac -> trong
+  diem_chat_luong: {
+    nhan: "Điểm chất lượng /100",
+    nhom: "Điểm & chỉ báo",
+    canPhai: true,
+    lay: (r) => diemChatLuongCho(r)?.diem ?? null,
+    hien: (r) => (diemChatLuongCho(r) ? <DiemChatLuong row={r} /> : Trong),
   },
   sanyaku: {
     nhan: "Độ tin cậy",

@@ -111,6 +111,7 @@ const THU_TU_COT = [
   "adx",
   "rs_vni",
   "vi_tri_120",
+  "diem_chat_luong",
   "sanyaku",
   "breadth_nganh",
   "khoi_luong_tb20",

@@ -13,6 +13,7 @@ import KhoiNgoaiMa from "@/components/KhoiNgoaiMa";
 import PhanTichCoBan from "@/components/PhanTichCoBan";
 import ThanhMucTrang from "@/components/ThanhMucTrang";
 import NhanViTri120 from "@/components/NhanViTri120";
+import DiemChatLuong from "@/components/DiemChatLuong";
 import GiaiNghia from "@/components/GiaiNghia";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import { useTrongKhungVaoLenh } from "@/components/KhungGioContext";
@@ -507,6 +508,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               {n.nhan}
             </span>
           ))}
+          <DiemChatLuong row={row} kieu="day" />
           <NhanViTri120 row={row} className="text-xs font-semibold" />
         </div>
         <p className="text-lg sm:text-xl font-bold leading-snug mb-1.5" style={{ color: nlg.mau, fontFamily: "var(--font-chu)" }} data-may="ket-luan">
