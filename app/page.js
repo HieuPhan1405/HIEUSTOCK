@@ -25,7 +25,9 @@ import KhoaTinHieuTrangChu from "@/components/KhoaTinHieuTrangChu";
 import GiaiNghia from "@/components/GiaiNghia";
 import RadarTinHieu from "@/components/RadarTinHieu";
 import { layBatDayGanDay } from "@/lib/batDay";
-import { dungSuKienRadar, chonLuoiMa } from "@/lib/radarSuKien";
+import { dungSuKienRadar } from "@/lib/radarSuKien";
+import { layCoDem } from "@/lib/boNhoMem";
+import { layKhoiNgoaiMoiMa } from "@/lib/thiTruong";
 
 export const dynamic = "force-dynamic";
 
@@ -221,10 +223,13 @@ export default async function TrangTongQuan() {
   let muaPhucHoi = [];
   let diemBGanDay = {};
   let batDayGanDay = [];
+  // Bang chi bao ky thuat (khoi luong so voi TB20, cach day 52 tuan...) + khoi ngoai moi ma (nguon ngoai, nho 5 phut) cho RADAR - cho CA khach (du lieu thi truong cong khai). Loi / cham thi radar bo cac loai do.
+  const cbCho = layChiBaoKyThuat().catch(() => null);
+  const ngoaiCho = layCoDem("khoi-ngoai-moi-ma", 300_000, layKhoiNgoaiMoiMa, { choToiDaMs: 2500 }).catch(() => null);
   if (xemTinHieu) {
     const [a, cb, c, bd] = await Promise.all([
       layLenhCoSuKienNgay(ngayPhien).catch(() => []),
-      layChiBaoKyThuat().catch(() => null),
+      cbCho,
       layDiemBGanDay().then((x) => Object.fromEntries(x.map((d) => [d.ma, d]))).catch(() => ({})),
       layBatDayGanDay().catch(() => []),
     ]);
@@ -270,8 +275,10 @@ export default async function TrangTongQuan() {
   const cohoiAnh = xemTinHieu ? dungCoHoiHomNay({ tatCa, dongLenh, ngay: ngayPhien }) : null;
 
   // RADAR: su kien dang chu y trong phien dung tu du lieu da co (khach chi nhan loai thi truong - lib/radarSuKien.js). Chi gui xuong trinh duyet ma + loai + mo ta, khong gui dong tin hieu.
-  const radar = tatCa.length ? dungSuKienRadar({ tatCa, coHoi: cohoiAnh, muaPhucHoi, batDay: batDayGanDay, xemTinHieu }) : null;
-  const radarMa = radar ? chonLuoiMa(tatCa, radar.suKien) : [];
+  const [cbRadar, khoiNgoaiRadar] = await Promise.all([cbCho, ngoaiCho]);
+  const radar = tatCa.length ? dungSuKienRadar({ tatCa, coHoi: cohoiAnh, muaPhucHoi, batDay: batDayGanDay, chiBao: cbRadar?.hang ?? [], khoiNgoai: khoiNgoaiRadar, xemTinHieu }) : null;
+  // Luoi: TAT CA ma dang theo doi, kem nganh (de xep theo nganh nhu bang dien). Chi gui ma + nganh xuong trinh duyet.
+  const radarMa = radar ? tatCa.map((r) => [r.ma, r.nganh ?? null]) : [];
   const radarGio = capNhat ? new Date(capNhat).toLocaleTimeString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit" }) : "";
 
   return (

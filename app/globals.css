@@ -807,18 +807,38 @@ html.cs-dang-chup .cs-cung {
 /* ===== RADAR TIN HIEU (trang chu, components/RadarTinHieu.js) ===== */
 .cs-radar-luoi {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-  gap: 6px;
+  columns: 190px;
+  column-gap: 20px;
   isolation: isolate;
+}
+.cs-radar-nhom {
+  break-inside: avoid;
+  margin-bottom: 14px;
+}
+.cs-radar-nhom-ten {
+  margin-bottom: 5px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--mo);
+}
+.cs-radar-nhom-ten span {
+  font-weight: 500;
+  color: var(--mo-3);
+}
+.cs-radar-o-luoi {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+  gap: 3px;
 }
 .cs-radar-o {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 28px;
-  border-radius: 7px;
-  font-size: 11px;
+  height: 22px;
+  border-radius: 5px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.02em;
   font-family: var(--font-chu);
@@ -945,23 +965,6 @@ html.cs-dang-chup .cs-cung {
   color: var(--chu);
   background: color-mix(in srgb, var(--c) 26%, transparent);
   border: 1px solid color-mix(in srgb, var(--c) 60%, transparent);
-}
-.cs-radar-dong li:nth-child(n + 7) a {
-  opacity: 0.7;
-}
-@media (max-width: 639px) {
-  .cs-radar-luoi {
-    grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
-    gap: 5px;
-  }
-  .cs-radar-o {
-    height: 26px;
-    font-size: 10.5px;
-  }
-  /* dien thoai: chi ~60 o dau (A-Z) de luoi khong qua dai; o co su kien luon hien */
-  .cs-radar-o:not(.cs-radar-o--sang):nth-child(n + 63) {
-    display: none;
-  }
 }
 @media (prefers-reduced-motion: reduce) {
   .cs-radar-quet,

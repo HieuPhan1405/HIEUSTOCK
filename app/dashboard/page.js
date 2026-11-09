@@ -17,8 +17,6 @@ import { layLichSuGia } from "@/lib/lichSuGia";
 import { viTriTheoVungGiaTri } from "@/lib/vungGiaTriChiSo";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 import BanDoNhiet from "@/components/BanDoNhiet";
-import DoRongNganh from "@/components/DoRongNganh";
-import { tinhRSNganh } from "@/lib/rsNganh";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -96,13 +94,8 @@ export default async function TrangDashboard() {
       )}
 
       <TongQuanThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} />
-      {/* Ban do nhiet (doi tieu chi to mau / co o) + do rong tung nganh. Chi gui xuong trinh duyet cac truong khach cung duoc thay (khong gui nguyen dong tin hieu: lib/lamSachChoKhach.js). */}
-      {tatCa.length > 0 && (
-        <>
-          <BanDoNhiet tieuDe="Bản đồ nhiệt thị trường" tatCa={tatCa.map((r) => ({ ma: r.ma, nganh: r.nganh, doi: r.doi, gtgd_tb20: r.gtgd_tb20, rs_vni: r.rs_vni, rs_vni_60: r.rs_vni_60, diem: r.diem, von_hoa_ty: r.von_hoa_ty }))} />
-          <DoRongNganh hang={tinhRSNganh(tatCa)} haiCot />
-        </>
-      )}
+      {/* Ban do nhiet (doi tieu chi to mau / co o). Chi gui xuong trinh duyet cac truong khach cung duoc thay (khong gui nguyen dong tin hieu: lib/lamSachChoKhach.js). */}
+      {tatCa.length > 0 && <BanDoNhiet tieuDe="Bản đồ nhiệt thị trường" tatCa={tatCa.map((r) => ({ ma: r.ma, nganh: r.nganh, doi: r.doi, gtgd_tb20: r.gtgd_tb20, rs_vni: r.rs_vni, rs_vni_60: r.rs_vni_60, diem: r.diem, von_hoa_ty: r.von_hoa_ty }))} />}
       <BieuDoTamLyLichSu hienTai={tamLyHienTai} />
       <DongTienThiTruong />
       <Suspense fallback={<TheCho tieuDe="Vị trí VN-Index so với vùng giá trị" />}>
