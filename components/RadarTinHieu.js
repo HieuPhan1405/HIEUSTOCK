@@ -14,7 +14,14 @@ const MUTED = "var(--mo)";
 // RADAR TIN HIEU (trang chu): TAT CA ma dang theo doi, xep theo NGANH (nhu bang dien); vach quet chay ngang, ma nao co su kien trong phien thi sang len khi vach quet qua; ben phai la danh sach "Vua phat hien".
 // Mac dinh chi sang cac ma NOI BAT (moi loai vai ma quan trong nhat); chon 1 loai (chip) thi sang TAT CA ma cua loai do va danh sach liet ke het.
 // Du lieu: server dung tu du lieu web da co (lib/radarSuKien.js) - khach chua dang nhap chi nhan loai thi truong, loai con lai bi khoa.
-// cacMa: [[ma, nganh]]; suKien: [{ma, loai, moTa, top}]; dem: {loai: so ma that}; khoa: true neu la khach (hien nut mo khoa).
+// cacMa: [[ma, nganh, %doi, KL/TB20, GTGD hom nay uoc tinh (ty)]]; suKien: [{ma, loai, moTa, top}]; dem: {loai: so ma that}; khoa: true neu la khach (hien nut mo khoa).
+// To nen o theo % thay doi trong ngay (bao hoa o +-5%): dung bien --nhiet-* nhu ban do nhiet.
+function mauDoi(v) {
+  if (v == null || !Number.isFinite(v)) return "var(--nhiet-trung)";
+  const m = Math.max(-5, Math.min(5, v));
+  return `color-mix(in srgb, ${m >= 0 ? "var(--nhiet-tang)" : "var(--nhiet-giam)"} ${Math.round((Math.abs(m) / 5) * 100)}%, var(--nhiet-trung))`;
+}
+
 export default function RadarTinHieu({ cacMa, suKien, dem, ngay, gio, khoa }) {
   const [loc, setLoc] = useState(null);
   // Dien thoai: mac dinh chi hien ma co su kien (luoi day du dai > 2000px); may tinh: hien tat ca. Bam nut de doi.
@@ -29,6 +36,10 @@ export default function RadarTinHieu({ cacMa, suKien, dem, ngay, gio, khoa }) {
   );
   const [che, setChe] = useState(null);
   const gon = (che ?? (nho ? "gon" : "day")) === "gon";
+  // Kieu o: "bang" = bang dien (ma + % trong ngay + khoi luong, to mau theo tang giam); "luoi" = o nho chi co ma. Dien thoai mac dinh luoi nho.
+  const [kieu, setKieu] = useState(null);
+  const bang = (kieu ?? (nho ? "luoi" : "bang")) === "bang";
+  const soLieu = useMemo(() => new Map(cacMa.map(([ma, , doi, kl, gt]) => [ma, { doi, kl, gt }])), [cacMa]);
   const [moDangNhap, setMoDangNhap] = useState(false);
   const luoiRef = useRef(null);
 
@@ -66,7 +77,7 @@ export default function RadarTinHieu({ cacMa, suKien, dem, ngay, gio, khoa }) {
     const quanSat = new ResizeObserver(do_);
     quanSat.observe(luoi);
     return () => quanSat.disconnect();
-  }, [nhom, theoMa, gon]);
+  }, [nhom, theoMa, gon, bang]);
 
   return (
     <section className="rounded-2xl border mb-6 overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }} aria-label="Radar tín hiệu">
@@ -102,14 +113,17 @@ export default function RadarTinHieu({ cacMa, suKien, dem, ngay, gio, khoa }) {
             Phiên này chưa có sự kiện nào đáng chú ý.
           </span>
         )}
-        <button type="button" onClick={() => setChe(gon ? "day" : "gon")} className="cs-radar-chip ml-auto" style={{ "--c": "var(--tim-nhat)" }}>
+        <button type="button" onClick={() => setKieu(bang ? "luoi" : "bang")} className="cs-radar-chip ml-auto" style={{ "--c": "var(--tim-nhat)" }}>
+          {bang ? "Lưới gọn" : "Bảng điện"}
+        </button>
+        <button type="button" onClick={() => setChe(gon ? "day" : "gon")} className="cs-radar-chip" style={{ "--c": "var(--tim-nhat)" }}>
           {gon ? "Hiện tất cả mã" : "Chỉ hiện mã có sự kiện"}
         </button>
       </div>
 
       <div className="mt-3">
         <div className="px-4 sm:px-5 pb-4">
-          <div ref={luoiRef} className="cs-radar-luoi" role="list">
+          <div ref={luoiRef} className={`cs-radar-luoi${bang ? " cs-radar-luoi--bang" : ""}`} role="list">
             <span className="cs-radar-quet" aria-hidden="true" />
             {nhom.map((n) => {
               const ds = gon ? n.cacMa.filter((ma) => theoMa.has(ma)) : n.cacMa;
@@ -122,16 +136,27 @@ export default function RadarTinHieu({ cacMa, suKien, dem, ngay, gio, khoa }) {
                   <div className="cs-radar-o-luoi">
                     {ds.map((ma) => {
                       const s = theoMa.get(ma);
+                      const d = soLieu.get(ma);
                       return (
                         <Link
                           key={ma}
                           href={`/ma/${ma}`}
                           role="listitem"
                           className={`cs-radar-o${s ? " cs-radar-o--sang" : ""}`}
-                          style={s ? { "--c": LOAI_RADAR[s.loai].mau } : undefined}
+                          style={{ ...(s ? { "--c": LOAI_RADAR[s.loai].mau } : null), ...(bang ? { "--nen": mauDoi(d?.doi) } : null) }}
                           {...(s ? { "data-sang": "", "aria-label": `${ma}: ${LOAI_RADAR[s.loai].nhan}, ${s.moTa}` } : {})}
                         >
-                          {ma}
+                          {bang ? (
+                            <>
+                              <b>{ma}</b>
+                              <span className="cs-radar-o-doi">{d?.doi == null ? "–" : `${d.doi > 0 ? "+" : ""}${d.doi.toFixed(2).replace(".", ",")}%`}</span>
+                              <span className="cs-radar-o-kl" title="Khối lượng hôm nay so với trung bình 20 phiên; giá trị giao dịch ước tính (tỷ đồng)">
+                                {d?.kl == null ? "" : `${d.kl.toFixed(1).replace(".", ",")}×${d.gt != null ? ` · ${d.gt >= 100 ? Math.round(d.gt) : d.gt.toFixed(1).replace(".", ",")} tỷ` : ""}`}
+                              </span>
+                            </>
+                          ) : (
+                            ma
+                          )}
                         </Link>
                       );
                     })}

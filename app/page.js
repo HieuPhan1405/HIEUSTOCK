@@ -278,7 +278,16 @@ export default async function TrangTongQuan() {
   const [cbRadar, khoiNgoaiRadar] = await Promise.all([cbCho, ngoaiCho]);
   const radar = tatCa.length ? dungSuKienRadar({ tatCa, coHoi: cohoiAnh, muaPhucHoi, batDay: batDayGanDay, chiBao: cbRadar?.hang ?? [], khoiNgoai: khoiNgoaiRadar, xemTinHieu }) : null;
   // Luoi: TAT CA ma dang theo doi, kem nganh (de xep theo nganh nhu bang dien). Chi gui ma + nganh xuong trinh duyet.
-  const radarMa = radar ? tatCa.map((r) => [r.ma, r.nganh ?? null]) : [];
+  // Moi o: [ma, nganh, %doi trong ngay, KL / TB20 (lan), GTGD hom nay uoc tinh (ty) = KL/TB20 x GTGD TB20]. Deu la so khach cung thay.
+  const soHuuHan = (v) => (v != null && Number.isFinite(Number(v)) ? Number(v) : null);
+  const klTheoMa = new Map((cbRadar?.hang ?? []).map((b) => [b.ma, soHuuHan(b.kl_ty_le)]));
+  const radarMa = radar
+    ? tatCa.map((r) => {
+        const kl = klTheoMa.get(r.ma) ?? null;
+        const tb = soHuuHan(r.gtgd_tb20);
+        return [r.ma, r.nganh ?? null, soHuuHan(r.doi), kl, kl != null && tb != null ? kl * tb : null];
+      })
+    : [];
   const radarGio = capNhat ? new Date(capNhat).toLocaleTimeString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", hour: "2-digit", minute: "2-digit" }) : "";
 
   return (

@@ -851,6 +851,66 @@ html.cs-dang-chup .cs-cung {
   color: var(--chu);
   border-color: var(--vien-dam);
 }
+/* Kieu BANG DIEN: o cao hon, ma + % trong ngay + khoi luong, nen to theo tang giam (--nen). Chu o luon doc duoc tren nen nhat: dung --chu. */
+.cs-radar-luoi--bang {
+  columns: 250px;
+}
+.cs-radar-luoi--bang .cs-radar-o-luoi {
+  grid-template-columns: repeat(auto-fill, minmax(74px, 1fr));
+  gap: 4px;
+}
+.cs-radar-luoi--bang .cs-radar-o {
+  flex-direction: column;
+  gap: 1px;
+  height: auto;
+  min-height: 54px;
+  padding: 4px 3px;
+  color: var(--chu);
+  background: var(--nen, var(--vien-nhe));
+}
+.cs-radar-luoi--bang .cs-radar-o b {
+  font-size: 12px;
+}
+/* kieu bang dien: o giu nen to mau tang giam, vach quet chi them vien sang + phong nhe (khong doi nen) */
+.cs-radar-luoi--bang .cs-radar-o--sang {
+  animation-name: cs-radar-bat-bang;
+}
+@keyframes cs-radar-bat-bang {
+  0% {
+    border-color: transparent;
+    box-shadow: none;
+    transform: scale(1);
+  }
+  3% {
+    border-color: var(--c);
+    box-shadow: 0 0 22px color-mix(in srgb, var(--c) 70%, transparent);
+    transform: scale(1.1);
+  }
+  9%,
+  92% {
+    border-color: var(--c);
+    box-shadow: 0 0 12px color-mix(in srgb, var(--c) 45%, transparent);
+    transform: scale(1);
+  }
+  100% {
+    border-color: transparent;
+    box-shadow: none;
+    transform: scale(1);
+  }
+}
+.cs-radar-o-doi {
+  font-size: 11px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.cs-radar-o-kl {
+  font-size: 9px;
+  font-weight: 500;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--mo-2);
+  font-variant-numeric: tabular-nums;
+}
 /* o co su kien: sang len khi vach quet di qua (do tre = vi tri ngang x chu ky, do bang JS vao --p), giu sang den het vong; truoc luot dau van mo (fill-mode both) */
 .cs-radar-o--sang {
   animation: cs-radar-bat 8s linear infinite both;
@@ -980,5 +1040,8 @@ html.cs-dang-chup .cs-cung {
     border-color: var(--c);
     background: color-mix(in srgb, var(--c) 30%, var(--card));
     box-shadow: 0 0 14px color-mix(in srgb, var(--c) 45%, transparent);
+  }
+  .cs-radar-luoi--bang .cs-radar-o--sang {
+    background: var(--nen, var(--vien-nhe));
   }
 }
