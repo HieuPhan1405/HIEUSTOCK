@@ -8,12 +8,12 @@ const PRIMARY = "#6C5CE7";
 const TOI_DA = 14;
 
 // "Xem nhanh" cua trang Bieu do: cac ma trong danh sach theo doi cua ban (danh sach chinh truoc, roi cac danh sach khac, bo trung). Khach / danh sach trong thi dung goi y co dinh.
-export default function XemNhanhDanhSach({ ma, goiY }) {
+export default function XemNhanhDanhSach({ ma, goiY, className = "mb-4" }) {
   const { danhSach } = useDanhSachTheoDoi();
   const cuaToi = [...new Set((danhSach ?? []).flatMap((d) => d.ma.map((x) => x.ma)))].slice(0, TOI_DA);
   const ds = cuaToi.length ? cuaToi : goiY;
   return (
-    <div className="flex flex-wrap items-center gap-1.5 mb-4 text-xs">
+    <div className={`flex flex-wrap items-center gap-1.5 text-xs ${className}`}>
       <span style={{ color: MUTED }}>{cuaToi.length ? "Danh sách theo dõi:" : "Xem nhanh:"}</span>
       {ds.map((g) => (
         <Link

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import GiaiThichThem from "@/components/GiaiThichThem";
 import { createChart, createSeriesMarkers, BaselineSeries, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
 import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2 } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
@@ -307,7 +308,7 @@ function Chip({ bat, onClick, children, mau, may }) {
 // Bieu do ky thuat kieu FireAnt/TradingView: nen Nhat + khoi luong + Ichimoku (9-17-33, may) + duong can bang dai han (65/129) + MA,
 // ve them vung mua / cat lo / chot loi cua he thong (neu ma dang giu lenh). Cong thuc chi bao giong het AFL.
 // Gia = gia DA DIEU CHINH co tuc/thuong CP (giong du lieu AmiBroker) de chi bao khop tin hieu; nguon qua /api/gia-lich-su.
-export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false }) {
+export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330 }) {
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
@@ -370,7 +371,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   useEffect(() => {
     khoaVeRef.current = khoaLuu(ma, khungTG);
   }, [ma, khungTG]);
-  const caoGoc = layDayManHinh ? Math.max(chieuCao, caoManHinh - 330) : chieuCao; // trang Bieu do: bieu do cao toi sat day man hinh thay vi co dinh
+  const caoGoc = layDayManHinh ? Math.max(chieuCao, caoManHinh - truCao) : chieuCao; // trang Bieu do: bieu do cao toi sat day man hinh thay vi co dinh (truCao = phan dau trang + thanh cong cu phia tren bieu do)
   const chieuCaoTong = caoGoc + soPhu * CHIEU_CAO_PHU;
 
   useEffect(() => {
@@ -1381,11 +1382,16 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       )}
       </div>
 
+      {/* 10/11/2026: doan ghi chu dai (cach tinh chi bao, phan ky, Volume Profile...) thu vao 1 dong mo / dong - bieu do kieu FireAnt khong co khoi chu duoi bieu do. */}
       {!toanMH && (
-      <p className="px-3 py-2 text-[11px] border-t" style={{ borderColor: VIEN, color: MUTED }}>
+      <div className="px-3 py-2 border-t" style={{ borderColor: VIEN }}>
+      <GiaiThichThem nhanMo="Ghi chú dữ liệu và chỉ báo">
+        <p style={{ color: MUTED }}>
         Giá đã điều chỉnh cổ tức/thưởng cổ phiếu (giống dữ liệu AmiBroker), khối lượng khớp lệnh; chỉ báo tính giống hệ thống tín hiệu (Ichimoku 9-17-33, mây dịch 26
         phiên, đường cân bằng dài hạn 65/129); EMA, Bollinger, RSI, MACD, Stochastic là chỉ báo tham khảo thông dụng. RSI phân kỳ (PK↑ đáy sau thấp hơn nhưng RSI cao hơn; PK↓ đỉnh sau cao hơn nhưng RSI thấp hơn) chỉ xác nhận sau 2 nến (màu xanh / đỏ); nét đứt MÀU VÀNG PK↑? / PK↓? là phân kỳ SỚM: ít điều kiện hơn (RSI chỉ cần cao hơn đáy trước, không cần ≤ 40) hoặc đáy / đỉnh mới chưa đủ 2 nến xác nhận, dễ báo sai hơn. Cả hai chỉ là điều kiện tham khảo, không phải tín hiệu mua bán: thống kê 390 mã cho thấy không có lợi thế riêng lẻ. Volume Profile là ước lượng: khối lượng mỗi nến chia đều theo khoảng giá của nến đó (dùng nến 1 giờ khi có, từ khoảng 10/2023; trước đó dùng nến của biểu đồ), không phải dữ liệu khớp lệnh theo từng mức giá. Hỗ trợ / Kháng cự (KL) là các vùng giá có khối lượng giao dịch lớn trong khoảng 6 tháng gần nhất (nét đậm = vùng lớn), chỉ để tham khảo: kiểm tra lịch sử cho thấy giá giữ được ở các mức này khoảng một nửa số lần. Hình vẽ lưu trên trình duyệt này theo từng mã và khung thời gian. Trong phiên, nến hôm nay cập nhật theo giá khớp thực tế, web tự làm mới mỗi 30 giây, không dùng để đặt lệnh khớp từng giây.
-      </p>
+        </p>
+      </GiaiThichThem>
+      </div>
       )}
     </div>
   );

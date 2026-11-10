@@ -19,7 +19,6 @@ const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
 const GOI_Y = ["VNINDEX", "VN30", "VCB", "FPT", "HPG", "SSI", "STB"];
 
 export default async function TrangBieuDo({ searchParams }) {
@@ -53,57 +52,46 @@ export default async function TrangBieuDo({ searchParams }) {
         }
       : null;
 
+  // 10/11/2026 bo cuc kieu FireAnt Charts: bo tieu de to + dong huong dan, gom O TIM MA + XEM NHANH + TEN MA vao 1 HANG cong cu, bieu do rong het chieu ngang va cao toi sat day man hinh.
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: TEXT }}>
-      <h1 className="text-2xl mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
-        Biểu đồ kỹ thuật
-      </h1>
-      <p className="text-sm mb-4" style={{ color: MUTED }}>
-        Rê chuột (hoặc chạm) để xem giá từng phiên, cuộn để phóng to/thu nhỏ.
-      </p>
+    <div className="px-3 sm:px-4 py-3" style={{ color: TEXT }}>
+      <h1 className="sr-only">Biểu đồ kỹ thuật {ma}</h1>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-2">
+        <form action="/bieu-do" method="get" className="relative w-36 shrink-0">
+          <Search size={14} aria-hidden="true" className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: MUTED }} />
+          <input
+            name="ma"
+            defaultValue={ma}
+            key={ma}
+            autoComplete="off"
+            maxLength={12}
+            placeholder="Nhập mã…"
+            aria-label="Mã cổ phiếu hoặc chỉ số (Enter để xem)"
+            className="w-full h-8 pl-8 pr-2 text-sm outline-none rounded-lg"
+            style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 700, textTransform: "uppercase" }}
+          />
+        </form>
+        {ten && (
+          <p className="flex flex-wrap items-center gap-2 text-sm min-w-0" style={{ color: MUTED }}>
+            <span className="truncate max-w-[280px]" title={ten.ten}>
+              {ten.ten} · {ten.san}
+            </span>
+            {ma !== "VNINDEX" && nguoiDung?.da_duyet && <NutThamGia ma={ma} soNguoiThamGia={0} daThamGia={false} />}
+          </p>
+        )}
+        {row && ma !== "VNINDEX" && (
+          <div className="flex flex-wrap items-center gap-2 text-sm">
+            {nguoiDung && <SignalPill tin={row.tin} banTheoDoiTu={row.ban_theo_doi ? row.ban_theo_doi_tu : null} webGiu={Array.isArray(row.lenh_web) && row.lenh_web.length > 0} muaTheoDoiTu={row.mua_theo_doi_tu ?? null} daChotMua={row.da_chot_mua === true} />}
+            <Link href={`/ma/${ma}`} className="text-xs" style={{ color: "var(--tim-chu)" }}>
+              Chi tiết {ma} →
+            </Link>
+          </div>
+        )}
+        {/* thanh vien: cac ma trong danh sach theo doi; khach: goi y co dinh */}
+        <XemNhanhDanhSach ma={ma} goiY={GOI_Y} className="lg:ml-auto" />
+      </div>
 
-      <form action="/bieu-do" method="get" className="flex gap-2 mb-3 max-w-md">
-        <input
-          name="ma"
-          defaultValue={ma}
-          key={ma}
-          autoComplete="off"
-          maxLength={12}
-          placeholder="Nhập mã (ví dụ: VCB, VNINDEX)"
-          aria-label="Mã cổ phiếu"
-          className="px-3 py-2 text-sm flex-1 outline-none rounded-lg"
-          style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)", textTransform: "uppercase" }}
-        />
-        <button
-          type="submit"
-          className="px-4 py-2 text-sm flex items-center gap-2 shrink-0 rounded-lg cursor-pointer"
-          style={{ background: "#6C5CE7", color: "#FFFFFF", fontWeight: 600 }}
-        >
-          <Search size={15} aria-hidden="true" /> Xem
-        </button>
-      </form>
-      {/* thanh vien: cac ma trong danh sach theo doi; khach: goi y co dinh */}
-      <XemNhanhDanhSach ma={ma} goiY={GOI_Y} />
-
-      {ten && (
-        <p className="flex flex-wrap items-center gap-2 text-sm mb-3" style={{ color: MUTED }}>
-          <b style={{ color: TEXT }}>{ma}</b>
-          {ma !== "VNINDEX" && nguoiDung?.da_duyet && <NutThamGia ma={ma} soNguoiThamGia={0} daThamGia={false} />}
-          <span>
-            {ten.ten} · {ten.san}
-          </span>
-        </p>
-      )}
-      {row && ma !== "VNINDEX" && (
-        <div className="flex flex-wrap items-center gap-3 mb-3 text-sm">
-          {nguoiDung && <SignalPill tin={row.tin} banTheoDoiTu={row.ban_theo_doi ? row.ban_theo_doi_tu : null} webGiu={Array.isArray(row.lenh_web) && row.lenh_web.length > 0} muaTheoDoiTu={row.mua_theo_doi_tu ?? null} daChotMua={row.da_chot_mua === true} />}
-          <Link href={`/ma/${ma}`} className="underline" style={{ color: PRIMARY }}>
-            Xem chi tiết {ma} →
-          </Link>
-        </div>
-      )}
-
-      <BieuDoKyThuat ma={ma} vung={vung} ngayMua={vung ? row.ngay_mua : null} chieuCao={620} layDayManHinh thongTin={thongTin} />
+      <BieuDoKyThuat ma={ma} vung={vung} ngayMua={vung ? row.ngay_mua : null} chieuCao={520} layDayManHinh truCao={250} thongTin={thongTin} />
     </div>
   );
 }

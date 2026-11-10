@@ -16,47 +16,37 @@ const so = (v, dp = 2) => (v == null || !Number.isFinite(v) ? "—" : v.toLocale
 const dau = (v, dp = 2) => (v == null || !Number.isFinite(v) ? "—" : `${v > 0 ? "+" : ""}${so(v, dp)}`);
 const ngayVN = (s) => (s ? s.split("-").reverse().join("/") : "");
 
-// Mot dong: ma nam ben CON LAI cua thanh (ma tang o trai, ma giam o phai) giong bang "Anh huong Index" cac trang chung khoan - thanh xanh keo sang phai,
-// thanh do keo sang trai tu truc giua.
-function Dong({ ma, diem, pct, toiDa }) {
+// 1 COT (10/11/2026, kieu bieu do "Tac dong" cua FireAnt): thanh doc dung tren / duoi duong goc chung - xanh len (keo chi so tang), do xuong (keo giam);
+// so diem ghi o dau thanh, ben duoi la ma + % gia. tren / duoi: % chieu cao vung ve danh cho phan duong / am (theo ma dong gop lon nhat moi phia).
+function Cot({ ma, diem, pct, tren, duoi }) {
   const tang = diem >= 0;
-  const rong = `${Math.max((Math.abs(diem) / toiDa) * 100, 1.5)}%`;
+  const h = Math.max((Math.abs(diem) / Math.max(tren + duoi, 1e-9)) * 100, 1.5);
+  const goc = (tren / Math.max(tren + duoi, 1e-9)) * 100;
   return (
-    <div className="flex items-center h-7 text-sm" style={{ fontFamily: "var(--font-chu)" }} title={`${ma}: ${dau(diem)} điểm${pct != null ? ` · giá ${dau(pct, 2)}%` : ""}`}>
-      <div className="flex-1 flex items-center justify-end gap-2 min-w-0">
-        {tang ? (
-          <Link href={`/ma/${ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", color: TEXT }}>
-            {ma}
-          </Link>
-        ) : (
-          <>
-            <span className="text-xs" style={{ color: MUTED }}>
-              {dau(diem)}
-            </span>
-            <div className="h-4 rounded-l-full" style={{ width: rong, maxWidth: "70%", background: DO }} />
-          </>
-        )}
+    <Link href={`/ma/${ma}`} className="flex-1 min-w-[38px] flex flex-col items-center group" title={`${ma}: ${dau(diem)} điểm${pct != null ? ` · giá ${dau(pct, 2)}%` : ""}`}>
+      <div className="relative w-full h-[150px]">
+        <div className="absolute inset-x-0 top-4 bottom-4">
+          <div className="absolute inset-x-0 h-px" style={{ top: `${goc}%`, background: "var(--vien-dam)" }} aria-hidden="true" />
+          <div
+            className="absolute left-1/2 -translate-x-1/2 w-[58%] max-w-[26px] group-hover:brightness-125"
+            style={tang ? { bottom: `${100 - goc}%`, height: `${h}%`, background: XANH, borderRadius: "4px 4px 0 0" } : { top: `${goc}%`, height: `${h}%`, background: DO, borderRadius: "0 0 4px 4px" }}
+          />
+          <span className="absolute left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap" style={{ ...(tang ? { bottom: `calc(${100 - goc + h}% + 2px)` } : { top: `calc(${goc + h}% + 2px)` }), color: MUTED, fontFamily: "var(--font-chu)" }}>
+            {dau(diem)}
+          </span>
+        </div>
       </div>
-      <div className="w-px self-stretch" style={{ background: "var(--vien-dam)" }} />
-      <div className="flex-1 flex items-center gap-2 min-w-0">
-        {tang ? (
-          <>
-            <div className="h-4 rounded-r-full" style={{ width: rong, maxWidth: "70%", background: XANH }} />
-            <span className="text-xs" style={{ color: MUTED }}>
-              {dau(diem)}
-            </span>
-          </>
-        ) : (
-          <Link href={`/ma/${ma}`} className="hover:underline" style={{ fontFamily: "var(--font-chu)", color: TEXT }}>
-            {ma}
-          </Link>
-        )}
-      </div>
-    </div>
+      <b className="text-[11px] mt-1" style={{ fontFamily: "var(--font-chu)", color: TEXT }}>
+        {ma}
+      </b>
+      <span className="text-[10px]" style={{ color: pct == null ? MUTED : pct >= 0 ? XANH : DO, fontFamily: "var(--font-chu)" }}>
+        {pct == null ? "" : `${dau(pct, 1)}%`}
+      </span>
+    </Link>
   );
 }
 
-// Anh huong cua tung ma toi VN-Index (so diem dong gop) trong phien moi nhat: 10 ma keo len nhieu nhat + 10 ma keo xuong nhieu nhat.
+// Anh huong cua tung ma toi VN-Index (so diem dong gop) trong phien moi nhat: 10 ma keo len nhieu nhat + 10 ma keo xuong nhieu nhat - bieu do cot doc (10/11/2026, truoc la 20 dong thanh ngang ~700px).
 export default function AnhHuongIndex() {
   const [du, setDu] = useState(null);
   const [loi, setLoi] = useState(null);
@@ -91,16 +81,21 @@ export default function AnhHuongIndex() {
 
   const pctIndex = du ? (du.thayDoiDiem / du.vniTruoc) * 100 : null;
   const mau = du ? (du.thayDoiDiem >= 0 ? XANH : DO) : MUTED;
-  const toiDa = du ? Math.max(...du.tang.map((d) => d.diem), ...du.giam.map((d) => Math.abs(d.diem)), 0.01) : 1;
-  // Ma tang xep tu nhieu -> it, ma giam xep tu it -> nhieu (giong bang tham khao: keo xuong nhieu nhat nam CUOI danh sach).
-  const giamTuItDenNhieu = du ? [...du.giam].sort((a, b) => b.diem - a.diem) : [];
+  // Thu tu cot (giong FireAnt): trai = keo giam nhieu nhat -> it nhat, phai = keo tang it nhat -> nhieu nhat.
+  const cot = du ? [...[...du.giam].sort((a, b) => a.diem - b.diem), ...[...du.tang].sort((a, b) => a.diem - b.diem)] : [];
+  const tren = du ? Math.max(...du.tang.map((d) => d.diem), 0) : 0;
+  const duoi = du ? Math.max(...du.giam.map((d) => -d.diem), 0) : 0;
 
   return (
-    <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
+    <div className="rounded-2xl border p-4 sm:p-5 mb-6 h-full" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-baseline justify-between gap-2 mb-1">
-        <p className="text-xs " style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
-          Ảnh hưởng tới VN-Index {du ? (du.laHomNay ? "hôm nay" : `phiên ${ngayVN(du.ngay).slice(0, 5)}`) : ""}
-        </p>
+        <h2 className="text-[15px]" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+          Tác động tới VN-Index
+          <span className="text-xs" style={{ color: MUTED, fontWeight: 400 }}>
+            {" "}
+            · {du ? (du.laHomNay ? "hôm nay" : `phiên ${ngayVN(du.ngay).slice(0, 5)}`) : ""}
+          </span>
+        </h2>
         {du && (
           <p style={{ fontFamily: "var(--font-chu)" }}>
             <span className="text-lg font-bold" style={{ color: TEXT }}>
@@ -119,17 +114,16 @@ export default function AnhHuongIndex() {
         </div>
       ) : (
         <>
-          <p className="text-xs mb-3" style={{ color: MUTED }}>
-            Số điểm mỗi mã làm VN-Index tăng (xanh) hoặc giảm (đỏ). {du.soMaTang} mã tăng · {du.soMaGiam} mã giảm.
+          <p className="text-xs mb-2" style={{ color: MUTED }}>
+            Số điểm mỗi mã kéo VN-Index lên (xanh) hoặc xuống (đỏ). {du.soMaTang} mã tăng · {du.soMaGiam} mã giảm.
           </p>
-          <div className="max-w-xl">
-            {du.tang.map((d) => (
-              <Dong key={d.ma} ma={d.ma} diem={d.diem} pct={d.pct} toiDa={toiDa} />
-            ))}
-            <div className="my-1 border-t" style={{ borderColor: "var(--vien-nhe)" }} />
-            {giamTuItDenNhieu.map((d) => (
-              <Dong key={d.ma} ma={d.ma} diem={d.diem} pct={d.pct} toiDa={toiDa} />
-            ))}
+          {/* Dien thoai: 20 cot qua hep -> cuon ngang trong khung */}
+          <div className="overflow-x-auto -mx-1 px-1">
+            <div className="relative flex min-w-[600px]">
+              {cot.map((d) => (
+                <Cot key={d.ma} ma={d.ma} diem={d.diem} pct={d.pct} tren={tren} duoi={duoi} />
+              ))}
+            </div>
           </div>
           <GiaiThichThem nhanMo="Cách tính" className="mt-3">
             <p>

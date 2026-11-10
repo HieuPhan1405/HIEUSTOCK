@@ -1045,3 +1045,38 @@ html.cs-dang-chup .cs-cung {
     background: var(--nen, var(--vien-nhe));
   }
 }
+
+/* THANH BEN THU GON / MO RONG (components/Sidebar.js, 10/11/2026): rong 240px, thu gon 64px chi con bieu tuong. html[data-menu="gon"] dat tu localStorage o app/layout.js. */
+@media (min-width: 768px) {
+  .cs-thanh-ben {
+    width: 15rem;
+    transition: width 0.18s ease;
+  }
+  .cs-noi-dung {
+    padding-left: 15rem;
+    transition: padding-left 0.18s ease;
+  }
+  html[data-menu="gon"] .cs-thanh-ben {
+    width: 4rem;
+  }
+  html[data-menu="gon"] .cs-noi-dung {
+    padding-left: 4rem;
+  }
+  html[data-menu="gon"] .cs-thanh-ben .cs-chu-menu {
+    display: none;
+  }
+  html[data-menu="gon"] .cs-thanh-ben .cs-muc-menu {
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  html:not([data-menu="gon"]) .cs-thanh-ben .cs-vach-menu {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cs-thanh-ben,
+  .cs-noi-dung {
+    transition: none;
+  }
+}

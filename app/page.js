@@ -242,28 +242,6 @@ function TheXuHuongCacMa({ soXanh, soSideway, soDo, tong, pctXanh, pctDo, doRong
   );
 }
 
-// Thanh "PHIEN HOM NAY": so ma tang / dung / giam trong phien (tren cac ma dang theo doi) - ve thay cho doc so trong doan nhan dinh.
-function ThanhPhienHomNay({ soTang, soDung, soGiam }) {
-  const tong = soTang + soDung + soGiam;
-  if (!tong) return null;
-  const w = (n) => `${(n / tong) * 100}%`;
-  return (
-    <div className="mt-4">
-      <div className="flex h-1.5 rounded-full overflow-hidden gap-[2px]" aria-hidden="true">
-        {soTang > 0 && <div style={{ width: w(soTang), background: XANH }} />}
-        {soDung > 0 && <div style={{ width: w(soDung), background: VANG }} />}
-        {soGiam > 0 && <div style={{ width: w(soGiam), background: DO }} />}
-      </div>
-      <p className="flex flex-wrap gap-x-3 mt-1.5 text-xs" style={{ fontFamily: "var(--font-chu)", color: MUTED }}>
-        <span>Phiên hôm nay:</span>
-        <span style={{ color: XANH }}>{soTang} tăng</span>
-        <span style={{ color: VANG }}>{soDung} đứng giá</span>
-        <span style={{ color: DO }}>{soGiam} giảm</span>
-      </p>
-    </div>
-  );
-}
-
 export default async function TrangTongQuan() {
   // Nguoi dung va du lieu thi truong doc SONG SONG (khong doi nhau): truoc day doc lan luot nen cong don do tre toi DB.
   const duLieuCho = Promise.all([layTatCaTinHieu(), layChiSoVNIndex()]).then((v) => ({ v }), (e) => ({ e }));
@@ -485,7 +463,6 @@ export default async function TrangTongQuan() {
                 {nhanDinh.doanVan}
               </p>
             )}
-            {nhanDinh && <ThanhPhienHomNay soTang={nhanDinh.soTang} soDung={nhanDinh.soDung} soGiam={nhanDinh.soGiam} />}
             {chiSoVNIndex && (
               <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-2 gap-x-4 gap-y-3 mt-5 pt-5 border-t" style={{ borderColor: VIEN }}>
                 <div>
@@ -528,6 +505,10 @@ export default async function TrangTongQuan() {
                 )}
               </div>
             )}
+            {/* Do rong phien, thanh khoan, khoi ngoai, ban do nhiet... chi o Dashboard (10/11/2026 bo trung lap giua 2 trang). */}
+            <Link href="/dashboard" className="inline-block text-xs mt-4" style={{ color: "var(--tim-chu)" }}>
+              Độ rộng, thanh khoản, khối ngoại, bản đồ nhiệt: xem Dashboard →
+            </Link>
           </div>
         )}
         {tong > 0 && <TheXuHuongCacMa soXanh={soXanh} soSideway={soSideway} soDo={soDo} tong={tong} pctXanh={pctXanh} pctDo={pctDo} doRongVonHoa={doRongVonHoa} />}

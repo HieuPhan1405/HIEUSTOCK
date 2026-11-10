@@ -248,13 +248,15 @@ export default async function TrangHuongDan() {
 
       <TieuDeLon chu="Cách sử dụng web" />
 
-      <Muc tieuDe="Tổng quan thị trường">
-        <p>
-          Đồng hồ giao dịch ở đầu trang cho biết đang trong hay ngoài khung giờ vào lệnh. Các thẻ bên dưới đếm nhanh: mã đang theo dõi, tỷ lệ xu
-          hướng tăng, tín hiệu MUA hôm nay, cảnh báo Mắt Thần, cơ hội chốt lời và cảnh báo bán bớt — <b>bấm vào thẻ</b> để mở Bộ lọc đã lọc sẵn đúng
-          nhóm đó. Tiếp theo là nhận định thị trường tự động, độ rộng theo vốn hoá và danh sách tín hiệu MUA / BÁN mới phát sinh (tín hiệu MUA kèm
-          Rank, Confidence và nhãn &quot;Giải ngân 1 phần&quot; nếu có).
-        </p>
+      <Muc tieuDe="Tổng quan và Dashboard thị trường">
+        <DanhSach
+          muc={[
+            "Đồng hồ giao dịch ở đầu trang cho biết đang trong hay ngoài khung giờ vào lệnh.",
+            "Tổng quan: hàng đầu là VN-Index kèm nhận định tự động và xu hướng các mã đang theo dõi (Xanh / Sideway / Đỏ, theo nhóm vốn hoá). Tiếp theo 4 ô đếm nhanh: tín hiệu MUA hôm nay, cảnh báo Mắt Thần, cơ hội chốt lời, cảnh báo bán bớt — bấm vào ô để mở Bộ lọc đã lọc sẵn. Bên dưới là Top cơ hội trong phiên và Radar thị trường (mặc định chỉ hiện mã có sự kiện, bấm \"Hiện đủ\" để xem bảng điện tất cả mã).",
+            "Dashboard: số liệu thị trường dạng từng ô — 4 chỉ số (VN-Index, VN30, HNX, UPCoM), biểu đồ VN-Index trong ngày / 1 tháng / 3 tháng / 1 năm, thống kê phiên (độ rộng, thanh khoản so với trung bình 20 phiên, khối ngoại, tâm lý), bản đồ nhiệt, tác động tới VN-Index, top biến động, ngành, khối ngoại, thanh khoản trong phiên. Thanh chip ở đầu trang để nhảy nhanh tới từng ô.",
+            "Trên máy tính, nút \"Thu gọn menu\" ở cuối thanh bên trái thu menu thành cột biểu tượng để có thêm chỗ xem; mũi tên cạnh mỗi mục mở các trang con. Lựa chọn được nhớ cho lần sau.",
+          ]}
+        />
       </Muc>
 
       <Muc tieuDe="Bộ lọc cổ phiếu">
@@ -272,7 +274,7 @@ export default async function TrangHuongDan() {
       <Muc tieuDe="Biểu đồ kỹ thuật">
         <p>
           Biểu đồ nến Nhật kèm khối lượng, Ichimoku (Tenkan 9, Kijun 17, mây Senkou 33 dịch 26 phiên), đường cân bằng dài hạn (65 và 129 phiên) và MA 20/50/200. Bật/tắt từng chỉ báo ở thanh
-          phía trên, đổi khung Ngày/Tuần và chọn khoảng thời gian (3T, 6T, 1N, 3N, Tất cả). Với mã bạn đang có lệnh (đăng nhập), biểu đồ vẽ thêm vùng mua, cắt lỗ, chốt lời gần/xa,
+          phía trên, đổi khung Ngày/Tuần và chọn khoảng thời gian (3T, 6T, 1N, 3N, Tất cả). Gõ mã vào ô tìm ở góc trái thanh công cụ rồi Enter để đổi mã; biểu đồ chiếm gần hết màn hình. Với mã bạn đang có lệnh (đăng nhập), biểu đồ vẽ thêm vùng mua, cắt lỗ, chốt lời gần/xa,
           mức hòa vốn và mũi tên MUA đúng ngày mua. Giá đã điều chỉnh cổ tức/thưởng cổ phiếu (giống dữ liệu AmiBroker) nên chỉ báo khớp với tín hiệu; trong phiên, nến hôm nay chạy theo giá khớp thực tế, web tự
           làm mới mỗi 30 giây. Nguồn dữ liệu là bên thứ ba nên có thể trễ hoặc tạm thời không tải được.
         </p>

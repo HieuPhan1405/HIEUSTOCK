@@ -249,7 +249,7 @@ export default function BieuDoTamLyLichSu({ hienTai = null }) {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
-        <h2 className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+        <h2 className="text-[15px]" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
           Lịch sử tâm lý thị trường
         </h2>
         <div className="flex gap-1" role="group" aria-label="Khoảng thời gian">
@@ -299,13 +299,19 @@ export default function BieuDoTamLyLichSu({ hienTai = null }) {
       </div>
 
       <div className="mt-4 pt-3 border-t text-xs leading-relaxed space-y-1.5" style={{ borderColor: "var(--vien-nhe)", color: MUTED }}>
+        {/* 10/11/2026: chi giu 1 cau ket luan, so lieu kiem chung thu vao "Kiểm chứng" (o Dashboard dang luoi, doan van dai lam o nay cao gap doi o canh). */}
         <p>
-          <b style={{ color: TEXT }}>Dưới 20 là vùng quá bán, không phải điểm đáy.</b> Kiểm chứng 2013–2026: 17/21 đáy thật của VN-Index có chỉ số dưới 20 trong khoảng ±5 phiên, nhưng chỉ 13/26 lần chạm dưới 20 đầu tiên nằm gần đáy; VN-Index còn giảm thêm trung bình khoảng 4% trong 20 phiên sau, và trong các pha giảm kéo dài (2018, 2022, 2023, 2026) tín hiệu hiện sớm hơn đáy 26–53 phiên.
-        </p>
-        <p>
-          Chờ VN-Index đóng cửa vượt đỉnh 5 phiên (tam giác xanh) làm mức giảm thêm còn khoảng 2% và giảm số lần còn rơi trên 5% từ 35% xuống 18%; lãi sau 20 phiên gần như không đổi, giá mua vẫn cao hơn đáy khoảng 7%. Hiệu ứng chỉ rõ trong ≤ 20 phiên, mẫu nhỏ (26 lần).
+          <b style={{ color: TEXT }}>Dưới 20 là vùng quá bán, không phải điểm đáy</b> — chờ VN-Index vượt đỉnh 5 phiên (tam giác xanh) rủi ro giảm thêm thấp hơn.
           {dangQuaBan && <b style={{ color: DO }}> Hiện chỉ số đang dưới 20.</b>}
         </p>
+        <GiaiThichThem nhanMo="Kiểm chứng">
+          <p>
+            Kiểm chứng 2013–2026: 17/21 đáy thật của VN-Index có chỉ số dưới 20 trong khoảng ±5 phiên, nhưng chỉ 13/26 lần chạm dưới 20 đầu tiên nằm gần đáy; VN-Index còn giảm thêm trung bình khoảng 4% trong 20 phiên sau, và trong các pha giảm kéo dài (2018, 2022, 2023, 2026) tín hiệu hiện sớm hơn đáy 26–53 phiên.
+          </p>
+          <p className="mt-1.5">
+            Chờ VN-Index đóng cửa vượt đỉnh 5 phiên làm mức giảm thêm còn khoảng 2% và giảm số lần còn rơi trên 5% từ 35% xuống 18%; lãi sau 20 phiên gần như không đổi, giá mua vẫn cao hơn đáy khoảng 7%. Hiệu ứng chỉ rõ trong ≤ 20 phiên, mẫu nhỏ (26 lần).
+          </p>
+        </GiaiThichThem>
         <GiaiThichThem nhanMo="Cách tính">
           <p>
             Trung bình 3 tỷ lệ (mã tăng giá, mã trên Kijun, mã trên đường cân bằng dài hạn) tính trên các mã đang niêm yết, từ 2013. Chỉ số này xấp xỉ (không có tỷ lệ “mã đạt điểm MUA” như đồng hồ phía trên) và thiên lệch người sống sót; chỉ là thông tin tham khảo, không phải lệnh mua hay khuyến nghị tỷ trọng.

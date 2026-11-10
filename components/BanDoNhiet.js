@@ -113,9 +113,9 @@ export default function BanDoNhiet({ tatCa, chieuCao = CHIEU_CAO, tieuDe = "Bả
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-        <p className="text-xs" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} data-may="ban-do-nhiet">
+        <h2 className="text-[15px]" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }} data-may="ban-do-nhiet">
           {tieuDe}
-        </p>
+        </h2>
         <p className="text-[11px]" style={{ color: MUTED }}>
           Màu: {tc.mota} · {kt.mota} · {soMa} mã
         </p>

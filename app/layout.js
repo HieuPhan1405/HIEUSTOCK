@@ -35,7 +35,8 @@ export const metadata = {
 };
 
 // Dat che do sang/toi TRUOC khi ve trang (script nho chay ngay trong <head>) de khong bi nhay tu toi sang sang. Mac dinh TOI; nguoi dung doi bang nut o thanh dau (components/NutGiaoDien.js).
-const SCRIPT_GIAO_DIEN = `(function(){try{var t=localStorage.getItem("cs-giao-dien");document.documentElement.setAttribute("data-theme",t==="light"?"light":"dark")}catch(e){}})()`;
+// Cung script: menu ben trai THU GON (cot bieu tuong) neu lan truoc nguoi dung da thu gon (localStorage "cs-menu", nut o cuoi thanh ben - components/Sidebar.js).
+const SCRIPT_GIAO_DIEN = `(function(){try{var d=document.documentElement,t=localStorage.getItem("cs-giao-dien");d.setAttribute("data-theme",t==="light"?"light":"dark");if(localStorage.getItem("cs-menu")==="gon")d.setAttribute("data-menu","gon")}catch(e){}})()`;
 
 export default function RootLayout({ children }) {
   return (
@@ -49,7 +50,7 @@ export default function RootLayout({ children }) {
           <ThanhDau />
           <Sidebar />
           <MayHuongDan />
-          <div className="md:pl-60 md:pb-0 pb-[calc(56px+env(safe-area-inset-bottom,0px))] flex flex-col flex-1">
+          <div className="cs-noi-dung md:pb-0 pb-[calc(56px+env(safe-area-inset-bottom,0px))] flex flex-col flex-1">
             <ThanhTabNhom />
             <main className="flex-1">{children}</main>
             <ChanTrang />

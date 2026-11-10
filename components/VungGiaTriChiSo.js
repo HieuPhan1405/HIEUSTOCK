@@ -46,9 +46,10 @@ export default function VungGiaTriChiSo({ vt, ten = "VN-Index" }) {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
-        <p className="text-xs " style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
-          {ten} theo khối lượng · vùng giá trị {vt.soPhien} phiên
-        </p>
+        <h2 className="text-[15px]" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+          Vùng giá trị {ten}
+          <span className="text-xs" style={{ color: MUTED, fontWeight: 400 }}> · theo khối lượng {vt.soPhien} phiên</span>
+        </h2>
         <span className="px-2.5 py-1 rounded-md text-xs font-bold" style={{ background: nhe(tt.mau, 14), color: tt.mau, border: `1px solid ${nhe(tt.mau, 30)}`, fontFamily: "var(--font-chu)" }}>
           {tt.nhan}
         </span>

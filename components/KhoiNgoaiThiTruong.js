@@ -57,9 +57,9 @@ export default function KhoiNgoaiThiTruong({ ngoai }) {
   return (
     <div className="rounded-2xl border p-5 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-        <p className="text-xs " style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
-          Khối ngoại (nhà đầu tư nước ngoài)
-        </p>
+        <h2 className="text-[15px]" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+          Khối ngoại
+        </h2>
         <p className="text-[11px]" style={{ color: MUTED }}>
           Ngày {ngoai.ngay.split("-").reverse().join("/")} · toàn bộ mã niêm yết HOSE, nguồn VNDirect
         </p>

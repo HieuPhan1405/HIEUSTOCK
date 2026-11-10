@@ -1,301 +1,249 @@
 import Link from "next/link";
-import { CalendarDays } from "lucide-react";
-import { tinhTongQuanThiTruong, nhanTamLy } from "@/lib/thiTruong";
+import { nhanTamLy } from "@/lib/thiTruong";
 import { tenCongTy } from "@/lib/tenMa";
-import { fmt, pct, capNhatMoiNhat, nhe } from "@/components/dungChung";
-import SoChay from "@/components/SoChay";
+import { fmt, pct, nhe } from "@/components/dungChung";
+import { soVN, tyVN } from "@/lib/soVN";
 
-// Khoi "Ra soat thi truong" dung o trang Dashboard: 3 the tong hop (xu huong, tam ly, muc giu lenh) va RA SOAT NHANH (do rong, top tang/giam, nganh, khoi ngoai...). Tinh tren cac ma he thong
-// dang theo doi, khong phai toan thi truong.
+// CAC O THI TRUONG cua Dashboard (10/11/2026 lam lai kieu FireAnt: tung o gon, moi chi so 1 con so + 1 hinh nho, chu giai thich toi thieu).
+// Truoc day la 1 khoi "Ra soat nhanh" 6 hang dai ~1.100px + 3 the "Xu huong / Tam ly / Muc giu lenh" (gia + xu huong VN-Index bo vi trung voi dai chi so + trang Tong quan).
+// Tat ca tinh tren cac ma he thong dang theo doi (lib/thiTruong.js tinhTongQuanThiTruong), KHONG phai toan thi truong - tieu de o ghi ro.
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
-const PRIMARY = "#6C5CE7";
 const XANH = "var(--xanh)";
 const DO = "var(--do)";
 const VANG = "var(--vang)";
-
-const mono = { fontFamily: "var(--font-chu)" };
 const sans = { fontFamily: "var(--font-chu)" };
 
-function The({ tieuDe, phu, children, may }) {
+// Khung o dung chung: tieu de + chu phu nho + phan phai (vd link "Xem them"), than o.
+export function OThiTruong({ tieuDe, phu, phai, children, className = "", may }) {
   return (
-    <div className="rounded-2xl border p-5 flex flex-col" style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <p className="text-xs" style={{ color: MUTED, ...mono }} data-may={may}>
-        {tieuDe}
-      </p>
-      <div className="flex-1 flex flex-col justify-center py-3">{children}</div>
-      {phu && (
-        <p className="text-[11px] leading-snug" style={{ color: MUTED }}>
-          {phu}
+    <div className={`rounded-2xl border p-4 sm:p-5 h-full flex flex-col min-w-0 ${className}`} style={{ borderColor: VIEN, background: NEN_CARD }}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-0.5 mb-3">
+        <h2 className="text-[15px]" style={{ ...sans, fontWeight: 700 }} data-may={may}>
+          {tieuDe}
+          {phu && <span className="text-xs" style={{ color: MUTED, fontWeight: 400 }}> · {phu}</span>}
+        </h2>
+        {phai}
+      </div>
+      <div className="flex-1 min-w-0">{children}</div>
+    </div>
+  );
+}
+
+// 1 dong cua o Thong ke phien: nhan trai, so phai, hinh nho ben duoi.
+function DongThongKe({ nhan, phu, gia, mau = TEXT, children, may }) {
+  return (
+    <div className="py-3 border-t first:border-t-0 first:pt-0 last:pb-0" style={{ borderColor: "var(--vien-nhe)" }} data-may={may}>
+      <div className="flex items-baseline justify-between gap-3">
+        <p className="text-[13px] min-w-0" style={{ ...sans, color: "var(--mo-2)" }}>
+          {nhan}
+          {phu && (
+            <span className="block text-[11px]" style={{ color: MUTED }}>
+              {phu}
+            </span>
+          )}
         </p>
-      )}
+        <b className="text-[17px] whitespace-nowrap" style={{ ...sans, color: mau }}>
+          {gia}
+        </b>
+      </div>
+      {children && <div className="mt-2">{children}</div>}
     </div>
   );
 }
 
-// Dong ho do tam ly 0-100: nen cung xam, phan da lap mang mau theo nhan tam ly, kim chi theo gia tri.
-function DongHoTamLy({ diem }) {
-  const goc = diem == null ? -90 : -90 + (Math.max(0, Math.min(100, diem)) / 100) * 180;
-  const cx = 100;
-  const cy = 100;
-  const r = 78;
-  const diemTrenCung = (phanTram) => {
-    const a = Math.PI * (1 - phanTram / 100);
-    return [cx + r * Math.cos(a), cy - r * Math.sin(a)];
-  };
-  // nen cung xam trung tinh; phan da lap tu 0 toi kim mang 1 mau theo nhan tam ly (khong ve du 5 mau cau vong)
-  const cung = (tu, den) => {
-    const [x1, y1] = diemTrenCung(tu);
-    const [x2, y2] = diemTrenCung(den);
-    return `M ${x1} ${y1} A ${r} ${r} 0 0 1 ${x2} ${y2}`;
-  };
-  const diemHopLe = diem == null ? 0 : Math.max(0, Math.min(100, diem));
+function ThanhChong({ phan, cao = 8 }) {
+  const tong = phan.reduce((s, [n]) => s + n, 0) || 1;
   return (
-    <svg viewBox="0 0 200 118" className="w-full max-w-[230px] mx-auto" role="img" aria-label={`Thang tâm lý thị trường: ${diem ?? "chưa có"} trên 100`}>
-      <path d={cung(0.4, 99.6)} stroke="var(--vien-dam)" strokeWidth="14" fill="none" strokeLinecap="butt" />
-      {diemHopLe > 1 && <path d={cung(0.4, diemHopLe)} pathLength="100" className="cs-cung" stroke={nhanTamLy(diem).mau} strokeWidth="14" fill="none" strokeLinecap="butt" />}
-      <g className="cs-kim" style={{ transform: `rotate(${goc}deg)`, transformOrigin: `${cx}px ${cy}px` }}>
-        <line x1={cx} y1={cy} x2={cx} y2={cy - 66} stroke="var(--chu)" strokeWidth="3" strokeLinecap="round" />
-      </g>
-      <circle cx={cx} cy={cy} r="7" fill="var(--chu)" />
-      <text x="16" y="116" fill={MUTED} fontSize="11" style={mono}>
-        0
-      </text>
-      <text x="176" y="116" fill={MUTED} fontSize="11" style={mono}>
-        100
-      </text>
-    </svg>
-  );
-}
-
-function DanhSachMa({ ds, mau, hienThi, trong = "Không có mã nào" }) {
-  if (!ds.length) return <span className="text-sm" style={{ color: MUTED }}>{trong}</span>;
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      {ds.map((r) => {
-        const t = tenCongTy(r.ma);
-        return (
-          <Link
-            key={r.khoa ?? r.khoa_lenh ?? r.ma}
-            href={`/ma/${r.ma}`}
-            title={t?.ten}
-            className="inline-flex items-baseline gap-1.5 px-2 py-1 rounded-md text-xs hover:brightness-125 transition"
-            style={{ background: nhe(mau, 12), color: mau, border: `1px solid ${nhe(mau, 20)}` }}
-          >
-            <b style={{ ...mono, fontWeight: 700 }}>{r.ten_lenh ?? r.ma}</b>
-            {hienThi && <span style={{ ...mono, opacity: 0.85, fontSize: 11 }}>{hienThi(r)}</span>}
-          </Link>
-        );
-      })}
-    </div>
-  );
-}
-
-function DanhSachNganh({ ds, mau }) {
-  return (
-    <div className="flex flex-wrap gap-1.5">
-      {ds.map((n) => (
-        <span key={n.khoa} className="inline-flex items-baseline gap-1.5 px-2 py-1 rounded-md text-xs" style={{ background: nhe(mau, 12), color: mau, border: `1px solid ${nhe(mau, 20)}` }}>
-          <b style={{ ...sans, fontWeight: 600 }}>{n.nhan}</b>
-          <span style={{ ...mono, opacity: 0.85, fontSize: 11 }}>{pct(n.tb, 2)}</span>
-        </span>
+    <div className="flex rounded-full overflow-hidden gap-[2px]" style={{ height: cao }} aria-hidden="true">
+      {phan.filter(([n]) => n > 0).map(([n, mau], i) => (
+        <div key={i} style={{ width: `${(n / tong) * 100}%`, background: mau }} />
       ))}
     </div>
   );
 }
 
-// nhan / nhan2: 2 nhan (xanh, do) ben trai; children / children2: noi dung tuong ung ben phai.
-function HangRaSoat({ so, nhan, mauNhan = XANH, nhan2, mauNhan2 = DO, children, children2 }) {
+// Cot nho N phien (thanh khoan 20 phien): cot cuoi = phien moi nhat, to dam.
+function CotNho({ ds, mau }) {
+  const max = Math.max(...ds, 1);
   return (
-    <div className="grid md:grid-cols-[250px_1fr] gap-x-6 gap-y-2 py-4 border-b last:border-b-0" style={{ borderColor: "var(--vien-nhe)" }}>
-      <div className="flex gap-3">
-        <span className="shrink-0 w-6 h-6 rounded-md text-[11px] flex items-center justify-center" style={{ background: "rgba(108,92,231,0.2)", color: "var(--tim-chu)", fontWeight: 700, ...mono }}>
-          {so}
-        </span>
-        <div className="text-sm leading-snug" style={{ ...sans, fontWeight: 600 }}>
-          <p style={{ color: mauNhan }}>{nhan}</p>
-          {nhan2 && (
-            <p className="mt-2.5" style={{ color: mauNhan2 }}>
-              {nhan2}
-            </p>
-          )}
-        </div>
+    <div className="flex items-end gap-[2px] h-7" aria-hidden="true">
+      {ds.map((v, i) => (
+        <div key={i} className="flex-1 rounded-t-sm" style={{ height: `${Math.max(6, (v / max) * 100)}%`, background: mau, opacity: i === ds.length - 1 ? 1 : 0.4 }} />
+      ))}
+    </div>
+  );
+}
+
+function TyLeNho({ nhan, ty, mau }) {
+  return (
+    <div className="min-w-0">
+      <div className="flex justify-between text-[11px] mb-1" style={{ color: MUTED }}>
+        <span className="truncate">{nhan}</span>
+        <b style={{ color: TEXT, ...sans }}>{ty == null ? "—" : `${Math.round(ty)}%`}</b>
       </div>
-      <div className="min-w-0 space-y-2.5">
-        <div>{children}</div>
-        {children2 && <div>{children2}</div>}
+      <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--vien)" }}>
+        <div className="h-full rounded-full" style={{ width: `${Math.max(0, Math.min(100, ty ?? 0))}%`, background: mau }} />
       </div>
     </div>
   );
 }
 
-function ThanhTyLe({ ty, mau }) {
-  return (
-    <div className="h-1.5 rounded-full overflow-hidden" style={{ background: "var(--vien)" }}>
-      <div className="h-full rounded-full cs-vach" style={{ width: `${Math.max(0, Math.min(100, ty))}%`, background: mau }} />
-    </div>
-  );
-}
-
-function DongTyLe({ nhan, ty, mau }) {
-  return (
-    <div className="mb-2.5 last:mb-0">
-      <div className="flex justify-between text-xs mb-1" style={{ color: MUTED }}>
-        <span>{nhan}</span>
-        <b style={{ color: TEXT, ...mono }}>{ty == null ? "—" : `${ty.toFixed(0)}%`}</b>
-      </div>
-      <ThanhTyLe ty={ty ?? 0} mau={mau} />
-    </div>
-  );
-}
-
-function TieuDeKhoi({ children, phu, ngay }) {
-  return (
-    <div className="px-5 pt-5 pb-3 border-b" style={{ borderColor: VIEN }}>
-      <h2 className="text-lg" style={{ ...sans, fontWeight: 700 }}>
-        {children}
-        {ngay && <span style={{ color: MUTED, fontWeight: 400 }}> · {ngay}</span>}
-      </h2>
-      {phu && (
-        <p className="text-xs mt-1" style={{ color: MUTED }}>
-          {phu}
-        </p>
-      )}
-    </div>
-  );
-}
-
-// "Tong quan thi truong" (3 the tong hop + ra soat nhanh) - dung o trang Dashboard rieng, tach khoi
-// trang Tong quan (trang dau) de trang dau chi tap trung vao huong di lenh/vi the (xem components/CoHoiHomNay.js).
-export function TongQuanThiTruong({ tatCa, vnindex }) {
-  if (!tatCa?.length) return null;
-  const tq = tinhTongQuanThiTruong(tatCa, vnindex);
-  const capNhat = capNhatMoiNhat(tatCa);
-  const ngayHienThi = capNhat
-    ? new Date(capNhat).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh", day: "numeric", month: "numeric", year: "numeric" })
-    : "";
+// O "THONG KE PHIEN" (kieu FireAnt): do rong, thanh khoan HOSE so voi TB20 (cot 20 phien), khoi ngoai rong HOSE, ty le ma tren Kijun / can bang / dat diem, tam ly, muc giu lenh.
+// thanhKhoan: chuoi layChuoiThanhKhoanHOSE (tang dan, phan tu cuoi = phien moi nhat) hoac null; khoiNgoai: layDongTienNuocNgoai() hoac null - thieu thi bo dong do.
+export function TheThongKePhien({ tq, thanhKhoan, khoiNgoai }) {
+  const dr = tq.doRong;
   const tamLy = nhanTamLy(tq.tamLy);
-  const mauDoi = (v) => (v > 0 ? XANH : v < 0 ? DO : VANG);
-  const chuoiDoi = (r) => pct(r.doi, 1);
-
+  let tk = null;
+  if (thanhKhoan?.length >= 2) {
+    const homNay = thanhKhoan[thanhKhoan.length - 1];
+    const truoc20 = thanhKhoan.slice(-21, -1);
+    const tb20 = truoc20.reduce((s, x) => s + x.giaTriTy, 0) / truoc20.length;
+    tk = { giaTri: homNay.giaTriTy, khop: homNay.khopTy, ss: (homNay.giaTriTy / tb20 - 1) * 100, chuoi: thanhKhoan.slice(-20).map((x) => x.giaTriTy) };
+  }
   return (
-    <section aria-label="Tổng quan thị trường" className="mb-8">
-      {ngayHienThi && (
-        <p className="flex items-center gap-1.5 text-xs mb-3" style={{ color: MUTED, ...mono }}>
-          <CalendarDays size={13} aria-hidden="true" /> Số liệu ngày {ngayHienThi}
+    <OThiTruong tieuDe="Thống kê phiên" phu={`${tq.tong} mã hệ thống theo dõi`} may="thong-ke-phien">
+      <DongThongKe nhan="Độ rộng" phu={`tăng mạnh >3%: ${dr.tangManh} · giảm mạnh <−3%: ${dr.giamManh}`} gia={`${dr.tang} / ${dr.giam}`} mau={dr.tang >= dr.giam ? XANH : DO}>
+        <ThanhChong phan={[[dr.tang, XANH], [dr.dung, VANG], [dr.giam, DO]]} />
+        <p className="flex justify-between text-[11px] mt-1" style={sans}>
+          <span style={{ color: XANH }}>{dr.tang} tăng</span>
+          <span style={{ color: VANG }}>{dr.dung} đứng giá</span>
+          <span style={{ color: DO }}>{dr.giam} giảm</span>
         </p>
+      </DongThongKe>
+      {tk && (
+        <DongThongKe nhan="Thanh khoản HOSE" phu={`khớp lệnh ${tyVN(tk.khop)} tỷ · ${tk.ss >= 0 ? "cao" : "thấp"} hơn TB20 ${soVN(Math.abs(tk.ss), 1)}%`} gia={`${tyVN(tk.giaTri)} tỷ`} mau={tk.ss >= 0 ? XANH : DO}>
+          <CotNho ds={tk.chuoi} mau="var(--tim-nhat)" />
+        </DongThongKe>
       )}
-
-      {/* 3 THE TONG HOP */}
-      <div className="grid md:grid-cols-3 gap-4 mb-6">
-        <The may="xu-huong-tt" tieuDe="Xu hướng thị trường" phu="Theo điểm Trend của chính VN-Index (Ichimoku + đường cân bằng dài hạn).">
-          {vnindex ? (
-            <div className="text-center">
-              <span className="inline-block px-4 py-1.5 rounded-full text-sm mb-3" style={{ background: nhe(tq.xuHuong.mau, 13), color: tq.xuHuong.mau, border: `1px solid ${nhe(tq.xuHuong.mau, 33)}`, fontWeight: 700 }}>
-                {tq.xuHuong.nhan}
-              </span>
-              <p className="text-3xl" style={{ ...mono, fontWeight: 700 }}>
-                <SoChay gia={vnindex.gia} chuSo={2} coDinh={false} />
-              </p>
-              <p className="text-sm" style={{ color: mauDoi(vnindex.doi), ...mono }}>
-                <SoChay gia={vnindex.doi} chuSo={2} kieu="pct" />
-              </p>
-            </div>
-          ) : (
-            <p className="text-sm text-center" style={{ color: MUTED }}>
-              Chưa có dữ liệu VN-Index.
-            </p>
-          )}
-        </The>
-
-        <The may="tam-ly" tieuDe="Tâm lý thị trường" phu="Trung bình 4 tỷ lệ: mã tăng giá, mã trên Kijun, mã trên đường cân bằng dài hạn, mã đạt điểm MUA (tự tính, không phải chỉ báo chuẩn).">
-          <DongHoTamLy diem={tq.tamLy} />
-          <p className="text-center -mt-1">
-            <span className="text-2xl" style={{ ...mono, fontWeight: 700 }}>
-              {tq.tamLy == null ? "—" : <SoChay gia={tq.tamLy} />}
-            </span>{" "}
-            <span className="text-sm" style={{ color: tamLy.mau, fontWeight: 600 }}>
-              {tamLy.nhan}
-            </span>
-          </p>
-        </The>
-
-        <The may="muc-giu-lenh" tieuDe="Mức giữ lệnh của hệ thống" phu="Số mã đang MUA hoặc NẮM GIỮ trên tổng số mã hệ thống theo dõi. Chỉ là thống kê, không phải khuyến nghị tỷ trọng.">
-          <p className="text-center text-4xl mb-1" style={{ ...mono, fontWeight: 700, color: PRIMARY }}>
-            {tq.tyLeDangGiu == null ? "—" : <SoChay gia={Math.round(tq.tyLeDangGiu)} hau="%" />}
-          </p>
-          <p className="text-center text-xs mb-4" style={{ color: MUTED }}>
-            {tq.dangGiu}/{tq.tong} mã đang giữ lệnh
-          </p>
-          <ThanhTyLe ty={tq.tyLeDangGiu ?? 0} mau={PRIMARY} />
-          <div className="flex justify-between text-[11px] mt-1" style={{ color: MUTED, ...mono }}>
-            <span>0%</span>
-            <span>50%</span>
-            <span>100%</span>
-          </div>
-        </The>
-      </div>
-
-      {/* RA SOAT NHANH */}
-      <div className="rounded-2xl border" style={{ borderColor: VIEN, background: NEN_CARD }}>
-        <TieuDeKhoi
-          ngay={ngayHienThi}
-          phu={`Tính trên ${tq.tong} mã hệ thống theo dõi (không phải toàn thị trường); top tăng / giảm chỉ xét mã có GTGD TB20 từ 5 tỷ.`}
-        >
-          Rà soát nhanh thị trường
-        </TieuDeKhoi>
-        <div className="px-5">
-          <HangRaSoat so="1" nhan="Độ rộng thị trường">
-            <p className="text-sm mb-2.5" style={sans}>
-              <b style={{ color: XANH }}>{tq.doRong.tang} mã tăng</b> / <b style={{ color: DO }}>{tq.doRong.giam} mã giảm</b>
-              {tq.doRong.dung > 0 && <span style={{ color: VANG }}> / {tq.doRong.dung} đứng giá</span>}
-              <span style={{ color: MUTED }}>
-                {" "}
-                (tăng mạnh &gt;3%: {tq.doRong.tangManh} · tăng nhẹ: {tq.doRong.tangNhe} · giảm nhẹ: {tq.doRong.giamNhe} · giảm mạnh &lt;−3%: {tq.doRong.giamManh})
-              </span>
-            </p>
-            <div className="flex h-2.5 rounded-full overflow-hidden cs-vach" style={{ background: "var(--vien)" }} aria-hidden="true">
-              {[
-                [tq.doRong.tangManh, "var(--xanh-dam)"],
-                [tq.doRong.tangNhe, "var(--xanh-nhat)"],
-                [tq.doRong.dung, VANG],
-                [tq.doRong.giamNhe, "var(--do-nhat)"],
-                [tq.doRong.giamManh, "#B91C1C"],
-              ].map(([n, mau]) => (
-                <div key={mau} style={{ width: `${(n / Math.max(tq.doRong.tong, 1)) * 100}%`, background: mau }} />
-              ))}
-            </div>
-          </HangRaSoat>
-
-          <HangRaSoat so="2" nhan="Top tăng giá" nhan2="Top giảm giá" children2={<DanhSachMa ds={tq.topGiam} mau={DO} hienThi={chuoiDoi} />}>
-            <DanhSachMa ds={tq.topTang} mau={XANH} hienThi={chuoiDoi} />
-          </HangRaSoat>
-
-          <HangRaSoat so="3" nhan="Đạt điểm, đang chờ phiên sau" mauNhan={VANG}>
-            <DanhSachMa ds={tq.choPhienSau} mau={VANG} hienThi={(r) => `điểm ${fmt(r.diem)}`} />
-          </HangRaSoat>
-
-          <HangRaSoat so="4" nhan="Mã vượt đỉnh 52 tuần">
-            <p className="text-xs mb-2" style={{ color: MUTED }}>
-              {tq.soVuotDinh} mã đang ở hoặc trên đỉnh 52 tuần (hiện 10 mã thanh khoản lớn nhất).
-            </p>
-            <DanhSachMa ds={tq.vuotDinh} mau={XANH} hienThi={chuoiDoi} />
-          </HangRaSoat>
-
-          <HangRaSoat so="5" nhan="Top ngành tích cực" nhan2="Top ngành tiêu cực" children2={<DanhSachNganh ds={tq.nganhXau} mau={DO} />}>
-            <DanhSachNganh ds={tq.nganhTot} mau={XANH} />
-          </HangRaSoat>
-
-          <HangRaSoat so="6" nhan="Thống kê mã so với đường trung bình của hệ thống">
-            <DongTyLe nhan="Mã có giá trên Kijun (17 phiên)" ty={tq.tren.kijun} mau="#3B9EFF" />
-            <DongTyLe nhan="Mã có giá trên đường cân bằng dài hạn" ty={tq.tren.canBang} mau="var(--tim-nhat)" />
-            <DongTyLe nhan="Mã đạt điểm MUA (từ 1,25 điểm)" ty={tq.tren.datDiem} mau={XANH} />
-          </HangRaSoat>
+      {khoiNgoai && (
+        <DongThongKe nhan="Khối ngoại ròng HOSE" phu={`phiên ${khoiNgoai.ngay.split("-").reverse().slice(0, 2).join("/")}`} gia={`${khoiNgoai.rongHose > 0 ? "+" : ""}${tyVN(khoiNgoai.rongHose)} tỷ`} mau={khoiNgoai.rongHose >= 0 ? XANH : DO} />
+      )}
+      <DongThongKe nhan="Vị trí giá của các mã">
+        <div className="grid grid-cols-3 gap-3">
+          <TyLeNho nhan="Trên Kijun" ty={tq.tren.kijun} mau="#3B9EFF" />
+          <TyLeNho nhan="Trên cân bằng" ty={tq.tren.canBang} mau="var(--tim-nhat)" />
+          <TyLeNho nhan="Đạt điểm MUA" ty={tq.tren.datDiem} mau={XANH} />
         </div>
-      </div>
-    </section>
+      </DongThongKe>
+      <DongThongKe may="tam-ly" nhan="Tâm lý thị trường" phu="trung bình 4 tỷ lệ: mã tăng, trên Kijun, trên cân bằng, đạt điểm" gia={tq.tamLy == null ? "—" : `${tq.tamLy} · ${tamLy.nhan}`} mau={tamLy.mau}>
+        <div className="relative h-1.5 rounded-full" style={{ background: "linear-gradient(90deg, var(--do), var(--cam), var(--vang), var(--chanh), var(--xanh))" }} aria-hidden="true">
+          {tq.tamLy != null && <span className="absolute -top-1 w-1 h-3.5 rounded-full" style={{ left: `calc(${tq.tamLy}% - 2px)`, background: "var(--chu)" }} />}
+        </div>
+      </DongThongKe>
+      <DongThongKe may="muc-giu-lenh" nhan="Mức giữ lệnh của hệ thống" phu={`${tq.dangGiu}/${tq.tong} mã đang MUA hoặc NẮM GIỮ`} gia={tq.tyLeDangGiu == null ? "—" : `${Math.round(tq.tyLeDangGiu)}%`} mau="var(--tim-chu)" />
+    </OThiTruong>
   );
 }
+
+function DongMa({ r, mau }) {
+  const ten = r.ten_ngan ?? tenCongTy(r.ma)?.ten; // ten ngan ("Chung khoan SSI") de khong bi cat cut "Cong ty Co phan..."
+  return (
+    <Link href={`/ma/${r.ma}`} className="flex items-center justify-between gap-2 py-1.5 border-b last:border-b-0 hover:opacity-80" style={{ borderColor: "var(--vien-nhe)" }}>
+      <span className="min-w-0">
+        <b className="text-[13px]" style={sans}>
+          {r.ma}
+        </b>
+        {ten && (
+          <span className="block text-[11px] truncate" style={{ color: MUTED }}>
+            {ten}
+          </span>
+        )}
+      </span>
+      <b className="text-[13px] whitespace-nowrap" style={{ color: mau, ...sans }}>
+        {pct(r.doi, 2)}
+      </b>
+    </Link>
+  );
+}
+
+// O "TOP BIEN DONG": 6 ma tang / 6 ma giam manh nhat (chi ma GTGD TB20 tu 5 ty) - 2 cot.
+export function TheBienDong({ tq }) {
+  return (
+    <OThiTruong tieuDe="Top biến động" phu="mã GTGD TB20 từ 5 tỷ">
+      <div className="grid grid-cols-2 gap-x-5">
+        <div className="min-w-0">
+          <p className="text-xs mb-1" style={{ color: XANH, ...sans, fontWeight: 600 }}>
+            Tăng mạnh
+          </p>
+          {tq.topTang.slice(0, 6).map((r) => (
+            <DongMa key={r.ma} r={r} mau={XANH} />
+          ))}
+        </div>
+        <div className="min-w-0">
+          <p className="text-xs mb-1" style={{ color: DO, ...sans, fontWeight: 600 }}>
+            Giảm mạnh
+          </p>
+          {tq.topGiam.slice(0, 6).map((r) => (
+            <DongMa key={r.ma} r={r} mau={DO} />
+          ))}
+        </div>
+      </div>
+    </OThiTruong>
+  );
+}
+
+function Chip({ href, mau, chinh, phu }) {
+  const noiDung = (
+    <>
+      <b style={{ ...sans, fontWeight: 700 }}>{chinh}</b>
+      {phu && <span style={{ opacity: 0.85, fontSize: 11 }}>{phu}</span>}
+    </>
+  );
+  const kieu = { background: nhe(mau, 12), color: mau, border: `1px solid ${nhe(mau, 20)}` };
+  return href ? (
+    <Link href={href} className="inline-flex items-baseline gap-1.5 px-2 py-1 rounded-md text-xs hover:brightness-125 transition" style={kieu}>
+      {noiDung}
+    </Link>
+  ) : (
+    <span className="inline-flex items-baseline gap-1.5 px-2 py-1 rounded-md text-xs" style={kieu}>
+      {noiDung}
+    </span>
+  );
+}
+
+function NhomChip({ nhan, mau, children }) {
+  return (
+    <div className="py-3 border-t first:border-t-0 first:pt-0 last:pb-0" style={{ borderColor: "var(--vien-nhe)" }}>
+      <p className="text-xs mb-2" style={{ color: mau, ...sans, fontWeight: 600 }}>
+        {nhan}
+      </p>
+      <div className="flex flex-wrap gap-1.5">{children}</div>
+    </div>
+  );
+}
+
+// O "NGANH & DIEM NOI BAT": nganh tich cuc / tieu cuc (trung binh % trong phien), ma vuot dinh 52 tuan, ma dat diem dang cho phien sau.
+export function TheNoiBat({ tq }) {
+  return (
+    <OThiTruong
+      tieuDe="Ngành & điểm nổi bật"
+      phai={
+        <Link href="/nganh" className="text-xs" style={{ color: "var(--tim-chu)" }}>
+          Phân tích ngành →
+        </Link>
+      }
+    >
+      <NhomChip nhan="Ngành tích cực" mau={XANH}>
+        {tq.nganhTot.map((n) => (
+          <Chip key={n.khoa} mau={XANH} chinh={n.nhan} phu={pct(n.tb, 2)} />
+        ))}
+      </NhomChip>
+      <NhomChip nhan="Ngành tiêu cực" mau={DO}>
+        {tq.nganhXau.map((n) => (
+          <Chip key={n.khoa} mau={DO} chinh={n.nhan} phu={pct(n.tb, 2)} />
+        ))}
+      </NhomChip>
+      <NhomChip nhan={`Vượt đỉnh 52 tuần · ${tq.soVuotDinh} mã`} mau={XANH}>
+        {tq.vuotDinh.length ? tq.vuotDinh.slice(0, 8).map((r) => <Chip key={r.ma} href={`/ma/${r.ma}`} mau={XANH} chinh={r.ma} phu={pct(r.doi, 1)} />) : <span className="text-xs" style={{ color: MUTED }}>Không có mã nào</span>}
+      </NhomChip>
+      <NhomChip nhan="Đạt điểm, đang chờ phiên sau" mau={VANG}>
+        {tq.choPhienSau.length ? tq.choPhienSau.slice(0, 10).map((r) => <Chip key={r.khoa ?? r.ma} href={`/ma/${r.ma}`} mau={VANG} chinh={r.ma} phu={`điểm ${fmt(r.diem)}`} />) : <span className="text-xs" style={{ color: MUTED }}>Không có mã nào</span>}
+      </NhomChip>
+    </OThiTruong>
+  );
+}
+
