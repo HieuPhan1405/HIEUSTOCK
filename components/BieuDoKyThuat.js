@@ -3,7 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import { createChart, createSeriesMarkers, BaselineSeries, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
-import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2 } from "lucide-react";
+import Link from "next/link";
+import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2, Eraser } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
 import { phanKyRSI, phanKyRSISom } from "@/lib/phanKyRSI";
@@ -149,6 +150,24 @@ const CONG_CU_VE = [
 ];
 const MAU_VE = ["#F6C544", "#3B9EFF", "#22C55E", "#EF4444", "#E879F9", "#E5E7EB"];
 const khoaLuu = (ma, kt) => `cs-ve|${ma}|${kt}`;
+
+// NUT VUONG cua THANH CONG CU VE DOC ben trai (bo cuc kieu FireAnt Charts, chi trang /bieu-do): chi bieu tuong, ten o title.
+function NutDoc({ chon = false, onClick, title, disabled = false, mau, children }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      title={title}
+      aria-label={title}
+      aria-pressed={chon}
+      className="w-8 h-8 shrink-0 rounded-md flex items-center justify-center hover:bg-[color:var(--hover-nhe)]"
+      style={{ background: chon ? "rgba(108,92,231,0.22)" : undefined, color: chon ? "var(--chu)" : mau ?? "var(--mo)", opacity: disabled ? 0.4 : 1, cursor: disabled ? "default" : "pointer" }}
+    >
+      {children}
+    </button>
+  );
+}
 
 // Ngay giao dich ke tiep (bo qua T7/CN; khong biet ngay le) dung de ve "may tuong lai" - chi mang tinh hien thi.
 function ngayTuongLai(ngayCuoi, k, tuan) {
@@ -308,7 +327,8 @@ function Chip({ bat, onClick, children, mau, may }) {
 // Bieu do ky thuat kieu FireAnt/TradingView: nen Nhat + khoi luong + Ichimoku (9-17-33, may) + duong can bang dai han (65/129) + MA,
 // ve them vung mua / cat lo / chot loi cua he thong (neu ma dang giu lenh). Cong thuc chi bao giong het AFL.
 // Gia = gia DA DIEU CHINH co tuc/thuong CP (giong du lieu AmiBroker) de chi bao khop tin hieu; nguon qua /api/gia-lich-su.
-export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330 }) {
+// boCucRong (trang /bieu-do, 10/11/2026 kieu FireAnt Charts): cong cu ve thanh DOC ben trai luon hien (may tinh), o THONG TIN MA ben phai (man >= 1280px). thongTinMa: { ten, san, nganh, vonHoaTy, gtgdTb20, dinh52, diem } - chi truong cong khai.
+export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null }) {
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
@@ -962,6 +982,66 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
   const truoc = nen && idx > 0 ? nen[idx - 1].c : null;
   const doiPct = hienTai && truoc ? ((hienTai.c - truoc) / truoc) * 100 : null;
   const mauDoi = doiPct == null ? MUTED : doiPct >= 0 ? XANH : DO;
+  const veDoc = boCucRong && !toanMH; // thanh cong cu ve doc ben trai (may tinh)
+  const benPhai = boCucRong && !toanMH; // o thong tin ma ben phai (man >= 1280px)
+  // Noi dung O THONG TIN MA: dung chung cho o ben phai (boCucRong) va khung ben phai khi xem toan man hinh.
+  const noiDungThongTin = (
+    <>
+      {hienTai && (
+        <div>
+          <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 800 }}>{ma}</p>
+          <p className="text-3xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 800, color: mauDoi }}>{fmt(hienTai.c)}</p>
+          {doiPct != null && <p className="text-sm font-bold" style={{ color: mauDoi }}>{pctVN(doiPct, 2)}</p>}
+          <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs" style={{ fontFamily: "var(--font-chu)" }}>
+            {[["Mở", hienTai.o], ["Cao", hienTai.h], ["Thấp", hienTai.l], ["Tham chiếu", truoc]].map(([k, v]) => (
+              <div key={k} className="flex justify-between"><dt style={{ color: MUTED }}>{k}</dt><dd style={{ color: TEXT, fontWeight: 600 }}>{v != null ? fmt(v) : "—"}</dd></div>
+            ))}
+            <div className="flex justify-between col-span-2"><dt style={{ color: MUTED }}>KL</dt><dd style={{ color: TEXT, fontWeight: 600 }}>{chuoiKL(hienTai.v)}</dd></div>
+            <div className="flex justify-between col-span-2"><dt style={{ color: MUTED }}>Nến</dt><dd style={{ color: TEXT, fontWeight: 600 }}>{nhanThoiGian(hienTai.t)}</dd></div>
+          </dl>
+        </div>
+      )}
+      {thongTinMa && (
+        <div className="text-xs border-t pt-3" style={{ borderColor: VIEN, fontFamily: "var(--font-chu)" }}>
+          <p className="text-[11px] mb-1.5" style={{ color: MUTED }}>Thông tin cổ phiếu</p>
+          {thongTinMa.ten && <p className="mb-1.5 leading-snug" style={{ color: TEXT, fontWeight: 600 }}>{thongTinMa.ten}</p>}
+          <dl className="flex flex-col gap-1">
+            {[
+              ["Sàn", thongTinMa.san],
+              ["Ngành", thongTinMa.nganh],
+              ["Vốn hoá", thongTinMa.vonHoaTy != null ? `${soVN(thongTinMa.vonHoaTy, 0)} tỷ` : null],
+              ["GTGD TB20", thongTinMa.gtgdTb20 != null ? `${soVN(thongTinMa.gtgdTb20, 1)} tỷ/phiên` : null],
+              ["Đỉnh 52 tuần", thongTinMa.dinh52 != null ? fmt(thongTinMa.dinh52) : null],
+              ["Điểm hợp lưu", thongTinMa.diem != null ? soVN(thongTinMa.diem, 2, true) : null],
+            ]
+              .filter(([, v]) => v != null && v !== "")
+              .map(([k, v]) => (
+                <div key={k} className="flex justify-between gap-2"><dt style={{ color: MUTED }}>{k}</dt><dd className="text-right" style={{ color: TEXT, fontWeight: 600 }}>{v}</dd></div>
+              ))}
+          </dl>
+          {ma !== "VNINDEX" && (
+            <Link href={`/ma/${ma}`} className="inline-block mt-2" style={{ color: "var(--tim-chu)" }}>
+              Xem chi tiết {ma} →
+            </Link>
+          )}
+        </div>
+      )}
+      {thongTin && (
+        <div className="border-t pt-3" style={{ borderColor: VIEN }}>
+          <p className="text-[11px] mb-1.5" style={{ color: MUTED }}>Tín hiệu hệ thống</p>
+          <BangThongTinBieuDo tt={thongTin} />
+        </div>
+      )}
+      {conVung && (
+        <div className="text-xs border-t pt-3" style={{ borderColor: VIEN, fontFamily: "var(--font-chu)" }}>
+          <p className="text-[11px] mb-1.5" style={{ color: MUTED }}>Vùng lệnh</p>
+          {daiTuVung(vung).map((d) => (
+            <div key={d.nhan} className="flex justify-between py-0.5"><span style={{ color: `rgb(${d.mau})` }}>{d.nhan}</span><b>{d.tu === d.den ? fmt(d.tu) : `${fmt(d.tu)} – ${fmt(d.den)}`}</b></div>
+          ))}
+        </div>
+      )}
+    </>
+  );
   // chip chi bao: luon hien 2 lop chinh (Ichimoku, can bang dai han) + chi bao dang bat; bam "+ Chi bao khac" (hoac toan man hinh) moi hien het
   const hienChip = (k) => toanMH || moChiBao || k === "ichimoku" || k === "canBang" || !!bat[k];
   const hienVe = toanMH || moVe || congCu != null;
@@ -1037,7 +1117,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
             </button>
           )}
           {!toanMH && (
-            <button type="button" onClick={() => setMoVe((v) => !v)} aria-expanded={moVe || congCu != null} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs cursor-pointer" style={{ border: `1px solid ${moVe || congCu != null ? PRIMARY : VIEN}`, background: moVe || congCu != null ? "rgba(108,92,231,0.18)" : "transparent", color: moVe || congCu != null ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}>
+            <button type="button" onClick={() => setMoVe((v) => !v)} aria-expanded={moVe || congCu != null} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs cursor-pointer${boCucRong ? " md:hidden" : ""}`} style={{ border: `1px solid ${moVe || congCu != null ? PRIMARY : VIEN}`, background: moVe || congCu != null ? "rgba(108,92,231,0.18)" : "transparent", color: moVe || congCu != null ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}>
               <PenLine size={13} strokeWidth={2} /> Công cụ vẽ
             </button>
           )}
@@ -1156,7 +1236,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       {hienVe && (
         <>
         {/* THANH CONG CU KE VE: chon cong cu roi bam / bam hai lan len bieu do; bam vao hinh de chon, keo diem dau mut de sua, Delete de xoa; Esc huy. */}
-        <div className={`flex items-center gap-x-1.5 gap-y-1.5 px-3 py-2 border-b ${toanMH ? "shrink-0 overflow-x-auto flex-nowrap [&>*]:shrink-0" : "flex-wrap max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:[&>*]:shrink-0 max-sm:[scrollbar-width:none]"}`} style={{ borderColor: VIEN }} data-may="cong-cu-ve">
+        <div className={`flex items-center gap-x-1.5 gap-y-1.5 px-3 py-2 border-b ${toanMH ? "shrink-0 overflow-x-auto flex-nowrap [&>*]:shrink-0" : "flex-wrap max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:[&>*]:shrink-0 max-sm:[scrollbar-width:none]"}${veDoc ? " md:hidden" : ""}`} style={{ borderColor: VIEN }} data-may="cong-cu-ve">
           <span className="text-[11px] mr-1 hidden sm:inline" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}>
             Công cụ vẽ
           </span>
@@ -1270,7 +1350,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         </div>
 
         {/* Dong goi y luon hien, cao co dinh: neu chi hien khi chon cong cu thi bieu do bi day xuong, lech vi tri con tro */}
-        <div className="px-3 h-7 flex items-center text-[11px] border-b truncate" style={{ borderColor: VIEN, color: congCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}>
+        <div className={`px-3 h-7 flex items-center text-[11px] border-b truncate${veDoc ? " md:hidden" : ""}`} style={{ borderColor: VIEN, color: congCu ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}>
           {congCu ? (
             <span>
               {congCu === "gapKhuc" ? (
@@ -1291,14 +1371,60 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         </>
       )}
       {thongTin && !toanMH && (
-        <div className="min-[1340px]:hidden px-3 py-2 border-b" style={{ borderColor: VIEN }}>
+        <div className={`${boCucRong ? "xl:hidden" : "min-[1340px]:hidden"} px-3 py-2 border-b`} style={{ borderColor: VIEN }}>
           <BangThongTinBieuDo tt={thongTin} />
         </div>
       )}
-      <div className={toanMH ? "flex flex-1 min-h-0" : ""}>
-      <div className={toanMH ? "relative flex-1 min-w-0" : "relative"} style={toanMH ? undefined : { height: chieuCaoTong }}>
+      <div className={toanMH ? "flex flex-1 min-h-0" : boCucRong ? "flex" : ""}>
+      {veDoc && (
+        <div className="hidden md:flex flex-col items-center gap-1 py-2 px-1 border-r overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" style={{ borderColor: VIEN, height: chieuCaoTong }} role="toolbar" aria-label="Công cụ vẽ" data-may="cong-cu-ve">
+          <NutDoc chon={congCu === null} onClick={() => setCongCuState(null)} title="Con trỏ: kéo, thu phóng biểu đồ; bấm vào hình vẽ để chọn">
+            <MousePointer2 size={16} strokeWidth={2} />
+          </NutDoc>
+          {CONG_CU_VE.map(({ khoa: k, nhan, Icon }) => (
+            <NutDoc key={k} chon={congCu === k} onClick={() => setCongCuState((c) => (c === k ? null : k))} title={`${nhan}: bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ`}>
+              {Icon ? <Icon size={16} strokeWidth={2} /> : <span className="text-[10px] font-bold leading-none">Fib</span>}
+            </NutDoc>
+          ))}
+          <span className="w-6 h-px my-1 shrink-0" style={{ background: VIEN }} aria-hidden="true" />
+          <NutDoc chon={giuCongCu} onClick={() => setGiuCongCu((v) => !v)} title="Giữ công cụ: vẽ xong vẫn giữ công cụ đang chọn để vẽ tiếp (Esc để thoát)">
+            {giuCongCu ? <Lock size={15} strokeWidth={2} /> : <LockOpen size={15} strokeWidth={2} />}
+          </NutDoc>
+          <NutDoc chon={hitGia} onClick={() => setHitGia((v) => !v)} title="Hít giá: điểm vẽ tự bám vào Mở / Cao / Thấp / Đóng của nến gần nhất">
+            <Magnet size={15} strokeWidth={2} />
+          </NutDoc>
+          <NutDoc disabled={!lichSuVe.coHoanTac} onClick={() => veRef.current?.lopVe.hoanTac()} title="Hoàn tác (Ctrl+Z)">
+            <Undo2 size={15} strokeWidth={2} />
+          </NutDoc>
+          <NutDoc disabled={!lichSuVe.coLamLai} onClick={() => veRef.current?.lopVe.lamLai()} title="Làm lại (Ctrl+Y)">
+            <Redo2 size={15} strokeWidth={2} />
+          </NutDoc>
+          <NutDoc disabled={!chonVe} mau={chonVe ? DO : undefined} onClick={() => veRef.current?.lopVe.xoaChon()} title="Xóa hình đang chọn (phím Delete)">
+            <Trash2 size={15} strokeWidth={2} />
+          </NutDoc>
+          <NutDoc
+            disabled={soHinhVe === 0}
+            onClick={() => {
+              if (soHinhVe > 0 && window.confirm(`Xóa tất cả ${soHinhVe} hình vẽ của ${ma}?`)) veRef.current?.lopVe.xoaHet();
+            }}
+            title={`Xóa tất cả hình vẽ của mã này${soHinhVe > 0 ? ` (${soHinhVe})` : ""}`}
+          >
+            <Eraser size={15} strokeWidth={2} />
+          </NutDoc>
+          <span className="w-6 h-px my-1 shrink-0" style={{ background: VIEN }} aria-hidden="true" />
+          {MAU_VE.map((m) => (
+            <button key={m} type="button" onClick={() => setMauVe(m)} aria-label={`Màu nét vẽ ${m}`} aria-pressed={mauVe === m} className="w-4 h-4 shrink-0 rounded-full cursor-pointer my-0.5" style={{ background: m, outline: mauVe === m ? `2px solid ${TEXT}` : "none", outlineOffset: 1 }} />
+          ))}
+        </div>
+      )}
+      <div className={toanMH || boCucRong ? "relative flex-1 min-w-0" : "relative"} style={toanMH ? undefined : { height: chieuCaoTong }}>
         <div ref={khungRef} className="absolute inset-0" />
-        {thongTin && !toanMH && (
+        {veDoc && congCu && (
+          <div className="hidden md:block absolute left-3 bottom-8 z-10 pointer-events-none text-[11px] rounded px-2 py-1" style={{ background: `color-mix(in srgb, ${NEN_CARD} 85%, transparent)`, color: TEXT, fontFamily: "'Open Sans', sans-serif" }}>
+            {congCu === "gapKhuc" ? "Đường dẫn: chuột trái thêm đoạn, chuột phải / bấm đúp để kết thúc." : congCu === "frvp" ? "Bấm nến bắt đầu rồi nến kết thúc (hoặc kéo - thả)." : "Bấm 2 lần hoặc bấm - kéo - thả để vẽ."} Esc để thoát.
+          </div>
+        )}
+        {thongTin && !toanMH && !boCucRong && (
           <div className="hidden min-[1340px]:block absolute right-[76px] top-2 z-10 pointer-events-none">
             <BangThongTinBieuDo tt={thongTin} />
           </div>
@@ -1347,36 +1473,14 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           </div>
         )}
       </div>
+      {benPhai && (
+        <aside className="hidden xl:flex w-[272px] shrink-0 flex-col gap-3 overflow-y-auto border-l p-3" style={{ borderColor: VIEN, height: chieuCaoTong }} aria-label="Thông tin mã">
+          {noiDungThongTin}
+        </aside>
+      )}
       {toanMH && (
         <aside className="hidden md:flex w-[300px] shrink-0 flex-col gap-3 overflow-y-auto border-l p-3" style={{ borderColor: VIEN }} aria-label="Thông tin mã">
-          {hienTai && (
-            <div>
-              <p className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 800 }}>{ma}</p>
-              <p className="text-3xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 800, color: mauDoi }}>{fmt(hienTai.c)}</p>
-              {doiPct != null && <p className="text-sm font-bold" style={{ color: mauDoi }}>{pctVN(doiPct, 2)}</p>}
-              <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs" style={{ fontFamily: "var(--font-chu)" }}>
-                {[["Mở", hienTai.o], ["Cao", hienTai.h], ["Thấp", hienTai.l], ["Tham chiếu", truoc]].map(([k, v]) => (
-                  <div key={k} className="flex justify-between"><dt style={{ color: MUTED }}>{k}</dt><dd style={{ color: TEXT, fontWeight: 600 }}>{v != null ? fmt(v) : "—"}</dd></div>
-                ))}
-                <div className="flex justify-between col-span-2"><dt style={{ color: MUTED }}>KL</dt><dd style={{ color: TEXT, fontWeight: 600 }}>{chuoiKL(hienTai.v)}</dd></div>
-                <div className="flex justify-between col-span-2"><dt style={{ color: MUTED }}>Nến</dt><dd style={{ color: TEXT, fontWeight: 600 }}>{nhanThoiGian(hienTai.t)}</dd></div>
-              </dl>
-            </div>
-          )}
-          {thongTin && (
-            <div>
-              <p className="text-[11px] mb-1.5 " style={{ color: MUTED }}>Tín hiệu hệ thống</p>
-              <BangThongTinBieuDo tt={thongTin} />
-            </div>
-          )}
-          {conVung && (
-            <div className="text-xs" style={{ fontFamily: "var(--font-chu)" }}>
-              <p className="text-[11px] mb-1.5 " style={{ color: MUTED }}>Vùng lệnh</p>
-              {daiTuVung(vung).map((d) => (
-                <div key={d.nhan} className="flex justify-between py-0.5"><span style={{ color: `rgb(${d.mau})` }}>{d.nhan}</span><b>{d.tu === d.den ? fmt(d.tu) : `${fmt(d.tu)} – ${fmt(d.den)}`}</b></div>
-              ))}
-            </div>
-          )}
+          {noiDungThongTin}
           <p className="text-[11px] leading-relaxed" style={{ color: MUTED }}>Esc: thu nhỏ. Chỉ để tham khảo, không phải khuyến nghị mua bán.</p>
         </aside>
       )}

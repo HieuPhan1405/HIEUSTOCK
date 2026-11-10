@@ -8,6 +8,8 @@ import { tinhVungLenh } from "@/components/dungChung";
 import { tenCongTy } from "@/lib/tenMa";
 import NutThamGia from "@/components/NutThamGia";
 import XemNhanhDanhSach from "@/components/XemNhanhDanhSach";
+import TabMaBieuDo from "@/components/TabMaBieuDo";
+import { NGANH_NHAN } from "@/lib/nganh";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -51,15 +53,30 @@ export default async function TrangBieuDo({ searchParams }) {
           laiLo: row.lai_lo_pct,
         }
       : null;
+  // O THONG TIN MA ben phai bieu do (kieu FireAnt): chi truong CONG KHAI (khach cung thay o trang ma) - ten, san, nganh, von hoa, GTGD, dinh 52 tuan, diem hop luu.
+  const thongTinMa =
+    ma === "VNINDEX"
+      ? null
+      : {
+          ten: ten?.ten ?? row?.ten_cong_ty ?? null,
+          san: ten?.san ?? null,
+          nganh: row?.nganh ? NGANH_NHAN[row.nganh] || row.nganh : null,
+          vonHoaTy: row?.von_hoa_ty ?? null,
+          gtgdTb20: row?.gtgd_tb20 ?? null,
+          dinh52: row?.dinh_52t ?? null,
+          diem: row?.diem ?? null,
+        };
 
   // 10/11/2026 bo cuc kieu FireAnt Charts: bo tieu de to + dong huong dan, gom O TIM MA + XEM NHANH + TEN MA vao 1 HANG cong cu, bieu do rong het chieu ngang va cao toi sat day man hinh.
   return (
     <div className="px-3 sm:px-4 py-3" style={{ color: TEXT }}>
       <h1 className="sr-only">Biểu đồ kỹ thuật {ma}</h1>
+      <TabMaBieuDo ma={ma} idOTim="o-tim-ma-bieu-do" />
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-2">
         <form action="/bieu-do" method="get" className="relative w-36 shrink-0">
           <Search size={14} aria-hidden="true" className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: MUTED }} />
           <input
+            id="o-tim-ma-bieu-do"
             name="ma"
             defaultValue={ma}
             key={ma}
@@ -91,7 +108,7 @@ export default async function TrangBieuDo({ searchParams }) {
         <XemNhanhDanhSach ma={ma} goiY={GOI_Y} className="lg:ml-auto" />
       </div>
 
-      <BieuDoKyThuat ma={ma} vung={vung} ngayMua={vung ? row.ngay_mua : null} chieuCao={520} layDayManHinh truCao={250} thongTin={thongTin} />
+      <BieuDoKyThuat ma={ma} vung={vung} ngayMua={vung ? row.ngay_mua : null} chieuCao={520} layDayManHinh truCao={290} thongTin={thongTin} boCucRong thongTinMa={thongTinMa} />
     </div>
   );
 }
