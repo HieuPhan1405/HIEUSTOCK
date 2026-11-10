@@ -13,6 +13,8 @@ import NhanPhuTinHieu, { dsNhanPhu } from "@/components/NhanPhuTinHieu";
 import { CAC_COT } from "@/components/cotChung";
 import { COT_CHI_BAO_HIEN, THU_TU_COT_CHI_BAO } from "@/components/cotChiBao";
 import BoLocChiBaoKyThuat from "@/components/BoLocChiBaoKyThuat";
+import KhungBoLocCuaToi from "@/components/KhungBoLocCuaToi";
+import { laMaTheoDoi, LOC_MAC_DINH } from "@/lib/boLocLuuThuan";
 import { locTheoChiBao, cotChoBoLoc } from "@/lib/boLocChiBao";
 import { coCanhBaoBanBot } from "@/lib/ghiChuTuDong";
 import { layNguoiDungTrinhDuyet } from "@/lib/nguoiDungTrinhDuyet";
@@ -32,7 +34,7 @@ import {
   HangLocNhanh,
   ThanhGocNhin,
 } from "@/components/boLocChung";
-import { fmt, pct, soAn, fmtTy, chamTPCaoNhat, datChuanUuTien, sapChamMoc, laChoPhienSau, laDangGiu, lyDoChuaCoDiemMua, phanLoaiXuHuong, NGUONG_DIEM_MUA } from "@/components/dungChung";
+import { fmt, pct, soAn, fmtTy, chamTPCaoNhat, datChuanUuTien, laDangGiu, lyDoChuaCoDiemMua, phanLoaiXuHuong } from "@/components/dungChung";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -47,15 +49,8 @@ const PRIMARY = "#6C5CE7";
 // diem va du diem MUA (xem sapChamMoc trong dungChung.js). Du lieu moc chi co
 // sau khi Explore lai voi AFL moi - TRUOC DO tam dung cach cu: ma TRUNG LAP co
 // diem nam sat duoi nguong MUA (trong BIEN_DO_GAN_MUA diem).
-const BIEN_DO_GAN_MUA = 0.5;
 const CAC_BIEN_MOC = [1, 2, 3, 5];
 const COT_THEO_DOI = ["moc_tiep_theo", "diem_neu_vuot"];
-
-function laMaTheoDoi(r, coDuLieuMoc, bienMoc) {
-  if (laChoPhienSau(r)) return true;
-  if (coDuLieuMoc) return sapChamMoc(r, bienMoc);
-  return r.tin === "TRUNG LAP" && r.diem >= NGUONG_DIEM_MUA - BIEN_DO_GAN_MUA && r.diem < NGUONG_DIEM_MUA;
-}
 
 // Cot ma + tin hieu co logic rieng (nut Tham gia, khoa Tin hieu khi chua dang
 // nhap) nen dinh nghia tai day; cac cot chi so con lai lay tu cotChung.js.
@@ -351,6 +346,14 @@ export default function BangBoLoc({ duLieu: duLieuTho = null, duLieuGon = null, 
     setSapXep((s) => (s.khoa === khoa ? { khoa, chieu: s.chieu === "desc" ? "asc" : "desc" } : { khoa, chieu: khoa === "ma" ? "asc" : "desc" }));
   }
 
+  // Ap dung 1 bo loc da luu (components/KhungBoLocCuaToi.js): dat lai o loc, bo loc chi bao (cap id moi tranh trung voi bo loc them tay) va thu tu sap xep.
+  const apBoLocLuu = useCallback((dn) => {
+    datLoc({ ...LOC_TRONG, ...LOC_MAC_DINH, ...(dn?.loc ?? {}) });
+    const t = Date.now();
+    datLocChiBao((dn?.locChiBao ?? []).map((l, i) => ({ ...l, id: `luu${t}_${i}` })));
+    if (dn?.sapXep?.khoa) setSapXep(dn.sapXep);
+  }, []);
+
   function xoaBoLoc() {
     datLoc({ ...LOC_TRONG, tin: "", chiGanDiemMua: false, chiDuDiemChuaMua: false, bienMoc: 3 });
     datLocChiBao([]);
@@ -379,6 +382,9 @@ export default function BangBoLoc({ duLieu: duLieuTho = null, duLieuGon = null, 
 
   return (
     <div>
+      {/* BO LOC CA NHAN: luu bo loc, bao ve may khi co ma moi khop */}
+      <KhungBoLocCuaToi loc={loc} locChiBao={locChiBao} sapXep={sapXep} duLieu={duLieu} coBoLoc={!!coBoLoc} nguoiDung={nguoiDung} onAp={apBoLocLuu} moDangNhap={() => setMoModalTK(true)} idTuUrl={searchParams.get("loc")} />
+
       {/* BO LOC NHANH (1 cham ra danh sach) */}
       <HangLocNhanh
         ds={locNhanh}

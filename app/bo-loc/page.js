@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
-import { COT_CHI_BAO } from "@/lib/cotChiBaoKyThuat";
+import { gopChiBao } from "@/lib/boLocLuuDb";
 import BangBoLoc from "@/components/BangBoLoc";
 import NhanCapNhat from "@/components/NhanCapNhat";
 import NhanThiTruong5Phien from "@/components/NhanThiTruong5Phien";
@@ -37,21 +37,8 @@ export default async function TrangBoLoc() {
   // Chi bao ky thuat (RSI, MACD, MA...) gop vao tung ma - loi o day khong duoc lam mat bang chinh, chi mat bo loc chi bao.
   if (!loi && kqChiBao) {
     try {
-      const { hang, capNhatLuc } = kqChiBao.v;
-      const theoMa = new Map(hang.map((h) => [h.ma, h]));
-      // Du lieu nay duoc gui nguyen xuong trinh duyet (~390 ma x hon 100 cot): BO cot khong co gia tri (null ~ nua so cot) va lam tron so thap phan dai (7 chu so co nghia) de trang nhe di rat nhieu.
-      // Cot thieu duoc doc nhu null o moi noi (bo loc / cot hien thi deu dung kiem tra so huu han).
-      tatCa = tatCa.map((r) => {
-        const h = theoMa.get(r.ma);
-        if (!h) return r;
-        const o = { ...r };
-        for (const k of COT_CHI_BAO) {
-          const v = h[k];
-          if (v != null) o[k] = typeof v === "number" && !Number.isInteger(v) ? Number(v.toPrecision(7)) : v;
-        }
-        return o;
-      });
-      chiBaoLuc = capNhatLuc;
+      tatCa = gopChiBao(tatCa, kqChiBao.v);
+      chiBaoLuc = kqChiBao.v.capNhatLuc;
     } catch {}
   }
 

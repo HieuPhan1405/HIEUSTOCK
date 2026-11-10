@@ -7,9 +7,7 @@ import { NGANH_NHAN } from "@/lib/nganh";
 // bao va tieu chi UU TIEN; moi bang them cac bo loc rieng qua "children").
 import { useState, useEffect, useRef, useMemo, useSyncExternalStore } from "react";
 import { Search, Columns3, Lock } from "lucide-react";
-import { phanLoaiXuHuong, chamTPCaoNhat, laDangGiu, datChuanUuTien } from "@/components/dungChung";
 import { NHOM_COT } from "@/components/cotChung";
-import { coCanhBaoBanBot } from "@/lib/ghiChuTuDong";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -54,26 +52,8 @@ export function docLocChungTuUrl(searchParams) {
   };
 }
 
-export function locChung(ds, loc) {
-  const tuKhoa = (loc.timKiem || "").trim().toUpperCase();
-  return ds.filter(
-    (r) =>
-      (!tuKhoa || r.ma.includes(tuKhoa)) &&
-      (!loc.vonHoa || r.von_hoa === loc.vonHoa) &&
-      (!loc.xuHuong || phanLoaiXuHuong(r) === loc.xuHuong) &&
-      (!loc.san || (r.san || "HOSE") === loc.san) &&
-      (!loc.nganh || (r.nganh || "Khac") === loc.nganh) &&
-      (!loc.chiMatThan || r.mat_than) &&
-      // tp_da_cham cua ma KHONG con giu chi la lich su lan mua gan nhat - chi tinh ma dang giu.
-      (!loc.chiChotLoi || (laDangGiu(r) && chamTPCaoNhat(r))) &&
-      (!loc.chiBanBot || coCanhBaoBanBot(r)) &&
-      (!loc.chiUuTien || datChuanUuTien(r))
-  );
-}
-
-export function coLocChung(loc) {
-  return !!(loc.timKiem || loc.vonHoa || loc.xuHuong || loc.san || loc.nganh || loc.chiMatThan || loc.chiChotLoi || loc.chiBanBot || loc.chiUuTien);
-}
+// locChung / coLocChung chuyen sang lib/boLocLuuThuan.js (de may chu cung dung de loc cho thong bao bo loc ca nhan).
+export { locChung, coLocChung } from "@/lib/boLocLuuThuan";
 
 export function OSelect({ value, onChange, options, placeholder }) {
   return (
