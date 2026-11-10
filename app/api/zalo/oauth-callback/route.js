@@ -10,7 +10,7 @@ export async function GET(request) {
   const state = url.searchParams.get("state"); // "appId:secretKey" da ma hoa base64 o buoc tao link
 
   if (!code || !state) {
-    return new Response("Thieu code hoac state tu Zalo.", { status: 400 });
+    return new Response("Thiếu code hoặc state từ Zalo.", { status: 400 });
   }
 
   let appId, secretKey;
@@ -18,7 +18,7 @@ export async function GET(request) {
     const giaiMa = Buffer.from(state, "base64url").toString("utf-8");
     [appId, secretKey] = giaiMa.split(":");
   } catch {
-    return new Response("State khong hop le.", { status: 400 });
+    return new Response("State không hợp lệ.", { status: 400 });
   }
 
   try {
@@ -32,6 +32,6 @@ export async function GET(request) {
       { headers: { "Content-Type": "text/html; charset=utf-8" } }
     );
   } catch (loi) {
-    return new Response("Loi khi doi token: " + String(loi?.message || loi), { status: 500 });
+    return new Response("Lỗi khi đổi token: " + String(loi?.message || loi), { status: 500 });
   }
 }

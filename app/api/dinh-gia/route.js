@@ -8,7 +8,7 @@ function kiemTraApiKey(request) {
 
 export async function GET(request) {
   const ma = new URL(request.url).searchParams.get("ma");
-  if (!ma) return Response.json({ loi: "Thieu tham so ma" }, { status: 400 });
+  if (!ma) return Response.json({ loi: "Thiếu tham số mã" }, { status: 400 });
   try {
     const rows = await layDinhGia(ma);
     return Response.json({ trangThai: "ok", dinhGia: rows });
@@ -19,7 +19,7 @@ export async function GET(request) {
 
 export async function POST(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   const body = await request.json();
   const { ma, congTyCK, ngayDinhGia, giaMucTieu, khuyenNghi } = body || {};
@@ -36,7 +36,7 @@ export async function POST(request) {
 
 export async function DELETE(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   const id = new URL(request.url).searchParams.get("id");
   if (!id) return Response.json({ loi: "Thieu id" }, { status: 400 });

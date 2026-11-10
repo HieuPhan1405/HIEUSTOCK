@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 // Neu engine khong chay, trang /phai-sinh dang mo cung goi cung ham nay moi lan lam moi (xem app/api/phai-sinh/route.js).
 export async function POST(request) {
   const key = request.headers.get("x-api-key");
-  if (!process.env.UPLOAD_API_KEY || key !== process.env.UPLOAD_API_KEY) return Response.json({ loi: "API key khong dung" }, { status: 401 });
+  if (!process.env.UPLOAD_API_KEY || key !== process.env.UPLOAD_API_KEY) return Response.json({ loi: "API key không đúng" }, { status: 401 });
   try {
     const st = await layTrangThaiPhaVo();
     const kq = await baoPhaiSinh(st);

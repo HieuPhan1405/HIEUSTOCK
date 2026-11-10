@@ -10,7 +10,7 @@ function kiemTraApiKey(request) {
 // ngoai, chi bao co/khong).
 export async function GET(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   const cauHinh = await layCauHinhZalo();
   return Response.json({
@@ -27,7 +27,7 @@ export async function GET(request) {
 // "guiThu": gui 1 tin nhan test toi nguoi nhan da luu.
 export async function POST(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   const body = await request.json();
 
@@ -38,7 +38,7 @@ export async function POST(request) {
 
   const { appId, secretKey, baseUrl } = body;
   if (!appId || !secretKey || !baseUrl) {
-    return Response.json({ loi: "Can du appId, secretKey, baseUrl" }, { status: 400 });
+    return Response.json({ loi: "Cần đủ appId, secretKey, baseUrl" }, { status: 400 });
   }
   await luuCauHinhZalo({ app_id: appId, secret_key: secretKey });
 

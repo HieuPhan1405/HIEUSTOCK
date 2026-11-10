@@ -10,6 +10,7 @@ import DaiThongKe, { OThongKe } from "@/components/DaiThongKe";
 import { NhanMuc } from "@/components/LienKetPhongCach";
 import { layTatCaTinHieu } from "@/lib/tinHieu";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
+import { NGANH_NHAN } from "@/lib/nganh";
 import BatDayTabs from "@/components/BatDayTabs";
 import DiemBatDayHienTai from "@/components/DiemBatDayHienTai";
 
@@ -64,7 +65,7 @@ export default async function TrangBatDay() {
       hienTai.push({
         ma: h.ma,
         ten: t.ten_ngan ?? t.ten_cong_ty ?? "",
-        nganh: t.nganh ?? "",
+        nganh: NGANH_NHAN[t.nganh] || t.nganh || "",
         gia: so(t.gia),
         doi: so(t.doi),
         gtgd: so(t.gtgd_tb20),

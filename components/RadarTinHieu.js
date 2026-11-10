@@ -6,6 +6,7 @@ import { Lock } from "lucide-react";
 import ModalTaiKhoan from "@/components/ModalTaiKhoan";
 import { LOAI_RADAR } from "@/lib/radarSuKien";
 import { NGANH_NHAN } from "@/lib/nganh";
+import { useLuaChonLuu } from "@/components/boLocChung";
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -34,11 +35,13 @@ export default function RadarTinHieu({ cacMa, suKien, dem, ngay, gio, khoa }) {
     () => window.matchMedia("(max-width: 639px)").matches,
     () => false
   );
-  const [che, setChe] = useState(null);
-  const gon = (che ?? (nho ? "gon" : "day")) === "gon";
-  // Kieu o: "bang" = bang dien (ma + % trong ngay + khoi luong, to mau theo tang giam); "luoi" = o nho chi co ma. Dien thoai mac dinh luoi nho.
-  const [kieu, setKieu] = useState(null);
-  const bang = (kieu ?? (nho ? "luoi" : "bang")) === "bang";
+  // 10/11/2026: MOI man hinh mac dinh chi hien ma co su kien (luoi du 391 ma dai > 4000px lam trang chu roi); bam "Hien du ... ma" de xem bang dien day du.
+  // Lua chon duoc NHO (localStorage) - ai thich bang day du thi bam 1 lan, lan sau mo van giu.
+  const [che, setChe] = useLuaChonLuu("cs-radar-che", "gon", ["gon", "day"]);
+  const gon = che === "gon";
+  // Kieu o: "bang" = bang dien (ma + % trong ngay + khoi luong, to mau theo tang giam); "luoi" = o nho chi co ma. Chua chon thi dien thoai luoi nho, may tinh bang dien.
+  const [kieu, setKieu] = useLuaChonLuu("cs-radar-kieu", "", ["bang", "luoi"]);
+  const bang = (kieu || (nho ? "luoi" : "bang")) === "bang";
   const soLieu = useMemo(() => new Map(cacMa.map(([ma, , doi, kl, gt]) => [ma, { doi, kl, gt }])), [cacMa]);
   const [moDangNhap, setMoDangNhap] = useState(false);
   const luoiRef = useRef(null);
@@ -81,11 +84,12 @@ export default function RadarTinHieu({ cacMa, suKien, dem, ngay, gio, khoa }) {
 
   return (
     <section className="rounded-2xl border mb-6 overflow-hidden" style={{ borderColor: VIEN, background: NEN_CARD }} aria-label="Radar tín hiệu">
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 pt-4">
-        <p className="text-xs" style={{ color: MUTED, fontFamily: "var(--font-chu)", letterSpacing: "0.04em" }} data-may="radar">
-          RADAR · {cacMa.length} MÃ THEO NGÀNH
-        </p>
-        <p className="flex items-center gap-2 text-[11px]" style={{ color: MUTED }}>
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 px-4 sm:px-5 pt-4">
+        <h2 className="text-lg" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }} data-may="radar">
+          Radar thị trường
+          <span style={{ color: MUTED, fontWeight: 400 }}> · {cacMa.length} mã theo ngành</span>
+        </h2>
+        <p className="flex items-center gap-2 text-xs" style={{ color: MUTED }}>
           <span className="cs-radar-diem" aria-hidden="true" />
           {ngay ? `Phiên ${ngay}` : "Phiên gần nhất"}
           {gio ? ` · cập nhật ${gio}` : ""}
@@ -113,11 +117,11 @@ export default function RadarTinHieu({ cacMa, suKien, dem, ngay, gio, khoa }) {
             Phiên này chưa có sự kiện nào đáng chú ý.
           </span>
         )}
-        <button type="button" onClick={() => setKieu(bang ? "luoi" : "bang")} className="cs-radar-chip ml-auto" style={{ "--c": "var(--tim-nhat)" }}>
-          {bang ? "Lưới gọn" : "Bảng điện"}
+        <button type="button" onClick={() => setChe(gon ? "day" : "gon")} aria-pressed={!gon} className="cs-radar-chip ml-auto" style={{ "--c": "var(--tim-nhat)" }}>
+          {gon ? `Hiện đủ ${cacMa.length} mã` : "Chỉ mã có sự kiện"}
         </button>
-        <button type="button" onClick={() => setChe(gon ? "day" : "gon")} className="cs-radar-chip" style={{ "--c": "var(--tim-nhat)" }}>
-          {gon ? "Hiện tất cả mã" : "Chỉ hiện mã có sự kiện"}
+        <button type="button" onClick={() => setKieu(bang ? "luoi" : "bang")} className="cs-radar-chip" style={{ "--c": "var(--tim-nhat)" }}>
+          {bang ? "Ô gọn" : "Bảng điện"}
         </button>
       </div>
 
@@ -168,9 +172,9 @@ export default function RadarTinHieu({ cacMa, suKien, dem, ngay, gio, khoa }) {
         </div>
 
         <div className="border-t px-4 sm:px-5 py-4" style={{ borderColor: VIEN }}>
-          <p className="text-[11px] mb-2" style={{ color: MUTED, letterSpacing: "0.04em" }}>
-            {loc ? `${LOAI_RADAR[loc].nhan.toUpperCase()} · ${hienThi.length} MÃ` : "VỪA PHÁT HIỆN"}
-          </p>
+          <h3 className="text-sm mb-1" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
+            {loc ? `${LOAI_RADAR[loc].nhan} · ${hienThi.length} mã` : "Vừa phát hiện"}
+          </h3>
           <ul className="cs-radar-dong grid sm:grid-cols-2 lg:grid-cols-3 gap-x-6 max-h-[360px] overflow-y-auto pr-1">
             {hienThi.map((s) => (
               <li key={`${s.loai}:${s.ma}`}>

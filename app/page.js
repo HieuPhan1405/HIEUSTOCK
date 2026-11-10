@@ -117,10 +117,10 @@ function TheKPI({ nhan, giaTri, phu, mau, href, may, mo = false, hau = "" }) {
         className="absolute -right-8 -top-8 w-28 h-28 rounded-full blur-3xl opacity-25 pointer-events-none"
         style={{ background: mau || PRIMARY }}
       />
-      <p className="text-xs mb-2 relative" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} data-may={may}>
+      <p className="text-xs mb-1 relative" style={{ color: MUTED, fontFamily: "var(--font-chu)" }} data-may={may}>
         {nhan}
       </p>
-      <p className="text-3xl relative" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mau || TEXT, ...(mo ? { filter: "blur(7px)", userSelect: "none" } : {}) }}>
+      <p className="text-2xl relative" style={{ fontFamily: "var(--font-chu)", fontWeight: 700, color: mau || TEXT, ...(mo ? { filter: "blur(7px)", userSelect: "none" } : {}) }}>
         {typeof giaTri === "number" && !mo ? <SoChay gia={giaTri} hau={hau} /> : giaTri}
       </p>
       {mo && <Lock size={15} color={MUTED} strokeWidth={2} className="absolute right-4 top-4" aria-hidden="true" />}
@@ -132,7 +132,7 @@ function TheKPI({ nhan, giaTri, phu, mau, href, may, mo = false, hau = "" }) {
     </>
   );
 
-  const className = "rounded-2xl border p-5 relative overflow-hidden block";
+  const className = "rounded-2xl border px-4 py-3.5 relative overflow-hidden block";
   const style = { borderColor: VIEN, background: NEN_CARD };
 
   if (href) {
@@ -151,10 +151,9 @@ function TheKPI({ nhan, giaTri, phu, mau, href, may, mo = false, hau = "" }) {
 
 // Bieu do tron (donut) that ve bang SVG - the hien ty le Xanh/Sideway/Do,
 // khong can thu vien ngoai.
-function BieuDoTronDoRong({ soXanh, soSideway, soDo, tong }) {
-  const kichThuoc = 148;
+function BieuDoTronDoRong({ soXanh, soSideway, soDo, tong, kichThuoc = 148 }) {
   const tam = kichThuoc / 2;
-  const doDayVanh = 20;
+  const doDayVanh = Math.round(kichThuoc * 0.135);
   const banKinh = tam - doDayVanh / 2;
   const chuVi = 2 * Math.PI * banKinh;
   const cacPhan = [
@@ -188,13 +187,80 @@ function BieuDoTronDoRong({ soXanh, soSideway, soDo, tong }) {
           daVe += doDai;
           return el;
         })}
-      <text x={tam} y={tam - 3} textAnchor="middle" fontSize="26" fontWeight="700" fill={TEXT} style={{ fontFamily: "var(--font-chu)" }}>
+      <text x={tam} y={tam - 2} textAnchor="middle" fontSize={Math.round(kichThuoc * 0.17)} fontWeight="700" fill={TEXT} style={{ fontFamily: "var(--font-chu)" }}>
         {tong ? Math.round((soXanh / tong) * 100) : 0}%
       </text>
-      <text x={tam} y={tam + 16} textAnchor="middle" fontSize="11" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
+      <text x={tam} y={tam + Math.round(kichThuoc * 0.11)} textAnchor="middle" fontSize="11" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
         mã xanh
       </text>
     </svg>
+  );
+}
+
+// O "XU HUONG CAC MA" canh the VN-Index (10/11/2026: gop 2 the "Ket luan thi truong" + "Do rong theo von hoa" truoc nam cuoi trang len hang dau, kieu the doi
+// cua Stockfly / Simplize - tom tat truoc, chi tiet sau). Day la XU HUONG (vung gia Xanh / Sideway / Do) cua cac ma dang theo doi, khac sac thai PHIEN HOM NAY
+// (so ma tang / giam trong phien) o the VN-Index - 2 tieu de ghi ro de nguoi xem khong thay "tich cuc" va "tieu cuc" mau thuan nhau.
+function TheXuHuongCacMa({ soXanh, soSideway, soDo, tong, pctXanh, pctDo, doRongVonHoa }) {
+  return (
+    <div className="xl:col-span-2 rounded-2xl border p-5 sm:p-6 grid sm:grid-cols-2 xl:grid-cols-1 gap-4 sm:gap-6 xl:gap-4 content-start" style={{ borderColor: VIEN, background: NEN_CARD }}>
+      <div className="flex items-center gap-5">
+        <div className="shrink-0">
+          <BieuDoTronDoRong soXanh={soXanh} soSideway={soSideway} soDo={soDo} tong={tong} kichThuoc={112} />
+        </div>
+        <div className="min-w-0">
+          <p className="text-sm mb-1" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+            Xu hướng các mã đang theo dõi
+          </p>
+          <p className="text-[15px] leading-snug mb-2" style={{ fontFamily: "var(--font-chu)", fontWeight: 600 }}>
+            {sinhKetLuan(pctXanh, pctDo, tong)}
+          </p>
+          {/* Bam vao tung nhom -> Bo loc co phieu loc san theo xu huong do (phanLoaiXuHuong: xanh / sideway / do). */}
+          <p className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs" style={{ fontFamily: "var(--font-chu)" }}>
+            <Link href="/bo-loc?xuhuong=xanh" className="hover:underline" style={{ color: XANH }}>● Xanh {soXanh}</Link>
+            <Link href="/bo-loc?xuhuong=sideway" className="hover:underline" style={{ color: VANG }}>● Sideway {soSideway}</Link>
+            <Link href="/bo-loc?xuhuong=do" className="hover:underline" style={{ color: DO }}>● Đỏ {soDo}</Link>
+          </p>
+        </div>
+      </div>
+      <div className="pt-4 border-t sm:pt-0 sm:border-t-0 sm:pl-6 sm:border-l xl:pl-0 xl:border-l-0 xl:pt-4 xl:border-t" style={{ borderColor: VIEN }}>
+        <p className="text-xs mb-3" style={{ color: MUTED }}>
+          Tỷ lệ mã xu hướng tăng theo nhóm vốn hoá
+        </p>
+        {doRongVonHoa.map(([nhan, { tong: tongNhom, xanh, pctXanh: pctXanhNhom }]) => (
+          <div key={nhan} className="mb-2.5 last:mb-0">
+            <div className="flex justify-between text-xs mb-1" style={{ color: "var(--mo-2)" }}>
+              <span>{nhan}</span>
+              <span style={{ fontFamily: "var(--font-chu)" }}>{tongNhom === 0 ? "chưa có dữ liệu" : `${xanh}/${tongNhom} mã (${soVN(pctXanhNhom, 1, true)}%)`}</span>
+            </div>
+            <div className="h-1.5 rounded-full overflow-hidden" style={{ background: NEN_INSET }}>
+              <div className="h-full rounded-full" style={{ width: `${pctXanhNhom}%`, background: XANH }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Thanh "PHIEN HOM NAY": so ma tang / dung / giam trong phien (tren cac ma dang theo doi) - ve thay cho doc so trong doan nhan dinh.
+function ThanhPhienHomNay({ soTang, soDung, soGiam }) {
+  const tong = soTang + soDung + soGiam;
+  if (!tong) return null;
+  const w = (n) => `${(n / tong) * 100}%`;
+  return (
+    <div className="mt-4">
+      <div className="flex h-1.5 rounded-full overflow-hidden gap-[2px]" aria-hidden="true">
+        {soTang > 0 && <div style={{ width: w(soTang), background: XANH }} />}
+        {soDung > 0 && <div style={{ width: w(soDung), background: VANG }} />}
+        {soGiam > 0 && <div style={{ width: w(soGiam), background: DO }} />}
+      </div>
+      <p className="flex flex-wrap gap-x-3 mt-1.5 text-xs" style={{ fontFamily: "var(--font-chu)", color: MUTED }}>
+        <span>Phiên hôm nay:</span>
+        <span style={{ color: XANH }}>{soTang} tăng</span>
+        <span style={{ color: VANG }}>{soDung} đứng giá</span>
+        <span style={{ color: DO }}>{soGiam} giảm</span>
+      </p>
+    </div>
   );
 }
 
@@ -375,8 +441,10 @@ export default async function TrangTongQuan() {
 
         {/* VN-INDEX + NHAN DINH (gop 2 the cu "Nhan dinh nhanh" + "PTKT VNINDEX", 04/11/2026): gia + 2 nhan (sac thai, xu huong) -> 1 doan nhan dinh -> 5 so lieu chi so.
             Nhan dinh la doan van tu dong sinh tu ~390 ma dang theo doi; chi so tinh cung he thong chi bao nhu tung ma (xem AFL: LaVNIndex). */}
+        {/* HANG TOM TAT (10/11/2026, hoc Stockfly / Simplize: tom tat truoc, chi tiet sau): VN-Index + nhan dinh (trai) | Xu huong cac ma + von hoa (phai). */}
+        <div className="grid xl:grid-cols-5 gap-4 mb-3">
         {(nhanDinh || chiSoVNIndex) && (
-          <div className="rounded-2xl border p-5 sm:p-6 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
+          <div className="xl:col-span-3 rounded-2xl border p-5 sm:p-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
             <div className="flex flex-wrap items-start justify-between gap-3 mb-3">
               {chiSoVNIndex ? (
                 <div>
@@ -398,15 +466,16 @@ export default async function TrangTongQuan() {
                 </p>
               )}
               <div className="flex flex-wrap gap-2">
+                {/* 2 nhan ghi ro PHIEN HOM NAY (so ma tang/giam) va XU HUONG cua chi so - truoc ghi "Thi truong tich cuc" canh "Xu huong giam" de doc nham la mau thuan. */}
                 {nhanDinh && (
                   <span className="text-xs font-bold px-2 py-1 rounded-md" style={{ color: nhanDinh.mau, background: nhe(nhanDinh.mau, 13), fontFamily: "var(--font-chu)" }}>
-                    Thị trường {nhanDinh.sacThai.toLowerCase()}
+                    Phiên hôm nay: {nhanDinh.sacThai.toLowerCase()}
                   </span>
                 )}
                 {/* Chi so khong "nam giu" duoc - hien xu huong thay cho nhan lenh MUA / NAM GIU / BAN. */}
                 {chiSoVNIndex && (
                   <span className="text-xs font-bold px-2 py-1 rounded-md" data-may="xu-huong-tt" style={{ color: phanLoaiTrend(chiSoVNIndex.trend).mau, background: nhe(phanLoaiTrend(chiSoVNIndex.trend).mau, 13), fontFamily: "var(--font-chu)" }}>
-                    Xu hướng {phanLoaiTrend(chiSoVNIndex.trend).nhan.toLowerCase()}
+                    Xu hướng chỉ số: {phanLoaiTrend(chiSoVNIndex.trend).nhan.toLowerCase()}
                   </span>
                 )}
               </div>
@@ -416,8 +485,9 @@ export default async function TrangTongQuan() {
                 {nhanDinh.doanVan}
               </p>
             )}
+            {nhanDinh && <ThanhPhienHomNay soTang={nhanDinh.soTang} soDung={nhanDinh.soDung} soGiam={nhanDinh.soGiam} />}
             {chiSoVNIndex && (
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-x-4 gap-y-3 mt-5 pt-5 border-t" style={{ borderColor: VIEN }}>
+              <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-2 gap-x-4 gap-y-3 mt-5 pt-5 border-t" style={{ borderColor: VIEN }}>
                 <div>
                   <p className="text-xs mb-1" style={{ color: MUTED }}>
                     <GiaiNghia khoa="diem-tong-hop-vni">Điểm tổng hợp</GiaiNghia>
@@ -460,29 +530,23 @@ export default async function TrangTongQuan() {
             )}
           </div>
         )}
+        {tong > 0 && <TheXuHuongCacMa soXanh={soXanh} soSideway={soSideway} soDo={soDo} tong={tong} pctXanh={pctXanh} pctDo={pctDo} doRongVonHoa={doRongVonHoa} />}
+        </div>
         {!chiSoVNIndex && !loi && (
           <p className="text-sm mb-6" style={{ color: MUTED }}>
             Chưa có dữ liệu PTKT VN-Index — cần chạy lại Explore + upload sau khi cập nhật công thức AFL mới nhất.
           </p>
         )}
 
-        <NhanCapNhat luc={capNhat} className={xemTinHieu ? "mb-2" : "mb-6"} />
+        <NhanCapNhat luc={capNhat} className={xemTinHieu ? "mb-1" : "mb-5"} />
         {xemTinHieu && (
           <Suspense fallback={null}>
-            <NhanThiTruong5Phien className="mb-6" />
+            <NhanThiTruong5Phien className="mb-5" />
           </Suspense>
         )}
 
-        {radar && <RadarTinHieu cacMa={radarMa} suKien={radar.suKien} dem={radar.dem} ngay={ngayAnh} gio={radarGio} khoa={!xemTinHieu} />}
-
-        {/* TOP CO HOI DANG CHU Y: 4 o lenh CUA PHIEN HOM NAY - hang tren Mua | Ban, hang duoi Mua moi | Ban bot. Tong quan/Ra soat nhanh
-            (breadth, top nganh, khoi ngoai...) o trang /dashboard rieng. */}
-        {(tatCa.length > 0 || !xemTinHieu) && (xemTinHieu ? <CoHoiHomNay tatCa={tatCa} dongLenh={dongLenh} ngay={ngayPhien} muaPhucHoi={muaPhucHoi} diemBGanDay={diemBGanDay} /> : <KhoaTinHieuTrangChu choDuyet={choDuyet} />)}
-
-        {/* HANG KPI */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-          <TheKPI nhan="Mã đang theo dõi" giaTri={tong} mau={TEXT} href="/bo-loc" />
-          <TheKPI nhan="Xu hướng tăng" giaTri={Math.round(pctXanh)} hau="%" phu={`${soXanh} mã`} mau={XANH} href="/bo-loc?xuhuong=xanh" />
+        {/* HANG SO NHANH: 4 con so can hanh dong (khach thay ban lam mo). 10/11/2026 bo 2 o "Ma dang theo doi" / "Xu huong tang" vi the Xu huong cac ma ngay tren da co. */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
           {xemTinHieu ? (
             <>
               <TheKPI nhan="Tín hiệu MUA" giaTri={soMua} phu="hôm nay" mau={PRIMARY} href="/bo-loc?tin=MUA" />
@@ -500,47 +564,11 @@ export default async function TrangTongQuan() {
           )}
         </div>
 
-        {/* KET LUAN + BIEU DO TRON  ·  DO RONG THEO VON HOA */}
-        <div className="grid md:grid-cols-2 gap-4 mb-10">
-          <div className="rounded-2xl border p-6 flex items-center gap-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-            <BieuDoTronDoRong soXanh={soXanh} soSideway={soSideway} soDo={soDo} tong={tong} />
-            <div>
-              <p className="text-xs  mb-2" style={{ color: MUTED }}>
-                Kết luận thị trường
-              </p>
-              <p className="text-base mb-3" style={{ fontFamily: "var(--font-chu)", fontWeight: 600 }}>
-                {sinhKetLuan(pctXanh, pctDo, tong)}
-              </p>
-              <div className="flex flex-col gap-1 text-[11px]" style={{ fontFamily: "var(--font-chu)" }}>
-                <span style={{ color: XANH }}>● Xanh {soXanh} mã</span>
-                <span style={{ color: VANG }}>● Sideway {soSideway} mã</span>
-                <span style={{ color: DO }}>● Đỏ {soDo} mã</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="rounded-2xl border p-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-            <p className="text-xs  mb-4" style={{ color: MUTED }}>
-              Độ rộng theo vốn hoá
-            </p>
-            {doRongVonHoa.map(([nhan, { tong: tongNhom, xanh, pctXanh: pctXanhNhom }]) => (
-              <div key={nhan} className="mb-3 last:mb-0">
-                <div className="flex justify-between text-xs mb-1" style={{ color: "var(--mo-2)" }}>
-                  <span>{nhan}</span>
-                  <span style={{ fontFamily: "var(--font-chu)" }}>
-                    {tongNhom === 0 ? "chưa có dữ liệu" : `${xanh}/${tongNhom} mã xanh (${soVN(pctXanhNhom, 1, true)}%)`}
-                  </span>
-                </div>
-                <div className="h-2 rounded-full overflow-hidden" style={{ background: NEN_INSET }}>
-                  <div className="h-full rounded-full" style={{ width: `${pctXanhNhom}%`, background: XANH }} />
-                </div>
-              </div>
-            ))}
-            <p className="text-[11px] mt-3" style={{ color: MUTED }}>
-              % mã có xu hướng tăng trong từng nhóm — bluechip dẫn dắt thường thấy VN30 dẫn trước Midcap/Smallcap.
-            </p>
-          </div>
-        </div>
+        {/* THU TU (10/11/2026): thanh vien - Top co hoi (viec can lam trong phien) roi moi Radar; khach - Radar (xem tu do) roi khung moi dang nhap.
+            TOP CO HOI DANG CHU Y: 4 o lenh CUA PHIEN HOM NAY - hang tren Mua | Ban, hang duoi Mua moi | Ban bot. Chi tiet thi truong o trang /dashboard rieng. */}
+        {xemTinHieu && tatCa.length > 0 && <CoHoiHomNay tatCa={tatCa} dongLenh={dongLenh} ngay={ngayPhien} muaPhucHoi={muaPhucHoi} diemBGanDay={diemBGanDay} />}
+        {radar && <RadarTinHieu cacMa={radarMa} suKien={radar.suKien} dem={radar.dem} ngay={ngayAnh} gio={radarGio} khoa={!xemTinHieu} />}
+        {!xemTinHieu && <KhoaTinHieuTrangChu choDuyet={choDuyet} />}
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ function kiemTraApiKey(request) {
 // POST: chi admin (dung tu trang /quan-tri) duoc duyet/bo duyet 1 tai khoan SDT.
 export async function POST(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   let body;
   try {

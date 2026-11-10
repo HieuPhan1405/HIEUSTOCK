@@ -12,7 +12,7 @@ function kiemTraApiKey(request) {
 // IP that chi luu trong bang gioi han va tu xoa sau 1 ngay; chi tinh tu luc bat tinh nang ghi IP (cac dong cu khong co IP khong hien).
 export async function GET(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   try {
     const kq = await layDanhSachChan();

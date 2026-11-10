@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from "react";
 
-// THANH MUC TRANG (dinh duoi thanh dau): chip nhay toi tung khoi cua trang dai (trang ma) va to sang khoi dang xem. Chi hien khoi CO trong trang (id ton tai).
+// THANH MUC TRANG (dinh duoi thanh dau): chip nhay toi tung khoi cua trang dai (trang ma; tu 10/11/2026 ca Dashboard, Nganh) va to sang khoi dang xem. Chi hien khoi CO trong trang (id ton tai).
 const VIEN = "var(--vien)";
 const PRIMARY = "#6C5CE7";
 
@@ -31,7 +31,7 @@ export default function ThanhMucTrang({ muc }) {
   if (co.length < 2) return null;
   const nhay = (id) => document.getElementById(id)?.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
   return (
-    <nav className="sticky top-[57px] z-20 -mx-1 px-1 py-2 mb-4 flex gap-1.5 overflow-x-auto cs-ngan-keo backdrop-blur-xl" style={{ background: "color-mix(in srgb, var(--nen) 88%, transparent)", borderBottom: `1px solid ${VIEN}` }} aria-label="Các mục trong trang">
+    <nav className="sticky top-[57px] z-20 -mx-1 px-1 py-2 mb-4 flex gap-1.5 overflow-x-auto cs-ngan-keo backdrop-blur-xl [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" style={{ background: "color-mix(in srgb, var(--nen) 88%, transparent)", borderBottom: `1px solid ${VIEN}` }} aria-label="Các mục trong trang">
       {muc.filter((m) => co.includes(m.id)).map((m) => (
         <button
           key={m.id}

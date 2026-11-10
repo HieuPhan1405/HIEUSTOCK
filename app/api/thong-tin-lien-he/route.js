@@ -19,13 +19,13 @@ export async function GET() {
 // POST: chi admin (tu /quan-tri) duoc sua.
 export async function POST(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   let body;
   try {
     body = await request.json();
   } catch {
-    return Response.json({ loi: "Du lieu gui len khong dung dinh dang" }, { status: 400 });
+    return Response.json({ loi: "Dữ liệu gửi lên không đúng định dạng" }, { status: 400 });
   }
   try {
     await luuThongTinLienHe(body || {});

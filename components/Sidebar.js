@@ -31,16 +31,23 @@ export default function Sidebar() {
         className="hidden md:flex md:flex-col md:fixed md:top-14 md:bottom-0 md:left-0 md:w-60 md:z-20"
         style={{ background: BG, borderRight: `1px solid ${VIEN}` }}
       >
-        <nav className="flex-1 px-3 py-2 flex flex-col gap-1 overflow-y-auto">
-          {MENU.map(({ href, nhan }) => {
+        <nav className="flex-1 px-3 py-2 flex flex-col gap-0.5 overflow-y-auto">
+          {MENU.map(({ href, nhan, nhom }, i) => {
             const active = dangMo?.href === href;
             const Icon = ICON[href];
+            // Tieu de nhom nho truoc muc dau tien cua moi nhom (Cong cu · Cach dau tu · Cua ban) - 9 muc lien mot mach truoc day kho do mat.
+            const dauNhom = nhom && nhom !== MENU[i - 1]?.nhom;
             return (
+              <div key={href} className="contents">
+              {dauNhom && (
+                <p className={`px-3 pb-1 text-[11px] ${i === 0 ? "pt-1" : "pt-4"}`} style={{ color: "var(--mo-3)", fontFamily: "var(--font-chu)", fontWeight: 600 }}>
+                  {nhom}
+                </p>
+              )}
               <Link
-                key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors hover:bg-[color:var(--hover-nhe)]"
+                className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors hover:bg-[color:var(--hover-nhe)]"
                 style={{
                   background: active ? "linear-gradient(90deg, rgba(108,92,231,0.24), rgba(108,92,231,0.05))" : undefined,
                   boxShadow: active ? "inset 3px 0 0 var(--tim-nhat)" : undefined,
@@ -52,6 +59,7 @@ export default function Sidebar() {
                 <Icon size={18} strokeWidth={2} />
                 {nhan}
               </Link>
+              </div>
             );
           })}
         </nav>

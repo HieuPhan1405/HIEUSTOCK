@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ArrowUp, MessageCircle, Music2, X } from "lucide-react";
 
 // Cac nut noi goc duoi ben phai: len dau trang (chi hien khi da cuon xuong), Facebook, TikTok, Zalo (3 nut sau chi hien neu chu web da nhap kenh).
-// Dien thoai: Facebook + TikTok + Zalo gom vao 1 nut "Lien he" (bam moi xoe ra) va nut nho hon de khong de len chu; may tinh van hien du.
+// Facebook + TikTok + Zalo gom vao 1 nut "Lien he" (bam moi xoe ra) o MOI man hinh (10/11/2026: truoc may tinh hien ca 3 nut, de len cot cuoi bang / nut "Luu vao danh sach").
 export default function NutNoi({ zalo, facebook, tiktok }) {
   const [daCuon, setDaCuon] = useState(false);
   const [xoe, setXoe] = useState(false);
@@ -33,7 +33,7 @@ export default function NutNoi({ zalo, facebook, tiktok }) {
           <ArrowUp size={18} aria-hidden="true" />
         </button>
       )}
-      <div className={`${xoe ? "flex" : "hidden"} md:flex flex-col items-center gap-2 md:gap-2.5`}>
+      <div className={`${xoe ? "flex" : "hidden"} flex-col items-center gap-2 md:gap-2.5`}>
         {facebook && (
           <a href={facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className={kieu} style={{ background: "#1877F2", color: "#FFFFFF" }}>
             <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -65,7 +65,7 @@ export default function NutNoi({ zalo, facebook, tiktok }) {
           onClick={() => setXoe((v) => !v)}
           aria-expanded={xoe}
           aria-label={xoe ? "Đóng liên hệ" : "Liên hệ qua Zalo / Facebook / TikTok"}
-          className={`${kieu} md:hidden cursor-pointer`}
+          className={`${kieu} cursor-pointer`}
           style={{ background: xoe ? "var(--vien)" : "#0068FF", color: xoe ? "var(--chu)" : "#FFFFFF" }}
         >
           {xoe ? <X size={18} aria-hidden="true" /> : <MessageCircle size={19} aria-hidden="true" />}

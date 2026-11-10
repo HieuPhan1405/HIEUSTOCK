@@ -14,11 +14,16 @@ export default function DiemChatLuong({ row, kieu = "chip", className = "", styl
   );
   if (kieu === "day") {
     return (
-      <span className={`inline-flex items-center gap-2 text-xs font-semibold ${className}`} style={style} data-may="diem-chat-luong">
-        <GiaiNghia khoa="diem-chat-luong">Điểm chất lượng</GiaiNghia>
-        {thanh(64)}
-        <b style={{ color: bac.mau, fontFamily: "var(--font-chu)" }}>{diem}/100</b>
-        <span style={{ color: bac.mau }}>{bac.nhan}</span>
+      <span className={`inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-semibold ${className}`} style={style} data-may="diem-chat-luong">
+        {/* nowrap: o hep (o Co hoi 2 cot) truoc day nhan bi be thanh 3 dong "Diem / chat / luong". */}
+        <span className="whitespace-nowrap">
+          <GiaiNghia khoa="diem-chat-luong">Điểm chất lượng</GiaiNghia>
+        </span>
+        <span className="inline-flex items-center gap-2 whitespace-nowrap">
+          {thanh(64)}
+          <b style={{ color: bac.mau, fontFamily: "var(--font-chu)" }}>{diem}/100</b>
+          <span style={{ color: bac.mau }}>{bac.nhan}</span>
+        </span>
       </span>
     );
   }

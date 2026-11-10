@@ -14,7 +14,7 @@ export async function POST(request) {
   try {
     body = await request.json();
   } catch {
-    return Response.json({ loi: "Du lieu gui len khong dung dinh dang" }, { status: 400 });
+    return Response.json({ loi: "Dữ liệu gửi lên không đúng định dạng" }, { status: 400 });
   }
   // Chong spam: o bay an "website" + toi da 5 tin / gio / dia chi mang.
   if (body?.website) return Response.json({ loi: "Không thể gửi lúc này, vui lòng thử lại sau." }, { status: 400 });
@@ -38,7 +38,7 @@ export async function POST(request) {
 // GET: chi admin (dung tu trang /quan-tri) duoc xem danh sach tin nhan.
 export async function GET(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   try {
     const rows = await layTatCaLienHe();
@@ -51,7 +51,7 @@ export async function GET(request) {
 // PATCH: admin danh dau da doc.
 export async function PATCH(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   const id = new URL(request.url).searchParams.get("id");
   if (!id) return Response.json({ loi: "Thieu id" }, { status: 400 });
@@ -66,7 +66,7 @@ export async function PATCH(request) {
 // DELETE: chi admin.
 export async function DELETE(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   const id = new URL(request.url).searchParams.get("id");
   if (!id) return Response.json({ loi: "Thieu id" }, { status: 400 });

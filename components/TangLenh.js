@@ -19,10 +19,13 @@ export default function TangLenh({ row, kieu = "chip", className = "", style = n
   const ghiChu = cho ? "chờ phiên sau xác nhận" : "phiên sau đã xác nhận";
   if (kieu === "day") {
     return (
-      <span className={`inline-flex items-center gap-2 text-xs font-semibold ${className}`} style={style} title={moTaTang(x)} data-may="tang-lenh">
-        <GiaiNghia khoa="tang-lenh">Tầng lệnh</GiaiNghia>
+      <span className={`inline-flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-semibold ${className}`} style={style} title={moTaTang(x)} data-may="tang-lenh">
+        {/* nowrap: o hep (o Co hoi 2 cot) truoc day nhan bi be thanh 2 dong "Tang / lenh". */}
+        <span className="whitespace-nowrap">
+          <GiaiNghia khoa="tang-lenh">Tầng lệnh</GiaiNghia>
+        </span>
         {chip}
-        <span style={{ color: "var(--mo)" }}>{ghiChu}</span>
+        <span className="whitespace-nowrap" style={{ color: "var(--mo)" }}>{ghiChu}</span>
       </span>
     );
   }

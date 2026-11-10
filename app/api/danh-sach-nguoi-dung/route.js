@@ -11,7 +11,7 @@ function kiemTraApiKey(request) {
 // noi dung website.
 export async function GET(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   try {
     const rows = await layTatCaNguoiDung();

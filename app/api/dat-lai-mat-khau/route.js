@@ -8,7 +8,7 @@ function kiemTraApiKey(request) {
 
 // POST { id }: chi admin (trang /quan-tri, co API key). Khach quen mat khau -> tao mat khau tam, tra ve 1 lan de admin gui lai cho khach; khach dang nhap xong nen tu doi.
 export async function POST(request) {
-  if (!kiemTraApiKey(request)) return Response.json({ loi: "API key khong dung" }, { status: 401 });
+  if (!kiemTraApiKey(request)) return Response.json({ loi: "API key không đúng" }, { status: 401 });
   let body;
   try {
     body = await request.json();

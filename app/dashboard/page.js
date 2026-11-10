@@ -17,6 +17,19 @@ import { layLichSuGia } from "@/lib/lichSuGia";
 import { viTriTheoVungGiaTri } from "@/lib/vungGiaTriChiSo";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 import BanDoNhiet from "@/components/BanDoNhiet";
+import ThanhMucTrang from "@/components/ThanhMucTrang";
+
+// Muc luc dinh o dau trang (10/11/2026): trang dai ~5.000px, 9 khoi lien nhau - bam chip de nhay toi phan can xem.
+const MUC_LUC = [
+  { id: "tong-quan", nhan: "Tổng quan" },
+  { id: "ban-do-nhiet", nhan: "Bản đồ nhiệt" },
+  { id: "tam-ly", nhan: "Tâm lý" },
+  { id: "dong-tien", nhan: "Dòng tiền" },
+  { id: "vung-gia-tri", nhan: "Vùng giá trị" },
+  { id: "thanh-khoan", nhan: "Thanh khoản" },
+  { id: "anh-huong", nhan: "Ảnh hưởng chỉ số" },
+  { id: "khoi-ngoai", nhan: "Khối ngoại" },
+];
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -67,7 +80,7 @@ export default async function TrangDashboard() {
   }
 
   return (
-    <div id="chup-dashboard" className="max-w-6xl mx-auto px-6 py-10" style={{ color: TEXT }}>
+    <div id="chup-dashboard" className="max-w-6xl mx-auto px-4 sm:px-6 py-8" style={{ color: TEXT }}>
       <div className="flex flex-wrap items-center justify-between gap-3 mb-1">
         <h1 className="text-2xl" style={{ fontFamily: "var(--font-chu)", fontWeight: 700 }}>
           Dashboard thị trường
@@ -83,9 +96,10 @@ export default async function TrangDashboard() {
           />
         )}
       </div>
-      <p className="text-sm mb-5" style={{ color: MUTED }}>
+      <p className="text-sm mb-3" style={{ color: MUTED }}>
         Bức tranh chung của thị trường: độ rộng, tâm lý, dòng tiền, thanh khoản và khối ngoại. Phần ngành nằm ở tab Ngành.
       </p>
+      <ThanhMucTrang muc={MUC_LUC} />
 
       {loi && (
         <p className="text-sm mb-6" style={{ color: "var(--do)" }}>
@@ -93,25 +107,41 @@ export default async function TrangDashboard() {
         </p>
       )}
 
-      <TongQuanThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} />
+      <section id="tong-quan" className="scroll-mt-28">
+        <TongQuanThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} />
+      </section>
       {/* Ban do nhiet (doi tieu chi to mau / co o). Chi gui xuong trinh duyet cac truong khach cung duoc thay (khong gui nguyen dong tin hieu: lib/lamSachChoKhach.js). */}
+      <section id="ban-do-nhiet" className="scroll-mt-28">
       {tatCa.length > 0 && <BanDoNhiet tieuDe="Bản đồ nhiệt thị trường" tatCa={tatCa.map((r) => ({ ma: r.ma, nganh: r.nganh, doi: r.doi, gtgd_tb20: r.gtgd_tb20, rs_vni: r.rs_vni, rs_vni_60: r.rs_vni_60, diem: r.diem, von_hoa_ty: r.von_hoa_ty }))} />}
-      <BieuDoTamLyLichSu hienTai={tamLyHienTai} />
-      <DongTienThiTruong />
-      <Suspense fallback={<TheCho tieuDe="Vị trí VN-Index so với vùng giá trị" />}>
-        <TheVungGiaTri />
-      </Suspense>
+      </section>
+      <section id="tam-ly" className="scroll-mt-28">
+        <BieuDoTamLyLichSu hienTai={tamLyHienTai} />
+      </section>
+      <section id="dong-tien" className="scroll-mt-28">
+        <DongTienThiTruong />
+      </section>
+      <section id="vung-gia-tri" className="scroll-mt-28">
+        <Suspense fallback={<TheCho tieuDe="Vị trí VN-Index so với vùng giá trị" />}>
+          <TheVungGiaTri />
+        </Suspense>
+      </section>
       <Link href="/nganh" className="flex items-center justify-between gap-3 rounded-2xl border p-4 mb-6 text-sm hover:opacity-90" style={{ borderColor: "var(--vien)", background: "var(--card)", color: TEXT }}>
         <span>
           <b style={{ fontFamily: "var(--font-chu)" }}>Phân tích ngành</b> — RRG ngành đang dẫn dắt, xếp hạng RS và bản đồ nhiệt
         </span>
         <span style={{ color: "var(--tim-nhat)" }}>Xem →</span>
       </Link>
-      <ThanhKhoanThiTruong ma="VNINDEX" />
-      <AnhHuongIndex />
-      <Suspense fallback={<TheCho tieuDe="Dòng tiền khối ngoại" />}>
-        <TheKhoiNgoai />
-      </Suspense>
+      <section id="thanh-khoan" className="scroll-mt-28">
+        <ThanhKhoanThiTruong ma="VNINDEX" />
+      </section>
+      <section id="anh-huong" className="scroll-mt-28">
+        <AnhHuongIndex />
+      </section>
+      <section id="khoi-ngoai" className="scroll-mt-28">
+        <Suspense fallback={<TheCho tieuDe="Dòng tiền khối ngoại" />}>
+          <TheKhoiNgoai />
+        </Suspense>
+      </section>
     </div>
   );
 }

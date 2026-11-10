@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request) {
   const nguoiDung = await layNguoiDungHienTai().catch(() => null);
-  if (!nguoiDung?.da_duyet) return Response.json({ loi: "Can dang nhap tai khoan da duoc duyet" }, { status: 401 });
+  if (!nguoiDung?.da_duyet) return Response.json({ loi: "Cần đăng nhập tài khoản đã được duyệt" }, { status: 401 });
   const ma = new URL(request.url).searchParams.get("ma");
   try {
     const du = ma ? await layDongTienMa(ma) : await layDongTienThiTruong();

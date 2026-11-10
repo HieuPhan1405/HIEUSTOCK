@@ -10,7 +10,7 @@ function kiemTraApiKey(request) {
 // tai khoan SDT da dang ky.
 export async function POST(request) {
   if (!kiemTraApiKey(request)) {
-    return Response.json({ loi: "API key khong dung" }, { status: 401 });
+    return Response.json({ loi: "API key không đúng" }, { status: 401 });
   }
   let body;
   try {
