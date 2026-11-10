@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import GiaiThichThem from "@/components/GiaiThichThem";
-import { createChart, createSeriesMarkers, BaselineSeries, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
+import { createChart, createTextWatermark, createSeriesMarkers, BaselineSeries, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
 import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2, Eraser } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
@@ -328,7 +328,15 @@ function Chip({ bat, onClick, children, mau, may }) {
 // ve them vung mua / cat lo / chot loi cua he thong (neu ma dang giu lenh). Cong thuc chi bao giong het AFL.
 // Gia = gia DA DIEU CHINH co tuc/thuong CP (giong du lieu AmiBroker) de chi bao khop tin hieu; nguon qua /api/gia-lich-su.
 // boCucRong (trang /bieu-do, 10/11/2026 kieu FireAnt Charts): cong cu ve thanh DOC ben trai luon hien (may tinh), o THONG TIN MA ben phai (man >= 1280px). thongTinMa: xem components/ThongTinMaBieuDo.js (app/bieu-do/page.js tao) - chi truong cong khai.
-export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null }) {
+// Rut gon ten cong ty cho watermark (kieu TradingView "CTCP FPT").
+const tenRutGon = (t) =>
+  String(t || "")
+    .replace(/^Ngân hàng Thương mại Cổ phần\s+/i, "NHTMCP ")
+    .replace(/^Tổng Công ty Cổ phần\s+/i, "TCT CP ")
+    .replace(/^Công ty Cổ phần\s+/i, "CTCP ");
+const NHAN_KHUNG_MO = { D: "1D", W: "1W", H: "1H", M30: "30m", M15: "15m", M5: "5m" };
+
+export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null }) {
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState("D");
@@ -427,6 +435,12 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       // Gia kieu Viet Nam tren truc gia / nhan gia (25,50 thay vi 25.50).
       localization: { locale: "vi-VN", priceFormatter: (p) => soVN(p, 2, true) },
     });
+    // WATERMARK (10/11/2026, kieu TradingView): "FPT, 1D" to + ten cong ty nho ben duoi, giua bieu do, mo; doi chu theo ma / khung o effect rieng ben duoi. Mau trung tinh trong suot de hop ca sang / toi.
+    const thuyVan = createTextWatermark(chart.panes()[0], {
+      horzAlign: "center",
+      vertAlign: "center",
+      lines: [{ text: "", color: "rgba(140,140,160,0.14)", fontSize: 96, fontStyle: "bold" }],
+    });
     const dong = (mau, rong = 1, them = {}) =>
       chart.addSeries(LineSeries, { color: mau, lineWidth: rong, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false, ...them });
 
@@ -437,6 +451,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
 
     const s = {
       chart,
+      thuyVan,
       may,
       canBang,
       daiGia,
@@ -526,6 +541,20 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
       chart.remove();
     };
   }, []);
+
+  // 1a. Watermark: doi chu khi doi ma / khung / ten. Dong 1 = "MA, khung" (co tren man hinh nho thi nho hon), dong 2 = ten cong ty rut gon.
+  const tenWm = tenRutGon(tenMa);
+  useEffect(() => {
+    const s = veRef.current;
+    if (!s?.thuyVan) return;
+    const nho = (khungRef.current?.clientWidth ?? 800) < 560;
+    s.thuyVan.applyOptions({
+      lines: [
+        { text: `${ma}, ${NHAN_KHUNG_MO[khungTG] ?? "1D"}`, color: "rgba(140,140,160,0.14)", fontSize: nho ? 48 : 96, fontStyle: "bold" },
+        ...(tenWm ? [{ text: tenWm, color: "rgba(140,140,160,0.14)", fontSize: nho ? 20 : 40 }] : []),
+      ],
+    });
+  }, [ma, khungTG, tenWm]);
 
   // 1b. Doi ma / khung thoi gian: nap hinh ve da luu cua ma + khung do.
   useEffect(() => {

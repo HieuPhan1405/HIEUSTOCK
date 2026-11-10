@@ -826,7 +826,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
 
       {/* BIEU DO KY THUAT */}
       <div id="muc-bieu-do" className="mb-4 scroll-mt-28">
-        <BieuDoKyThuat ma={row.ma} vung={vungLenh} ngayMua={vt.ngay_mua} />
+        <BieuDoKyThuat tenMa={row.ten_cong_ty ?? null} ma={row.ma} vung={vungLenh} ngayMua={vt.ngay_mua} />
       </div>
 
       {/* KHOI NGOAI mua / ban rong 10 phien (VNDirect, cong khai) */}

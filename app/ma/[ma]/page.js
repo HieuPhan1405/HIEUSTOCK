@@ -59,7 +59,7 @@ export default async function TrangChiTietMa({ params }) {
           <p className="text-sm mb-5" style={{ color: "var(--mo)" }}>
             Mã này chưa nằm trong danh sách hệ thống quét tín hiệu nên chưa có điểm, vùng mua, cắt lỗ và chốt lời. Bạn vẫn xem được biểu đồ giá bên dưới.
           </p>
-          <BieuDoKyThuat ma={ma.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12)} />
+          <BieuDoKyThuat tenMa={t?.ten ?? null} ma={ma.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12)} />
           {phanTichCB && (
             <div className="mt-6">
               <PhanTichCoBan du={phanTichCB} ma={ma.toUpperCase()} />

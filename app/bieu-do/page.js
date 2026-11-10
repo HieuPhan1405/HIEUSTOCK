@@ -125,7 +125,7 @@ export default async function TrangBieuDo({ searchParams }) {
         <XemNhanhDanhSach ma={ma} goiY={GOI_Y} className="lg:ml-auto" />
       </div>
 
-      <BieuDoKyThuat ma={ma} vung={vung} ngayMua={vung ? row.ngay_mua : null} chieuCao={520} layDayManHinh truCao={290} thongTin={thongTin} boCucRong thongTinMa={thongTinMa} />
+      <BieuDoKyThuat tenMa={ten?.ten ?? row?.ten_cong_ty ?? null} ma={ma} vung={vung} ngayMua={vung ? row.ngay_mua : null} chieuCao={520} layDayManHinh truCao={290} thongTin={thongTin} boCucRong thongTinMa={thongTinMa} />
     </div>
   );
 }
