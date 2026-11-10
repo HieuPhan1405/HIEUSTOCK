@@ -10,6 +10,8 @@ import NutThamGia from "@/components/NutThamGia";
 import XemNhanhDanhSach from "@/components/XemNhanhDanhSach";
 import TabMaBieuDo from "@/components/TabMaBieuDo";
 import { NGANH_NHAN } from "@/lib/nganh";
+import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
+import { layPhanTichMa } from "@/lib/phanTichCoBanDb";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
@@ -53,19 +55,34 @@ export default async function TrangBieuDo({ searchParams }) {
           laiLo: row.lai_lo_pct,
         }
       : null;
-  // O THONG TIN MA ben phai bieu do (kieu FireAnt): chi truong CONG KHAI (khach cung thay o trang ma) - ten, san, nganh, von hoa, GTGD, dinh 52 tuan, diem hop luu.
-  const thongTinMa =
-    ma === "VNINDEX"
-      ? null
-      : {
-          ten: ten?.ten ?? row?.ten_cong_ty ?? null,
-          san: ten?.san ?? null,
-          nganh: row?.nganh ? NGANH_NHAN[row.nganh] || row.nganh : null,
-          vonHoaTy: row?.von_hoa_ty ?? null,
-          gtgdTb20: row?.gtgd_tb20 ?? null,
-          dinh52: row?.dinh_52t ?? null,
-          diem: row?.diem ?? null,
-        };
+  // O THONG TIN MA ben phai bieu do (kieu FireAnt, components/ThongTinMaBieuDo.js): CHI truong CONG KHAI - cot trong allowlist khach (lib/lamSachChoKhach.js),
+  // chi bao ky thuat (bang chi_bao_ky_thuat, Bo loc chi bao cung cong khai) va phan tich co ban (trang ma cung cong khai). Nguon phu loi / chua co thi bo nhom do.
+  let thongTinMa = null;
+  if (ma !== "VNINDEX") {
+    const [cbTat, ptcb] = await Promise.all([layChiBaoKyThuat().catch(() => null), layPhanTichMa(ma).catch(() => null)]);
+    const cb = cbTat?.hang?.find((h) => h.ma === ma) ?? null;
+    const quyMoi = ptcb?.q ? (ptcb.quyMoi ?? Object.keys(ptcb.q).sort().at(-1)) : null;
+    const q = quyMoi ? ptcb.q[quyMoi] : null;
+    const so = (v) => (v != null && Number.isFinite(Number(v)) ? Number(v) : null);
+    thongTinMa = {
+      ten: ten?.ten ?? row?.ten_cong_ty ?? null,
+      san: ten?.san ?? null,
+      nganh: row?.nganh ? NGANH_NHAN[row.nganh] || row.nganh : null,
+      giaoDich: { klTyLe: so(cb?.kl_ty_le), klTb20: so(row?.khoi_luong_tb20), gtgdTb20: so(row?.gtgd_tb20), vonHoaTy: so(row?.von_hoa_ty), freeFloat: so(row?.free_float), vonHoaTuDoTy: so(row?.von_hoa_tu_do_ty) },
+      kyThuat: {
+        gia: so(row?.gia), diem: so(row?.diem), trend: so(row?.trend), dt: so(row?.dt), adx: so(row?.adx), matThan: !!row?.mat_than,
+        kijun: so(row?.kijun), ggBot: so(row?.gg_bot), ggTop: so(row?.gg_top), dinh52: so(row?.dinh_52t), rs20: so(row?.rs_vni), rs60: so(row?.rs_vni_60),
+        rsi: so(cb?.rsi14), mfi: so(cb?.mfi14), cachMa200: so(cb?.cach_ma200_pct),
+      },
+      coBan: ptcb?.dinhGia
+        ? {
+            quy: quyMoi && /^\d{4}-\d{2}-\d{2}$/.test(quyMoi) ? `Quý ${Math.ceil(Number(quyMoi.slice(5, 7)) / 3)}/${quyMoi.slice(0, 4)}` : quyMoi,
+            pe: ptcb.dinhGia.pe ?? null, peNganh: so(ptcb.dinhGia.peNganh), pb: so(ptcb.dinhGia.pb), pbNganh: so(ptcb.dinhGia.pbNganh), coTuc: so(ptcb.dinhGia.tyLeCoTuc),
+            roe: so(q?.roe), lnYoY: so(q?.lnTTMYoY), dtYoY: so(q?.dtTTMYoY), xepLoai: ptcb.d360?.xepLoai ?? null, diem360: so(ptcb.d360?.tong),
+          }
+        : null,
+    };
+  }
 
   // 10/11/2026 bo cuc kieu FireAnt Charts: bo tieu de to + dong huong dan, gom O TIM MA + XEM NHANH + TEN MA vao 1 HANG cong cu, bieu do rong het chieu ngang va cao toi sat day man hinh.
   return (

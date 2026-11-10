@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import { createChart, createSeriesMarkers, BaselineSeries, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
-import Link from "next/link";
 import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2, Eraser } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
@@ -16,6 +15,7 @@ import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio, timDinhKhoiLuong, cho
 import { DaiMay, DaiGia } from "@/components/bieuDoPlugin";
 import { fmt } from "@/components/dungChung";
 import BangThongTinBieuDo from "@/components/BangThongTinBieuDo";
+import ThongTinMaBieuDo from "@/components/ThongTinMaBieuDo";
 import { dangTrongPhienGiaoDich } from "@/lib/khungGioVaoLenh";
 import { soVN, pctVN } from "@/lib/soVN";
 
@@ -327,7 +327,7 @@ function Chip({ bat, onClick, children, mau, may }) {
 // Bieu do ky thuat kieu FireAnt/TradingView: nen Nhat + khoi luong + Ichimoku (9-17-33, may) + duong can bang dai han (65/129) + MA,
 // ve them vung mua / cat lo / chot loi cua he thong (neu ma dang giu lenh). Cong thuc chi bao giong het AFL.
 // Gia = gia DA DIEU CHINH co tuc/thuong CP (giong du lieu AmiBroker) de chi bao khop tin hieu; nguon qua /api/gia-lich-su.
-// boCucRong (trang /bieu-do, 10/11/2026 kieu FireAnt Charts): cong cu ve thanh DOC ben trai luon hien (may tinh), o THONG TIN MA ben phai (man >= 1280px). thongTinMa: { ten, san, nganh, vonHoaTy, gtgdTb20, dinh52, diem } - chi truong cong khai.
+// boCucRong (trang /bieu-do, 10/11/2026 kieu FireAnt Charts): cong cu ve thanh DOC ben trai luon hien (may tinh), o THONG TIN MA ben phai (man >= 1280px). thongTinMa: xem components/ThongTinMaBieuDo.js (app/bieu-do/page.js tao) - chi truong cong khai.
 export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null }) {
   const khungRef = useRef(null);
   const veRef = useRef(null);
@@ -1001,31 +1001,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
           </dl>
         </div>
       )}
-      {thongTinMa && (
-        <div className="text-xs border-t pt-3" style={{ borderColor: VIEN, fontFamily: "var(--font-chu)" }}>
-          <p className="text-[11px] mb-1.5" style={{ color: MUTED }}>Thông tin cổ phiếu</p>
-          {thongTinMa.ten && <p className="mb-1.5 leading-snug" style={{ color: TEXT, fontWeight: 600 }}>{thongTinMa.ten}</p>}
-          <dl className="flex flex-col gap-1">
-            {[
-              ["Sàn", thongTinMa.san],
-              ["Ngành", thongTinMa.nganh],
-              ["Vốn hoá", thongTinMa.vonHoaTy != null ? `${soVN(thongTinMa.vonHoaTy, 0)} tỷ` : null],
-              ["GTGD TB20", thongTinMa.gtgdTb20 != null ? `${soVN(thongTinMa.gtgdTb20, 1)} tỷ/phiên` : null],
-              ["Đỉnh 52 tuần", thongTinMa.dinh52 != null ? fmt(thongTinMa.dinh52) : null],
-              ["Điểm hợp lưu", thongTinMa.diem != null ? soVN(thongTinMa.diem, 2, true) : null],
-            ]
-              .filter(([, v]) => v != null && v !== "")
-              .map(([k, v]) => (
-                <div key={k} className="flex justify-between gap-2"><dt style={{ color: MUTED }}>{k}</dt><dd className="text-right" style={{ color: TEXT, fontWeight: 600 }}>{v}</dd></div>
-              ))}
-          </dl>
-          {ma !== "VNINDEX" && (
-            <Link href={`/ma/${ma}`} className="inline-block mt-2" style={{ color: "var(--tim-chu)" }}>
-              Xem chi tiết {ma} →
-            </Link>
-          )}
-        </div>
-      )}
+      {thongTinMa && <ThongTinMaBieuDo ma={ma} du={thongTinMa} />}
       {thongTin && (
         <div className="border-t pt-3" style={{ borderColor: VIEN }}>
           <p className="text-[11px] mb-1.5" style={{ color: MUTED }}>Tín hiệu hệ thống</p>
@@ -1474,7 +1450,7 @@ export default function BieuDoKyThuat({ ma, vung = null, ngayMua = null, chieuCa
         )}
       </div>
       {benPhai && (
-        <aside className="hidden xl:flex w-[272px] shrink-0 flex-col gap-3 overflow-y-auto border-l p-3" style={{ borderColor: VIEN, height: chieuCaoTong }} aria-label="Thông tin mã">
+        <aside className="hidden xl:flex w-[300px] shrink-0 flex-col gap-3 overflow-y-auto border-l p-3" style={{ borderColor: VIEN, height: chieuCaoTong }} aria-label="Thông tin mã">
           {noiDungThongTin}
         </aside>
       )}
