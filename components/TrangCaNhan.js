@@ -246,7 +246,7 @@ export default function TrangCaNhan() {
             )}
             <div className="flex flex-wrap gap-1.5 mt-1">
               {hoSo.laAdmin && <Nhan mau={XANH}>ADMIN</Nhan>}
-              {hoSo.daDuyet ? <Nhan mau={XANH}>ĐÃ DUYỆT</Nhan> : <Nhan mau={VANG}>CHỜ DUYỆT</Nhan>}
+              {hoSo.daDuyet ? (hoSo.dungThuDen ? <Nhan mau={VANG}>DÙNG THỬ</Nhan> : <Nhan mau={XANH}>ĐÃ DUYỆT</Nhan>) : <Nhan mau={VANG}>CHỜ DUYỆT</Nhan>}
             </div>
           </div>
         </div>
@@ -254,7 +254,13 @@ export default function TrangCaNhan() {
           <Dong nhan="Số điện thoại">{hoSo.sdt}</Dong>
           <Dong nhan="Email">{hoSo.email || "Chưa có"}</Dong>
           <Dong nhan="Tham gia từ">{ngayHien(hoSo.taoLuc)}</Dong>
-          <Dong nhan="Trạng thái">{hoSo.daDuyet ? "Đã được duyệt, xem được nội dung dành cho thành viên" : "Đang chờ quản trị viên duyệt"}</Dong>
+          <Dong nhan="Trạng thái">
+            {hoSo.daDuyet
+              ? hoSo.dungThuDen
+                ? `Đang dùng thử miễn phí đến ${new Date(hoSo.dungThuDen).toLocaleDateString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })} — xem được nội dung dành cho thành viên`
+                : "Đã được duyệt, xem được nội dung dành cho thành viên"
+              : "Đang chờ quản trị viên duyệt"}
+          </Dong>
           <Dong nhan="Mã đang theo dõi">
             {hoSo.soMa} mã ·{" "}
             <Link href="/danh-muc" style={{ color: PRIMARY }}>

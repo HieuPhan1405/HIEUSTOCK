@@ -9,13 +9,14 @@ import { thongBaoLoi } from "@/lib/loiAnToan";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { layKichBanMua } from "@/lib/kichBanMuaDb";
 import { layDuLieuDaiHan } from "@/lib/phuongPhapDaiHanDb";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Đánh giá danh mục cổ phiếu miễn phí",
-  description:
-    "Chấm điểm danh mục cổ phiếu như quỹ đầu tư theo phong cách của bạn (xu hướng hoặc dài hạn): đa dạng hóa thật, rủi ro gánh từng mã, sức khỏe doanh nghiệp, kiểm tra sức chịu đựng, margin; gợi ý cắt lỗ / trung bình giá, nhật ký giao dịch và báo cáo PDF. Miễn phí.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Đánh giá danh mục cổ phiếu miễn phí",
+  moTa: "Chấm điểm danh mục cổ phiếu như quỹ đầu tư theo phong cách của bạn (xu hướng hoặc dài hạn): đa dạng hóa thật, rủi ro gánh từng mã, sức khỏe doanh nghiệp, kiểm tra sức chịu đựng, margin; gợi ý cắt lỗ / trung bình giá, nhật ký giao dịch và báo cáo PDF. Miễn phí.",
+  duongDan: "/danh-gia-danh-muc",
+});
 
 // MO CHO MOI NGUOI (cong cu quang ba web): phan phan tich rui ro chi dung du lieu gia cong khai. Tin hieu he thong (MUA / BAN, cat lo, chot loi) CHI gui cho thanh vien da duoc duyet -
 // khach chi nhan cac truong cong khai giong allowlist lib/lamSachChoKhach.js (gia, Kijun, duong can bang, nganh...).

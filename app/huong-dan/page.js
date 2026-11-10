@@ -2,12 +2,14 @@ import { Lock } from "lucide-react";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import TaiKhoanNut from "@/components/TaiKhoanNut";
 import SignalPill from "@/components/SignalPill";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Hướng dẫn & nguyên tắc",
-  description: "Cách đọc tín hiệu, vùng mua, cắt lỗ, chốt lời và nguyên tắc quản trị vốn của hệ thống CloudStock.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Hướng dẫn & nguyên tắc",
+  moTa: "Cách đọc tín hiệu, vùng mua, cắt lỗ, chốt lời và nguyên tắc quản trị vốn của hệ thống CloudStock.",
+  duongDan: "/huong-dan",
+});
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";

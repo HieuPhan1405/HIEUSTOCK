@@ -11,12 +11,14 @@ import { capNhatMoiNhat } from "@/components/dungChung";
 import { layLichSuGia } from "@/lib/lichSuGia";
 import { lenhDangMo } from "@/lib/muaThemTinhToan";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Lệnh đang mở · Đầu tư theo xu hướng",
-  description: "Danh mục các mã đang MUA / NẮM GIỮ: vùng mua, cắt lỗ, chốt lời và lãi/lỗ hiện tại.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Lệnh đang mở · Đầu tư theo xu hướng",
+  moTa: "Danh mục các mã đang MUA / NẮM GIỮ: vùng mua, cắt lỗ, chốt lời và lãi/lỗ hiện tại.",
+  duongDan: "/lenh-mo",
+});
 
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";

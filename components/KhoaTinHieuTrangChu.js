@@ -82,9 +82,12 @@ export default function KhoaTinHieuTrangChu({ choDuyet = false }) {
 
       <div className="relative">
         {/* Dữ liệu giả, làm mờ: không chứa thông tin thật nào. */}
+        {/* Dien thoai chi ve 1 o lam mo (4 o xep doc dai ~1.500px chi de lam nen cho khung moi). */}
         <div aria-hidden="true" className="grid gap-4 md:grid-cols-2 select-none pointer-events-none" style={{ filter: "blur(7px)", opacity: 0.9 }}>
-          {O.map((o) => (
-            <OGia key={o.tieuDe} {...o} />
+          {O.map((o, i) => (
+            <div key={o.tieuDe} className={i > 0 ? "hidden md:block" : ""}>
+              <OGia {...o} />
+            </div>
           ))}
         </div>
 
@@ -109,7 +112,7 @@ export default function KhoaTinHieuTrangChu({ choDuyet = false }) {
             </p>
             {!choDuyet && (
               <div className="flex justify-center">
-                <TaiKhoanNut nhan="Đăng ký / Đăng nhập để xem" />
+                <TaiKhoanNut taiLai nhan="Dùng thử miễn phí để xem" />
               </div>
             )}
           </div>

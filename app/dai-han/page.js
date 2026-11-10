@@ -3,13 +3,14 @@ import NhanCapNhat from "@/components/NhanCapNhat";
 import LienKetPhongCach from "@/components/LienKetPhongCach";
 import { layDuLieuDaiHan } from "@/lib/phuongPhapDaiHanDb";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Đầu tư dài hạn",
-  description:
-    "Bộ phương pháp đầu tư dài hạn đã kiểm tra trên dữ liệu thị trường Việt Nam: Buffett, Cổ tức, Graham, ít biến động; mô hình lõi & vệ tinh; định giá, vùng giá giải ngân chia 5 đợt và cách bán đúng. Miễn phí.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Đầu tư dài hạn",
+  moTa: "Bộ phương pháp đầu tư dài hạn đã kiểm tra trên dữ liệu thị trường Việt Nam: Buffett, Cổ tức, Graham, ít biến động; mô hình lõi & vệ tinh; định giá, vùng giá giải ngân chia 5 đợt và cách bán đúng. Miễn phí.",
+  duongDan: "/dai-han",
+});
 
 // MO CHO MOI NGUOI: chi dung du lieu cong khai (gia, BCTC, duong ky thuat) - khong dung tin hieu MUA / BAN cua he thong. Danh sach ma theo BCTC sinh bang scripts/capNhatPhuongPhapDaiHan.mjs.
 export default async function TrangDaiHan() {

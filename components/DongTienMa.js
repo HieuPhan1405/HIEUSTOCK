@@ -122,6 +122,7 @@ export default function DongTienMa({ ma }) {
         if (dung) return;
         if (r.status === 401) return setD({ trangThai: "khoa", du: null });
         const j = await r.json();
+        if (j.trangThai === "khoa") return setD({ trangThai: "khoa", du: null });
         setD({ trangThai: j.du ? "co" : "rong", du: j.du ?? null });
       } catch {
         /* giu du lieu cu */

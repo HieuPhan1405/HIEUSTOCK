@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, TriangleAlert } from "lucide-react";
+import { ArrowLeft, TriangleAlert, Lock } from "lucide-react";
+import TaiKhoanNut from "@/components/TaiKhoanNut";
 import SignalPill from "@/components/SignalPill";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
 import NhatKyGiaoDich from "@/components/NhatKyGiaoDich";
@@ -275,7 +276,7 @@ function tinhCacTag(row) {
       ? { nhan: "Tăng", mau: "var(--xanh)" }
       : row.trend < -0.5
       ? { nhan: "Giảm", mau: "var(--do)" }
-      : { nhan: "Sideway", mau: "var(--vang)" };
+      : { nhan: "Đi ngang", mau: "var(--vang)" };
 
   const dongTien =
     row.dt > 0.2
@@ -377,6 +378,27 @@ function boiCanhNgan(row) {
 const hh = (phut) => `${String(Math.floor(phut / 60)).padStart(2, "0")}:${String(phut % 60).padStart(2, "0")}`;
 const CHU_KHUNG = KHUNG_VAO_LENH.map((k) => `${hh(k.tu)}–${hh(k.den)}`).join(", ");
 
+// KHUNG KHOA cho KHACH (11/11/2026): tin hieu, gia mua, cat lo, chot loi, nhat ky lenh chi danh cho thanh vien - du lieu nay KHONG duoc gui xuong trinh duyet cua khach
+// (app/ma/[ma]/page.js lam sach dong tin hieu truoc), khung nay chi la loi moi dung thu.
+function KhungKhoa({ tieuDe, moTa }) {
+  return (
+    <div className="rounded-xl border p-4 flex flex-col sm:flex-row sm:items-center gap-3" style={{ borderColor: "var(--vien)", background: "var(--nen)" }}>
+      <span className="w-10 h-10 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(108,92,231,0.18)" }}>
+        <Lock size={18} color="#6C5CE7" aria-hidden="true" />
+      </span>
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-bold" style={{ fontFamily: "var(--font-chu)" }}>
+          {tieuDe}
+        </p>
+        <p className="text-xs mt-0.5" style={{ color: "var(--mo)" }}>
+          {moTa}
+        </p>
+      </div>
+      <TaiKhoanNut compact taiLai nhan="Dùng thử miễn phí" />
+    </div>
+  );
+}
+
 // O so lieu chinh cua lenh (gia mua / lai lo / cat lo / chot loi tiep)
 function OSo({ nhan, khoa, may, giaTri, phu, mau }) {
   return (
@@ -420,7 +442,8 @@ const MUC_TRANG = [
 
 // THU TU DOC (04/11/2026, cho nguoi moi): ten + gia -> "Nen lam gi" (1 cau + so lieu lenh neu dang giu) -> diem hop luu va ly do | thong tin co phieu -> vung gia
 // (cat lo / chot loi CHI hien khi dang co lenh: ma trung lap khong con hien muc cat lo / TP cu cua lenh da dong) -> bieu do -> ...
-export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaDong = [], lichPhien = [], phanTich = null }) {
+// khoa: khach chua dang nhap / chua duoc duyet - row da duoc lam sach o may chu (khong co tin, gia mua, cat lo, TP).
+export default function ChiTietMa({ row, khoa = false, dinhGia = [], cauChuyen = [], lichSuDaDong = [], lichPhien = [], phanTich = null }) {
   // Cac LENH DANG MO cua ma: moi lenh 1 dong rieng (gia mua, Stop-loss, TP, lai/lo rieng), danh so (1), (2) neu co nhieu lenh - xem lenhDangMo. Chon 1 lenh o thanh ngang de xem
   // moi thu theo lenh do. vt = lenh dang xem (hoac chinh dong tin hieu khi ma khong giu lenh nao); row van la du lieu chung cua ma (diem, xu huong, trang thai...).
   const cacLenh = useMemo(() => lenhDangMo([row], lichPhien), [row, lichPhien]);
@@ -463,7 +486,8 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
         <button type="button" onClick={quayLai} className="inline-flex items-center gap-1 text-sm" style={{ color: "var(--mo-2)", fontFamily: "var(--font-chu)" }}>
           <ArrowLeft size={15} /> Quay lại
         </button>
-        {/* XUAT THONG TIN: tao anh day du thong tin cua ma (gia, tin hieu, lenh dang mo + lai/lo, diem mua - ban da qua, chi bao) de gui cho khach */}
+        {/* XUAT THONG TIN: tao anh day du thong tin cua ma (gia, tin hieu, lenh dang mo + lai/lo, diem mua - ban da qua, chi bao) de gui cho khach - chi thanh vien */}
+        {!khoa && (
         <XuatAnh
           nhan="Xuất ảnh"
           kieu="nho"
@@ -471,6 +495,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           tieuDe={`${row.ma} · CloudStock`}
           the={<TheChiaSeMa row={row} cacLenh={cacLenh} lichSuDaDong={lichSuDaDong} ketLuan={ketLuanTuDong(row)} vungGia={vungGia} tag={tag} nen={nenAnh} />}
         />
+        )}
       </div>
 
       {/* TEN + GIA */}
@@ -498,6 +523,18 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
 
       {/* NEN LAM GI: cau tra loi ngan + so lieu lenh dang giu */}
       <Card className="mb-4">
+        {khoa ? (
+          <>
+            <p className="text-sm mb-1" style={{ color: "var(--mo)" }}>
+              Nên làm gì với {row.ma}
+            </p>
+            <p className="text-sm leading-relaxed mb-3" style={{ color: "var(--chu-2)" }}>
+              {boiCanhNgan(row)}
+            </p>
+            <KhungKhoa tieuDe={`Tín hiệu MUA / BÁN, giá mua, cắt lỗ và chốt lời của ${row.ma}`} moTa="Dành cho thành viên — dùng thử miễn phí tuần đầu, xem được ngay sau khi tạo tài khoản." />
+          </>
+        ) : (
+        <>
         <div className="flex flex-wrap items-center gap-2 mb-2">
           <span className="text-sm" style={{ color: "var(--mo)" }} data-may="nen-lam-gi">
             <GiaiNghia khoa="nen-lam-gi">Nên làm gì với {row.ma}</GiaiNghia>
@@ -597,6 +634,8 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
               )}
             </div>
           </GiaiThichThem>
+        )}
+        </>
         )}
       </Card>
 
@@ -745,7 +784,7 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
           </p>
           {!dangGiu && (
             <p className="text-xs mt-3 leading-relaxed" style={{ color: "var(--mo)" }}>
-              Mã chưa có lệnh đang mở nên chưa có mức cắt lỗ và chốt lời — các mốc này hiện khi hệ thống báo MUA.
+              {khoa ? "Mức cắt lỗ và chốt lời của lệnh (nếu mã đang có lệnh) dành cho thành viên." : "Mã chưa có lệnh đang mở nên chưa có mức cắt lỗ và chốt lời — các mốc này hiện khi hệ thống báo MUA."}
             </p>
           )}
           {dangGiu && vt.stop_loss !== null && vt.stop_loss !== undefined && (
@@ -841,7 +880,16 @@ export default function ChiTietMa({ row, dinhGia = [], cauChuyen = [], lichSuDaD
 
       {/* NHAT KY GIAO DICH */}
       <div id="muc-nhat-ky" className="mb-4 scroll-mt-28">
-        <NhatKyGiaoDich ma={row.ma} lichSuDaDong={lichSuDaDong} cacLenh={cacLenh} />
+        {khoa ? (
+          <Card>
+            <p className="text-sm mb-3" style={{ color: "var(--mo)" }}>
+              Nhật ký giao dịch {row.ma}
+            </p>
+            <KhungKhoa tieuDe="Các lệnh mua – bán hệ thống đã ghi nhận cho mã này" moTa="Ngày mua, giá, lãi / lỗ từng lệnh — dành cho thành viên." />
+          </Card>
+        ) : (
+          <NhatKyGiaoDich ma={row.ma} lichSuDaDong={lichSuDaDong} cacLenh={cacLenh} />
+        )}
       </div>
 
       {/* PHAN TICH CO BAN: Danh gia 360, dinh gia, diem Z/F, DuPont theo quy (lib/phanTichCoBanDb.js) */}

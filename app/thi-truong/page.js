@@ -1,11 +1,13 @@
 import { layTinTucThiTruong } from "@/lib/tinTuc";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Thông tin thị trường",
-  description: "Tin tức vĩ mô, quốc tế và doanh nghiệp; rà soát nhanh thị trường nằm ở trang Tổng quan.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Thông tin thị trường",
+  moTa: "Tin chứng khoán, vĩ mô và doanh nghiệp tổng hợp từ CafeF, cập nhật mỗi 10 phút.",
+  duongDan: "/thi-truong",
+});
 export const revalidate = 600;
 
 const VIEN = "var(--vien)";
@@ -85,7 +87,7 @@ export default async function TrangThiTruong() {
   try {
     const ket = await layTinTucThiTruong();
     theoDanhMuc = ket.theoDanhMuc;
-    danhSachDanhMuc = ket.danhSachDanhMuc;
+    danhSachDanhMuc = ket.danhSachDanhMuc.filter((d) => d.hien);
   } catch (e) {
     loi = thongBaoLoi(e);
   }
@@ -96,7 +98,7 @@ export default async function TrangThiTruong() {
         Thông tin thị trường
       </h1>
       <p className="text-sm mb-6" style={{ color: MUTED }}>
-        Tin vĩ mô trong nước, quốc tế và doanh nghiệp — tổng hợp tự động từ CafeF, cập nhật mỗi 10 phút. Rà soát nhanh thị trường và các lệnh mua – bán nằm ở trang Tổng quan thị trường.
+        Tin chứng khoán, vĩ mô và doanh nghiệp — tổng hợp tự động từ CafeF, cập nhật mỗi 10 phút. Bấm vào tin để đọc bài gốc ở tab mới.
       </p>
 
       {loi && (

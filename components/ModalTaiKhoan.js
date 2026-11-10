@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { createPortal } from "react-dom";
-import { X, Eye, EyeOff, Check, Mail, Phone, User, Lock, ShieldCheck } from "lucide-react";
+import { X, Eye, EyeOff, Mail, Phone, User, Lock } from "lucide-react";
 import { kiemTraTen, kiemTraEmail, kiemTraMatKhau, doManhMatKhau, MK_TOI_THIEU } from "@/lib/kiemTraDangKy";
 
 const VIEN = "var(--vien)";
@@ -65,12 +66,26 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
   const [sdt, setSdt] = useState("");
   const [email, setEmail] = useState("");
   const [matKhau, setMatKhau] = useState("");
-  const [matKhau2, setMatKhau2] = useState("");
   const [hienMk, setHienMk] = useState(false);
   const [website, setWebsite] = useState(""); // o bay: nguoi that khong thay / khong dien
   const [daCham, setDaCham] = useState({}); // o nao nguoi dung da roi khoi (de chi bao loi khi da nhap xong)
   const [dangXuLy, setDangXuLy] = useState(false);
   const [loi, setLoi] = useState("");
+
+  // Esc de dong + khoa cuon trang phia sau khi hop dang mo (11/11/2026: truoc bam Esc khong dong duoc).
+  useEffect(() => {
+    if (!open) return;
+    const phim = (e) => {
+      if (e.key === "Escape") onClose?.();
+    };
+    document.addEventListener("keydown", phim);
+    const cu = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", phim);
+      document.body.style.overflow = cu;
+    };
+  }, [open, onClose]);
 
   if (!open) return null;
 
@@ -83,27 +98,23 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
         sdt: loiSdt,
         email: kiemTraEmail(email),
         matKhau: kiemTraMatKhau(matKhau, { sdt: sdtSo, email }),
-        matKhau2: matKhau2 !== matKhau ? "Mật khẩu nhập lại chưa khớp." : !matKhau2 ? "Vui lòng nhập lại mật khẩu." : null,
       }
     : { sdt: loiSdt, matKhau: matKhau ? null : "Vui lòng nhập mật khẩu." };
   const coLoi = Object.values(loiCuaTruong).some(Boolean);
   const hien = (k) => (daCham[k] || daCham.tatCa ? loiCuaTruong[k] : null);
   const cham = (k) => () => setDaCham((d) => ({ ...d, [k]: true }));
   const manh = doManhMatKhau(matKhau);
-  const khopMk = matKhau2 && matKhau === matKhau2;
 
   function doiTab(t) {
     setTab(t);
     setLoi("");
     setDaCham({});
     setMatKhau("");
-    setMatKhau2("");
   }
 
   function dong() {
     setLoi("");
     setMatKhau("");
-    setMatKhau2("");
     setDaCham({});
     onClose?.();
   }
@@ -120,7 +131,8 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
       const res = await fetch(laDangKy ? "/api/dang-ky" : "/api/dang-nhap", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(laDangKy ? { ten, sdt, email, matKhau, matKhau2, website } : { sdt, matKhau }),
+        // 11/11/2026 bo o "Nhap lai mat khau" (da co nut hien mat khau) - may chu van kiem matKhau2 nen gui trung matKhau.
+        body: JSON.stringify(laDangKy ? { ten, sdt, email, matKhau, matKhau2: matKhau, website } : { sdt, matKhau }),
       });
       const d = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -131,7 +143,6 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
       setTen("");
       setEmail("");
       setMatKhau("");
-      setMatKhau2("");
       setDaCham({});
       onThanhCong?.(d.nguoiDung);
       onClose?.();
@@ -152,12 +163,12 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
   if (typeof document === "undefined") return null;
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto" style={{ background: "rgba(0,0,0,0.65)" }} onClick={dong}>
-      <div className="w-full max-w-sm rounded-2xl border p-5 my-auto" style={{ borderColor: VIEN, background: NEN_CARD }} onClick={(e) => e.stopPropagation()}>
+      <div role="dialog" aria-modal="true" aria-labelledby="tieu-de-tai-khoan" className="w-full max-w-sm rounded-2xl border p-5 my-auto" style={{ borderColor: VIEN, background: NEN_CARD }} onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start justify-between mb-1">
           <div>
-            <p style={{ color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 800, fontSize: 18 }}>{laDangKy ? "Tạo tài khoản CloudStock" : "Đăng nhập CloudStock"}</p>
+            <h2 id="tieu-de-tai-khoan" style={{ color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 800, fontSize: 18 }}>{laDangKy ? "Dùng thử miễn phí tuần đầu" : "Đăng nhập CloudStock"}</h2>
             <p className="text-xs mt-0.5" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
-              {laDangKy ? "Miễn phí, chỉ mất khoảng 1 phút." : "Chào mừng bạn quay lại."}
+              {laDangKy ? "Tạo tài khoản xong là xem được ngay tín hiệu, lệnh và cảnh báo — không cần chờ duyệt." : "Chào mừng bạn quay lại."}
             </p>
           </div>
           <button onClick={dong} aria-label="Đóng" className="p-1">
@@ -189,6 +200,7 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
                 onBlur={cham("ten")}
                 placeholder="Nguyễn Văn A"
                 autoComplete="name"
+                autoFocus
                 maxLength={100}
                 className="flex-1 py-2.5 text-sm outline-none"
                 style={cssO}
@@ -203,6 +215,7 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
               placeholder="0912 345 678"
               inputMode="tel"
               autoComplete="tel"
+              autoFocus={!laDangKy}
               maxLength={16}
               className="flex-1 py-2.5 text-sm outline-none"
               style={{ ...cssO, fontFamily: "var(--font-chu)" }}
@@ -249,26 +262,6 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
               </p>
             </div>
           )}
-          {laDangKy && (
-            <Truong
-              nhan="Nhập lại mật khẩu"
-              icon={ShieldCheck}
-              loi={hien("matKhau2")}
-              phu={khopMk ? <span className="flex items-center gap-1" style={{ color: XANH }}><Check size={12} /> Khớp</span> : null}
-            >
-              <input
-                type={hienMk ? "text" : "password"}
-                value={matKhau2}
-                onChange={(e) => setMatKhau2(e.target.value)}
-                onBlur={cham("matKhau2")}
-                placeholder="Nhập lại mật khẩu"
-                autoComplete="new-password"
-                maxLength={72}
-                className="flex-1 py-2.5 text-sm outline-none"
-                style={cssO}
-              />
-            </Truong>
-          )}
           {/* O bay chong bot: nguoi that khong thay (ra ngoai man hinh, bo khoi thu tu Tab), bot thuong dien het moi o. */}
           {laDangKy && (
             <input
@@ -294,14 +287,32 @@ export default function ModalTaiKhoan({ open, onClose, onThanhCong, tieuDeGoiY }
             className="px-3 py-3 text-sm font-semibold rounded-lg mt-1 transition-opacity"
             style={{ background: "#6C5CE7", color: "#FFFFFF", opacity: dangXuLy ? 0.6 : 1, cursor: dangXuLy ? "wait" : "pointer" }}
           >
-            {dangXuLy ? "Đang xử lý..." : laDangKy ? "Tạo tài khoản" : "Đăng nhập"}
+            {dangXuLy ? "Đang xử lý..." : laDangKy ? "Bắt đầu dùng thử" : "Đăng nhập"}
           </button>
         </form>
 
         <p className="text-[11px] mt-3 leading-relaxed" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
-          {laDangKy
-            ? "Bằng việc tạo tài khoản, bạn đồng ý để CloudStock liên hệ tư vấn qua số điện thoại hoặc Gmail bạn cung cấp. Tài khoản mới cần được duyệt trước khi xem nội dung dành cho thành viên. Thông tin trên web chỉ mang tính tham khảo, không phải khuyến nghị đầu tư."
-            : "Quên mật khẩu? Nhắn cho CloudStock qua Zalo trong mục Liên hệ để được hỗ trợ."}
+          {laDangKy ? (
+            <>
+              Tạo tài khoản là bạn đồng ý với{" "}
+              <Link href="/dieu-khoan" onClick={dong} className="underline" style={{ color: "var(--mo-2)" }}>
+                Điều khoản sử dụng
+              </Link>{" "}
+              và{" "}
+              <Link href="/bao-mat" onClick={dong} className="underline" style={{ color: "var(--mo-2)" }}>
+                Chính sách bảo mật
+              </Link>
+              . Thông tin trên web chỉ để tham khảo, không phải khuyến nghị đầu tư.
+            </>
+          ) : (
+            <>
+              Quên mật khẩu?{" "}
+              <Link href="/lien-he" onClick={dong} className="underline" style={{ color: "var(--tim-chu)" }}>
+                Nhắn CloudStock ở trang Liên hệ
+              </Link>{" "}
+              kèm số điện thoại đã đăng ký để được cấp lại mật khẩu.
+            </>
+          )}
         </p>
       </div>
     </div>,

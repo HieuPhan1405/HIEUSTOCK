@@ -3,12 +3,14 @@ import { layTatCaTinHieu } from "@/lib/tinHieu";
 import BangCoBan from "@/components/BangCoBan";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 import { donCot } from "@/lib/goiCot";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Bộ lọc cơ bản",
-  description: "Lọc toàn thị trường theo điểm Z (Altman), điểm F (Piotroski), ROE, P/E, P/B, tăng trưởng lợi nhuận, cổ tức và điểm Đánh giá 360.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Bộ lọc cơ bản",
+  moTa: "Lọc toàn thị trường theo điểm Z (Altman), điểm F (Piotroski), ROE, P/E, P/B, tăng trưởng lợi nhuận, cổ tức và điểm Đánh giá 360.",
+  duongDan: "/co-ban",
+});
 
 export default async function TrangCoBan() {
   let hang = [];

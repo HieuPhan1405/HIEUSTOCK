@@ -5,12 +5,14 @@ import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import LenhDaDongView from "@/components/LenhDaDongView";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Lệnh đã đóng",
-  description: "Kết quả các lệnh mua-bán đã đóng: tỷ lệ thắng, lãi/lỗ trung bình, thời gian nắm giữ.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Lệnh đã đóng",
+  moTa: "Kết quả các lệnh mua-bán đã đóng: tỷ lệ thắng, lãi/lỗ trung bình, thời gian nắm giữ.",
+  duongDan: "/lenh-da-dong",
+});
 
 export default async function TrangLenhDaDong() {
   const nguoiDung = await layNguoiDungHienTai();

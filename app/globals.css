@@ -179,7 +179,7 @@ html:not([data-theme="light"]) .chi-sang {
 @media (max-width: 639px) {
   .may-nut {
     width: 68px;
-    right: -34px;
+    right: -46px; /* 11/11/2026: chi lo 1 meo nho, truoc lo nua than che cot gia o danh sach */
     top: 46%;
   }
   .may-nut:hover,
@@ -985,7 +985,8 @@ html.cs-dang-chup .cs-cung {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  min-height: 32px; /* 11/11/2026: vung bam du lon cho ngon tay (truoc 28px) */
+  padding: 4px 12px;
   border-radius: 999px;
   border: 1px solid var(--vien);
   background: var(--card);

@@ -28,6 +28,8 @@ const THONG_TIN = [
   { href: "/thi-truong", nhan: "Thông tin thị trường" },
   { href: "/huong-dan", nhan: "Hướng dẫn & nguyên tắc" },
   { href: "/lien-he", nhan: "Liên hệ" },
+  { href: "/dieu-khoan", nhan: "Điều khoản sử dụng" },
+  { href: "/bao-mat", nhan: "Chính sách bảo mật" },
 ];
 
 function TieuDe({ children }) {
@@ -40,10 +42,10 @@ function TieuDe({ children }) {
 
 function DanhSachLink({ ds }) {
   return (
-    <ul className="flex flex-col gap-2">
+    <ul className="flex flex-col gap-0.5">
       {ds.map((x) => (
         <li key={x.href}>
-          <Link href={x.href} className="text-sm transition-colors hover:text-[color:var(--chu)]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
+          <Link href={x.href} className="inline-block py-1 text-sm transition-colors hover:text-[color:var(--chu)]" style={{ color: MUTED, fontFamily: "var(--font-chu)" }}>
             {x.nhan}
           </Link>
         </li>
@@ -106,7 +108,8 @@ export default async function ChanTrang() {
               )}
             </div>
 
-            <div>
+            {/* Dien thoai: bo cot "Cong cu" (da co thanh dieu huong day man hinh) - chan trang truoc cao ~1.000px. */}
+            <div className="hidden sm:block">
               <TieuDe>Công cụ</TieuDe>
               <DanhSachLink ds={CONG_CU} />
             </div>

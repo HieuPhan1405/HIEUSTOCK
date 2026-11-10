@@ -20,12 +20,14 @@ import GiaiThichThem from "@/components/GiaiThichThem";
 import { capNhatMoiNhat } from "@/components/dungChung";
 import { lenhDangMo, cacDiemMuaMoi } from "@/lib/muaThemTinhToan";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Danh sách theo dõi",
-  description: "Nhiều danh sách cổ phiếu theo dõi: giá, tín hiệu, điểm, cảnh báo của từng mã; danh sách chính kèm vị thế và lệnh đã đóng.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Danh sách theo dõi",
+  moTa: "Nhiều danh sách cổ phiếu theo dõi: giá, tín hiệu, điểm, cảnh báo của từng mã; danh sách chính kèm vị thế và lệnh đã đóng.",
+  duongDan: "/danh-muc",
+});
 
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";

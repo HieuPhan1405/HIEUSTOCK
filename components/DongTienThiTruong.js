@@ -85,6 +85,7 @@ export default function DongTienThiTruong() {
         if (dung) return;
         if (r.status === 401) return setD({ trangThai: "khoa", du: null, loi: null });
         const j = await r.json();
+        if (j.trangThai === "khoa") return setD({ trangThai: "khoa", du: null, loi: null });
         setD({ trangThai: j.du ? "co" : "rong", du: j.du ?? null, loi: j.loi ?? null });
       } catch {
         if (!dung) setD((c) => ({ ...c, loi: "Không tải được dữ liệu dòng tiền" }));

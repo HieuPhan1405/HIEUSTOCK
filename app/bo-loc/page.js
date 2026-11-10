@@ -10,12 +10,14 @@ import { thongBaoLoi } from "@/lib/loiAnToan";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import { lamSachChoKhach } from "@/lib/lamSachChoKhach";
 import { donCot } from "@/lib/goiCot";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Bộ lọc cổ phiếu",
-  description: "Lọc và sắp xếp toàn bộ cổ phiếu HOSE, HNX, UPCOM theo tín hiệu, xu hướng, dòng tiền, thanh khoản và vốn hoá.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Bộ lọc cổ phiếu",
+  moTa: "Lọc và sắp xếp toàn bộ cổ phiếu HOSE, HNX, UPCOM theo tín hiệu, xu hướng, dòng tiền, thanh khoản và vốn hoá.",
+  duongDan: "/bo-loc",
+});
 
 export default async function TrangBoLoc() {
   let tatCa = [];

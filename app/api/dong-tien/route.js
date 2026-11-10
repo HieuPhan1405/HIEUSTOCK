@@ -9,7 +9,8 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request) {
   const nguoiDung = await layNguoiDungHienTai().catch(() => null);
-  if (!nguoiDung?.da_duyet) return Response.json({ loi: "Cần đăng nhập tài khoản đã được duyệt" }, { status: 401 });
+  // Khach: tra 200 + trangThai "khoa" (truoc tra 401 -> moi trang co khoi dong tien deu bao loi do trong console trinh duyet cua khach).
+  if (!nguoiDung?.da_duyet) return Response.json({ trangThai: "khoa", loi: "Cần đăng nhập tài khoản thành viên" }, { headers: { "Cache-Control": "private, no-store" } });
   const ma = new URL(request.url).searchParams.get("ma");
   try {
     const du = ma ? await layDongTienMa(ma) : await layDongTienThiTruong();

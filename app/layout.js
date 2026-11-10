@@ -7,6 +7,7 @@ import { KhungGioProvider } from "@/components/KhungGioContext";
 import TuDongLamMoi from "@/components/TuDongLamMoi";
 import MayHuongDan from "@/components/MayHuongDan";
 import ThanhTabNhom from "@/components/ThanhTabNhom";
+import { ANH_CHIA_SE } from "@/lib/seo";
 
 // Open Sans (co dau tieng Viet, so deu hang nho font-variant-numeric: tabular-nums o globals.css; Hieu chon 2026-10-26). Phan biet --font-chu-tai (next/font) voi --font-chu (ngan xep du phong).
 const phongChu = Open_Sans({
@@ -31,7 +32,9 @@ export const metadata = {
     type: "website",
     title: "CloudStock — Hệ thống hỗ trợ đầu tư",
     description: "Quét toàn bộ cổ phiếu HOSE, HNX, UPCOM: tín hiệu mua/bán, vùng giá mua, cắt lỗ, chốt lời.",
+    images: [ANH_CHIA_SE], // anh xem truoc khi dan link len Zalo / Facebook (11/11/2026: truoc khong co og:image)
   },
+  twitter: { card: "summary_large_image", images: [ANH_CHIA_SE.url] },
 };
 
 // Dat che do sang/toi TRUOC khi ve trang (script nho chay ngay trong <head>) de khong bi nhay tu toi sang sang. Mac dinh TOI; nguoi dung doi bang nut o thanh dau (components/NutGiaoDien.js).

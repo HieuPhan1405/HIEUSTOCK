@@ -58,7 +58,7 @@ export async function POST(request) {
         const moi = await ghiThongBao([thongBaoDangKy(nguoiDung)]);
         if (moi.length) await guiDay(moi);
         const them = tb.soLan >= 3 ? "\n⚠ Đang có nhiều đăng ký liên tiếp, các tin sau sẽ không báo lẻ — xem đủ ở /quan-tri." : "";
-        await guiTinNhanZalo(`👤 NGƯỜI MỚI ĐĂNG KÝ: ${nguoiDung.ten || "Chưa đặt tên"} · ${nguoiDung.sdt} · ${nguoiDung.email}\nĐang chờ duyệt: https://cloudstock.id.vn/quan-tri${them}`);
+        await guiTinNhanZalo(`👤 NGƯỜI MỚI ĐĂNG KÝ: ${nguoiDung.ten || "Chưa đặt tên"} · ${nguoiDung.sdt} · ${nguoiDung.email}\nĐang dùng thử 7 ngày — duyệt vĩnh viễn ở https://cloudstock.id.vn/quan-tri${them}`);
       } catch {
         /* bo qua */
       }

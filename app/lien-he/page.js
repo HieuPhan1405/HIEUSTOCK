@@ -2,12 +2,14 @@ import { Mail, Phone, MessageCircle, Music2, Link2, Landmark } from "lucide-reac
 import { layThongTinLienHe } from "@/lib/thongTinLienHe";
 import FormGuiTinNhan from "@/components/FormGuiTinNhan";
 import { linkTiktok } from "@/components/kenhLienHe";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Liên hệ",
-  description: "Thông tin liên hệ và gửi tin nhắn tới CloudStock.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Liên hệ",
+  moTa: "Thông tin liên hệ và gửi tin nhắn tới CloudStock.",
+  duongDan: "/lien-he",
+});
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -15,7 +17,8 @@ const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
 const PRIMARY = "#6C5CE7";
 
-function DongKenh({ Icon, nhan, giaTri, laLink }) {
+// 11/11/2026: hien TEN kenh (chu de doc) thay cho duong dan tran; so dien thoai bam la goi. chu: chu hien thi cua link (mac dinh = duong dan).
+function DongKenh({ Icon, nhan, giaTri, laLink, chu, href }) {
   if (!giaTri) return null;
   return (
     <div className="flex items-center gap-3 py-3 border-b" style={{ borderColor: "var(--vien-nhe)" }}>
@@ -28,13 +31,13 @@ function DongKenh({ Icon, nhan, giaTri, laLink }) {
         </p>
         {laLink ? (
           <a
-            href={giaTri.startsWith("http") ? giaTri : `https://${giaTri}`}
+            href={href ?? (giaTri.startsWith("http") ? giaTri : `https://${giaTri}`)}
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm hover:underline break-all"
             style={{ color: TEXT, fontFamily: "var(--font-chu)" }}
           >
-            {giaTri}
+            {chu ?? giaTri}
           </a>
         ) : (
           <p className="text-sm break-all" style={{ color: TEXT, fontFamily: "var(--font-chu)" }}>
@@ -55,6 +58,7 @@ export default async function TrangLienHe() {
   }
 
   const tiktok = linkTiktok(tt);
+  const tenTiktok = (tiktok.match(/@[\w.]+/) || [null])[0];
   const coThongTinKenh = true; // luon co TikTok mac dinh
 
   return (
@@ -71,10 +75,10 @@ export default async function TrangLienHe() {
 
       {coThongTinKenh ? (
         <div className="rounded-2xl border p-6 mb-6" style={{ borderColor: VIEN, background: NEN_CARD }}>
-          <DongKenh Icon={Phone} nhan="Số điện thoại" giaTri={tt?.sdt} />
-          <DongKenh Icon={MessageCircle} nhan="Nhóm Zalo" giaTri={tt?.zalo} laLink />
-          <DongKenh Icon={Music2} nhan="TikTok" giaTri={tiktok} laLink />
-          <DongKenh Icon={Link2} nhan="Facebook" giaTri={tt?.facebook} laLink />
+          <DongKenh Icon={Phone} nhan="Điện thoại / Zalo" giaTri={tt?.sdt} laLink chu={tt?.sdt} href={tt?.sdt ? `tel:${tt.sdt.replace(/[^\d+]/g, "")}` : undefined} />
+          <DongKenh Icon={MessageCircle} nhan="Nhóm Zalo" giaTri={tt?.zalo} laLink chu="Tham gia nhóm Zalo CloudStock →" />
+          <DongKenh Icon={Music2} nhan="TikTok" giaTri={tiktok} laLink chu={tenTiktok ? `${tenTiktok} →` : "Kênh TikTok →"} />
+          <DongKenh Icon={Link2} nhan="Facebook" giaTri={tt?.facebook} laLink chu="Trang Facebook CloudStock →" />
           {tt?.so_tk && (
             <div className="flex items-center gap-3 pt-3">
               <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0" style={{ background: "var(--vien-nhe)" }}>
@@ -82,7 +86,7 @@ export default async function TrangLienHe() {
               </div>
               <div className="min-w-0">
                 <p className="text-[11px] " style={{ color: MUTED }}>
-                  Ủng hộ qua ngân hàng
+                  Ủng hộ dự án (tự nguyện)
                 </p>
                 <p className="text-sm" style={{ color: TEXT, fontFamily: "var(--font-chu)" }}>
                   {tt.ngan_hang ? `${tt.ngan_hang} — ` : ""}

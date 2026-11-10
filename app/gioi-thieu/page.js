@@ -11,11 +11,13 @@ import {
   ArrowRight,
 } from "lucide-react";
 import TaiKhoanNut from "@/components/TaiKhoanNut";
+import { taoMeta } from "@/lib/seo";
 
-export const metadata = {
-  title: "Giới thiệu",
-  description: "CloudStock — hệ thống hỗ trợ đầu tư chứng khoán: điểm hợp lưu, tín hiệu MUA/BÁN, dashboard thị trường, checklist bắt đáy, kiểm chứng backtest 12 năm trên VN100.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Giới thiệu",
+  moTa: "CloudStock — hệ thống hỗ trợ đầu tư chứng khoán: điểm hợp lưu, tín hiệu MUA/BÁN, dashboard thị trường, checklist bắt đáy, kiểm chứng backtest 11 năm với giá vào lệnh thực tế.",
+  duongDan: "/gioi-thieu",
+});
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -28,7 +30,7 @@ const TINH_NANG = [
   {
     Icon: LayoutGrid,
     tieuDe: "Điểm hợp lưu & tín hiệu MUA/BÁN",
-    mo: "Kết hợp Trend · Động lượng · Dòng tiền (Ichimoku + đường cân bằng dài hạn), tự động phát tín hiệu MUA/BÁN mỗi phiên — kiểm chứng backtest 12 năm trên VN100.",
+    mo: "Kết hợp Xu hướng · Động lượng · Dòng tiền (Ichimoku + đường cân bằng dài hạn), tự động phát tín hiệu MUA/BÁN mỗi phiên — kiểm chứng backtest 11 năm với giá vào lệnh thực tế.",
   },
   {
     Icon: ShieldCheck,
@@ -116,7 +118,7 @@ export default function TrangGioiThieu() {
             <span className="cs-chu-mau">đọc trong 5 giây.</span>
           </h1>
           <p className="text-base md:text-lg mb-8 max-w-2xl mx-auto" style={{ color: MUTED }}>
-            Điểm hợp lưu Trend · Động lượng · Dòng tiền, kiểm chứng backtest 12 năm trên VN100. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc biểu đồ
+            Điểm hợp lưu Xu hướng · Động lượng · Dòng tiền, kiểm chứng backtest 11 năm với giá vào lệnh thực tế. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc biểu đồ
             nhanh hơn.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
@@ -132,7 +134,7 @@ export default function TrangGioiThieu() {
 
           <div className="grid grid-cols-3 gap-6 mt-14 max-w-md mx-auto">
             <TheSo so="~390" nhan="mã theo dõi (HOSE, HNX, UPCOM)" />
-            <TheSo so="12 năm" nhan="đã kiểm chứng bằng backtest trên VN100" />
+            <TheSo so="11 năm" nhan="dữ liệu lịch sử dùng để kiểm chứng (backtest)" />
             <TheSo so="Miễn phí" nhan="trong tuần đầu sử dụng" />
           </div>
         </div>
@@ -165,7 +167,7 @@ export default function TrangGioiThieu() {
             Đăng ký bằng số điện thoại để lưu danh mục theo dõi, xem đầy đủ lịch sử checklist bắt đáy và các tính năng dành riêng cho hội viên.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <TaiKhoanNut compact nhan="Đăng ký nhận tư vấn miễn phí" />
+            <TaiKhoanNut compact nhan="Dùng thử miễn phí tuần đầu" />
             <Link href="/huong-dan" className="text-sm" style={{ color: PRIMARY, fontFamily: "var(--font-chu)" }}>
               Xem hướng dẫn & nguyên tắc →
             </Link>

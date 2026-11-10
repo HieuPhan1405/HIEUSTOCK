@@ -6,12 +6,14 @@ import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import { NhanMuc } from "@/components/LienKetPhongCach";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Điểm mua phục hồi",
-  description: "Lịch sử điểm mua phục hồi (điểm B) từ đầu 2026, bộ lọc nhanh và hướng dẫn dùng hiệu quả.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Điểm mua phục hồi",
+  moTa: "Lịch sử điểm mua phục hồi (điểm B) từ đầu 2026, bộ lọc nhanh và hướng dẫn dùng hiệu quả.",
+  duongDan: "/mua-phuc-hoi",
+});
 
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";

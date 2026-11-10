@@ -11,12 +11,14 @@ import { tinhRSNganh } from "@/lib/rsNganh";
 import { layRRGNganh } from "@/lib/phanTichCoBanDb";
 import { capNhatMoiNhat } from "@/components/dungChung";
 import { thongBaoLoi } from "@/lib/loiAnToan";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Phân tích ngành",
-  description: "RRG ngành (ngành nào đang dẫn dắt), sức mạnh tương đối RS theo ngành, bản đồ nhiệt, dòng tiền và bảng nhiệt mùa vụ (lợi suất theo tháng) của từng ngành.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Phân tích ngành",
+  moTa: "RRG ngành (ngành nào đang dẫn dắt), sức mạnh tương đối RS theo ngành, bản đồ nhiệt, dòng tiền và bảng nhiệt mùa vụ (lợi suất theo tháng) của từng ngành.",
+  duongDan: "/nganh",
+});
 
 const MUTED = "var(--mo)";
 

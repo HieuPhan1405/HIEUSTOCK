@@ -22,6 +22,8 @@ import { thongBaoLoi } from "@/lib/loiAnToan";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import { quyenTrangChu, locCauNhanDinh } from "@/lib/khoaTrangChu";
 import KhoaTinHieuTrangChu from "@/components/KhoaTinHieuTrangChu";
+import TaiKhoanNut from "@/components/TaiKhoanNut";
+import { taoMeta, GOC_WEB } from "@/lib/seo";
 import GiaiNghia from "@/components/GiaiNghia";
 import RadarTinHieu from "@/components/RadarTinHieu";
 import { layBatDayGanDay } from "@/lib/batDay";
@@ -30,6 +32,20 @@ import { layCoDem } from "@/lib/boNhoMem";
 import { layKhoiNgoaiMoiMa } from "@/lib/thiTruong";
 
 export const dynamic = "force-dynamic";
+export const metadata = taoMeta({
+  tieuDeDayDu: "CloudStock — Hệ thống hỗ trợ đầu tư chứng khoán",
+  moTa: "Tổng quan thị trường chứng khoán Việt Nam mỗi phiên: VN-Index, xu hướng, độ rộng, khối ngoại, radar sự kiện và tín hiệu MUA/BÁN cho cổ phiếu HOSE, HNX, UPCOM.",
+  duongDan: "/",
+});
+
+// Du lieu co cau truc (JSON-LD) cho Google: ten web + o tim kiem (Sitelinks search box -> trang ma).
+const JSON_LD = {
+  "@context": "https://schema.org",
+  "@graph": [
+    { "@type": "Organization", name: "CloudStock", url: GOC_WEB, logo: `${GOC_WEB}/icon-512.png` },
+    { "@type": "WebSite", name: "CloudStock", url: GOC_WEB, inLanguage: "vi-VN", potentialAction: { "@type": "SearchAction", target: `${GOC_WEB}/ma/{search_term_string}`, "query-input": "required name=search_term_string" } },
+  ],
+};
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";
@@ -54,7 +70,7 @@ function sinhKetLuan(pctXanh, pctDo, tong) {
   if (tong === 0) return "Chưa có dữ liệu — đang chờ AmiBroker đẩy CSV lên.";
   if (pctXanh - pctDo > 15) return "Nghiêng tích cực — số mã xu hướng tăng đang áp đảo.";
   if (pctDo - pctXanh > 15) return "Nghiêng tiêu cực — số mã xu hướng giảm đang áp đảo.";
-  return "Sideway — thị trường chưa có xu hướng rõ ràng.";
+  return "Đi ngang — thị trường chưa có xu hướng rõ ràng.";
 }
 
 // "NHAN DINH THI TRUONG" - doan van tu dong sinh tu chinh du lieu ~390 ma
@@ -83,7 +99,8 @@ function sinhNhanDinh(tatCa, xemTinHieu) {
 
   // Moi cau co co tinHieu (true = noi ve tin hieu MUA/BAN, Mat Than) - khach chua dang nhap khong thay (lib/khoaTrangChu.js).
   const cau = [
-    { tinHieu: false, cau: `Thị trường nghiêng ${sacThai.toLowerCase()} với ${soVN(pctGiam, 1, true)}% mã giảm điểm / ${soVN(pctTang, 1, true)}% mã tăng điểm trong ${tong} mã VN30-Midcap-Smallcap đang theo dõi (HOSE, HNX, UPCOM), trong đó ${soGiamManh} mã (${soVN(pctGiamManh, 1, true)}%) giảm mạnh trên 3%.` },
+    // 11/11/2026: noi so TANG truoc (cau cu "nghieng tich cuc voi 23,8% ma giam diem" doc nguoc), bo chu "VN30-Midcap-Smallcap".
+    { tinHieu: false, cau: `Phiên này nghiêng ${sacThai.toLowerCase()}: ${soVN(pctTang, 1, true)}% số mã tăng, ${soVN(pctGiam, 1, true)}% giảm trong ${tong} cổ phiếu đang theo dõi (HOSE, HNX, UPCOM)${soGiamManh > 0 ? `; ${soGiamManh} mã giảm mạnh trên 3%` : ""}.` },
   ];
   if (soMatThan > 0) {
     cau.push({ tinHieu: true, cau: `Có ${soMatThan} mã đang cảnh báo Mắt Thần — rủi ro đảo chiều cần theo dõi sát trong các phiên tới.` });
@@ -99,10 +116,10 @@ function sinhNhanDinh(tatCa, xemTinHieu) {
 // PTKT VNINDEX - dung dung cong thuc Ichimoku/duong can bang dai han/diem so nhu tung ma,
 // chi khac o cho ap dung cho chinh chi so (xem AFL: LaVNIndex).
 function phanLoaiTrend(trend) {
-  if (trend === null || trend === undefined) return { nhan: "Sideway", mau: VANG };
+  if (trend === null || trend === undefined) return { nhan: "Đi ngang", mau: VANG };
   if (trend > 0.5) return { nhan: "Tăng", mau: XANH };
   if (trend < -0.5) return { nhan: "Giảm", mau: DO };
-  return { nhan: "Sideway", mau: VANG };
+  return { nhan: "Đi ngang", mau: VANG };
 }
 
 // The KPI - card so lieu nhanh, co quang mau mo phia sau de tao diem nhan
@@ -191,7 +208,7 @@ function BieuDoTronDoRong({ soXanh, soSideway, soDo, tong, kichThuoc = 148 }) {
         {tong ? Math.round((soXanh / tong) * 100) : 0}%
       </text>
       <text x={tam} y={tam + Math.round(kichThuoc * 0.11)} textAnchor="middle" fontSize="11" fill={MUTED} style={{ fontFamily: "var(--font-chu)" }}>
-        mã xanh
+        xu hướng tăng
       </text>
     </svg>
   );
@@ -216,9 +233,9 @@ function TheXuHuongCacMa({ soXanh, soSideway, soDo, tong, pctXanh, pctDo, doRong
           </p>
           {/* Bam vao tung nhom -> Bo loc co phieu loc san theo xu huong do (phanLoaiXuHuong: xanh / sideway / do). */}
           <p className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs" style={{ fontFamily: "var(--font-chu)" }}>
-            <Link href="/bo-loc?xuhuong=xanh" className="hover:underline" style={{ color: XANH }}>● Xanh {soXanh}</Link>
-            <Link href="/bo-loc?xuhuong=sideway" className="hover:underline" style={{ color: VANG }}>● Sideway {soSideway}</Link>
-            <Link href="/bo-loc?xuhuong=do" className="hover:underline" style={{ color: DO }}>● Đỏ {soDo}</Link>
+            <Link href="/bo-loc?xuhuong=xanh" className="hover:underline py-1" style={{ color: XANH }}>● Tăng {soXanh}</Link>
+            <Link href="/bo-loc?xuhuong=sideway" className="hover:underline py-1" style={{ color: VANG }}>● Đi ngang {soSideway}</Link>
+            <Link href="/bo-loc?xuhuong=do" className="hover:underline py-1" style={{ color: DO }}>● Giảm {soDo}</Link>
           </p>
         </div>
       </div>
@@ -336,6 +353,7 @@ export default async function TrangTongQuan() {
 
   return (
     <div style={{ color: TEXT }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD).replace(/</g, "\\u003c") }} />
       {/* HERO: chi cho khach chua dang nhap (gioi thieu). Thanh vien vao thang phan thi truong + tin hieu (04/11/2026: bot cuon qua phan quang cao moi ngay). */}
       {xemTinHieu ? (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-8 flex flex-wrap items-end justify-between gap-3">
@@ -391,19 +409,25 @@ export default async function TrangTongQuan() {
               Điểm hợp lưu Xu hướng · Động lượng · Dòng tiền cho {tong > 0 ? tong : "gần 400"} cổ phiếu HOSE, HNX, UPCOM, kiểm chứng
               bằng backtest 11 năm với giá vào lệnh thực tế. Không phải khuyến nghị đầu tư — chỉ là công cụ đọc thị trường nhanh hơn.
             </p>
+            {/* 11/11/2026: nut DUNG THU dau tien (truoc hero 4 nut ngang hang, khong co nut dang ky); dien thoai chi giu 2 nut chinh de khach thay so lieu som hon. */}
             <div className="flex flex-wrap gap-3 mt-6 text-sm" style={{ fontFamily: "var(--font-chu)" }}>
-              <Link href="/bo-loc" className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold" style={{ background: "#6C5CE7", color: "#FFFFFF" }}>
+              <div className="[&>button]:px-4 [&>button]:py-2.5 [&>button]:text-sm">
+                <TaiKhoanNut compact taiLai nhan="Dùng thử miễn phí tuần đầu" />
+              </div>
+              <Link href="/bo-loc" className="group inline-flex items-center gap-2 px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: "#6C5CE7", color: TEXT }}>
                 Mở Bộ lọc cổ phiếu
                 <ArrowRight size={16} aria-hidden="true" className="transition-transform group-hover:translate-x-1" />
               </Link>
-              <Link href="/bieu-do" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
+              <Link href="/bieu-do" className="hidden sm:inline-flex px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
                 Xem biểu đồ kỹ thuật
               </Link>
-              <Link href="/danh-gia-danh-muc" className="px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: "#6C5CE7", color: TEXT }}>
+              <Link href="/danh-gia-danh-muc" className="hidden sm:inline-flex px-4 py-2.5 rounded-lg border font-semibold" style={{ borderColor: VIEN, color: TEXT }}>
                 Chấm điểm danh mục của bạn
               </Link>
               {/* Anh chia nho (chup ca trang dai va bi cat o man hinh nho): the co dinh 720px, xem components/TheThiTruong.js / TheTinHieu.js */}
-              <XuatAnh nhan="Ảnh thị trường" the={<TheThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} ngay={ngayAnh} />} rong={RONG_THE_THI_TRUONG} tenFile={`CloudStock-thi-truong-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tổng quan thị trường" />
+              <span className="hidden sm:contents">
+                <XuatAnh nhan="Ảnh thị trường" the={<TheThiTruong tatCa={tatCa} vnindex={chiSoVNIndex} ngay={ngayAnh} />} rong={RONG_THE_THI_TRUONG} tenFile={`CloudStock-thi-truong-${ngayPhien ?? "hom-nay"}.png`} tieuDe="Tổng quan thị trường" />
+              </span>
             </div>
           </div>
         </div>

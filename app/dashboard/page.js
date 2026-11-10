@@ -20,6 +20,7 @@ import { viTriTheoVungGiaTri } from "@/lib/vungGiaTriChiSo";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 import BanDoNhiet from "@/components/BanDoNhiet";
 import ThanhMucTrang from "@/components/ThanhMucTrang";
+import { taoMeta } from "@/lib/seo";
 
 // DASHBOARD THI TRUONG (10/11/2026 lam lai kieu FireAnt "Tong quan thi truong"): LUOI O thay vi 10 khoi xep doc ~5.700px.
 //   Hang 1: dai 4 chi so (VN-Index, VN30, HNX, UPCoM) · Hang 2: bieu do VN-Index | Thong ke phien · Hang 3: ban do nhiet · Hang 4: tac dong toi VN-Index
@@ -38,10 +39,11 @@ const MUC_LUC = [
 ];
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Dashboard thị trường",
-  description: "VN-Index, VN30, HNX, UPCoM, độ rộng, thanh khoản, khối ngoại, bản đồ nhiệt, tác động tới VN-Index, tâm lý và dòng tiền thị trường trong một màn hình.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Dashboard thị trường",
+  moTa: "VN-Index, VN30, HNX, UPCoM, độ rộng, thanh khoản, khối ngoại, bản đồ nhiệt, tác động tới VN-Index, tâm lý và dòng tiền thị trường trong một màn hình.",
+  duongDan: "/dashboard",
+});
 
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";

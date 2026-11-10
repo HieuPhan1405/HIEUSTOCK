@@ -12,12 +12,20 @@ import TabMaBieuDo from "@/components/TabMaBieuDo";
 import { NGANH_NHAN } from "@/lib/nganh";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { layPhanTichMa } from "@/lib/phanTichCoBanDb";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Biểu đồ kỹ thuật",
-  description: "Biểu đồ nến Nhật kèm Ichimoku, đường cân bằng dài hạn, MA và khối lượng cho cổ phiếu HOSE, HNX, UPCOM và VN-Index.",
-};
+// Tieu de theo MA dang xem (11/11/2026: truoc moi ma deu la "Bieu do ky thuat" - tab trinh duyet / link chia se khong biet dang xem ma nao).
+export async function generateMetadata({ searchParams }) {
+  const tham = await searchParams;
+  const ma = String(Array.isArray(tham?.ma) ? tham.ma[0] : tham?.ma || "VNINDEX").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12) || "VNINDEX";
+  const t = tenCongTy(ma);
+  return taoMeta({
+    tieuDe: ma === "VNINDEX" ? "Biểu đồ kỹ thuật VN-Index" : `Biểu đồ ${ma}${t ? ` – ${t.ngan || t.ten}` : ""}`,
+    moTa: `Biểu đồ nến ${ma === "VNINDEX" ? "VN-Index" : ma} kèm Ichimoku, đường cân bằng dài hạn, MA, khối lượng, công cụ vẽ và thông tin mã.`,
+    duongDan: ma === "VNINDEX" ? "/bieu-do" : `/bieu-do?ma=${ma}`,
+  });
+}
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";

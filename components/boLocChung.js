@@ -155,7 +155,7 @@ export function HangBoLocChung({ loc, datLoc, truocChon, sauChon, coBoLoc, onXoa
         options={[
           ["xanh", "Tăng"],
           ["do", "Giảm"],
-          ["sideway", "Sideway"],
+          ["sideway", "Đi ngang"],
         ]}
       />
       <OSelect

@@ -27,7 +27,7 @@ export default function NutNoi({ zalo, facebook, tiktok }) {
           type="button"
           onClick={lenDau}
           aria-label="Lên đầu trang"
-          className={`${kieu} cursor-pointer border`}
+          className={`${kieu.replace(" flex ", " ")} cursor-pointer border hidden md:flex`}
           style={{ background: "color-mix(in srgb, var(--card) 92%, transparent)", borderColor: "var(--vien)", color: "var(--chu)" }}
         >
           <ArrowUp size={18} aria-hidden="true" />

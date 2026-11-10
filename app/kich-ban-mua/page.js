@@ -4,12 +4,14 @@ import BangKichBanMua from "@/components/BangKichBanMua";
 import KhoaTrangNoiDung from "@/components/KhoaTrangNoiDung";
 import { thongBaoLoi } from "@/lib/loiAnToan";
 import { NhanMucXuHuong } from "@/components/LienKetPhongCach";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Sắp có lệnh · Đầu tư theo xu hướng",
-  description: "Mã chưa có lệnh sẽ ra tín hiệu MUA ở mức giá nào và sau bao nhiêu phiên, theo các kịch bản giá giữ nguyên, tăng đều, giảm đều.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Sắp có lệnh · Đầu tư theo xu hướng",
+  moTa: "Mã chưa có lệnh sẽ ra tín hiệu MUA ở mức giá nào và sau bao nhiêu phiên, theo các kịch bản giá giữ nguyên, tăng đều, giảm đều.",
+  duongDan: "/kich-ban-mua",
+});
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";

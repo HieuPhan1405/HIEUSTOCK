@@ -13,14 +13,16 @@ import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { NGANH_NHAN } from "@/lib/nganh";
 import BatDayTabs from "@/components/BatDayTabs";
 import DiemBatDayHienTai from "@/components/DiemBatDayHienTai";
+import { taoMeta } from "@/lib/seo";
 
 const so = (v) => (v == null || !Number.isFinite(Number(v)) ? null : Number(v));
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Checklist bắt đáy",
-  description: "Danh sách kiểm tra điều kiện bắt đáy cho từng cổ phiếu.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Checklist bắt đáy",
+  moTa: "Danh sách kiểm tra điều kiện bắt đáy cho từng cổ phiếu.",
+  duongDan: "/bat-day",
+});
 
 const VIEN = "var(--vien)";
 const NEN_CARD = "var(--card)";

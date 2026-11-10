@@ -46,7 +46,8 @@ const TheNho = ({ mau, children, title }) => (
 );
 
 // thanhDau: kieu gon cho THANH DAU trang - da dang nhap thi 1 nut (chu cai dau + ten) mo menu tai khoan; chua dang nhap thi nut Dang ky (dien thoai chi hien bieu tuong).
-export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
+// taiLai: dang ky / dang nhap xong thi tai lai trang (khung khoa noi dung can du lieu thanh vien tu may chu).
+export default function TaiKhoanNut({ compact, nhan, thanhDau, taiLai = false }) {
   const [nguoiDung, setNguoiDung] = useState(undefined); // undefined = dang tai, null = chua dang nhap
   const [moModal, setMoModal] = useState(false);
   const [moDoiMk, setMoDoiMk] = useState(false);
@@ -241,17 +242,17 @@ export default function TaiKhoanNut({ compact, nhan, thanhDau }) {
       >
         <UserRound size={14} strokeWidth={2.5} />
         {thanhDau ? (
-          <span className="hidden sm:inline">Đăng ký nhận tư vấn</span>
+          <span className="hidden sm:inline">Dùng thử miễn phí</span>
         ) : compact && !nhan ? (
           <>
-            <span className="hidden sm:inline">Đăng ký nhận tư vấn</span>
+            <span className="hidden sm:inline">Dùng thử miễn phí</span>
             <span className="sm:hidden">Đăng ký</span>
           </>
         ) : (
-          nhan || "Đăng ký nhận tư vấn"
+          nhan || "Dùng thử miễn phí"
         )}
       </button>
-      <ModalTaiKhoan open={moModal} onClose={() => setMoModal(false)} onThanhCong={thanhDau ? () => window.location.reload() : setNguoiDung} />
+      <ModalTaiKhoan open={moModal} onClose={() => setMoModal(false)} onThanhCong={thanhDau || taiLai ? () => window.location.reload() : setNguoiDung} />
     </>
   );
 }

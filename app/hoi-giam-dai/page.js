@@ -8,12 +8,14 @@ import { thongBaoLoi } from "@/lib/loiAnToan";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import DaiThongKe, { OThongKe } from "@/components/DaiThongKe";
 import { NhanMuc } from "@/components/LienKetPhongCach";
+import { taoMeta } from "@/lib/seo";
 
 export const dynamic = "force-dynamic";
-export const metadata = {
-  title: "Hồi sau giảm dài",
-  description: "Checklist bắt nhịp hồi của cổ phiếu đã giảm rất lâu, cầm hết nhịp hồi thay vì cố định số phiên.",
-};
+export const metadata = taoMeta({
+  tieuDe: "Hồi sau giảm dài",
+  moTa: "Checklist bắt nhịp hồi của cổ phiếu đã giảm rất lâu, cầm hết nhịp hồi thay vì cố định số phiên.",
+  duongDan: "/hoi-giam-dai",
+});
 
 const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
