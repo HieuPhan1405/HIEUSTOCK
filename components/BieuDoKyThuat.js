@@ -106,12 +106,15 @@ const nhanThoiGian = (t) => {
   return `${p(d.getUTCDate())}/${p(d.getUTCMonth() + 1)}/${d.getUTCFullYear()} ${p(d.getUTCHours())}:${p(d.getUTCMinutes())}`;
 };
 
+// Bollinger: mau CAM (de thay tren ca nen toi lan sang, khac hang Ichimoku / MA / EMA), dai tren + duoi net 2px, duong giua net dut, vung giua to nhe.
+const MAU_BB = "#F59E0B";
+const MAU_BB_NEN = "rgba(245,158,11,0.13)";
 const CONG_TAT = [
   { khoa: "ichimoku", nhan: "Ichimoku", mau: MAU.kijun },
   { khoa: "canBang", nhan: "Cân bằng dài hạn", mau: MAU.cb1 },
   { khoa: "ma", nhan: "MA 20/50/200", mau: MAU.ma20 },
   { khoa: "ema", nhan: "EMA 9/21", mau: "#22D3EE" },
-  { khoa: "boll", nhan: "Bollinger", mau: "#94A3B8" },
+  { khoa: "boll", nhan: "Bollinger", mau: MAU_BB },
   { khoa: "vp", nhan: "Volume Profile", mau: "#F6C544" },
   { khoa: "htkc", nhan: "Hỗ trợ / Kháng cự (KL)", mau: "#38BDF8" },
 ];
@@ -267,6 +270,7 @@ function tinhChiBaoPhu(nen) {
     bbTren: dong(bb.tren),
     bbMid: dong(bb.mid),
     bbDuoi: dong(bb.duoi),
+    bbBand: nen.map((b, i) => (bb.tren[i] == null ? null : { time: b.t, a: bb.tren[i], b: bb.duoi[i] })).filter(Boolean),
     rsi: dong(rsi(close, 14)),
     macd: dong(mc.macd),
     signal: dong(mc.signal),
@@ -446,6 +450,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
 
     const may = new DaiMay();
     const canBang = new DaiMay({ mauTren: "rgba(167,139,250,0.10)", mauDuoi: "rgba(167,139,250,0.10)" });
+    const bbBand = new DaiMay({ mauTren: MAU_BB_NEN, mauDuoi: MAU_BB_NEN }); // to mau vung giua dai tren / dai duoi Bollinger (kieu TradingView)
     const daiGia = new DaiGia();
     const dinhDang = { type: "price", precision: 2, minMove: 0.01 };
 
@@ -454,6 +459,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       thuyVan,
       may,
       canBang,
+      bbBand,
       daiGia,
       cb1: dong(MAU.cb1, 1, { lineStyle: LineStyle.Dashed }),
       cb2: dong(MAU.cb2, 1, { lineStyle: LineStyle.Dashed }),
@@ -474,9 +480,9 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       ttCb2: dong(MAU.cb2, 1, CHAM),
       ema9: dong("#22D3EE", 1, { visible: false }),
       ema21: dong("#0EA5E9", 1, { visible: false }),
-      bbTren: dong("#94A3B8", 1, { lineStyle: LineStyle.Dashed, visible: false }),
-      bbMid: dong("#94A3B8", 1, { lineStyle: LineStyle.Dotted, visible: false }),
-      bbDuoi: dong("#94A3B8", 1, { lineStyle: LineStyle.Dashed, visible: false }),
+      bbTren: dong(MAU_BB, 2, { visible: false }),
+      bbMid: dong(MAU_BB, 1, { lineStyle: LineStyle.Dashed, visible: false }),
+      bbDuoi: dong(MAU_BB, 2, { visible: false }),
       phu: [], // series cua cac chi bao phu (RSI / MACD / Stochastic) dang ve o cua so rieng - tao lai moi khi bat / tat
       vol: chart.addSeries(HistogramSeries, { priceFormat: { type: "volume" }, priceScaleId: "vol", lastValueVisible: false, priceLineVisible: false }),
       candle: chart.addSeries(CandlestickSeries, {
@@ -491,6 +497,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     s.vol.priceScale().applyOptions({ scaleMargins: { top: 0.82, bottom: 0 } });
     s.spanA.attachPrimitive(may);
     s.cb1.attachPrimitive(canBang);
+    s.bbTren.attachPrimitive(bbBand);
     s.candle.attachPrimitive(daiGia);
     s.markers = createSeriesMarkers(s.candle, []);
     s.markersPK = createSeriesMarkers(s.candle, []);
@@ -750,12 +757,14 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     s.bbTren.setData(cp ? cp.bbTren : []);
     s.bbMid.setData(cp ? cp.bbMid : []);
     s.bbDuoi.setData(cp ? cp.bbDuoi : []);
+    s.bbBand.datDuLieu(cp ? cp.bbBand : []);
   }, [chiBaoPhu]);
   useEffect(() => {
     const s = veRef.current;
     if (!s) return;
     for (const k of ["ema9", "ema21"]) s[k].applyOptions({ visible: bat.ema });
     for (const k of ["bbTren", "bbMid", "bbDuoi"]) s[k].applyOptions({ visible: bat.boll });
+    s.bbBand.datHien(bat.boll);
   }, [bat.ema, bat.boll]);
 
   // 3c. Chi bao phu o CUA SO RIENG (RSI / MACD / Stochastic): tao lai cac series moi khi bat / tat hoac doi du lieu.
