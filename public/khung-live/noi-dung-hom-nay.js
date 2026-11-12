@@ -36,6 +36,9 @@ window.KHUNG_LIVE = {
     "Đầu tư có rủi ro, thông tin chỉ để tham khảo thôi nha!"
   ],
 
+  // Mã cổ phiếu hôm nay phân tích: hiện trên BẢNG GỖ NOEL treo phía trên khung (tối đa 8 mã). Cũng có thể gõ thẳng trên link: khung-live.html?ma=FPT,HPG,VCB
+  maPhanTich: ["FPT", "HPG", "VCB"],
+
   // Mã môi giới MBS (hiện ở KHUNG TỐI GIẢN: khung-toi-gian.html)
   mbs: "7VZI",
 

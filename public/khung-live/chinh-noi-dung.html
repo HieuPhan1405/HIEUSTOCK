@@ -69,6 +69,11 @@
   </div>
 
   <div class="the">
+    <h2>Mã hôm nay phân tích (hiện trên bảng gỗ Noel treo phía trên khung, cách nhau bằng dấu phẩy, tối đa 8 mã)</h2>
+    <input id="mapt" maxlength="60" placeholder="Ví dụ: FPT, HPG, VCB">
+  </div>
+
+  <div class="the">
     <h2>Nội dung hôm nay (tối đa 6 mục, mục nào để trống thì không hiện). Mây sẽ ĐỌC lần lượt từng mục</h2>
     <div class="luoi2" id="muc"></div>
   </div>
@@ -118,6 +123,7 @@
     [1, 2, 3].forEach((n) => { $('pd' + n).value = (v.phuDe || [])[n - 1] || ''; });
     mucIn.forEach((el, i) => { el.value = (v.muc || [])[i] || ''; });
     $('may').value = (v.mayNoi || []).join('\n');
+    $('mapt').value = (v.maPhanTich || []).join(', ');
     $('avatar').value = v.avatar || '';
     const r = document.querySelector('input[name=loai][value=' + (v.loai === 'doc' ? 'doc' : 'ngang') + ']');
     if (r) r.checked = true;
@@ -128,6 +134,7 @@
     phuDe: [1, 2, 3].map((n) => $('pd' + n).value.trim()).filter(Boolean),
     muc: mucIn.map((el) => el.value.trim()).filter(Boolean),
     mayNoi: $('may').value.split('\n').map((t) => t.trim()).filter(Boolean),
+    maPhanTich: $('mapt').value.split(/[\s,;]+/).map((t) => t.trim().toUpperCase()).filter(Boolean).slice(0, 8),
     avatar: $('avatar').value.trim()
   });
   const thuMuc = location.href.replace(/[?#].*$/, '').replace(/[^/]*$/, '');
@@ -138,7 +145,7 @@
     const doc9 = v.loai === 'doc';
     $('hop-avatar').hidden = !doc9;
     const cfg = {};
-    for (const k of ['kenh', 'phuDe', 'muc', 'mayNoi']) if (v[k] && v[k].length) cfg[k] = v[k];
+    for (const k of ['kenh', 'phuDe', 'muc', 'mayNoi', 'maPhanTich']) if (v[k] && v[k].length) cfg[k] = v[k];
     if (doc9 && v.avatar) cfg.avatar = v.avatar;
     const link = thuMuc + (doc9 ? 'khung-doc.html' : 'khung-live.html') + '?c=' + encodeURIComponent(JSON.stringify(cfg));
     $('link').textContent = link;

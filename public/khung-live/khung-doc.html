@@ -21,7 +21,7 @@
 
   /* ---------- NEN (cat 2 lo trong suot bang clip-path; lop giao dien cung bi cat de anh sang khong tran vao camera) ---------- */
   .nen { position: absolute; inset: 0; background: var(--nen); }
-  .nen, #ui { clip-path: path(evenodd, "M0 0 H1080 V1920 H0 Z M20 526 A24 24 0 0 1 44 502 H1036 A24 24 0 0 1 1060 526 V1212 A24 24 0 0 1 1036 1236 H44 A24 24 0 0 1 20 1212 Z"); }
+  .nen, #ui { clip-path: path(evenodd, "M0 0 H1080 V1920 H0 Z M20 526 A24 24 0 0 1 44 502 H1036 A24 24 0 0 1 1060 526 V1118 A24 24 0 0 1 1036 1142 H44 A24 24 0 0 1 20 1118 Z"); }
   #ui { position: absolute; inset: 0; }
   .luoi { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.024) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.024) 1px, transparent 1px); background-size: 54px 54px; }
   .sang { position: absolute; border-radius: 50%; filter: blur(6px); }
@@ -137,7 +137,7 @@
   body.png .bong p::after { content: ""; }
   @keyframes con-tro { 50% { opacity: 0; } }
 
-  .the { position: absolute; top: 1248px; height: 66px; border-radius: 20px; padding: 0 20px; display: flex; flex-direction: row; align-items: center; gap: 14px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); animation: troi-the 5s ease-in-out infinite alternate; }
+  .the { position: absolute; top: 1154px; height: 66px; border-radius: 20px; padding: 0 20px; display: flex; flex-direction: row; align-items: center; gap: 14px; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,0.1); animation: troi-the 5s ease-in-out infinite alternate; }
   .the small { font-size: 17px; font-weight: 900; letter-spacing: 0.06em; flex: none; }
   .the strong { font-family: 'JetBrains Mono', monospace; font-weight: 700; line-height: 1.15; }
   .the.web { left: 20px; width: 500px; background: linear-gradient(150deg, rgba(212,36,38,0.7), rgba(15,34,24,0.97) 78%); border: 2px solid rgba(255,209,102,0.85); }
@@ -186,6 +186,27 @@
   .may .non { filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35)); }
   body.png .bt { opacity: 0.9; }
   .logo img { filter: hue-rotate(105deg) saturate(1.2); }
+
+  /* ---- Bang go treo ---- */
+  .bang-go { position: absolute; z-index: 6; pointer-events: none; transform-origin: 50% 0; animation: bang-dung 6s ease-in-out infinite; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5)) drop-shadow(0 0 18px rgba(255,214,120,0.45)); }
+  @keyframes bang-dung { 0%, 100% { transform: rotate(-0.9deg); } 50% { transform: rotate(0.9deg); } }
+  .bang-go .day { position: absolute; top: 0; width: 9px; background: repeating-linear-gradient(60deg, #E7C88A 0 4px, #A27B3C 4px 8px); border-radius: 4px; box-shadow: inset -1px 0 0 rgba(0,0,0,0.25); }
+  .bang-go .nut { position: absolute; width: 22px; height: 18px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #F1D8A2, #B98B44 70%, #7E5A25); box-shadow: 0 2px 3px rgba(0,0,0,0.4); }
+  .bang-go .tam { position: absolute; left: 0; right: 0; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; border: 3px solid #8A5A28;
+    background: linear-gradient(180deg, #F3D9A2, #E2B873 45%, #D3A15C); box-shadow: inset 0 2px 0 rgba(255,255,255,0.55), inset 0 -3px 6px rgba(120,70,20,0.35); }
+  .bang-go .tam::before { content: ""; position: absolute; inset: 0; border-radius: 5px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.007 0.22' numOctaves='3' seed='6'/%3E%3CfeColorMatrix values='0 0 0 0 0.42 0 0 0 0 0.24 0 0 0 0 0.08 0 0 0 1.5 -0.38'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); background-size: 100% 100%; mix-blend-mode: multiply; opacity: 0.55; }
+  .bang-go .tam::after { content: ""; position: absolute; left: 6px; right: 6px; top: 36%; height: 2px; background: rgba(110,65,20,0.28); border-radius: 2px; box-shadow: 0 1px 0 rgba(255,255,255,0.35); }
+  .bang-go small { position: relative; z-index: 2; font-weight: 800; letter-spacing: 0.14em; color: #1E6B3B; text-shadow: 0 1px 0 rgba(255,255,255,0.6); }
+  .bang-go b { position: relative; z-index: 2; font-weight: 900; color: #A8141A; line-height: 1.1; letter-spacing: 0.02em; text-shadow: 0 1px 0 rgba(255,255,255,0.6), 0 -1px 0 rgba(70,30,5,0.25); white-space: nowrap; }
+  .bang-go .tuyet-mai { position: absolute; left: -3px; right: -3px; top: -12px; height: 16px; z-index: 3; background: radial-gradient(circle at 10px 10px, #fff 9px, transparent 10px) repeat-x; background-size: 24px 16px; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.25)); }
+  .bang-go .tuyet-mai::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: #fff; border-radius: 0 0 4px 4px; }
+  .bang-go .holly { position: absolute; z-index: 4; height: auto; }
+  .bang-go { width: 380px; }
+  .bang-go.ngang { left: 1224px; top: 72px; } .bang-go.doc { left: 660px; top: 502px; }
+  .bang-go .d1 { left: 50px; height: 20px; } .bang-go .d2 { right: 50px; height: 20px; }
+  .bang-go .n1 { left: 43px; top: 8px; } .bang-go .n2 { right: 43px; top: 8px; }
+  .bang-go .tam { top: 18px; height: 92px; } .bang-go small { font-size: 14px; margin-bottom: 2px; } .bang-go .holly { width: 46px; left: -16px; bottom: -14px; }
+  body.png .bang-go { animation: none !important; }
 </style>
 </head>
 <body>
@@ -206,9 +227,9 @@
 
   <div id="ui">
     <!-- Vien sang: man hinh chinh, camera mat -->
-    <div class="vien" style="left:17px;top:499px;width:1046px;height:740px"></div>
+    <div class="vien" style="left:17px;top:499px;width:1046px;height:646px"></div>
     <div class="goc tl" style="left:2px;top:484px"></div><div class="goc tr" style="left:1028px;top:484px"></div>
-    <div class="goc bl" style="left:2px;top:1204px"></div><div class="goc br" style="left:1028px;top:1204px"></div>
+    <div class="goc bl" style="left:2px;top:1110px"></div><div class="goc br" style="left:1028px;top:1110px"></div>
 
     <!-- O avatar -->
     <div class="vien nho" style="left:37px;top:225px;width:90px;height:90px;border-radius:50%"></div>
@@ -256,11 +277,11 @@
   </div>
 
   <!-- Camera mat: de len GOC TRAI DUOI cua man hinh (220 x 220 tai 32,986) -->
-  <div class="vien nho" style="left:29px;top:983px;width:226px;height:226px;border-radius:24px"></div>
-  <svg class="non-cam" style="left:8px;top:938px;transform:rotate(-8deg)" viewBox="0 0 120 90" aria-hidden="true"><defs><linearGradient id="nonDo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F0443F"/><stop offset="1" stop-color="#B3161A"/></linearGradient></defs><path d="M20 62 C20 30 42 6 70 6 C90 6 104 22 108 44 C100 52 94 58 96 62 Z" fill="url(#nonDo)"/><rect x="8" y="58" width="104" height="24" rx="12" fill="#fff"/><circle cx="108" cy="46" r="10" fill="#fff"/></svg>
+  <div class="vien nho" style="left:29px;top:889px;width:226px;height:226px;border-radius:24px"></div>
+  <div class="bang-go doc" id="bang-go"><i class="day d1"></i><i class="day d2"></i><i class="nut n1"></i><i class="nut n2"></i><div class="tam"><div class="tuyet-mai"></div><small>HÔM NAY PHÂN TÍCH</small><b id="bang-ma">Ghi mã vào đây</b><svg class="holly" viewBox="0 0 60 44" aria-hidden="true"><path d="M30 24C20 8 6 8 2 14c6 4 12 12 28 10z" fill="#1E7A3C"/><path d="M30 24C40 8 54 8 58 14c-6 4-12 12-28 10z" fill="#27934A"/><path d="M30 24C24 34 14 40 6 40c4-8 12-14 24-16z" fill="#1E7A3C"/><circle cx="26" cy="26" r="6" fill="#D4202A"/><circle cx="36" cy="27" r="6" fill="#E5383B"/><circle cx="31" cy="33" r="6" fill="#C01820"/><circle cx="24.5" cy="24" r="1.6" fill="#fff" opacity=".7"/></svg></div></div><svg class="non-cam" style="left:8px;top:844px;transform:rotate(-8deg)" viewBox="0 0 120 90" aria-hidden="true"><defs><linearGradient id="nonDo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F0443F"/><stop offset="1" stop-color="#B3161A"/></linearGradient></defs><path d="M20 62 C20 30 42 6 70 6 C90 6 104 22 108 44 C100 52 94 58 96 62 Z" fill="url(#nonDo)"/><rect x="8" y="58" width="104" height="24" rx="12" fill="#fff"/><circle cx="108" cy="46" r="10" fill="#fff"/></svg>
   <!-- O gia xem truoc -->
-  <div class="gia" style="left:20px;top:502px;width:1040px;height:734px">MÀN HÌNH / CAMERA<small>1040 × 734 · lớp dưới khung</small></div>
-  <div class="gia" style="left:32px;top:986px;width:220px;height:220px;font-size:24px">CAMERA<br>MẶT<small>220 × 220</small></div>
+  <div class="gia" style="left:20px;top:502px;width:1040px;height:640px">MÀN HÌNH / CAMERA<small>1040 × 640 · lớp dưới khung</small></div>
+  <div class="gia" style="left:32px;top:892px;width:220px;height:220px;font-size:24px">CAMERA<br>MẶT<small>220 × 220</small></div>
   <div class="vung-tiktok tren"><span>TikTok phủ: avatar, số người xem, chip, nút đóng</span></div>
   <div class="vung-tiktok duoi"><span>TikTok phủ: bình luận, ô nhập, nút quà tặng<br>(đừng đặt nội dung quan trọng ở đây)</span></div>
 </div>
@@ -309,6 +330,21 @@
   if (!C.phuDe.some((t) => /Giáng sinh/i.test(t))) C.phuDe = ['❄ Giáng sinh an lành ❄'].concat(C.phuDe).slice(0, 3);
   C.chay = C.chay.concat(['❄ Giáng sinh an lành! Chúc cả nhà một mùa Noel ấm áp, bình an và nhiều niềm vui ❄']);
   C.mayNoi = C.mayNoi.concat(['Giáng sinh an lành! Chúc cả nhà một mùa Noel thật ấm áp nha!']);
+
+  // NOEL: bang go treo - ma hom nay phan tich
+  {
+    const tho = P.get('ma') ? P.get('ma').split(/[\s,;|]+/) : (Array.isArray(tuUrl.maPhanTich) ? tuUrl.maPhanTich : (window.KHUNG_LIVE || {}).maPhanTich || []);
+    const dsMa = tho.map((x) => String(x).trim().toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6)).filter(Boolean).slice(0, 8);
+    const bang = $('bang-ma'), hop = $('bang-go');
+    if (bang && hop) {
+      const chu = dsMa.length ? dsMa.join('  •  ') : 'Ghi mã vào đây';
+      bang.textContent = chu;
+      const ng = hop.classList.contains('ngang');
+      const rong = 380 - 40, cao = 40;
+      bang.style.fontSize = Math.max(16, Math.min(cao, rong / (chu.length * 0.66))) + 'px';
+      if (!dsMa.length) bang.style.opacity = '0.55';
+    }
+  }
   const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;');
 
   // Chu co dinh
