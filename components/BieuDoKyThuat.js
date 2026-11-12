@@ -16,6 +16,7 @@ import { DaiMay, DaiGia } from "@/components/bieuDoPlugin";
 import { fmt } from "@/components/dungChung";
 import BangThongTinBieuDo from "@/components/BangThongTinBieuDo";
 import ThongTinMaBieuDo from "@/components/ThongTinMaBieuDo";
+import PanelBenPhaiBieuDo from "@/components/PanelBenPhaiBieuDo";
 import { dangTrongPhienGiaoDich } from "@/lib/khungGioVaoLenh";
 import { soVN, pctVN } from "@/lib/soVN";
 
@@ -1489,12 +1490,12 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       </div>
       {benPhai && (
         <aside className="hidden xl:flex w-[300px] shrink-0 flex-col gap-3 overflow-y-auto border-l p-3" style={{ borderColor: VIEN, height: chieuCaoTong }} aria-label="Thông tin mã">
-          {noiDungThongTin}
+          <PanelBenPhaiBieuDo ma={ma}>{noiDungThongTin}</PanelBenPhaiBieuDo>
         </aside>
       )}
       {toanMH && (
         <aside className="hidden md:flex w-[300px] shrink-0 flex-col gap-3 overflow-y-auto border-l p-3" style={{ borderColor: VIEN }} aria-label="Thông tin mã">
-          {noiDungThongTin}
+          <PanelBenPhaiBieuDo ma={ma}>{noiDungThongTin}</PanelBenPhaiBieuDo>
           <p className="text-[11px] leading-relaxed" style={{ color: MUTED }}>Esc: thu nhỏ. Chỉ để tham khảo, không phải khuyến nghị mua bán.</p>
         </aside>
       )}
