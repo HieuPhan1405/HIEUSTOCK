@@ -1,4 +1,4 @@
-// Hai "primitive" ve them len bieu do lightweight-charts (thu vien khong co san):
+// Cac "primitive" ve them len bieu do lightweight-charts (thu vien khong co san) - DaiMay, DaiGia va VachNgay (vach chia phien, xem ben duoi):
 //   DaiMay - to mau vung giua 2 duong (may Ichimoku, vung can bang dai han), doi mau khi 2 duong cat nhau.
 //   DaiGia - dai gia nam ngang toan bo bieu do (vung mua / cat lo / chot loi), hoac 1 duong neu tu == den.
 // Ca hai ve o lop duoi cung (nen nen phai o duoi) va chi ve lai khi bieu do yeu cau.
@@ -87,6 +87,68 @@ export class DaiMay {
         tamGiac([[xc, yc], [p1.x, p1.ya], [p1.x, p1.yb]], p1.hieu >= 0 ? this._mauTren : this._mauDuoi);
       }
     }
+  }
+}
+
+// VachNgay - vach DOC net dut chia cac PHIEN (khung trong ngay), dat giua nen cuoi phien truoc va nen dau phien moi, kem nhan ngay nho o dinh.
+// moc: [{ time (nen dau phien), truoc (time nen cuoi phien truoc | null), nhan }]
+export class VachNgay {
+  constructor({ mau = "rgba(148,163,184,0.45)", mauChu = "rgba(148,163,184,0.9)" } = {}) {
+    this._moc = [];
+    this._hien = true;
+    this._mau = mau;
+    this._mauChu = mauChu;
+    this._khung = new KhungNhin((ctx, kichThuoc) => this._ve(ctx, kichThuoc));
+  }
+  attached({ chart, requestUpdate }) {
+    this._chart = chart;
+    this._yeuCauVe = requestUpdate;
+  }
+  detached() {
+    this._chart = null;
+    this._yeuCauVe = null;
+  }
+  datDuLieu(moc) {
+    this._moc = moc;
+    this._yeuCauVe?.();
+  }
+  datHien(hien) {
+    this._hien = hien;
+    this._yeuCauVe?.();
+  }
+  updateAllViews() {}
+  paneViews() {
+    return [this._khung];
+  }
+  _ve(ctx, { width, height }) {
+    if (!this._hien || !this._chart || !this._moc.length) return;
+    const truc = this._chart.timeScale();
+    ctx.save();
+    ctx.font = "600 10px 'Open Sans', sans-serif";
+    ctx.textBaseline = "top";
+    let xCuoiNhan = -Infinity;
+    for (const m of this._moc) {
+      const x1 = truc.timeToCoordinate(m.time);
+      if (x1 == null || x1 < 0 || x1 > width) continue;
+      const x0 = m.truoc != null ? truc.timeToCoordinate(m.truoc) : null;
+      const x = Math.round(x0 != null ? (x0 + x1) / 2 : x1) + 0.5;
+      ctx.beginPath();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = this._mau;
+      ctx.lineWidth = 1;
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, height);
+      ctx.stroke();
+      // nhan ngay: bo qua neu de len nhan truoc (khi thu nho bieu do nhieu ngay)
+      const rong = ctx.measureText(m.nhan).width;
+      if (x + 4 > xCuoiNhan + 6 && x + 4 + rong < width) {
+        ctx.fillStyle = this._mauChu;
+        ctx.fillText(m.nhan, x + 4, 4);
+        xCuoiNhan = x + 4 + rong;
+      }
+    }
+    ctx.setLineDash([]);
+    ctx.restore();
   }
 }
 
