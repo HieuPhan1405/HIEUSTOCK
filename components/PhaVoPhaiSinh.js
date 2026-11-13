@@ -91,7 +91,43 @@ const NHAN_TRANG_THAI = {
   choVaoLai: { chu: "Đã cắt lỗ · chờ vào lại", mau: VANG },
   khoaLai: { chu: "Đã thoát có lãi", mau: XANH },
   cuoiPhien: { chu: "Đã đóng cuối phiên", mau: MUTED },
+  quaDem: { chu: "Giữ qua đêm · đóng 9:30", mau: XANH },
+  giuQuaDem: { chu: "Đang giữ qua đêm", mau: XANH },
 };
+const nhanRa = (lyDo) => (lyDo === "catLo" ? "cắt lỗ" : lyDo === "khoaLai" ? "thoát lãi" : lyDo === "cuoiPhien" ? "14:29" : lyDo === "quaDem" ? "qua đêm → 9:30" : lyDo === "giuQuaDem" ? "giữ qua đêm" : "đang giữ");
+const LY_DO_QUA_DEM = {
+  nguocChieu: "Dòng tiền ngày NGƯỢC chiều lệnh → đóng 14:29 như thường.",
+  daoHan: "Hôm nay là ngày đáo hạn → đóng 14:29, không giữ qua đêm sang hợp đồng mới.",
+  chuaCoDongTien: "Chưa tính được dòng tiền ngày → đóng 14:29 như thường.",
+};
+
+// GIU QUA DEM (14/11/2026): lenh con giu den 14:29 + dong tien khung ngay cung chieu -> khong dong 14:29, dong 9:30 phien sau. Kiem chung: lib/phaVoPhaiSinh.js (xetGiuQuaDem).
+function KhungQuaDem({ q, dongTien, pha }) {
+  if (!q || q.lyDo === "khongCoLenh") return null;
+  const len = dongTien === 1;
+  const daXong = pha === "sauPhien" || pha === "ngayCu";
+  return (
+    <div className="mt-3 rounded-xl p-3 text-sm" style={{ border: `1px solid ${q.giu ? XANH : VIEN}` }}>
+      <p style={{ color: MUTED }}>
+        Dòng tiền khung ngày:{" "}
+        <b style={{ color: dongTien == null ? MUTED : len ? XANH : DO }}>{dongTien == null ? "chưa có" : len ? "LÊN" : "XUỐNG"}</b>
+      </p>
+      {q.lyDo === "daThoat" ? (
+        <p className="text-xs mt-1" style={{ color: MUTED }}>Lệnh đã thoát trong phiên nên không giữ qua đêm.</p>
+      ) : q.giu ? (
+        <p className="mt-1" style={{ color: XANH }}>
+          <b>{daXong ? "Giữ qua đêm" : q.dangGiu ? "Có thể giữ qua đêm" : "Giữ qua đêm"}:</b> dòng tiền ngày cùng chiều lệnh{" "}
+          {q.phia > 0 ? "MUA" : "BÁN KHỐNG"} → {daXong ? "không đóng 14:29, đóng lúc 9:30 phiên sau." : "nếu đến 14:29 lệnh vẫn còn và dòng tiền vẫn cùng chiều: không đóng, đóng lúc 9:30 phiên sau."}
+        </p>
+      ) : (
+        <p className="mt-1" style={{ color: TEXT }}>{LY_DO_QUA_DEM[q.lyDo] || "Đóng 14:29 như thường."}</p>
+      )}
+      <p className="text-[11px] mt-1.5" style={{ color: MUTED }}>
+        Kiểm chứng 2018–2026: thêm khoảng 60–85 điểm/năm mỗi hợp đồng, hơn 7/8 năm, đêm xấu nhất −27 điểm (giữ khi ngược chiều từng −153). Độ tin cậy mức vừa; cần đủ ký quỹ qua đêm. Không phải khuyến nghị.
+      </p>
+    </div>
+  );
+}
 const NHAN_PHA = { truocPhien: "Chưa mở cửa", trongPhien: "Đang trong phiên", nghiTrua: "Nghỉ trưa", sauPhien: "Đã hết phiên", ngayCu: "Xem lại ngày cũ" };
 
 function Dong({ nhan, gia, mau, ghiChu }) {
@@ -247,7 +283,7 @@ function OKetQua({ x }) {
   return (
     <span style={mono}>
       <b style={{ color: x.phia > 0 ? XANH : DO }}>{x.phia > 0 ? "Mua" : "Bán"}</b> {d1(x.vao)} <span style={{ color: MUTED }}>{x.gioVao}</span> → {x.ra != null ? d1(x.ra) : "…"}{" "}
-      <span style={{ color: MUTED }}>{x.lyDo === "catLo" ? "cắt lỗ" : x.lyDo === "khoaLai" ? "thoát lãi" : x.lyDo === "cuoiPhien" ? "14:29" : "đang giữ"}</span>
+      <span style={{ color: x.lyDo === "quaDem" || x.lyDo === "giuQuaDem" ? XANH : MUTED }}>{nhanRa(x.lyDo)}</span>
     </span>
   );
 }
@@ -652,7 +688,8 @@ export default function PhaVoPhaiSinh() {
 
   // Phat hien trang thai doi (vua co lenh / vua thoat) -> ghi su kien, thong bao trinh duyet, tieng bip
   function xetThayDoi(j) {
-    const moi = { bd: j.bienDong?.trangThai, ngay: j.ngay, hai: j.bienDong?.lenhHai?.trangThai ?? (j.bienDong?.vaoLai === "cho" ? "cho" : null) };
+    // dem: tu 14:20 (phut 231) lenh con giu + dong tien ngay cung chieu -> bao "giu qua dem"; demHQ: lenh qua dem cua phien truoc da dong 9:30
+    const moi = { bd: j.bienDong?.trangThai, ngay: j.ngay, hai: j.bienDong?.lenhHai?.trangThai ?? (j.bienDong?.vaoLai === "cho" ? "cho" : null), dem: !!(j.quaDem?.giu && j.kCuoi >= 231), demHQ: !!j.quaDemHomQua?.ketQua?.xong };
     const cu = truoc.current;
     truoc.current = moi;
     if (!cu || cu.ngay !== moi.ngay) return;
@@ -662,7 +699,7 @@ export default function PhaVoPhaiSinh() {
       if (moi[khoa] === "dangGiu") tin.push(`${ten}: ${x.phia > 0 ? "MUA" : "BÁN KHỐNG"} ${d1(x.vao.gia)} lúc ${x.vao.gio}, cắt lỗ ${d1(x.catLo)}`);
       else if (moi[khoa] === "khoaLai") tin.push(`${ten}: THOÁT CÓ LÃI ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm)`);
       else if (moi[khoa] === "catLo") tin.push(`${ten}: CẮT LỖ ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm)`);
-      else if (moi[khoa] === "cuoiPhien") tin.push(`${ten}: đóng cuối phiên ${d1(x.ra.gia)} (${diemCoDau(x.diemSauPhi)} điểm)`);
+      else if (moi[khoa] === "cuoiPhien" && !j.bienDong?.lenhHai) tin.push(j.quaDem?.giu ? `${ten}: 14:29 giá ${d1(x.ra.gia)} — GIỮ QUA ĐÊM, đóng 9:30 phiên sau` : `${ten}: đóng cuối phiên ${d1(x.ra.gia)} (${diemCoDau(x.diemSauPhi)} điểm)`);
     }
     // lenh VAO LAI sau cat lo (lenh 2)
     if (cu.hai !== moi.hai) {
@@ -671,8 +708,10 @@ export default function PhaVoPhaiSinh() {
       else if (moi.hai === "dangGiu") tin.push(`Vào lại: ${h.phia > 0 ? "MUA" : "BÁN KHỐNG"} ${d1(h.vao.gia)} lúc ${h.vao.gio}, cắt lỗ ${d1(h.catLo)}`);
       else if (moi.hai === "khoaLai") tin.push(`Vào lại: THOÁT CÓ LÃI ${d1(h.ra.gia)} lúc ${h.ra.gio} (${diemCoDau(h.diemSauPhi)} điểm)`);
       else if (moi.hai === "catLo") tin.push(`Vào lại: CẮT LỖ ${d1(h.ra.gia)} lúc ${h.ra.gio} (${diemCoDau(h.diemSauPhi)} điểm)`);
-      else if (moi.hai === "cuoiPhien") tin.push(`Vào lại: đóng cuối phiên ${d1(h.ra.gia)} (${diemCoDau(h.diemSauPhi)} điểm)`);
+      else if (moi.hai === "cuoiPhien") tin.push(j.quaDem?.giu ? `Vào lại: 14:29 giá ${d1(h.ra.gia)} — GIỮ QUA ĐÊM, đóng 9:30 phiên sau` : `Vào lại: đóng cuối phiên ${d1(h.ra.gia)} (${diemCoDau(h.diemSauPhi)} điểm)`);
     }
+    if (!cu.dem && moi.dem) tin.push(`Phái sinh: dòng tiền ngày cùng chiều lệnh ${j.quaDem.phia > 0 ? "MUA" : "BÁN KHỐNG"} → GIỮ QUA ĐÊM, không đóng 14:29, đóng 9:30 phiên sau`);
+    if (!cu.demHQ && moi.demHQ) tin.push(`Phái sinh: đóng lệnh giữ qua đêm lúc 9:30 giá ${d1(j.quaDemHomQua.ketQua.ra.gia)} (${diemCoDau(j.quaDemHomQua.ketQua.diemSauPhi)} điểm)`);
     if (!tin.length) return;
     const gio = new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
     setSuKien((ds) => [...tin.map((t) => `${gio} · ${t}`), ...ds].slice(0, 8));
@@ -872,6 +911,39 @@ export default function PhaVoPhaiSinh() {
         </p>
       )}
 
+      {du?.quaDemHomQua && (() => {
+        const h = du.quaDemHomQua;
+        const k = h.ketQua;
+        return (
+          <div className="rounded-2xl border p-4 mb-4" style={{ borderColor: XANH, background: NEN_CARD }}>
+            <p className="text-base font-bold mb-1" style={{ color: TEXT, fontFamily: "var(--font-chu)" }}>
+              Lệnh giữ qua đêm từ phiên {ngayHien(h.ngay)}
+            </p>
+            <p className="text-sm" style={{ color: h.phia > 0 ? XANH : DO }}>
+              <b>{h.phia > 0 ? "MUA" : "BÁN KHỐNG"}</b> lúc {h.vao.gio} giá <span style={mono}>{d1(h.vao.gia)}</span>
+              {h.gia1429 != null && (
+                <span style={{ color: MUTED }}>
+                  {" "}
+                  · 14:29 phiên trước <span style={mono}>{d1(h.gia1429)}</span>
+                </span>
+              )}
+            </p>
+            {k ? (
+              <p className="text-sm mt-1" style={{ color: TEXT }}>
+                {k.xong ? "Đóng lúc 9:30 hôm nay" : "Chờ đóng lúc 9:30 · giá hiện tại"} <span style={mono}>{d1(k.ra.gia)}</span> →{" "}
+                <b style={{ color: k.diemSauPhi > 0 ? XANH : DO, ...mono }}>
+                  {diemCoDau(k.diemSauPhi)} điểm ({trieu(k.diemSauPhi)} / hợp đồng)
+                </b>
+                {k.diemThem != null && <span style={{ color: MUTED }}> · qua đêm {diemCoDau(k.diemThem)} điểm so với đóng 14:29</span>}
+                {!k.xong && <span style={{ color: MUTED }}> (tạm tính)</span>}
+              </p>
+            ) : (
+              <p className="text-sm mt-1" style={{ color: MUTED }}>Chờ mở cửa: đóng lệnh lúc 9:30.</p>
+            )}
+          </div>
+        );
+      })()}
+
       <div className="grid gap-4 mb-4">
         <The tieuDe="Tín hiệu trong ngày" moTa="Mức mua, bán khống và cắt lỗ của hôm nay." trangThai={b.trangThaiNgay || b.trangThai}>
           {b.giaMoCua != null && (
@@ -910,6 +982,7 @@ export default function PhaVoPhaiSinh() {
               </p>
             </>
           )}
+          {du && <KhungQuaDem q={du.quaDem} dongTien={du.dongTienNgay} pha={du.pha} />}
         </The>
       </div>
 

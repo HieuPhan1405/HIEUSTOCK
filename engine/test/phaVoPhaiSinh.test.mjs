@@ -1,5 +1,5 @@
 // Test tay cho lib/phaVoPhaiSinh.js. Chay: node engine/test/phaVoPhaiSinh.test.mjs
-import { viTriPhut, gioCuaPhut, tachPhien, bienDoPhien, tinhBienDong, DIEM_CAT_LO_TOI_THIEU, catLoBanDau, DIEM_KICH_KHOA_LAI, DIEM_KHOA_LAI, thuNamTuanBa, laPhienDauHopDong, phiVong, vungGiaTriPhien, viTriVungGiaTri, K_CUOI, K_HET_GIO_VAO, SO_LENH_TOI_DA_NGAY } from "../../lib/phaVoPhaiSinh.js";
+import { viTriPhut, gioCuaPhut, tachPhien, bienDoPhien, tinhBienDong, DIEM_CAT_LO_TOI_THIEU, catLoBanDau, DIEM_KICH_KHOA_LAI, DIEM_KHOA_LAI, thuNamTuanBa, laPhienDauHopDong, phiVong, vungGiaTriPhien, viTriVungGiaTri, K_CUOI, K_HET_GIO_VAO, SO_LENH_TOI_DA_NGAY, laNgayDaoHan, dongTienNgayLienTuc, xetGiuQuaDem, ketQuaQuaDem, lenhCuoiNgay, nenNgayTuPhien } from "../../lib/phaVoPhaiSinh.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -192,6 +192,50 @@ ok("phi vong o 1.867,5 ~ 0,482 diem", Math.abs(phiVong(1867.5) - 0.4825) < 0.001
   ok("vi tri: mua tren VAH / ban duoi VAL = da ra khoi vung", viTriVungGiaTri(1008, 1, v) === "ra" && viTriVungGiaTri(995, -1, v) === "ra");
   ok("vi tri: ban tren VAH / mua duoi VAL = huong vao vung", viTriVungGiaTri(1008, -1, v) === "vao" && viTriVungGiaTri(995, 1, v) === "vao");
   ok("khong co vung / khong co lenh -> null", viTriVungGiaTri(1000, 1, null) === null && viTriVungGiaTri(1000, 0, v) === null && vungGiaTriPhien(null) === null);
+}
+
+// 8. GIU QUA DEM theo dong tien khung ngay (14/11/2026)
+{
+  // dong tien ngay: chuoi tang deu -> "len" (1); giam deu -> "xuong" (-1); it hon ~50 phien -> chua co
+  const tang = Array.from({ length: 80 }, (_, i) => ({ t: `2026-0${1 + Math.floor(i / 28)}-${String((i % 28) + 1).padStart(2, "0")}`, o: 1000 + i * 2, h: 1003 + i * 2 + (i % 3), l: 998 + i * 2 - (i % 2), c: 1001 + i * 2 + (i % 4) }));
+  const dtT = dongTienNgayLienTuc(tang);
+  ok("dong tien ngay: co gia tri sau du phien, khong co o phien dau", dtT.has(tang[79].t) && !dtT.has(tang[5].t));
+  const giam = tang.map((b, i) => ({ ...b, o: 2000 - i * 2, h: 2003 - i * 2, l: 1996 - i * 2, c: 2000 - i * 2 - (i % 4) }));
+  ok("dong tien ngay: chuoi giam -> xuong (-1)", dongTienNgayLienTuc(giam).get(giam[79].t) === -1);
+  // khoang nhay cuon hop dong khong lam doi trang thai: chen 1 phien dau hop dong moi nhay -300 diem roi tiep tuc cung nhip
+  const nhay = tang.map((b, i) => (i >= 60 ? { ...b, o: b.o - 300, h: b.h - 300, l: b.l - 300, c: b.c - 300 } : b));
+  // ngay 60 phai la phien dau hop dong moi: dat lai ngay de phien 59 <= thu Nam tuan 3 < phien 60 (thang 3/2026: thu Nam tuan 3 = 19/03)
+  const nhayNgay = nhay.map((b, i) => ({ ...b, t: i < 60 ? `2025-${String(1 + Math.floor(i / 20)).padStart(2, "0")}-${String((i % 20) + 1).padStart(2, "0")}` : `2026-03-${String(i - 40).padStart(2, "0")}` }));
+  nhayNgay[59] = { ...nhayNgay[59], t: "2026-03-19" };
+  const dtN = dongTienNgayLienTuc(nhayNgay);
+  ok("cuon hop dong (nhay -300) duoc noi lien: van la dong tien LEN", dtN.get(nhayNgay[79].t) === 1, String(dtN.get(nhayNgay[79].t)));
+  ok("laNgayDaoHan: thu Nam tuan 3", laNgayDaoHan("2026-11-19") && !laNgayDaoHan("2026-11-18"));
+
+  // lenh mua giu den 14:29 (khong cham cat lo, khong du lai 7 de khoa): mo 1000, bien do truoc 20 -> muc mua 1006, phut 10 len 1006 roi di ngang 1008
+  const g = phang(241, 1000); for (let k = 10; k <= 240; k++) g[k] = k < 100 ? 1006 : 1008;
+  const p = tachPhien(phien("2026-11-10", g)).get("2026-11-10");
+  const bd = tinhBienDong(p, 20);
+  ok("lenh mua con den 14:29 (cuoiPhien)", bd.phia === 1 && bd.trangThai === "cuoiPhien", bd.trangThai);
+  ok("dong tien cung chieu -> giu qua dem", xetGiuQuaDem(bd, 1).giu === true && xetGiuQuaDem(bd, 1).lyDo === "cungChieu");
+  ok("dong tien nguoc chieu -> khong giu", xetGiuQuaDem(bd, -1).giu === false && xetGiuQuaDem(bd, -1).lyDo === "nguocChieu");
+  ok("ngay dao han -> khong giu", xetGiuQuaDem(bd, 1, { daoHan: true }).lyDo === "daoHan");
+  ok("chua co dong tien -> khong giu", xetGiuQuaDem(bd, null).lyDo === "chuaCoDongTien");
+  ok("khong co lenh -> khongCoLenh", xetGiuQuaDem(tinhBienDong(tachPhien(phien("2026-11-10", phang(241, 1000))).get("2026-11-10"), 20), 1).lyDo === "khongCoLenh");
+  // lenh da cat lo -> daThoat
+  const gc = phang(241, 1000); gc[10] = 1006; for (let k = 11; k <= 240; k++) gc[k] = 990;
+  const bdc = tinhBienDong(tachPhien(phien("2026-11-10", gc)).get("2026-11-10"), 20);
+  ok("lenh da thoat trong phien -> daThoat", xetGiuQuaDem(bdc.lenhHai ? { ...bdc, lenhHai: { ...bdc.lenhHai, trangThai: "catLo" } } : bdc, 1).lyDo === "daThoat");
+  // ket qua dong 9:30 phien sau: phien sau di 1012 tu 9:00 -> 9:30 = 1012
+  const gs = phang(241, 1012);
+  const pSau = tachPhien(phien("2026-11-11", gs)).get("2026-11-11");
+  const kq = ketQuaQuaDem(lenhCuoiNgay(bd), pSau);
+  ok("ket qua qua dem: dong 9:30 gia 1012, lai = 1012 - gia vao, them so voi 14:29 = +4", kq.xong && kq.ra.gio === "09:30" && gan(kq.diem, 1012 - bd.vao.gia) && gan(kq.diemThem, 4) && gan(kq.diemSauPhi, kq.diem - phiVong(bd.vao.gia)), JSON.stringify(kq));
+  const pSom = tachPhien(phien("2026-11-11", phang(10, 1009))).get("2026-11-11");
+  ok("chua toi 9:30 -> xong = false, gia hien tai", ketQuaQuaDem(lenhCuoiNgay(bd), pSom).xong === false && gan(ketQuaQuaDem(lenhCuoiNgay(bd), pSom).ra.gia, 1009));
+  ok("phien sau chua co du lieu -> null", ketQuaQuaDem(lenhCuoiNgay(bd), null) === null);
+  // nen ngay tu phien: dong cua 14:29, cao / thap cua phien
+  const nn = nenNgayTuPhien(tachPhien([...phien("2026-11-10", g), ...phien("2026-11-11", gs)]));
+  ok("nenNgayTuPhien: 2 ngay, dong cua 14:29, mo 9:00", nn.length === 2 && nn[0].c === 1008 && nn[0].o === 1000 && nn[0].h === 1008 && nn[1].c === 1012);
 }
 
 console.log(loi ? `\n${loi} LOI` : "\nTat ca dat.");

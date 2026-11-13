@@ -5,7 +5,7 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { tachPhien, bienDoPhien, tinhBienDong, laPhienDauHopDong, vungGiaTriPhien, viTriVungGiaTri } from "../../lib/phaVoPhaiSinh.js";
+import { tachPhien, bienDoPhien, tinhBienDong, laPhienDauHopDong, vungGiaTriPhien, viTriVungGiaTri, nenNgayTuPhien, dongTienNgayLienTuc, xetGiuQuaDem, ketQuaQuaDem, lenhCuoiNgay } from "../../lib/phaVoPhaiSinh.js";
 
 const GOC = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
 const TU = process.env.TU ?? "2024-01-01";
@@ -13,6 +13,10 @@ const j = JSON.parse(readFileSync(path.join(GOC, "output", "vn30f1m_1p.json"), "
 const nen = j.t.map((t, i) => [t, j.o[i], j.h[i], j.l[i], j.c[i], j.v?.[i] ?? 0]).filter((r) => r.slice(1, 5).every((x) => Number.isFinite(x) && x > 0) && r[2] >= r[3]).sort((a, b) => a[0] - b[0]);
 const P = tachPhien(nen);
 const ds = [...P.keys()].sort();
+// 14/11/2026: GIU QUA DEM theo dong tien khung ngay (nen ngay tu nen 1 phut, dong cua 14:29 - giong ban kiem chung) -> lenh cuoi ngay dong 9:30 phien sau, lyDo "quaDem"
+const DTN = dongTienNgayLienTuc(nenNgayTuPhien(P));
+const tron = (v) => Math.round(v * 100) / 100;
+let soDem = 0, themDem = 0;
 const hang = [];
 for (let i = 1; i < ds.length; i++) {
   if (ds[i] < TU) continue;
@@ -31,6 +35,18 @@ for (let i = 1; i < ds.length; i++) {
       const h = x.lenhHai;
       r.hai = { phia: h.phia, vao: h.vao.gia, gioVao: h.vao.gio, ra: h.ra ? h.ra.gia : null, gioRa: h.ra ? h.ra.gio : null, lyDo: h.trangThai, diemSauPhi: Math.round(h.diemSauPhi * 100) / 100, viTri: viTriVungGiaTri(h.vao.gia, h.phia, vung) };
     }
+    // giu qua dem: lenh cuoi ngay con giu den 14:29 + dong tien ngay cung chieu + phien sau KHONG phai hop dong moi
+    const sau = i + 1 < ds.length ? ds[i + 1] : null;
+    const qd = sau ? xetGiuQuaDem(x, DTN.get(ds[i]), { daoHan: laPhienDauHopDong(ds[i], sau) }) : { giu: false };
+    if (qd.giu) {
+      const kq = ketQuaQuaDem(lenhCuoiNgay(x), P.get(sau));
+      if (kq && kq.xong) {
+        const o = r.hai || r;
+        Object.assign(o, { ra: kq.ra.gia, gioRa: `${kq.ra.gio} ${sau.slice(8, 10)}/${sau.slice(5, 7)}`, lyDo: "quaDem", diemSauPhi: tron(kq.diemSauPhi), gia1429: kq.gia1429 });
+        soDem++;
+        themDem += kq.diemThem;
+      }
+    }
   }
   hang.push(r);
 }
@@ -39,4 +55,4 @@ writeFileSync(path.join(GOC, "..", "lib", "phaiSinhLichSuTinh.json"), JSON.strin
 const L = hang.filter((r) => r.phia && !r.dauHD);
 const H = L.filter((r) => r.hai);
 const tong = (ds) => ds.reduce((t, r) => t + r.diemSauPhi, 0);
-console.log(`Ghi lib/phaiSinhLichSuTinh.json: ${hang.length} phien tu ${hang[0].ngay} den ${out.den}; ${L.length + H.length} lenh (${H.length} lenh vao lai), thang ${L.filter((r) => r.diemSauPhi > 0).length + H.filter((r) => r.hai.diemSauPhi > 0).length}, tong ${(tong(L) + H.reduce((t, r) => t + r.hai.diemSauPhi, 0)).toFixed(1)} diem sau phi (lenh dau ${tong(L).toFixed(1)}, vao lai ${H.reduce((t, r) => t + r.hai.diemSauPhi, 0).toFixed(1)})`);
+console.log(`Ghi lib/phaiSinhLichSuTinh.json: ${hang.length} phien tu ${hang[0].ngay} den ${out.den}; ${L.length + H.length} lenh (${H.length} lenh vao lai), thang ${L.filter((r) => r.diemSauPhi > 0).length + H.filter((r) => r.hai.diemSauPhi > 0).length}, tong ${(tong(L) + H.reduce((t, r) => t + r.hai.diemSauPhi, 0)).toFixed(1)} diem sau phi (lenh dau ${tong(L).toFixed(1)}, vao lai ${H.reduce((t, r) => t + r.hai.diemSauPhi, 0).toFixed(1)}); giu qua dem ${soDem} lan, them ${themDem.toFixed(1)} diem`);
