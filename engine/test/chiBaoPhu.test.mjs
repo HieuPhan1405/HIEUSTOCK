@@ -1,5 +1,5 @@
 // Test tay cho lib/chiBaoPhu.js. Chay: node engine/test/chiBaoPhu.test.mjs
-import { ema, rsi, macd, bollinger, stochastic } from "../../lib/chiBaoPhu.js";
+import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay } from "../../lib/chiBaoPhu.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -47,6 +47,32 @@ ok("Stochastic chuoi tang, dong cua = cao: K, D tien ve gan 100", st.k[29] > 85 
 const phang = Array.from({ length: 30 }, () => ({ h: 10, l: 10, c: 10 }));
 ok("Stochastic HHV = LLV -> 50", gan(stochastic(phang).k[29], 50));
 ok("Stochastic: null truoc du nen", st.k[12] === null && st.d[14] === null);
+
+// MFI
+const mfTang = Array.from({ length: 30 }, (_, i) => ({ h: 11 + i, l: 9 + i, c: 10 + i, v: 100 }));
+ok("MFI chuoi tang = 100", gan(mfi(mfTang)[29], 100) && mfi(mfTang)[13] === null && mfi(mfTang)[14] != null);
+const mfGiam = Array.from({ length: 30 }, (_, i) => ({ h: 51 - i, l: 49 - i, c: 50 - i, v: 100 }));
+ok("MFI chuoi giam = 0", gan(mfi(mfGiam)[29], 0));
+const mfXen = Array.from({ length: 31 }, (_, i) => ({ h: 11 + (i % 2), l: 9 + (i % 2), c: 10 + (i % 2), v: 100 }));
+ok("MFI xen ke len/xuong cung KL ~ 50", Math.abs(mfi(mfXen)[30] - 50) < 5, mfi(mfXen)[30]);
+ok("MFI luon trong [0,100]", mfi(Array.from({ length: 200 }, (_, i) => { const c = 100 + Math.sin(i / 4) * 5; return { h: c + 1, l: c - 1, c, v: 50 + (i % 7) * 10 }; })).filter((v) => v != null).every((v) => v >= 0 && v <= 100));
+
+// ADX
+const ax = adx(Array.from({ length: 60 }, (_, i) => ({ h: 11 + i, l: 9 + i, c: 10.5 + i })));
+ok("ADX xu huong tang deu: DI+ > DI-, ADX cao (> 50)", ax.pdi[59] > ax.mdi[59] && ax.adx[59] > 50, `${ax.pdi[59]} ${ax.mdi[59]} ${ax.adx[59]}`);
+ok("ADX: null truoc 2n-1 nen, co gia tri tu nen 2n-1", ax.adx[26] === null && ax.adx[27] != null);
+const axG = adx(Array.from({ length: 60 }, (_, i) => ({ h: 71 - i, l: 69 - i, c: 69.5 - i })));
+ok("ADX xu huong giam: DI- > DI+", axG.mdi[59] > axG.pdi[59]);
+
+// VWAP trong ngay
+const N0 = 20000 * 86400;
+const vw = vwapTrongNgay([
+  { t: N0 + 9 * 3600, h: 12, l: 8, c: 10, v: 100 },
+  { t: N0 + 9 * 3600 + 60, h: 22, l: 18, c: 20, v: 300 },
+  { t: N0 + 86400 + 9 * 3600, h: 31, l: 29, c: 30, v: 10 },
+]);
+ok("VWAP: (10*100 + 20*300)/400 = 17,5; sang phien moi bat dau lai = 30", gan(vw[0], 10) && gan(vw[1], 17.5) && gan(vw[2], 30), vw.join(","));
+ok("VWAP: nen chua co KL -> null", vwapTrongNgay([{ t: N0, h: 1, l: 1, c: 1, v: 0 }])[0] === null);
 
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

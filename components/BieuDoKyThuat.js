@@ -5,7 +5,7 @@ import GiaiThichThem from "@/components/GiaiThichThem";
 import { createChart, createTextWatermark, createSeriesMarkers, BaselineSeries, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
 import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2, Eraser } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
-import { ema, rsi, macd, bollinger, stochastic } from "@/lib/chiBaoPhu";
+import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay } from "@/lib/chiBaoPhu";
 import { phanKyRSI, phanKyRSISom } from "@/lib/phanKyRSI";
 import { tinhBankerHienThi, MAU_BANKER } from "@/lib/dongTienBanker";
 import { nhanDienMauHinh, nhanDienDangHinhThanh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
@@ -79,9 +79,10 @@ const KHUNG_CHON = [
   { khoa: "M30", nhan: "30 phút" },
   { khoa: "M15", nhan: "15 phút" },
   { khoa: "M5", nhan: "5 phút" },
+  { khoa: "M1", nhan: "1 phút" },
 ];
-const NEN_MOI_NGAY = { H: 5, M30: 9, M15: 16, M5: 48 };
-const BUOC_PHUT = { H: 60, M30: 30, M15: 15, M5: 5 };
+const NEN_MOI_NGAY = { H: 5, M30: 9, M15: 16, M5: 48, M1: 241 };
+const BUOC_PHUT = { H: 60, M30: 30, M15: 15, M5: 5, M1: 1 };
 const laNoiNgay = (kt) => kt in BUOC_PHUT;
 const khoangNoiNgay = (kt) => [{ nhan: "1T", nen: 5 * NEN_MOI_NGAY[kt] }, { nhan: "2T", nen: 10 * NEN_MOI_NGAY[kt] }, { nhan: "1th", nen: 21 * NEN_MOI_NGAY[kt] }, { nhan: "Tất cả", nen: 0 }];
 // Nen ke tiep (giay, da cong 7 gio) theo cac phien 9:00-11:30 va 13:00-14:45, bo qua T7 / CN - dung ve "may tuong lai" o khung nho.
@@ -110,12 +111,14 @@ const nhanThoiGian = (t) => {
 // Bollinger: mau CAM (de thay tren ca nen toi lan sang, khac hang Ichimoku / MA / EMA), dai tren + duoi net 2px, duong giua net dut, vung giua to nhe.
 const MAU_BB = "#F59E0B";
 const MAU_BB_NEN = "rgba(245,158,11,0.13)";
+const MAU_VWAP = "#E879F9";
 const CONG_TAT = [
   { khoa: "ichimoku", nhan: "Ichimoku", mau: MAU.kijun },
   { khoa: "canBang", nhan: "Cân bằng dài hạn", mau: MAU.cb1 },
   { khoa: "ma", nhan: "MA 20/50/200", mau: MAU.ma20 },
   { khoa: "ema", nhan: "EMA 9/21", mau: "#22D3EE" },
   { khoa: "boll", nhan: "Bollinger", mau: MAU_BB },
+  { khoa: "vwap", nhan: "VWAP", mau: MAU_VWAP }, // chi khung trong ngay (bat dau lai moi phien)
   { khoa: "vp", nhan: "Volume Profile", mau: "#F6C544" },
   { khoa: "htkc", nhan: "Hỗ trợ / Kháng cự (KL)", mau: "#38BDF8" },
 ];
@@ -128,6 +131,8 @@ const CHI_BAO_PHU = [
   { khoa: "rsi", nhan: "RSI 14", mau: "#A78BFA" },
   { khoa: "macd", nhan: "MACD", mau: "#60A5FA" },
   { khoa: "stoch", nhan: "Stochastic", mau: "#FBBF24" },
+  { khoa: "mfi", nhan: "MFI 14", mau: "#2DD4BF" },
+  { khoa: "adx", nhan: "ADX 14", mau: "#F472B6" },
   { khoa: "dongTien", nhan: "Dòng tiền", mau: "#22C55E" }, // Banker Fund Flow (lib/dongTienBanker.js): chi la chi bao hien thi, KHONG phai tin hieu mua / ban
 ];
 // RSI phan ky (lib/phanKyRSI.js): 2 day / dinh gia lien tiep nguoc chieu RSI - chi la DIEU KIEN THAM KHAO, nghien cuu 2026-10-16 tren 390 ma cho thay KHONG co loi the thong ke rieng le.
@@ -253,6 +258,9 @@ function tinhChiBaoPhu(nen) {
   const bb = bollinger(close, 20, 2);
   const mc = macd(close);
   const st = stochastic(bars);
+  const barsV = nen.map((b) => ({ h: b.h, l: b.l, c: b.c, v: b.v ?? 0 }));
+  const ad = adx(bars, 14);
+  const noiNgay = typeof nen[0]?.t === "number"; // VWAP chi co nghia o khung trong ngay (bat dau lai moi phien)
   // Dong tien (Banker Fund Flow) hien thi giong Pine: nen giua trend va bull/bear (mau theo trang thai), nen vang "Banker In", nen mo theo trang thai, duong trend doi mau, nhan IN / OUT / ...
   const bk = tinhBankerHienThi({ open: nen.map((b) => b.o ?? b.c), high: nen.map((b) => b.h), low: nen.map((b) => b.l), close, volume: nen.map((b) => b.v ?? 0) });
   const soNenNhan = 300; // chi gan nhan tren ~300 nen cuoi cho do roi
@@ -278,6 +286,11 @@ function tinhChiBaoPhu(nen) {
     hist: mc.hist.map((v, i) => (v == null ? null : { time: nen[i].t, value: v, color: v >= 0 ? "rgba(34,197,94,0.6)" : "rgba(239,68,68,0.6)" })).filter(Boolean),
     stochK: dong(st.k),
     stochD: dong(st.d),
+    mfi: dong(mfi(barsV, 14)),
+    adx: dong(ad.adx),
+    pdi: dong(ad.pdi),
+    mdi: dong(ad.mdi),
+    vwap: noiNgay ? dong(vwapTrongNgay(nen.map((b) => ({ t: b.t, h: b.h, l: b.l, c: b.c, v: b.v ?? 0 })))) : [],
   };
 }
 
@@ -339,13 +352,14 @@ const tenRutGon = (t) =>
     .replace(/^Ngân hàng Thương mại Cổ phần\s+/i, "NHTMCP ")
     .replace(/^Tổng Công ty Cổ phần\s+/i, "TCT CP ")
     .replace(/^Công ty Cổ phần\s+/i, "CTCP ");
-const NHAN_KHUNG_MO = { D: "1D", W: "1W", H: "1H", M30: "30m", M15: "15m", M5: "5m" };
+const NHAN_KHUNG_MO = { D: "1D", W: "1W", H: "1H", M30: "30m", M15: "15m", M5: "5m", M1: "1m" };
 
-export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null }) {
+// khungMacDinh / batMacDinh (14/11/2026, trang /phai-sinh): khung thoi gian va bo chi bao bat san khi mo (vd VN30F1M mo khung 5 phut + EMA / Bollinger / VWAP / RSI / MFI).
+export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null, khungMacDinh = "D", batMacDinh = null }) {
   const khungRef = useRef(null);
   const veRef = useRef(null);
-  const [khungTG, setKhungTG] = useState("D");
-  const [bat, setBat] = useState({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true });
+  const [khungTG, setKhungTG] = useState(khungMacDinh);
+  const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, vp: false, htkc: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
   // DIEM B (mua phuc hoi) + DIEM BAT DAY cua ma nay (chi thanh vien da duyet - xem /api/diem-bieu-do), ve thanh mui ten tren nen gia (khung Ngay / Tuan).
   const [diemSK, setDiemSK] = useState({ ma: "", b: [], batDay: [] });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
@@ -399,7 +413,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const [chonMH, setChonMH] = useState({ khoa: "", idx: 0 });
   const idxMH = chonMH.khoa === khoa ? chonMH.idx : 0; // doi ma / khung -> ve lai mau hinh moi nhat
   const mauHinhVe = bat.mauHinh && idxMH >= 0 && idxMH < dsMauHinh.length ? dsMauHinh[idxMH] : null;
-  const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0) + (bat.dongTien ? 1 : 0);
+  const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0) + (bat.mfi ? 1 : 0) + (bat.adx ? 1 : 0) + (bat.dongTien ? 1 : 0);
   // Khoa luu hinh ve cua ma + khung hien tai: cap nhat trong effect (khong ghi ref luc render). Dat TRUOC cac effect khoi tao / nap hinh ve nen chay truoc chung trong cung 1 lan cap nhat.
   useEffect(() => {
     khoaVeRef.current = khoaLuu(ma, khungTG);
@@ -484,6 +498,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       bbTren: dong(MAU_BB, 2, { visible: false }),
       bbMid: dong(MAU_BB, 1, { lineStyle: LineStyle.Dashed, visible: false }),
       bbDuoi: dong(MAU_BB, 2, { visible: false }),
+      vwap: dong(MAU_VWAP, 2, { visible: false }),
       phu: [], // series cua cac chi bao phu (RSI / MACD / Stochastic) dang ve o cua so rieng - tao lai moi khi bat / tat
       vol: chart.addSeries(HistogramSeries, { priceFormat: { type: "volume" }, priceScaleId: "vol", lastValueVisible: false, priceLineVisible: false }),
       candle: chart.addSeries(CandlestickSeries, {
@@ -759,6 +774,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     s.bbMid.setData(cp ? cp.bbMid : []);
     s.bbDuoi.setData(cp ? cp.bbDuoi : []);
     s.bbBand.datDuLieu(cp ? cp.bbBand : []);
+    s.vwap.setData(cp ? cp.vwap : []);
   }, [chiBaoPhu]);
   useEffect(() => {
     const s = veRef.current;
@@ -766,7 +782,8 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     for (const k of ["ema9", "ema21"]) s[k].applyOptions({ visible: bat.ema });
     for (const k of ["bbTren", "bbMid", "bbDuoi"]) s[k].applyOptions({ visible: bat.boll });
     s.bbBand.datHien(bat.boll);
-  }, [bat.ema, bat.boll]);
+    s.vwap.applyOptions({ visible: bat.vwap && noiNgay });
+  }, [bat.ema, bat.boll, bat.vwap, noiNgay]);
 
   // 3c. Chi bao phu o CUA SO RIENG (RSI / MACD / Stochastic): tao lai cac series moi khi bat / tat hoac doi du lieu.
   useEffect(() => {
@@ -847,6 +864,21 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       vach(sr, 80, "rgba(239,68,68,0.6)");
       vach(sr, 20, "rgba(34,197,94,0.6)");
     }
+    if (bat.mfi) {
+      const o = cuaSo++;
+      const sr = dong("#2DD4BF", cp.mfi, o, { title: "MFI 14", ...khoang0_100 });
+      vach(sr, 80, "rgba(239,68,68,0.6)");
+      vach(sr, 20, "rgba(34,197,94,0.6)");
+    }
+    if (bat.adx) {
+      // ADX (do manh xu huong, hong dam) + DI+ (xanh) / DI- (do); vach 20 / 25 = nguong xu huong thuong dung
+      const o = cuaSo++;
+      const sr = dong("#F472B6", cp.adx, o, { title: "ADX 14", lineWidth: 2 });
+      dong("#22C55E", cp.pdi, o, { title: "DI+" });
+      dong("#EF4444", cp.mdi, o, { title: "DI−" });
+      vach(sr, 20, "rgba(148,163,184,0.6)");
+      vach(sr, 25, "rgba(148,163,184,0.35)");
+    }
     if (bat.dongTien) {
       // GIONG PINE ([blackcat] L3 Banker Fund Flow): nen mo theo trang thai (xanh / do), vung 10-20 va 80-90 to mau, nen vang "Banker In", nen giua trend va bull/bear,
       // duong trend doi mau, vach cham 80 / 20 / 10 / 90, nhan Banker In / IN / OUT / SI / SO / RL / RS tren cua so nay, nhan TP / SL tren bieu do gia.
@@ -892,7 +924,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     // cua so gia lon hon cac cua so chi bao
     const panes = s.chart.panes();
     panes.forEach((p, i) => p.setStretchFactor(i === 0 ? 3.2 : 1));
-  }, [bat.rsi, bat.macd, bat.stoch, bat.dongTien, bat.phanKy, chiBaoPhu, phanKy, phanKySom, nen]);
+  }, [bat.rsi, bat.macd, bat.stoch, bat.mfi, bat.adx, bat.dongTien, bat.phanKy, chiBaoPhu, phanKy, phanKySom, nen]);
 
   // 4. Vung lenh + diem MUA.
   useEffect(() => {
@@ -1086,7 +1118,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
           </select>
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          {CONG_TAT.filter((c) => !(noiNgay && (c.khoa === "vp" || c.khoa === "htkc")) && hienChip(c.khoa)).map((c) => (
+          {CONG_TAT.filter((c) => !(noiNgay && (c.khoa === "vp" || c.khoa === "htkc")) && !(!noiNgay && c.khoa === "vwap") && hienChip(c.khoa)).map((c) => (
             <Chip key={c.khoa} may={`chip-${c.khoa}`} bat={bat[c.khoa]} mau={c.mau} onClick={() => setBat((b) => ({ ...b, [c.khoa]: !b[c.khoa] }))}>
               {c.nhan}
             </Chip>

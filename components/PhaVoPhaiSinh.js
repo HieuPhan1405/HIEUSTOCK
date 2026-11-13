@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import { createChart, createSeriesMarkers, CandlestickSeries, LineStyle } from "lightweight-charts";
 import { Bell, BellOff, RotateCcw } from "lucide-react";
 import { soVN } from "@/lib/soVN";
 import { laIOSChuaCaiDat, quyenHienTai } from "@/lib/dayTrinhDuyet";
+
+// Bieu do ky thuat nhieu khung (nang - tai rieng, chi tren trinh duyet)
+const BieuDoKyThuat = dynamic(() => import("@/components/BieuDoKyThuat"), { ssr: false });
 
 // TRANG /phai-sinh: tin hieu PHA VO BIEN DONG 0,3 trong ngay cho VN30F1M (thanh vien da duyet). Cat lo doi len gia vao + 2 diem khi lai 7 diem. Du lieu + logic: /api/phai-sinh (lib/phaVoPhaiSinh.js).
 // Tu lam moi 15 giay trong phien. Thong bao trinh duyet + tieng bip khi trang thai lenh doi (chi khi trang dang mo).
@@ -929,6 +933,14 @@ export default function PhaVoPhaiSinh() {
           Nến 1 phút phiên {ngayHien(du?.ngay)}
         </p>
         <BieuDoTrongNgay du={du} />
+      </div>
+
+      {/* BIEU DO KY THUAT NHIEU KHUNG (14/11/2026): dung chung bieu do co phieu - khung 1 / 5 / 15 / 30 phut, 1 gio, ngay, tuan; Ichimoku, EMA, Bollinger, VWAP, RSI, MFI, ADX, MACD, cong cu ve. Chi de quan sat, KHONG doi tin hieu pha vo o tren. */}
+      <div className="mb-4">
+        <p className="text-xs mb-2" style={{ color: MUTED }}>
+          Biểu đồ kỹ thuật VN30F1M nhiều khung (chỉ để quan sát; tín hiệu của hệ vẫn là mức phá vỡ ở trên). Bấm “+ Chỉ báo khác” để bật Ichimoku, MACD, ADX, Stochastic…
+        </p>
+        <BieuDoKyThuat ma="VN30F1M" khungMacDinh="M5" chieuCao={460} batMacDinh={{ ichimoku: false, canBang: false, ema: true, boll: true, vwap: true, rsi: true, mfi: true }} />
       </div>
 
       <div className="rounded-2xl border overflow-hidden mb-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
