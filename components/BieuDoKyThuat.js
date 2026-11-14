@@ -5,7 +5,7 @@ import GiaiThichThem from "@/components/GiaiThichThem";
 import { createChart, createTextWatermark, createSeriesMarkers, BaselineSeries, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
 import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2, Eraser } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
-import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay } from "@/lib/chiBaoPhu";
+import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay, mcdx, MCDX_BANKER, MCDX_HOT } from "@/lib/chiBaoPhu";
 import { phanKyRSI, phanKyRSISom } from "@/lib/phanKyRSI";
 import { tinhBankerHienThi, MAU_BANKER } from "@/lib/dongTienBanker";
 import { nhanDienMauHinh, nhanDienDangHinhThanh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
@@ -134,6 +134,7 @@ const CHI_BAO_PHU = [
   { khoa: "stoch", nhan: "Stochastic", mau: "#FBBF24" },
   { khoa: "mfi", nhan: "MFI 14", mau: "#2DD4BF" },
   { khoa: "adx", nhan: "ADX 14", mau: "#F472B6" },
+  { khoa: "mcdx", nhan: "MCDX", mau: "#EF4444" }, // Banker (do) / Hot Money (vang) / Retailer (xanh) - lib/chiBaoPhu.js mcdx
   { khoa: "dongTien", nhan: "Dòng tiền", mau: "#22C55E" }, // Banker Fund Flow (lib/dongTienBanker.js): chi la chi bao hien thi, KHONG phai tin hieu mua / ban
 ];
 // RSI phan ky (lib/phanKyRSI.js): 2 day / dinh gia lien tiep nguoc chieu RSI - chi la DIEU KIEN THAM KHAO, nghien cuu 2026-10-16 tren 390 ma cho thay KHONG co loi the thong ke rieng le.
@@ -291,6 +292,8 @@ function tinhChiBaoPhu(nen) {
     adx: dong(ad.adx),
     pdi: dong(ad.pdi),
     mdi: dong(ad.mdi),
+    mcdxB: dong(mcdx(close, MCDX_BANKER)),
+    mcdxH: dong(mcdx(close, MCDX_HOT)),
     vwap: noiNgay ? dong(vwapTrongNgay(nen.map((b) => ({ t: b.t, h: b.h, l: b.l, c: b.c, v: b.v ?? 0 })))) : [],
   };
 }
@@ -360,7 +363,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState(khungMacDinh);
-  const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, chiaNgay: true, vp: false, htkc: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
+  const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, chiaNgay: true, vp: false, htkc: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, mcdx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
   // DIEM B (mua phuc hoi) + DIEM BAT DAY cua ma nay (chi thanh vien da duyet - xem /api/diem-bieu-do), ve thanh mui ten tren nen gia (khung Ngay / Tuan).
   const [diemSK, setDiemSK] = useState({ ma: "", b: [], batDay: [] });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
@@ -414,7 +417,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const [chonMH, setChonMH] = useState({ khoa: "", idx: 0 });
   const idxMH = chonMH.khoa === khoa ? chonMH.idx : 0; // doi ma / khung -> ve lai mau hinh moi nhat
   const mauHinhVe = bat.mauHinh && idxMH >= 0 && idxMH < dsMauHinh.length ? dsMauHinh[idxMH] : null;
-  const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0) + (bat.mfi ? 1 : 0) + (bat.adx ? 1 : 0) + (bat.dongTien ? 1 : 0);
+  const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0) + (bat.mfi ? 1 : 0) + (bat.adx ? 1 : 0) + (bat.mcdx ? 1 : 0) + (bat.dongTien ? 1 : 0);
   // Khoa luu hinh ve cua ma + khung hien tai: cap nhat trong effect (khong ghi ref luc render). Dat TRUOC cac effect khoi tao / nap hinh ve nen chay truoc chung trong cung 1 lan cap nhat.
   useEffect(() => {
     khoaVeRef.current = khoaLuu(ma, khungTG);
@@ -897,6 +900,22 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       vach(sr, 20, "rgba(148,163,184,0.6)");
       vach(sr, 25, "rgba(148,163,184,0.35)");
     }
+    if (bat.mcdx) {
+      // MCDX (FireAnt): 3 cot chong len nhau tren thang 0-20: Retailer xanh (hang so 20) o duoi cung, Hot Money vang, Banker do o tren; vach 5 / 10 / 15 = 25% / 50% / 75%
+      const o = cuaSo++;
+      const rangCot = { priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false };
+      const cot = (mau, du, them = {}) => {
+        const sr = s.chart.addSeries(HistogramSeries, { color: mau, ...rangCot, ...them }, o);
+        sr.setData(du);
+        s.phu.push(sr);
+        return sr;
+      };
+      const xanh = cp.mcdxB.map((d) => ({ time: d.time, value: 20 }));
+      cot("rgba(34,197,94,0.75)", xanh, { autoscaleInfoProvider: () => ({ priceRange: { minValue: 0, maxValue: 20 } }) });
+      cot("rgba(250,204,21,0.95)", cp.mcdxH);
+      const sr = cot("rgba(239,68,68,0.95)", cp.mcdxB, { title: "MCDX", lastValueVisible: true });
+      for (const [g, n] of [[5, "25%"], [10, "50%"], [15, "75%"]]) sr.createPriceLine({ price: g, color: "rgba(148,163,184,0.55)", lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: false, title: n });
+    }
     if (bat.dongTien) {
       // GIONG PINE ([blackcat] L3 Banker Fund Flow): nen mo theo trang thai (xanh / do), vung 10-20 va 80-90 to mau, nen vang "Banker In", nen giua trend va bull/bear,
       // duong trend doi mau, vach cham 80 / 20 / 10 / 90, nhan Banker In / IN / OUT / SI / SO / RL / RS tren cua so nay, nhan TP / SL tren bieu do gia.
@@ -942,7 +961,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     // cua so gia lon hon cac cua so chi bao
     const panes = s.chart.panes();
     panes.forEach((p, i) => p.setStretchFactor(i === 0 ? 3.2 : 1));
-  }, [bat.rsi, bat.macd, bat.stoch, bat.mfi, bat.adx, bat.dongTien, bat.phanKy, chiBaoPhu, phanKy, phanKySom, nen]);
+  }, [bat.rsi, bat.macd, bat.stoch, bat.mfi, bat.adx, bat.mcdx, bat.dongTien, bat.phanKy, chiBaoPhu, phanKy, phanKySom, nen]);
 
   // 4. Vung lenh + diem MUA.
   useEffect(() => {

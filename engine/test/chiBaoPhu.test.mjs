@@ -1,5 +1,5 @@
 // Test tay cho lib/chiBaoPhu.js. Chay: node engine/test/chiBaoPhu.test.mjs
-import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay } from "../../lib/chiBaoPhu.js";
+import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay, mcdx, MCDX_BANKER, MCDX_HOT } from "../../lib/chiBaoPhu.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -73,6 +73,16 @@ const vw = vwapTrongNgay([
 ]);
 ok("VWAP: (10*100 + 20*300)/400 = 17,5; sang phien moi bat dau lai = 30", gan(vw[0], 10) && gan(vw[1], 17.5) && gan(vw[2], 30), vw.join(","));
 ok("VWAP: nen chua co KL -> null", vwapTrongNgay([{ t: N0, h: 1, l: 1, c: 1, v: 0 }])[0] === null);
+
+// MCDX
+const mTang = mcdx(Array.from({ length: 120 }, (_, i) => 100 + i), MCDX_BANKER);
+ok("MCDX Banker: chuoi tang deu -> RSI 100 -> 1,5 x 50 = 75 -> kep o 20; null truoc nen thu 51", mTang[119] === 20 && mTang[49] === null && mTang[50] === 20);
+const mGiam = mcdx(Array.from({ length: 120 }, (_, i) => 300 - i), MCDX_BANKER);
+ok("MCDX: chuoi giam -> RSI 0 -> am -> kep o 0", mGiam[119] === 0);
+const mPhang = mcdx(new Array(120).fill(100), MCDX_HOT);
+ok("MCDX: gia phang -> RSI 50 -> Hot Money 0,7 x (50 - 30) = 14", gan(mPhang[119], 14), mPhang[119]);
+ok("MCDX: Banker gia phang -> RSI 50 - goc 50 = 0", gan(mcdx(new Array(120).fill(100), MCDX_BANKER)[119], 0));
+ok("MCDX luon trong [0, 20]", mcdx(Array.from({ length: 300 }, (_, i) => 100 + Math.sin(i / 7) * 20 + i * 0.1), MCDX_BANKER).filter((v) => v != null).every((v) => v >= 0 && v <= 20));
 
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);
