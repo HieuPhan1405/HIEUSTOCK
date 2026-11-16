@@ -4,10 +4,11 @@
 // Cach ve: bam 2 lan, HOAC bam - keo - tha (nhu TradingView). Giu Space (hoac chuot giua) de keo bieu do khi dang chon cong cu. Esc thoat.
 // Chinh sua: bam vao hinh de chon, keo than / dau mut; thanh nho hien canh hinh (do day / nhan ban / xoa); Delete xoa; chuot phai chon; Ctrl+Z hoan tac, Ctrl+Y / Ctrl+Shift+Z lam lai.
 import { soVN, pctVN } from "@/lib/soVN";
+import { CONG_CU_MOI, MAU_MUC_FIB } from "./veCongCuTV";
 
 export const MUC_FIB = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 // FIBONACCI MO RONG DUA TREN XU HUONG (kieu TradingView "Trend-Based Fib Extension", 3 diem A - B - C, tu ve tay): muc = C + m.(B - A). Chi la cong cu ve tham khao.
-export const MUC_FIB_MO_RONG = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1, 1.272, 1.618, 2.618, 3.618, 4.236];
+export const MUC_FIB_MO_RONG = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1, 1.618, 2.618, 3.618, 4.236];
 const LA_3_DIEM = (loai) => loai === "kenh" || loai === "fibMoRong";
 const LOAI_1_DIEM = ["ngang", "doc", "chu"];
 const KHOANG_CHON = 10; // px (chuot); cam ung dung 18
@@ -39,6 +40,9 @@ export class LopVe {
     this.onChon = onChon || (() => {});
     this.onLichSu = onLichSu || (() => {});
     this.hinh = [];
+    this.an = false; // an tat ca hinh ve
+    this.khoaHet = false; // khoa: khong chon / keo hinh
+    this.bamTuDo = false;
     this.congCu = null; // null = con tro
     this.giu = false; // true: ve xong van giu cong cu de ve tiep
     this.mau = "#F6C544";
@@ -98,6 +102,21 @@ export class LopVe {
   }
 
   // ---------- API cho React ----------
+  // Hinh VE NGOAI chi doc (khong chon / keo / luu duoc), vd Auto Fib Extension cua chi bao: ds = [{ id, loai, p1, p2, p3, mau, keoDai }]
+  datHinhNgoai(ds) {
+    this.hinhNgoai = ds || [];
+    this._ve(true);
+  }
+  datAn(v) {
+    this.an = !!v;
+    if (this.an && this.chon) this._chonHinh(null);
+    this._ve(true);
+  }
+  datKhoaHet(v) {
+    this.khoaHet = !!v;
+    if (this.khoaHet && this.chon) this._chonHinh(null);
+    this._ve(true);
+  }
   datHinh(ds) {
     this.hinh = Array.isArray(ds) ? ds : [];
     if (!this.hinh.some((h) => h.id === this.chon)) this.chon = null;
@@ -323,6 +342,8 @@ export class LopVe {
 
   // hit test mot hinh: tra ve { cham: 'p1'|'p2'|'p3'|'than' } hoac null
   _hit(h, x, y) {
+    const dm = CONG_CU_MOI[h.loai];
+    if (dm && h.ds) return this._hitMoi(h, dm, x, y);
     if (h.loai === "frvp") {
       const k = this._khungFrvp(h);
       if (!k) return null;
@@ -365,9 +386,10 @@ export class LopVe {
       if (Math.hypot(x - c.x, y - c.y) <= T + 2) return { cham: "p3" };
       const { W: Wc } = this._chuKhungVe();
       if (khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T || khoangCachDoan(x, y, b.x, b.y, c.x, c.y) <= T) return { cham: "than" };
+      const xa = Math.min(a.x, b.x, c.x), xb = Math.max(a.x, b.x, c.x);
       for (const m of MUC_FIB_MO_RONG) {
         const yy = this._y(h.p3.p + (h.p2.p - h.p1.p) * m);
-        if (yy != null && x >= c.x - T && x <= Wc && Math.abs(y - yy) <= T) return { cham: "than" };
+        if (yy != null && x >= xa - T && x <= Math.min(xb + T, Wc)) if (Math.abs(y - yy) <= T) return { cham: "than" };
       }
       return null;
     }
@@ -378,16 +400,25 @@ export class LopVe {
       return trong ? { cham: "than" } : null;
     }
     if (h.loai === "fib") {
-      const x1 = Math.min(a.x, b.x);
+      const x1 = Math.min(a.x, b.x), x2 = Math.max(a.x, b.x);
       for (const m of MUC_FIB) {
         const yy = this._y(h.p1.p + (h.p2.p - h.p1.p) * m);
-        if (yy != null && x >= x1 - T && x <= W && Math.abs(y - yy) <= T) return { cham: "than" };
+        if (yy != null && x >= x1 - T && x <= Math.min(x2 + T, W)) if (Math.abs(y - yy) <= T) return { cham: "than" };
       }
       if (khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T) return { cham: "than" };
     }
     return null;
   }
+  _hitMoi(h, dm, x, y) {
+    const px = h.ds.map((q) => this._diemPx(q));
+    if (px.some((q) => !q)) return null;
+    const T = this.tol;
+    if (!dm.tuDo) for (let k = px.length - 1; k >= 0; k--) if (Math.hypot(x - px[k].x, y - px[k].y) <= T + 2) return { cham: `d${k}` };
+    const nt = this._hinhHocAnToan(dm, h, px);
+    return this._hitNguyenThuy(nt, x, y, T) ? { cham: "than" } : null;
+  }
   _timHinh(x, y) {
+    if (this.an || this.khoaHet) return null;
     // uu tien hinh dang chon, roi tu tren xuong (hinh moi nhat truoc)
     const ds = [...this.hinh].reverse();
     if (this.chon) ds.sort((a, b) => (a.id === this.chon ? -1 : b.id === this.chon ? 1 : 0));
@@ -434,6 +465,11 @@ export class LopVe {
       const pt = this._chiDiem(x, y);
       if (!pt) return;
       const c = this.congCu;
+      const dm = CONG_CU_MOI[c];
+      if (dm) {
+        this._xuongMoi(dm, c, pt, x, y);
+        return;
+      }
       if (LOAI_1_DIEM.includes(c)) {
         const h = this._hinhMoi(c, pt);
         if (c === "chu") {
@@ -490,21 +526,96 @@ export class LopVe {
       this._ve(true);
     }
   }
+  _esNhieu() {
+    const d = this.dangVe;
+    return !!d && (d.loai === "gapKhuc" || !!d.nhieu);
+  }
+  // Tao hinh cho cong cu thuoc bo moi (veCongCuTV.js): 1 diem / n diem co dinh / nhieu diem (khep kin) / ve tu do
+  _xuongMoi(dm, c, pt, x, y) {
+    if (dm.tuDo) {
+      this.dangVe = { loai: c, p1: pt, ds: [pt], tuDo: true, buoc: 9 };
+      this.bamTuDo = true;
+      this._ve(true);
+      return;
+    }
+    if (dm.n === 1) {
+      const h = { id: taoId(), loai: c, p1: pt, ds: [pt], mau: this.mau, dam: 1.5 };
+      if (dm.hoiChu) {
+        const t = window.prompt(dm.hoiChu, "");
+        if ((!t || !t.trim()) && !dm.chuTuyChon) {
+          this.dangVe = null;
+          this._ve(true);
+          return;
+        }
+        if (t && t.trim()) h.chu = t.trim().slice(0, 80);
+      }
+      this._hoanTat(h);
+      return;
+    }
+    if (dm.n === "nhieu") {
+      if (!this.dangVe) this.dangVe = { loai: c, p1: pt, ds: [pt], cur: pt, buoc: 3, nhieu: true };
+      else {
+        const cuoi = this._diemPx(this.dangVe.ds[this.dangVe.ds.length - 1]);
+        if (cuoi && Math.hypot(x - cuoi.x, y - cuoi.y) < 4) this._ketThucGapKhuc();
+        else this.dangVe.ds.push(pt);
+      }
+      this._ve(true);
+      return;
+    }
+    if (!this.dangVe) {
+      this.dangVe = { loai: c, p1: pt, ds: [pt, pt], moi: true, buoc: 1, n: dm.n };
+      this.xuongTai = { x, y };
+      this._ve(true);
+      return;
+    }
+    const d = this.dangVe;
+    const truoc = this._diemPx(d.ds[d.ds.length - 2]);
+    if (truoc && Math.hypot(x - truoc.x, y - truoc.y) < 3) return; // bam trung diem truoc: bo qua
+    this._datDiem2(pt);
+    this._ve(true);
+  }
+  _hinhNhieu(d) {
+    const dm = CONG_CU_MOI[d.loai];
+    const h = { id: taoId(), loai: d.loai, p1: d.ds[0], ds: d.ds.slice(0, d.n ?? d.ds.length), mau: this.mau, dam: dm?.tuDo ? 2 : 1.5 };
+    if (dm?.hoiChu) {
+      const t = window.prompt(dm.hoiChu, "");
+      if (t && t.trim()) h.chu = t.trim().slice(0, 80);
+      else if (!dm.chuTuyChon) return null;
+    }
+    return h;
+  }
   _ketThucGapKhuc() {
     const d = this.dangVe;
-    if (!d || d.loai !== "gapKhuc") return false;
-    if (d.ds.length < 2) {
+    if (!d || !(d.loai === "gapKhuc" || d.nhieu)) return false;
+    const toiThieu = d.nhieu && CONG_CU_MOI[d.loai]?.dong ? 3 : 2;
+    if (d.ds.length < toiThieu) {
       this.dangVe = null;
       this._ve(true);
       return false;
     }
-    const h = { id: taoId(), loai: "gapKhuc", p1: d.ds[0], ds: d.ds, mau: this.mau, dam: 1.5 };
+    const h = { id: taoId(), loai: d.loai, p1: d.ds[0], ds: d.ds, mau: this.mau, dam: 1.5 };
     this._hoanTat(h);
     return true;
   }
   // dat diem thu 2: kenh song song can them diem thu 3, cac hinh con lai hoan tat
   _datDiem2(pt) {
     const d = this.dangVe;
+    if (d.moi) {
+      d.ds[d.ds.length - 1] = pt;
+      if (d.ds.length >= d.n) {
+        const h = this._hinhNhieu(d);
+        if (h) this._hoanTat(h);
+        else {
+          this.dangVe = null;
+          this._ve(true);
+        }
+        return;
+      }
+      d.ds.push(pt);
+      d.buoc = 2;
+      this.xuongTai = null;
+      return;
+    }
     d.p2 = pt;
     if (LA_3_DIEM(d.loai)) {
       d.buoc = 2;
@@ -520,6 +631,25 @@ export class LopVe {
     this.tol = e.pointerType === "touch" ? 18 : KHOANG_CHON;
     if (this.congCu && this.dangVe) {
       const pt = this._chiDiem(x, y);
+      const dv = this.dangVe;
+      if (dv.tuDo) {
+        if (this.bamTuDo && pt) {
+          const cuoi = this._diemPx(dv.ds[dv.ds.length - 1]);
+          if (!cuoi || Math.hypot(x - cuoi.x, y - cuoi.y) > 2.5) dv.ds.push(pt);
+        }
+        this._ve(true);
+        return;
+      }
+      if (dv.nhieu) {
+        if (pt) dv.cur = pt;
+        this._ve(true);
+        return;
+      }
+      if (dv.moi) {
+        if (pt) dv.ds[dv.ds.length - 1] = pt;
+        this._ve(true);
+        return;
+      }
       if (this.dangVe.loai === "gapKhuc") {
         if (pt) this.dangVe.cur = pt;
         this._ve(true);
@@ -569,6 +699,17 @@ export class LopVe {
     }
   }
   _len(e) {
+    if (this.bamTuDo) {
+      this.bamTuDo = false;
+      const d = this.dangVe;
+      if (d?.tuDo) {
+        if (d.ds.length >= 2) this._hoanTat({ id: taoId(), loai: d.loai, p1: d.ds[0], ds: d.ds, mau: this.mau, dam: d.loai === "butDanhDau" ? 1.5 : 2 });
+        else {
+          this.dangVe = null;
+          this._ve(true);
+        }
+      }
+    }
     if (this.keo) {
       this.keo = null;
       this._xong();
@@ -592,7 +733,7 @@ export class LopVe {
       if (x <= W && y <= H) {
         e.preventDefault();
         e.stopPropagation();
-        if (this.dangVe?.loai === "gapKhuc") this._ketThucGapKhuc();
+        if (this._esNhieu()) this._ketThucGapKhuc();
       }
       return;
     }
@@ -633,13 +774,13 @@ export class LopVe {
         return;
       }
     }
-    if (e.key === "Enter" && this.dangVe?.loai === "gapKhuc" && !trongONhap) {
+    if (e.key === "Enter" && this._esNhieu() && !trongONhap) {
       e.preventDefault();
       this._ketThucGapKhuc();
       return;
     }
     if (e.key === "Escape") {
-      if (this.dangVe?.loai === "gapKhuc" && this.dangVe.ds.length >= 2 && this._ketThucGapKhuc()) return; // Esc chot duong dan dang ve
+      if (this._esNhieu() && this.dangVe.ds.length >= 2 && this._ketThucGapKhuc()) return; // Esc chot duong dan dang ve
       if (this.dangVe || this.congCu) {
         this.dangVe = null;
         this.congCu = null;
@@ -702,6 +843,14 @@ export class LopVe {
     let ax = a.x, ay = a.y;
     if (h.loai === "ngang") ax = W / 2;
     if (h.loai === "doc") ay = 30;
+    if (h && h.ds && CONG_CU_MOI[h.loai]) {
+      const ps = h.ds.map((q) => this._diemPx(q)).filter(Boolean);
+      if (ps.length) {
+        const t = ps.reduce((m, q) => (q.y < m.y ? q : m));
+        ax = t.x;
+        ay = t.y;
+      }
+    }
     if (h.p2) {
       const b = this._diemPx(h.p2);
       if (b && b.y < ay) {
@@ -799,7 +948,7 @@ export class LopVe {
   _ve(ep) {
     if (this.huy || !this.rong) return;
     // Chi ve lai khi co thay doi (hinh / truc toa do): chu ky = vi tri 2 diem tham chieu + so hinh.
-    const sig = `${this.hinh.length}|${this.chon}|${!!this.dangVe}|${this._x(0)}|${this._x(100)}|${this.series.priceToCoordinate(1)}|${this.series.priceToCoordinate(100)}|${this.rong}|${this.cao}`;
+    const sig = `${this.hinh.length}|${this.an}|${this.khoaHet}|${this.chon}|${!!this.dangVe}|${this._x(0)}|${this._x(100)}|${this.series.priceToCoordinate(1)}|${this.series.priceToCoordinate(100)}|${this.rong}|${this.cao}`;
     if (!ep && sig === this.sig) return;
     this.sig = sig;
     const ctx = this.canvas.getContext("2d");
@@ -826,7 +975,9 @@ export class LopVe {
       ctx.fillStyle = this.mauChu;
       ctx.fillText(chu, W - w - 6, H - 11);
     }
-    const ds = this.dangVe ? [...this.hinh, { id: "_tam", ...this.dangVe, mau: this.mau, tam: true }] : this.hinh;
+    const hinhHien = this.an ? [] : this.hinh;
+    const goc = this.hinhNgoai?.length ? [...hinhHien, ...this.hinhNgoai] : hinhHien;
+    const ds = this.dangVe ? [...goc, { id: "_tam", ...this.dangVe, mau: this.mau, tam: true }] : goc;
     for (const h of ds) this._veHinh(ctx, h, W, H);
     ctx.restore();
     if (this.hoSo) this._nhanGia(ctx, { p1: { p: this.hoSo.poc }, mau: "#F6C544" }, W);
@@ -869,6 +1020,15 @@ export class LopVe {
     const dauCham = (...ps) => {
       if (chon || h.tam) for (const p of ps) if (p) diem(p);
     };
+    const dmNew = CONG_CU_MOI[h.loai];
+    if (dmNew && h.ds) {
+      const dsHien = h.tam && h.nhieu && h.cur ? [...h.ds, h.cur] : h.ds;
+      const px = dsHien.map((q) => this._diemPx(q));
+      if (px.some((q) => !q)) return;
+      this._veNguyenThuy(ctx, this._hinhHocAnToan(dmNew, { ...h, ds: dsHien }, px, W, H), h);
+      if (!dmNew.tuDo) dauCham(...px);
+      return;
+    }
     if (h.loai === "ngang") {
       ctx.beginPath();
       ctx.moveTo(0, a.y);
@@ -1017,41 +1177,7 @@ export class LopVe {
     }
     if (h.loai === "fibMoRong") {
       const c = h.p3 ? this._diemPx(h.p3) : null;
-      const dp = h.p2.p - h.p1.p;
-      ctx.strokeStyle = h.mau;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 3]);
-      ctx.beginPath();
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(b.x, b.y);
-      if (c) ctx.lineTo(c.x, c.y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      if (c) {
-        let truoc = null;
-        for (const m of MUC_FIB_MO_RONG) {
-          const gia = h.p3.p + dp * m;
-          const y = this._y(gia);
-          if (y == null) continue;
-          if (truoc != null) {
-            ctx.globalAlpha = 0.05;
-            ctx.fillStyle = h.mau;
-            ctx.fillRect(c.x, Math.min(y, truoc), W - c.x, Math.abs(y - truoc));
-            ctx.globalAlpha = 1;
-          }
-          truoc = y;
-          ctx.strokeStyle = h.mau;
-          ctx.lineWidth = m === 0 || m === 1 ? dam : Math.max(1, dam - 0.5);
-          ctx.setLineDash(m === 0 || m === 1 ? [] : [4, 3]);
-          ctx.beginPath();
-          ctx.moveTo(c.x, y);
-          ctx.lineTo(W, y);
-          ctx.stroke();
-          ctx.setLineDash([]);
-          ctx.fillStyle = h.mau;
-          ctx.fillText(`${String(m).replace(".", ",")}  ${soVN(gia, 2, true)}`, c.x + 6, y - 8);
-        }
-      }
+      this._veFibTV(ctx, h, W, MUC_FIB_MO_RONG, c ? h.p3.p : null, h.p2.p - h.p1.p, [a, b, c]);
       dauCham(a, b, c);
       return;
     }
@@ -1066,40 +1192,173 @@ export class LopVe {
       return;
     }
     if (h.loai === "fib") {
-      const x1 = Math.min(a.x, b.x);
-      const dp = h.p2.p - h.p1.p;
+      this._veFibTV(ctx, h, W, MUC_FIB, h.p1.p, h.p2.p - h.p1.p, [a, b]);
+      dauCham(a, b);
+    }
+  }
+  // Hinh luu bi hong (thieu diem...) khong duoc lam sap ca bieu do: bo qua hinh do
+  _hinhHocAnToan(dm, h, px, W, H) {
+    try {
+      const r = dm.hinh(h, px, h.ds, this._tienIch(W, H));
+      return Array.isArray(r) ? r : [];
+    } catch (e) {
+      if (!this._daBaoLoi) this._daBaoLoi = new Set();
+      if (!this._daBaoLoi.has(h.loai)) {
+        this._daBaoLoi.add(h.loai);
+        console.warn("[ve] cong cu loi:", h.loai, h.ds?.length, e?.message);
+      }
+      return [];
+    }
+  }
+  _tienIch(W, H) {
+    const k = this._chuKhungVe();
+    return { W: W ?? k.W, H: H ?? k.H, nen: this.nen, xI: (i) => this._x(i), yP: (pr) => this._y(pr), soVN, pctVN };
+  }
+  _doanKeo(p) {
+    const { a, b, keo } = p;
+    if (!keo) return [a, b];
+    const dx = b.x - a.x, dy = b.y - a.y, len = Math.hypot(dx, dy) || 1, k = 6000 / len;
+    if (keo === "phai") return [a, { x: a.x + dx * k, y: a.y + dy * k }];
+    return [{ x: a.x - dx * k, y: a.y - dy * k }, { x: a.x + dx * k, y: a.y + dy * k }];
+  }
+  // Ve cac nguyen thuy (xem veCongCuTV.js)
+  _veNguyenThuy(ctx, prims, h) {
+    const dam = h.dam || 1.5, chon = h.id === this.chon;
+    for (const p of prims) {
+      const mau = p.mau || h.mau;
+      ctx.save();
+      ctx.globalAlpha = p.alpha ?? 1;
+      ctx.strokeStyle = mau;
+      ctx.fillStyle = mau;
+      ctx.lineWidth = (p.dam ?? dam) + (chon ? 0.6 : 0);
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.setLineDash(p.net === "dut" ? [5, 4] : p.net === "cham" ? [2, 3] : []);
+      if (p.t === "doan") {
+        const [a, b] = this._doanKeo(p);
+        ctx.beginPath();
+        ctx.moveTo(a.x, a.y);
+        ctx.lineTo(b.x, b.y);
+        ctx.stroke();
+      } else if (p.t === "da") {
+        if (p.pts.length) {
+          ctx.beginPath();
+          ctx.moveTo(p.pts[0].x, p.pts[0].y);
+          for (let k = 1; k < p.pts.length; k++) ctx.lineTo(p.pts[k].x, p.pts[k].y);
+          if (p.dong) ctx.closePath();
+          if (p.to) {
+            ctx.globalAlpha = (p.alpha ?? 1) * p.to;
+            ctx.fill();
+            ctx.globalAlpha = p.alpha ?? 1;
+          }
+          if (p.vien !== false) ctx.stroke();
+        }
+      } else if (p.t === "elip") {
+        ctx.beginPath();
+        ctx.ellipse(p.cx, p.cy, Math.max(0.5, p.rx), Math.max(0.5, p.ry), p.rot || 0, 0, Math.PI * 2);
+        if (p.to) {
+          ctx.globalAlpha = (p.alpha ?? 1) * p.to;
+          ctx.fill();
+          ctx.globalAlpha = p.alpha ?? 1;
+        }
+        ctx.stroke();
+      } else if (p.t === "cham") {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r || 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      } else if (p.t === "chu") {
+        const co = p.co || 12;
+        ctx.font = `${p.dam ? "700" : "500"} ${co}px 'Open Sans', sans-serif`;
+        ctx.textBaseline = "middle";
+        const w = ctx.measureText(p.chu).width, x0 = p.canh === "giua" ? p.x - w / 2 : p.canh === "phai" ? p.x - w : p.x;
+        if (p.nen) {
+          ctx.globalAlpha = 0.88;
+          ctx.fillStyle = typeof p.nen === "string" ? p.nen : this.mauNen;
+          ctx.fillRect(x0 - 4, p.y - co / 2 - 3, w + 8, co + 6);
+          ctx.globalAlpha = 1;
+          ctx.fillStyle = p.mauChu || (typeof p.nen === "string" ? "#111827" : mau);
+        } else ctx.fillStyle = p.mauChu || mau;
+        ctx.fillText(p.chu, x0, p.y);
+      }
+      ctx.restore();
+    }
+  }
+  _hitNguyenThuy(prims, x, y, T) {
+    const trongDaGiac = (pts) => {
+      let trong = false;
+      for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+        if (pts[i].y > y !== pts[j].y > y && x < ((pts[j].x - pts[i].x) * (y - pts[i].y)) / (pts[j].y - pts[i].y) + pts[i].x) trong = !trong;
+      }
+      return trong;
+    };
+    for (const p of prims) {
+      if (p.t === "doan") {
+        const [a, b] = this._doanKeo(p);
+        if (khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T) return true;
+      } else if (p.t === "da") {
+        const n = p.pts.length;
+        for (let k = 1; k < n; k++) if (khoangCachDoan(x, y, p.pts[k - 1].x, p.pts[k - 1].y, p.pts[k].x, p.pts[k].y) <= T) return true;
+        if (p.dong && n > 2 && khoangCachDoan(x, y, p.pts[n - 1].x, p.pts[n - 1].y, p.pts[0].x, p.pts[0].y) <= T) return true;
+        if (p.dong && p.to > 0.02 && n > 2 && trongDaGiac(p.pts)) return true;
+      } else if (p.t === "elip") {
+        const dx = x - p.cx, dy = y - p.cy, c = Math.cos(-(p.rot || 0)), sn = Math.sin(-(p.rot || 0)), lx = dx * c - dy * sn, ly = dx * sn + dy * c;
+        const r = Math.hypot(lx / Math.max(1, p.rx), ly / Math.max(1, p.ry));
+        if (Math.abs(r - 1) * Math.min(p.rx, p.ry) <= T || (p.to > 0.02 && r <= 1)) return true;
+      } else if (p.t === "cham") {
+        if (Math.hypot(x - p.x, y - p.y) <= Math.max(T, p.r || 3.5)) return true;
+      } else if (p.t === "chu") {
+        const co = p.co || 12, w = (p.chu || "").length * co * 0.62, x0 = p.canh === "giua" ? p.x - w / 2 : p.canh === "phai" ? p.x - w : p.x;
+        if (x >= x0 - 5 && x <= x0 + w + 5 && Math.abs(y - p.y) <= co / 2 + 4) return true;
+      }
+    }
+    return false;
+  }
+  // Ve Fibonacci theo cach trinh bay cua TradingView: hop tu x trai nhat den x phai nhat cua cac diem (h.keoDai: keo den het truc gia), moi muc 1 net 1px mau rieng, to nhe giua 2 muc lien tiep theo mau muc duoi,
+  // nhan "muc (gia)" cung mau o BEN TRAI hop, doan noi cac diem net dut xam. goc = gia muc 0, dp = chenh lech gia nhan voi tung muc; goc = null (chua du diem) chi ve doan noi.
+  _veFibTV(ctx, h, W, mucs, goc, dp, diemPx) {
+    const ps = diemPx.filter(Boolean);
+    const chon = h.id === this.chon;
+    ctx.save();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = "rgba(148,163,184,0.95)";
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ps.forEach((p, k) => (k ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+    ctx.stroke();
+    ctx.setLineDash([]);
+    if (goc != null) {
+      const x1 = Math.min(...ps.map((p) => p.x)), x2 = h.keoDai ? W : Math.max(...ps.map((p) => p.x));
       let truoc = null;
-      for (const m of MUC_FIB) {
-        const gia = h.p1.p + dp * m;
-        const y = this._y(gia);
+      ctx.font = "12px 'Open Sans', sans-serif";
+      ctx.textBaseline = "middle";
+      for (const m of mucs) {
+        const gia = goc + dp * m, y = this._y(gia), mau = MAU_MUC_FIB[m] || "#94A3B8";
         if (y == null) continue;
         if (truoc != null) {
-          ctx.globalAlpha = 0.06;
-          ctx.fillStyle = h.mau;
-          ctx.fillRect(x1, Math.min(y, truoc), W - x1, Math.abs(y - truoc));
+          ctx.globalAlpha = 0.13;
+          ctx.fillStyle = mau;
+          ctx.fillRect(x1, Math.min(y, truoc), x2 - x1, Math.abs(y - truoc));
           ctx.globalAlpha = 1;
         }
         truoc = y;
-        ctx.strokeStyle = h.mau;
-        ctx.lineWidth = m === 0 || m === 1 ? dam : Math.max(1, dam - 0.5);
-        ctx.setLineDash(m === 0 || m === 1 ? [] : [4, 3]);
+        ctx.strokeStyle = mau;
+        ctx.lineWidth = chon ? 1.6 : 1;
         ctx.beginPath();
         ctx.moveTo(x1, y);
-        ctx.lineTo(W, y);
+        ctx.lineTo(x2, y);
         ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.fillStyle = h.mau;
-        ctx.fillText(`${soVN(m * 100, 1)}%  ${soVN(gia, 2, true)}`, x1 + 6, y - 8);
+        const chu = `${m} (${soVN(gia, 2, true)})`, w = ctx.measureText(chu).width;
+        ctx.fillStyle = mau;
+        if (x1 - w - 8 >= 0) {
+          ctx.textAlign = "right";
+          ctx.fillText(chu, x1 - 6, y);
+        } else {
+          ctx.textAlign = "left";
+          ctx.fillText(chu, x1 + 6, y - 8);
+        }
+        ctx.textAlign = "left";
       }
-      ctx.strokeStyle = h.mau;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([2, 3]);
-      ctx.beginPath();
-      ctx.moveTo(a.x, a.y);
-      ctx.lineTo(b.x, b.y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      dauCham(a, b);
     }
+    ctx.restore();
   }
 }

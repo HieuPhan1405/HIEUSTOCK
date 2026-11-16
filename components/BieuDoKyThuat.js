@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import { createChart, createTextWatermark, createSeriesMarkers, BaselineSeries, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
-import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2, Eraser, Waypoints } from "lucide-react";
+import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2, Eraser, Waypoints, Activity, Check, ChevronRight, ChevronDown, Info, Slash, Compass, ArrowRight, Crosshair, ChartLine, Layers, Frame, Network, Radar, AlignJustify, Columns3, CircleDot, Orbit, Rainbow, Clock, Grid3x3, ChartSpline, Triangle, AudioWaveform, Mountain, Waves, TrendingDown, Target, ChartCandlestick, CornerUpRight, Anchor, RectangleHorizontal, CalendarRange, Scaling, Brush, Highlighter, Rotate3d, Circle, Pentagon, LineSquiggle, StickyNote, Tag, Pin, MessageSquare, MessageCircle, Signpost, Flag, ArrowBigUp, ArrowBigDown, Smile, Eye, EyeOff, LockKeyhole, Repeat } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay, mcdx, MCDX_BANKER, MCDX_HOT } from "@/lib/chiBaoPhu";
 import { phanKyRSI, phanKyRSISom } from "@/lib/phanKyRSI";
@@ -12,6 +13,7 @@ import { tinhBankerHienThi, MAU_BANKER } from "@/lib/dongTienBanker";
 import { nhanDienMauHinh, nhanDienDangHinhThanh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
 import { nhanDienMauHinhNen, THONG_KE_MAU_HINH_NEN } from "@/lib/mauHinhNen";
 import { LopVe } from "@/components/veBieuDoLop";
+import { CONG_CU_MOI, NHOM_CONG_CU, DS_BIEU_TUONG } from "@/components/veCongCuTV";
 import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio, timDinhKhoiLuong, chonHoTroKhangCu } from "@/lib/volumeProfile";
 import { DaiMay, DaiGia, VachNgay } from "@/components/bieuDoPlugin";
 import { fmt } from "@/components/dungChung";
@@ -82,6 +84,16 @@ const KHUNG_CHON = [
   { khoa: "M5", nhan: "5 phút" },
   { khoa: "M1", nhan: "1 phút" },
 ];
+// Thanh khung thoi gian kieu TradingView (1 hang chu ngan): 1p 5p 15p 30p 1G Ngay Tuan
+const KHUNG_NHANH = [
+  { khoa: "M1", nhan: "1p", ten: "1 phút" },
+  { khoa: "M5", nhan: "5p", ten: "5 phút" },
+  { khoa: "M15", nhan: "15p", ten: "15 phút" },
+  { khoa: "M30", nhan: "30p", ten: "30 phút" },
+  { khoa: "H", nhan: "1G", ten: "1 giờ" },
+  { khoa: "D", nhan: "Ngày", ten: "Khung ngày" },
+  { khoa: "W", nhan: "Tuần", ten: "Khung tuần" },
+];
 const NEN_MOI_NGAY = { H: 5, M30: 9, M15: 16, M5: 48, M1: 241 };
 const BUOC_PHUT = { H: 60, M30: 30, M15: 15, M5: 5, M1: 1 };
 const laNoiNgay = (kt) => kt in BUOC_PHUT;
@@ -125,8 +137,6 @@ const CONG_TAT = [
   { khoa: "htkc", nhan: "Hỗ trợ / Kháng cự (KL)", mau: "#38BDF8" },
   { khoa: "autoFib", nhan: "Auto Fib Extension", mau: "#14B8A6" }, // lib/autoFib.js - chi la cong cu ve tham khao (kiem dinh 16/11/2026: khong du doan duoc dinh)
 ];
-// Mau tung muc cua Auto Fib Extension (theo script TradingView goc)
-const MAU_MUC_FIB = { 0: "#787B86", 0.236: "#F44336", 0.382: "#81C784", 0.5: "#4CAF50", 0.618: "#009688", 0.786: "#64B5F6", 1: "#787B86", 1.618: "#2962FF", 2.618: "#F44336", 3.618: "#9C27B0", 4.236: "#E91E63" };
 // Ho tro / khang cu THAM KHAO theo khoi luong: dinh khoi luong cua SO_NEN_HTKC nen gan nhat (khung ngay ~6 thang; khung tuan lay 26 tuan)
 const SO_NEN_HTKC = { D: 120, W: 26 };
 const MAU_HO_TRO = "#22C55E";
@@ -148,21 +158,48 @@ const SO_PK_SOM_HIEN = 3; // phan ky SOM (mau vang): chi ve 3 cai gan nhat moi l
 const MAU_PK_SOM = "#FBBF24";
 const CHIEU_CAO_PHU = 140;
 
+// Bieu tuong Fibonacci thoai lui (4 vach ngang + duong cheo net dut) - lucide khong co
+function IconFib({ size = 16, strokeWidth = 2 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 5h18M3 10h18M3 15h18M3 20h18" />
+      <path d="M6 20 18 5" strokeDasharray="2 2.5" />
+    </svg>
+  );
+}
+
 // Cong cu ke ve (components/veBieuDoLop.js)
-const CONG_CU_VE = [
+const CONG_CU_VE_GOC = [
   { khoa: "xuHuong", nhan: "Xu hướng", Icon: TrendingUp },
   { khoa: "tia", nhan: "Tia", Icon: MoveUpRight },
   { khoa: "ngang", nhan: "Ngang", Icon: Minus },
   { khoa: "doc", nhan: "Dọc", Icon: SeparatorVertical },
   { khoa: "chuNhat", nhan: "Chữ nhật", Icon: Square },
-  { khoa: "fib", nhan: "Fibonacci", Icon: null },
+  { khoa: "fib", nhan: "Fibonacci thoái lui", Icon: IconFib },
   { khoa: "thuoc", nhan: "Thước đo", Icon: Ruler },
   { khoa: "gapKhuc", nhan: "Đường dẫn", Icon: Spline },
   { khoa: "frvp", nhan: "Volume Profile vùng chọn", Icon: BarChartHorizontal },
   { khoa: "kenh", nhan: "Kênh song song", Icon: Equal, goiY: "bấm 3 điểm để vẽ" },
-  { khoa: "fibMoRong", nhan: "Fibonacci mở rộng", Icon: Waypoints, goiY: "bấm 3 điểm A (đầu nhịp), B (cuối nhịp), C (điểm hồi); mục tiêu = C + m × (B − A)" },
+  { khoa: "fibMoRong", nhan: "Fibonacci mở rộng dựa trên xu hướng", Icon: Waypoints, goiY: "bấm 3 điểm A (đầu nhịp), B (cuối nhịp), C (điểm hồi); mục tiêu = C + m × (B − A)" },
   { khoa: "mui", nhan: "Mũi tên", Icon: ArrowUpRight },
   { khoa: "chu", nhan: "Ghi chú", Icon: Type },
+];
+// Nhom cong cu o thanh ben trai (kieu TradingView): bam bieu tuong = dung cong cu vua dung cua nhom, bam mui ten nho = mo danh sach
+const NHOM_VE = NHOM_CONG_CU; // bo tri nhom + tieu muc: components/veCongCuTV.js
+// Bieu tuong cho cac cong cu thuoc bo TradingView (veCongCuTV.js)
+const ICON_MOI = {
+  thongTinDuong: Info, duongKeoDai: Slash, gocXuHuong: Compass, tiaNgang: ArrowRight, duongCat: Crosshair, hoiQuy: ChartLine, dinhDayPhang: Layers, kenhRoi: Frame,
+  cayChia: Network, cayChiaSchiff: Network, cayChiaSchiffSua: Network, quatCayChia: Radar,
+  kenhFib: AlignJustify, vungThoiGianFib: Columns3, quatFib: Radar, thoiGianFibXuHuong: Clock, vongFib: CircleDot, xoanOcFib: Orbit, cungFib: Rainbow, hopGann: Grid3x3, oVuongGann: Grid3x3, quatGann: Radar,
+  xabcd: ChartSpline, cypher: ChartSpline, abcd: Waypoints, tamGiacMH: Triangle, baLucDay: AudioWaveform, vaiDauVai: Mountain,
+  elliottXungLuc: Waves, elliottDieuChinh: Waves, elliottTamGiac: Waves, elliottKepDoi: Waves, elliottBaPhuc: Waves, chuKy: Repeat, chuKyThoiGian: Waves, duongSin: AudioWaveform,
+  viTheMua: TrendingUp, viTheBan: TrendingDown, duBao: Target, mauThanhNen: ChartCandlestick, phepChieu: CornerUpRight, vwapNeo: Anchor, vungGia: RectangleHorizontal, vungNgay: CalendarRange, vungGiaNgay: Scaling,
+  co: Brush, butDanhDau: Highlighter, chuNhatXoay: Rotate3d, tronTron: Circle, elip: Circle, tamGiacHinh: Triangle, daGiac: Pentagon, cung: Spline, duongCong: LineSquiggle, duongCongKep: LineSquiggle,
+  chuNeo: Type, ghiChu: StickyNote, ghiChuGia: Tag, ghim: Pin, chuThichBong: MessageSquare, binhLuan: MessageCircle, nhanGia: Tag, bienBao: Signpost, coHieu: Flag, muiKhoi: ArrowUpRight, muiLenCT: ArrowBigUp, muiXuongCT: ArrowBigDown,
+};
+const CONG_CU_VE = [
+  ...CONG_CU_VE_GOC,
+  ...Object.entries(CONG_CU_MOI).map(([khoa, d]) => ({ khoa, nhan: d.nhan, Icon: ICON_MOI[khoa] ?? Smile, goiY: d.goiY, bieuTuong: DS_BIEU_TUONG.find((b) => b[0] === khoa)?.[1] })),
 ];
 const MAU_VE = ["#F6C544", "#3B9EFF", "#22C55E", "#EF4444", "#E879F9", "#E5E7EB"];
 const khoaLuu = (ma, kt) => `cs-ve|${ma}|${kt}`;
@@ -177,11 +214,111 @@ function NutDoc({ chon = false, onClick, title, disabled = false, mau, children 
       title={title}
       aria-label={title}
       aria-pressed={chon}
-      className="w-8 h-8 shrink-0 rounded-md flex items-center justify-center hover:bg-[color:var(--hover-nhe)]"
+      className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center hover:bg-[color:var(--hover-nhe)]"
       style={{ background: chon ? "rgba(108,92,231,0.22)" : undefined, color: chon ? "var(--chu)" : mau ?? "var(--mo)", opacity: disabled ? 0.4 : 1, cursor: disabled ? "default" : "pointer" }}
     >
       {children}
     </button>
+  );
+}
+
+const VachDoc = () => <span className="w-6 h-px my-1 shrink-0" style={{ background: VIEN }} aria-hidden="true" />;
+// THANH CONG CU VE BEN TRAI kieu TradingView: bieu tuong rieng tung nhom (Duong / Fibonacci / Hinh / Do), mui ten nho mo danh sach; ben duoi hit gia, giu cong cu, mau, xoa.
+function ThanhVeTrai({ congCu, chonCongCu, giuCongCu, setGiuCongCu, hitGia, setHitGia, chonVe, xoaChon, soHinhVe, xoaHet, mauVe, setMauVe, cao, anHet, setAnHet, khoaHet, setKhoaHet }) {
+  const [mo, setMo] = useState(null); // { khoa, top, left }; khoa = "mau" cho bang mau
+  const [cuoi, setCuoi] = useState({});
+  useEffect(() => {
+    if (!mo) return;
+    const dong = (e) => {
+      if (e.target.closest?.("[data-flyout]")) return;
+      setMo(null);
+    };
+    const esc = (e) => e.key === "Escape" && setMo(null);
+    document.addEventListener("mousedown", dong);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("mousedown", dong);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [mo]);
+  const dsCC = Object.fromEntries(CONG_CU_VE.map((c) => [c.khoa, c]));
+  const moDs = (khoa, el) => {
+    const r = el.getBoundingClientRect();
+    setMo((c) => (c?.khoa === khoa ? null : { khoa, top: r.top, left: r.right + 8 }));
+  };
+  const nhomMo = mo && NHOM_VE.find((n) => n.khoa === mo.khoa);
+  return (
+    <div className="hidden md:flex flex-col items-center gap-0.5 py-2 px-1.5 border-r overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" style={{ borderColor: VIEN, ...(cao ? { height: cao } : {}) }} role="toolbar" aria-label="Công cụ vẽ" data-may="cong-cu-ve">
+      <NutDoc chon={congCu === null} onClick={() => chonCongCu(null)} title="Con trỏ: kéo, thu phóng biểu đồ; bấm vào hình vẽ để chọn">
+        <MousePointer2 size={18} strokeWidth={2} />
+      </NutDoc>
+      <VachDoc />
+      {NHOM_VE.map((n) => {
+        const dsTen = n.ds.filter((k) => !k.startsWith("#"));
+        const dangDung = dsTen.includes(congCu);
+        const khoaHien = dangDung ? congCu : cuoi[n.khoa] ?? dsTen[0];
+        const cc = dsCC[khoaHien];
+        const Icon = cc.Icon;
+        return (
+          <div key={n.khoa} className="relative flex items-center" data-flyout>
+            <NutDoc chon={dangDung} onClick={() => chonCongCu(khoaHien)} title={`${cc.nhan}${cc.goiY ? ": " + cc.goiY : ""}`}>
+              {cc.bieuTuong ? <span className="text-[16px] leading-none">{cc.bieuTuong}</span> : <Icon size={18} strokeWidth={2} />}
+            </NutDoc>
+            <button type="button" onClick={(e) => moDs(n.khoa, e.currentTarget.parentElement)} aria-label={`Danh sách: ${n.nhan}`} aria-expanded={mo?.khoa === n.khoa} className="absolute -right-1 top-1/2 -translate-y-1/2 w-3.5 h-6 rounded-sm flex items-center justify-center cursor-pointer hover:bg-[color:var(--hover-nhe)]" style={{ color: "var(--mo)" }}>
+              <ChevronRight size={11} strokeWidth={2.5} />
+            </button>
+          </div>
+        );
+      })}
+      <VachDoc />
+      <NutDoc chon={hitGia} onClick={() => setHitGia((v) => !v)} title="Hít giá: điểm vẽ tự bám vào Mở / Cao / Thấp / Đóng của nến gần nhất">
+        <Magnet size={17} strokeWidth={2} />
+      </NutDoc>
+      <NutDoc chon={giuCongCu} onClick={() => setGiuCongCu((v) => !v)} title="Giữ công cụ: vẽ xong vẫn giữ công cụ đang chọn để vẽ tiếp (Esc để thoát)">
+        {giuCongCu ? <Lock size={17} strokeWidth={2} /> : <LockOpen size={17} strokeWidth={2} />}
+      </NutDoc>
+      <NutDoc chon={khoaHet} onClick={() => setKhoaHet((v) => !v)} title="Khóa tất cả hình vẽ: không chọn / kéo được khi đang khóa">
+        <LockKeyhole size={17} strokeWidth={2} />
+      </NutDoc>
+      <NutDoc chon={anHet} onClick={() => setAnHet((v) => !v)} title={anHet ? "Hiện lại tất cả hình vẽ" : "Ẩn tất cả hình vẽ"}>
+        {anHet ? <EyeOff size={17} strokeWidth={2} /> : <Eye size={17} strokeWidth={2} />}
+      </NutDoc>
+      <div className="relative" data-flyout>
+        <NutDoc onClick={(e) => moDs("mau", e.currentTarget.parentElement)} title="Màu nét vẽ">
+          <span className="w-4 h-4 rounded-full" style={{ background: mauVe, outline: `2px solid ${VIEN}`, outlineOffset: 1 }} />
+        </NutDoc>
+      </div>
+      <VachDoc />
+      <NutDoc disabled={!chonVe} mau={chonVe ? DO : undefined} onClick={xoaChon} title="Xóa hình đang chọn (phím Delete)">
+        <Trash2 size={17} strokeWidth={2} />
+      </NutDoc>
+      <NutDoc disabled={soHinhVe === 0} onClick={xoaHet} title={`Xóa tất cả hình vẽ của mã này${soHinhVe > 0 ? ` (${soHinhVe})` : ""}`}>
+        <Eraser size={17} strokeWidth={2} />
+      </NutDoc>
+      {nhomMo && createPortal(
+        <div data-flyout className="fixed z-[400] w-[290px] rounded-lg border shadow-xl py-1 overflow-y-auto" style={{ top: Math.max(8, Math.min(mo.top, (typeof window !== "undefined" ? window.innerHeight : 800) - 440)), left: mo.left, maxHeight: "min(430px, calc(100vh - 16px))", background: NEN_CARD, borderColor: VIEN }} role="menu" aria-label={nhomMo.nhan}>
+          {nhomMo.ds.map((k) => {
+            if (k.startsWith("#")) return <p key={k} className="px-3 pt-2 pb-1 text-[11px] font-semibold tracking-wide" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}>{k.slice(1)}</p>;
+            const c = dsCC[k], Icon = c.Icon, dang = congCu === k;
+            return (
+              <button key={k} type="button" role="menuitem" onClick={() => { setCuoi((x) => ({ ...x, [nhomMo.khoa]: k })); chonCongCu(k); setMo(null); }} title={c.goiY} className="w-full flex items-center gap-3 px-3 h-9 text-[13px] cursor-pointer hover:bg-[color:var(--hover-nhe)] text-left" style={{ color: dang ? TEXT : "var(--chu)", background: dang ? "rgba(108,92,231,0.18)" : undefined, fontFamily: "'Open Sans', sans-serif" }}>
+                {c.bieuTuong ? <span className="text-[17px] leading-none w-[17px] text-center">{c.bieuTuong}</span> : <Icon size={17} strokeWidth={2} />}
+                <span className="flex-1">{c.nhan}</span>
+              </button>
+            );
+          })}
+        </div>,
+        document.body
+      )}
+      {mo?.khoa === "mau" && createPortal(
+        <div data-flyout className="fixed z-[400] rounded-lg border shadow-xl p-2 flex gap-2" style={{ top: mo.top, left: mo.left, background: NEN_CARD, borderColor: VIEN }} role="menu" aria-label="Màu nét vẽ">
+          {MAU_VE.map((m) => (
+            <button key={m} type="button" onClick={() => { setMauVe(m); setMo(null); }} aria-label={`Màu ${m}`} aria-pressed={mauVe === m} className="w-6 h-6 rounded-full cursor-pointer" style={{ background: m, outline: mauVe === m ? `2px solid ${TEXT}` : "none", outlineOffset: 2 }} />
+          ))}
+        </div>,
+        document.body
+      )}
+    </div>
   );
 }
 
@@ -382,6 +519,27 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   // GON MAC DINH (04/11/2026): chi hien khung Ngay / Tuan + 2 lop chinh cua he thong; chi bao khac va cong cu ve mo khi can (toan man hinh thi hien het).
   const [moChiBao, setMoChiBao] = useState(false);
   const [moVe, setMoVe] = useState(false);
+  const [anHet, setAnHet] = useState(false);
+  const [khoaHet, setKhoaHet] = useState(false);
+  const [nhomDong, setNhomDong] = useState({});
+  const [timCB, setTimCB] = useState("");
+  const [viTriCB, setViTriCB] = useState({ top: 0, left: 0 });
+  const nutCBRef = useRef(null);
+  const popCBRef = useRef(null);
+  useEffect(() => {
+    if (!moChiBao) return;
+    const dong = (e) => {
+      if (popCBRef.current?.contains(e.target) || nutCBRef.current?.contains(e.target)) return;
+      setMoChiBao(false);
+    };
+    const esc = (e) => e.key === "Escape" && setMoChiBao(false);
+    document.addEventListener("mousedown", dong);
+    document.addEventListener("keydown", esc);
+    return () => {
+      document.removeEventListener("mousedown", dong);
+      document.removeEventListener("keydown", esc);
+    };
+  }, [moChiBao]);
   const [caoManHinh, setCaoManHinh] = useState(900);
   // Volume Profile: nen 1 gio (tai khi can), co hinh "frvp" hay khong, va cac tham chieu de ham tinh ho so luon doc du lieu moi nhat
   const [nenGio, setNenGio] = useState({ ma: "", nen: null });
@@ -1005,28 +1163,28 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     s.markersSK.setMarkers(nhan);
   }, [sk, nen, bat.diemB, bat.batDay, noiNgay, kieuMau, ma]);
 
-  // 4a2. AUTO FIB EXTENSION (chip "Auto Fib Extension"): doan A-B (net lien) + B-C, cac muc C + m.|AB| thanh vach gia co nhan; theo khung dang xem. Chi la cong cu ve tham khao.
+  // An / khoa tat ca hinh ve (nut mat / o khoa o thanh ben trai)
+  useEffect(() => {
+    veRef.current?.lopVe?.datAn(anHet);
+  }, [anHet]);
+  useEffect(() => {
+    veRef.current?.lopVe?.datKhoaHet(khoaHet);
+  }, [khoaHet]);
+
+  // 4a2. AUTO FIB EXTENSION (chip "Auto Fib Extension"): ve bang lop ve nhu cong cu Fibonacci mo rong cua TradingView (hop to mau tung muc, nhan ben trai, doan A-B-C net dut), keo dai den het truc gia, chi doc. Chi la cong cu tham khao.
   useEffect(() => {
     const s = veRef.current;
-    if (!s || !s.candle) return;
-    try {
-      for (const sr of s.fib?.series || []) s.chart.removeSeries(sr);
-      for (const pl of s.fib?.vach || []) s.candle.removePriceLine(pl);
-    } catch {}
-    s.fib = { series: [], vach: [] };
-    if (!bat.autoFib || !nen || nen.length < 40) return;
-    const r = autoFibExt(nen.map((b) => b.h), nen.map((b) => b.l), { depth: 10 });
-    if (!r || !nen[r.A.i] || !nen[r.B.i] || !nen[r.C.i]) return;
-    const doan = (p1, p2, mau, kieu) => {
-      const sr = s.chart.addSeries(LineSeries, { color: mau, lineWidth: 1, lineStyle: kieu, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false });
-      sr.setData([{ time: nen[p1.i].t, value: p1.v }, { time: nen[p2.i].t, value: p2.v }]);
-      s.fib.series.push(sr);
-    };
-    doan(r.A, r.B, "#EF4444", LineStyle.Dashed);
-    doan(r.B, r.C, "#22C55E", LineStyle.Dashed);
-    for (const { m, gia } of r.muc) {
-      s.fib.vach.push(s.candle.createPriceLine({ price: gia, color: MAU_MUC_FIB[m] || "#94A3B8", lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: `Fib ${m}${r.huong > 0 ? " ↑" : " ↓"}` }));
+    if (!s || !s.lopVe) return;
+    if (!bat.autoFib || !nen || nen.length < 40) {
+      s.lopVe.datHinhNgoai([]);
+      return;
     }
+    const r = autoFibExt(nen.map((b) => b.h), nen.map((b) => b.l), { depth: 10 });
+    if (!r || !nen[r.A.i] || !nen[r.B.i] || !nen[r.C.i]) {
+      s.lopVe.datHinhNgoai([]);
+      return;
+    }
+    s.lopVe.datHinhNgoai([{ id: "_autoFib", loai: "fibMoRong", p1: { i: r.A.i, p: r.A.v }, p2: { i: r.B.i, p: r.B.v }, p3: { i: r.C.i, p: r.C.v }, mau: "#787B86", keoDai: true }]);
   }, [bat.autoFib, nen, khungTG, kieuMau]);
 
   // 4b. Tu ve MAU HINH GIA len bieu do: duong co / canh (LineSeries), diem chinh (marker), muc tieu + cat lo (vach gia); cuon bieu do toi mau hinh.
@@ -1119,7 +1277,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const truoc = nen && idx > 0 ? nen[idx - 1].c : null;
   const doiPct = hienTai && truoc ? ((hienTai.c - truoc) / truoc) * 100 : null;
   const mauDoi = doiPct == null ? MUTED : doiPct >= 0 ? XANH : DO;
-  const veDoc = boCucRong && !toanMH; // thanh cong cu ve doc ben trai (may tinh)
+  const veDoc = boCucRong || toanMH; // thanh cong cu ve doc ben trai (may tinh; ca khi xem toan man hinh)
   const benPhai = boCucRong && !toanMH; // o thong tin ma ben phai (man >= 1280px)
   // Noi dung O THONG TIN MA: dung chung cho o ben phai (boCucRong) va khung ben phai khi xem toan man hinh.
   const noiDungThongTin = (
@@ -1155,112 +1313,114 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       )}
     </>
   );
-  // chip chi bao: luon hien 2 lop chinh (Ichimoku, can bang dai han) + chi bao dang bat; bam "+ Chi bao khac" (hoac toan man hinh) moi hien het
-  const hienChip = (k) => toanMH || moChiBao || k === "ichimoku" || k === "canBang" || !!bat[k];
+  // Danh sach chi bao cho MENU "Chi bao" (kieu TradingView) va chu thich tren bieu do: moi muc co khoa, nhan, mau, nhom, ma "data-may" (huong dan cua May) va ham bam.
+  const bamBat = (k) => () => setBat((b) => ({ ...b, [k]: !b[k] }));
+  const dsMenu = [
+    ...CONG_TAT.filter((c) => !(noiNgay && (c.khoa === "vp" || c.khoa === "htkc")) && !(!noiNgay && (c.khoa === "vwap" || c.khoa === "chiaNgay"))).map((c) => ({ khoa: c.khoa, nhan: c.nhan, mau: c.mau, nhom: "Lớp trên biểu đồ giá", may: `chip-${c.khoa}`, bam: bamBat(c.khoa) })),
+    conVung && { khoa: "vung", nhan: "Vùng lệnh", mau: XANH, nhom: "Tín hiệu hệ thống", may: "chip-vung", bam: bamBat("vung") },
+    !noiNgay && sk && sk.b.length > 0 && { khoa: "diemB", nhan: `Điểm B (${sk.b.length})`, mau: "var(--diem-b)", nhom: "Tín hiệu hệ thống", may: "chip-diemB", bam: bamBat("diemB") },
+    !noiNgay && sk && sk.batDay.length > 0 && { khoa: "batDay", nhan: `Bắt đáy (${sk.batDay.length})`, mau: "var(--diem-day)", nhom: "Tín hiệu hệ thống", may: "chip-batDay", bam: bamBat("batDay") },
+    ...CHI_BAO_PHU.map((c) => ({ khoa: c.khoa, nhan: c.nhan, mau: c.mau, nhom: "Chỉ báo phụ (cửa sổ riêng)", may: `chip-${c.khoa}`, bam: bamBat(c.khoa) })),
+    { khoa: "mauHinh", nhan: "Mẫu hình giá", mau: "#F6C544", nhom: "Nhận diện tự động", may: "mau-hinh", bam: bamBat("mauHinh") },
+    { khoa: "nenNhat", nhan: "Mẫu hình nến", mau: "#38BDF8", nhom: "Nhận diện tự động", may: "mau-hinh-nen", bam: bamBat("nenNhat") },
+    { khoa: "phanKy", nhan: CHI_BAO_PK.nhan, mau: CHI_BAO_PK.mau, nhom: "Nhận diện tự động", may: "chip-phanKy", bam: () => setBat((b) => ({ ...b, phanKy: !b.phanKy, rsi: !b.phanKy ? true : b.rsi })) },
+  ]
+    .filter(Boolean)
+    .map((x) => ({ ...x, bat: !!bat[x.khoa] }));
+  const dsDangBat = dsMenu.filter((x) => x.bat && x.khoa !== "chiaNgay");
+  const moMenuChiBao = () => {
+    const r = nutCBRef.current?.getBoundingClientRect();
+    if (r) setViTriCB({ top: r.bottom + 6, left: Math.max(8, Math.min(r.left, window.innerWidth - 336)) });
+    setTimCB("");
+    setMoChiBao((v) => !v);
+  };
+  const nhomMenu = [...new Set(dsMenu.map((x) => x.nhom))];
   const hienVe = toanMH || moVe || congCu != null;
 
   return (
     <div ref={rootRef} className={toanMH ? "fixed inset-0 z-[300] flex flex-col overflow-hidden" : "rounded-2xl border overflow-hidden"} style={{ borderColor: VIEN, background: NEN_CARD }}>
-      <div className={`flex items-center gap-x-4 gap-y-2 px-3 py-2.5 border-b ${toanMH ? "shrink-0 overflow-x-auto flex-nowrap [&>*]:shrink-0" : "flex-wrap max-sm:flex-nowrap max-sm:overflow-x-auto max-sm:[&>*]:shrink-0 max-sm:[scrollbar-width:none]"}`} style={{ borderColor: VIEN }}>
-        <div className="flex items-center gap-1.5">
-          {KHUNG_CHON.slice(0, 2).map((k) => (
-            <Chip key={k.khoa} bat={khungTG === k.khoa} onClick={() => setKhungTG(k.khoa)}>
-              {k.nhan}
-            </Chip>
-          ))}
-          <select
-            value={noiNgay ? khungTG : ""}
-            onChange={(e) => e.target.value && setKhungTG(e.target.value)}
-            aria-label="Khung trong ngày"
-            className="px-2 py-1 rounded-md text-xs cursor-pointer"
-            style={{ border: `1px solid ${noiNgay ? PRIMARY : VIEN}`, background: noiNgay ? "rgba(108,92,231,0.18)" : "transparent", color: noiNgay ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
-          >
-            <option value="">Trong ngày</option>
-            {KHUNG_CHON.slice(2).map((k) => (
-              <option key={k.khoa} value={k.khoa}>
+      <div className="flex items-center gap-0.5 px-2 py-1 border-b overflow-x-auto flex-nowrap [&>*]:shrink-0 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" style={{ borderColor: VIEN }}>
+        <div className="flex items-center" role="tablist" aria-label="Khung thời gian">
+          {KHUNG_NHANH.map((k) => {
+            const dang = khungTG === k.khoa;
+            return (
+              <button key={k.khoa} type="button" role="tab" aria-selected={dang} onClick={() => setKhungTG(k.khoa)} title={k.ten} className="h-8 px-2.5 rounded-md text-[13px] cursor-pointer hover:bg-[color:var(--hover-nhe)]" style={{ background: dang ? "rgba(108,92,231,0.22)" : undefined, color: dang ? TEXT : MUTED, fontWeight: dang ? 700 : 500, fontFamily: "'Open Sans', sans-serif" }}>
                 {k.nhan}
-              </option>
-            ))}
-          </select>
+              </button>
+            );
+          })}
         </div>
-        <div className="flex flex-wrap items-center gap-1.5">
-          {CONG_TAT.filter((c) => !(noiNgay && (c.khoa === "vp" || c.khoa === "htkc")) && !(!noiNgay && (c.khoa === "vwap" || c.khoa === "chiaNgay")) && hienChip(c.khoa)).map((c) => (
-            <Chip key={c.khoa} may={`chip-${c.khoa}`} bat={bat[c.khoa]} mau={c.mau} onClick={() => setBat((b) => ({ ...b, [c.khoa]: !b[c.khoa] }))}>
-              {c.nhan}
-            </Chip>
-          ))}
-          {conVung && (
-            <Chip may="chip-vung" bat={bat.vung} mau={XANH} onClick={() => setBat((b) => ({ ...b, vung: !b.vung }))}>
-              Vùng lệnh
-            </Chip>
-          )}
-          {!noiNgay && sk && sk.b.length > 0 && (
-            <Chip may="chip-diemB" bat={bat.diemB} mau="var(--diem-b)" onClick={() => setBat((b) => ({ ...b, diemB: !b.diemB }))}>
-              Điểm B ({sk.b.length})
-            </Chip>
-          )}
-          {!noiNgay && sk && sk.batDay.length > 0 && (
-            <Chip may="chip-batDay" bat={bat.batDay} mau="var(--diem-day)" onClick={() => setBat((b) => ({ ...b, batDay: !b.batDay }))}>
-              Bắt đáy ({sk.batDay.length})
-            </Chip>
-          )}
-          {CHI_BAO_PHU.filter((c) => hienChip(c.khoa)).map((c) => (
-            <Chip key={c.khoa} may={`chip-${c.khoa}`} bat={bat[c.khoa]} mau={c.mau} onClick={() => setBat((b) => ({ ...b, [c.khoa]: !b[c.khoa] }))}>
-              {c.nhan}
-            </Chip>
-          ))}
-          {hienChip("mauHinh") && (
-            <Chip may="mau-hinh" bat={bat.mauHinh} mau="#F6C544" onClick={() => setBat((b) => ({ ...b, mauHinh: !b.mauHinh }))}>
-              Mẫu hình
-            </Chip>
-          )}
-          {hienChip("nenNhat") && (
-            <Chip may="mau-hinh-nen" bat={bat.nenNhat} mau="#38BDF8" onClick={() => setBat((b) => ({ ...b, nenNhat: !b.nenNhat }))}>
-              Mẫu hình nến
-            </Chip>
-          )}
-          {hienChip("phanKy") && (
-            <Chip may="chip-phanKy" bat={bat.phanKy} mau={CHI_BAO_PK.mau} onClick={() => setBat((b) => ({ ...b, phanKy: !b.phanKy, rsi: !b.phanKy ? true : b.rsi }))}>
-              {CHI_BAO_PK.nhan}
-            </Chip>
-          )}
-          {!toanMH && (
-            <button type="button" onClick={() => setMoChiBao((v) => !v)} aria-expanded={moChiBao} className="px-2.5 py-1 rounded-md text-xs cursor-pointer" style={{ border: `1px dashed ${VIEN}`, color: "var(--tim-chu)", fontFamily: "var(--font-chu)" }}>
-              {moChiBao ? "Thu gọn chỉ báo" : "+ Chỉ báo khác"}
-            </button>
-          )}
-          {!toanMH && (
-            <button type="button" onClick={() => setMoVe((v) => !v)} aria-expanded={moVe || congCu != null} className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs cursor-pointer${boCucRong ? " md:hidden" : ""}`} style={{ border: `1px solid ${moVe || congCu != null ? PRIMARY : VIEN}`, background: moVe || congCu != null ? "rgba(108,92,231,0.18)" : "transparent", color: moVe || congCu != null ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}>
-              <PenLine size={13} strokeWidth={2} /> Công cụ vẽ
-            </button>
-          )}
-        </div>
-        <div className="flex items-center gap-1 ml-auto">
-          <button
-            type="button"
-            onClick={() => setToanMH((v) => !v)}
-            aria-pressed={toanMH}
-            data-may="toan-man-hinh"
-            title={toanMH ? "Thu nhỏ (Esc)" : "Xem biểu đồ toàn màn hình"}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs cursor-pointer"
-            style={{ border: `1px solid ${toanMH ? PRIMARY : VIEN}`, background: toanMH ? "rgba(108,92,231,0.18)" : "transparent", color: toanMH ? TEXT : MUTED, fontFamily: "var(--font-chu)" }}
-          >
-            {toanMH ? <Minimize2 size={13} strokeWidth={2} /> : <Maximize2 size={13} strokeWidth={2} />}
-            {toanMH ? "Thu nhỏ" : "Toàn màn hình"}
+        <span className="w-px h-5 mx-1.5" style={{ background: VIEN }} aria-hidden="true" />
+        <button ref={nutCBRef} type="button" onClick={moMenuChiBao} aria-expanded={moChiBao} aria-haspopup="dialog" data-may="chip-menu" title="Chỉ báo và lớp hiển thị" className="h-8 px-2.5 rounded-md text-[13px] cursor-pointer inline-flex items-center gap-1.5 hover:bg-[color:var(--hover-nhe)]" style={{ background: moChiBao ? "rgba(108,92,231,0.22)" : undefined, color: moChiBao ? TEXT : "var(--chu)", fontWeight: 500, fontFamily: "'Open Sans', sans-serif" }}>
+          <Activity size={16} strokeWidth={2} />
+          Chỉ báo
+          <span className="text-[11px] min-w-[18px] h-[18px] px-1 rounded-full inline-flex items-center justify-center" style={{ background: "rgba(108,92,231,0.28)", color: TEXT }}>{dsDangBat.length}</span>
+        </button>
+        {!toanMH && !boCucRong && (
+          <button type="button" onClick={() => setMoVe((v) => !v)} aria-expanded={moVe || congCu != null} className="md:hidden h-8 px-2.5 rounded-md text-[13px] cursor-pointer inline-flex items-center gap-1.5" style={{ background: moVe || congCu != null ? "rgba(108,92,231,0.22)" : undefined, color: moVe || congCu != null ? TEXT : "var(--chu)", fontWeight: 500, fontFamily: "'Open Sans', sans-serif" }}>
+            <PenLine size={15} strokeWidth={2} /> Công cụ vẽ
           </button>
+        )}
+        {!toanMH && boCucRong && (
+          <button type="button" onClick={() => setMoVe((v) => !v)} aria-expanded={moVe || congCu != null} className="md:hidden h-8 px-2.5 rounded-md text-[13px] cursor-pointer inline-flex items-center gap-1.5" style={{ background: moVe || congCu != null ? "rgba(108,92,231,0.22)" : undefined, color: moVe || congCu != null ? TEXT : "var(--chu)", fontWeight: 500, fontFamily: "'Open Sans', sans-serif" }}>
+            <PenLine size={15} strokeWidth={2} /> Công cụ vẽ
+          </button>
+        )}
+        {veDoc && (
+          <div className="hidden md:flex items-center ml-0.5">
+            <span className="w-px h-5 mx-1.5" style={{ background: VIEN }} aria-hidden="true" />
+            <NutDoc disabled={!lichSuVe.coHoanTac} onClick={() => veRef.current?.lopVe.hoanTac()} title="Hoàn tác (Ctrl+Z)">
+              <Undo2 size={17} strokeWidth={2} />
+            </NutDoc>
+            <NutDoc disabled={!lichSuVe.coLamLai} onClick={() => veRef.current?.lopVe.lamLai()} title="Làm lại (Ctrl+Y)">
+              <Redo2 size={17} strokeWidth={2} />
+            </NutDoc>
+          </div>
+        )}
+        <div className="flex items-center gap-0.5 ml-auto">
           {(noiNgay ? khoangNoiNgay(khungTG) : KHOANG).map((k) => (
-            <button
-              key={k.nhan}
-              type="button"
-              onClick={() => datKhoang(k.nen)}
-              className="px-2 py-1 rounded text-xs cursor-pointer hover:text-[color:var(--chu)]"
-              style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}
-            >
+            <button key={k.nhan} type="button" onClick={() => datKhoang(k.nen)} className="h-8 px-2 rounded-md text-xs cursor-pointer hover:bg-[color:var(--hover-nhe)] hover:text-[color:var(--chu)]" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}>
               {k.nhan}
             </button>
           ))}
+          <span className="w-px h-5 mx-1.5" style={{ background: VIEN }} aria-hidden="true" />
+          <button type="button" onClick={() => setToanMH((v) => !v)} aria-pressed={toanMH} data-may="toan-man-hinh" title={toanMH ? "Thu nhỏ (Esc)" : "Xem biểu đồ toàn màn hình"} aria-label={toanMH ? "Thu nhỏ" : "Toàn màn hình"} className="w-9 h-8 rounded-md cursor-pointer inline-flex items-center justify-center hover:bg-[color:var(--hover-nhe)]" style={{ background: toanMH ? "rgba(108,92,231,0.22)" : undefined, color: toanMH ? TEXT : "var(--chu)" }}>
+            {toanMH ? <Minimize2 size={17} strokeWidth={2} /> : <Maximize2 size={17} strokeWidth={2} />}
+          </button>
         </div>
       </div>
+      {moChiBao && createPortal(
+        <div ref={popCBRef} className="fixed z-[400] w-[320px] max-w-[calc(100vw-16px)] rounded-xl border shadow-2xl flex flex-col" style={{ top: viTriCB.top, left: viTriCB.left, background: NEN_CARD, borderColor: VIEN, maxHeight: "min(72vh, 560px)" }} role="dialog" aria-label="Chỉ báo">
+          <div className="p-2 border-b" style={{ borderColor: VIEN }}>
+            <input value={timCB} onChange={(e) => setTimCB(e.target.value)} placeholder="Tìm chỉ báo…" autoFocus className="w-full h-9 px-3 rounded-lg text-[13px] outline-none" style={{ background: "var(--hover-nhe)", color: "var(--chu)", border: `1px solid ${VIEN}`, fontFamily: "'Open Sans', sans-serif" }} />
+          </div>
+          <div className="overflow-y-auto py-1">
+            {nhomMenu.map((nhom) => {
+              const ds = dsMenu.filter((x) => x.nhom === nhom && x.nhan.toLowerCase().includes(timCB.trim().toLowerCase()));
+              if (!ds.length) return null;
+              const dong = !!nhomDong[nhom] && !timCB.trim();
+              const soBat = ds.filter((x) => x.bat).length;
+              return (
+                <div key={nhom}>
+                  <button type="button" onClick={() => setNhomDong((c) => ({ ...c, [nhom]: !c[nhom] }))} aria-expanded={!dong} className="w-full flex items-center gap-2 px-3 h-8 text-[12px] cursor-pointer hover:bg-[color:var(--hover-nhe)] text-left" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif", fontWeight: 600 }}>
+                    <ChevronDown size={14} strokeWidth={2.5} style={{ transform: dong ? "rotate(-90deg)" : undefined, transition: "transform .15s" }} />
+                    <span className="flex-1">{nhom}</span>
+                    {soBat > 0 && <span className="text-[10px] px-1.5 rounded-full" style={{ background: "rgba(108,92,231,0.28)", color: TEXT }}>{soBat}</span>}
+                  </button>
+                  {!dong && ds.map((x) => (
+                    <button key={x.khoa} type="button" data-may={x.may} onClick={x.bam} aria-pressed={x.bat} className="w-full flex items-center gap-3 px-3 h-9 text-[13px] cursor-pointer hover:bg-[color:var(--hover-nhe)] text-left" style={{ color: x.bat ? TEXT : "var(--chu)", fontFamily: "'Open Sans', sans-serif", fontWeight: x.bat ? 600 : 400 }}>
+                      <span className="inline-block w-2.5 h-2.5 rounded-full shrink-0" style={{ background: x.mau, opacity: x.bat ? 1 : 0.45 }} />
+                      <span className="flex-1 truncate">{x.nhan}</span>
+                      {x.bat && <Check size={16} strokeWidth={2.5} style={{ color: PRIMARY }} />}
+                    </button>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>,
+        document.body
+      )}
 
       {bat.nenNhat && (
         <div className="px-3 py-2 border-b" style={{ borderColor: VIEN }} data-may="mau-hinh-nen" aria-label="Mẫu hình nến Nhật">
@@ -1364,7 +1524,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
             <MousePointer2 size={13} strokeWidth={2} />
             Con trỏ
           </button>
-          {CONG_CU_VE.map(({ khoa: k, nhan, Icon, goiY }) => (
+          {CONG_CU_VE_GOC.map(({ khoa: k, nhan, Icon, goiY }) => (
             <button
               key={k}
               type="button"
@@ -1490,45 +1650,27 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       )}
       <div className={toanMH ? "flex flex-1 min-h-0" : boCucRong ? "flex" : ""}>
       {veDoc && (
-        <div className="hidden md:flex flex-col items-center gap-1 py-2 px-1 border-r overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" style={{ borderColor: VIEN, height: chieuCaoTong }} role="toolbar" aria-label="Công cụ vẽ" data-may="cong-cu-ve">
-          <NutDoc chon={congCu === null} onClick={() => setCongCuState(null)} title="Con trỏ: kéo, thu phóng biểu đồ; bấm vào hình vẽ để chọn">
-            <MousePointer2 size={16} strokeWidth={2} />
-          </NutDoc>
-          {CONG_CU_VE.map(({ khoa: k, nhan, Icon, goiY }) => (
-            <NutDoc key={k} chon={congCu === k} onClick={() => setCongCuState((c) => (c === k ? null : k))} title={`${nhan}: ${goiY || "bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ"}`}>
-              {Icon ? <Icon size={16} strokeWidth={2} /> : <span className="text-[10px] font-bold leading-none">Fib</span>}
-            </NutDoc>
-          ))}
-          <span className="w-6 h-px my-1 shrink-0" style={{ background: VIEN }} aria-hidden="true" />
-          <NutDoc chon={giuCongCu} onClick={() => setGiuCongCu((v) => !v)} title="Giữ công cụ: vẽ xong vẫn giữ công cụ đang chọn để vẽ tiếp (Esc để thoát)">
-            {giuCongCu ? <Lock size={15} strokeWidth={2} /> : <LockOpen size={15} strokeWidth={2} />}
-          </NutDoc>
-          <NutDoc chon={hitGia} onClick={() => setHitGia((v) => !v)} title="Hít giá: điểm vẽ tự bám vào Mở / Cao / Thấp / Đóng của nến gần nhất">
-            <Magnet size={15} strokeWidth={2} />
-          </NutDoc>
-          <NutDoc disabled={!lichSuVe.coHoanTac} onClick={() => veRef.current?.lopVe.hoanTac()} title="Hoàn tác (Ctrl+Z)">
-            <Undo2 size={15} strokeWidth={2} />
-          </NutDoc>
-          <NutDoc disabled={!lichSuVe.coLamLai} onClick={() => veRef.current?.lopVe.lamLai()} title="Làm lại (Ctrl+Y)">
-            <Redo2 size={15} strokeWidth={2} />
-          </NutDoc>
-          <NutDoc disabled={!chonVe} mau={chonVe ? DO : undefined} onClick={() => veRef.current?.lopVe.xoaChon()} title="Xóa hình đang chọn (phím Delete)">
-            <Trash2 size={15} strokeWidth={2} />
-          </NutDoc>
-          <NutDoc
-            disabled={soHinhVe === 0}
-            onClick={() => {
-              if (soHinhVe > 0 && window.confirm(`Xóa tất cả ${soHinhVe} hình vẽ của ${ma}?`)) veRef.current?.lopVe.xoaHet();
-            }}
-            title={`Xóa tất cả hình vẽ của mã này${soHinhVe > 0 ? ` (${soHinhVe})` : ""}`}
-          >
-            <Eraser size={15} strokeWidth={2} />
-          </NutDoc>
-          <span className="w-6 h-px my-1 shrink-0" style={{ background: VIEN }} aria-hidden="true" />
-          {MAU_VE.map((m) => (
-            <button key={m} type="button" onClick={() => setMauVe(m)} aria-label={`Màu nét vẽ ${m}`} aria-pressed={mauVe === m} className="w-4 h-4 shrink-0 rounded-full cursor-pointer my-0.5" style={{ background: m, outline: mauVe === m ? `2px solid ${TEXT}` : "none", outlineOffset: 1 }} />
-          ))}
-        </div>
+        <ThanhVeTrai
+          congCu={congCu}
+          chonCongCu={(k) => setCongCuState((c) => (k === null ? null : c === k ? null : k))}
+          giuCongCu={giuCongCu}
+          setGiuCongCu={setGiuCongCu}
+          hitGia={hitGia}
+          setHitGia={setHitGia}
+          chonVe={chonVe}
+          xoaChon={() => veRef.current?.lopVe.xoaChon()}
+          soHinhVe={soHinhVe}
+          xoaHet={() => {
+            if (soHinhVe > 0 && window.confirm(`Xóa tất cả ${soHinhVe} hình vẽ của ${ma}?`)) veRef.current?.lopVe.xoaHet();
+          }}
+          mauVe={mauVe}
+          setMauVe={setMauVe}
+          cao={toanMH ? undefined : chieuCaoTong}
+          anHet={anHet}
+          setAnHet={setAnHet}
+          khoaHet={khoaHet}
+          setKhoaHet={setKhoaHet}
+        />
       )}
       <div className={toanMH || boCucRong ? "relative flex-1 min-w-0" : "relative"} style={toanMH ? undefined : { height: chieuCaoTong }}>
         <div ref={khungRef} className="absolute inset-0" />
@@ -1565,6 +1707,19 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
             <span>
               KL <b style={{ color: TEXT }}>{chuoiKL(hienTai.v)}</b>
             </span>
+          </div>
+        )}
+        {dsDangBat.length > 0 && (
+          <div className="hidden sm:flex absolute left-3 top-[34px] z-10 flex-col items-start gap-0.5 text-[11px]" style={{ fontFamily: "'Open Sans', sans-serif" }} aria-label="Chỉ báo đang bật">
+            {dsDangBat.map((x) => (
+              <span key={x.khoa} className="group inline-flex items-center gap-1.5 rounded px-1.5 h-5" style={{ color: MUTED, background: `color-mix(in srgb, ${NEN_CARD} 78%, transparent)` }}>
+                <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ background: x.mau }} />
+                {x.nhan}
+                <button type="button" onClick={x.bam} aria-label={`Tắt ${x.nhan}`} title={`Tắt ${x.nhan}`} className="hidden group-hover:inline-flex items-center justify-center w-3.5 h-3.5 rounded cursor-pointer hover:text-[color:var(--chu)]">
+                  ×
+                </button>
+              </span>
+            ))}
           </div>
         )}
         {(dangTai || loi) && (
