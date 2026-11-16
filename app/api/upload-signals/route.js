@@ -751,9 +751,10 @@ export async function POST(request) {
   }
 
   // THONG BAO (chuong tren web + thong bao ve may): su kien cua phien DUNG nhu 4 o "Top co hoi dang chu y" o trang dau - Mua / Ban / Mua moi / Ban bot. Moi su kien chi bao 1 lan
-  // (khoa chong trung), upload lai trong phien chi bao su kien moi. Nguon thu nghiem (header x-skip-zalo) khong bao. Loi o day KHONG lam hong lan upload.
+  // (khoa chong trung), upload lai trong phien chi bao su kien moi. Nguon thu nghiem (header x-skip-zalo) khong bao, TRU KHI co header x-bao-thong-bao: 1 (engine real-time gui khi muon
+  // bao chuong + thong bao ve may nhung van TAT Zalo - 16/11/2026, Hieu: "hien len web, thong bao zalo tam thoi bo"). Loi o day KHONG lam hong lan upload.
   let thongBao = {};
-  if (!boQuaZalo) {
+  if (!boQuaZalo || request.headers.get("x-bao-thong-bao") === "1") {
     try {
       thongBao = await thongBaoPhien({ trongPhien });
     } catch (e) {

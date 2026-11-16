@@ -96,13 +96,18 @@ async function main() {
     );
   }
 
+  // THONG BAO WEB (chuong + ve may) cho Mua / Ban / Mua moi / Ban bot / Giam bot / Goi y mua / Danh muc / Bo loc: bao qua header x-bao-thong-bao (Zalo van tat nhu tren). Toi da 1 lan / 60 giay de
+  // khong ganh nang may chu (buoc bao doc tin hieu + goi y mua + danh muc + bo loc); khoa chong trung nen lan sau van bao bu. Tat: CS_BAO_THONG_BAO=TAT.
+  let lanBaoThongBaoCuoi = 0;
   async function guiLenWebNeuDuocPhep(csv) {
     if (!uploadDuocPhep) return;
     try {
       const gocWeb = process.env.CS_GOC_WEB || "https://www.cloudstock.id.vn";
+      const baoThongBao = process.env.CS_BAO_THONG_BAO !== "TAT" && Date.now() - lanBaoThongBaoCuoi >= 60000;
+      if (baoThongBao) lanBaoThongBaoCuoi = Date.now();
       const res = await fetch(`${gocWeb}/api/upload-signals`, {
         method: "POST",
-        headers: { "Content-Type": "text/csv", "x-api-key": uploadKey, "x-skip-zalo": choPhepZalo ? "0" : "1" },
+        headers: { "Content-Type": "text/csv", "x-api-key": uploadKey, "x-skip-zalo": choPhepZalo ? "0" : "1", ...(baoThongBao && { "x-bao-thong-bao": "1" }) },
         body: csv,
         signal: AbortSignal.timeout(120000),
       });
