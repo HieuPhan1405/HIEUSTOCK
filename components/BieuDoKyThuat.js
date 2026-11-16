@@ -7,6 +7,7 @@ import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Squar
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay, mcdx, MCDX_BANKER, MCDX_HOT } from "@/lib/chiBaoPhu";
 import { phanKyRSI, phanKyRSISom } from "@/lib/phanKyRSI";
+import { autoFibExt } from "@/lib/autoFib";
 import { tinhBankerHienThi, MAU_BANKER } from "@/lib/dongTienBanker";
 import { nhanDienMauHinh, nhanDienDangHinhThanh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
 import { nhanDienMauHinhNen, THONG_KE_MAU_HINH_NEN } from "@/lib/mauHinhNen";
@@ -122,7 +123,10 @@ const CONG_TAT = [
   { khoa: "chiaNgay", nhan: "Chia ngày", mau: "#94A3B8" }, // chi khung trong ngay: vach doc net dut giua cac phien + nhan ngay
   { khoa: "vp", nhan: "Volume Profile", mau: "#F6C544" },
   { khoa: "htkc", nhan: "Hỗ trợ / Kháng cự (KL)", mau: "#38BDF8" },
+  { khoa: "autoFib", nhan: "Auto Fib Extension", mau: "#14B8A6" }, // lib/autoFib.js - chi la cong cu ve tham khao (kiem dinh 16/11/2026: khong du doan duoc dinh)
 ];
+// Mau tung muc cua Auto Fib Extension (theo script TradingView goc)
+const MAU_MUC_FIB = { 0: "#787B86", 0.236: "#F44336", 0.382: "#81C784", 0.5: "#4CAF50", 0.618: "#009688", 0.786: "#64B5F6", 1: "#787B86", 1.618: "#2962FF", 2.618: "#F44336", 3.618: "#9C27B0", 4.236: "#E91E63" };
 // Ho tro / khang cu THAM KHAO theo khoi luong: dinh khoi luong cua SO_NEN_HTKC nen gan nhat (khung ngay ~6 thang; khung tuan lay 26 tuan)
 const SO_NEN_HTKC = { D: 120, W: 26 };
 const MAU_HO_TRO = "#22C55E";
@@ -363,7 +367,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState(khungMacDinh);
-  const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, chiaNgay: true, vp: false, htkc: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, mcdx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
+  const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, chiaNgay: true, vp: false, htkc: false, autoFib: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, mcdx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
   // DIEM B (mua phuc hoi) + DIEM BAT DAY cua ma nay (chi thanh vien da duyet - xem /api/diem-bieu-do), ve thanh mui ten tren nen gia (khung Ngay / Tuan).
   const [diemSK, setDiemSK] = useState({ ma: "", b: [], batDay: [] });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
@@ -999,6 +1003,30 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     }
     s.markersSK.setMarkers(nhan);
   }, [sk, nen, bat.diemB, bat.batDay, noiNgay, kieuMau, ma]);
+
+  // 4a2. AUTO FIB EXTENSION (chip "Auto Fib Extension"): doan A-B (net lien) + B-C, cac muc C + m.|AB| thanh vach gia co nhan; theo khung dang xem. Chi la cong cu ve tham khao.
+  useEffect(() => {
+    const s = veRef.current;
+    if (!s || !s.candle) return;
+    try {
+      for (const sr of s.fib?.series || []) s.chart.removeSeries(sr);
+      for (const pl of s.fib?.vach || []) s.candle.removePriceLine(pl);
+    } catch {}
+    s.fib = { series: [], vach: [] };
+    if (!bat.autoFib || !nen || nen.length < 40) return;
+    const r = autoFibExt(nen.map((b) => b.h), nen.map((b) => b.l), { depth: 10 });
+    if (!r || !nen[r.A.i] || !nen[r.B.i] || !nen[r.C.i]) return;
+    const doan = (p1, p2, mau, kieu) => {
+      const sr = s.chart.addSeries(LineSeries, { color: mau, lineWidth: 1, lineStyle: kieu, lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false });
+      sr.setData([{ time: nen[p1.i].t, value: p1.v }, { time: nen[p2.i].t, value: p2.v }]);
+      s.fib.series.push(sr);
+    };
+    doan(r.A, r.B, "#EF4444", LineStyle.Dashed);
+    doan(r.B, r.C, "#22C55E", LineStyle.Dashed);
+    for (const { m, gia } of r.muc) {
+      s.fib.vach.push(s.candle.createPriceLine({ price: gia, color: MAU_MUC_FIB[m] || "#94A3B8", lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: true, title: `Fib ${m}${r.huong > 0 ? " ↑" : " ↓"}` }));
+    }
+  }, [bat.autoFib, nen, khungTG, kieuMau]);
 
   // 4b. Tu ve MAU HINH GIA len bieu do: duong co / canh (LineSeries), diem chinh (marker), muc tieu + cat lo (vach gia); cuon bieu do toi mau hinh.
   useEffect(() => {
