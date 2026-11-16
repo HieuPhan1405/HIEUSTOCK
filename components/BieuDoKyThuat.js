@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import { createChart, createTextWatermark, createSeriesMarkers, BaselineSeries, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle } from "lightweight-charts";
-import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2, Eraser } from "lucide-react";
+import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2, Eraser, Waypoints } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
 import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay, mcdx, MCDX_BANKER, MCDX_HOT } from "@/lib/chiBaoPhu";
 import { phanKyRSI, phanKyRSISom } from "@/lib/phanKyRSI";
@@ -159,7 +159,8 @@ const CONG_CU_VE = [
   { khoa: "thuoc", nhan: "Thước đo", Icon: Ruler },
   { khoa: "gapKhuc", nhan: "Đường dẫn", Icon: Spline },
   { khoa: "frvp", nhan: "Volume Profile vùng chọn", Icon: BarChartHorizontal },
-  { khoa: "kenh", nhan: "Kênh song song", Icon: Equal },
+  { khoa: "kenh", nhan: "Kênh song song", Icon: Equal, goiY: "bấm 3 điểm để vẽ" },
+  { khoa: "fibMoRong", nhan: "Fibonacci mở rộng", Icon: Waypoints, goiY: "bấm 3 điểm A (đầu nhịp), B (cuối nhịp), C (điểm hồi); mục tiêu = C + m × (B − A)" },
   { khoa: "mui", nhan: "Mũi tên", Icon: ArrowUpRight },
   { khoa: "chu", nhan: "Ghi chú", Icon: Type },
 ];
@@ -1363,13 +1364,13 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
             <MousePointer2 size={13} strokeWidth={2} />
             Con trỏ
           </button>
-          {CONG_CU_VE.map(({ khoa: k, nhan, Icon }) => (
+          {CONG_CU_VE.map(({ khoa: k, nhan, Icon, goiY }) => (
             <button
               key={k}
               type="button"
               onClick={() => setCongCuState((c) => (c === k ? null : k))}
               aria-pressed={congCu === k}
-              title={`${nhan}: bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ`}
+              title={`${nhan}: ${goiY || "bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ"}`}
               className="px-2.5 py-1 rounded-md text-xs cursor-pointer flex items-center gap-1.5"
               style={{ background: congCu === k ? "rgba(108,92,231,0.18)" : "transparent", border: `1px solid ${congCu === k ? PRIMARY : VIEN}`, color: congCu === k ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
             >
@@ -1493,8 +1494,8 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
           <NutDoc chon={congCu === null} onClick={() => setCongCuState(null)} title="Con trỏ: kéo, thu phóng biểu đồ; bấm vào hình vẽ để chọn">
             <MousePointer2 size={16} strokeWidth={2} />
           </NutDoc>
-          {CONG_CU_VE.map(({ khoa: k, nhan, Icon }) => (
-            <NutDoc key={k} chon={congCu === k} onClick={() => setCongCuState((c) => (c === k ? null : k))} title={`${nhan}: bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ`}>
+          {CONG_CU_VE.map(({ khoa: k, nhan, Icon, goiY }) => (
+            <NutDoc key={k} chon={congCu === k} onClick={() => setCongCuState((c) => (c === k ? null : k))} title={`${nhan}: ${goiY || "bấm 2 lần (hoặc bấm - kéo - thả) lên biểu đồ để vẽ"}`}>
               {Icon ? <Icon size={16} strokeWidth={2} /> : <span className="text-[10px] font-bold leading-none">Fib</span>}
             </NutDoc>
           ))}
@@ -1533,7 +1534,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
         <div ref={khungRef} className="absolute inset-0" />
         {veDoc && congCu && (
           <div className="hidden md:block absolute left-3 bottom-8 z-10 pointer-events-none text-[11px] rounded px-2 py-1" style={{ background: `color-mix(in srgb, ${NEN_CARD} 85%, transparent)`, color: TEXT, fontFamily: "'Open Sans', sans-serif" }}>
-            {congCu === "gapKhuc" ? "Đường dẫn: chuột trái thêm đoạn, chuột phải / bấm đúp để kết thúc." : congCu === "frvp" ? "Bấm nến bắt đầu rồi nến kết thúc (hoặc kéo - thả)." : "Bấm 2 lần hoặc bấm - kéo - thả để vẽ."} Esc để thoát.
+            {congCu === "gapKhuc" ? "Đường dẫn: chuột trái thêm đoạn, chuột phải / bấm đúp để kết thúc." : congCu === "frvp" ? "Bấm nến bắt đầu rồi nến kết thúc (hoặc kéo - thả)." : congCu === "fibMoRong" ? "Bấm 3 điểm: A (đầu nhịp), B (cuối nhịp), C (điểm hồi)." : congCu === "kenh" ? "Bấm 3 điểm để vẽ kênh." : "Bấm 2 lần hoặc bấm - kéo - thả để vẽ."} Esc để thoát.
           </div>
         )}
         {thongTin && !toanMH && !boCucRong && (

@@ -6,6 +6,9 @@
 import { soVN, pctVN } from "@/lib/soVN";
 
 export const MUC_FIB = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
+// FIBONACCI MO RONG DUA TREN XU HUONG (kieu TradingView "Trend-Based Fib Extension", 3 diem A - B - C, tu ve tay): muc = C + m.(B - A). Chi la cong cu ve tham khao.
+export const MUC_FIB_MO_RONG = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1, 1.272, 1.618, 2.618, 3.618, 4.236];
+const LA_3_DIEM = (loai) => loai === "kenh" || loai === "fibMoRong";
 const LOAI_1_DIEM = ["ngang", "doc", "chu"];
 const KHOANG_CHON = 10; // px (chuot); cam ung dung 18
 const KHOANG_HIT_GIA = 14; // px: hit nam cham gia O/H/L/C
@@ -356,6 +359,18 @@ export class LopVe {
       if (khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T || khoangCachDoan(x, y, k.a2.x, k.a2.y, k.b2.x, k.b2.y) <= T) return { cham: "than" };
       return null;
     }
+    if (h.loai === "fibMoRong") {
+      const c = h.p3 ? this._diemPx(h.p3) : null;
+      if (!c) return khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T ? { cham: "than" } : null;
+      if (Math.hypot(x - c.x, y - c.y) <= T + 2) return { cham: "p3" };
+      const { W: Wc } = this._chuKhungVe();
+      if (khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T || khoangCachDoan(x, y, b.x, b.y, c.x, c.y) <= T) return { cham: "than" };
+      for (const m of MUC_FIB_MO_RONG) {
+        const yy = this._y(h.p3.p + (h.p2.p - h.p1.p) * m);
+        if (yy != null && x >= c.x - T && x <= Wc && Math.abs(y - yy) <= T) return { cham: "than" };
+      }
+      return null;
+    }
     if (h.loai === "chuNhat") {
       const x1 = Math.min(a.x, b.x), x2 = Math.max(a.x, b.x), y1 = Math.min(a.y, b.y), y2 = Math.max(a.y, b.y);
       const trong = x >= x1 - T && x <= x2 + T && y >= y1 - T && y <= y2 + T;
@@ -491,7 +506,7 @@ export class LopVe {
   _datDiem2(pt) {
     const d = this.dangVe;
     d.p2 = pt;
-    if (d.loai === "kenh") {
+    if (LA_3_DIEM(d.loai)) {
       d.buoc = 2;
       d.p3 = pt;
       this.xuongTai = null;
@@ -998,6 +1013,46 @@ export class LopVe {
       ctx.lineTo(b.x, b.y);
       ctx.stroke();
       dauCham(a, b, k?.c);
+      return;
+    }
+    if (h.loai === "fibMoRong") {
+      const c = h.p3 ? this._diemPx(h.p3) : null;
+      const dp = h.p2.p - h.p1.p;
+      ctx.strokeStyle = h.mau;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+      if (c) ctx.lineTo(c.x, c.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      if (c) {
+        let truoc = null;
+        for (const m of MUC_FIB_MO_RONG) {
+          const gia = h.p3.p + dp * m;
+          const y = this._y(gia);
+          if (y == null) continue;
+          if (truoc != null) {
+            ctx.globalAlpha = 0.05;
+            ctx.fillStyle = h.mau;
+            ctx.fillRect(c.x, Math.min(y, truoc), W - c.x, Math.abs(y - truoc));
+            ctx.globalAlpha = 1;
+          }
+          truoc = y;
+          ctx.strokeStyle = h.mau;
+          ctx.lineWidth = m === 0 || m === 1 ? dam : Math.max(1, dam - 0.5);
+          ctx.setLineDash(m === 0 || m === 1 ? [] : [4, 3]);
+          ctx.beginPath();
+          ctx.moveTo(c.x, y);
+          ctx.lineTo(W, y);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.fillStyle = h.mau;
+          ctx.fillText(`${String(m).replace(".", ",")}  ${soVN(gia, 2, true)}`, c.x + 6, y - 8);
+        }
+      }
+      dauCham(a, b, c);
       return;
     }
     if (h.loai === "chuNhat") {
