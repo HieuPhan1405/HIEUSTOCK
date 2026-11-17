@@ -1338,15 +1338,32 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   useEffect(() => {
     const s = veRef.current;
     if (!s || !s.lopVe) return;
+    // Truc gia KEO RONG de chua du cac muc fib (17/11/2026, Hieu: "fibo van thieu diem" - muc 1,272 / 1,618 nam ngoai vung gia dang thay nen bi cat mat): provider autoscale cong them khoang [thap, cao] cua cac muc.
+    const giaFibRef = (s.giaFib = s.giaFib || { khoang: null });
+    const apKhoang = (kh) => {
+      giaFibRef.khoang = kh;
+      s.candle.applyOptions({
+        autoscaleInfoProvider: (goc) => {
+          const res = goc();
+          const e = giaFibRef.khoang;
+          if (!res || !e) return res;
+          return { ...res, priceRange: { minValue: Math.min(res.priceRange.minValue, e[0]), maxValue: Math.max(res.priceRange.maxValue, e[1]) } };
+        },
+      });
+    };
     if (!bat.autoFib || !nen || nen.length < 40) {
+      apKhoang(null);
       s.lopVe.datHinhNgoai([]);
       return;
     }
     const r = autoFibExt(nen.map((b) => b.h), nen.map((b) => b.l), { depth: 10 });
     if (!r || !nen[r.A.i] || !nen[r.B.i] || !nen[r.C.i]) {
+      apKhoang(null);
       s.lopVe.datHinhNgoai([]);
       return;
     }
+    const giaMuc = [1, 1.272, 1.618].map((m) => r.C.v + r.huong * m * r.doAB);
+    apKhoang([Math.min(r.C.v, ...giaMuc), Math.max(r.C.v, ...giaMuc)]);
     s.lopVe.datHinhNgoai([{ id: "_autoFib", loai: "fibMoRong", p1: { i: r.A.i, p: r.A.v }, p2: { i: r.B.i, p: r.B.v }, p3: { i: r.C.i, p: r.C.v }, mau: "#787B86", keoDai: true, mucChon: [1, 1.272, 1.618] }]);
   }, [bat.autoFib, nen, khungTG, kieuMau]);
 

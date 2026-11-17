@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Search, LayoutGrid } from "lucide-react";
+import { LayoutGrid } from "lucide-react";
 import { layTinHieuTheoMa } from "@/lib/tinHieu";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import LuoiDaKhung from "@/components/LuoiDaKhung";
+import OTimMaDaKhung from "@/components/OTimMaDaKhung";
 import ChonChiSo from "@/components/ChonChiSo";
 import XemNhanhDanhSach from "@/components/XemNhanhDanhSach";
 import { tinhVungLenh } from "@/components/dungChung";
@@ -44,20 +45,7 @@ export default async function TrangDaKhung({ searchParams }) {
     <div className="px-3 sm:px-4 py-3" style={{ color: TEXT }}>
       <h1 className="sr-only">Biểu đồ đa khung {ma}</h1>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-2">
-        <form action="/bieu-do/da-khung" method="get" className="relative w-36 shrink-0">
-          <Search size={14} aria-hidden="true" className="absolute left-2.5 top-1/2 -translate-y-1/2" style={{ color: MUTED }} />
-          <input
-            name="ma"
-            defaultValue={ma}
-            key={ma}
-            autoComplete="off"
-            maxLength={12}
-            placeholder="Nhập mã…"
-            aria-label="Mã cổ phiếu hoặc chỉ số (Enter để xem)"
-            className="w-full h-8 pl-8 pr-2 text-sm outline-none rounded-lg"
-            style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 700, textTransform: "uppercase" }}
-          />
-        </form>
+        <OTimMaDaKhung ma={ma} />
         <ChonChiSo ma={ma} duongDan="/bieu-do/da-khung" />
         {ten && (
           <p className="text-sm truncate max-w-[280px]" style={{ color: MUTED }} title={ten.ten}>
