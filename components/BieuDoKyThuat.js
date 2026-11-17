@@ -9,13 +9,14 @@ import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuong
 import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay, mcdx, MCDX_BANKER, MCDX_HOT } from "@/lib/chiBaoPhu";
 import { phanKyRSI, phanKyRSISom } from "@/lib/phanKyRSI";
 import { autoFibExt } from "@/lib/autoFib";
+import { adaptiveSuperTrend } from "@/lib/adaptiveSuperTrend";
 import { tinhBankerHienThi, MAU_BANKER } from "@/lib/dongTienBanker";
 import { nhanDienMauHinh, nhanDienDangHinhThanh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
 import { nhanDienMauHinhNen, THONG_KE_MAU_HINH_NEN } from "@/lib/mauHinhNen";
 import { LopVe } from "@/components/veBieuDoLop";
 import { CONG_CU_MOI, NHOM_CONG_CU, DS_BIEU_TUONG } from "@/components/veCongCuTV";
 import { tinhHoSoKhoiLuong, chonNenChoHoSo, chuanBiNenGio, timDinhKhoiLuong, chonHoTroKhangCu } from "@/lib/volumeProfile";
-import { DaiMay, DaiGia, VachNgay } from "@/components/bieuDoPlugin";
+import { DaiMay, DaiGia, VachNgay, NhanSo } from "@/components/bieuDoPlugin";
 import { fmt } from "@/components/dungChung";
 import BangThongTinBieuDo from "@/components/BangThongTinBieuDo";
 import ThongTinMaBieuDo from "@/components/ThongTinMaBieuDo";
@@ -125,6 +126,8 @@ const nhanThoiGian = (t) => {
 const MAU_BB = "#F59E0B";
 const MAU_BB_NEN = "rgba(245,158,11,0.13)";
 const MAU_VWAP = "#E879F9";
+const MLST_LEN = "#22C55E"; // ML Adaptive SuperTrend: mau duong tang / giam (hex 6 so de ghep do trong suot)
+const MLST_XUONG = "#EF4444";
 const CONG_TAT = [
   { khoa: "ichimoku", nhan: "Ichimoku", mau: MAU.kijun },
   { khoa: "canBang", nhan: "Cân bằng dài hạn", mau: MAU.cb1 },
@@ -135,6 +138,7 @@ const CONG_TAT = [
   { khoa: "chiaNgay", nhan: "Chia ngày", mau: "#94A3B8" }, // chi khung trong ngay: vach doc net dut giua cac phien + nhan ngay
   { khoa: "vp", nhan: "Volume Profile", mau: "#F6C544" },
   { khoa: "htkc", nhan: "Hỗ trợ / Kháng cự (KL)", mau: "#38BDF8" },
+  { khoa: "mlst", nhan: "ML Adaptive SuperTrend", mau: "#00C9A7" }, // lib/adaptiveSuperTrend.js - so 1/2/3 = muc bien dong (kiem dinh 17/11/2026: tin hieu doi chieu khong hon SuperTrend thuong)
   { khoa: "autoFib", nhan: "Auto Fib Extension", mau: "#14B8A6" }, // lib/autoFib.js - chi la cong cu ve tham khao (kiem dinh 16/11/2026: khong du doan duoc dinh)
 ];
 // Ho tro / khang cu THAM KHAO theo khoi luong: dinh khoi luong cua SO_NEN_HTKC nen gan nhat (khung ngay ~6 thang; khung tuan lay 26 tuan)
@@ -409,7 +413,17 @@ function tinhChiBaoPhu(nen) {
   const bk = tinhBankerHienThi({ open: nen.map((b) => b.o ?? b.c), high: nen.map((b) => b.h), low: nen.map((b) => b.l), close, volume: nen.map((b) => b.v ?? 0) });
   const soNenNhan = 300; // chi gan nhan tren ~300 nen cuoi cho do roi
   const nhanBk = bk.nhan.filter((l) => l.i >= nen.length - soNenNhan).map((l) => ({ time: nen[l.i].t, loai: l.loai, text: l.text }));
+  // ML Adaptive SuperTrend: duong tang (xanh) / giam (do) ngat quang khi doi chieu, to mau giua than nen va duong, mui ten doi chieu, so 1/2/3 canh duong.
+  const ml = adaptiveSuperTrend(nen.map((b) => b.h), nen.map((b) => b.l), close);
+  const MAU_SO = { 1: [MLST_LEN, MLST_XUONG].map((m) => m + "44"), 2: [MLST_LEN, MLST_XUONG].map((m) => m + "88"), 3: [MLST_LEN, MLST_XUONG].map((m) => m + "DD") };
+  const mlCuoi = ml.st.length - 1;
   return {
+    // 1 duong, mau theo tung diem; thu vien noi lien cac diem nen doan nhay luc doi chieu (i - 1 -> i) phai trong suot: doan do lay mau cua diem i - 1.
+    mlstDuong: nen.map((b, i) => (ml.st[i] == null ? { time: b.t } : { time: b.t, value: ml.st[i], color: ml.huong[i + 1] != null && ml.huong[i + 1] !== ml.huong[i] ? "rgba(0,0,0,0)" : ml.huong[i] === 1 ? MLST_LEN : MLST_XUONG })),
+    mlstDai: nen.map((b, i) => (ml.st[i] == null ? null : { time: b.t, a: ((b.o ?? b.c) + b.c) / 2, b: ml.st[i] })).filter(Boolean),
+    mlstSo: nen.map((b, i) => (ml.st[i] == null || ml.so[i] == null ? null : { time: b.t, gia: ml.st[i] - ml.huong[i] * 0.7 * (ml.atr[i] ?? 0), text: String(ml.so[i]), mau: MAU_SO[ml.so[i]][ml.huong[i] === 1 ? 0 : 1] })).filter(Boolean),
+    mlstMui: nen.map((b, i) => (i > 0 && ml.huong[i] != null && ml.huong[i - 1] != null && ml.huong[i] !== ml.huong[i - 1] ? { time: b.t, position: ml.huong[i] === 1 ? "belowBar" : "aboveBar", shape: ml.huong[i] === 1 ? "arrowUp" : "arrowDown", color: ml.huong[i] === 1 ? MLST_LEN : MLST_XUONG, text: "" } : null)).filter(Boolean),
+    mlstTT: mlCuoi >= 0 && ml.huong[mlCuoi] != null ? { huong: ml.huong[mlCuoi], so: ml.so[mlCuoi] } : null,
     bankerNen: bk.trend.map((v, i) => (v == null || bk.bb[i] == null || bk.mauNen[i] == null ? null : { time: nen[i].t, open: v, high: Math.max(v, bk.bb[i]), low: Math.min(v, bk.bb[i]), close: bk.bb[i], color: MAU_BANKER[bk.mauNen[i]], borderColor: MAU_BANKER[bk.mauNen[i]], wickColor: MAU_BANKER[bk.mauNen[i]] })).filter(Boolean),
     bankerVang: bk.nenVang.map((v, i) => (v ? { time: nen[i].t, open: 0, high: 50, low: 0, close: 50, color: MAU_BANKER.vang, borderColor: MAU_BANKER.vang, wickColor: MAU_BANKER.vang } : null)).filter(Boolean),
     bankerDuong: bk.trend.map((v, i) => (v == null ? null : { time: nen[i].t, value: v, color: MAU_BANKER[bk.mauDuong[i]] })).filter(Boolean),
@@ -505,7 +519,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const khungRef = useRef(null);
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState(khungMacDinh);
-  const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, chiaNgay: true, vp: false, htkc: false, autoFib: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, mcdx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
+  const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, chiaNgay: true, vp: false, htkc: false, mlst: false, autoFib: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, mcdx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
   // DIEM B (mua phuc hoi) + DIEM BAT DAY cua ma nay (chi thanh vien da duyet - xem /api/diem-bieu-do), ve thanh mui ten tren nen gia (khung Ngay / Tuan).
   const [diemSK, setDiemSK] = useState({ ma: "", b: [], batDay: [] });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
@@ -668,6 +682,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       bbMid: dong(MAU_BB, 1, { lineStyle: LineStyle.Dashed, visible: false }),
       bbDuoi: dong(MAU_BB, 2, { visible: false }),
       vwap: dong(MAU_VWAP, 2, { visible: false }),
+      mlstDuong: dong(MLST_LEN, 2, { visible: false }),
       phu: [], // series cua cac chi bao phu (RSI / MACD / Stochastic) dang ve o cua so rieng - tao lai moi khi bat / tat
       vol: chart.addSeries(HistogramSeries, { priceFormat: { type: "volume" }, priceScaleId: "vol", lastValueVisible: false, priceLineVisible: false }),
       candle: chart.addSeries(CandlestickSeries, {
@@ -691,6 +706,13 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     s.markersNen = createSeriesMarkers(s.candle, []); // mau hinh NEN NHAT (chip "Mẫu hình nến")
     s.markersBanker = createSeriesMarkers(s.candle, []); // nhan TP / SL cua chi bao Dong tien (Banker Fund Flow) tren bieu do gia
     s.markersSK = createSeriesMarkers(s.candle, []); // diem B (mua phuc hoi) + diem bat day
+    s.markersST = createSeriesMarkers(s.candle, []); // mui ten doi chieu ML Adaptive SuperTrend
+    s.mlstDai = new DaiMay({ mauTren: "rgba(34,197,94,0.10)", mauDuoi: "rgba(239,68,68,0.10)" });
+    s.mlstDai.datHien(false);
+    s.mlstSo = new NhanSo();
+    s.mlstSo.datHien(false);
+    s.candle.attachPrimitive(s.mlstDai);
+    s.candle.attachPrimitive(s.mlstSo);
     s.mh = { series: [], vach: [] }; // cac duong / vach gia cua mau hinh gia dang ve (xoa khi doi mau hinh)
     // Lop ke ve (canvas phu len bieu do): hinh luu o localStorage theo ma + khung thoi gian.
     s.lopVe = new LopVe({
@@ -958,7 +980,18 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     s.bbDuoi.setData(cp ? cp.bbDuoi : []);
     s.bbBand.datDuLieu(cp ? cp.bbBand : []);
     s.vwap.setData(cp ? cp.vwap : []);
+    s.mlstDuong.setData(cp ? cp.mlstDuong : []);
+    s.mlstDai.datDuLieu(cp ? cp.mlstDai : []);
+    s.mlstSo.datDuLieu(cp ? cp.mlstSo : []);
   }, [chiBaoPhu]);
+  useEffect(() => {
+    const s = veRef.current;
+    if (!s) return;
+    s.mlstDuong.applyOptions({ visible: bat.mlst });
+    s.mlstDai.datHien(bat.mlst);
+    s.mlstSo.datHien(bat.mlst);
+    s.markersST.setMarkers(bat.mlst && chiBaoPhu ? chiBaoPhu.mlstMui : []);
+  }, [bat.mlst, chiBaoPhu]);
   useEffect(() => {
     const s = veRef.current;
     if (!s) return;
@@ -1715,6 +1748,11 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
               <span key={x.khoa} className="group inline-flex items-center gap-1.5 rounded px-1.5 h-5" style={{ color: MUTED, background: `color-mix(in srgb, ${NEN_CARD} 78%, transparent)` }}>
                 <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ background: x.mau }} />
                 {x.nhan}
+                {x.khoa === "mlst" && chiBaoPhu?.mlstTT && (
+                  <b style={{ color: chiBaoPhu.mlstTT.huong === 1 ? MLST_LEN : MLST_XUONG }}>
+                    {chiBaoPhu.mlstTT.huong === 1 ? "Tăng" : "Giảm"} · biến động {chiBaoPhu.mlstTT.so} ({["", "thấp", "vừa", "cao"][chiBaoPhu.mlstTT.so]})
+                  </b>
+                )}
                 <button type="button" onClick={x.bam} aria-label={`Tắt ${x.nhan}`} title={`Tắt ${x.nhan}`} className="hidden group-hover:inline-flex items-center justify-center w-3.5 h-3.5 rounded cursor-pointer hover:text-[color:var(--chu)]">
                   ×
                 </button>

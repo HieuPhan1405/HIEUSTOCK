@@ -13,11 +13,12 @@ class LopVe {
 }
 
 class KhungNhin {
-  constructor(veFn) {
+  constructor(veFn, lop = "bottom") {
     this._lop = new LopVe(veFn);
+    this._z = lop;
   }
   zOrder() {
-    return "bottom";
+    return this._z;
   }
   renderer() {
     return this._lop;
@@ -226,5 +227,56 @@ export class DaiGia {
         ctx.fillText(d.nhan, Math.max(4, width - rong - 8), laDuong ? tren - 13 : tren + 3);
       }
     }
+  }
+}
+
+// NhanSo - chu nho tai (time, gia) tren bieu do (vd so 1 / 2 / 3 cua ML Adaptive SuperTrend). diem: [{ time, gia, text, mau }].
+// Chi ve khi nen du rong (>= 6px) de khong roi; ve tren nen.
+export class NhanSo {
+  constructor() {
+    this._diem = [];
+    this._hien = true;
+    this._khung = new KhungNhin((ctx, kichThuoc) => this._ve(ctx, kichThuoc), "top");
+  }
+  attached({ chart, series, requestUpdate }) {
+    this._chart = chart;
+    this._series = series;
+    this._yeuCauVe = requestUpdate;
+  }
+  detached() {
+    this._chart = null;
+    this._series = null;
+    this._yeuCauVe = null;
+  }
+  datDuLieu(diem) {
+    this._diem = diem;
+    this._yeuCauVe?.();
+  }
+  datHien(hien) {
+    this._hien = hien;
+    this._yeuCauVe?.();
+  }
+  updateAllViews() {}
+  paneViews() {
+    return [this._khung];
+  }
+  _ve(ctx, { width }) {
+    if (!this._hien || !this._chart || !this._series || !this._diem.length) return;
+    const truc = this._chart.timeScale();
+    const rongNen = truc.options().barSpacing;
+    if (!(rongNen >= 6)) return;
+    ctx.save();
+    ctx.font = `600 ${rongNen >= 10 ? 10 : 9}px 'Open Sans', sans-serif`;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    for (const d of this._diem) {
+      const x = truc.timeToCoordinate(d.time);
+      if (x == null || x < -10 || x > width + 10) continue;
+      const y = this._series.priceToCoordinate(d.gia);
+      if (y == null) continue;
+      ctx.fillStyle = d.mau;
+      ctx.fillText(d.text, x, y);
+    }
+    ctx.restore();
   }
 }
