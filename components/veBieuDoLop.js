@@ -8,7 +8,7 @@ import { CONG_CU_MOI, MAU_MUC_FIB } from "./veCongCuTV";
 
 export const MUC_FIB = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1];
 // FIBONACCI MO RONG DUA TREN XU HUONG (kieu TradingView "Trend-Based Fib Extension", 3 diem A - B - C, tu ve tay): muc = C + m.(B - A). Chi la cong cu ve tham khao.
-export const MUC_FIB_MO_RONG = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1, 1.618, 2.618, 3.618, 4.236];
+export const MUC_FIB_MO_RONG = [0, 0.236, 0.382, 0.5, 0.618, 0.786, 1, 1.272, 1.618, 2.618, 3.618, 4.236];
 const LA_3_DIEM = (loai) => loai === "kenh" || loai === "fibMoRong";
 const LOAI_1_DIEM = ["ngang", "doc", "chu"];
 const KHOANG_CHON = 10; // px (chuot); cam ung dung 18
