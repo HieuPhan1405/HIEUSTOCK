@@ -9,6 +9,7 @@ import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuong
 import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay, mcdx, MCDX_BANKER, MCDX_HOT } from "@/lib/chiBaoPhu";
 import { phanKyRSI, phanKyRSISom } from "@/lib/phanKyRSI";
 import { autoFibExt } from "@/lib/autoFib";
+import { vungCungCau, chonVungDeVe } from "@/lib/vungCungCau";
 import { adaptiveSuperTrend } from "@/lib/adaptiveSuperTrend";
 import { tinhBankerHienThi, MAU_BANKER } from "@/lib/dongTienBanker";
 import { nhanDienMauHinh, nhanDienDangHinhThanh, THONG_KE_MAU_HINH } from "@/lib/mauHinh";
@@ -141,6 +142,7 @@ const CONG_TAT = [
   { khoa: "vp", nhan: "Volume Profile", mau: "#F6C544" },
   { khoa: "htkc", nhan: "Hỗ trợ / Kháng cự (KL)", mau: "#38BDF8" },
   { khoa: "mlst", nhan: "ML Adaptive SuperTrend", mau: "#00C9A7" }, // lib/adaptiveSuperTrend.js - so 1/2/3 = muc bien dong (kiem dinh 17/11/2026: tin hieu doi chieu khong hon SuperTrend thuong)
+  { khoa: "cungCau", nhan: "Vùng cung cầu", mau: "#F59E0B" }, // lib/vungCungCau.js - tu video VT Markets 18/11/2026, chi la cong cu ve tham khao (chua kiem dinh)
   { khoa: "autoFib", nhan: "Auto Fib Extension", mau: "#14B8A6" }, // lib/autoFib.js - chi la cong cu ve tham khao (kiem dinh 16/11/2026: khong du doan duoc dinh)
 ];
 // Ho tro / khang cu THAM KHAO theo khoi luong: dinh khoi luong cua SO_NEN_HTKC nen gan nhat (khung ngay ~6 thang; khung tuan lay 26 tuan)
@@ -561,6 +563,9 @@ function chiSoTuMs(nen, ms) {
   return k + (ms - a) / (b - a);
 }
 let demODongBo = 0;
+function danhDauTuongTac(ref) {
+  ref.current = Date.now() + 500;
+}
 
 // khungMacDinh / batMacDinh (14/11/2026, trang /phai-sinh): khung thoi gian va bo chi bao bat san khi mo (vd VN30F1M mo khung 5 phut + EMA / Bollinger / VWAP / RSI / MFI).
 export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null, khungMacDinh = "D", batMacDinh = null, dongBo = null, dongBoZoom = null, veTrai = false }) {
@@ -569,14 +574,12 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const idDongBoRef = useRef(++demODongBo);
   const dangDatConTroRef = useRef(false);
   const dongBoRef = useRef(dongBo);
-  dongBoRef.current = dongBo;
   const dongBoZoomRef = useRef(dongBoZoom);
-  dongBoZoomRef.current = dongBoZoom;
   const tuongTacDenRef = useRef(0); // ms: den luc nay moi coi la NGUOI DUNG dang thao tac tren bieu do (keo / cuon / bam nut khoang)
   const boQuaDenRef = useRef(0); // ms: den luc nay khong phat zoom (vua nhan tu o khac)
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState(khungMacDinh);
-  const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, chiaNgay: true, vp: false, htkc: false, mlst: false, autoFib: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, mcdx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
+  const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, chiaNgay: true, vp: false, htkc: false, mlst: false, cungCau: false, autoFib: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, mcdx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
   // DIEM B (mua phuc hoi) + DIEM BAT DAY cua ma nay (chi thanh vien da duyet - xem /api/diem-bieu-do), ve thanh mui ten tren nen gia (khung Ngay / Tuan).
   const [diemSK, setDiemSK] = useState({ ma: "", b: [], batDay: [] });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
@@ -627,7 +630,12 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const khoa = `${ma}|${khungTG}`;
   const noiNgay = laNoiNgay(khungTG);
   const nen = ketQua.khoa === khoa ? ketQua.nen : null;
-  nenHienRef.current = nen;
+  // Cap nhat cac ref doc boi su kien (khong ghi ref luc render)
+  useEffect(() => {
+    dongBoRef.current = dongBo;
+    dongBoZoomRef.current = dongBoZoom;
+    nenHienRef.current = nen;
+  });
 
   // Nhan khung hinh (zoom / keo) tu cac o khac cung nhom: doi thoi gian -> chi so nen cua o nay.
   useEffect(() => {
@@ -1338,6 +1346,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   useEffect(() => {
     const s = veRef.current;
     if (!s || !s.lopVe) return;
+    // Hinh ve ngoai gom: Auto Fib Extension + VUNG CUNG CAU (datHinhNgoai thay ca danh sach nen phai gop 1 lan).
     // Truc gia KEO RONG de chua du cac muc fib (17/11/2026, Hieu: "fibo van thieu diem" - muc 1,272 / 1,618 nam ngoai vung gia dang thay nen bi cat mat): provider autoscale cong them khoang [thap, cao] cua cac muc.
     const giaFibRef = (s.giaFib = s.giaFib || { khoang: null });
     const apKhoang = (kh) => {
@@ -1351,21 +1360,27 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
         },
       });
     };
-    if (!bat.autoFib || !nen || nen.length < 40) {
-      apKhoang(null);
-      s.lopVe.datHinhNgoai([]);
-      return;
+    const ds = [];
+    let khoangFib = null;
+    if (nen && nen.length >= 40 && bat.autoFib) {
+      const r = autoFibExt(nen.map((b) => b.h), nen.map((b) => b.l), { depth: 10 });
+      if (r && nen[r.A.i] && nen[r.B.i] && nen[r.C.i]) {
+        const giaMuc = [1, 1.272, 1.618].map((m) => r.C.v + r.huong * m * r.doAB);
+        khoangFib = [Math.min(r.C.v, ...giaMuc), Math.max(r.C.v, ...giaMuc)];
+        ds.push({ id: "_autoFib", loai: "fibMoRong", p1: { i: r.A.i, p: r.A.v }, p2: { i: r.B.i, p: r.B.v }, p3: { i: r.C.i, p: r.C.v }, mau: "#787B86", keoDai: true, mucChon: [1, 1.272, 1.618] });
+      }
     }
-    const r = autoFibExt(nen.map((b) => b.h), nen.map((b) => b.l), { depth: 10 });
-    if (!r || !nen[r.A.i] || !nen[r.B.i] || !nen[r.C.i]) {
-      apKhoang(null);
-      s.lopVe.datHinhNgoai([]);
-      return;
+    if (nen && nen.length >= 40 && bat.cungCau) {
+      const vung = chonVungDeVe(vungCungCau(nen.map((b) => b.o), nen.map((b) => b.h), nen.map((b) => b.l), nen.map((b) => b.c)));
+      for (const z of vung) {
+        const cau = z.loai === "cau";
+        const nhan = `${cau ? "Cầu" : "Cung"}${z.fvg ? " · FVG" : ""}${z.soCham === 0 ? " · mới" : ` · chạm ${z.soCham} lần${z.soCham >= 2 ? " (yếu)" : ""}`}`;
+        ds.push({ id: `_cc${z.loai}${z.i}`, loai: "vungCC", p1: { i: z.i, p: z.top }, p2: { i: z.i, p: z.bot }, mau: cau ? "#22C55E" : "#EF4444", alpha: z.soCham === 0 ? 0.2 : z.soCham === 1 ? 0.14 : 0.08, nhan });
+      }
     }
-    const giaMuc = [1, 1.272, 1.618].map((m) => r.C.v + r.huong * m * r.doAB);
-    apKhoang([Math.min(r.C.v, ...giaMuc), Math.max(r.C.v, ...giaMuc)]);
-    s.lopVe.datHinhNgoai([{ id: "_autoFib", loai: "fibMoRong", p1: { i: r.A.i, p: r.A.v }, p2: { i: r.B.i, p: r.B.v }, p3: { i: r.C.i, p: r.C.v }, mau: "#787B86", keoDai: true, mucChon: [1, 1.272, 1.618] }]);
-  }, [bat.autoFib, nen, khungTG, kieuMau]);
+    apKhoang(khoangFib);
+    s.lopVe.datHinhNgoai(ds);
+  }, [bat.autoFib, bat.cungCau, nen, khungTG, kieuMau]);
 
   // 4b. Tu ve MAU HINH GIA len bieu do: duong co / canh (LineSeries), diem chinh (marker), muc tieu + cat lo (vach gia); cuon bieu do toi mau hinh.
   useEffect(() => {
@@ -1448,7 +1463,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     const s = veRef.current;
     if (!s || !chiBao) return;
     const from = soNen ? chiBao.n - soNen : -2;
-    tuongTacDenRef.current = Date.now() + 500; // bam nut khoang = thao tac cua nguoi dung -> dong bo sang cac o khac
+    danhDauTuongTac(tuongTacDenRef); // bam nut khoang = thao tac cua nguoi dung -> dong bo sang cac o khac
     s.chart.timeScale().setVisibleLogicalRange({ from, to: chiBao.n + THAM_SO_MAC_DINH.dichMay + SO_BUOC_TUONG_LAI.spanB + 2 });
   }
 

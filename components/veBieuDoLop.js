@@ -997,7 +997,32 @@ export class LopVe {
     ctx.textBaseline = "middle";
     ctx.fillText(chu, W + 6, y);
   }
+  // VUNG CUNG CAU (chip "Vung cung cau"): hop tu gia tren (p1.p) toi gia duoi (p2.p), tu nen goc (p1.i) keo dai sang phai; nhan o goc tren trai. Chi ve, khong chon / keo duoc.
+  _veVungCC(ctx, h, W) {
+    const x0 = this._x(h.p1.i), yT = this._y(h.p1.p), yB = this._y(h.p2.p);
+    if (x0 == null || yT == null || yB == null) return;
+    const x1 = Math.max(0, x0), y1 = Math.min(yT, yB), hh = Math.abs(yB - yT);
+    if (W - x1 <= 0 || y1 > this.cao + 50 || y1 + hh < -50) return;
+    ctx.save();
+    ctx.globalAlpha = h.alpha ?? 0.16;
+    ctx.fillStyle = h.mau;
+    ctx.fillRect(x1, y1, W - x1, Math.max(hh, 1));
+    ctx.globalAlpha = Math.min(0.9, (h.alpha ?? 0.16) + 0.5);
+    ctx.strokeStyle = h.mau;
+    ctx.lineWidth = 1;
+    ctx.strokeRect(x1 + 0.5, y1 + 0.5, W - x1 - 1, Math.max(hh, 1));
+    ctx.globalAlpha = 1;
+    if (h.nhan) {
+      ctx.font = "600 11px 'Open Sans', sans-serif";
+      ctx.textBaseline = "middle";
+      ctx.textAlign = "left";
+      ctx.fillStyle = h.mau;
+      ctx.fillText(h.nhan, Math.max(x1 + 6, 6), y1 + Math.min(hh / 2, 9) + 1);
+    }
+    ctx.restore();
+  }
   _veHinh(ctx, h, W, H) {
+    if (h.loai === "vungCC") return this._veVungCC(ctx, h, W);
     const a = this._diemPx(h.p1);
     if (!a) return;
     const chon = h.id === this.chon;
