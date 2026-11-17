@@ -9,6 +9,8 @@ import { tenCongTy } from "@/lib/tenMa";
 import NutThamGia from "@/components/NutThamGia";
 import XemNhanhDanhSach from "@/components/XemNhanhDanhSach";
 import TabMaBieuDo from "@/components/TabMaBieuDo";
+import ChonChiSo from "@/components/ChonChiSo";
+import { laChiSoNganh, CHI_SO_CHINH_THUC } from "@/lib/chiSoNhom";
 import { NGANH_NHAN } from "@/lib/nganh";
 import { layChiBaoKyThuat } from "@/lib/chiBaoLocDb";
 import { layPhanTichMa } from "@/lib/phanTichCoBanDb";
@@ -48,6 +50,7 @@ export default async function TrangBieuDo({ searchParams }) {
   }
   const vung = nguoiDung?.da_duyet && row ? tinhVungLenh(row) : null;
   const ten = tenCongTy(ma);
+  const laChiSoNhom = ["VNINDEX", "HNXINDEX", "UPCOMINDEX"].includes(ma) || ma in CHI_SO_CHINH_THUC || laChiSoNganh(ma);
   // Bang 5 o tren goc bieu do (Diem, Trang thai, Gia mua, So phien, Lai/lo) - cung dieu kien voi vung lenh: chi nguoi da dang nhap va duoc duyet.
   const thongTin =
     nguoiDung?.da_duyet && row && ma !== "VNINDEX"
@@ -66,7 +69,7 @@ export default async function TrangBieuDo({ searchParams }) {
   // O THONG TIN MA ben phai bieu do (kieu FireAnt, components/ThongTinMaBieuDo.js): CHI truong CONG KHAI - cot trong allowlist khach (lib/lamSachChoKhach.js),
   // chi bao ky thuat (bang chi_bao_ky_thuat, Bo loc chi bao cung cong khai) va phan tich co ban (trang ma cung cong khai). Nguon phu loi / chua co thi bo nhom do.
   let thongTinMa = null;
-  if (ma !== "VNINDEX") {
+  if (!laChiSoNhom) {
     const [cbTat, ptcb] = await Promise.all([layChiBaoKyThuat().catch(() => null), layPhanTichMa(ma).catch(() => null)]);
     const cb = cbTat?.hang?.find((h) => h.ma === ma) ?? null;
     const quyMoi = ptcb?.q ? (ptcb.quyMoi ?? Object.keys(ptcb.q).sort().at(-1)) : null;
@@ -113,12 +116,13 @@ export default async function TrangBieuDo({ searchParams }) {
             style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontFamily: "var(--font-chu)", fontWeight: 700, textTransform: "uppercase" }}
           />
         </form>
+        <ChonChiSo ma={ma} />
         {ten && (
           <p className="flex flex-wrap items-center gap-2 text-sm min-w-0" style={{ color: MUTED }}>
             <span className="truncate max-w-[280px]" title={ten.ten}>
               {ten.ten} · {ten.san}
             </span>
-            {ma !== "VNINDEX" && nguoiDung?.da_duyet && <NutThamGia ma={ma} soNguoiThamGia={0} daThamGia={false} />}
+            {!laChiSoNhom && nguoiDung?.da_duyet && <NutThamGia ma={ma} soNguoiThamGia={0} daThamGia={false} />}
           </p>
         )}
         {row && ma !== "VNINDEX" && (
