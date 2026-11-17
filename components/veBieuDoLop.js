@@ -387,7 +387,7 @@ export class LopVe {
       const { W: Wc } = this._chuKhungVe();
       if (khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T || khoangCachDoan(x, y, b.x, b.y, c.x, c.y) <= T) return { cham: "than" };
       const xa = Math.min(a.x, b.x, c.x), xb = Math.max(a.x, b.x, c.x);
-      for (const m of MUC_FIB_MO_RONG) {
+      for (const m of h.mucChon ?? MUC_FIB_MO_RONG) {
         const yy = this._y(h.p3.p + (h.p2.p - h.p1.p) * m);
         if (yy != null && x >= xa - T && x <= Math.min(xb + T, Wc)) if (Math.abs(y - yy) <= T) return { cham: "than" };
       }
@@ -1177,7 +1177,7 @@ export class LopVe {
     }
     if (h.loai === "fibMoRong") {
       const c = h.p3 ? this._diemPx(h.p3) : null;
-      this._veFibTV(ctx, h, W, MUC_FIB_MO_RONG, c ? h.p3.p : null, h.p2.p - h.p1.p, [a, b, c]);
+      this._veFibTV(ctx, h, W, h.mucChon ?? MUC_FIB_MO_RONG, c ? h.p3.p : null, h.p2.p - h.p1.p, [a, b, c]);
       dauCham(a, b, c);
       return;
     }

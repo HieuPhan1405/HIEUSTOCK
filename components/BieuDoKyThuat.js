@@ -519,9 +519,30 @@ const tenRutGon = (t) =>
     .replace(/^Công ty Cổ phần\s+/i, "CTCP ");
 const NHAN_KHUNG_MO = { D: "1D", W: "1W", MO: "1M", H: "1H", M30: "30m", M15: "15m", M5: "5m", M1: "1m" };
 
+// DONG BO CON TRO giua cac o cua trang Da khung (17/11/2026): cac o cung nhom (prop dongBo) phat / nhan su kien window "cs-dong-bo-con" { nhom, nguon, ms, gran }.
+// ms = thoi diem dang tro (nen ngay / tuan / thang: 0h cua ngay nhan nen, gran "ngay"; nen trong ngay: giay x 1000, gran "gio"). O nhan tim nen CUOI CUNG co thoi gian <= moc roi dat con tro vao do.
+const msNen = (t) => (typeof t === "number" ? t * 1000 : Date.parse(`${t}T00:00:00Z`));
+function timNenTheoMoc(nen, ms, gran) {
+  if (!nen || nen.length === 0) return null;
+  const soGio = typeof nen[0].t === "number";
+  const dich = soGio ? (gran === "ngay" ? ms + 86399000 : ms) : Math.floor(ms / 86400000) * 86400000;
+  let lo = 0, hi = nen.length - 1, kq = -1;
+  while (lo <= hi) {
+    const g = (lo + hi) >> 1;
+    if (msNen(nen[g].t) <= dich) { kq = g; lo = g + 1; } else hi = g - 1;
+  }
+  return kq >= 0 ? nen[kq] : null;
+}
+let demODongBo = 0;
+
 // khungMacDinh / batMacDinh (14/11/2026, trang /phai-sinh): khung thoi gian va bo chi bao bat san khi mo (vd VN30F1M mo khung 5 phut + EMA / Bollinger / VWAP / RSI / MFI).
-export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null, khungMacDinh = "D", batMacDinh = null }) {
+export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null, khungMacDinh = "D", batMacDinh = null, dongBo = null }) {
   const khungRef = useRef(null);
+  const nenHienRef = useRef(null);
+  const idDongBoRef = useRef(++demODongBo);
+  const dangDatConTroRef = useRef(false);
+  const dongBoRef = useRef(dongBo);
+  dongBoRef.current = dongBo;
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState(khungMacDinh);
   const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, chiaNgay: true, vp: false, htkc: false, mlst: false, autoFib: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, mcdx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
@@ -575,6 +596,31 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const khoa = `${ma}|${khungTG}`;
   const noiNgay = laNoiNgay(khungTG);
   const nen = ketQua.khoa === khoa ? ketQua.nen : null;
+  nenHienRef.current = nen;
+
+  // Nhan con tro tu cac o khac cung nhom (trang Da khung) - xem timNenTheoMoc.
+  useEffect(() => {
+    if (!dongBo) return;
+    const nhan = (e) => {
+      const d = e.detail;
+      const s = veRef.current;
+      if (!d || d.nhom !== dongBo || d.nguon === idDongBoRef.current || !s) return;
+      dangDatConTroRef.current = true;
+      try {
+        const b = d.ms == null ? null : timNenTheoMoc(nenHienRef.current, d.ms, d.gran);
+        if (b) {
+          s.chart.setCrosshairPosition(b.c, b.t, s.candle);
+          setChuThich({ t: chuoiThoiGian(b.t), o: b.o, h: b.h, l: b.l, c: b.c, v: b.v ?? 0 });
+        } else {
+          s.chart.clearCrosshairPosition();
+          setChuThich(null);
+        }
+      } catch {}
+      dangDatConTroRef.current = false;
+    };
+    window.addEventListener("cs-dong-bo-con", nhan);
+    return () => window.removeEventListener("cs-dong-bo-con", nhan);
+  }, [dongBo]);
   const dangTai = ketQua.khoa !== khoa;
   const loi = ketQua.khoa === khoa ? ketQua.loi : null;
   const chiBao = useMemo(() => (nen && nen.length >= 2 ? tinhChiBao(nen, khungTG) : null), [nen, khungTG]);
@@ -742,6 +788,10 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     veRef.current = s;
 
     chart.subscribeCrosshairMove((p) => {
+      if (dongBoRef.current && !dangDatConTroRef.current) {
+        const ct = p.time && p.point ? { ms: msNen(p.time), gran: typeof p.time === "number" ? "gio" : "ngay" } : !p.point ? { ms: null, gran: "ngay" } : null;
+        if (ct) window.dispatchEvent(new CustomEvent("cs-dong-bo-con", { detail: { nhom: dongBoRef.current, nguon: idDongBoRef.current, ...ct } }));
+      }
       if (!p.time) return setChuThich(null);
       const c = p.seriesData.get(s.candle);
       const v = p.seriesData.get(s.vol);
@@ -1225,7 +1275,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       s.lopVe.datHinhNgoai([]);
       return;
     }
-    s.lopVe.datHinhNgoai([{ id: "_autoFib", loai: "fibMoRong", p1: { i: r.A.i, p: r.A.v }, p2: { i: r.B.i, p: r.B.v }, p3: { i: r.C.i, p: r.C.v }, mau: "#787B86", keoDai: true }]);
+    s.lopVe.datHinhNgoai([{ id: "_autoFib", loai: "fibMoRong", p1: { i: r.A.i, p: r.A.v }, p2: { i: r.B.i, p: r.B.v }, p3: { i: r.C.i, p: r.C.v }, mau: "#787B86", keoDai: true, mucChon: [1, 1.272, 1.618] }]);
   }, [bat.autoFib, nen, khungTG, kieuMau]);
 
   // 4b. Tu ve MAU HINH GIA len bieu do: duong co / canh (LineSeries), diem chinh (marker), muc tieu + cat lo (vach gia); cuon bieu do toi mau hinh.
