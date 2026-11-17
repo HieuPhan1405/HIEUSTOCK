@@ -533,16 +533,47 @@ function timNenTheoMoc(nen, ms, gran) {
   }
   return kq >= 0 ? nen[kq] : null;
 }
+// DONG BO ZOOM (17/11/2026): cac o cung nhom (prop dongBoZoom) phat / nhan su kien window "cs-dong-bo-zoom" { nhom, nguon, msTu, msDen, gran } khi NGUOI DUNG keo / cuon / bam nut khoang (khong phat khi bieu do tu dat khung hinh luc tai du lieu).
+// Chi so logic <-> thoi gian: noi suy tuyen tinh giua cac nen; ngoai dau / cuoi (may tuong lai, khoang trong) ngoai suy theo buoc nen trung binh 10 nen gan nhat.
+function buocNen(nen, cuoi) {
+  const n = nen.length;
+  const k = Math.min(10, n - 1);
+  if (k < 1) return 86400000;
+  return cuoi ? (msNen(nen[n - 1].t) - msNen(nen[n - 1 - k].t)) / k : (msNen(nen[k].t) - msNen(nen[0].t)) / k;
+}
+function msTuChiSo(nen, idx) {
+  const n = nen.length;
+  if (idx >= n - 1) return msNen(nen[n - 1].t) + (idx - (n - 1)) * buocNen(nen, true);
+  if (idx <= 0) return msNen(nen[0].t) + idx * buocNen(nen, false);
+  const k = Math.floor(idx), a = msNen(nen[k].t), b = msNen(nen[k + 1].t);
+  return a + (b - a) * (idx - k);
+}
+function chiSoTuMs(nen, ms) {
+  const n = nen.length;
+  let lo = 0, hi = n - 1, k = -1;
+  while (lo <= hi) {
+    const g = (lo + hi) >> 1;
+    if (msNen(nen[g].t) <= ms) { k = g; lo = g + 1; } else hi = g - 1;
+  }
+  if (k < 0) return (ms - msNen(nen[0].t)) / buocNen(nen, false);
+  if (k >= n - 1) return n - 1 + (ms - msNen(nen[n - 1].t)) / buocNen(nen, true);
+  const a = msNen(nen[k].t), b = msNen(nen[k + 1].t);
+  return k + (ms - a) / (b - a);
+}
 let demODongBo = 0;
 
 // khungMacDinh / batMacDinh (14/11/2026, trang /phai-sinh): khung thoi gian va bo chi bao bat san khi mo (vd VN30F1M mo khung 5 phut + EMA / Bollinger / VWAP / RSI / MFI).
-export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null, khungMacDinh = "D", batMacDinh = null, dongBo = null }) {
+export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null, khungMacDinh = "D", batMacDinh = null, dongBo = null, dongBoZoom = null }) {
   const khungRef = useRef(null);
   const nenHienRef = useRef(null);
   const idDongBoRef = useRef(++demODongBo);
   const dangDatConTroRef = useRef(false);
   const dongBoRef = useRef(dongBo);
   dongBoRef.current = dongBo;
+  const dongBoZoomRef = useRef(dongBoZoom);
+  dongBoZoomRef.current = dongBoZoom;
+  const tuongTacDenRef = useRef(0); // ms: den luc nay moi coi la NGUOI DUNG dang thao tac tren bieu do (keo / cuon / bam nut khoang)
+  const boQuaDenRef = useRef(0); // ms: den luc nay khong phat zoom (vua nhan tu o khac)
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState(khungMacDinh);
   const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, chiaNgay: true, vp: false, htkc: false, mlst: false, autoFib: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, mcdx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
@@ -597,6 +628,25 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const noiNgay = laNoiNgay(khungTG);
   const nen = ketQua.khoa === khoa ? ketQua.nen : null;
   nenHienRef.current = nen;
+
+  // Nhan khung hinh (zoom / keo) tu cac o khac cung nhom: doi thoi gian -> chi so nen cua o nay.
+  useEffect(() => {
+    if (!dongBoZoom) return;
+    const nhan = (e) => {
+      const d = e.detail;
+      const s = veRef.current;
+      const nen = nenHienRef.current;
+      if (!d || d.nhom !== dongBoZoom || d.nguon === idDongBoRef.current || !s || !nen || nen.length < 3) return;
+      const soGio = typeof nen[0].t === "number";
+      const den = d.gran === "ngay" && soGio ? d.msDen + 86399000 : d.msDen;
+      let tu = chiSoTuMs(nen, d.msTu), toi = chiSoTuMs(nen, den);
+      if (toi - tu < 8) { const g = (tu + toi) / 2; tu = g - 4; toi = g + 4; } // o khung lon (thang / tuan) khong thu qua it nen
+      boQuaDenRef.current = Date.now() + 400;
+      try { s.chart.timeScale().setVisibleLogicalRange({ from: tu, to: toi }); } catch {}
+    };
+    window.addEventListener("cs-dong-bo-zoom", nhan);
+    return () => window.removeEventListener("cs-dong-bo-zoom", nhan);
+  }, [dongBoZoom]);
 
   // Nhan con tro tu cac o khac cung nhom (trang Da khung) - xem timNenTheoMoc.
   useEffect(() => {
@@ -798,6 +848,23 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       setChuThich(c ? { t: chuoiThoiGian(p.time), o: c.open, h: c.high, l: c.low, c: c.close, v: v?.value ?? 0 } : null);
     });
 
+    const khungVe = khungRef.current;
+    const batTT = () => { tuongTacDenRef.current = Infinity; };
+    const tatTT = () => { if (tuongTacDenRef.current === Infinity) tuongTacDenRef.current = Date.now() + 400; };
+    const cuonTT = () => { if (tuongTacDenRef.current !== Infinity) tuongTacDenRef.current = Date.now() + 500; };
+    khungVe.addEventListener("pointerdown", batTT, true);
+    khungVe.addEventListener("wheel", cuonTT, { passive: true, capture: true });
+    khungVe.addEventListener("touchmove", cuonTT, { passive: true, capture: true });
+    window.addEventListener("pointerup", tatTT);
+    window.addEventListener("pointercancel", tatTT);
+    const khiDoiKhung = (r) => {
+      if (!dongBoZoomRef.current || !r || Date.now() > tuongTacDenRef.current || Date.now() < boQuaDenRef.current) return;
+      const nen = nenHienRef.current;
+      if (!nen || nen.length < 3) return;
+      window.dispatchEvent(new CustomEvent("cs-dong-bo-zoom", { detail: { nhom: dongBoZoomRef.current, nguon: idDongBoRef.current, msTu: msTuChiSo(nen, r.from), msDen: msTuChiSo(nen, r.to), gran: typeof nen[0].t === "number" ? "gio" : "ngay" } }));
+    };
+    chart.timeScale().subscribeVisibleLogicalRangeChange(khiDoiKhung);
+
     const theoDoiMau = new MutationObserver(() => {
       apDungMau(s);
       setKieuMau((x) => x + 1);
@@ -805,6 +872,11 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     theoDoiMau.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
 
     return () => {
+      khungVe.removeEventListener("pointerdown", batTT, true);
+      khungVe.removeEventListener("wheel", cuonTT, true);
+      khungVe.removeEventListener("touchmove", cuonTT, true);
+      window.removeEventListener("pointerup", tatTT);
+      window.removeEventListener("pointercancel", tatTT);
       theoDoiMau.disconnect();
       veRef.current = null;
       s.lopVe.huyLop();
@@ -1359,6 +1431,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     const s = veRef.current;
     if (!s || !chiBao) return;
     const from = soNen ? chiBao.n - soNen : -2;
+    tuongTacDenRef.current = Date.now() + 500; // bam nut khoang = thao tac cua nguoi dung -> dong bo sang cac o khac
     s.chart.timeScale().setVisibleLogicalRange({ from, to: chiBao.n + THAM_SO_MAC_DINH.dichMay + SO_BUOC_TUONG_LAI.spanB + 2 });
   }
 

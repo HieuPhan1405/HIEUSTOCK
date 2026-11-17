@@ -21,6 +21,7 @@ const TEN_KHUNG = { MO: "Tháng", W: "Tuần", D: "Ngày", H: "1 giờ", M30: "3
 export default function LuoiDaKhung({ ma, tenMa = null, vung = null, ngayMua = null }) {
   const [boCuc, setBoCuc] = useState("4");
   const [dongBo, setDongBo] = useState(true);
+  const [dongBoZoom, setDongBoZoom] = useState(true);
   const [caoMH, setCaoMH] = useState(800);
   const [rong, setRong] = useState(1400);
 
@@ -78,6 +79,10 @@ export default function LuoiDaKhung({ ma, tenMa = null, vung = null, ngayMua = n
           <input type="checkbox" checked={dongBo} onChange={(e) => setDongBo(e.target.checked)} style={{ accentColor: "#6C5CE7" }} />
           Đồng bộ con trỏ
         </label>
+        <label className="inline-flex items-center gap-1.5 text-xs cursor-pointer" style={{ color: TEXT, fontWeight: 600 }} title="Kéo hoặc cuộn ở một ô, các ô còn lại đổi theo cùng khoảng thời gian">
+          <input type="checkbox" checked={dongBoZoom} onChange={(e) => setDongBoZoom(e.target.checked)} style={{ accentColor: "#6C5CE7" }} />
+          Đồng bộ zoom
+        </label>
         <span className="text-xs" style={{ color: MUTED }}>
           {bc.khung.map((k) => TEN_KHUNG[k]).join(" · ")} — mỗi ô vẫn đổi được khung riêng
         </span>
@@ -85,7 +90,7 @@ export default function LuoiDaKhung({ ma, tenMa = null, vung = null, ngayMua = n
       <div className={`grid gap-2 ${bc.cot}`}>
         {bc.khung.map((k) => (
           <div key={`${ma}-${bc.khoa}-${k}`} className="min-w-0">
-            <BieuDoKyThuat tenMa={tenMa} ma={ma} vung={vung} ngayMua={ngayMua} chieuCao={cao} khungMacDinh={k} dongBo={dongBo ? `dk-${ma}` : null} />
+            <BieuDoKyThuat tenMa={tenMa} ma={ma} vung={vung} ngayMua={ngayMua} chieuCao={cao} khungMacDinh={k} dongBo={dongBo ? `dk-${ma}` : null} dongBoZoom={dongBoZoom ? `dkz-${ma}` : null} />
           </div>
         ))}
       </div>
