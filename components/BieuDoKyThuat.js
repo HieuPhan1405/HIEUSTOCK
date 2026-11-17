@@ -79,6 +79,7 @@ const KHOANG = [
 const KHUNG_CHON = [
   { khoa: "D", nhan: "Ngày" },
   { khoa: "W", nhan: "Tuần" },
+  { khoa: "MO", nhan: "Tháng" },
   { khoa: "H", nhan: "1 giờ" },
   { khoa: "M30", nhan: "30 phút" },
   { khoa: "M15", nhan: "15 phút" },
@@ -94,6 +95,7 @@ const KHUNG_NHANH = [
   { khoa: "H", nhan: "1G", ten: "1 giờ" },
   { khoa: "D", nhan: "Ngày", ten: "Khung ngày" },
   { khoa: "W", nhan: "Tuần", ten: "Khung tuần" },
+  { khoa: "MO", nhan: "Tháng", ten: "Khung tháng" },
 ];
 const NEN_MOI_NGAY = { H: 5, M30: 9, M15: 16, M5: 48, M1: 241 };
 const BUOC_PHUT = { H: 60, M30: 30, M15: 15, M5: 5, M1: 1 };
@@ -142,7 +144,7 @@ const CONG_TAT = [
   { khoa: "autoFib", nhan: "Auto Fib Extension", mau: "#14B8A6" }, // lib/autoFib.js - chi la cong cu ve tham khao (kiem dinh 16/11/2026: khong du doan duoc dinh)
 ];
 // Ho tro / khang cu THAM KHAO theo khoi luong: dinh khoi luong cua SO_NEN_HTKC nen gan nhat (khung ngay ~6 thang; khung tuan lay 26 tuan)
-const SO_NEN_HTKC = { D: 120, W: 26 };
+const SO_NEN_HTKC = { D: 120, W: 26, MO: 12 };
 const MAU_HO_TRO = "#22C55E";
 const MAU_KHANG_CU = "#EF4444";
 // Chi bao PHU o cua so rieng phia duoi (moi chi bao 1 khung): bat / tat bang chip.
@@ -329,7 +331,10 @@ function ThanhVeTrai({ congCu, chonCongCu, giuCongCu, setGiuCongCu, hitGia, setH
 // Ngay giao dich ke tiep (bo qua T7/CN; khong biet ngay le) dung de ve "may tuong lai" - chi mang tinh hien thi.
 function ngayTuongLai(ngayCuoi, k, tuan) {
   const d = new Date(`${ngayCuoi}T00:00:00Z`);
-  if (tuan) {
+  if (tuan === "MO") {
+    d.setUTCDate(1); // nen thang gan nhan = ngay giao dich dau thang -> nen tuong lai k = ngay 1 cua thang thu k ke tiep
+    d.setUTCMonth(d.getUTCMonth() + k);
+  } else if (tuan) {
     d.setUTCDate(d.getUTCDate() + 7 * k);
   } else {
     let con = k;
@@ -343,7 +348,7 @@ function ngayTuongLai(ngayCuoi, k, tuan) {
 }
 
 function tinhChiBao(nen, khung) {
-  const tuan = khung === "W";
+  const tuan = khung === "W" ? true : khung === "MO" ? "MO" : false;
   const n = nen.length;
   const bars = nen.map((b) => ({ h: b.h, l: b.l, c: b.c }));
   const dich = THAM_SO_MAC_DINH.dichMay;
@@ -512,7 +517,7 @@ const tenRutGon = (t) =>
     .replace(/^Ngân hàng Thương mại Cổ phần\s+/i, "NHTMCP ")
     .replace(/^Tổng Công ty Cổ phần\s+/i, "TCT CP ")
     .replace(/^Công ty Cổ phần\s+/i, "CTCP ");
-const NHAN_KHUNG_MO = { D: "1D", W: "1W", H: "1H", M30: "30m", M15: "15m", M5: "5m", M1: "1m" };
+const NHAN_KHUNG_MO = { D: "1D", W: "1W", MO: "1M", H: "1H", M30: "30m", M15: "15m", M5: "5m", M1: "1m" };
 
 // khungMacDinh / batMacDinh (14/11/2026, trang /phai-sinh): khung thoi gian va bo chi bao bat san khi mo (vd VN30F1M mo khung 5 phut + EMA / Bollinger / VWAP / RSI / MFI).
 export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null, khungMacDinh = "D", batMacDinh = null }) {
@@ -586,7 +591,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   // MAU HINH GIA (lib/mauHinh.js): nhan dien tren nen dang hien (ngay / tuan); bam chip "Mẫu hình" de tu ve len bieu do, bam tung mau hinh de xem hinh khac.
   const dsMauHinh = useMemo(() => {
     if (!nen || nen.length < 40) return [];
-    const khungMH = khungTG === "W" ? "tuan" : "ngay";
+    const khungMH = khungTG === "W" || khungTG === "MO" ? "tuan" : "ngay";
     return [...nhanDienDangHinhThanh(nen, { khung: khungMH }).slice(0, 6), ...nhanDienMauHinh(nen, { khung: khungMH }).slice(0, 12)];
   }, [nen, khungTG]);
   // MAU HINH NEN NHAT (lib/mauHinhNen.js): chip "Mẫu hình nến" danh dau cac nen tren 120 nen gan nhat (bo doji thuong cho do roi).
@@ -831,8 +836,11 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       const a = Math.max(0, Math.ceil(Math.min(i1, i2))), b = Math.min(d.nen.length - 1, Math.floor(Math.max(i1, i2)));
       if (b < a) return null;
       const tuan = d.khungTG === "W";
-      const denNgay = tuan ? new Date(Date.parse(`${d.nen[b].t}T00:00:00Z`) + 6 * 86400e3).toISOString().slice(0, 10) : d.nen[b].t;
-      const chon = chonNenChoHoSo({ nenBieuDo: d.nen, nenGio: d.nenGio, tuNgay: d.nen[a].t, denNgay, soNgayMoiNen: tuan ? 7 : 1 });
+      const thang = d.khungTG === "MO";
+      const denNgay = thang
+        ? new Date(Date.UTC(Number(d.nen[b].t.slice(0, 4)), Number(d.nen[b].t.slice(5, 7)), 0)).toISOString().slice(0, 10)
+        : tuan ? new Date(Date.parse(`${d.nen[b].t}T00:00:00Z`) + 6 * 86400e3).toISOString().slice(0, 10) : d.nen[b].t;
+      const chon = chonNenChoHoSo({ nenBieuDo: d.nen, nenGio: d.nenGio, tuNgay: d.nen[a].t, denNgay, soNgayMoiNen: thang ? 22 : tuan ? 7 : 1 });
       const hs = tinhHoSoKhoiLuong(chon.nen, { soHang });
       return hs ? { ...hs, nguon: chon.nguon } : null;
     };
@@ -929,7 +937,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   // 2b. Trong phien giao dich: tu dong lam moi nen "hom nay" moi 30 giay (khung Ngay - nguon
   // DNSE tra ve nen hom nay dang chay, khong phai da chot) - khung Tuan khong can vi khong doi trong ngay.
   useEffect(() => {
-    if (khungTG === "W") return;
+    if (khungTG === "W" || khungTG === "MO") return;
     const hen = setInterval(() => {
       if (dangTrongPhienGiaoDich() && document.visibilityState === "visible") setLanThu((x) => x + 1);
     }, 30_000);
@@ -1480,7 +1488,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
         <div className="px-3 py-2 border-b" style={{ borderColor: VIEN }} data-may="mau-hinh" aria-label="Nhận diện mẫu hình giá">
           <div className="flex flex-wrap items-center gap-1.5">
             <span className="text-[11px] mr-1" style={{ color: MUTED, fontFamily: "'Open Sans', sans-serif" }}>
-              Mẫu hình ({khungTG === "W" ? "khung tuần" : noiNgay ? `khung ${KHUNG_CHON.find((k) => k.khoa === khungTG).nhan.toLowerCase()}` : "khung ngày"}) — ⏳ đang hình thành · ▲▼ đã phá vỡ. Bấm để vẽ lên hình:
+              Mẫu hình ({khungTG === "W" ? "khung tuần" : khungTG === "MO" ? "khung tháng" : noiNgay ? `khung ${KHUNG_CHON.find((k) => k.khoa === khungTG).nhan.toLowerCase()}` : "khung ngày"}) — ⏳ đang hình thành · ▲▼ đã phá vỡ. Bấm để vẽ lên hình:
             </span>
             {dsMauHinh.length === 0 && (
               <span className="text-xs" style={{ color: MUTED }}>
@@ -1501,7 +1509,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
                   style={{ background: chon ? "rgba(246,197,68,0.16)" : "transparent", border: `1px ${dangHT ? "dashed" : "solid"} ${chon ? "#F6C544" : VIEN}`, color: chon ? TEXT : MUTED, fontFamily: "'Open Sans', sans-serif" }}
                 >
                   {dangHT ? <span>⏳</span> : <span style={{ color: mau }}>{m.huong > 0 ? "▲" : "▼"}</span>} {m.ten} ·{" "}
-                  {dangHT ? `cách mức phá vỡ ${soVN(m.cachPhaVoPct, 1)}%` : m.cach === 0 ? (khungTG === "W" ? "tuần này" : noiNgay ? "nến này" : "hôm nay") : `${m.cach} ${khungTG === "W" ? "tuần" : noiNgay ? "nến" : "phiên"} trước`}
+                  {dangHT ? `cách mức phá vỡ ${soVN(m.cachPhaVoPct, 1)}%` : m.cach === 0 ? (khungTG === "W" ? "tuần này" : khungTG === "MO" ? "tháng này" : noiNgay ? "nến này" : "hôm nay") : `${m.cach} ${khungTG === "W" ? "tuần" : khungTG === "MO" ? "tháng" : noiNgay ? "nến" : "phiên"} trước`}
                 </button>
               );
             })}

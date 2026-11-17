@@ -11,7 +11,7 @@ const TEXT = "var(--chu)";
 const MUTED = "var(--mo)";
 
 // Nut "Chỉ số" tren /bieu-do (17/11/2026): chon nhanh chi so thi truong, nhom co phieu (VN30, Midcap, Smallcap...), nganh tu tinh theo cach chia nganh CloudStock va 10 nganh HOSE.
-export default function ChonChiSo({ ma }) {
+export default function ChonChiSo({ ma, duongDan = "/bieu-do" }) {
   const [mo, setMo] = useState(false);
   const khungRef = useRef(null);
 
@@ -59,7 +59,7 @@ export default function ChonChiSo({ ma }) {
                 {g.muc.map((m) => (
                   <Link
                     key={m.ma}
-                    href={`/bieu-do?ma=${m.ma}`}
+                    href={`${duongDan}?ma=${m.ma}`}
                     onClick={() => setMo(false)}
                     title={m.moTa ? `${m.ma} · ${m.moTa}` : m.ma}
                     className="rounded-md px-2 py-1.5 text-[13px] leading-tight hover:bg-[color:var(--hover-nhe)]"
@@ -75,7 +75,7 @@ export default function ChonChiSo({ ma }) {
             </div>
           ))}
           <p className="text-[11px] mt-2 leading-snug" style={{ color: MUTED }}>
-            Ngành CloudStock: tính như VN30 – trọng số theo vốn hóa tự do, trần 15%/mã, các mã trong ngành theo cách chia ngành của web (gồm cả HNX, UPCoM), mốc 100. Ngành HOSE: chỉ số chính thức của sở, chỉ gồm mã sàn HOSE.
+            Ngành CloudStock: các mã trong ngành theo cách chia ngành của web (gồm cả HNX, UPCoM), mốc 100. Ngành HOSE: chỉ số chính thức của sở, chỉ gồm mã sàn HOSE.
           </p>
         </div>
       )}

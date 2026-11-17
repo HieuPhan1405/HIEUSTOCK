@@ -8,7 +8,7 @@ const PRIMARY = "#6C5CE7";
 const TOI_DA = 14;
 
 // "Xem nhanh" cua trang Bieu do: cac ma trong danh sach theo doi cua ban (danh sach chinh truoc, roi cac danh sach khac, bo trung). Khach / danh sach trong thi dung goi y co dinh.
-export default function XemNhanhDanhSach({ ma, goiY, className = "mb-4" }) {
+export default function XemNhanhDanhSach({ ma, goiY, className = "mb-4", duongDan = "/bieu-do" }) {
   const { danhSach } = useDanhSachTheoDoi();
   const cuaToi = [...new Set((danhSach ?? []).flatMap((d) => d.ma.map((x) => x.ma)))].slice(0, TOI_DA);
   const ds = cuaToi.length ? cuaToi : goiY;
@@ -18,7 +18,7 @@ export default function XemNhanhDanhSach({ ma, goiY, className = "mb-4" }) {
       {ds.map((g) => (
         <Link
           key={g}
-          href={`/bieu-do?ma=${g}`}
+          href={`${duongDan}?ma=${g}`}
           className="px-2 py-1 rounded-md border hover:text-[color:var(--chu)]"
           style={{ borderColor: g === ma ? PRIMARY : "var(--vien)", color: g === ma ? "var(--chu)" : MUTED, fontFamily: "var(--font-chu)" }}
         >
@@ -26,7 +26,7 @@ export default function XemNhanhDanhSach({ ma, goiY, className = "mb-4" }) {
         </Link>
       ))}
       {cuaToi.length > 0 && ma !== "VNINDEX" && (
-        <Link href="/bieu-do?ma=VNINDEX" className="px-2 py-1 rounded-md border" style={{ borderColor: "var(--vien)", color: MUTED, fontFamily: "var(--font-chu)" }}>
+        <Link href={`${duongDan}?ma=VNINDEX`} className="px-2 py-1 rounded-md border" style={{ borderColor: "var(--vien)", color: MUTED, fontFamily: "var(--font-chu)" }}>
           VNINDEX
         </Link>
       )}

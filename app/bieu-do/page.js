@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Search } from "lucide-react";
+import { Search, Columns3 } from "lucide-react";
 import { layTinHieuTheoMa } from "@/lib/tinHieu";
 import { layNguoiDungHienTai } from "@/lib/nguoiDung";
 import BieuDoKyThuat from "@/components/BieuDoKyThuat";
@@ -117,6 +117,15 @@ export default async function TrangBieuDo({ searchParams }) {
           />
         </form>
         <ChonChiSo ma={ma} />
+        <Link
+          href={`/bieu-do/da-khung?ma=${ma}`}
+          className="h-8 px-2.5 rounded-lg text-sm inline-flex items-center gap-1.5 shrink-0"
+          style={{ background: NEN_CARD, border: `1px solid ${VIEN}`, color: TEXT, fontWeight: 600 }}
+          title="Xem cùng một mã ở nhiều khung thời gian trên một màn hình"
+        >
+          <Columns3 size={14} aria-hidden="true" style={{ color: "var(--tim-chu)" }} />
+          Đa khung
+        </Link>
         {ten && (
           <p className="flex flex-wrap items-center gap-2 text-sm min-w-0" style={{ color: MUTED }}>
             <span className="truncate max-w-[280px]" title={ten.ten}>
