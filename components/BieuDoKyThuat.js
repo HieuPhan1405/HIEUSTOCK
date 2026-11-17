@@ -563,7 +563,7 @@ function chiSoTuMs(nen, ms) {
 let demODongBo = 0;
 
 // khungMacDinh / batMacDinh (14/11/2026, trang /phai-sinh): khung thoi gian va bo chi bao bat san khi mo (vd VN30F1M mo khung 5 phut + EMA / Bollinger / VWAP / RSI / MFI).
-export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null, khungMacDinh = "D", batMacDinh = null, dongBo = null, dongBoZoom = null }) {
+export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua = null, chieuCao = 540, thongTin = null, layDayManHinh = false, truCao = 330, boCucRong = false, thongTinMa = null, khungMacDinh = "D", batMacDinh = null, dongBo = null, dongBoZoom = null, veTrai = false }) {
   const khungRef = useRef(null);
   const nenHienRef = useRef(null);
   const idDongBoRef = useRef(++demODongBo);
@@ -1458,7 +1458,8 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const truoc = nen && idx > 0 ? nen[idx - 1].c : null;
   const doiPct = hienTai && truoc ? ((hienTai.c - truoc) / truoc) * 100 : null;
   const mauDoi = doiPct == null ? MUTED : doiPct >= 0 ? XANH : DO;
-  const veDoc = boCucRong || toanMH; // thanh cong cu ve doc ben trai (may tinh; ca khi xem toan man hinh)
+  const veDoc = boCucRong || toanMH || veTrai; // veTrai: thanh cong cu ve doc cho o nho (trang Da khung) ma khong can o thong tin ben phai
+  const chieuNgang = boCucRong || veTrai; // than bieu do chiem het chieu ngang con lai ben canh thanh ve // thanh cong cu ve doc ben trai (may tinh; ca khi xem toan man hinh)
   const benPhai = boCucRong && !toanMH; // o thong tin ma ben phai (man >= 1280px)
   // Noi dung O THONG TIN MA: dung chung cho o ben phai (boCucRong) va khung ben phai khi xem toan man hinh.
   const noiDungThongTin = (
@@ -1829,7 +1830,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
           <BangThongTinBieuDo tt={thongTin} />
         </div>
       )}
-      <div className={toanMH ? "flex flex-1 min-h-0" : boCucRong ? "flex" : ""}>
+      <div className={toanMH ? "flex flex-1 min-h-0" : chieuNgang ? "flex" : ""}>
       {veDoc && (
         <ThanhVeTrai
           congCu={congCu}
@@ -1853,7 +1854,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
           setKhoaHet={setKhoaHet}
         />
       )}
-      <div className={toanMH || boCucRong ? "relative flex-1 min-w-0" : "relative"} style={toanMH ? undefined : { height: chieuCaoTong }}>
+      <div className={toanMH || chieuNgang ? "relative flex-1 min-w-0" : "relative"} style={toanMH ? undefined : { height: chieuCaoTong }}>
         <div ref={khungRef} className="absolute inset-0" />
         {veDoc && congCu && (
           <div className="hidden md:block absolute left-3 bottom-8 z-10 pointer-events-none text-[11px] rounded px-2 py-1" style={{ background: `color-mix(in srgb, ${NEN_CARD} 85%, transparent)`, color: TEXT, fontFamily: "'Open Sans', sans-serif" }}>

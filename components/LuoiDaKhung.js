@@ -129,7 +129,7 @@ export default function LuoiDaKhung({ ma, tenMa = null, vung = null, ngayMua = n
       <div className="grid gap-2" style={{ gridTemplateColumns: `repeat(${cot}, minmax(0, 1fr))` }}>
         {dsKhung.map((k, i) => (
           <div key={k} className="min-w-0" style={cot > 1 && n % cot === 1 && i === n - 1 ? { gridColumn: "1 / -1" } : undefined}>
-            <BieuDoKyThuat tenMa={tenMa} ma={ma} vung={vung} ngayMua={ngayMua} chieuCao={cao} khungMacDinh={k} dongBo={dongBo ? "dk" : null} dongBoZoom={dongBoZoom ? "dkz" : null} />
+            <BieuDoKyThuat tenMa={tenMa} ma={ma} vung={vung} ngayMua={ngayMua} chieuCao={cao} khungMacDinh={k} dongBo={dongBo ? "dk" : null} dongBoZoom={dongBoZoom ? "dkz" : null} veTrai />
           </div>
         ))}
       </div>
