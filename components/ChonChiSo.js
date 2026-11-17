@@ -75,7 +75,7 @@ export default function ChonChiSo({ ma }) {
             </div>
           ))}
           <p className="text-[11px] mt-2 leading-snug" style={{ color: MUTED }}>
-            Ngành CloudStock: trung bình đều biến động giá các mã trong ngành theo cách chia ngành của web (gồm cả HNX, UPCoM), mốc 100. Ngành HOSE: chỉ số chính thức của sở, chỉ gồm mã sàn HOSE.
+            Ngành CloudStock: tính như VN30 – trọng số theo vốn hóa tự do, trần 15%/mã, các mã trong ngành theo cách chia ngành của web (gồm cả HNX, UPCoM), mốc 100. Ngành HOSE: chỉ số chính thức của sở, chỉ gồm mã sàn HOSE.
           </p>
         </div>
       )}
