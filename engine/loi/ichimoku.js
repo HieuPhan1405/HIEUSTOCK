@@ -18,8 +18,8 @@ function emaMang(a, n) {
 }
 const duongTheoKieu = (kieu, len, { high, low, close }) => (kieu === "sma" ? sma(close, len) : kieu === "ema" ? emaMang(close, len) : chia2(hhv(high, len), llv(low, len)));
 
-// { high, low }, cac do dai giong tham so AFL mac dinh: Tenkan 9, Kijun 17, SenkouB 33, Shift 26.
-export function tinhIchimoku({ high, low, close }, { tenkanLen = 9, kijunLen = 17, senkouBLen = 33, shift = 26, kieuTenkanKijun = "donchian", kieuMay = "donchian" } = {}) {
+// { high, low }, cac do dai giong tham so AFL mac dinh: Tenkan 9, Kijun 17, SenkouB 26 (doi tu 33 ngay 18/11/2026), Shift 26.
+export function tinhIchimoku({ high, low, close }, { tenkanLen = 9, kijunLen = 17, senkouBLen = 26, shift = 26, kieuTenkanKijun = "donchian", kieuMay = "donchian" } = {}) {
   const g = { high, low, close };
   const tenkan = duongTheoKieu(kieuTenkanKijun, tenkanLen, g);
   const kijun = duongTheoKieu(kieuTenkanKijun, kijunLen, g);
