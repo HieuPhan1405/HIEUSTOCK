@@ -284,8 +284,15 @@ export class LopVe {
     this._ve(true);
   }
   _x(i) {
-    const x = this.chart.timeScale().logicalToCoordinate(i);
-    return x == null ? null : x;
+    // chi so LE (hinh ve dung chung moi khung: diem doi tu thoi diem sang chi so nen co the nam giua 2 nen) - logicalToCoordinate chi dung voi so nguyen -> noi suy
+    const ts = this.chart.timeScale();
+    const k = Math.floor(i);
+    if (k === i) {
+      const x = ts.logicalToCoordinate(i);
+      return x == null ? null : x;
+    }
+    const a = ts.logicalToCoordinate(k), b = ts.logicalToCoordinate(k + 1);
+    return a == null || b == null ? null : a + (b - a) * (i - k);
   }
   _y(p) {
     const y = this.series.priceToCoordinate(p);

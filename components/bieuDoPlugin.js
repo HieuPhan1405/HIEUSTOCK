@@ -280,3 +280,144 @@ export class NhanSo {
     ctx.restore();
   }
 }
+
+// FOOTPRINT (lib/footprint.js, /api/footprint): moi nen ve tung muc gia - BEN TRAI la KL ban chu dong (do), BEN PHAI la KL mua chu dong (xanh),
+// xam = khop khong ro chieu (ATO / ATC). Muc gia tu gop lai khi phong nho (moi hang >= 3 px; co so khi nen rong >= 50 px - luc do moi hang >= 11 px).
+// Vien vang = muc gia khop nhieu nhat cua nen (POC). Muc dam mau = lech 1 ben >= 3 lan. Duoi nen: chenh lech mua - ban (delta).
+const BUOC_DEP = [1, 2, 5, 10, 20, 50, 100, 200, 500];
+const soGon = (v) => (v >= 10000 ? `${Math.round(v / 1000)}k` : v >= 1000 ? `${(v / 1000).toFixed(1).replace(".", ",")}k` : String(v));
+export class Footprint {
+  constructor() {
+    this._du = null;
+    this._hien = false;
+    this._thongBao = "";
+    this._mauChu = "#E5E7EB";
+    this._khung = new KhungNhin((ctx, kichThuoc) => this._ve(ctx, kichThuoc), "top");
+  }
+  attached({ chart, series, requestUpdate }) {
+    this._chart = chart;
+    this._series = series;
+    this._yeuCauVe = requestUpdate;
+  }
+  detached() {
+    this._chart = null;
+    this._series = null;
+    this._yeuCauVe = null;
+  }
+  // du: { buoc, nen: [{ t, muc: [[gia, mua, ban, khac]], mua, ban, khac, poc }] } hoac null
+  datDuLieu(du, thongBao = "") {
+    this._du = du;
+    this._thongBao = thongBao;
+    this._yeuCauVe?.();
+  }
+  datHien(hien) {
+    this._hien = hien;
+    this._yeuCauVe?.();
+  }
+  datMauChu(mau) {
+    if (mau) this._mauChu = mau;
+    this._yeuCauVe?.();
+  }
+  updateAllViews() {}
+  paneViews() {
+    return [this._khung];
+  }
+  _ve(ctx, { width, height }) {
+    if (!this._hien || !this._chart || !this._series) return;
+    ctx.save();
+    ctx.font = "600 11px 'Open Sans', sans-serif";
+    const truc = this._chart.timeScale();
+    const rongNen = truc.options().barSpacing;
+    const thongBao = this._thongBao || (!this._du?.nen?.length ? "Footprint: đang tải…" : rongNen < 10 ? "Footprint: phóng to biểu đồ để xem (lăn chuột)" : "");
+    if (thongBao) {
+      ctx.fillStyle = this._mauChu;
+      ctx.globalAlpha = 0.75;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "top";
+      ctx.fillText(thongBao, width / 2, 8);
+      ctx.globalAlpha = 1;
+    }
+    if (!this._du?.nen?.length || rongNen < 10) return ctx.restore();
+    const goc = this._du.buoc || 0.1;
+    const y0 = this._series.priceToCoordinate(1000), y1 = this._series.priceToCoordinate(1000 + goc);
+    const pxMoiBuoc = y0 != null && y1 != null ? Math.abs(y0 - y1) : 0;
+    if (!(pxMoiBuoc > 0)) return ctx.restore();
+    const coSo = rongNen >= 50;
+    const canHang = coSo ? 11 : 3;
+    const k = BUOC_DEP.find((b) => b * pxMoiBuoc >= canHang) ?? BUOC_DEP.at(-1);
+    const B = Math.round(goc * k * 1000) / 1000; // buoc hien thi (diem)
+    const caoHang = k * pxMoiBuoc;
+    const nua = rongNen * 0.46;
+    const tick = goc; // gia thap nhat trong 1 o goc (o goc chua [g, g + goc))
+    for (const b of this._du.nen) {
+      const x = truc.timeToCoordinate(b.t);
+      if (x == null || x < -rongNen || x > width + rongNen) continue;
+      // gop muc theo buoc hien thi
+      const gop = new Map();
+      for (const [g, mua, ban, khac] of b.muc) {
+        const key = Math.floor(g / B + 1e-6);
+        let o = gop.get(key);
+        if (!o) gop.set(key, (o = [key * B, 0, 0, 0]));
+        o[1] += mua;
+        o[2] += ban;
+        o[3] += khac;
+      }
+      const hang = [...gop.values()];
+      let max = 0, poc = null, maxTong = -1, giaThap = Infinity;
+      for (const o of hang) {
+        max = Math.max(max, o[1] + o[3] / 2, o[2] + o[3] / 2);
+        const tong = o[1] + o[2] + o[3];
+        if (tong > maxTong) { maxTong = tong; poc = o; }
+        giaThap = Math.min(giaThap, o[0]);
+      }
+      if (!(max > 0)) continue;
+      for (const o of hang) {
+        const giua = o[0] + (B - tick) / 2;
+        const yc = this._series.priceToCoordinate(giua);
+        if (yc == null || yc < -caoHang || yc > height + caoHang) continue;
+        const top = yc - caoHang / 2 + (caoHang > 4 ? 0.5 : 0);
+        const h = Math.max(1, caoHang - (caoHang > 4 ? 1 : 0));
+        const [, mua, ban, khac] = o;
+        const wM = (nua * mua) / max, wB = (nua * ban) / max, wK = (nua * khac) / 2 / max;
+        if (wK > 0) {
+          ctx.fillStyle = "rgba(148,163,184,0.45)";
+          ctx.fillRect(x - wB - wK, top, wK, h);
+          ctx.fillRect(x + wM, top, wK, h);
+        }
+        const lechMua = mua >= 3 * Math.max(ban, 1) && mua >= 5, lechBan = ban >= 3 * Math.max(mua, 1) && ban >= 5;
+        ctx.fillStyle = lechBan ? "rgba(239,68,68,0.9)" : "rgba(239,68,68,0.5)";
+        ctx.fillRect(x - wB, top, wB, h);
+        ctx.fillStyle = lechMua ? "rgba(34,197,94,0.9)" : "rgba(34,197,94,0.5)";
+        ctx.fillRect(x, top, wM, h);
+        if (o === poc && caoHang >= 3) {
+          ctx.strokeStyle = "#F6C544";
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x - nua + 0.5, top + 0.5, nua * 2 - 1, h - 1);
+        }
+        if (coSo && caoHang >= 11) {
+          ctx.font = `600 ${caoHang >= 14 ? 10 : 9}px 'Open Sans', sans-serif`;
+          ctx.textBaseline = "middle";
+          ctx.fillStyle = this._mauChu;
+          ctx.textAlign = "right";
+          ctx.fillText(soGon(ban + Math.round(khac / 2)), x - 3, yc);
+          ctx.textAlign = "left";
+          ctx.fillText(soGon(mua + Math.round(khac / 2)), x + 3, yc);
+        }
+      }
+      // vach giua + delta duoi nen
+      ctx.fillStyle = "rgba(148,163,184,0.6)";
+      const yTren = this._series.priceToCoordinate(hang.reduce((m, o) => Math.max(m, o[0]), -Infinity) + (B - tick) / 2);
+      const yDuoi = this._series.priceToCoordinate(giaThap + (B - tick) / 2);
+      if (yTren != null && yDuoi != null) ctx.fillRect(x - 0.5, yTren - caoHang / 2, 1, yDuoi - yTren + caoHang);
+      if (rongNen >= 26 && yDuoi != null) {
+        const d = b.mua - b.ban;
+        ctx.font = `700 ${rongNen >= 50 ? 11 : 9}px 'Open Sans', sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "top";
+        ctx.fillStyle = d >= 0 ? "#22C55E" : "#EF4444";
+        ctx.fillText((d > 0 ? "+" : d < 0 ? "−" : "") + soGon(Math.abs(d)), x, yDuoi + caoHang / 2 + 3);
+      }
+    }
+    ctx.restore();
+  }
+}
