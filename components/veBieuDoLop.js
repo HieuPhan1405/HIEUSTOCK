@@ -378,7 +378,9 @@ export class LopVe {
     const b = h.p2 ? this._diemPx(h.p2) : null;
     if (!b) return null;
     if (Math.hypot(x - b.x, y - b.y) <= T + 2) return { cham: "p2" };
-    if (h.loai === "xuHuong" || h.loai === "thuoc" || h.loai === "mui") return khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T ? { cham: "than" } : null;
+    // Thuoc do kieu TradingView = hinh chu nhat: bam ben trong (hoac sat vien) la chon / keo ca hinh
+    if (h.loai === "thuoc") return x >= Math.min(a.x, b.x) - T && x <= Math.max(a.x, b.x) + T && y >= Math.min(a.y, b.y) - T && y <= Math.max(a.y, b.y) + T ? { cham: "than" } : null;
+    if (h.loai === "xuHuong" || h.loai === "mui") return khoangCachDoan(x, y, a.x, a.y, b.x, b.y) <= T ? { cham: "than" } : null;
     if (h.loai === "tia") return khoangCachDoan(x, y, a.x, a.y, b.x, b.y, true) <= T ? { cham: "than" } : null;
     if (h.loai === "kenh") {
       const k = this._kenh2(h, a, b);
@@ -1028,6 +1030,89 @@ export class LopVe {
     }
     ctx.restore();
   }
+  // THUOC DO kieu TradingView: so nen, khoang thoi gian va tong khoi luong giua 2 diem (nen ngoai du lieu = ngoai suy theo khoang cach 2 nen cuoi)
+  _thongKeThuoc(h) {
+    const nen = this.nen, n = nen.length, i1 = h.p1.i, i2 = h.p2.i;
+    const soNen = Math.abs(Math.round(i2 - i1));
+    let kl = 0;
+    for (let q = Math.max(0, Math.round(Math.min(i1, i2))); q <= Math.min(n - 1, Math.round(Math.max(i1, i2))); q++) kl += nen[q]?.v > 0 ? nen[q].v : 0;
+    const ms = (t) => (typeof t === "number" ? t * 1000 : new Date(`${t}T00:00:00Z`).getTime());
+    const thoiDiem = (i) => {
+      if (!n) return null;
+      const k = Math.round(i);
+      if (k >= 0 && k < n) return ms(nen[k].t);
+      const buoc = n > 1 ? ms(nen[n - 1].t) - ms(nen[n - 2].t) : 86400000;
+      return k < 0 ? ms(nen[0].t) + k * buoc : ms(nen[n - 1].t) + (k - (n - 1)) * buoc;
+    };
+    const t1 = thoiDiem(i1), t2 = thoiDiem(i2);
+    let thoiGian = "";
+    if (t1 != null && t2 != null) {
+      const phut = Math.round(Math.abs(t2 - t1) / 60000);
+      if (typeof nen[0]?.t === "number") {
+        // khung trong ngay: phut / gio; nhay qua dem thi hien theo ngay
+        if (phut < 60) thoiGian = `${phut} phút`;
+        else if (phut < 1440) thoiGian = `${Math.floor(phut / 60)} giờ${phut % 60 ? ` ${phut % 60} phút` : ""}`;
+        else thoiGian = `${soVN(phut / 1440, 1)} ngày`;
+      } else {
+        const ngay = Math.round(phut / 1440);
+        thoiGian = ngay >= 365 ? `${soVN(ngay / 365, 1)} năm` : ngay >= 60 ? `${soVN(ngay / 30.4, 1)} tháng` : `${ngay} ngày`;
+      }
+    }
+    const kyHieu = (v) => (v >= 1e9 ? `${soVN(v / 1e9, 2)}B` : v >= 1e6 ? `${soVN(v / 1e6, 2)}M` : v >= 1e3 ? `${soVN(v / 1e3, 2)}K` : soVN(v, 0));
+    return { soNen, thoiGian, kl: kyHieu(kl) };
+  }
+  _veThuoc(ctx, h, a, b, W, H, chon) {
+    const dp = h.p2.p - h.p1.p, pc = h.p1.p ? (dp / h.p1.p) * 100 : 0, tang = dp >= 0;
+    const mau = tang ? "41,98,255" : "247,82,95";
+    const x1 = Math.min(a.x, b.x), x2 = Math.max(a.x, b.x), y1 = Math.min(a.y, b.y), y2 = Math.max(a.y, b.y), xm = (a.x + b.x) / 2, ym = (a.y + b.y) / 2;
+    ctx.save();
+    ctx.fillStyle = `rgba(${mau},0.17)`;
+    ctx.fillRect(x1, y1, x2 - x1, y2 - y1);
+    ctx.strokeStyle = `rgba(${mau},0.95)`;
+    ctx.fillStyle = `rgba(${mau},0.95)`;
+    ctx.lineWidth = chon ? 1.6 : 1.1;
+    ctx.setLineDash([]);
+    const muiTen = (px, py, g) => {
+      const L = 9;
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(px - L * Math.cos(g - 0.45), py - L * Math.sin(g - 0.45));
+      ctx.moveTo(px, py);
+      ctx.lineTo(px - L * Math.cos(g + 0.45), py - L * Math.sin(g + 0.45));
+      ctx.stroke();
+    };
+    // doc: tu diem dau den diem cuoi theo chieu gia; ngang: theo chieu thoi gian
+    ctx.beginPath();
+    ctx.moveTo(xm, a.y);
+    ctx.lineTo(xm, b.y);
+    ctx.stroke();
+    if (b.y !== a.y) muiTen(xm, b.y, b.y > a.y ? Math.PI / 2 : -Math.PI / 2);
+    ctx.beginPath();
+    ctx.moveTo(a.x, ym);
+    ctx.lineTo(b.x, ym);
+    ctx.stroke();
+    if (b.x !== a.x) muiTen(b.x, ym, b.x > a.x ? 0 : Math.PI);
+    // nhan 3 dong: chenh gia (% va so buoc gia) · so nen, thoi gian · khoi luong
+    const tk = this._thongKeThuoc(h);
+    const buoc = Math.round(dp / 0.01);
+    const dong = [`${dp > 0 ? "+" : ""}${soVN(dp, 2, true)} (${pctVN(pc, 2)}) ${buoc > 0 ? "+" : ""}${soVN(buoc, 0)}`, `${tk.soNen} nến${tk.thoiGian ? `, ${tk.thoiGian}` : ""}`, `KL ${tk.kl}`];
+    ctx.font = "600 12px 'Open Sans', sans-serif";
+    const rong = Math.max(...dong.map((s) => ctx.measureText(s).width)) + 20, cao = dong.length * 17 + 10;
+    let bx = xm - rong / 2, by = tang ? y1 - cao - 8 : y2 + 8;
+    if (by < 2) by = Math.min(y2 + 8, H - cao - 2);
+    if (by + cao > H - 2) by = Math.max(2, y1 - cao - 8);
+    bx = Math.min(Math.max(bx, 2), W - rong - 2);
+    ctx.fillStyle = `rgba(${mau},0.95)`;
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(bx, by, rong, cao, 4);
+    else ctx.rect(bx, by, rong, cao);
+    ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    dong.forEach((s, k) => ctx.fillText(s, bx + rong / 2, by + 5 + 8.5 + k * 17));
+    ctx.restore();
+  }
   _veHinh(ctx, h, W, H) {
     if (h.loai === "vungCC") return this._veVungCC(ctx, h, W);
     const a = this._diemPx(h.p1);
@@ -1142,14 +1227,18 @@ export class LopVe {
     }
     const b = h.p2 ? this._diemPx(h.p2) : null;
     if (!b) return;
-    if (h.loai === "xuHuong" || h.loai === "thuoc" || h.loai === "tia" || h.loai === "mui") {
+    if (h.loai === "thuoc") {
+      this._veThuoc(ctx, h, a, b, W, H, chon);
+      dauCham(a, b);
+      return;
+    }
+    if (h.loai === "xuHuong" || h.loai === "tia" || h.loai === "mui") {
       let x2 = b.x, y2 = b.y;
       if (h.loai === "tia" && b.x !== a.x) {
         const t = (W + 50 - a.x) / (b.x - a.x);
         if (t > 1 && b.x > a.x) { x2 = a.x + (b.x - a.x) * t; y2 = a.y + (b.y - a.y) * t; }
         else if (b.x < a.x) { const t2 = (-50 - a.x) / (b.x - a.x); x2 = a.x + (b.x - a.x) * t2; y2 = a.y + (b.y - a.y) * t2; }
       }
-      if (h.loai === "thuoc") ctx.setLineDash([5, 4]);
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(x2, y2);
@@ -1165,19 +1254,6 @@ export class LopVe {
         ctx.closePath();
         ctx.fillStyle = h.mau;
         ctx.fill();
-      }
-      if (h.loai === "thuoc") {
-        const dp = h.p2.p - h.p1.p;
-        const pc = h.p1.p ? (dp / h.p1.p) * 100 : 0;
-        const nen = Math.round(h.p2.i - h.p1.i);
-        const chu = `${pctVN(pc, 2)} (${dp >= 0 ? "+" : ""}${soVN(dp, 2, true)}) · ${Math.abs(nen)} nến`;
-        const w = ctx.measureText(chu).width + 12;
-        const bx = (a.x + b.x) / 2 - w / 2;
-        const by = Math.min(a.y, b.y) - 24 < 4 ? Math.max(a.y, b.y) + 8 : Math.min(a.y, b.y) - 24;
-        ctx.fillStyle = dp >= 0 ? "rgba(34,197,94,0.92)" : "rgba(239,68,68,0.92)";
-        ctx.fillRect(bx, by, w, 18);
-        ctx.fillStyle = "#fff";
-        ctx.fillText(chu, bx + 6, by + 9);
       }
       dauCham(a, b);
       return;

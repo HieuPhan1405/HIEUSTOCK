@@ -4,9 +4,15 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import GiaiThichThem from "@/components/GiaiThichThem";
 import { createChart, createTextWatermark, createSeriesMarkers, BaselineSeries, CandlestickSeries, HistogramSeries, LineSeries, CrosshairMode, LineStyle, PriceScaleMode } from "lightweight-charts";
-import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2, Eraser, Waypoints, Activity, Check, ChevronRight, ChevronDown, Info, Slash, Compass, ArrowRight, Crosshair, ChartLine, Layers, Frame, Network, Radar, AlignJustify, Columns3, CircleDot, Orbit, Rainbow, Clock, Grid3x3, ChartSpline, Triangle, AudioWaveform, Mountain, Waves, TrendingDown, Target, ChartCandlestick, CornerUpRight, Anchor, RectangleHorizontal, CalendarRange, Scaling, Brush, Highlighter, Rotate3d, Circle, Pentagon, LineSquiggle, StickyNote, Tag, Pin, MessageSquare, MessageCircle, Signpost, Flag, ArrowBigUp, ArrowBigDown, Smile, Eye, EyeOff, LockKeyhole, Repeat, History, Play, Pause, StepForward, X, Bell, BellPlus } from "lucide-react";
+import { MousePointer2, TrendingUp, MoveUpRight, Minus, SeparatorVertical, Square, Ruler, Trash2, Magnet, PenLine, Undo2, Redo2, ArrowUpRight, Type, Equal, Lock, LockOpen, Spline, BarChartHorizontal, Maximize2, Minimize2, Eraser, Waypoints, Activity, Check, ChevronRight, ChevronDown, Info, Slash, Compass, ArrowRight, Crosshair, ChartLine, Layers, Frame, Network, Radar, AlignJustify, Columns3, CircleDot, Orbit, Rainbow, Clock, Grid3x3, ChartSpline, Triangle, AudioWaveform, Mountain, Waves, TrendingDown, Target, ChartCandlestick, CornerUpRight, Anchor, RectangleHorizontal, CalendarRange, Scaling, Brush, Highlighter, Rotate3d, Circle, Pentagon, LineSquiggle, StickyNote, Tag, Pin, MessageSquare, MessageCircle, Signpost, Flag, ArrowBigUp, ArrowBigDown, Smile, Eye, EyeOff, LockKeyhole, Repeat, History, Play, Pause, StepForward, X, Bell, BellPlus, Settings } from "lucide-react";
 import { tinhIchimoku, tinhIchimokuTuongLai, SO_BUOC_TUONG_LAI, tinhCanBangTuongLai, tinhCanBang, trungBinhDon, THAM_SO_MAC_DINH } from "@/lib/chiBaoKyThuat";
-import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay, mcdx, MCDX_BANKER, MCDX_HOT } from "@/lib/chiBaoPhu";
+import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay, mcdx } from "@/lib/chiBaoPhu";
+import { homilyDE, homilyTE, homilyKDJ, homilyThaoBan, diemCat, CAI_HONG } from "@/lib/homily";
+import { bankerRhythm } from "@/lib/bankerRhythm";
+import { thamSo, kieuNet, hexRgba, nhanDong, docLuuTru, ghiLuuTru, CO_CAI_DAT } from "@/lib/caiDatChiBao";
+import CaiDatChiBao from "@/components/CaiDatChiBao";
+import { liquidityTrap } from "@/lib/liquidityTrap";
+import { avpt } from "@/lib/avpt";
 import { phanKyRSI, phanKyRSISom } from "@/lib/phanKyRSI";
 import { autoFibExt } from "@/lib/autoFib";
 import { vungCungCau, chonVungDeVe } from "@/lib/vungCungCau";
@@ -166,8 +172,38 @@ const CHI_BAO_PHU = [
   { khoa: "mfi", nhan: "MFI 14", mau: "#2DD4BF" },
   { khoa: "adx", nhan: "ADX 14", mau: "#F472B6" },
   { khoa: "mcdx", nhan: "MCDX", mau: "#EF4444" }, // Banker (do) / Hot Money (vang) / Retailer (xanh) - lib/chiBaoPhu.js mcdx
+  { khoa: "bkr", nhan: "Banker Rhythm", mau: "#3B82F6" }, // lib/bankerRhythm.js: "2 rau" chi do vi tri gia trong bien do 15 phien (KHONG phai dong tien that); kiem dinh 21/11/2026: khong co loi the rieng
   { khoa: "dongTien", nhan: "Dòng tiền", mau: "#22C55E" }, // Banker Fund Flow (lib/dongTienBanker.js): chi la chi bao hien thi, KHONG phai tin hieu mua / ban
 ];
+// HOMILY CHART (21/11/2026): bo chi bao phong theo ma cong khai cua phan mem Homily (lib/homily.js, nguon o Desktop/Homily-Code). Chi la chi bao HIEN THI / THAM KHAO:
+// kiem dinh 389 ma cho thay mau nen DE / TE, giao cat, J cat 50, Taichi... khong co loi the thong ke rieng le (xem memory project_homily_kiem_dinh). Mau theo quy uoc Homily: DO = tien vao / tang, XANH LA = tien ra / giam.
+const NHOM_HOMILY = "Homily Chart (tham khảo, chưa có lợi thế)";
+const HOMILY_GIA = [
+  { khoa: "hmTE", nhan: "TE 趋势王 (xu hướng)", mau: "#D946EF" },
+  { khoa: "hmJinChu", nhan: "进出 (EMA 8 · 20)", mau: "#EAB308" },
+  { khoa: "hmCaiHong", nhan: "彩虹 (16 đường EMA)", mau: "#F97316" },
+  { khoa: "hmTongDao", nhan: "通道 (Bollinger 10)", mau: "#38BDF8" },
+  { khoa: "hmStrong", nhan: "强势信号 (J cắt 50)", mau: "#3B82F6" },
+  { khoa: "hmYeuThe", nhan: "弱势抄底", mau: "#06B6D4" },
+  { khoa: "hmThaoBan", nhan: "操盘王 (买 / 卖)", mau: "#FB923C" },
+  { khoa: "hmTaichi", nhan: "Taichi (RSI 9: 20 / 80)", mau: "#FACC15" },
+];
+const HOMILY_PHU = [
+  { khoa: "hmDE", nhan: "DE 背离王 (dòng tiền)", mau: "#EF4444" }, // Deviation Expert: nen do = tien vao, xanh = tien ra; da doi chieu so voi phan mem Homily (PLX 20/11/2026 = -2,987)
+  { khoa: "hmKDJ", nhan: "KDJ 9·3·3 (强势信号)", mau: "#3B82F6" },
+];
+// CHI BAO TRADINGVIEW DA KIEM DINH (21/11/2026): viet lai bang JS tu logic cong khai (MPL 2.0), chi la chi bao HIEN THI / THAM KHAO - ca hai KHONG co loi the khi dung de vao lenh (xem memory project_pine_liquidity_fibo_flip, project_he_thong_danh_ngan).
+// Khong dua "Fibonacci Swing Flip [MarkitTick]" len vi giay phep CC BY-NC-SA 4.0 (phi thuong mai) khong hop voi trang co thu phi.
+const NHOM_TV = "Chỉ báo TradingView đã kiểm định (tham khảo)";
+const TV_GIA = [
+  { khoa: "tvTrap", nhan: "Liquidity Trap Radar (quét thanh khoản)", mau: "#A3E635" },
+  { khoa: "tvAvpt", nhan: "Anchored VWAP Pullback (AVPT)", mau: "#00E6A8" },
+];
+const TV_XANH = "#00E6A8";
+const TV_DO = "#FF3B69";
+const HM_DO = "#EF4444";
+const HM_XANH = "#22C55E";
+const SO_NEN_DANH_DAU_HM = 300; // chi gan nhan tren ~300 nen cuoi cho do roi
 // RSI phan ky (lib/phanKyRSI.js): 2 day / dinh gia lien tiep nguoc chieu RSI - chi la DIEU KIEN THAM KHAO, nghien cuu 2026-10-16 tren 390 ma cho thay KHONG co loi the thong ke rieng le.
 const CHI_BAO_PK = { khoa: "phanKy", nhan: "RSI phân kỳ", mau: "#34D399" };
 const SO_PK_HIEN = 8; // chi ve SO_PK_HIEN phan ky gan nhat moi loai (tranh roi bieu do)
@@ -276,7 +312,7 @@ function NutDoc({ chon = false, onClick, title, disabled = false, mau, children 
 
 const VachDoc = () => <span className="w-6 h-px my-1 shrink-0" style={{ background: VIEN }} aria-hidden="true" />;
 // THANH CONG CU VE BEN TRAI kieu TradingView: bieu tuong rieng tung nhom (Duong / Fibonacci / Hinh / Do), mui ten nho mo danh sach; ben duoi hit gia, giu cong cu, mau, xoa.
-function ThanhVeTrai({ congCu, chonCongCu, giuCongCu, setGiuCongCu, hitGia, setHitGia, chonVe, xoaChon, soHinhVe, xoaHet, mauVe, setMauVe, cao, anHet, setAnHet, khoaHet, setKhoaHet }) {
+function ThanhVeTrai({ congCu, chonCongCu, giuCongCu, setGiuCongCu, hitGia, setHitGia, chonVe, xoaChon, soHinhVe, xoaHet, mauVe, setMauVe, cao, anHet, setAnHet, khoaHet, setKhoaHet, veMoiKhung, doiVeMoiKhung, chonVeMoiKhung, doiKhungHinhChon }) {
   const [mo, setMo] = useState(null); // { khoa, top, left }; khoa = "mau" cho bang mau
   const [cuoi, setCuoi] = useState({});
   useEffect(() => {
@@ -335,12 +371,18 @@ function ThanhVeTrai({ congCu, chonCongCu, giuCongCu, setGiuCongCu, hitGia, setH
       <NutDoc chon={anHet} onClick={() => setAnHet((v) => !v)} title={anHet ? "Hiện lại tất cả hình vẽ" : "Ẩn tất cả hình vẽ"}>
         {anHet ? <EyeOff size={17} strokeWidth={2} /> : <Eye size={17} strokeWidth={2} />}
       </NutDoc>
+      <NutDoc chon={veMoiKhung} onClick={doiVeMoiKhung} title={veMoiKhung ? "Hình vẽ mới đang hiện ở MỌI khung thời gian. Bấm để hình mới chỉ hiện ở khung đang vẽ" : "Hình vẽ mới chỉ hiện ở khung đang vẽ. Bấm để hình mới hiện ở mọi khung thời gian"}>
+        <Layers size={17} strokeWidth={2} />
+      </NutDoc>
       <div className="relative" data-flyout>
         <NutDoc onClick={(e) => moDs("mau", e.currentTarget.parentElement)} title="Màu nét vẽ">
           <span className="w-4 h-4 rounded-full" style={{ background: mauVe, outline: `2px solid ${VIEN}`, outlineOffset: 1 }} />
         </NutDoc>
       </div>
       <VachDoc />
+      <NutDoc disabled={!chonVe} chon={!!chonVe && chonVeMoiKhung} onClick={doiKhungHinhChon} title={!chonVe ? "Chọn 1 hình vẽ để đổi: chỉ hiện ở khung này / hiện ở mọi khung" : chonVeMoiKhung ? "Hình đang chọn hiện ở mọi khung. Bấm để chỉ hiện ở khung này" : "Hình đang chọn chỉ hiện ở khung này. Bấm để hiện ở mọi khung"}>
+        <Frame size={17} strokeWidth={2} />
+      </NutDoc>
       <NutDoc disabled={!chonVe} mau={chonVe ? DO : undefined} onClick={xoaChon} title="Xóa hình đang chọn (phím Delete)">
         <Trash2 size={17} strokeWidth={2} />
       </NutDoc>
@@ -393,19 +435,20 @@ function ngayTuongLai(ngayCuoi, k, tuan) {
   return d.toISOString().slice(0, 10);
 }
 
-function tinhChiBao(nen, khung) {
+function tinhChiBao(nen, khung, cd) {
   const tuan = khung === "W" ? true : khung === "MO" ? "MO" : false;
   const n = nen.length;
   const bars = nen.map((b) => ({ h: b.h, l: b.l, c: b.c }));
-  const dich = THAM_SO_MAC_DINH.dichMay;
+  const tIch = thamSo(cd, "ichimoku"), tCb = thamSo(cd, "canBang"), tMa = thamSo(cd, "ma");
+  const dich = tIch.dichMay;
   const thoiGian = nen.map((b) => b.t);
   for (let k = 1; k <= dich + SO_BUOC_TUONG_LAI.spanB; k++) thoiGian.push(laNoiNgay(khung) ? nenNoiNgayKeTiep(thoiGian[thoiGian.length - 1], khung) : ngayTuongLai(nen[n - 1].t, k, tuan)); // dich: may goc; them spanB buoc de ve cham Senkou B tuong lai
 
-  const ich = tinhIchimoku(bars);
-  const tl = tinhIchimokuTuongLai(bars);
-  const tlCb = tinhCanBangTuongLai(bars);
+  const ich = tinhIchimoku(bars, tIch);
+  const tl = tinhIchimokuTuongLai(bars, tIch);
+  const tlCb = tinhCanBangTuongLai(bars, tCb);
   const chamTL = (ds, dichThem) => ds.map(({ k, value }) => ({ time: thoiGian[n - 1 + k + dichThem], value })).filter((x) => x.time);
-  const cb = tinhCanBang(bars);
+  const cb = tinhCanBang(bars, tCb);
   const dong = (mang) => {
     const kq = [];
     mang.forEach((v, i) => {
@@ -437,14 +480,17 @@ function tinhChiBao(nen, khung) {
     cb1: dong(cb.cb1),
     cb2: dong(cb.cb2),
     cbBand: dai(cb.cb1, cb.cb2),
-    ma20: dongMA(20),
-    ma50: dongMA(50),
-    ma200: dongMA(200),
+    ma20: dongMA(tMa.ma1),
+    ma50: dongMA(tMa.ma2),
+    ma200: dongMA(tMa.ma3),
+    dich,
   };
 }
 
 // Chi bao phu (EMA / Bollinger / RSI / MACD / Stochastic) theo dung nen dang hien (khung Ngay hoac Tuan) - cong thuc o lib/chiBaoPhu.js.
-function tinhChiBaoPhu(nen) {
+function tinhChiBaoPhu(nen, cd) {
+  const T = (k) => thamSo(cd, k); // thong so nguoi dung da chinh (lib/caiDatChiBao.js), chua chinh = mac dinh
+  const tE = T("ema"), tB = T("boll"), tM = T("macd"), tS = T("stoch"), tA = T("adx"), tR = T("rsi"), tF = T("mfi"), tX = T("mcdx");
   const dong = (mang) => {
     const kq = [];
     mang.forEach((v, i) => {
@@ -454,12 +500,55 @@ function tinhChiBaoPhu(nen) {
   };
   const close = nen.map((b) => b.c);
   const bars = nen.map((b) => ({ h: b.h, l: b.l, c: b.c }));
-  const bb = bollinger(close, 20, 2);
-  const mc = macd(close);
-  const st = stochastic(bars);
+  const bb = bollinger(close, tB.n, tB.k);
+  const mc = macd(close, tM.nhanh, tM.cham, tM.tinHieu);
+  const st = stochastic(bars, tS.n, tS.k, tS.d);
   const barsV = nen.map((b) => ({ h: b.h, l: b.l, c: b.c, v: b.v ?? 0 }));
-  const ad = adx(bars, 14);
+  const ad = adx(bars, tA.n);
   const noiNgay = typeof nen[0]?.t === "number"; // VWAP chi co nghia o khung trong ngay (bat dau lai moi phien)
+  // HOMILY CHART (lib/homily.js)
+  const mo = nen.map((b) => b.o ?? b.c);
+  const cao = nen.map((b) => b.h);
+  const thap = nen.map((b) => b.l);
+  const hmDE = homilyDE(close, { forcastN: T("hmDE").forcastN });
+  const hmTE = homilyTE(mo, cao, thap, close);
+  const hmKDJ = homilyKDJ(cao, thap, close, T("hmKDJ").n);
+  const hmTB = homilyThaoBan(mo, cao, thap, close);
+  const tK = T("bkr"), tL = T("tvTrap"), tV = T("tvAvpt"), tJ = T("hmJinChu"), tD = T("hmTongDao"), tT = T("hmTaichi");
+  const bkr = bankerRhythm(mo, cao, thap, close, { bienDo: tK.bienDo, bridge: tK.bridge, trend: tK.trend });
+  const ltr = liquidityTrap(mo, cao, thap, close, { lookback: tL.lookback, cooldown: tL.cooldown, atrBuffer: tL.atrBuffer });
+  const avp = avpt(mo, cao, thap, close, nen.map((b) => b.v ?? 0), { profile: tV.profile, swing: tV.swing, minImpulseAtr: tV.minImpulse });
+  const cuoiT = nen[nen.length - 1].t;
+  // muc lenh cua tin hieu CUOI: [{ gia, mau, nhan, kieu }] + khoang thoi gian (tu nen tin hieu den nen ket thuc / nen cuoi)
+  const mucLenh = (s, iKet, kieuTP) => {
+    if (!s) return null;
+    const den = iKet != null ? nen[Math.min(iKet, nen.length - 1)].t : cuoiT;
+    if (den === nen[s.i].t) return null;
+    const ds = [{ gia: s.entry, mau: "#60A5FA", ten: "Entry" }, { gia: s.sl, mau: TV_DO, ten: "SL" }, { gia: s.tp1, mau: TV_XANH, ten: "TP1" }, { gia: s.tp2, mau: TV_XANH, ten: "TP2" }];
+    if (kieuTP === 3) ds.push({ gia: s.tp3, mau: TV_XANH, ten: "TP3" });
+    return { tu: nen[s.i].t, den, ds };
+  };
+  const tuTv = nen.length - SO_NEN_DANH_DAU_HM;
+  const ltrCuoi = ltr.signals.length ? ltr.signals[ltr.signals.length - 1] : null;
+  const avpCuoi = avp.signals.length ? avp.signals[avp.signals.length - 1] : null;
+  const hmE8 = ema(close, tJ.nhanh);
+  const hmE20 = ema(close, tJ.cham);
+  const hmBB10 = bollinger(close, tD.n, tD.k);
+  const hmR9 = rsi(close, tT.n);
+  const tuNen = nen.length - SO_NEN_DANH_DAU_HM;
+  const danhDau = (chiSo, position, shape, color, text) => chiSo.filter((i) => i >= tuNen).map((i) => ({ time: nen[i].t, position, shape, color, text }));
+  const kdCat = diemCat(hmKDJ.j, 50);
+  const yeuThe = [];
+  for (let i = 1; i < nen.length; i++) if (hmKDJ.k[i] > hmKDJ.d[i] && hmKDJ.k[i - 1] < hmKDJ.d[i - 1] && hmKDJ.d[i - 1] < hmKDJ.d[i] && hmKDJ.d[i] < 50) yeuThe.push(i);
+  const tbCat = diemCat(hmTB.b, hmTB.d);
+  const jcCat = diemCat(hmE8, hmE20);
+  const r20 = [];
+  const r80 = [];
+  for (let i = 1; i < nen.length; i++) {
+    if (hmR9[i] == null || hmR9[i - 1] == null) continue;
+    if (hmR9[i - 1] <= tT.duoi && hmR9[i] > tT.duoi) r20.push(i);
+    if (hmR9[i - 1] >= tT.tren && hmR9[i] < tT.tren) r80.push(i);
+  }
   // Dong tien (Banker Fund Flow) hien thi giong Pine: nen giua trend va bull/bear (mau theo trang thai), nen vang "Banker In", nen mo theo trang thai, duong trend doi mau, nhan IN / OUT / ...
   const bk = tinhBankerHienThi({ open: nen.map((b) => b.o ?? b.c), high: nen.map((b) => b.h), low: nen.map((b) => b.l), close, volume: nen.map((b) => b.v ?? 0) });
   const soNenNhan = 300; // chi gan nhan tren ~300 nen cuoi cho do roi
@@ -483,24 +572,60 @@ function tinhChiBaoPhu(nen) {
     bankerNhan: nhanBk,
     bankerNhanGia: nhanBk.filter((l) => l.loai === "TP" || l.loai === "SL"),
     bankerNhanDao: nhanBk.filter((l) => l.loai !== "TP" && l.loai !== "SL"),
-    ema9: dong(ema(close, 9)),
-    ema21: dong(ema(close, 21)),
+    ema9: dong(ema(close, tE.e1)),
+    ema21: dong(ema(close, tE.e2)),
     bbTren: dong(bb.tren),
     bbMid: dong(bb.mid),
     bbDuoi: dong(bb.duoi),
     bbBand: nen.map((b, i) => (bb.tren[i] == null ? null : { time: b.t, a: bb.tren[i], b: bb.duoi[i] })).filter(Boolean),
-    rsi: dong(rsi(close, 14)),
+    rsi: dong(rsi(close, tR.n)),
     macd: dong(mc.macd),
     signal: dong(mc.signal),
     hist: mc.hist.map((v, i) => (v == null ? null : { time: nen[i].t, value: v, color: v >= 0 ? "rgba(34,197,94,0.6)" : "rgba(239,68,68,0.6)" })).filter(Boolean),
     stochK: dong(st.k),
     stochD: dong(st.d),
-    mfi: dong(mfi(barsV, 14)),
+    mfi: dong(mfi(barsV, tF.n)),
     adx: dong(ad.adx),
     pdi: dong(ad.pdi),
     mdi: dong(ad.mdi),
-    mcdxB: dong(mcdx(close, MCDX_BANKER)),
-    mcdxH: dong(mcdx(close, MCDX_HOT)),
+    mcdxB: dong(mcdx(close, { chuKy: tX.bankerChuKy, goc: tX.bankerGoc, nhay: tX.bankerNhay })),
+    mcdxH: dong(mcdx(close, { chuKy: tX.hotChuKy, goc: tX.hotGoc, nhay: tX.hotNhay })),
+    // HOMILY: DE (nen khong rau tu towerc phien truoc den towerc phien nay, do = tien vao), KDJ, TE (7 duong + nen thap), 进出, 彩虹, 通道 BB10, cac nhan
+    hmDE: hmDE.tw.map((v, i) => (v == null || i === 0 || hmDE.tw[i - 1] == null ? null : { time: nen[i].t, open: hmDE.tw[i - 1], high: Math.max(v, hmDE.tw[i - 1]), low: Math.min(v, hmDE.tw[i - 1]), close: v, color: hmDE.len[i] ? HM_DO : HM_XANH, borderColor: hmDE.len[i] ? HM_DO : HM_XANH, wickColor: hmDE.len[i] ? HM_DO : HM_XANH })).filter(Boolean),
+    // BANKER RHYTHM: 2 rau doi xung (b / bot1), BridgeT +/- (mau theo tang / giam), cot Buy2 +/-30, nhan Buy1
+    bkrTren: dong(bkr.rauTren),
+    bkrDuoi: dong(bkr.rauDuoi),
+    bkrCauTren: bkr.bridge.map((v, i) => (v == null ? null : { time: nen[i].t, value: v, color: bkr.bridgeTang[i] ? "#F59E0B" : "#60A5FA" })).filter(Boolean),
+    bkrCauDuoi: bkr.bridge.map((v, i) => (v == null ? null : { time: nen[i].t, value: -v, color: bkr.bridgeTang[i] ? "#F59E0B" : "#60A5FA" })).filter(Boolean),
+    bkrA: bkr.buyA.map((v, i) => (v > 0 ? { time: nen[i].t, value: 30, color: "rgba(34,197,94,0.6)" } : null)).filter(Boolean),
+    bkrAAm: bkr.buyA.map((v, i) => (v > 0 ? { time: nen[i].t, value: -30, color: "rgba(34,197,94,0.6)" } : null)).filter(Boolean),
+    bkrB: bkr.buyB.map((v, i) => (v ? { time: nen[i].t, position: "belowBar", shape: "square", color: "#22C55E", text: "" } : null)).filter(Boolean),
+    // LIQUIDITY TRAP RADAR + AVPT (lib/liquidityTrap.js, lib/avpt.js)
+    tvTrapMui: ltr.signals.filter((s) => s.i >= tuTv).map((s) => ({ time: nen[s.i].t, position: s.dir === 1 ? "belowBar" : "aboveBar", shape: s.dir === 1 ? "arrowUp" : "arrowDown", color: s.dir === 1 ? "#A3E635" : TV_DO, text: s.dir === 1 ? "TRAP BUY" : "TRAP SELL" })),
+    tvTrapMuc: mucLenh(ltrCuoi, null, 2),
+    tvAvwap: avp.avwap.map((v, i) => (v == null ? null : { time: nen[i].t, value: v, color: avp.bias[i] === -1 ? TV_DO : TV_XANH })).filter(Boolean),
+    tvBandTren: dong(avp.bandTren),
+    tvBandDuoi: dong(avp.bandDuoi),
+    tvBandDai: nen.map((b, i) => (avp.bandTren[i] == null ? null : { time: b.t, a: avp.bandTren[i], b: avp.bandDuoi[i] })).filter(Boolean),
+    tvAvptMui: avp.signals.filter((s) => s.i >= tuTv).map((s) => ({ time: nen[s.i].t, position: s.dir === 1 ? "belowBar" : "aboveBar", shape: s.dir === 1 ? "arrowUp" : "arrowDown", color: s.dir === 1 ? TV_XANH : TV_DO, text: `${s.dir === 1 ? "BUY" : "SELL"} ${Math.round(s.q)}%` })),
+    tvAvptMuc: mucLenh(avpCuoi, avpCuoi?.iKetThuc ?? null, 3),
+    hmK: dong(hmKDJ.k),
+    hmD: dong(hmKDJ.d),
+    hmJ: dong(hmKDJ.j),
+    hmTEDuong: hmTE.duong.map((d) => d.map((v, i) => (v == null ? null : { time: nen[i].t, value: v, color: i > 0 && d[i - 1] != null && v < d[i - 1] ? HM_XANH : "#D946EF" })).filter(Boolean)),
+    hmTEThap: hmTE.thap.map((v, i) => (v == null || i === 0 || hmTE.thap[i - 1] == null ? null : { time: nen[i].t, open: hmTE.thap[i - 1], high: Math.max(v, hmTE.thap[i - 1]), low: Math.min(v, hmTE.thap[i - 1]), close: v, color: hmTE.len[i] ? "rgba(239,68,68,0.45)" : "rgba(34,197,94,0.45)", borderColor: hmTE.len[i] ? "rgba(239,68,68,0.45)" : "rgba(34,197,94,0.45)", wickColor: hmTE.len[i] ? "rgba(239,68,68,0.45)" : "rgba(34,197,94,0.45)" })).filter(Boolean),
+    hmE8: dong(hmE8),
+    hmE20: dong(hmE20),
+    hmJinChuDai: nen.map((b, i) => (hmE8[i] == null || hmE20[i] == null ? null : { time: b.t, a: hmE8[i], b: hmE20[i] })).filter(Boolean),
+    hmJinChuMui: [...danhDau(jcCat.len, "belowBar", "arrowUp", HM_DO, "Thêm"), ...danhDau(jcCat.xuong, "aboveBar", "arrowDown", HM_XANH, "Thoát")],
+    hmCaiHong: CAI_HONG.flatMap((nhom) => nhom.chuKy.map((n) => ({ mau: nhom.mau, du: dong(ema(close, n)) }))),
+    hmBBTren: dong(hmBB10.tren),
+    hmBBMid: dong(hmBB10.mid),
+    hmBBDuoi: dong(hmBB10.duoi),
+    hmStrongMui: [...danhDau(kdCat.len, "belowBar", "arrowUp", "#3B82F6", "J50"), ...danhDau(kdCat.xuong, "aboveBar", "arrowDown", "#94A3B8", "J50")],
+    hmYeuTheMui: danhDau(yeuThe, "belowBar", "circle", "#06B6D4", "抄底"),
+    hmThaoBanMui: [...danhDau(tbCat.len, "belowBar", "arrowUp", "#FB923C", "买"), ...danhDau(tbCat.xuong, "aboveBar", "arrowDown", "#94A3B8", "卖")],
+    hmTaichiMui: [...danhDau(r20, "belowBar", "circle", "#3B82F6", "T20"), ...danhDau(r80, "aboveBar", "circle", "#FACC15", "T80")],
     vwap: noiNgay ? dong(vwapTrongNgay(nen.map((b) => ({ t: b.t, h: b.h, l: b.l, c: b.c, v: b.v ?? 0 })))) : [],
   };
 }
@@ -623,7 +748,42 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const boQuaDenRef = useRef(0); // ms: den luc nay khong phat zoom (vua nhan tu o khac)
   const veRef = useRef(null);
   const [khungTG, setKhungTG] = useState(khungMacDinh);
-  const [bat, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, footprint: false, chiaNgay: true, vp: false, htkc: false, mlst: false, cungCau: false, autoFib: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, mcdx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
+  const [batGoc, setBat] = useState(() => ({ ichimoku: true, canBang: true, ma: false, vung: true, ema: false, boll: false, vwap: false, footprint: false, chiaNgay: true, vp: false, htkc: false, mlst: false, cungCau: false, autoFib: false, rsi: false, macd: false, stoch: false, mfi: false, adx: false, mcdx: false, dongTien: false, phanKy: false, mauHinh: false, nenNhat: false, diemB: true, batDay: true, ...(batMacDinh || {}) }));
+  // AN / HIEN chi bao (con mat trong chu thich, kieu TradingView): chi bao bi an van con trong danh sach nhung khong ve; `bat` = bat va khong bi an
+  const [an, setAn] = useState({});
+  const bat = useMemo(() => {
+    const o = { ...batGoc };
+    for (const k of Object.keys(an)) if (an[k]) o[k] = false;
+    return o;
+  }, [batGoc, an]);
+  // CAI DAT CHI BAO (thong so + kieu net, luu o trinh duyet - lib/caiDatChiBao.js)
+  const [caiDat, setCaiDat] = useState({ thamSo: {}, kieu: {} });
+  const [moCaiDat, setMoCaiDat] = useState(null); // khoa chi bao dang mo hop cai dat
+  useEffect(() => {
+    // doc localStorage sau khi gan vao trang (tranh lech HTML may chu / trinh duyet)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCaiDat(docLuuTru());
+    try {
+      setAn(JSON.parse(localStorage.getItem("cs-chi-bao-an") ?? "{}") || {});
+    } catch {
+      /* khong doc duoc: giu mac dinh */
+    }
+  }, []);
+  const luuCaiDat = (cd) => {
+    setCaiDat(cd);
+    ghiLuuTru(cd);
+  };
+  const doiAn = (k) =>
+    setAn((a) => {
+      const moi = { ...a, [k]: !a[k] };
+      try {
+        localStorage.setItem("cs-chi-bao-an", JSON.stringify(moi));
+      } catch {
+        /* bo qua */
+      }
+      return moi;
+    });
+  const khoaThamSo = useMemo(() => JSON.stringify(caiDat.thamSo), [caiDat.thamSo]);
   // DIEM B (mua phuc hoi) + DIEM BAT DAY cua ma nay (chi thanh vien da duyet - xem /api/diem-bieu-do), ve thanh mui ten tren nen gia (khung Ngay / Tuan).
   const [diemSK, setDiemSK] = useState({ ma: "", b: [], batDay: [] });
   const [congCu, setCongCuState] = useState(null); // cong cu ke ve dang chon (null = con tro)
@@ -639,6 +799,13 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const [moVe, setMoVe] = useState(false);
   const [anHet, setAnHet] = useState(false);
   const [khoaHet, setKhoaHet] = useState(false);
+  // HINH VE THEO KHUNG (20/11/2026, Hieu: "ve hinh ca 2 khung deu co, tat duoc ko"): moi hinh co truong khung = "*" (hien o moi khung) hoac ma khung luc ve (chi hien o khung do).
+  // veMoiKhung = cach ap cho hinh MOI ve (luu o trinh duyet, mac dinh TAT = chi khung dang ve). Hinh dang chon doi duoc rieng bang nut o thanh cong cu.
+  const [veMoiKhung, setVeMoiKhung] = useState(false);
+  const veMoiKhungRef = useRef(false);
+  const khungVeRef = useRef("D");
+  const hinhKhungKhacRef = useRef([]); // hinh cua ma nay nhung khong hien o khung hien tai (giu nguyen khi luu)
+  const [chonVeMoiKhung, setChonVeMoiKhung] = useState(false); // hinh dang chon co hien o moi khung khong
   const [nhomDong, setNhomDong] = useState({});
   const [timCB, setTimCB] = useState("");
   const [viTriCB, setViTriCB] = useState({ top: 0, left: 0 });
@@ -748,8 +915,10 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   }, [dongBo]);
   const dangTai = ketQua.khoa !== khoa;
   const loi = ketQua.khoa === khoa ? ketQua.loi : null;
-  const chiBao = useMemo(() => (nen && nen.length >= 2 ? tinhChiBao(nen, khungTG) : null), [nen, khungTG]);
-  const chiBaoPhu = useMemo(() => (nen && nen.length >= 30 ? tinhChiBaoPhu(nen) : null), [nen]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- caiDat.thamSo chi doi qua khoaThamSo
+  const chiBao = useMemo(() => (nen && nen.length >= 2 ? tinhChiBao(nen, khungTG, caiDat) : null), [nen, khungTG, khoaThamSo]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- caiDat.thamSo chi doi qua khoaThamSo
+  const chiBaoPhu = useMemo(() => (nen && nen.length >= 30 ? tinhChiBaoPhu(nen, caiDat) : null), [nen, khoaThamSo]);
   const phanKy = useMemo(() => {
     if (!nen || nen.length < 60) return [];
     return phanKyRSI(nen.map((b) => ({ h: b.h, l: b.l, c: b.c })), rsi(nen.map((b) => b.c), 14), { k: 2 });
@@ -770,11 +939,43 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const [chonMH, setChonMH] = useState({ khoa: "", idx: 0 });
   const idxMH = chonMH.khoa === khoa ? chonMH.idx : 0; // doi ma / khung -> ve lai mau hinh moi nhat
   const mauHinhVe = bat.mauHinh && idxMH >= 0 && idxMH < dsMauHinh.length ? dsMauHinh[idxMH] : null;
-  const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0) + (bat.mfi ? 1 : 0) + (bat.adx ? 1 : 0) + (bat.mcdx ? 1 : 0) + (bat.dongTien ? 1 : 0);
+  const soPhu = (bat.rsi ? 1 : 0) + (bat.macd ? 1 : 0) + (bat.stoch ? 1 : 0) + (bat.mfi ? 1 : 0) + (bat.adx ? 1 : 0) + (bat.mcdx ? 1 : 0) + (bat.bkr ? 1 : 0) + (bat.hmDE ? 1 : 0) + (bat.hmKDJ ? 1 : 0) + (bat.dongTien ? 1 : 0);
   // Khoa luu hinh ve cua ma + khung hien tai: cap nhat trong effect (khong ghi ref luc render). Dat TRUOC cac effect khoi tao / nap hinh ve nen chay truoc chung trong cung 1 lan cap nhat.
   useEffect(() => {
     khoaVeRef.current = { ma, khoa: `${ma}|${khungTG}` };
+    khungVeRef.current = khungTG;
   }, [ma, khungTG]);
+  // Che do "hinh moi hien o moi khung": nap tu trinh duyet + luu khi doi
+  useEffect(() => {
+    queueMicrotask(() => {
+      try {
+        setVeMoiKhung(localStorage.getItem("cs-ve-moi-khung") === "1");
+      } catch {
+        /* chan luu tru: giu mac dinh */
+      }
+    });
+  }, []);
+  useEffect(() => {
+    veMoiKhungRef.current = veMoiKhung;
+  }, [veMoiKhung]);
+  const doiVeMoiKhung = () =>
+    setVeMoiKhung((v) => {
+      try {
+        localStorage.setItem("cs-ve-moi-khung", v ? "0" : "1");
+      } catch {
+        /* khong luu duoc: chi doi trong phien */
+      }
+      return !v;
+    });
+  // Doi hinh dang chon: chi khung nay <-> moi khung
+  const doiKhungHinhChon = () => {
+    const lop = veRef.current?.lopVe;
+    const h = lop?.hinh.find((x) => x.id === lop.chon);
+    if (!h) return;
+    h.khung = h.khung === "*" ? khungTG : "*";
+    setChonVeMoiKhung(h.khung === "*");
+    lop._xong();
+  };
   const caoGoc = layDayManHinh ? Math.max(chieuCao, caoManHinh - truCao) : chieuCao; // trang Bieu do: bieu do cao toi sat day man hinh thay vi co dinh (truCao = phan dau trang + thanh cong cu phia tren bieu do)
   const chieuCaoTong = caoGoc + soPhu * CHIEU_CAO_PHU;
 
@@ -886,6 +1087,16 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     s.markersBanker = createSeriesMarkers(s.candle, []); // nhan TP / SL cua chi bao Dong tien (Banker Fund Flow) tren bieu do gia
     s.markersSK = createSeriesMarkers(s.candle, []); // diem B (mua phuc hoi) + diem bat day
     s.markersST = createSeriesMarkers(s.candle, []); // mui ten doi chieu ML Adaptive SuperTrend
+    s.markersHM = createSeriesMarkers(s.candle, []); // nhan cua bo chi bao Homily (强势信号, 弱势抄底, 操盘王, Taichi, 进出)
+    s.markersTV = createSeriesMarkers(s.candle, []); // nhan Liquidity Trap Radar + AVPT
+    s.tv = []; // series cua Liquidity Trap / AVPT tren cua so gia (duong AVWAP, dai, muc lenh) - tao lai moi khi bat / tat
+    s.tvDai = new DaiMay({ mauTren: "rgba(167,139,250,0.12)", mauDuoi: "rgba(167,139,250,0.12)" }); // dai gia tri AVWAP +- sigma
+    s.tvDai.datHien(false);
+    s.candle.attachPrimitive(s.tvDai);
+    s.homily = []; // series cua cac chi bao Homily tren cua so gia (TE, 进出, 彩虹, 通道) - tao lai moi khi bat / tat
+    s.homilyDai = new DaiMay({ mauTren: "rgba(239,68,68,0.14)", mauDuoi: "rgba(34,197,94,0.14)" }); // dai 进出: do khi EMA8 > EMA20 (lam mua), xanh khi nguoc lai
+    s.homilyDai.datHien(false);
+    s.candle.attachPrimitive(s.homilyDai);
     s.mlstDai = new DaiMay({ mauTren: "rgba(34,197,94,0.10)", mauDuoi: "rgba(239,68,68,0.10)" });
     s.mlstDai.datHien(false);
     s.mlstSo = new NhanSo();
@@ -902,21 +1113,29 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       goc: rootRef.current,
       chart,
       series: s.candle,
-      onThayDoi: (ds) => {
+      onThayDoi: (ds0) => {
+        // Hinh moi ve chua co truong khung -> gan theo che do hien tai (ghi ca vao lop ve de lan luu sau giu nguyen)
+        const khungMoi = veMoiKhungRef.current ? "*" : khungVeRef.current;
+        for (const h of s.lopVe?.hinh ?? []) if (!h.khung) h.khung = khungMoi;
+        const ds = ds0.map((h) => (h.khung ? h : { ...h, khung: khungMoi }));
         setSoHinhVe(ds.length);
         setCoFrvp(ds.some((h) => h.loai === "frvp"));
         const nenH = nenDuRef.current; // nen DAY DU (khong bi cat khi dang tua lai)
         const k = khoaVeRef.current;
         if (!k || daNapVeRef.current !== k.khoa || !nenH?.length) return;
         try {
-          localStorage.setItem(khoaLuuChung(k.ma), JSON.stringify(doiDiemHinh(ds, (d) => ({ ...d, ms: Math.round(msTuChiSo(nenH, d.i)) }))));
+          localStorage.setItem(khoaLuuChung(k.ma), JSON.stringify([...hinhKhungKhacRef.current, ...doiDiemHinh(ds, (d) => ({ ...d, ms: Math.round(msTuChiSo(nenH, d.i)) }))]));
           window.dispatchEvent(new CustomEvent("cs-ve-doi", { detail: { ma: k.ma, nguon: idDongBoRef.current } })); // o khac (trang Da khung) cung ma nap lai
         } catch {
           /* tren trinh duyet an danh / chan luu tru: hinh ve chi ton tai trong phien */
         }
       },
       onCongCu: (c) => setCongCuState(c),
-      onChon: (id) => setChonVe(id),
+      onChon: (id) => {
+        setChonVe(id);
+        const h = id ? s.lopVe?.hinh.find((x) => x.id === id) : null;
+        setChonVeMoiKhung(!!h && (h.khung ?? (veMoiKhungRef.current ? "*" : "")) === "*");
+      },
       onLichSu: (t) => setLichSuVe(t),
     });
     s.lopVe.datMauGiaoDien({ mo: m.mo, nen: m.nen });
@@ -1009,7 +1228,10 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
         /* khong luu duoc: van hien */
       }
     }
-    const ds = doiDiemHinh(chung, (d) => (typeof d.ms === "number" ? { ...d, i: chiSoTuMs(nenDu, d.ms) } : d));
+    // Hinh cu (truoc khi co che do theo khung) khong co truong khung -> coi la "moi khung" nhu truoc. Hinh cua khung khac giu rieng, khong ve.
+    chung = chung.map((h) => (h.khung ? h : { ...h, khung: "*" }));
+    hinhKhungKhacRef.current = chung.filter((h) => h.khung !== "*" && h.khung !== khungTG);
+    const ds = doiDiemHinh(chung.filter((h) => h.khung === "*" || h.khung === khungTG), (d) => (typeof d.ms === "number" ? { ...d, i: chiSoTuMs(nenDu, d.ms) } : d));
     daNapVeRef.current = khoa;
     s.lopVe.datHinh(ds);
     setSoHinhVe(ds.length);
@@ -1216,7 +1438,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       // dang phat: nen moi vuot 3/4 khung nhin thi truot theo 1 nen
       const r = ts.getVisibleLogicalRange();
       if (r && chiBao.n - 1 > r.from + 0.75 * (r.to - r.from)) ts.setVisibleLogicalRange({ from: r.from + 1, to: r.to + 1 });
-    } else ts.setVisibleLogicalRange({ from: Math.max(-2, chiBao.n - 150), to: chiBao.n + THAM_SO_MAC_DINH.dichMay + SO_BUOC_TUONG_LAI.spanB + 2 });
+    } else ts.setVisibleLogicalRange({ from: Math.max(-2, chiBao.n - 150), to: chiBao.n + (chiBao.dich ?? THAM_SO_MAC_DINH.dichMay) + SO_BUOC_TUONG_LAI.spanB + 2 });
   }, [chiBao, nen, catTua]);
 
   // 3a'. TUA LAI: bam chon nen bat dau (che do chonTua) + tu phat theo toc do.
@@ -1495,12 +1717,121 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   useEffect(() => {
     const s = veRef.current;
     if (!s) return;
-    for (const k of ["ema9", "ema21"]) s[k].applyOptions({ visible: bat.ema });
-    for (const k of ["bbTren", "bbMid", "bbDuoi"]) s[k].applyOptions({ visible: bat.boll });
+    // mau / do day / hien-an tung net theo cai dat nguoi dung (lib/caiDatChiBao.js)
+    const nk = (khoa, k, bang, id, them = {}) => {
+      const x = kieuNet(caiDat, khoa, k);
+      s[id].applyOptions({ visible: !!bang && x.hien, color: x.mau, lineWidth: x.day, ...them });
+    };
+    nk("ema", "e1", bat.ema, "ema9");
+    nk("ema", "e2", bat.ema, "ema21");
+    nk("boll", "tren", bat.boll, "bbTren");
+    nk("boll", "giua", bat.boll, "bbMid", { lineWidth: kieuNet(caiDat, "boll", "giua").day });
+    nk("boll", "duoi", bat.boll, "bbDuoi");
     s.bbBand.datHien(bat.boll);
-    s.vwap.applyOptions({ visible: bat.vwap && noiNgay });
+    nk("vwap", "vwap", bat.vwap && noiNgay, "vwap");
     s.vachNgay.datHien(bat.chiaNgay && noiNgay);
-  }, [bat.ema, bat.boll, bat.vwap, bat.chiaNgay, noiNgay]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bat.ema, bat.boll, bat.vwap, bat.chiaNgay, noiNgay, caiDat.kieu]);
+  // 3b''. HOMILY tren cua so gia (TE, 进出, 彩虹, 通道 + cac nhan): tao lai series moi khi bat / tat hoac doi du lieu.
+  useEffect(() => {
+    const s = veRef.current;
+    if (!s) return;
+    for (const x of s.homily) {
+      try {
+        s.chart.removeSeries(x);
+      } catch {
+        /* da bi go cung bieu do */
+      }
+    }
+    s.homily = [];
+    const cp = chiBaoPhu;
+    s.homilyDai.datDuLieu(bat.hmJinChu && cp ? cp.hmJinChuDai : []);
+    s.homilyDai.datHien(!!bat.hmJinChu);
+    if (!cp) {
+      s.markersHM.setMarkers([]);
+      return;
+    }
+    const khongVe = { lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false };
+    const duong = (du, mau, rong = 1, them = {}) => {
+      const sr = s.chart.addSeries(LineSeries, { color: mau, lineWidth: rong, ...khongVe, ...them });
+      sr.setData(du);
+      s.homily.push(sr);
+      return sr;
+    };
+    if (bat.hmCaiHong) for (const x of cp.hmCaiHong) duong(x.du, x.mau);
+    if (bat.hmTongDao) {
+      const kDai = kieuNet(caiDat, "hmTongDao", "dai");
+      duong(cp.hmBBTren, kDai.mau, kDai.day, { visible: kDai.hien });
+      duong(cp.hmBBMid, kDai.mau, 1, { lineStyle: LineStyle.Dashed, visible: kDai.hien });
+      duong(cp.hmBBDuoi, kDai.mau, kDai.day, { visible: kDai.hien });
+    }
+    if (bat.hmJinChu) {
+      const kN = kieuNet(caiDat, "hmJinChu", "nhanh"), kC = kieuNet(caiDat, "hmJinChu", "cham");
+      duong(cp.hmE8, kN.mau, kN.day, { visible: kN.hien });
+      duong(cp.hmE20, kC.mau, kC.day, { visible: kC.hien });
+    }
+    if (bat.hmTE) {
+      const thap = s.chart.addSeries(CandlestickSeries, { borderVisible: true, wickVisible: true, ...khongVe });
+      thap.setData(cp.hmTEThap);
+      s.homily.push(thap);
+      cp.hmTEDuong.forEach((d, k) => duong(d, "#D946EF", k === cp.hmTEDuong.length - 1 ? 2 : 1, { lineStyle: k === cp.hmTEDuong.length - 1 ? LineStyle.Solid : LineStyle.Dotted }));
+    }
+    const dau = [];
+    if (bat.hmJinChu) dau.push(...cp.hmJinChuMui);
+    if (bat.hmStrong) dau.push(...cp.hmStrongMui);
+    if (bat.hmYeuThe) dau.push(...cp.hmYeuTheMui);
+    if (bat.hmThaoBan) dau.push(...cp.hmThaoBanMui);
+    if (bat.hmTaichi) dau.push(...cp.hmTaichiMui);
+    dau.sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
+    s.markersHM.setMarkers(dau);
+  }, [chiBaoPhu, bat.hmTE, bat.hmJinChu, bat.hmCaiHong, bat.hmTongDao, bat.hmStrong, bat.hmYeuThe, bat.hmThaoBan, bat.hmTaichi, caiDat]);
+  // 3b'''. LIQUIDITY TRAP RADAR + AVPT tren cua so gia: tao lai series moi khi bat / tat hoac doi du lieu.
+  useEffect(() => {
+    const s = veRef.current;
+    if (!s) return;
+    for (const x of s.tv) {
+      try {
+        s.chart.removeSeries(x);
+      } catch {
+        /* da bi go cung bieu do */
+      }
+    }
+    s.tv = [];
+    const cp = chiBaoPhu;
+    s.tvDai.datDuLieu(bat.tvAvpt && cp ? cp.tvBandDai : []);
+    s.tvDai.datHien(!!bat.tvAvpt);
+    if (!cp) {
+      s.markersTV.setMarkers([]);
+      return;
+    }
+    const khongVe = { lastValueVisible: false, priceLineVisible: false, crosshairMarkerVisible: false };
+    const duong = (du, mau, rong = 1, them = {}) => {
+      const sr = s.chart.addSeries(LineSeries, { color: mau, lineWidth: rong, ...khongVe, ...them });
+      sr.setData(du);
+      s.tv.push(sr);
+      return sr;
+    };
+    // muc lenh cua tin hieu cuoi: moi muc 1 doan ngang tu nen tin hieu den nen ket thuc / nen cuoi
+    const muc = (m) => {
+      if (!m) return;
+      for (const d of m.ds) duong([{ time: m.tu, value: d.gia }, { time: m.den, value: d.gia }], d.mau, d.ten === "Entry" ? 1 : 1, { lineStyle: d.ten === "SL" ? LineStyle.Solid : LineStyle.Dashed, lastValueVisible: true, title: d.ten });
+    };
+    const dau = [];
+    if (bat.tvTrap) {
+      dau.push(...cp.tvTrapMui);
+      muc(cp.tvTrapMuc);
+    }
+    if (bat.tvAvpt) {
+      const kAv = kieuNet(caiDat, "tvAvpt", "avwap");
+      duong(cp.tvAvwap.map((d) => (d.color === TV_XANH ? { ...d, color: kAv.mau } : d)), kAv.mau, kAv.day, { title: "AVWAP", visible: kAv.hien });
+      duong(cp.tvBandTren, "rgba(167,139,250,0.55)");
+      duong(cp.tvBandDuoi, "rgba(167,139,250,0.55)");
+      dau.push(...cp.tvAvptMui);
+      muc(cp.tvAvptMuc);
+    }
+    dau.sort((a, b) => (a.time < b.time ? -1 : a.time > b.time ? 1 : 0));
+    s.markersTV.setMarkers(dau);
+  }, [chiBaoPhu, bat.tvTrap, bat.tvAvpt, caiDat]);
   // 3b'. FOOTPRINT (chi VN30F1M, khung trong ngay): tai /api/footprint khi bat chip, gian nen ra >= 64 px de doc duoc tung muc gia.
   const coFootprint = !!bat.footprint && noiNgay && ma === "VN30F1M";
   useEffect(() => {
@@ -1557,9 +1888,10 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     const vach = (sr, gia, mau) => sr.createPriceLine({ price: gia, color: mau, lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: false, title: "" });
     if (bat.rsi) {
       const o = cuaSo++;
-      const sr = dong("#A78BFA", cp.rsi, o, { title: "RSI 14", ...khoang0_100 });
-      vach(sr, 70, "rgba(239,68,68,0.6)");
-      vach(sr, 30, "rgba(34,197,94,0.6)");
+      const kR = kieuNet(caiDat, "rsi", "rsi"), tR = thamSo(caiDat, "rsi");
+      const sr = dong(kR.mau, cp.rsi, o, { title: nhanDong("rsi", caiDat, "RSI 14"), lineWidth: kR.day, visible: kR.hien, ...khoang0_100 });
+      vach(sr, tR.mua, "rgba(239,68,68,0.6)");
+      vach(sr, tR.ban, "rgba(34,197,94,0.6)");
       // RSI phan ky: noi 2 day (hoac 2 dinh) tren gia va tren RSI, danh dau nen dinh / day thu hai
       if (bat.phanKy && nen) {
         const mauTang = "#22C55E", mauGiam = "#EF4444";
@@ -1598,33 +1930,37 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     }
     if (bat.macd) {
       const o = cuaSo++;
-      const h = s.chart.addSeries(HistogramSeries, { priceLineVisible: false, lastValueVisible: false, title: "MACD 12·26·9" }, o);
+      const h = s.chart.addSeries(HistogramSeries, { priceLineVisible: false, lastValueVisible: false, title: nhanDong("macd", caiDat, "MACD 12·26·9") }, o);
       h.setData(cp.hist);
       s.phu.push(h);
-      dong("#60A5FA", cp.macd, o);
-      dong("#FB923C", cp.signal, o);
+      const kM = kieuNet(caiDat, "macd", "macd"), kS = kieuNet(caiDat, "macd", "signal");
+      dong(kM.mau, cp.macd, o, { lineWidth: kM.day, visible: kM.hien });
+      dong(kS.mau, cp.signal, o, { lineWidth: kS.day, visible: kS.hien });
     }
     if (bat.stoch) {
       const o = cuaSo++;
-      const sr = dong("#FBBF24", cp.stochK, o, { title: "Stoch 14·3·3", ...khoang0_100 });
-      dong("#38BDF8", cp.stochD, o, khoang0_100);
+      const kK = kieuNet(caiDat, "stoch", "k"), kD = kieuNet(caiDat, "stoch", "d");
+      const sr = dong(kK.mau, cp.stochK, o, { title: nhanDong("stoch", caiDat, "Stoch 14·3·3"), lineWidth: kK.day, visible: kK.hien, ...khoang0_100 });
+      dong(kD.mau, cp.stochD, o, { lineWidth: kD.day, visible: kD.hien, ...khoang0_100 });
       vach(sr, 80, "rgba(239,68,68,0.6)");
       vach(sr, 20, "rgba(34,197,94,0.6)");
     }
     if (bat.mfi) {
       const o = cuaSo++;
-      const sr = dong("#2DD4BF", cp.mfi, o, { title: "MFI 14", ...khoang0_100 });
-      vach(sr, 80, "rgba(239,68,68,0.6)");
-      vach(sr, 20, "rgba(34,197,94,0.6)");
+      const kF = kieuNet(caiDat, "mfi", "mfi"), tF = thamSo(caiDat, "mfi");
+      const sr = dong(kF.mau, cp.mfi, o, { title: nhanDong("mfi", caiDat, "MFI 14"), lineWidth: kF.day, visible: kF.hien, ...khoang0_100 });
+      vach(sr, tF.mua, "rgba(239,68,68,0.6)");
+      vach(sr, tF.ban, "rgba(34,197,94,0.6)");
     }
     if (bat.adx) {
       // ADX (do manh xu huong, hong dam) + DI+ (xanh) / DI- (do); vach 20 / 25 = nguong xu huong thuong dung
       const o = cuaSo++;
-      const sr = dong("#F472B6", cp.adx, o, { title: "ADX 14", lineWidth: 2 });
-      dong("#22C55E", cp.pdi, o, { title: "DI+" });
-      dong("#EF4444", cp.mdi, o, { title: "DI−" });
-      vach(sr, 20, "rgba(148,163,184,0.6)");
-      vach(sr, 25, "rgba(148,163,184,0.35)");
+      const kA = kieuNet(caiDat, "adx", "adx"), kP = kieuNet(caiDat, "adx", "pdi"), kN = kieuNet(caiDat, "adx", "mdi"), tA = thamSo(caiDat, "adx");
+      const sr = dong(kA.mau, cp.adx, o, { title: nhanDong("adx", caiDat, "ADX 14"), lineWidth: kA.day, visible: kA.hien });
+      dong(kP.mau, cp.pdi, o, { title: "DI+", lineWidth: kP.day, visible: kP.hien });
+      dong(kN.mau, cp.mdi, o, { title: "DI−", lineWidth: kN.day, visible: kN.hien });
+      vach(sr, tA.nguong1, "rgba(148,163,184,0.6)");
+      vach(sr, tA.nguong2, "rgba(148,163,184,0.35)");
     }
     if (bat.mcdx) {
       // MCDX (FireAnt): 3 cot chong len nhau tren thang 0-20: Retailer xanh (hang so 20) o duoi cung, Hot Money vang, Banker do o tren; vach 5 / 10 / 15 = 25% / 50% / 75%
@@ -1641,6 +1977,46 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       cot("rgba(250,204,21,0.95)", cp.mcdxH);
       const sr = cot("rgba(239,68,68,0.95)", cp.mcdxB, { title: "MCDX", lastValueVisible: true });
       for (const [g, n] of [[5, "25%"], [10, "50%"], [15, "75%"]]) sr.createPriceLine({ price: g, color: "rgba(148,163,184,0.55)", lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: false, title: n });
+    }
+    if (bat.bkr) {
+      // BANKER RHYTHM (lib/bankerRhythm.js, ma cong khai "bkr"): 2 rau xanh doi xung quanh 0 (tach ra = gia gan dinh bien do 15 phien, thu vao = gan day), BridgeT +/- (cam khi tang, xanh nhat khi giam),
+      // cot xanh +/-30 = BuySignal-A, o vuong xanh = BuySignal-B (trend cat len 5). Chi la chi bao hien thi: kiem dinh 21/11/2026 khong co loi the rieng le.
+      const o = cuaSo++;
+      const cot = s.chart.addSeries(HistogramSeries, { priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false }, o);
+      cot.setData(cp.bkrA);
+      s.phu.push(cot);
+      const cotAm = s.chart.addSeries(HistogramSeries, { priceLineVisible: false, lastValueVisible: false, crosshairMarkerVisible: false }, o);
+      cotAm.setData(cp.bkrAAm);
+      s.phu.push(cotAm);
+      const kRau = kieuNet(caiDat, "bkr", "rau"), kCau = kieuNet(caiDat, "bkr", "bridge");
+      // BridgeT: nhan cam = dang tang (mau theo cai dat), xanh nhat = dang giam
+      const mauCau = (d) => (d.color === "#F59E0B" ? { ...d, color: kCau.mau } : d);
+      dong(kCau.mau, cp.bkrCauTren.map(mauCau), o, { lineWidth: kCau.day, visible: kCau.hien });
+      dong(kCau.mau, cp.bkrCauDuoi.map(mauCau), o, { lineWidth: kCau.day, visible: kCau.hien });
+      const sr = dong(kRau.mau, cp.bkrTren, o, { title: "Banker Rhythm", lineWidth: kRau.day, visible: kRau.hien });
+      dong(kRau.mau, cp.bkrDuoi, o, { lineWidth: kRau.day, visible: kRau.hien });
+      vach(sr, 0, "rgba(148,163,184,0.5)");
+      createSeriesMarkers(sr, cp.bkrB);
+    }
+    if (bat.hmDE) {
+      // HOMILY DE 背离王 (lib/homily.js): nen khong rau tu towerc phien truoc den towerc phien nay; DO = tien vao (towerc >= phien truoc), XANH LA = tien ra; vach 0.
+      const o = cuaSo++;
+      const kUp = kieuNet(caiDat, "hmDE", "len"), kDown = kieuNet(caiDat, "hmDE", "xuong");
+      const sr = s.chart.addSeries(CandlestickSeries, { upColor: kUp.mau, downColor: kDown.mau, borderVisible: false, priceLineVisible: false, lastValueVisible: true, crosshairMarkerVisible: false, title: "DE (đỏ = tiền vào)" }, o);
+      sr.setData(cp.hmDE.map((d) => { const m = d.color === HM_DO ? kUp.mau : kDown.mau; return { ...d, color: m, borderColor: m, wickColor: m }; }));
+      s.phu.push(sr);
+      sr.createPriceLine({ price: 0, color: "rgba(148,163,184,0.7)", lineWidth: 1, lineStyle: LineStyle.Dashed, axisLabelVisible: false, title: "" });
+    }
+    if (bat.hmKDJ) {
+      // KDJ 9,3,3 cua Tongdaxin: J cat len 50 = "强势信号" cua Homily; vach 50 (manh / yeu), 20 / 80.
+      const o = cuaSo++;
+      const kJ = kieuNet(caiDat, "hmKDJ", "j"), kKk = kieuNet(caiDat, "hmKDJ", "k"), kDd = kieuNet(caiDat, "hmKDJ", "d");
+      const sr = dong(kJ.mau, cp.hmJ, o, { title: `J (KDJ ${thamSo(caiDat, "hmKDJ").n}·3·3)`, lineWidth: kJ.day, visible: kJ.hien });
+      dong(kKk.mau, cp.hmK, o, { title: "K", lineWidth: kKk.day, visible: kKk.hien });
+      dong(kDd.mau, cp.hmD, o, { title: "D", lineWidth: kDd.day, visible: kDd.hien });
+      vach(sr, 50, "rgba(148,163,184,0.7)");
+      vach(sr, 80, "rgba(239,68,68,0.45)");
+      vach(sr, 20, "rgba(34,197,94,0.45)");
     }
     if (bat.dongTien) {
       // GIONG PINE ([blackcat] L3 Banker Fund Flow): nen mo theo trang thai (xanh / do), vung 10-20 va 80-90 to mau, nen vang "Banker In", nen giua trend va bull/bear,
@@ -1687,7 +2063,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     // cua so gia lon hon cac cua so chi bao
     const panes = s.chart.panes();
     panes.forEach((p, i) => p.setStretchFactor(i === 0 ? 3.2 : 1));
-  }, [bat.rsi, bat.macd, bat.stoch, bat.mfi, bat.adx, bat.mcdx, bat.dongTien, bat.phanKy, chiBaoPhu, phanKy, phanKySom, nen]);
+  }, [bat.rsi, bat.macd, bat.stoch, bat.mfi, bat.adx, bat.mcdx, bat.bkr, bat.hmDE, bat.hmKDJ, bat.dongTien, bat.phanKy, chiBaoPhu, phanKy, phanKySom, nen, caiDat]);
 
   // 4. Vung lenh + diem MUA.
   useEffect(() => {
@@ -1845,20 +2221,34 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   useEffect(() => {
     const s = veRef.current;
     if (!s) return;
-    for (const k of ["tenkan", "kijun", "spanA", "spanB", "chikou", "ttTenkan", "ttKijun", "ttSpanA", "ttSpanB"]) s[k].applyOptions({ visible: bat.ichimoku });
+    // Ichimoku / can bang / MA: hien-an, mau, do day theo cai dat nguoi dung
+    const dat = (khoa, k, bang, ids, goc = {}, alpha = 1) => {
+      const x = kieuNet(caiDat, khoa, k);
+      const mau = alpha < 1 ? hexRgba(x.mau, alpha) : x.mau;
+      for (const [id, chiMau] of ids) s[id].applyOptions({ visible: !!bang && x.hien, color: x.daSua || khoa !== "ma" || k !== "ma3" ? mau : mauTheoGiaoDien().ma200, ...(chiMau ? {} : { lineWidth: x.day }), ...goc });
+    };
+    dat("ichimoku", "tenkan", bat.ichimoku, [["tenkan"], ["ttTenkan", 1]]);
+    dat("ichimoku", "kijun", bat.ichimoku, [["kijun"], ["ttKijun", 1]]);
+    dat("ichimoku", "chikou", bat.ichimoku, [["chikou"]]);
+    dat("ichimoku", "spanA", bat.ichimoku, [["spanA"], ["ttSpanA", 1]], {}, 0.75);
+    dat("ichimoku", "spanB", bat.ichimoku, [["spanB"], ["ttSpanB", 1]], {}, 0.75);
     s.may.datHien(bat.ichimoku);
-    for (const k of ["cb1", "cb2", "ttCb1", "ttCb2"]) s[k].applyOptions({ visible: bat.canBang });
+    dat("canBang", "cb1", bat.canBang, [["cb1"], ["ttCb1", 1]]);
+    dat("canBang", "cb2", bat.canBang, [["cb2"], ["ttCb2", 1]]);
     s.canBang.datHien(bat.canBang);
-    for (const k of ["ma20", "ma50", "ma200"]) s[k].applyOptions({ visible: bat.ma });
+    dat("ma", "ma1", bat.ma, [["ma20"]]);
+    dat("ma", "ma2", bat.ma, [["ma50"]]);
+    dat("ma", "ma3", bat.ma, [["ma200"]]);
     s.daiGia.datHien(bat.vung);
-  }, [bat]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bat, caiDat.kieu]);
 
   function datKhoang(soNen) {
     const s = veRef.current;
     if (!s || !chiBao) return;
     const from = soNen ? chiBao.n - soNen : -2;
     danhDauTuongTac(tuongTacDenRef); // bam nut khoang = thao tac cua nguoi dung -> dong bo sang cac o khac
-    s.chart.timeScale().setVisibleLogicalRange({ from, to: chiBao.n + THAM_SO_MAC_DINH.dichMay + SO_BUOC_TUONG_LAI.spanB + 2 });
+    s.chart.timeScale().setVisibleLogicalRange({ from, to: chiBao.n + (chiBao.dich ?? THAM_SO_MAC_DINH.dichMay) + SO_BUOC_TUONG_LAI.spanB + 2 });
   }
 
   const conVung = vung && (vung.mua || vung.sl || vung.tp);
@@ -1913,12 +2303,14 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     !noiNgay && sk && sk.b.length > 0 && { khoa: "diemB", nhan: `Điểm B (${sk.b.length})`, mau: "var(--diem-b)", nhom: "Tín hiệu hệ thống", may: "chip-diemB", bam: bamBat("diemB") },
     !noiNgay && sk && sk.batDay.length > 0 && { khoa: "batDay", nhan: `Bắt đáy (${sk.batDay.length})`, mau: "var(--diem-day)", nhom: "Tín hiệu hệ thống", may: "chip-batDay", bam: bamBat("batDay") },
     ...CHI_BAO_PHU.map((c) => ({ khoa: c.khoa, nhan: c.nhan, mau: c.mau, nhom: "Chỉ báo phụ (cửa sổ riêng)", may: `chip-${c.khoa}`, bam: bamBat(c.khoa) })),
+    ...[...HOMILY_PHU, ...HOMILY_GIA].map((c) => ({ khoa: c.khoa, nhan: c.nhan, mau: c.mau, nhom: NHOM_HOMILY, may: `chip-${c.khoa}`, bam: bamBat(c.khoa) })),
+    ...TV_GIA.map((c) => ({ khoa: c.khoa, nhan: c.nhan, mau: c.mau, nhom: NHOM_TV, may: `chip-${c.khoa}`, bam: bamBat(c.khoa) })),
     { khoa: "mauHinh", nhan: "Mẫu hình giá", mau: "#F6C544", nhom: "Nhận diện tự động", may: "mau-hinh", bam: bamBat("mauHinh") },
     { khoa: "nenNhat", nhan: "Mẫu hình nến", mau: "#38BDF8", nhom: "Nhận diện tự động", may: "mau-hinh-nen", bam: bamBat("nenNhat") },
     { khoa: "phanKy", nhan: CHI_BAO_PK.nhan, mau: CHI_BAO_PK.mau, nhom: "Nhận diện tự động", may: "chip-phanKy", bam: () => setBat((b) => ({ ...b, phanKy: !b.phanKy, rsi: !b.phanKy ? true : b.rsi })) },
   ]
     .filter(Boolean)
-    .map((x) => ({ ...x, bat: !!bat[x.khoa] }));
+    .map((x) => ({ ...x, nhan: nhanDong(x.khoa, caiDat, x.nhan), bat: !!batGoc[x.khoa], an: !!an[x.khoa] }));
   const dsDangBat = dsMenu.filter((x) => x.bat && x.khoa !== "chiaNgay");
   const moMenuChiBao = () => {
     const r = nutCBRef.current?.getBoundingClientRect();
@@ -2229,6 +2621,28 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
           </button>
           <button
             type="button"
+            onClick={doiVeMoiKhung}
+            aria-pressed={veMoiKhung}
+            title={veMoiKhung ? "Hình vẽ mới đang hiện ở mọi khung thời gian. Bấm để hình mới chỉ hiện ở khung đang vẽ" : "Hình vẽ mới chỉ hiện ở khung đang vẽ. Bấm để hình mới hiện ở mọi khung thời gian"}
+            className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5 cursor-pointer"
+            style={{ border: `1px solid ${VIEN}`, color: veMoiKhung ? TEXT : MUTED, background: veMoiKhung ? "rgba(108,92,231,0.18)" : undefined, fontFamily: "'Open Sans', sans-serif" }}
+          >
+            <Layers size={13} strokeWidth={2} />
+            Hình mới: {veMoiKhung ? "mọi khung" : "khung này"}
+          </button>
+          <button
+            type="button"
+            disabled={!chonVe}
+            onClick={doiKhungHinhChon}
+            title="Hình đang chọn: chỉ hiện ở khung này hoặc hiện ở mọi khung"
+            className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
+            style={{ border: `1px solid ${VIEN}`, color: chonVe ? TEXT : MUTED, opacity: chonVe ? 1 : 0.45, cursor: chonVe ? "pointer" : "default", fontFamily: "'Open Sans', sans-serif" }}
+          >
+            <Frame size={13} strokeWidth={2} />
+            {chonVe && chonVeMoiKhung ? "Chỉ hiện khung này" : "Hiện mọi khung"}
+          </button>
+          <button
+            type="button"
             disabled={!chonVe}
             onClick={() => veRef.current?.lopVe.xoaChon()}
             title="Xóa hình đang chọn (phím Delete)"
@@ -2242,7 +2656,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
             type="button"
             disabled={soHinhVe === 0}
             onClick={() => {
-              if (soHinhVe > 0 && window.confirm(`Xóa tất cả ${soHinhVe} hình vẽ của ${ma}?`)) veRef.current?.lopVe.xoaHet();
+              if (soHinhVe > 0 && window.confirm(`Xóa tất cả ${soHinhVe} hình vẽ đang hiện của ${ma} ở khung này?`)) veRef.current?.lopVe.xoaHet();
             }}
             title="Xóa tất cả hình vẽ của mã này"
             className="px-2.5 py-1 rounded-md text-xs flex items-center gap-1.5"
@@ -2292,7 +2706,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
           xoaChon={() => veRef.current?.lopVe.xoaChon()}
           soHinhVe={soHinhVe}
           xoaHet={() => {
-            if (soHinhVe > 0 && window.confirm(`Xóa tất cả ${soHinhVe} hình vẽ của ${ma}?`)) veRef.current?.lopVe.xoaHet();
+            if (soHinhVe > 0 && window.confirm(`Xóa tất cả ${soHinhVe} hình vẽ đang hiện của ${ma} ở khung này?`)) veRef.current?.lopVe.xoaHet();
           }}
           mauVe={mauVe}
           setMauVe={setMauVe}
@@ -2301,6 +2715,10 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
           setAnHet={setAnHet}
           khoaHet={khoaHet}
           setKhoaHet={setKhoaHet}
+          veMoiKhung={veMoiKhung}
+          doiVeMoiKhung={doiVeMoiKhung}
+          chonVeMoiKhung={chonVeMoiKhung}
+          doiKhungHinhChon={doiKhungHinhChon}
         />
       )}
       <div className={toanMH || chieuNgang ? "relative flex-1 min-w-0" : "relative"} style={toanMH ? undefined : { height: chieuCaoTong }}>
@@ -2442,13 +2860,21 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
         {dsDangBat.length > 0 && (
           <div className="hidden sm:flex absolute left-3 top-[34px] z-10 flex-col items-start gap-0.5 text-[11px]" style={{ fontFamily: "'Open Sans', sans-serif" }} aria-label="Chỉ báo đang bật">
             {dsDangBat.map((x) => (
-              <span key={x.khoa} className="group inline-flex items-center gap-1.5 rounded px-1.5 h-5" style={{ color: MUTED, background: `color-mix(in srgb, ${NEN_CARD} 78%, transparent)` }}>
+              <span key={x.khoa} className="group inline-flex items-center gap-1.5 rounded px-1.5 h-5" style={{ color: MUTED, background: `color-mix(in srgb, ${NEN_CARD} 78%, transparent)`, opacity: x.an ? 0.55 : 1 }}>
                 <span className="inline-block w-1.5 h-1.5 rounded-full" style={{ background: x.mau }} />
                 {x.nhan}
                 {x.khoa === "mlst" && chiBaoPhu?.mlstTT && (
                   <b style={{ color: chiBaoPhu.mlstTT.huong === 1 ? MLST_LEN : MLST_XUONG }}>
                     {chiBaoPhu.mlstTT.huong === 1 ? "Tăng" : "Giảm"} · biến động {chiBaoPhu.mlstTT.so} ({["", "thấp", "vừa", "cao"][chiBaoPhu.mlstTT.so]})
                   </b>
+                )}
+                <button type="button" onClick={() => doiAn(x.khoa)} aria-label={x.an ? `Hiện ${x.nhan}` : `Ẩn ${x.nhan}`} title={x.an ? `Hiện ${x.nhan}` : `Ẩn ${x.nhan} (vẫn giữ trong danh sách)`} className={`${x.an ? "inline-flex" : "hidden group-hover:inline-flex"} items-center justify-center w-3.5 h-3.5 rounded cursor-pointer hover:text-[color:var(--chu)]`}>
+                  {x.an ? <EyeOff size={12} strokeWidth={2} /> : <Eye size={12} strokeWidth={2} />}
+                </button>
+                {CO_CAI_DAT(x.khoa) && (
+                  <button type="button" onClick={() => setMoCaiDat(x.khoa)} aria-label={`Cài đặt ${x.nhan}`} title={`Cài đặt ${x.nhan}`} className="hidden group-hover:inline-flex items-center justify-center w-3.5 h-3.5 rounded cursor-pointer hover:text-[color:var(--chu)]">
+                    <Settings size={12} strokeWidth={2} />
+                  </button>
                 )}
                 <button type="button" onClick={x.bam} aria-label={`Tắt ${x.nhan}`} title={`Tắt ${x.nhan}`} className="hidden group-hover:inline-flex items-center justify-center w-3.5 h-3.5 rounded cursor-pointer hover:text-[color:var(--chu)]">
                   ×
@@ -2457,6 +2883,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
             ))}
           </div>
         )}
+        {moCaiDat && <CaiDatChiBao key={moCaiDat} khoa={moCaiDat} cd={caiDat} nhan={dsMenu.find((x) => x.khoa === moCaiDat)?.nhan ?? moCaiDat} onLuu={luuCaiDat} onDong={() => setMoCaiDat(null)} />}
         {(dangTai || loi) && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 text-sm" style={{ background: "color-mix(in srgb, var(--card) 85%, transparent)", color: MUTED }}>
             {dangTai && <span>Đang tải biểu đồ…</span>}
