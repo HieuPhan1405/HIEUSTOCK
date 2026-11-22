@@ -30,7 +30,7 @@ export default async function TrangMotBaoCao({ params }) {
         {b.tieuDe}
       </h1>
       <p className="text-sm mb-4" style={{ color: "var(--mo)" }}>
-        {b.tenCongTy} ({b.ma}) · Số liệu đến {b.ngay} · Cập nhật {b.capNhat} · Khuyến nghị: <b style={{ color: "var(--xanh)" }}>{b.khuyenNghi}</b> · Giá mục tiêu 12 tháng {b.giaMucTieu.toLocaleString("vi-VN")} đồng
+        {b.tenCongTy} ({b.ma}) · Số liệu đến {b.ngay} · Cập nhật {b.capNhat} · Khuyến nghị: <b style={{ color: "var(--xanh)" }}>{b.khuyenNghi}</b> · {b.nhanGia ?? "Giá mục tiêu"} {b.giaMucTieu.toLocaleString("vi-VN")} đồng
       </p>
       <ul className="list-disc pl-5 grid gap-1.5 text-sm mb-4 max-w-3xl">
         {b.diem.map((d) => (

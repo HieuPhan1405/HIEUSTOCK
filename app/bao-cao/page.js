@@ -44,7 +44,7 @@ export default function TrangBaoCao() {
                 <dd style={{ fontWeight: 700, color: "var(--xanh)" }}>{b.khuyenNghi}</dd>
               </div>
               <div>
-                <dt style={{ color: "var(--mo)" }}>Giá mục tiêu</dt>
+                <dt style={{ color: "var(--mo)" }}>{b.nhanGia ?? "Giá mục tiêu"}</dt>
                 <dd style={{ fontWeight: 700 }}>{fmtGia(b.giaMucTieu)}</dd>
               </div>
               <div>
