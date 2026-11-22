@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
-import { LayoutGrid, TrendingUp, Activity, ListFilter, TrendingDown, BookOpen, CandlestickChart, Wallet, Mail, Ellipsis, Sprout, ChevronDown, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { LayoutGrid, TrendingUp, Activity, ListFilter, TrendingDown, BookOpen, CandlestickChart, Wallet, Mail, Ellipsis, Sprout, FileText, ChevronDown, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { MENU, mucDangMo } from "@/lib/menu";
 
-const ICON = { "/": LayoutGrid, "/bo-loc": ListFilter, "/bieu-do": CandlestickChart, "/lenh-mo": TrendingUp, "/danh-muc": Wallet, "/bat-day": TrendingDown, "/dai-han": Sprout, "/phai-sinh": Activity, "/huong-dan": BookOpen };
+const ICON = { "/": LayoutGrid, "/bo-loc": ListFilter, "/bieu-do": CandlestickChart, "/lenh-mo": TrendingUp, "/danh-muc": Wallet, "/bat-day": TrendingDown, "/dai-han": Sprout, "/bao-cao": FileText, "/phai-sinh": Activity, "/huong-dan": BookOpen };
 
 const BG = "var(--nen-sau)";
 const VIEN = "var(--vien)";

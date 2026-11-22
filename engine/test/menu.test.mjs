@@ -9,7 +9,8 @@ const ok = (ten, dk, them = "") => {
   } else console.log("ok:", ten);
 };
 
-ok("menu 9 muc", MENU.length === 9);
+ok("menu 10 muc", MENU.length === 10);
+ok("/bao-cao la muc rieng nhom Nghien cuu, nam truoc Danh muc", mucDangMo("/bao-cao")?.nhom === "Nghiên cứu" && mucDangMo("/bao-cao/fpt")?.href === "/bao-cao" && tabCuaTrang("/bao-cao") === null && MENU.findIndex((m) => m.href === "/bao-cao") === MENU.findIndex((m) => m.href === "/danh-muc") - 1);
 ok("trang dau -> Thi truong", mucDangMo("/")?.nhan === "Thị trường");
 ok("/dashboard, /nganh, /thi-truong thuoc Thi truong", mucDangMo("/dashboard")?.href === "/" && mucDangMo("/nganh")?.href === "/" && mucDangMo("/thi-truong")?.href === "/");
 ok("/lenh-da-dong thuoc So lenh", mucDangMo("/lenh-da-dong")?.href === "/lenh-mo");
