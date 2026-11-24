@@ -1288,9 +1288,14 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     duLieuHoSoRef.current = { nen, nenGio: nenGioCuaMa, khungTG };
     const tinh = (i1, i2, soHang = 48) => {
       const d = duLieuHoSoRef.current;
-      if (!d.nen || !d.nen.length || typeof d.nen[0].t === "number") return null; // Volume Profile chi cho khung ngay / tuan
+      if (!d.nen || !d.nen.length) return null;
       const a = Math.max(0, Math.ceil(Math.min(i1, i2))), b = Math.min(d.nen.length - 1, Math.floor(Math.max(i1, i2)));
       if (b < a) return null;
+      if (typeof d.nen[0].t === "number") {
+        // Khung trong ngay (1p / 5p / 15p / 30p / 1G): nen cua chinh khung da du min, tinh truc tiep tren cac nen trong vung xem (khong can nen 1 gio)
+        const hsNgay = tinhHoSoKhoiLuong(d.nen.slice(a, b + 1), { soHang });
+        return hsNgay ? { ...hsNgay, nguon: "bieuDo" } : null;
+      }
       const tuan = d.khungTG === "W";
       const thang = d.khungTG === "MO";
       const denNgay = thang
@@ -1302,7 +1307,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     };
     s.tinhHoSo = tinh;
     s.lopVe.datNguonHoSo((i1, i2) => tinh(i1, i2, 48));
-    if (!bat.vp || noiNgay) {
+    if (!bat.vp) {
       s.lopVe.datHoSo(null);
       return;
     }
@@ -2298,7 +2303,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   // Danh sach chi bao cho MENU "Chi bao" (kieu TradingView) va chu thich tren bieu do: moi muc co khoa, nhan, mau, nhom, ma "data-may" (huong dan cua May) va ham bam.
   const bamBat = (k) => () => setBat((b) => ({ ...b, [k]: !b[k] }));
   const dsMenu = [
-    ...CONG_TAT.filter((c) => !(noiNgay && (c.khoa === "vp" || c.khoa === "htkc")) && !(!noiNgay && (c.khoa === "vwap" || c.khoa === "chiaNgay")) && !(c.khoa === "footprint" && !(noiNgay && ma === "VN30F1M"))).map((c) => ({ khoa: c.khoa, nhan: c.nhan, mau: c.mau, nhom: "Lớp trên biểu đồ giá", may: `chip-${c.khoa}`, bam: c.khoa === "footprint" ? () => setBat((b) => ({ ...b, footprint: !b.footprint, ...(!b.footprint ? { ichimoku: false, canBang: false } : {}) })) : bamBat(c.khoa) })),
+    ...CONG_TAT.filter((c) => !(noiNgay && c.khoa === "htkc") && !(!noiNgay && (c.khoa === "vwap" || c.khoa === "chiaNgay")) && !(c.khoa === "footprint" && !(noiNgay && ma === "VN30F1M"))).map((c) => ({ khoa: c.khoa, nhan: c.nhan, mau: c.mau, nhom: "Lớp trên biểu đồ giá", may: `chip-${c.khoa}`, bam: c.khoa === "footprint" ? () => setBat((b) => ({ ...b, footprint: !b.footprint, ...(!b.footprint ? { ichimoku: false, canBang: false } : {}) })) : bamBat(c.khoa) })),
     conVung && { khoa: "vung", nhan: "Vùng lệnh", mau: XANH, nhom: "Tín hiệu hệ thống", may: "chip-vung", bam: bamBat("vung") },
     !noiNgay && sk && sk.b.length > 0 && { khoa: "diemB", nhan: `Điểm B (${sk.b.length})`, mau: "var(--diem-b)", nhom: "Tín hiệu hệ thống", may: "chip-diemB", bam: bamBat("diemB") },
     !noiNgay && sk && sk.batDay.length > 0 && { khoa: "batDay", nhan: `Bắt đáy (${sk.batDay.length})`, mau: "var(--diem-day)", nhom: "Tín hiệu hệ thống", may: "chip-batDay", bam: bamBat("batDay") },
