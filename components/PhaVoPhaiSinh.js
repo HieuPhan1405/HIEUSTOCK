@@ -6,6 +6,7 @@ import { createChart, createSeriesMarkers, CandlestickSeries, LineStyle } from "
 import { Bell, BellOff, RotateCcw } from "lucide-react";
 import { soVN } from "@/lib/soVN";
 import { laIOSChuaCaiDat, quyenHienTai } from "@/lib/dayTrinhDuyet";
+import { laThuHai, heSoKhoiLuong, HE_SO_THU_HAI } from "@/lib/phaVoPhaiSinh";
 
 // Bieu do ky thuat nhieu khung (nang - tai rieng, chi tren trinh duyet)
 const BieuDoKyThuat = dynamic(() => import("@/components/BieuDoKyThuat"), { ssr: false });
@@ -405,12 +406,80 @@ function KhungKyQuy({ kq, doi, gia, b }) {
   );
 }
 
+// KHUNG THU HAI x2 (25/11/2026): goi y khoi luong gap doi vao ngay thu Hai (muc vao / cat lo / thoat KHONG doi). So lieu kiem chung: xem chu thich HE_SO_THU_HAI trong lib/phaVoPhaiSinh.js.
+function KhungThuHai({ ngay, kq, gia }) {
+  const hom = laThuHai(ngay);
+  const soHD = Math.max(0, Math.floor(Number(kq.soHD) || 0));
+  const von = Math.max(0, Number(kq.von) || 0);
+  const im = Math.min(60, Math.max(5, Number(kq.im) || 17));
+  const p = gia || 1850;
+  const soHDHomNay = soHD * HE_SO_THU_HAI;
+  const kyQuy2 = (soHDHomNay * p * 0.1 * im) / 100; // trieu dong
+  const dung2 = von > 0 ? (kyQuy2 / von) * 100 : 0;
+  const donBay2 = von > 0 ? (soHDHomNay * p * 0.1) / von : 0;
+  const loXau2 = NGUON_LO_NGAY_XAU * soHDHomNay * 0.1;
+  const dungXau2 = von > 0 ? ((kyQuy2 + loXau2) / von) * 100 : 0;
+  const mau = hom ? XANH : VIEN;
+  return (
+    <div className="rounded-2xl border p-4 mb-4" style={{ borderColor: mau, background: NEN_CARD }}>
+      <div className="flex flex-wrap items-center justify-between gap-2 mb-1">
+        <h2 className="text-base font-bold" style={{ color: TEXT, fontFamily: "var(--font-chu)" }}>
+          Thứ Hai gợi ý gấp đôi khối lượng
+        </h2>
+        <span className="px-2.5 py-1 rounded-md text-xs font-bold" style={{ color: hom ? XANH : MUTED, border: `1px solid ${hom ? XANH : VIEN}` }}>
+          {hom ? "HÔM NAY LÀ THỨ HAI · ×2" : "Áp dụng cho các phiên thứ Hai"}
+        </span>
+      </div>
+      <p className="text-sm" style={{ color: MUTED }}>
+        Mức vào, cắt lỗ và thoát lệnh <b style={{ color: TEXT }}>không đổi</b>; chỉ gấp đôi số hợp đồng ở phiên thứ Hai, vì đây là phiên hệ phá vỡ cho kết quả tốt nhất.
+      </p>
+      {hom && soHD > 0 && (
+        <p className="text-sm mt-2" style={{ color: TEXT }}>
+          Bạn đang nhập <b style={mono}>{soHD}</b> hợp đồng → phiên hôm nay gợi ý <b style={{ ...mono, color: XANH }}>{soHDHomNay}</b> hợp đồng.
+          {von > 0 && (
+            <span style={{ color: dung2 >= 80 ? VANG : MUTED }}>
+              {" "}
+              Ký quỹ cần khoảng <b style={mono}>{soVN(kyQuy2, 1, true)} triệu</b> ({soVN(dung2, 0, true)}% vốn), đòn bẩy <b style={mono}>{soVN(donBay2, 2, true)}x</b>
+              {donBay2 > 3 ? " — vượt mức khuyến nghị 3x, nên giữ nguyên số hợp đồng cho phiên này" : ""}. Nếu gặp ngày xấu nhất lịch sử ({soVN(NGUON_LO_NGAY_XAU, 0, true)} điểm/hợp đồng) khi giữ {soHDHomNay} hợp đồng: sử dụng ký quỹ{" "}
+              <b style={{ color: dungXau2 >= 100 ? DO : dungXau2 >= 90 ? DO : dungXau2 >= 80 ? VANG : TEXT }}>{soVN(dungXau2, 0, true)}%</b>.
+            </span>
+          )}
+        </p>
+      )}
+      {hom && soHD === 0 && (
+        <p className="text-xs mt-2" style={{ color: MUTED }}>
+          Nhập số hợp đồng ở khung &ldquo;Vốn và ký quỹ của bạn&rdquo; bên dưới để xem số hợp đồng và ký quỹ gợi ý cho hôm nay.
+        </p>
+      )}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-px mt-3 rounded-lg overflow-hidden" style={{ background: "var(--vien-nhe)" }}>
+        {[
+          ["Thứ Hai, TB mỗi lệnh (điểm)", "+3,9", "ngày khác +1,0 · thắng 68%"],
+          ["Năm lãi 2018–2026", "9/9", "322 lệnh thứ Hai"],
+          ["Sharpe: 1 HĐ → ×2", "2,31→2,54", "sau 7/2022: 1,74→2,05"],
+          ["Sụt lớn nhất (điểm/HĐ)", "−98→−132", "phiên T2 tệ nhất −22→−45"],
+        ].map(([n, v, ghi]) => (
+          <div key={n} className="px-3 py-2" style={{ background: NEN_CARD }}>
+            <p className="text-xs" style={{ color: MUTED }}>{n}</p>
+            <p className="whitespace-nowrap" style={{ ...mono, fontWeight: 700, color: TEXT, fontSize: "clamp(13px, 4.2vw, 18px)" }}>{v}</p>
+            <p className="text-[11px]" style={{ color: MUTED }}>{ghi}</p>
+          </div>
+        ))}
+      </div>
+      <p className="text-[11px] mt-2" style={{ color: MUTED }}>
+        Kiểm chứng 2018 – 13/11/2026, nến 1 phút, điểm sau phí MBS + trượt 0,4 điểm mỗi vòng. Gấp đôi khối lượng cũng gấp đôi lỗ ở các phiên thứ Hai xấu: xao trộn khối 20 ngày cho thấy xác suất sụt hơn 150 điểm/hợp đồng trong 1 năm tăng từ 1% lên 4%. Chọn thứ Hai sau khi xem dữ liệu nên có thể kém hơn trong tương lai; hãy theo dõi vài tháng với khối lượng nhỏ trước. Chỉ là gợi ý khối lượng, trang không tự đặt lệnh.
+      </p>
+    </div>
+  );
+}
+
 function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien, setNgayXem, von, soHD }) {
   const [gomVaoLai, setGomVaoLai] = useState(true); // tinh ca lenh VAO LAI sau cat lo (lenh thu 2 trong ngay)
+  const [thuHai2, setThuHai2] = useState(true); // tinh thu Hai gap doi khoi luong (goi y moi 25/11/2026)
+  const hs = (ngay) => (thuHai2 ? heSoKhoiLuong(ngay) : 1);
   const hang = dai?.hang || [];
   const lenhNgay = hang.filter((r) => r.phia && !r.dauHD && !r.dangChay); // moi phan tu = 1 ngay co lenh
-  const lenh = lenhNgay.flatMap((r) => dsLenh(r, gomVaoLai).map((o) => ({ ...o, ngay: r.ngay }))); // moi phan tu = 1 LENH
-  const lenhLai = lenhNgay.filter((r) => r.hai).map((r) => r.hai);
+  const lenh = lenhNgay.flatMap((r) => dsLenh(r, gomVaoLai).map((o) => ({ ...o, ngay: r.ngay, diemSauPhi: o.diemSauPhi * hs(r.ngay) }))); // moi phan tu = 1 LENH (diem da nhan he so thu Hai)
+  const lenhLai = lenhNgay.filter((r) => r.hai).map((r) => ({ ...r.hai, diemSauPhi: r.hai.diemSauPhi * hs(r.ngay) }));
   const thang = (ds) => ds.filter((r) => r.diemSauPhi > 0).length;
   const tongDiem = (ds) => ds.reduce((s, r) => s + r.diemSauPhi, 0);
   const nam = [...new Set(lenh.map((r) => r.ngay.slice(0, 4)))].sort();
@@ -431,7 +500,7 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
     dinh = Math.max(dinh, cd);
     sut = Math.min(sut, cd - dinh);
   }
-  const ngayTe = lenhNgay.reduce((m, r) => Math.min(m, diemNgay(r, gomVaoLai)), 0);
+  const ngayTe = lenhNgay.reduce((m, r) => Math.min(m, diemNgay(r, gomVaoLai) * hs(r.ngay)), 0);
   const thangTe = dsThang.reduce((m, x) => Math.min(m, x.diem), 0);
   const nhanThang = (t) => `${t.slice(5)}/${t.slice(2, 4)}`;
   return (
@@ -468,6 +537,10 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                 <label className="flex items-center gap-1.5 cursor-pointer" style={{ color: TEXT }}>
                   <input type="checkbox" checked={gomVaoLai} onChange={(e) => setGomVaoLai(e.target.checked)} />
                   Tính cả lệnh thứ 2 trong ngày
+                </label>
+                <label className="flex items-center gap-1.5 cursor-pointer" style={{ color: TEXT }}>
+                  <input type="checkbox" checked={thuHai2} onChange={(e) => setThuHai2(e.target.checked)} />
+                  Thứ Hai gấp đôi khối lượng (×{HE_SO_THU_HAI})
                 </label>
                 <span>
                   Riêng lệnh thứ 2: {lenhLai.length} lệnh · thắng {lenhLai.length ? Math.round((thang(lenhLai) / lenhLai.length) * 100) : 0}% ·{" "}
@@ -569,6 +642,7 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                           {ngayHien(r.ngay).slice(0, 5)}/{r.ngay.slice(2, 4)}
                           {r.dangChay && <span style={{ color: VANG }}> ●</span>}
                           {r.dauHD && <span style={{ color: VANG }} title="Phiên đầu hợp đồng mới: không tính vào tổng"> *</span>}
+                          {r.phia && hs(r.ngay) > 1 && <span style={{ color: XANH }} title="Thứ Hai: điểm đã nhân đôi khối lượng"> ×{hs(r.ngay)}</span>}
                         </td>
                         <td className="px-3 py-1.5 whitespace-nowrap">
                           <OKetQua x={r.phia ? r : { phia: 0, lyDo: "khongKhop" }} />
@@ -580,7 +654,7 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                           )}
                         </td>
                         <td className="px-3 py-1.5 text-right whitespace-nowrap" style={{ ...mono, color: !r.phia ? MUTED : diemNgay(r, gomVaoLai) > 0 ? XANH : DO }}>
-                          {r.phia ? diemCoDau(diemNgay(r, gomVaoLai)) : ""}
+                          {r.phia ? diemCoDau(diemNgay(r, gomVaoLai) * hs(r.ngay)) : ""}
                         </td>
                       </tr>
                     ))}
@@ -696,7 +770,7 @@ export default function PhaVoPhaiSinh() {
     const tin = [];
     for (const [khoa, ten, x] of [["bd", "Phái sinh", j.bienDong]]) {
       if (cu[khoa] === moi[khoa]) continue;
-      if (moi[khoa] === "dangGiu") tin.push(`${ten}: ${x.phia > 0 ? "MUA" : "BÁN KHỐNG"} ${d1(x.vao.gia)} lúc ${x.vao.gio}, cắt lỗ ${d1(x.catLo)}`);
+      if (moi[khoa] === "dangGiu") tin.push(`${ten}: ${x.phia > 0 ? "MUA" : "BÁN KHỐNG"} ${d1(x.vao.gia)} lúc ${x.vao.gio}, cắt lỗ ${d1(x.catLo)}${heSoKhoiLuong(j.ngay) > 1 ? ` · thứ Hai: gợi ý khối lượng gấp ${heSoKhoiLuong(j.ngay)}` : ""}`);
       else if (moi[khoa] === "khoaLai") tin.push(`${ten}: THOÁT CÓ LÃI ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm)`);
       else if (moi[khoa] === "catLo") tin.push(`${ten}: CẮT LỖ ${d1(x.ra.gia)} lúc ${x.ra.gio} (${diemCoDau(x.diemSauPhi)} điểm)`);
       else if (moi[khoa] === "cuoiPhien" && !j.bienDong?.lenhHai) tin.push(j.quaDem?.giu ? `${ten}: 14:29 giá ${d1(x.ra.gia)} — GIỮ QUA ĐÊM, đóng 9:30 phiên sau` : `${ten}: đóng cuối phiên ${d1(x.ra.gia)} (${diemCoDau(x.diemSauPhi)} điểm)`);
@@ -986,6 +1060,8 @@ export default function PhaVoPhaiSinh() {
         </The>
       </div>
 
+      <KhungThuHai ngay={du?.ngay} kq={kq} gia={du?.giaHienTai} />
+
       <KhungKyQuy kq={kq} doi={doiKq} gia={du?.giaHienTai} b={b} />
 
       {suKien.length > 0 && (
@@ -1076,7 +1152,7 @@ export default function PhaVoPhaiSinh() {
 
       <p className="text-[11px]" style={{ color: MUTED }}>
         Phái sinh có đòn bẩy cao, có thể mất nhiều hơn số tiền ký quỹ ban đầu. Công cụ thống kê, không phải khuyến nghị đầu tư và không tự đặt lệnh. Giá lấy từ nến 1 phút nên chậm hơn bảng giá vài giây đến một phút.
-        Điểm sau phí theo biểu phí MBS (3.000đ + 2.700đ + 2.550đ mỗi lượt và thuế), 1 điểm = 100.000đ mỗi hợp đồng. Quá khứ không đảm bảo tương lai.
+        Điểm sau phí theo biểu phí MBS (3.000đ + 2.700đ + 2.550đ mỗi lượt và thuế), 1 điểm = 100.000đ mỗi hợp đồng. Ở lịch sử từ 2024, ô &ldquo;Thứ Hai gấp đôi khối lượng&rdquo; nhân đôi điểm của các phiên thứ Hai (tắt đi để xem 1 hợp đồng mỗi lệnh). Quá khứ không đảm bảo tương lai.
       </p>
     </div>
   );

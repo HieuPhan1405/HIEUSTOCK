@@ -136,6 +136,8 @@ ok("goi y mua: tom tat day nhieu su kien co nhan 'Gợi ý mua'", /Gợi ý mua:
   ok("phai sinh: dang cho vao lai co thong bao 'cho2' kem muc", cho.length === 3 && cho[2].khoa === "phai_sinh:2026-11-09:cho2" && /1\.869,5/.test(cho[2].noi_dung) && /1\.859,7/.test(cho[2].noi_dung), JSON.stringify(cho.map((t) => t.khoa)));
   const dangGiu = dungThongBaoPhaiSinh({ ngay: "2026-11-09", bienDong: { ...x1, ra: null, trangThai: "dangGiu" } });
   ok("phai sinh: dang giu chi co thong bao vao lenh", dangGiu.length === 1 && dangGiu[0].khoa === "phai_sinh:2026-11-09:vao1");
+  const thuBa = dungThongBaoPhaiSinh({ ngay: "2026-11-10", bienDong: { ...x1, ra: null, trangThai: "dangGiu" } });
+  ok("phai sinh: thu Hai (09/11) nhac goi y khoi luong gap 2, thu Ba (10/11) khong nhac", dangGiu[0].noi_dung.includes("thứ Hai: khối lượng gợi ý gấp 2") && !thuBa[0].noi_dung.includes("thứ Hai"), `${dangGiu[0].noi_dung} || ${thuBa[0].noi_dung}`);
   ok("phai sinh: phien dau hop dong moi / chua co lenh -> khong bao", dungThongBaoPhaiSinh({ ngay: "2026-11-09", bienDong: x1, phienDauHopDong: true }).length === 0 && dungThongBaoPhaiSinh({ ngay: "2026-11-09", bienDong: { trangThai: "cho" } }).length === 0);
   // loc theo tai khoan
   const tb = [...ps, ...b, ...d];
