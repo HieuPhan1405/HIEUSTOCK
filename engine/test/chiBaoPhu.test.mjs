@@ -1,5 +1,5 @@
 // Test tay cho lib/chiBaoPhu.js. Chay: node engine/test/chiBaoPhu.test.mjs
-import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay, mcdx, MCDX_BANKER, MCDX_HOT } from "../../lib/chiBaoPhu.js";
+import { ema, rsi, macd, bollinger, stochastic, mfi, adx, vwapTrongNgay, mcdx, cvd, MCDX_BANKER, MCDX_HOT } from "../../lib/chiBaoPhu.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -83,6 +83,19 @@ const mPhang = mcdx(new Array(120).fill(100), MCDX_HOT);
 ok("MCDX: gia phang -> RSI 50 -> Hot Money 0,7 x (50 - 30) = 14", gan(mPhang[119], 14), mPhang[119]);
 ok("MCDX: Banker gia phang -> RSI 50 - goc 50 = 0", gan(mcdx(new Array(120).fill(100), MCDX_BANKER)[119], 0));
 ok("MCDX luon trong [0, 20]", mcdx(Array.from({ length: 300 }, (_, i) => 100 + Math.sin(i / 7) * 20 + i * 0.1), MCDX_BANKER).filter((v) => v != null).every((v) => v >= 0 && v <= 20));
+
+// CVD uoc luong (25/11/2026)
+const cv1 = cvd([{ h: 10, l: 8, c: 10, v: 100 }, { h: 10, l: 8, c: 8, v: 50 }, { h: 10, l: 8, c: 9, v: 70 }]);
+ok("CVD: dong cua o dinh = +V, o day = -V, o giua = 0", gan(cv1.delta[0], 100) && gan(cv1.delta[1], -50) && gan(cv1.delta[2], 0), JSON.stringify(cv1.delta));
+ok("CVD: cong don 100, 50, 50", gan(cv1.cvd[0], 100) && gan(cv1.cvd[1], 50) && gan(cv1.cvd[2], 50), JSON.stringify(cv1.cvd));
+const cv2 = cvd([{ h: 10, l: 10, c: 10, v: 10 }, { h: 11, l: 11, c: 11, v: 30 }, { h: 11, l: 11, c: 11, v: 20 }, { h: 10, l: 10, c: 10, v: 5 }]);
+ok("CVD: nen mot gia (tran / san) lay dau cua C - dong cua truoc: nen dau 0, +30, 0, -5", gan(cv2.delta[0], 0) && gan(cv2.delta[1], 30) && gan(cv2.delta[2], 0) && gan(cv2.delta[3], -5), JSON.stringify(cv2.delta));
+const cv3 = cvd([{ h: 10, l: 8, c: 10, v: 100 }, { h: 10, l: 8, c: 10, v: 100 }, { h: 10, l: 8, c: 10, v: 100 }], { khoaNgay: [1, 1, 2] });
+ok("CVD: dat lai khi doi phien (100, 200, 100)", gan(cv3.cvd[0], 100) && gan(cv3.cvd[1], 200) && gan(cv3.cvd[2], 100), JSON.stringify(cv3.cvd));
+const cv4 = cvd([{ h: 10, l: 8, c: 10, v: 100 }, { h: 10, l: 8, c: 10, v: 100 }, { h: 10, l: 8, c: 10, v: 100 }, { h: 10, l: 8, c: 8, v: 100 }], { n: 2 });
+ok("CVD: duong trung binh n = 2 (100, 150, 250, 250)", gan(cv4.tb[0], 100) && gan(cv4.tb[1], 150) && gan(cv4.tb[2], 250) && gan(cv4.tb[3], 250), JSON.stringify(cv4.tb));
+ok("CVD: nen khong khoi luong -> delta 0, khong NaN", cvd([{ h: 5, l: 4, c: 5 }, { h: 5, l: 4, c: 4, v: 0 }]).cvd.every((x) => x === 0));
+ok("CVD: delta moi nen nam trong [-V, +V]", cvd(Array.from({ length: 200 }, (_, i) => ({ h: 105 + (i % 7), l: 95 - (i % 3), c: 96 + (i % 9), v: 1000 + i }))).delta.every((d, i) => Math.abs(d) <= 1000 + i + 1e-9));
 
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);
