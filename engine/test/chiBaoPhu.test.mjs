@@ -96,6 +96,8 @@ const cv4 = cvd([{ h: 10, l: 8, c: 10, v: 100 }, { h: 10, l: 8, c: 10, v: 100 },
 ok("CVD: duong trung binh n = 2 (100, 150, 250, 250)", gan(cv4.tb[0], 100) && gan(cv4.tb[1], 150) && gan(cv4.tb[2], 250) && gan(cv4.tb[3], 250), JSON.stringify(cv4.tb));
 ok("CVD: nen khong khoi luong -> delta 0, khong NaN", cvd([{ h: 5, l: 4, c: 5 }, { h: 5, l: 4, c: 4, v: 0 }]).cvd.every((x) => x === 0));
 ok("CVD: delta moi nen nam trong [-V, +V]", cvd(Array.from({ length: 200 }, (_, i) => ({ h: 105 + (i % 7), l: 95 - (i % 3), c: 96 + (i % 9), v: 1000 + i }))).delta.every((d, i) => Math.abs(d) <= 1000 + i + 1e-9));
+const cv5 = cvd([{ h: 10, l: 8, c: 10, v: 100 }, { h: 10, l: 8, c: 10, v: 100 }, { h: 10, l: 8, c: 10, v: 100 }], { deltaGoc: [null, -30, 40] });
+ok("CVD: delta that thay cho xap xi o nen co du lieu (100, 70, 110), nen null giu xap xi", gan(cv5.delta[0], 100) && gan(cv5.delta[1], -30) && gan(cv5.delta[2], 40) && gan(cv5.cvd[2], 110), JSON.stringify(cv5.cvd));
 
 console.log(loi === 0 ? "TAT CA DAT" : `${loi} LOI`);
 process.exit(loi === 0 ? 0 : 1);

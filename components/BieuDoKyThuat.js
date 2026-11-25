@@ -489,7 +489,7 @@ function tinhChiBao(nen, khung, cd) {
 }
 
 // Chi bao phu (EMA / Bollinger / RSI / MACD / Stochastic) theo dung nen dang hien (khung Ngay hoac Tuan) - cong thuc o lib/chiBaoPhu.js.
-function tinhChiBaoPhu(nen, cd) {
+function tinhChiBaoPhu(nen, cd, cvdThat = null) {
   const T = (k) => thamSo(cd, k); // thong so nguoi dung da chinh (lib/caiDatChiBao.js), chua chinh = mac dinh
   const tE = T("ema"), tB = T("boll"), tM = T("macd"), tS = T("stoch"), tA = T("adx"), tR = T("rsi"), tF = T("mfi"), tX = T("mcdx"), tC = T("cvd");
   const dong = (mang) => {
@@ -506,7 +506,10 @@ function tinhChiBaoPhu(nen, cd) {
   const st = stochastic(bars, tS.n, tS.k, tS.d);
   const barsV = nen.map((b) => ({ h: b.h, l: b.l, c: b.c, v: b.v ?? 0 }));
   const ad = adx(bars, tA.n);
-  const cvdTinh = cvd(barsV, { khoaNgay: typeof nen[0]?.t === "number" && tC.datLai >= 1 ? nen.map((b) => Math.floor((b.t + 7 * 3600) / 86400)) : null, n: tC.n });
+  const ngayNen = typeof nen[0]?.t === "number" ? nen.map((b) => Math.floor((b.t + 7 * 3600) / 86400)) : null;
+  // VN30F1M khung trong ngay: nhung ngay CO footprint (tick that DNSE) dung delta THAT = mua chu dong - ban chu dong cua tung nen; ngay chua co tick giu xap xi tu nen
+  const deltaThat = cvdThat && ngayNen ? nen.map((b, i) => (cvdThat.ngay.has(ngayNen[i]) ? cvdThat.delta.get(b.t) ?? 0 : null)) : null;
+  const cvdTinh = cvd(barsV, { khoaNgay: ngayNen && tC.datLai >= 1 ? ngayNen : null, n: tC.n, deltaGoc: deltaThat });
   const noiNgay = typeof nen[0]?.t === "number"; // VWAP chi co nghia o khung trong ngay (bat dau lai moi phien)
   // HOMILY CHART (lib/homily.js)
   const mo = nen.map((b) => b.o ?? b.c);
@@ -921,8 +924,32 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
   const loi = ketQua.khoa === khoa ? ketQua.loi : null;
   // eslint-disable-next-line react-hooks/exhaustive-deps -- caiDat.thamSo chi doi qua khoaThamSo
   const chiBao = useMemo(() => (nen && nen.length >= 2 ? tinhChiBao(nen, khungTG, caiDat) : null), [nen, khungTG, khoaThamSo]);
+  // CVD THAT (tick DNSE) cho VN30F1M o khung trong ngay: tai /api/footprint khi bat chip CVD (cung nguon voi chip Footprint, chi thanh vien da duyet; khong tai duoc thi giu CVD uoc luong)
+  const [cvdThatTai, setCvdThatTai] = useState(null);
+  const cvdThatCan = !!bat.cvd && noiNgay && ma === "VN30F1M";
+  useEffect(() => {
+    if (!cvdThatCan) return;
+    let huy = false;
+    fetch(`/api/footprint?ma=VN30F1M&kt=${khungTG}`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (huy || j.trangThai !== "ok" || !Array.isArray(j.nen)) return;
+        const delta = new Map();
+        const ngayCo = new Set();
+        for (const e of j.nen) {
+          delta.set(e.t, (e.mua || 0) - (e.ban || 0));
+          ngayCo.add(Math.floor((e.t + 7 * 3600) / 86400));
+        }
+        setCvdThatTai({ khoa: `${ma}|${khungTG}`, delta, ngay: ngayCo });
+      })
+      .catch(() => {});
+    return () => {
+      huy = true;
+    };
+  }, [cvdThatCan, ma, khungTG]);
+  const cvdThat = cvdThatCan && cvdThatTai && cvdThatTai.khoa === `${ma}|${khungTG}` ? cvdThatTai : null;
   // eslint-disable-next-line react-hooks/exhaustive-deps -- caiDat.thamSo chi doi qua khoaThamSo
-  const chiBaoPhu = useMemo(() => (nen && nen.length >= 30 ? tinhChiBaoPhu(nen, caiDat) : null), [nen, khoaThamSo]);
+  const chiBaoPhu = useMemo(() => (nen && nen.length >= 30 ? tinhChiBaoPhu(nen, caiDat, cvdThat) : null), [nen, khoaThamSo, cvdThat]);
   const phanKy = useMemo(() => {
     if (!nen || nen.length < 60) return [];
     return phanKyRSI(nen.map((b) => ({ h: b.h, l: b.l, c: b.c })), rsi(nen.map((b) => b.c), 14), { k: 2 });
@@ -1965,13 +1992,17 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
       // CVD UOC LUONG (lib/chiBaoPhu.js cvd): duong cam = delta khoi luong luy ke (khung trong ngay: dat lai dau moi phien), duong xanh nhat = trung binh trong phien; vach 0. Khong co du lieu tung lenh nen chi la xap xi.
       const o = cuaSo++;
       const kC = kieuNet(caiDat, "cvd", "cvd"), kT = kieuNet(caiDat, "cvd", "tb");
+      // tieu de trung thuc: co tick that o phien CUOI thi "tick that" (ngay chua co tick giu xap xi), neu phien cuoi chua co tick thi noi ro tick that chi co den ngay nao
+      const ngayCuoiKey = Math.floor((nen[nen.length - 1].t + 7 * 3600) / 86400);
+      const maxKey = cvdThat ? Math.max(...cvdThat.ngay) : null;
+      const tieuDeCvd = !cvdThat ? nhanDong("cvd", caiDat, "CVD (ước lượng)") : cvdThat.ngay.has(ngayCuoiKey) ? "CVD (tick thật; phiên chưa có tick dùng ước lượng)" : `CVD (ước lượng; tick thật chỉ đến ${new Date(maxKey * 86400e3).toISOString().slice(8, 10)}/${new Date(maxKey * 86400e3).toISOString().slice(5, 7)})`;
       const gonSo = (v) => {
         const a = Math.abs(v);
         const d = (x) => String(Math.round(x * 100) / 100).replace(".", ",");
         return a >= 1e9 ? `${d(v / 1e9)} tỷ` : a >= 1e6 ? `${d(v / 1e6)} tr` : a >= 1e3 ? `${d(v / 1e3)}k` : d(v);
       };
       const dinhDang = { priceFormat: { type: "custom", minMove: 1, formatter: gonSo } }; // truc / nhan gia gon: k = nghin, tr = trieu, ty = ty (co phieu / hop dong)
-      const sr = dong(kC.mau, cp.cvd, o, { title: nhanDong("cvd", caiDat, "CVD (ước lượng)"), lineWidth: kC.day, visible: kC.hien, ...dinhDang });
+      const sr = dong(kC.mau, cp.cvd, o, { title: tieuDeCvd, lineWidth: kC.day, visible: kC.hien, ...dinhDang });
       dong(kT.mau, cp.cvdTB, o, { lineWidth: kT.day, visible: kT.hien, ...dinhDang });
       vach(sr, 0, "rgba(148,163,184,0.5)");
     }
@@ -2086,7 +2117,7 @@ export default function BieuDoKyThuat({ tenMa = null, ma, vung = null, ngayMua =
     // cua so gia lon hon cac cua so chi bao
     const panes = s.chart.panes();
     panes.forEach((p, i) => p.setStretchFactor(i === 0 ? 3.2 : 1));
-  }, [bat.rsi, bat.macd, bat.stoch, bat.mfi, bat.cvd, bat.adx, bat.mcdx, bat.bkr, bat.hmDE, bat.hmKDJ, bat.dongTien, bat.phanKy, chiBaoPhu, phanKy, phanKySom, nen, caiDat]);
+  }, [bat.rsi, bat.macd, bat.stoch, bat.mfi, bat.cvd, cvdThat, bat.adx, bat.mcdx, bat.bkr, bat.hmDE, bat.hmKDJ, bat.dongTien, bat.phanKy, chiBaoPhu, phanKy, phanKySom, nen, caiDat]);
 
   // 4. Vung lenh + diem MUA.
   useEffect(() => {
