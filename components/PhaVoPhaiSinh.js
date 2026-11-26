@@ -6,7 +6,7 @@ import { createChart, createSeriesMarkers, CandlestickSeries, LineStyle } from "
 import { Bell, BellOff, RotateCcw } from "lucide-react";
 import { soVN } from "@/lib/soVN";
 import { laIOSChuaCaiDat, quyenHienTai } from "@/lib/dayTrinhDuyet";
-import { laThuHai, heSoKhoiLuong, HE_SO_THU_HAI } from "@/lib/phaVoPhaiSinh";
+import { laThuHai, heSoKhoiLuong, HE_SO_THU_HAI, tbThangThua } from "@/lib/phaVoPhaiSinh";
 
 // Bieu do ky thuat nhieu khung (nang - tai rieng, chi tren trinh duyet)
 const BieuDoKyThuat = dynamic(() => import("@/components/BieuDoKyThuat"), { ssr: false });
@@ -503,6 +503,8 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
   const ngayTe = lenhNgay.reduce((m, r) => Math.min(m, diemNgay(r, gomVaoLai) * hs(r.ngay)), 0);
   const thangTe = dsThang.reduce((m, x) => Math.min(m, x.diem), 0);
   const nhanThang = (t) => `${t.slice(5)}/${t.slice(2, 4)}`;
+  const tt = tbThangThua(lenh);
+  const diemTB = (v) => (v == null ? "—" : diemCoDau(v));
   return (
     <div className="rounded-2xl border overflow-hidden mb-4" style={{ borderColor: VIEN, background: NEN_CARD }}>
       <button type="button" onClick={() => setMoDai(!moDai)} aria-expanded={moDai} className="w-full flex items-center justify-between gap-3 px-3 py-3 text-left" style={{ color: TEXT }}>
@@ -520,16 +522,19 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
             <p className="px-3 py-4 text-sm" style={{ color: MUTED }}>Đang tải lịch sử…</p>
           ) : (
             <>
-              <div className="px-3 py-3 grid grid-cols-2 sm:grid-cols-4 gap-px" style={{ background: "var(--vien-nhe)" }}>
+              <div className="px-3 py-3 grid grid-cols-2 sm:grid-cols-3 gap-px" style={{ background: "var(--vien-nhe)" }}>
                 {[
                   ["Số lệnh", lenh.length, null],
                   ["Thắng", `${thang(lenh)} (${lenh.length ? Math.round((thang(lenh) / lenh.length) * 100) : 0}%)`, null],
                   ["Tổng điểm sau phí", diemCoDau(tongDiem(lenh)), tongDiem(lenh) > 0 ? XANH : DO],
                   [`Lãi/lỗ với ${soHD} hợp đồng`, trieu(tongDiem(lenh) * soHD), tongDiem(lenh) > 0 ? XANH : DO],
-                ].map(([n, v, m]) => (
+                  ["TB lệnh thắng (điểm)", diemTB(tt.tbThang), XANH, tt.tbThang == null ? null : `${tt.soThang} lệnh · ${trieu(tt.tbThang * soHD)} / lệnh`],
+                  ["TB lệnh thua (điểm)", diemTB(tt.tbThua), DO, tt.tbThua == null ? null : `${tt.soThua} lệnh · ${trieu(tt.tbThua * soHD)} / lệnh${tt.tiLe == null ? "" : ` · lãi TB gấp ${soVN(tt.tiLe, 2, true)} lần lỗ TB`}`],
+                ].map(([n, v, m, ghi]) => (
                   <div key={n} className="px-3 py-2" style={{ background: NEN_CARD }}>
                     <p className="text-xs" style={{ color: MUTED }}>{n}</p>
                     <p className="text-lg" style={{ ...mono, fontWeight: 700, color: m || TEXT }}>{v}</p>
+                    {ghi && <p className="text-[11px]" style={{ color: MUTED }}>{ghi}</p>}
                   </div>
                 ))}
               </div>
@@ -568,12 +573,14 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                 </p>
               )}
               <div className="overflow-x-auto">
-                <table className="w-full text-sm" style={{ minWidth: 480 }}>
+                <table className="w-full text-sm" style={{ minWidth: 640 }}>
                   <thead>
                     <tr style={{ color: MUTED }}>
                       <th className="text-left font-normal px-3 py-2">Năm</th>
                       <th className="text-right font-normal px-3 py-2">Lệnh</th>
                       <th className="text-right font-normal px-3 py-2">Thắng</th>
+                      <th className="text-right font-normal px-3 py-2">TB thắng</th>
+                      <th className="text-right font-normal px-3 py-2">TB thua</th>
                       <th className="text-right font-normal px-3 py-2">Điểm sau phí</th>
                       <th className="text-right font-normal px-3 py-2">Triệu đồng ({soHD} HĐ)</th>
                       <th className="text-right font-normal px-3 py-2">% vốn</th>
@@ -582,11 +589,14 @@ function LichSuDai({ moDai, setMoDai, dai, namLoc, setNamLoc, soHien, setSoHien,
                   <tbody>
                     {nam.map((y) => {
                       const g = lenh.filter((r) => r.ngay.startsWith(y));
+                      const tn = tbThangThua(g);
                       return (
                         <tr key={y} className="border-t" style={{ borderColor: "var(--vien-nhe)" }}>
                           <td className="px-3 py-1.5" style={mono}>{y}</td>
                           <td className="px-3 py-1.5 text-right" style={mono}>{g.length}</td>
                           <td className="px-3 py-1.5 text-right" style={mono}>{thang(g)} ({Math.round((thang(g) / g.length) * 100)}%)</td>
+                          <td className="px-3 py-1.5 text-right" style={{ ...mono, color: XANH }}>{diemTB(tn.tbThang)}</td>
+                          <td className="px-3 py-1.5 text-right" style={{ ...mono, color: DO }}>{diemTB(tn.tbThua)}</td>
                           <td className="px-3 py-1.5 text-right" style={{ ...mono, color: tongDiem(g) > 0 ? XANH : DO }}>{diemCoDau(tongDiem(g))}</td>
                           <td className="px-3 py-1.5 text-right" style={{ ...mono, color: tongDiem(g) > 0 ? XANH : DO }}>{trieu(tongDiem(g) * soHD).replace(" triệu", "")}</td>
                           <td className="px-3 py-1.5 text-right" style={{ ...mono, color: tongDiem(g) > 0 ? XANH : DO }}>
@@ -1137,6 +1147,14 @@ export default function PhaVoPhaiSinh() {
                   <td className="px-3 py-2 font-bold">Tổng</td>
                   <td className="px-3 py-2" style={{ color: MUTED }}>
                     {soLenh("bienDong")} lệnh, thắng {soThang("bienDong")}
+                    {(() => {
+                      const t = tbThangThua(duocTinh("bienDong"));
+                      return (
+                        <div className="text-xs mt-0.5">
+                          TB thắng <b style={{ ...mono, color: XANH }}>{t.tbThang == null ? "—" : diemCoDau(t.tbThang)}</b> · TB thua <b style={{ ...mono, color: DO }}>{t.tbThua == null ? "—" : diemCoDau(t.tbThua)}</b> điểm
+                        </div>
+                      );
+                    })()}
                   </td>
                   <td className="px-3 py-2 text-right font-bold" style={{ ...mono, color: tong("bienDong") > 0 ? XANH : DO }}>
                     {diemCoDau(tong("bienDong"))}

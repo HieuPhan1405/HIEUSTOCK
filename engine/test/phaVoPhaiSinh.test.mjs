@@ -1,6 +1,6 @@
 // Test tay cho lib/phaVoPhaiSinh.js. Chay: node engine/test/phaVoPhaiSinh.test.mjs
 import { viTriPhut, gioCuaPhut, tachPhien, bienDoPhien, tinhBienDong, DIEM_CAT_LO_TOI_THIEU, catLoBanDau, DIEM_KICH_KHOA_LAI, DIEM_KHOA_LAI, thuNamTuanBa, laPhienDauHopDong, phiVong, vungGiaTriPhien, viTriVungGiaTri, K_CUOI, K_HET_GIO_VAO, SO_LENH_TOI_DA_NGAY, laNgayDaoHan, dongTienNgayLienTuc, xetGiuQuaDem, ketQuaQuaDem, lenhCuoiNgay, nenNgayTuPhien } from "../../lib/phaVoPhaiSinh.js";
-import { laThuHai, heSoKhoiLuong, HE_SO_THU_HAI } from "../../lib/phaVoPhaiSinh.js";
+import { laThuHai, heSoKhoiLuong, HE_SO_THU_HAI, tbThangThua } from "../../lib/phaVoPhaiSinh.js";
 
 let loi = 0;
 const ok = (ten, dk, them = "") => {
@@ -244,6 +244,16 @@ ok("laThuHai: 2026-11-23 la thu Hai", laThuHai("2026-11-23") === true);
 ok("laThuHai: 2026-11-24 (thu Ba), 2026-11-22 (Chu nhat), 2026-11-27 (thu Sau) khong phai", !laThuHai("2026-11-24") && !laThuHai("2026-11-22") && !laThuHai("2026-11-27"));
 ok("laThuHai: dau vao rac / rong -> false", !laThuHai("") && !laThuHai(null) && !laThuHai(undefined) && !laThuHai("23/11/2026"));
 ok("heSoKhoiLuong: thu Hai = 2, ngay khac = 1", heSoKhoiLuong("2026-11-23") === HE_SO_THU_HAI && HE_SO_THU_HAI === 2 && heSoKhoiLuong("2026-11-25") === 1 && heSoKhoiLuong(null) === 1);
+
+// Trung binh lenh thang / thua (26/11/2026)
+{
+  const t = tbThangThua([{ diemSauPhi: 10 }, { diemSauPhi: 4 }, { diemSauPhi: -5 }, { diemSauPhi: 0 }, { diemSauPhi: -4 }]);
+  ok("tbThangThua: dem va trung binh (hoa tinh vao thua)", t.soThang === 2 && t.soThua === 3 && gan(t.tbThang, 7) && gan(t.tbThua, -3) && gan(t.tiLe, 7 / 3));
+  const r = tbThangThua([]);
+  ok("tbThangThua: rong -> null", r.tbThang === null && r.tbThua === null && r.tiLe === null);
+  const w = tbThangThua([{ diemSauPhi: 3 }]);
+  ok("tbThangThua: chi co lenh thang -> TB thua va ti le = null", gan(w.tbThang, 3) && w.tbThua === null && w.tiLe === null);
+}
 
 console.log(loi ? `\n${loi} LOI` : "\nTat ca dat.");
 process.exit(loi ? 1 : 0);
