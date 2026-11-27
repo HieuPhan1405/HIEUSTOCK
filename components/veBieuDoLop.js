@@ -1421,51 +1421,77 @@ export class LopVe {
     }
     return false;
   }
-  // Ve Fibonacci theo cach trinh bay cua TradingView: hop tu x trai nhat den x phai nhat cua cac diem (h.keoDai: keo den het truc gia), moi muc 1 net 1px mau rieng, to nhe giua 2 muc lien tiep theo mau muc duoi,
-  // nhan "muc (gia)" cung mau o BEN TRAI hop, doan noi cac diem net dut xam. goc = gia muc 0, dp = chenh lech gia nhan voi tung muc; goc = null (chua du diem) chi ve doan noi.
+  // Ve Fibonacci gon, de nhin (28/11/2026, Hieu gui mau): moi muc NET DUT trong doan giua cac diem neo, NET CHAM keo tiep qua nen cuoi; chi to 1 VUNG VANG 0,5 - 0,618; nhan "muc(gia)" cung mau.
+  // Doan neo du rong: nhan nam TREN duong, sat mep phai doan neo. Doan neo hep: nhan nam ben PHAI cuoi net cham, tu day ra cho khoi de nhau. h.keoDai: net cham keo den het truc gia.
+  // goc = gia muc 0, dp = chenh lech gia nhan voi tung muc; goc = null (chua du diem) chi ve doan noi. Doan noi cac diem: Fibonacci thoai lui chi hien khi dang chon / dang ve cho do roi; mo rong A-B-C luon hien.
   _veFibTV(ctx, h, W, mucs, goc, dp, diemPx) {
     const ps = diemPx.filter(Boolean);
     const chon = h.id === this.chon;
     ctx.save();
-    ctx.setLineDash([4, 4]);
-    ctx.strokeStyle = "rgba(148,163,184,0.95)";
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ps.forEach((p, k) => (k ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
-    ctx.stroke();
-    ctx.setLineDash([]);
+    if (goc == null || h.loai !== "fib" || chon || !this.hinh.includes(h)) {
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = "rgba(148,163,184,0.7)";
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ps.forEach((p, k) => (k ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)));
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
     if (goc != null) {
-      const x1 = Math.min(...ps.map((p) => p.x)), x2 = h.keoDai ? W : Math.max(...ps.map((p) => p.x));
-      let truoc = null;
+      const x1 = Math.min(...ps.map((p) => p.x)), x2 = Math.max(...ps.map((p) => p.x));
+      const xNenCuoi = this.nen.length ? this._x(this.nen.length - 1) : null;
+      const xHet = h.keoDai ? W : Math.max(x2, Math.min(W, Math.max(x2 + 48, (xNenCuoi ?? x2) + 14)));
       ctx.font = "12px 'Open Sans', sans-serif";
-      ctx.textBaseline = "middle";
+      const ds = [];
       for (const m of mucs) {
-        const gia = goc + dp * m, y = this._y(gia), mau = MAU_MUC_FIB[m] || "#94A3B8";
+        const gia = goc + dp * m, y = this._y(gia);
         if (y == null) continue;
-        if (truoc != null) {
-          ctx.globalAlpha = 0.13;
-          ctx.fillStyle = mau;
-          ctx.fillRect(x1, Math.min(y, truoc), x2 - x1, Math.abs(y - truoc));
-          ctx.globalAlpha = 1;
-        }
-        truoc = y;
-        ctx.strokeStyle = mau;
-        ctx.lineWidth = chon ? 1.6 : 1;
-        ctx.beginPath();
-        ctx.moveTo(x1, y);
-        ctx.lineTo(x2, y);
-        ctx.stroke();
-        const chu = `${m} (${soVN(gia, 2, true)})`, w = ctx.measureText(chu).width;
-        ctx.fillStyle = mau;
-        if (x1 - w - 8 >= 0) {
-          ctx.textAlign = "right";
-          ctx.fillText(chu, x1 - 6, y);
-        } else {
-          ctx.textAlign = "left";
-          ctx.fillText(chu, x1 + 6, y - 8);
-        }
-        ctx.textAlign = "left";
+        const chu = `${m}(${soVN(gia, 2, true)})`;
+        ds.push({ m, y, chu, rong: ctx.measureText(chu).width, mau: MAU_MUC_FIB[m] || "#94A3B8" });
       }
+      const y50 = ds.find((d) => d.m === 0.5)?.y, y618 = ds.find((d) => d.m === 0.618)?.y;
+      if (y50 != null && y618 != null) {
+        ctx.fillStyle = "rgba(214,170,28,0.2)";
+        ctx.fillRect(x1, Math.min(y50, y618), (h.keoDai ? W : x2) - x1, Math.abs(y50 - y618));
+      }
+      const net = (y, tu, den, kieu) => {
+        if (den - tu < 1) return;
+        ctx.setLineDash(kieu);
+        ctx.beginPath();
+        ctx.moveTo(tu, y);
+        ctx.lineTo(den, y);
+        ctx.stroke();
+      };
+      for (const d of ds) {
+        ctx.strokeStyle = d.mau;
+        ctx.lineWidth = chon ? 1.7 : 1;
+        net(d.y, x1, x2, [6, 5]);
+        net(d.y, x2, xHet, [1.5, 3]);
+      }
+      ctx.setLineDash([]);
+      const rongNhat = ds.reduce((a, d) => Math.max(a, d.rong), 0);
+      // du rong -> nhan tren duong (trong doan neo, hoac sat mep phai khi keo dai); hep -> nhan ben phai cuoi duong
+      const trenDuong = h.keoDai || x2 - x1 >= rongNhat * 2 + 20 || xHet + 8 + rongNhat > W;
+      ctx.textBaseline = "middle";
+      if (trenDuong) {
+        const xPhai = h.keoDai ? W - 6 : Math.min(W - 6, x2 - 10);
+        ctx.textAlign = "right";
+        for (const d of ds) {
+          ctx.fillStyle = d.mau;
+          // doan neo hep sat mep phai: lui chu ve phia trong khung
+          ctx.fillText(d.chu, Math.max(xPhai, d.rong + 4), d.y - 9);
+        }
+      } else {
+        ctx.textAlign = "left";
+        let yTruoc = -Infinity;
+        for (const d of [...ds].sort((a, b) => a.y - b.y)) {
+          const yChu = Math.max(d.y, yTruoc + 14);
+          yTruoc = yChu;
+          ctx.fillStyle = d.mau;
+          ctx.fillText(d.chu, xHet + 8, yChu);
+        }
+      }
+      ctx.textAlign = "left";
     }
     ctx.restore();
   }
